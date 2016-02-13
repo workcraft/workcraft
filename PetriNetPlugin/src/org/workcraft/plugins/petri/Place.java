@@ -61,7 +61,7 @@ public class Place extends MathNode {
                 throw new ArgumentException("Negative or zero capacity is not allowed.");
             }
             if (tokens > value) {
-                throw new ArgumentException("The place capacity "+ value + " is too small for the current number of tokens " + tokens + " .");
+                throw new ArgumentException("The place capacity " + value + " is too small for the current number of tokens " + tokens + " .");
             }
             this.capacity = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_CAPACITY));

@@ -9,14 +9,14 @@ import javax.swing.border.Border;
 
 import org.workcraft.plugins.son.gui.TimeConsistencyDialog.Granularity;
 
-public class GranularityPanel extends JPanel{
+public class GranularityPanel extends JPanel {
 
     private static final long serialVersionUID = 1L;
 
     private JRadioButton yearYearButton, hourMinsButton;
     private ButtonGroup granularityGroup;
 
-    public GranularityPanel(Border border){
+    public GranularityPanel(Border border) {
         setLayout(new FlowLayout());
         setBorder(border);
 
@@ -35,22 +35,22 @@ public class GranularityPanel extends JPanel{
         add(hourMinsButton);
     }
 
-    public GranularityPanel(){
+    public GranularityPanel() {
         this(null);
     }
 
-    public Granularity getSelection(){
-        if(yearYearButton.isSelected())
+    public Granularity getSelection() {
+        if (yearYearButton.isSelected())
             return Granularity.YEAR_YEAR;
-        else if(hourMinsButton.isSelected())
+        else if (hourMinsButton.isSelected())
             return Granularity.HOUR_MINS;
         return null;
     }
 
-    public void setSelection(Granularity g){
-        if(g == Granularity.YEAR_YEAR){
+    public void setSelection(Granularity g) {
+        if (g == Granularity.YEAR_YEAR) {
             yearYearButton.setSelected(true);
-        }else if(g == Granularity.HOUR_MINS){
+        } else if (g == Granularity.HOUR_MINS) {
             hourMinsButton.setSelected(true);
         }
     }

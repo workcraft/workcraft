@@ -39,7 +39,7 @@ import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.util.Step;
 
 @SuppressWarnings("rawtypes")
-public class ParallelSimDialog  extends JDialog{
+public class ParallelSimDialog  extends JDialog {
 
     private static final long serialVersionUID = 1L;
 
@@ -68,32 +68,32 @@ public class ParallelSimDialog  extends JDialog{
         private boolean isSelected = false;
         private TransitionNode event;
 
-        EventItem(String label, TransitionNode event, List<TransitionNode> postEvents){
+        EventItem(String label, TransitionNode event, List<TransitionNode> postEvents) {
             this.label = label;
             this.event = event;
         }
 
-        public boolean isSelected(){
+        public boolean isSelected() {
             return isSelected;
         }
 
-        public void setSelected(boolean isSelected){
+        public void setSelected(boolean isSelected) {
             this.isSelected = isSelected;
         }
 
-        public String toString(){
+        public String toString() {
             return label;
         }
 
-        public TransitionNode getEvent(){
+        public TransitionNode getEvent() {
             return event;
         }
 
-        public void setForegroudColor(Color color){
+        public void setForegroudColor(Color color) {
             event.setForegroundColor(color);
         }
 
-        public void setFillColor(Color color){
+        public void setFillColor(Color color) {
             event.setFillColor(color);
         }
     }
@@ -118,14 +118,14 @@ public class ParallelSimDialog  extends JDialog{
     }
 
     @SuppressWarnings("unchecked")
-    private void createEventItemsPanel(){
+    private void createEventItemsPanel() {
 
         eventPanel = new JPanel();
 
         DefaultListModel listModel = new DefaultListModel();
 
-        for(TransitionNode event : this.possibleFire){
-            EventItem item = new EventItem(net.getNodeReference(event)+"  "+event.getLabel(), event, possibleFire);
+        for (TransitionNode event : this.possibleFire) {
+            EventItem item = new EventItem(net.getNodeReference(event) + "  " + event.getLabel(), event, possibleFire);
             listModel.addElement(item);
         }
 
@@ -138,25 +138,25 @@ public class ParallelSimDialog  extends JDialog{
                 JList list = (JList) event.getSource();
 
                 int index = list.locationToIndex(event.getPoint());
-                try{
+                try {
                     EventItem item = (EventItem) list.getModel().getElementAt(index);
                     item.setSelected(!item.isSelected());
 
                     ArrayList<EventItem> itemList = new ArrayList<EventItem>();
-                    for(int i=0; i<list.getModel().getSize(); i++){
+                    for (int i = 0; i < list.getModel().getSize(); i++) {
                         itemList.add((EventItem) list.getModel().getElementAt(i));
                     }
 
-                    if(item instanceof EventItem){
+                    if (item instanceof EventItem) {
                         SimulationAlg simuAlg = new SimulationAlg(net);
-                        if(item.isSelected()){
+                        if (item.isSelected()) {
                             selectedEvents.add(item.getEvent());
 
                             Step minFire = simuAlg.getMinFire(item.getEvent(), sync, possibleFire, isRev);
 
-                            for(TransitionNode e : minFire){
-                                for(EventItem eventItem : itemList){
-                                    if(e==eventItem.getEvent()){
+                            for (TransitionNode e : minFire) {
+                                for (EventItem eventItem : itemList) {
+                                    if (e == eventItem.getEvent()) {
                                         selectedEvents.add(e);
                                         eventItem.setSelected(true);
                                         eventItem.setFillColor(selectedColor);
@@ -166,15 +166,15 @@ public class ParallelSimDialog  extends JDialog{
                             item.setFillColor(selectedColor);
                         }
 
-                        if(!item.isSelected()){
+                        if (!item.isSelected()) {
                             selectedEvents.remove(item.getEvent());
 
                             Step minFire = simuAlg.getMinFire(item.getEvent(), sync, possibleFire, !isRev);
 
                             //unselected related synchronous events.
-                            for(TransitionNode e : minFire){
-                                for(EventItem eventItem : itemList){
-                                    if(e==eventItem.getEvent()){
+                            for (TransitionNode e : minFire) {
+                                for (EventItem eventItem : itemList) {
+                                    if (e == eventItem.getEvent()) {
                                         selectedEvents.remove(e);
                                         eventItem.setSelected(false);
                                         eventItem.setFillColor(Color.WHITE);
@@ -185,10 +185,10 @@ public class ParallelSimDialog  extends JDialog{
                             item.setFillColor(Color.WHITE);
                         }
 
-                        for(int i=0; i<list.getModel().getSize(); i++)
+                        for (int i = 0; i < list.getModel().getSize(); i++)
                             list.repaint(list.getCellBounds(i, i));
                     }
-                }catch (ArrayIndexOutOfBoundsException e){}
+                } catch (ArrayIndexOutOfBoundsException e) { }
             }
         });
 
@@ -236,7 +236,7 @@ public class ParallelSimDialog  extends JDialog{
         buttonsPanel.add(runButton);
     }
 
-    private void createEventInfoPanel(){
+    private void createEventInfoPanel() {
         eventInfoPanel = new JPanel();
 
         String[] colNames = {"Name", "Label"};
@@ -251,17 +251,17 @@ public class ParallelSimDialog  extends JDialog{
         eventInfoPanel.add(table);
     }
 
-    private String[][] createData(){
-        String[][] dataVal = new String[this.minFire.size()+1][2];
+    private String[][] createData() {
+        String[][] dataVal = new String[this.minFire.size() + 1][2];
 
-        dataVal[0][0] = net.getNodeReference(clickedEvent)+ "(clicked)";
+        dataVal[0][0] = net.getNodeReference(clickedEvent) + "(clicked)";
         dataVal[0][1] = this.clickedEvent.getLabel();
 
-        if(!minFire.isEmpty()){
-            for(int i=1; i < minFire.size()+1; i++)
-                dataVal[i][0]=net.getNodeReference(minFire.get(i-1));
-            for(int i=1; i < minFire.size()+1; i++)
-                dataVal[i][1] = minFire.get(i-1).getLabel();
+        if (!minFire.isEmpty()) {
+            for (int i = 1; i < minFire.size() + 1; i++)
+                dataVal[i][0] = net.getNodeReference(minFire.get(i - 1));
+            for (int i = 1; i < minFire.size() + 1; i++)
+                dataVal[i][1] = minFire.get(i - 1).getLabel();
         }
 
         return dataVal;
@@ -271,7 +271,7 @@ public class ParallelSimDialog  extends JDialog{
     public ParallelSimDialog(Window owner, SON net,
             Step possibleFire, Step minFire,
             TransitionNode event, boolean isRev,
-            Collection<Path> sync){
+            Collection<Path> sync) {
         super(owner, "Parallel Execution Setting", ModalityType.TOOLKIT_MODAL);
 
         this.net = net;
@@ -309,32 +309,32 @@ public class ParallelSimDialog  extends JDialog{
 
             @Override
             public void windowLostFocus(WindowEvent e) {
-                if(run==0)
+                if (run == 0)
                     setVisible(true);
             }
         });
 
     }
 
-    private void setColor(List<TransitionNode> preEvents, TransitionNode event){
+    private void setColor(List<TransitionNode> preEvents, TransitionNode event) {
         event.setFillColor(selectedColor);
-        for(TransitionNode e : preEvents)
+        for (TransitionNode e : preEvents)
             e.setFillColor(selectedColor);
     }
 
-    public SON getSONModel(){
+    public SON getSONModel() {
         return this.net;
     }
 
-    public HashSet<TransitionNode> getSelectedEvent(){
+    public HashSet<TransitionNode> getSelectedEvent() {
         return this.selectedEvents;
     }
 
-    public Window getOwner(){
+    public Window getOwner() {
         return this.owner;
     }
 
-    public int getRun(){
+    public int getRun() {
         return run;
     }
 

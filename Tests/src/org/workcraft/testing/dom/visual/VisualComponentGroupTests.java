@@ -201,7 +201,7 @@ public class VisualComponentGroupTests {
 
         Iterable<Node> unGroup = node1.unGroup();
         ArrayList<Node> list = new ArrayList<Node>();
-        for(Node node: unGroup)
+        for (Node node: unGroup)
             list.add(node);
 
         Assert.assertEquals(4, list.size());

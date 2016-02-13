@@ -81,7 +81,7 @@ public class Xmas extends AbstractMathModel {
 
     public Collection<Node> getNodes() {
         ArrayList<Node> result =  new ArrayList<Node>();
-        for (Node node : Hierarchy.getDescendantsOfType(getRoot(), Node.class)){
+        for (Node node : Hierarchy.getDescendantsOfType(getRoot(), Node.class)) {
             if (node instanceof SourceComponent)
                 result.add(node);
             if (node instanceof FunctionComponent)
@@ -104,17 +104,17 @@ public class Xmas extends AbstractMathModel {
 
     public String getType(Node node) {
         String result = null;
-        if(node instanceof SourceComponent) result = "source";
-        if(node instanceof FunctionComponent) result = "function";
-        if(node instanceof QueueComponent) result = "queue";
-        if(node instanceof ForkComponent) result = "fork";
-        if(node instanceof JoinComponent) result = "join";
-        if(node instanceof SwitchComponent) result = "switch";
-        if(node instanceof MergeComponent) result = "merge";
-        if(node instanceof SwitchComponent) result = "switch";
-        if(node instanceof SinkComponent) result = "sink";
-        if(node instanceof CreditComponent) result = "credit";
-        if(node instanceof SyncComponent) result = "sync";
+        if (node instanceof SourceComponent) result = "source";
+        if (node instanceof FunctionComponent) result = "function";
+        if (node instanceof QueueComponent) result = "queue";
+        if (node instanceof ForkComponent) result = "fork";
+        if (node instanceof JoinComponent) result = "join";
+        if (node instanceof SwitchComponent) result = "switch";
+        if (node instanceof MergeComponent) result = "merge";
+        if (node instanceof SwitchComponent) result = "switch";
+        if (node instanceof SinkComponent) result = "sink";
+        if (node instanceof CreditComponent) result = "credit";
+        if (node instanceof SyncComponent) result = "sync";
         return result;
     }
 

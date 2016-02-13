@@ -89,7 +89,7 @@ public class Fst extends Fsm {
             signal = (Signal) node;
             if (signal.getType() != type) {
                 throw new ArgumentException("Signal '" + name + "' already exists and its type '"
-                        + signal.getType() + "' is different from the required \'" + type +"' type.");
+                        + signal.getType() + "' is different from the required \'" + type + "' type.");
             }
         } else {
             throw new ArgumentException("Node '" + name + "' already exists and it is not a signal.");
@@ -125,13 +125,13 @@ public class Fst extends Fsm {
     public ModelProperties getProperties(Node node) {
         ModelProperties properties = super.getProperties(node);
         if (node == null) {
-            LinkedList<PropertyDescriptor> signalDescriptors= new LinkedList<>();
+            LinkedList<PropertyDescriptor> signalDescriptors = new LinkedList<>();
             for (final Signal signal: getSignals()) {
                 signalDescriptors.add(new SignalTypePropertyDescriptor(this, signal));
             }
             properties.addSorted(signalDescriptors);
         } else if (node instanceof SignalEvent) {
-            LinkedList<PropertyDescriptor> eventDescriptors= new LinkedList<>();
+            LinkedList<PropertyDescriptor> eventDescriptors = new LinkedList<>();
             SignalEvent signalEvent = (SignalEvent) node;
             eventDescriptors.add(new EventSignalPropertyDescriptor(this, signalEvent));
             Signal signal = signalEvent.getSignal();

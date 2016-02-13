@@ -53,8 +53,8 @@ public class LegacyPluginInfo implements Initialiser<Object> {
 
         DisplayName name = cls.getAnnotation(DisplayName.class);
 
-        if(name == null)
-            displayName = className.substring(className.lastIndexOf('.')+1);
+        if (name == null)
+            displayName = className.substring(className.lastIndexOf('.') + 1);
         else
             displayName = name.value();
 
@@ -86,17 +86,17 @@ public class LegacyPluginInfo implements Initialiser<Object> {
 
     public LegacyPluginInfo(Element element) throws FormatException {
         className = XmlUtil.readStringAttr(element, "class");
-        if(className==null || className.isEmpty())
+        if (className == null || className.isEmpty())
             throw new FormatException();
 
         displayName = XmlUtil.readStringAttr(element, "displayName");
         if (displayName.isEmpty())
-            displayName = className.substring(className.lastIndexOf('.')+1);
+            displayName = className.substring(className.lastIndexOf('.') + 1);
 
         NodeList nl = element.getElementsByTagName("interface");
         interfaceNames = new String[nl.getLength()];
 
-        for (int i=0; i<nl.getLength(); i++)
+        for (int i = 0; i < nl.getLength(); i++)
             interfaceNames[i] = ((Element) nl.item(i)).getAttribute("name");
     }
 

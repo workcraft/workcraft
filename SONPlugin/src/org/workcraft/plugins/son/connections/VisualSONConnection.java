@@ -133,7 +133,7 @@ public class VisualSONConnection extends VisualConnection {
     }
 
     protected void cacheLabelRenderedText(DrawRequest r) {
-        String time = "T: "+ getTime().toString();
+        String time = "T: " + getTime().toString();
 
         if (timeRenderedText.isDifferent(time, timeFont, Positioning.CENTER, new Point2D.Double())) {
             timeRenderedText = new RenderedText(time, timeFont, Positioning.CENTER, new Point2D.Double());
@@ -180,7 +180,7 @@ public class VisualSONConnection extends VisualConnection {
 
     @Override
     public void draw(DrawRequest r) {
-        if(getSemantics()==Semantics.PNLINE || getSemantics() == Semantics.ASYNLINE)
+        if (getSemantics() == Semantics.PNLINE || getSemantics() == Semantics.ASYNLINE)
             drawLabelInLocalSpace(r);
     }
 

@@ -21,7 +21,7 @@ public class PNetExt {
     //VisualCircuit circuit;
     //private CheckCircuitTask checkTask;
 
-    private static boolean printoutput=true;
+    private static boolean printoutput = true;
 
     private static class Source {
 
@@ -78,43 +78,43 @@ public class PNetExt {
     }
 
     private static void readFile(String file, int syncflag) {
-        String typ=null;
-        String g1=null;
-        String g2=null;
+        String typ = null;
+        String g1 = null;
+        String g2 = null;
         ArrayList storeWordList = new ArrayList();
-        Scanner sc=null;
-        try{
-            sc=new Scanner(new File(file));
-        }catch (FileNotFoundException e) { //Catch exception if any
+        Scanner sc = null;
+        try {
+            sc = new Scanner(new File(file));
+        } catch (FileNotFoundException e) { //Catch exception if any
             LogUtils.logErrorLine(e.getMessage());
         }
         String name;
         int num;
-        while(sc.hasNextLine()) {
-            Scanner line=new Scanner(sc.nextLine());
-            Scanner nxt=new Scanner(line.next());
-            String check=nxt.next();
-            if(check.startsWith("//gen")) {
-                if(check.startsWith("//gensource")) {
-                    nxt=new Scanner(line.next());
-                    name=nxt.next();
+        while (sc.hasNextLine()) {
+            Scanner line = new Scanner(sc.nextLine());
+            Scanner nxt = new Scanner(line.next());
+            String check = nxt.next();
+            if (check.startsWith("//gen")) {
+                if (check.startsWith("//gensource")) {
+                    nxt = new Scanner(line.next());
+                    name = nxt.next();
                     sourcelist.add(new Source(name, name));
-                    typ="Source";
-                } else if(check.startsWith("//genfunction")) {
-                    nxt=new Scanner(line.next());
-                    name=nxt.next();
+                    typ = "Source";
+                } else if (check.startsWith("//genfunction")) {
+                    nxt = new Scanner(line.next());
+                    name = nxt.next();
                     funlist.add(new Fun(name));
-                    typ="Function";
-                } else if(check.startsWith("//genmerge")) {
-                    nxt=new Scanner(line.next());
-                    name=nxt.next();
+                    typ = "Function";
+                } else if (check.startsWith("//genmerge")) {
+                    nxt = new Scanner(line.next());
+                    name = nxt.next();
                     mergelist.add(new Merge(name, name));
-                    typ="Merge";
-                } else if(check.startsWith("//genswitch")) {
-                    nxt=new Scanner(line.next());
-                    name=nxt.next();
+                    typ = "Merge";
+                } else if (check.startsWith("//genswitch")) {
+                    nxt = new Scanner(line.next());
+                    name = nxt.next();
                     switchlist.add(new Switch(name, name));
-                    typ="Switch";
+                    typ = "Switch";
                 }
             }
         }
@@ -122,7 +122,7 @@ public class PNetExt {
 
     private static void writeNet(PrintWriter writer, Collection<SourceComponent> srcNodes, Collection<FunctionComponent> funNodes, Collection<SwitchComponent> swNodes) {
         writer.println("TS");
-        int no=0;
+        int no = 0;
         for (SourceComponent srcNode : srcNodes) {
             String ls = "";
             switch (srcNode.getMode()) {
@@ -143,7 +143,7 @@ public class PNetExt {
             no++;
         }
         writer.println("FN");
-        no=0;
+        no = 0;
         for (FunctionComponent funNode : funNodes) {
             writer.println(funlist.get(no).name1 + "\"" + funNode.getType() + "\"");       //changed from below
             no++;
@@ -153,7 +153,7 @@ public class PNetExt {
         //writer.println(sw.name1 + "\"" + "t");
         writer.println(sw.name1 + "\"" + sw.getType());
         }*/
-        no=0;
+        no = 0;
         for (SwitchComponent swNode : swNodes) {
             writer.println(switchlist.get(no).name1 + "\"" + swNode.getType() + "\"" + swNode.getVal());
             no++;

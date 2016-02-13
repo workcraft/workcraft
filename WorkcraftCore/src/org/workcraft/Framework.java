@@ -206,7 +206,7 @@ public final class Framework {
                     OperationCancelDialog<T> cancelDialog = new OperationCancelDialog<T>(mainWindow, description);
 
                     ProgressMonitorArray<T> observers = new ProgressMonitorArray<T>();
-                    if(observer != null)
+                    if (observer != null)
                         observers.add(observer);
                     observers.add(cancelDialog);
 
@@ -296,7 +296,7 @@ public final class Framework {
     public String[] getModelNames() {
         LinkedList<Class<?>> list = modelManager.getModelList();
         String[] a = new String[list.size()];
-        int i=0;
+        int i = 0;
         for (Class<?> cls : list)
             a[i++] = cls.getName();
         return a;
@@ -329,7 +329,7 @@ public final class Framework {
     }
 
     public void setJavaScriptProperty(final String name, final Object object, final ScriptableObject scope, final boolean readOnly) {
-        contextFactory.call(new ContextAction(){
+        contextFactory.call(new ContextAction() {
             public Object run(Context arg0) {
                 Object scriptable = Context.javaToJS(object, scope);
                 ScriptableObject.putProperty(scope, name, scriptable);
@@ -343,7 +343,7 @@ public final class Framework {
     }
 
     public void deleteJavaScriptProperty(final String name, final ScriptableObject scope) {
-        contextFactory.call(new ContextAction(){
+        contextFactory.call(new ContextAction() {
             public Object run(Context arg0) {
                 return ScriptableObject.deleteProperty(scope, name);
             }
@@ -394,12 +394,12 @@ public final class Framework {
     private Object doContextAction(ContextAction action) {
         try {
             return contextFactory.call(action);
-        } catch(JavaScriptException ex) {
+        } catch (JavaScriptException ex) {
             System.out.println("Script stack trace: " + ex.getScriptStackTrace());
             Object value = ex.getValue();
-            if(value instanceof NativeJavaObject) {
+            if (value instanceof NativeJavaObject) {
                 Object wrapped = ((NativeJavaObject) value).unwrap();
-                if(wrapped instanceof Throwable)
+                if (wrapped instanceof Throwable)
                     throw new JavascriptPassThroughException((Throwable) wrapped, ex.getScriptStackTrace());
             }
             throw ex;
@@ -730,7 +730,7 @@ public final class Framework {
 
     public void save(ModelEntry modelEntry, OutputStream out) throws SerialisationException {
         Model model = modelEntry.getModel();
-        VisualModel visualModel = (model instanceof VisualModel)? (VisualModel) model : null;
+        VisualModel visualModel = (model instanceof VisualModel) ? (VisualModel) model : null;
         Model mathModel = (visualModel == null) ? model : visualModel.getMathModel();
         ZipOutputStream zos = new ZipOutputStream(out);
         try {

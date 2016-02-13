@@ -93,49 +93,49 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
             clockStg = generateClockStg();
             clockControlSignals = new HashSet<>();
             groupComponentStg(clockStg);
-            for(VisualSourceComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualSourceComponent.class)) {
+            for (VisualSourceComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualSourceComponent.class)) {
                 SourceStg stg = generateSourceStg(component);
                 groupComponentStg(stg);
                 putSourceStg(component, stg);
                 remainingComponents.remove(component);
             }
-            for(VisualSinkComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualSinkComponent.class)) {
+            for (VisualSinkComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualSinkComponent.class)) {
                 SinkStg stg = generateSinkStg(component);
                 groupComponentStg(stg);
                 putSinkStg(component, stg);
                 remainingComponents.remove(component);
             }
-            for(VisualFunctionComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualFunctionComponent.class)) {
+            for (VisualFunctionComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualFunctionComponent.class)) {
                 FunctionStg stg = generateFunctionStg(component);
                 groupComponentStg(stg);
                 putFunctionStg(component, stg);
                 remainingComponents.remove(component);
             }
-            for(VisualForkComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualForkComponent.class)) {
+            for (VisualForkComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualForkComponent.class)) {
                 ForkStg stg = generateForkStg(component);
                 groupComponentStg(stg);
                 putForkStg(component, stg);
                 remainingComponents.remove(component);
             }
-            for(VisualJoinComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualJoinComponent.class)) {
+            for (VisualJoinComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualJoinComponent.class)) {
                 JoinStg stg = generateJoinStg(component);
                 groupComponentStg(stg);
                 putJoinStg(component, stg);
                 remainingComponents.remove(component);
             }
-            for(VisualSwitchComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualSwitchComponent.class)) {
+            for (VisualSwitchComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualSwitchComponent.class)) {
                 SwitchStg stg = generateSwitchStg(component);
                 groupComponentStg(stg);
                 putSwitchStg(component, stg);
                 remainingComponents.remove(component);
             }
-            for(VisualMergeComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualMergeComponent.class)) {
+            for (VisualMergeComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualMergeComponent.class)) {
                 MergeStg stg = generateMergeStg(component);
                 groupComponentStg(stg);
                 putMergeStg(component, stg);
                 remainingComponents.remove(component);
             }
-            for(VisualQueueComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualQueueComponent.class)) {
+            for (VisualQueueComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualQueueComponent.class)) {
                 QueueStg stg = generateQueueStg(component);
                 groupComponentStg(stg);
                 putQueueStg(component, stg);
@@ -143,28 +143,28 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
             }
 
             connectClockStg();
-            for(VisualSourceComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualSourceComponent.class)) {
+            for (VisualSourceComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualSourceComponent.class)) {
                 connectSourceStg(component);
             }
-            for(VisualSinkComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualSinkComponent.class)) {
+            for (VisualSinkComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualSinkComponent.class)) {
                 connectSinkStg(component);
             }
-            for(VisualFunctionComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualFunctionComponent.class)) {
+            for (VisualFunctionComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualFunctionComponent.class)) {
                 connectFunctionStg(component);
             }
-            for(VisualForkComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualForkComponent.class)) {
+            for (VisualForkComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualForkComponent.class)) {
                 connectForkStg(component);
             }
-            for(VisualJoinComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualJoinComponent.class)) {
+            for (VisualJoinComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualJoinComponent.class)) {
                 connectJoinStg(component);
             }
-            for(VisualSwitchComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualSwitchComponent.class)) {
+            for (VisualSwitchComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualSwitchComponent.class)) {
                 connectSwitchStg(component);
             }
-            for(VisualMergeComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualMergeComponent.class)) {
+            for (VisualMergeComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualMergeComponent.class)) {
                 connectMergeStg(component);
             }
-            for(VisualQueueComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualQueueComponent.class)) {
+            for (VisualQueueComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualQueueComponent.class)) {
                 connectQueueStg(component);
             }
         } catch (InvalidConnectionException e) {
@@ -172,7 +172,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         }
         for (VisualComponent component: remainingComponents) {
             String name = getXmasModel().getNodeMathReference(component);
-            LogUtils.logErrorLine("Cannot derive an STG for xMAS component '" + name +"' of type " + component.getClass().getName());
+            LogUtils.logErrorLine("Cannot derive an STG for xMAS component '" + name + "' of type " + component.getClass().getName());
         }
         getXmasModel().selectNone();
     }
@@ -317,26 +317,26 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
     }
 
     private void connectClockStg()  throws InvalidConnectionException {
-        for(VisualSourceComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualSourceComponent.class)) {
+        for (VisualSourceComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualSourceComponent.class)) {
             SourceStg sourceStg = getSourceStg(component);
             if (sourceStg != null) {
                 createReplicaReadArcsFromDoneToClock(sourceStg.o.dn);
             }
         }
-        for(VisualSinkComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualSinkComponent.class)) {
+        for (VisualSinkComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualSinkComponent.class)) {
             SinkStg sinkStg = getSinkStg(component);
             if (sinkStg != null) {
                 createReplicaReadArcsFromDoneToClock(sinkStg.i.dn);
             }
         }
-        for(VisualFunctionComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualFunctionComponent.class)) {
+        for (VisualFunctionComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualFunctionComponent.class)) {
             FunctionStg funcStg = getFunctionStg(component);
             if (funcStg != null) {
                 createReplicaReadArcsFromDoneToClock(funcStg.i.dn);
                 createReplicaReadArcsFromDoneToClock(funcStg.o.dn);
             }
         }
-        for(VisualForkComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualForkComponent.class)) {
+        for (VisualForkComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualForkComponent.class)) {
             ForkStg forkStg = getForkStg(component);
             if (forkStg != null) {
                 createReplicaReadArcsFromDoneToClock(forkStg.i.dn);
@@ -344,7 +344,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
                 createReplicaReadArcsFromDoneToClock(forkStg.b.dn);
             }
         }
-        for(VisualJoinComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualJoinComponent.class)) {
+        for (VisualJoinComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualJoinComponent.class)) {
             JoinStg joinStg = getJoinStg(component);
             if (joinStg != null) {
                 createReplicaReadArcsFromDoneToClock(joinStg.a.dn);
@@ -352,7 +352,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
                 createReplicaReadArcsFromDoneToClock(joinStg.o.dn);
             }
         }
-        for(VisualSwitchComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualSwitchComponent.class)) {
+        for (VisualSwitchComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualSwitchComponent.class)) {
             SwitchStg switchStg = getSwitchStg(component);
             if (switchStg != null) {
                 createReplicaReadArcsFromDoneToClock(switchStg.i.dn);
@@ -360,7 +360,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
                 createReplicaReadArcsFromDoneToClock(switchStg.b.dn);
             }
         }
-        for(VisualMergeComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualMergeComponent.class)) {
+        for (VisualMergeComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualMergeComponent.class)) {
             MergeStg mergeStg = getMergeStg(component);
             if (mergeStg != null) {
                 createReplicaReadArcsFromDoneToClock(mergeStg.a.dn);
@@ -368,7 +368,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
                 createReplicaReadArcsFromDoneToClock(mergeStg.o.dn);
             }
         }
-        for(VisualQueueComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualQueueComponent.class)) {
+        for (VisualQueueComponent component : Hierarchy.getDescendantsOfType(getXmasModel().getRoot(), VisualQueueComponent.class)) {
             QueueStg queueStg = getQueueStg(component);
             if (queueStg != null) {
                 createReplicaReadArcsFromDoneToClock(queueStg.i.dn);
@@ -1088,10 +1088,10 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
             char suffix = (char) idx;
             suffix += 'A';
             SignalStg mem = generateBasicSignalStg(name + _MEM + suffix, pos.getX() + xSlot, pos.getY(), SignalTransition.Type.INPUT);
-            SignalStg rdy = generateSignalStg(XmasStgType.IRDY, name + _HEAD + suffix +_RDY, pos.getX() + xSlot, pos.getY() - 8.0);
+            SignalStg rdy = generateSignalStg(XmasStgType.IRDY, name + _HEAD + suffix + _RDY, pos.getX() + xSlot, pos.getY() - 8.0);
             SignalStg dn = generateSignalStg(XmasStgType.IDN, name + _HEAD + suffix + _DN, pos.getX() + xSlot, pos.getY() - 16.0, 4, 3);
             ContactStg hd = new ContactStg(rdy, dn);
-            rdy = generateSignalStg(XmasStgType.TRDY, name + _TAIL + suffix +_RDY, pos.getX() + xSlot, pos.getY() + 8.0);
+            rdy = generateSignalStg(XmasStgType.TRDY, name + _TAIL + suffix + _RDY, pos.getX() + xSlot, pos.getY() + 8.0);
             dn = generateSignalStg(XmasStgType.TDN, name + _TAIL + suffix + _DN, pos.getX() + xSlot, pos.getY() + 16.0, 4, 3);
             setSignalInitialState(rdy, idx == 0);
             ContactStg tl = new ContactStg(rdy, dn);

@@ -280,7 +280,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
             Point2D labelPosition = cr.getLabelPosition();
             if (labelPosition != null) {
                 at.transform(labelPosition, labelPosition);
-                Arc2D cShape = new Arc2D.Double(labelPosition.getX()-0.15, labelPosition.getY()-0.15, 0.30, 0.30, 60, 240, Arc2D.OPEN);
+                Arc2D cShape = new Arc2D.Double(labelPosition.getX() - 0.15, labelPosition.getY() - 0.15, 0.30, 0.30, 60, 240, Arc2D.OPEN);
                 g.draw(cShape);
             }
 
@@ -288,17 +288,17 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
             if (plusPosition != null) {
                 at.transform(plusPosition, plusPosition);
                 Path2D plusShape = new Path2D.Double();
-                plusShape.moveTo(plusPosition.getX()-0.10, plusPosition.getY());
-                plusShape.lineTo(plusPosition.getX()+0.10, plusPosition.getY());
-                plusShape.moveTo(plusPosition.getX(), plusPosition.getY()-0.10);
-                plusShape.lineTo(plusPosition.getX(), plusPosition.getY()+0.10);
+                plusShape.moveTo(plusPosition.getX() - 0.10, plusPosition.getY());
+                plusShape.lineTo(plusPosition.getX() + 0.10, plusPosition.getY());
+                plusShape.moveTo(plusPosition.getX(), plusPosition.getY() - 0.10);
+                plusShape.lineTo(plusPosition.getX(), plusPosition.getY() + 0.10);
                 g.draw(plusShape);
             }
 
             Point2D minusPosition = cr.getMinusPosition();
             if (minusPosition != null) {
                 at.transform(minusPosition, minusPosition);
-                Line2D minusShape = new Line2D.Double(minusPosition.getX()-0.10, minusPosition.getY(), minusPosition.getX()+0.10, minusPosition.getY());
+                Line2D minusShape = new Line2D.Double(minusPosition.getX() - 0.10, minusPosition.getY(), minusPosition.getX() + 0.10, minusPosition.getY());
                 g.draw(minusShape);
             }
         }

@@ -16,14 +16,14 @@ public class Path extends ArrayList<Node> {
             if (!first) {
                 result.append(',');
                 result.append(' ' + net.getNodeReference(node));
-            }else{
+            } else {
                 result.append(' ');
                 result.append('[');
                 result.append(net.getNodeReference(node));
                 first = false;
             }
         }
-        if(!this.isEmpty())
+        if (!this.isEmpty())
             result.append(']');
         return result.toString();
     }

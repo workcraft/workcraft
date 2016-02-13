@@ -31,7 +31,7 @@ public class SwitchComponent extends XmasComponent {
     public static final String PROPERTY_VAL = "Val";
 
     public enum Type {
-        TYPE_E("==");
+        TYPE_E(" == ");
 
         private final String name;
 

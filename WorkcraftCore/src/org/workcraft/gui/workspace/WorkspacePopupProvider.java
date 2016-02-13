@@ -68,7 +68,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 
         final File file = workspace.getFile(path);
 
-        if(file.isDirectory()) {
+        if (file.isDirectory()) {
             popup.addSeparator();
             final JMenuItem miLink = new JMenuItem("Link external files or directories...");
             miLink.addActionListener(new ActionListener() {
@@ -98,7 +98,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                     String name;
                     while (true) {
                         name = JOptionPane.showInputDialog("Please enter the name of the new folder:", "");
-                        if(name==null)
+                        if (name == null)
                             throw new OperationCancelledException();
                         File newDir = workspace.getFile(Path.append(path, name));
                         if (!newDir.mkdir()) {
@@ -119,9 +119,9 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
         if (WorkspaceTree.isLeaf(workspace, path)) {
             popup.addSeparator();
             final WorkspaceEntry openFile = workspace.getOpenFile(path);
-            if (openFile==null) {
-                if(file.exists()) {
-                    if(file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+            if (openFile == null) {
+                if (file.exists()) {
+                    if (file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
                         final JMenuItem miOpen = new JMenuItem("Open");
                         miOpen.addActionListener(new ActionListener() {
                             @Override
@@ -151,7 +151,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                 }
             } else if (openFile.getModelEntry() != null) {
                 final Model model = openFile.getModelEntry().getModel();
-                JLabel label = new JLabel(model.getDisplayName()+ " " + (model.getTitle().isEmpty()?"" : ("'" + model.getTitle() + "'")));
+                JLabel label = new JLabel(model.getDisplayName() + " " + (model.getTitle().isEmpty() ? "" : ("'" + model.getTitle() + "'")));
                 popup.add(label);
                 popup.addSeparator();
 

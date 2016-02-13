@@ -105,7 +105,7 @@ class DefaultNodeDeserialiser {
         } catch (IllegalAccessException e) {
             throw new DeserialisationException(e);
         } catch (InvocationTargetException e) {
-            throw new DeserialisationException(instance.getClass().getName() + " " + currentLevel.getName() + " "+ e.getMessage(), e);
+            throw new DeserialisationException(instance.getClass().getName() + " " + currentLevel.getName() + " " + e.getMessage(), e);
         } catch (InstantiationException e) {
             throw new DeserialisationException(e);
         } catch (IntrospectionException e) {
@@ -147,7 +147,7 @@ class DefaultNodeDeserialiser {
 
                 if (constructorParameters.length != 0) {
                     Class<?>[] parameterTypes = new Class<?>[constructorParameters.length];
-                    for (int i=0; i<constructorParameters.length; i++)
+                    for (int i = 0; i < constructorParameters.length; i++)
                         parameterTypes[i] = constructorParameters[i].getClass();
                     Constructor<?> ctor = new ConstructorParametersMatcher().match(Class.forName(className), parameterTypes);
                     instance = ctor.newInstance(constructorParameters);

@@ -54,7 +54,7 @@ public class PGMinerImportTool implements Tool {
             int c = 0;
             File originalFile = new File(dialog.getFilePath());
             Scanner k = new Scanner(originalFile);
-            while(k.hasNextLine()) {
+            while (k.hasNextLine()) {
                 c++;
                 k.nextLine();
             }
@@ -80,7 +80,7 @@ public class PGMinerImportTool implements Tool {
                 for (String event : events) {
                     if (visitedEvents.contains(event)) {
                         int d = 1;
-                        while (visitedEvents.contains(event + "_" + d)){
+                        while (visitedEvents.contains(event + "_" + d)) {
                             d++;
                         }
                         event = event + "_" + d;

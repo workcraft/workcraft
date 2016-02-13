@@ -53,7 +53,7 @@ public class PGMinerTask implements Task<ExternalProcessResult> {
             Map<String, byte[]> outputFiles = new HashMap<String, byte[]>();
             try {
                 File outputFile = getOutputFile(inputFile);
-                if(outputFile.exists()) {
+                if (outputFile.exists()) {
                     outputFiles.put("output.cpog", FileUtils.readAllBytes(outputFile));
                 }
             } catch (IOException e) {

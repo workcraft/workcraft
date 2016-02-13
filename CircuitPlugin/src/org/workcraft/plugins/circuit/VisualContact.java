@@ -70,7 +70,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
         static public AffineTransform getDirectionTransform(Direction dir) {
             AffineTransform result = new AffineTransform();
-            if (dir!=null) {
+            if (dir != null) {
                 switch (dir) {
                 case WEST:
                     result.quadrantRotate(2);
@@ -145,7 +145,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
     public VisualContact(Contact contact) {
         super(contact, true, false, false);
-        setDirection(contact.getIOType()==IOType.INPUT ? Direction.WEST : Direction.EAST);
+        setDirection(contact.getIOType() == IOType.INPUT ? Direction.WEST : Direction.EAST);
         contact.addObserver(this);
         addPropertyDeclarations();
     }

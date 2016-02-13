@@ -32,7 +32,7 @@ import org.workcraft.util.Hierarchy;
 @Hotkey(KeyEvent.VK_B)
 @DisplayName("Block")
 @SVGIcon("images/icons/svg/son-block.svg")
-public class VisualBlock extends VisualPage implements VisualTransitionNode{
+public class VisualBlock extends VisualPage implements VisualTransitionNode {
     private Block mathBlock;
     private static final float strokeWidth = 0.06f;
 
@@ -48,7 +48,7 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
     }
 
     @Override
-    public void draw(DrawRequest r){
+    public void draw(DrawRequest r) {
         // This is to update the rendered text for names (and labels) of group children,
         // which is necessary to calculate the bounding box before children have been drawn
         for (VisualComponent component: Hierarchy.getChildrenOfType(this, VisualComponent.class)) {
@@ -68,14 +68,14 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
                 g.setStroke(new BasicStroke((float) strokeWidth));
                 g.draw(bb);
 
-                double s = 2.3*size/3;
-                Shape shape = new Rectangle2D.Double(-s/2, -s/2, s, s);
-                g.setStroke(new BasicStroke(strokeWidth/2));
+                double s = 2.3 * size / 3;
+                Shape shape = new Rectangle2D.Double(-s / 2, -s / 2, s, s);
+                g.setStroke(new BasicStroke(strokeWidth / 2));
                 g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
                 g.draw(shape);
 
                 drawFault(r);
-            }else{
+            } else {
                 g.setColor(Coloriser.colorise(Color.WHITE, d.getBackground()));
                 g.fill(bb);
                 float[] pattern = {0.2f, 0.2f};
@@ -91,11 +91,11 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
     }
 
     @Override
-    public void drawFault(DrawRequest r){
+    public void drawFault(DrawRequest r) {
         if (SONSettings.isErrorTracing()) {
             Graphics2D g = r.getGraphics();
-            GlyphVector glyphVector=null;
-            Rectangle2D labelBB=null;
+            GlyphVector glyphVector = null;
+            Rectangle2D labelBB = null;
 
             Font labelFont = new Font(Font.SANS_SERIF, Font.PLAIN, 1).deriveFont(0.5f);
             if (isFaulty()) {
@@ -110,14 +110,14 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
     }
 
     private void cahceDurationRenderedText(DrawRequest r) {
-        String duration = "D: "+ getDuration().toString();
+        String duration = "D: " + getDuration().toString();
         //double o = 0.8 * size;
 
         Point2D offset = getOffset(durationLabelPositioning);
-        if (durationLabelPositioning.ySign<0) {
-            offset.setLocation(offset.getX(), offset.getY()-0.6);
+        if (durationLabelPositioning.ySign < 0) {
+            offset.setLocation(offset.getX(), offset.getY() - 0.6);
         } else {
-            offset.setLocation(offset.getX(), offset.getY()+0.6);
+            offset.setLocation(offset.getX(), offset.getY() + 0.6);
         }
 
         if (durationRenderedText.isDifferent(duration, timeFont, durationLabelPositioning, offset)) {
@@ -163,43 +163,43 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
         return  this.getReferencedComponent().getIsCollapsed();
     }
 
-    public String getStartTime(){
+    public String getStartTime() {
         return ((Block) getReferencedComponent()).getStartTime().toString();
     }
 
-    public void setStartTime(String time){
+    public void setStartTime(String time) {
         Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
         ((Block) getReferencedComponent()).setStartTime(input);
     }
 
-    public String getEndTime(){
+    public String getEndTime() {
         return ((Block) getReferencedComponent()).getEndTime().toString();
     }
 
-    public void setEndTime(String time){
+    public void setEndTime(String time) {
         Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
         ((Block) getReferencedComponent()).setEndTime(input);
     }
 
-    public String getDuration(){
+    public String getDuration() {
         return ((Block) getReferencedComponent()).getDuration().toString();
     }
 
-    public void setDuration(String time){
+    public void setDuration(String time) {
         Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
         ((Block) getReferencedComponent()).setDuration(input);
     }
 
-    public Color getDurationColor(){
+    public Color getDurationColor() {
         return ((Block) getReferencedComponent()).getDurationColor();
     }
 
-    public void setDurationColor(Color value){
+    public void setDurationColor(Color value) {
         ((Block) getReferencedComponent()).setDurationColor(value);
     }
 
     @Override
-    public boolean isFaulty(){
+    public boolean isFaulty() {
         return ((Block) getReferencedComponent()).isFaulty();
     }
 
@@ -216,34 +216,34 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode{
     }
 
     @Override
-    public void setForegroundColor(Color color){
+    public void setForegroundColor(Color color) {
         this.getReferencedComponent().setForegroundColor(color);
     }
 
     @Override
-    public Color getForegroundColor(){
+    public Color getForegroundColor() {
         return this.getReferencedComponent().getForegroundColor();
     }
 
     @Override
-    public void setFillColor(Color color){
+    public void setFillColor(Color color) {
         this.getReferencedComponent().setFillColor(color);
     }
 
     @Override
-    public Color getFillColor(){
+    public Color getFillColor() {
         return this.getReferencedComponent().getFillColor();
     }
 
-    public Block getReferencedComponent(){
+    public Block getReferencedComponent() {
         return mathBlock;
     }
 
-    public Collection<VisualSONConnection> getVisualSONConnections(){
+    public Collection<VisualSONConnection> getVisualSONConnections() {
         return Hierarchy.getDescendantsOfType(this, VisualSONConnection.class);
     }
 
-    public Collection<VisualEvent> getVisualEvents(){
+    public Collection<VisualEvent> getVisualEvents() {
         return Hierarchy.getDescendantsOfType(this, VisualEvent.class);
     }
 

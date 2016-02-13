@@ -220,7 +220,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
     }
 
     protected Rectangle2D transformToParentSpace(Rectangle2D rect) {
-        if(rect == null)
+        if (rect == null)
             return null;
 
         Point2D p0 = new Point2D.Double(rect.getMinX(), rect.getMinY());

@@ -84,7 +84,7 @@ public class PresetManagerDialog<T> extends JDialog {
                     String desc = JOptionPane.showInputDialog(PresetManagerDialog.this,
                             "Please enter the new preset description:", (
                             (Preset<T>) o).getDescription());
-                    if (desc!=null) {
+                    if (desc != null) {
                         presetManager.rename((Preset<T>) o, desc);
                     }
                 }

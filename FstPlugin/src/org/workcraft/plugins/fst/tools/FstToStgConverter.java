@@ -59,7 +59,7 @@ public class FstToStgConverter {
 
     private Map<VisualState, VisualPlace> convertStates() {
         Map<VisualState, VisualPlace> result = new HashMap<VisualState, VisualPlace>();
-        for(VisualState state: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualState.class)) {
+        for (VisualState state: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualState.class)) {
             String name = srcModel.getMathModel().getNodeReference(state.getReferencedState());
             VisualPlace place = dstModel.createPlace(name, null);
             place.copyPosition(state);
@@ -92,7 +92,7 @@ public class FstToStgConverter {
 
     private Map<VisualSignalEvent, VisualNamedTransition> convertEvents() {
         Map<VisualSignalEvent, VisualNamedTransition> result = new HashMap<VisualSignalEvent, VisualNamedTransition>();
-        for(VisualSignalEvent signalEvent : Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualSignalEvent.class)) {
+        for (VisualSignalEvent signalEvent : Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualSignalEvent.class)) {
             VisualNamedTransition transition = null;
             Signal signal = signalEvent.getReferencedSignalEvent().getSignal();
             String name = srcModel.getMathName(signal);
@@ -114,7 +114,7 @@ public class FstToStgConverter {
     }
 
     private void connectEvents() throws InvalidConnectionException {
-        for(VisualEvent event: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualEvent.class)) {
+        for (VisualEvent event: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualEvent.class)) {
             VisualTransition transition = eventToTransitionMap.get(event);
             if (transition != null) {
                 Node first = event.getFirst();

@@ -96,7 +96,7 @@ public class PcompTask implements Task<ExternalProcessResult> {
 
         Map<String, byte[]> outputFiles = new HashMap<String, byte[]>();
         try {
-            if(listFile.exists()) {
+            if (listFile.exists()) {
                 outputFiles.put("places.list", FileUtils.readAllBytes(listFile));
             }
         } catch (IOException e) {

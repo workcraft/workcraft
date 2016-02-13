@@ -81,65 +81,65 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
     @Override
     public void convert() {
         try {
-            for(VisualLogic l : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualLogic.class)) {
+            for (VisualLogic l : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualLogic.class)) {
                 LogicStg lstg = generateLogicStg(l);
                 groupComponentStg(lstg);
                 putLogicStg(l, lstg);
             }
-            for(VisualRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualRegister.class)) {
+            for (VisualRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualRegister.class)) {
                 RegisterStg rstg = generateRegisterSTG(r);
                 groupComponentStg(rstg);
                 putRegisterStg(r, rstg);
             }
 
-            for(VisualCounterflowLogic l : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualCounterflowLogic.class)) {
+            for (VisualCounterflowLogic l : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualCounterflowLogic.class)) {
                 CounterflowLogicStg lstg = generateCounterflowLogicStg(l);
                 groupComponentStg(lstg);
                 putCounterflowLogicStg(l, lstg);
             }
-            for(VisualCounterflowRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualCounterflowRegister.class)) {
+            for (VisualCounterflowRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualCounterflowRegister.class)) {
                 CounterflowRegisterStg rstg = generateCounterflowRegisterSTG(r);
                 groupComponentStg(rstg);
                 putCounterflowRegisterStg(r, rstg);
             }
 
-            for(VisualControlRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualControlRegister.class)) {
+            for (VisualControlRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualControlRegister.class)) {
                 BinaryRegisterStg rstg = generateControlRegisterStg(r);
                 groupComponentStg(rstg);
                 putControlRegisterStg(r, rstg);
             }
-            for(VisualPushRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualPushRegister.class)) {
+            for (VisualPushRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualPushRegister.class)) {
                 BinaryRegisterStg rstg = generatePushRegisterStg(r);
                 groupComponentStg(rstg);
                 putPushRegisterStg(r, rstg);
             }
-            for(VisualPopRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualPopRegister.class)) {
+            for (VisualPopRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualPopRegister.class)) {
                 BinaryRegisterStg rstg = generatePopRegisterStg(r);
                 groupComponentStg(rstg);
                 putPopRegisterStg(r, rstg);
             }
 
-            for(VisualLogic l : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualLogic.class)) {
+            for (VisualLogic l : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualLogic.class)) {
                 connectLogicStg(l);
             }
-            for(VisualRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualRegister.class)) {
+            for (VisualRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualRegister.class)) {
                 connectRegisterStg(r);
             }
 
-            for(VisualCounterflowLogic l : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualCounterflowLogic.class)) {
+            for (VisualCounterflowLogic l : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualCounterflowLogic.class)) {
                 connectCounterflowLogicStg(l);
             }
-            for(VisualCounterflowRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualCounterflowRegister.class)) {
+            for (VisualCounterflowRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualCounterflowRegister.class)) {
                 connectCounterflowRegisterStg(r);
             }
 
-            for(VisualControlRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualControlRegister.class)) {
+            for (VisualControlRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualControlRegister.class)) {
                 connectControlRegisterStg(r);
             }
-            for(VisualPushRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualPushRegister.class)) {
+            for (VisualPushRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualPushRegister.class)) {
                 connectPushRegisterStg(r);
             }
-            for(VisualPopRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualPopRegister.class)) {
+            for (VisualPopRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualPopRegister.class)) {
                 connectPopRegisterStg(r);
             }
         } catch (InvalidConnectionException e) {
@@ -725,7 +725,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
     }
 
     public CounterflowRegisterStg getCounterflowRegisterStg(VisualCounterflowRegister register) {
-        return (counterflowRegisterMap == null) ? null: counterflowRegisterMap.get(register);
+        return (counterflowRegisterMap == null) ? null : counterflowRegisterMap.get(register);
     }
 
     public void putCounterflowRegisterStg(VisualCounterflowRegister register, CounterflowRegisterStg stg) {

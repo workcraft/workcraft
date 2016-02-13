@@ -145,7 +145,7 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
     private Dimension doLayout(Container target) {
         synchronized (target.getTreeLock()) {
             Insets insets = target.getInsets();
-            int maxwidth = target.getWidth() - (insets.left + insets.right + hgap*2);
+            int maxwidth = target.getWidth() - (insets.left + insets.right + hgap * 2);
             int nmembers = target.getComponentCount();
             int x = 0, y = insets.top + vgap;
             int rowh = 0, start = 0;
@@ -153,7 +153,7 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
             boolean ltr = target.getComponentOrientation().isLeftToRight();
 
             boolean useBaseline = getAlignOnBaseline();
-            if(useBaseline)
+            if (useBaseline)
                 throw new NotSupportedException("BaseLine is not supported.");
 
             for (int i = 0; i < nmembers; i++) {
@@ -171,14 +171,14 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
                     rowh = Math.max(rowh, d.height);
 
                     if (x >= maxwidth) {
-                        if(fit(target, insets.left + hgap, y, maxwidth, rowh, start, i+1, ltr)) {
-                            start = i+1;
+                        if (fit(target, insets.left + hgap, y, maxwidth, rowh, start, i + 1, ltr)) {
+                            start = i + 1;
                             x = 0;
                             y += vgap + rowh;
                             rowh = 0;
                         } else {
                             int end = i;
-                            if(start == end)
+                            if (start == end)
                                 end++;
                             stretch(target, insets.left + hgap, y, maxwidth, rowh, start, end, ltr);
                             start = end;
@@ -192,7 +192,7 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
             //moveComponents(target, insets.left + hgap, y, 0, rowh, start, nmembers, ltr);
             stretch(target, insets.left + hgap, y, maxwidth, rowh, start, nmembers, ltr);
 
-            return new Dimension(maxwidth, y + rowh + (rowh!=0?vgap:0));
+            return new Dimension(maxwidth, y + rowh + (rowh != 0 ? vgap : 0));
         }
     }
 
@@ -224,7 +224,7 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
             }
         };
 
-        if(!resize(target, start, end, width, minimumExtremeProvider))
+        if (!resize(target, start, end, width, minimumExtremeProvider))
             return false;
         else {
             if (applyLayout)
@@ -237,12 +237,12 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
         int totalFreedom = 0;
         int extremeWidth = 0;
 
-        for(int i=start; i<end; i++) {
+        for (int i = start; i < end; i++) {
             Component component = target.getComponent(i);
-            if(component.isVisible()) {
+            if (component.isVisible()) {
                 Dimension extreme = extremeProvider.fn(component);
                 Dimension pref = component.getPreferredSize();
-                if(i>start) {
+                if (i > start) {
                     extremeWidth += hgap;
                 }
                 totalFreedom += extreme.width - pref.width;
@@ -253,15 +253,15 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
         int totalChange = width - (extremeWidth - totalFreedom);
 
         boolean failed;
-        if((double) totalChange/totalFreedom > 1.0) {
+        if ((double) totalChange / totalFreedom > 1.0) {
             failed = true;
             totalChange = totalFreedom;
         } else
             failed = false;
 
-        for(int i=start; i<end; i++) {
+        for (int i = start; i < end; i++) {
             Component component = target.getComponent(i);
-            if(component.isVisible() && totalFreedom != 0) {
+            if (component.isVisible() && totalFreedom != 0) {
                 Dimension extreme = extremeProvider.fn(component);
                 Dimension pref = component.getPreferredSize();
 

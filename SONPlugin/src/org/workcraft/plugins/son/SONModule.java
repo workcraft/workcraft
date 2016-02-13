@@ -18,7 +18,7 @@ import org.workcraft.plugins.son.tools.TimeValueDisable;
 import org.workcraft.plugins.son.tools.ClearMarkingTool;
 import org.workcraft.plugins.son.tools.TimeValueSetter;
 
-public class SONModule implements Module{
+public class SONModule implements Module {
 
     public String getDescription() {
         return "Structured Occurrence Nets";

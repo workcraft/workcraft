@@ -20,7 +20,7 @@ import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.util.ScenarioRef;
 import org.workcraft.plugins.son.util.ScenarioSaveList;
 
-public class ScenarioTable extends JTable{
+public class ScenarioTable extends JTable {
 
     private static final long serialVersionUID = 1L;
 
@@ -47,13 +47,13 @@ public class ScenarioTable extends JTable{
         this.saveList = saveList;
         net = (SON) editor.getModel().getMathModel();
 
-        if(!saveList.isEmpty()){
+        if (!saveList.isEmpty()) {
             //get scenario node refs without connection refs
             scenarioRef.addAll(saveList.get(0));
             updateColor(selection);
         }
 
-        if(model == null)
+        if (model == null)
             this.setModel(new ScenarioTableModel());
         else
             this.setModel(model);
@@ -77,16 +77,16 @@ public class ScenarioTable extends JTable{
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
-            if(value instanceof String)
+            if (value instanceof String)
                 label.setText((String) value);
-            else if(value instanceof ScenarioRef){
-                label.setText("Senario "+(row+1));
+            else if (value instanceof ScenarioRef) {
+                label.setText("Senario " + (row + 1));
             } else
                 return null;
 
             if (row == saveList.getPosition() && column == 0 && !saveList.isEmpty() && isCellColorized) {
                 label.setBackground(Color.PINK);
-            }else {
+            } else {
                 label.setBackground(Color.WHITE);
             }
 
@@ -132,7 +132,7 @@ public class ScenarioTable extends JTable{
         tableChanged(new TableModelEvent(getModel()));
     }
 
-    public void updateColor(){
+    public void updateColor() {
         net.clearMarking();
         setColors(net.getNodes(), greyoutColor);
         Collection<Node> nodes = new ArrayList<Node>();
@@ -141,7 +141,7 @@ public class ScenarioTable extends JTable{
         setColors(nodes, Color.BLACK);
     }
 
-    public void updateColor(Node exclude){
+    public void updateColor(Node exclude) {
         net.clearMarking();
         setColors(net.getNodes(), exclude, greyoutColor);
         Collection<Node> nodes = new ArrayList<Node>();
@@ -150,7 +150,7 @@ public class ScenarioTable extends JTable{
         setColors(nodes, exclude, Color.BLACK);
     }
 
-    public void runtimeUpdateColor(){
+    public void runtimeUpdateColor() {
         net.clearMarking();
         setColors(net.getNodes(), greyoutColor);
         Collection<Node> nodes = new ArrayList<Node>();
@@ -159,15 +159,15 @@ public class ScenarioTable extends JTable{
         setColors(nodes, Color.BLACK);
     }
 
-    private void setColors(Collection<? extends Node> nodes, Color color){
-        for(Node node : nodes){
+    private void setColors(Collection<? extends Node> nodes, Color color) {
+        for (Node node : nodes) {
             net.setForegroundColor(node, color);
         }
     }
 
-    private void setColors(Collection<? extends Node> nodes, Node exclude, Color color){
-        for(Node node : nodes){
-            if(node != exclude)
+    private void setColors(Collection<? extends Node> nodes, Node exclude, Color color) {
+        for (Node node : nodes) {
+            if (node != exclude)
                 net.setForegroundColor(node, color);
         }
     }
@@ -182,7 +182,7 @@ public class ScenarioTable extends JTable{
 
     public ArrayList<String> getScenarioNodeRef() {
         ArrayList<String> result = new ArrayList<String>();
-        for(String str : scenarioRef.getNodeRefs(net)){
+        for (String str : scenarioRef.getNodeRefs(net)) {
             result.add(str);
         }
         return result;

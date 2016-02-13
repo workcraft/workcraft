@@ -1,10 +1,10 @@
 package org.workcraft.plugins.son.exception;
 
-public class IncompatibleScenarioException extends Exception{
+public class IncompatibleScenarioException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-    public IncompatibleScenarioException(){
+    public IncompatibleScenarioException() {
         super();
     }
 }

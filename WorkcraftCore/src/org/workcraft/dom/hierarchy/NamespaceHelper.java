@@ -52,7 +52,7 @@ public class NamespaceHelper {
         String head = getReferenceHead(reference);
         String tail = getReferenceTail(reference);
         if (tail.isEmpty()) {
-            return ret+head;
+            return ret + head;
         }
         return ret + head + hierarchicalToFlatName(tail, flatNameSeparator, false);
     }
@@ -74,7 +74,7 @@ public class NamespaceHelper {
         Matcher matcher = hPattern.matcher(reference);
         if (matcher.find()) {
             String str = matcher.group(2);
-            str=str.replace("'", "");
+            str = str.replace("'", "");
             path.add(str);
             splitReference(matcher.group(9), path);
         }

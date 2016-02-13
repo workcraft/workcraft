@@ -31,7 +31,7 @@ public class MpsatCscResolutionResultHandler implements Runnable {
 
     public STGModel getResolvedStg() {
         final byte[] output = result.getReturnValue().getOutputFile("mpsat.g");
-        if(output == null) {
+        if (output == null) {
             return null;
         }
         try {

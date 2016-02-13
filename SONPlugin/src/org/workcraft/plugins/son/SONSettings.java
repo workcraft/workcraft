@@ -36,7 +36,7 @@ public class SONSettings implements Settings {
     private static boolean timeVisibility = defaultTimeVisibility;
     private static boolean errorTracing = defaultErrorTracing;
 
-    public SONSettings(){
+    public SONSettings() {
         properties.add(new PropertyDeclaration<SONSettings, Color>(
                 this, "Erroneous node color(relation)", Color.class, true, false, false) {
             protected void setter(SONSettings object, Color value) {
@@ -129,27 +129,27 @@ public class SONSettings implements Settings {
         return "Structured Occurrence Nets";
     }
 
-    public static void setRelationErrColor(Color value){
+    public static void setRelationErrColor(Color value) {
         relationErrColor = value;
     }
 
-    public static Color getRelationErrColor(){
+    public static Color getRelationErrColor() {
         return relationErrColor;
     }
 
-    public static void setCyclePathColor(Color value){
+    public static void setCyclePathColor(Color value) {
         cyclePathColor = value;
     }
 
-    public static Color getCyclePathColor(){
+    public static Color getCyclePathColor() {
         return cyclePathColor;
     }
 
-    public static void setConnectionErrColor(Color value){
+    public static void setConnectionErrColor(Color value) {
         connectionErrColor = value;
     }
 
-    public static Color getConnectionErrColor(){
+    public static Color getConnectionErrColor() {
         return connectionErrColor;
     }
 

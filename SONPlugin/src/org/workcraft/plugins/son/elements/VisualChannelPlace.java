@@ -15,7 +15,7 @@ import org.workcraft.gui.graph.tools.Decoration;
 @DisplayName("ChannelPlace")
 //@Hotkey(KeyEvent.VK_P)
 @SVGIcon("images/icons/svg/son-channel-place.svg")
-public class VisualChannelPlace extends VisualPlaceNode{
+public class VisualChannelPlace extends VisualPlaceNode {
 
     private static float strokeWidth = 0.2f;
     protected double size = 1.2;
@@ -31,8 +31,8 @@ public class VisualChannelPlace extends VisualPlaceNode{
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
 
-        double s = size-strokeWidth;
-        Shape shape = new Ellipse2D.Double(-s/2, -s/2, s, s);
+        double s = size - strokeWidth;
+        Shape shape = new Ellipse2D.Double(-s / 2, -s / 2, s, s);
         g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
         g.fill(shape);
         g.setStroke(new BasicStroke(strokeWidth));

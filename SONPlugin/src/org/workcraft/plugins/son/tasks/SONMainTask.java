@@ -30,22 +30,22 @@ public class SONMainTask implements Task<VerificationResult> {
     private int totalWarningNum = 0;
 
     private Collection<String> groupErrors = new HashSet<String>();
-    private Collection<String> relationErrors= new HashSet<String>();
+    private Collection<String> relationErrors = new HashSet<String>();
     private Collection<ArrayList<String>> cycleErrors = new ArrayList<ArrayList<String>>();
 
-    public SONMainTask(StructureVerifySettings settings, WorkspaceEntry we){
+    public SONMainTask(StructureVerifySettings settings, WorkspaceEntry we) {
         this.settings = settings;
         this.we = we;
     }
 
     @Override
-    public Result<? extends VerificationResult> run(ProgressMonitor<? super VerificationResult> monitor){
+    public Result<? extends VerificationResult> run(ProgressMonitor<? super VerificationResult> monitor) {
         clearConsole();
         //all tasks
-        SON net=(SON) we.getModelEntry().getMathModel();
+        SON net = (SON) we.getModelEntry().getMathModel();
         VisualSON visualNet = (VisualSON) we.getModelEntry().getVisualModel();
 
-        if(settings.getType() == 0){
+        if (settings.getType() == 0) {
 
             ONStructureTask onSTask = new ONStructureTask(net);
             onSTask.task(settings.getSelectedGroups());
@@ -68,8 +68,8 @@ public class SONMainTask implements Task<VerificationResult> {
             relationErrors.addAll(bsonSTask.getRelationErrors());
             cycleErrors.addAll(bsonSTask.getCycleErrors());
 
-            totalErrNum = totalErrNum+onSTask.getErrNumber();
-            totalWarningNum = totalWarningNum+onSTask.getWarningNumber();
+            totalErrNum = totalErrNum + onSTask.getErrNumber();
+            totalWarningNum = totalWarningNum + onSTask.getWarningNumber();
 
             totalErrNum = totalErrNum + csonSTask.getErrNumber();
             totalWarningNum = totalWarningNum + csonSTask.getWarningNumber();
@@ -77,12 +77,12 @@ public class SONMainTask implements Task<VerificationResult> {
             totalErrNum = totalErrNum + bsonSTask.getErrNumber();
             totalWarningNum = totalWarningNum + bsonSTask.getWarningNumber();
 
-            //if(settings.getOuputBefore())
+            //if (settings.getOuputBefore())
                 //outputBefore(net);
         }
 
         //group structure tasks
-        if(settings.getType() == 1){
+        if (settings.getType() == 1) {
             ONStructureTask onSTask = new ONStructureTask(net);
             //main group task
             onSTask.task(settings.getSelectedGroups());
@@ -97,7 +97,7 @@ public class SONMainTask implements Task<VerificationResult> {
         }
 
         //CSON structure tasks
-        if(settings.getType() == 2){
+        if (settings.getType() == 2) {
             CSONStructureTask csonSTask = new CSONStructureTask(net);
             csonSTask.task(settings.getSelectedGroups());
 
@@ -111,7 +111,7 @@ public class SONMainTask implements Task<VerificationResult> {
         }
 
         //BSON structure tasks
-        if(settings.getType() == 3){
+        if (settings.getType() == 3) {
             BSONStructureTask bsonSTask = new BSONStructureTask(net, null);
             bsonSTask.task(settings.getSelectedGroups());
 
@@ -126,7 +126,7 @@ public class SONMainTask implements Task<VerificationResult> {
         BlockConnector.blockInternalConnector(visualNet);
 
         //TSON structure tasks
-        if(settings.getType() == 0){
+        if (settings.getType() == 0) {
             TSONStructureTask tsonSTask = new TSONStructureTask(net);
             tsonSTask.task(settings.getSelectedGroups());
 
@@ -138,7 +138,7 @@ public class SONMainTask implements Task<VerificationResult> {
             totalWarningNum = totalWarningNum + tsonSTask.getWarningNumber();
         }
 
-        if(settings.getType() == 4){
+        if (settings.getType() == 4) {
             TSONStructureTask tsonSTask = new TSONStructureTask(net);
             tsonSTask.task(settings.getSelectedGroups());
 
@@ -150,7 +150,7 @@ public class SONMainTask implements Task<VerificationResult> {
             totalWarningNum = totalWarningNum + tsonSTask.getWarningNumber();
         }
 
-        if(settings.getOuputBefore())
+        if (settings.getOuputBefore())
             outputBefore(net);
 
         int err = getTotalErrNum();
@@ -158,7 +158,7 @@ public class SONMainTask implements Task<VerificationResult> {
 
         errNodesHighlight(settings.getErrNodesHighlight(), net);
 
-        logger.info("\n\nVerification-Result : "+ err + " Error(s), " + warning + " Warning(s).");
+        logger.info("\n\nVerification-Result : " + err + " Error(s), " + warning + " Warning(s).");
 
         return new Result<VerificationResult>(Outcome.FINISHED);
     }
@@ -177,34 +177,34 @@ public class SONMainTask implements Task<VerificationResult> {
         }
     }
 
-    private void outputBefore(SON net){
-        if(totalErrNum > 0){
+    private void outputBefore(SON net) {
+        if (totalErrNum > 0) {
             totalWarningNum++;
             logger.info("WARNING : Structure error exist, cannot output before(e).");
-        }else{
+        } else {
             BSONAlg bsonAlg = new BSONAlg(net);
             logger.info("\nOutput BSON causal dependencies:");
             Map<TransitionNode, Before> before = bsonAlg.getBeforeMap();
 
-            for(TransitionNode e : before.keySet()){
-                logger.info("before("+ net.getNodeReference(e)+"): ");
+            for (TransitionNode e : before.keySet()) {
+                logger.info("before(" + net.getNodeReference(e) + "): ");
                 Collection<String> relations = new ArrayList<String>();
 
-                for(TransitionNode[] e2 : before.get(e))
-                    relations.add("("+net.getNodeReference(e2[0]) + ", " + net.getNodeReference(e2[1])+ ")");
+                for (TransitionNode[] e2 : before.get(e))
+                    relations.add("(" + net.getNodeReference(e2[0]) + ", " + net.getNodeReference(e2[1]) + ")");
 
                 logger.info(relations);
             }
         }
     }
 
-    private void errNodesHighlight(boolean b, SON net){
-        if(b){
-            for(String group : groupErrors){
+    private void errNodesHighlight(boolean b, SON net) {
+        if (b) {
+            for (String group : groupErrors) {
                 net.setFillColor(net.getNodeByReference(group), SONSettings.getRelationErrColor());
             }
 
-            for(String node : relationErrors){
+            for (String node : relationErrors) {
                 net.setFillColor(net.getNodeByReference(node), SONSettings.getRelationErrColor());
             }
 
@@ -214,11 +214,11 @@ public class SONMainTask implements Task<VerificationResult> {
         }
     }
 
-    public int getTotalErrNum(){
+    public int getTotalErrNum() {
         return this.totalErrNum;
     }
 
-    public int getTotalWarningNum(){
+    public int getTotalWarningNum() {
         return this.totalWarningNum;
 
     }

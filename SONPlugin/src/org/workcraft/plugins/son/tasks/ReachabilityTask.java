@@ -40,11 +40,11 @@ public class ReachabilityTask implements Task<VerificationResult> {
     private Collection<Node> causalPredecessors;
     private Collection<String> causalPredecessorRefs;
 
-    public ReachabilityTask(WorkspaceEntry we){
+    public ReachabilityTask(WorkspaceEntry we) {
         this.we = we;
         net = (SON) we.getModelEntry().getMathModel();
 
-        if(hasConflict()){
+        if (hasConflict()) {
             JOptionPane.showMessageDialog(null, "Model has alternative behaviours", "Fail to run reachability task", JOptionPane.ERROR_MESSAGE);
             return;
         }
@@ -56,18 +56,18 @@ public class ReachabilityTask implements Task<VerificationResult> {
         causalPredecessors = new HashSet<Node>();
         causalPredecessorRefs = new HashSet<String>();
 
-        for(PlaceNode node : net.getPlaceNodes()){
-            if(node.isMarked())
+        for (PlaceNode node : net.getPlaceNodes()) {
+            if (node.isMarked())
                 markingRefs.add(net.getNodeReference(node));
         }
     }
 
-    private boolean hasConflict(){
+    private boolean hasConflict() {
         RelationAlgorithm alg = new RelationAlgorithm(net);
-        for(Condition c : net.getConditions()){
-            if(alg.hasPostConflictEvents(c))
+        for (Condition c : net.getConditions()) {
+            if (alg.hasPostConflictEvents(c))
                 return true;
-            else if(alg.hasPreConflictEvents(c))
+            else if (alg.hasPreConflictEvents(c))
                 return true;
         }
         return false;
@@ -80,7 +80,7 @@ public class ReachabilityTask implements Task<VerificationResult> {
         final Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
 
-        if(markingRefs.isEmpty()){
+        if (markingRefs.isEmpty()) {
             JOptionPane.showMessageDialog(mainWindow,
                     "Double click on condition/channel place or use property editor"
                     + " to mark some nodes and check the reachability.",
@@ -88,22 +88,22 @@ public class ReachabilityTask implements Task<VerificationResult> {
             return new Result<VerificationResult>(Outcome.FINISHED);
         }
 
-        if(reachabilityTask()){
+        if (reachabilityTask()) {
             net = (SON) we.getModelEntry().getMathModel();
             int result = JOptionPane.showConfirmDialog(mainWindow,
                     "The selected marking is REACHABLE from the initial states. \n" +
                     "Select OK to analyze the trace leading to the marking in the simulation tool.",
                     "Reachability task result", JOptionPane.OK_CANCEL_OPTION);
-            if(result == 0){
+            if (result == 0) {
                 Map<PlaceNode, Boolean> finalStates = simulation();
-                for(String ref : markingRefs){
+                for (String ref : markingRefs) {
                     Node node = net.getNodeByReference(ref);
-                    if(finalStates.get(node) == false)
+                    if (finalStates.get(node) == false)
                         throw new RuntimeException("Reachability task error, doesn't reach selected marking" + ref);
                 }
                 return new Result<VerificationResult>(Outcome.FINISHED);
             }
-        } else{
+        } else {
             JOptionPane.showMessageDialog(mainWindow,
                     "The selected marking is UNREACHABLE from the initial states",
                     "Reachability task result", JOptionPane.INFORMATION_MESSAGE);
@@ -111,7 +111,7 @@ public class ReachabilityTask implements Task<VerificationResult> {
         return new Result<VerificationResult>(Outcome.FINISHED);
     }
 
-    private Map<PlaceNode, Boolean> simulation(){
+    private Map<PlaceNode, Boolean> simulation() {
         Map<PlaceNode, Boolean> result;
         final ToolboxPanel toolbox = ToolManager.getToolboxPanel(we);
         final SONSimulationTool tool = toolbox.getToolInstance(SONSimulationTool.class);
@@ -122,32 +122,32 @@ public class ReachabilityTask implements Task<VerificationResult> {
         return result;
     }
 
-    private boolean reachabilityTask(){
+    private boolean reachabilityTask() {
         //Collection<Node> initial = new HashSet<Node>();
-        Collection<Node> sync= new HashSet<Node>();
-        for(Path path : getSyncCycles())
+        Collection<Node> sync = new HashSet<Node>();
+        for (Path path : getSyncCycles())
             sync.addAll(path);
 
         //if marking contains a synchronous channel place, it's unreachable.
-        for(String ref : markingRefs){
+        for (String ref : markingRefs) {
             Node node = net.getNodeByReference(ref);
-            if(node instanceof ChannelPlace)
-                if(sync.contains(node)) {
+            if (node instanceof ChannelPlace)
+                if (sync.contains(node)) {
                     return false;
                 }
         }
 //        SimulationAlg simuAlg = new SimulationAlg(net);
 //        Map<PlaceNode, Boolean> initialMarking = simuAlg.getInitialMarking();
 
-//        for(Node c : initialMarking.keySet()){
-//            if(initialMarking.get(c)){
+//        for (Node c : initialMarking.keySet()) {
+//            if (initialMarking.get(c)) {
 //                initial.add(c);
 //            }
 //        }
         causalPredecessors = new HashSet<Node>();
 
         //get causalPredecessors for each marking
-        for(String ref : markingRefs){
+        for (String ref : markingRefs) {
             Node node = net.getNodeByReference(ref);
             causalPredecessors.addAll(reachAlg.getCausalPredecessors(node));
         }
@@ -155,10 +155,10 @@ public class ReachabilityTask implements Task<VerificationResult> {
         Collection<Node> consume = new HashSet<Node>();
 
         //get all place nodes which are the input (consumed) of causal predecessors
-        for(Node t : causalPredecessors){
-            if(t instanceof TransitionNode){
+        for (Node t : causalPredecessors) {
+            if (t instanceof TransitionNode) {
                 causalPredecessorRefs.add(net.getNodeReference(t));
-                for(Node pre : net.getPreset(t)){
+                for (Node pre : net.getPreset(t)) {
                     consume.add(pre);
                 }
             }
@@ -167,19 +167,19 @@ public class ReachabilityTask implements Task<VerificationResult> {
         // marking is reachable if
         //1. none of the marked conditions is consumed by causalPredecessors.
         //2. all of corresponding abstract conditions are not consumed by causalPredecessors
-        for(String ref : markingRefs){
+        for (String ref : markingRefs) {
             Node node = net.getNodeByReference(ref);
-            if(consume.contains(node))
+            if (consume.contains(node))
                 return false;
             Collection<Condition> upper = bsonAlg.getUpperConditions(node);
-            if(!upper.isEmpty() && consume.containsAll(upper))
+            if (!upper.isEmpty() && consume.containsAll(upper))
                 return false;
         }
 
         return true;
     }
 
-    private Collection<Path> getSyncCycles(){
+    private Collection<Path> getSyncCycles() {
         HashSet<Node> nodes = new HashSet<Node>();
         nodes.addAll(net.getTransitionNodes());
         nodes.addAll(net.getChannelPlaces());

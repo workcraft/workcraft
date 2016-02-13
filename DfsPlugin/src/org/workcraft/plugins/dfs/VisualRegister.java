@@ -71,8 +71,8 @@ public class VisualRegister extends VisualAbstractRegister {
         Decoration d = r.getDecoration();
         double w = size - strokeWidth;
         double h = size - strokeWidth;
-        double w2 = w/2;
-        double h2 = h/2;
+        double w2 = w / 2;
+        double h2 = h / 2;
         double dx = size / 5;
         double dy = strokeWidth / 4;
         double dt = (size - strokeWidth) / 8;

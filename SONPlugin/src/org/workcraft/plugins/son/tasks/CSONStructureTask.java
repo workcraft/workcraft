@@ -11,7 +11,7 @@ import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 
-public class CSONStructureTask extends AbstractStructuralVerification{
+public class CSONStructureTask extends AbstractStructuralVerification {
 
     private SON net;
 
@@ -24,21 +24,21 @@ public class CSONStructureTask extends AbstractStructuralVerification{
     private int errNumber = 0;
     private int warningNumber = 0;
 
-    public CSONStructureTask(SON net){
+    public CSONStructureTask(SON net) {
         super(net);
         this.net = net;
 
         csonCycleAlg = new CSONCycleAlg(net);
     }
 
-    public void task(Collection<ONGroup> groups){
+    public void task(Collection<ONGroup> groups) {
 
         infoMsg("-----------------Communication-SON Structure Verification-----------------");
 
         //group info
         infoMsg("Initialising selected groups and components...");
         ArrayList<Node> components = new ArrayList<Node>();
-        for(ONGroup group : groups){
+        for (ONGroup group : groups) {
             components.addAll(group.getComponents());
         }
 
@@ -50,7 +50,7 @@ public class CSONStructureTask extends AbstractStructuralVerification{
 
         infoMsg("Channel Places = " + relatedCPlaces.size());
 
-        if(relatedCPlaces.isEmpty()){
+        if (relatedCPlaces.isEmpty()) {
             infoMsg("Task terminated: no communication abstractions in selected groups.");
             return;
         }
@@ -62,14 +62,14 @@ public class CSONStructureTask extends AbstractStructuralVerification{
         relationErrors.addAll(task1);
         relationErrors.addAll(task2);
 
-        if(relationErrors.isEmpty() && relationErrors.isEmpty())
+        if (relationErrors.isEmpty() && relationErrors.isEmpty())
             infoMsg("Valid channel place relation.");
-        else{
+        else {
             errNumber = errNumber + relationErrors.size();
-            for(Node cPlace : task1)
+            for (Node cPlace : task1)
                 errMsg("ERROR : Invalid channel place relation (input/output size != 1).", cPlace);
 
-            for(Node cPlace : task2)
+            for (Node cPlace : task2)
                 errMsg("ERROR : Invalid communication types (inconsistent input and output connection types).", cPlace);
         }
 
@@ -81,11 +81,11 @@ public class CSONStructureTask extends AbstractStructuralVerification{
 
         if (cycleErrors.isEmpty())
             infoMsg("Communication-SON is cycle free");
-        else{
+        else {
             errNumber++;
-            errMsg("ERROR : Communication-SON involves global cycle paths = "+ cycleErrors.size() + ".");
+            errMsg("ERROR : Communication-SON involves global cycle paths = " + cycleErrors.size() + ".");
             int i = 1;
-            for(Path cycle : cycleErrors){
+            for (Path cycle : cycleErrors) {
                 errMsg("Cycle " + i + ": " + cycle.toString(net));
                 i++;
             }
@@ -95,27 +95,27 @@ public class CSONStructureTask extends AbstractStructuralVerification{
 
     }
 
-    private Collection<ChannelPlace> cPlaceRelationTask(ArrayList<ChannelPlace> cPlaces){
+    private Collection<ChannelPlace> cPlaceRelationTask(ArrayList<ChannelPlace> cPlaces) {
         ArrayList<ChannelPlace> result = new ArrayList<ChannelPlace>();
 
-        for(ChannelPlace cPlace : cPlaces){
-            if(net.getPostset(cPlace).size() != 1 || net.getPreset(cPlace).size() != 1)
+        for (ChannelPlace cPlace : cPlaces) {
+            if (net.getPostset(cPlace).size() != 1 || net.getPreset(cPlace).size() != 1)
                 result.add(cPlace);
         }
         return result;
     }
 
-    private Collection<ChannelPlace> cPlaceConTypeTask(ArrayList<ChannelPlace> cPlaces){
+    private Collection<ChannelPlace> cPlaceConTypeTask(ArrayList<ChannelPlace> cPlaces) {
         ArrayList<ChannelPlace> result = new ArrayList<ChannelPlace>();
 
-        for(ChannelPlace cPlace : cPlaces){
-            if(net.getSONConnectionTypes(cPlace).size() > 1)
+        for (ChannelPlace cPlace : cPlaces) {
+            if (net.getSONConnectionTypes(cPlace).size() > 1)
                 result.add(cPlace);
         }
         return result;
     }
 
-    public CSONCycleAlg getCSONCycleAlg(){
+    public CSONCycleAlg getCSONCycleAlg() {
         return csonCycleAlg;
     }
 
@@ -135,12 +135,12 @@ public class CSONStructureTask extends AbstractStructuralVerification{
     }
 
     @Override
-    public int getErrNumber(){
+    public int getErrNumber() {
         return this.errNumber;
     }
 
     @Override
-    public int getWarningNumber(){
+    public int getWarningNumber() {
         return this.warningNumber;
     }
 

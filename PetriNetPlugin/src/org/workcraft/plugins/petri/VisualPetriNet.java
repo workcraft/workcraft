@@ -181,7 +181,7 @@ public class VisualPetriNet extends AbstractVisualModel {
         }
 
         VisualReadArc connection = null;
-        if ((mPlace != null) && (mTransition !=null)) {
+        if ((mPlace != null) && (mTransition != null)) {
             MathConnection mConsumingConnection = petriNet.connect(mPlace, mTransition);
             MathConnection mProducingConnection = petriNet.connect(mTransition, mPlace);
 

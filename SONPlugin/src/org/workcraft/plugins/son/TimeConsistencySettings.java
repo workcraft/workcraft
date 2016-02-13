@@ -21,7 +21,7 @@ public class TimeConsistencySettings {
             boolean unspecifyHighlight, ArrayList<ONGroup> selectedGroups,
             ScenarioRef seletedScenario, ArrayList<Node> seletedNodes, int tabIndex,
             Granularity granularity, boolean causalConsistency,
-            Interval defaultDuration, boolean causalHighlight){
+            Interval defaultDuration, boolean causalHighlight) {
         this.inconsistencyHighlight =     inconsistencyHighlight;
         this.unspecifyHighlight = unspecifyHighlight;
         this.selectedGroups = selectedGroups;
@@ -34,36 +34,36 @@ public class TimeConsistencySettings {
         this.causalHighlight = causalHighlight;
     }
 
-    public boolean getInconsistencyHighlight(){
+    public boolean getInconsistencyHighlight() {
         return inconsistencyHighlight;
     }
 
-    public boolean getUnspecifyHighlight(){
+    public boolean getUnspecifyHighlight() {
         return unspecifyHighlight;
     }
 
-    public ArrayList<ONGroup> getSelectedGroups(){
+    public ArrayList<ONGroup> getSelectedGroups() {
         return selectedGroups;
     }
 
-    public ScenarioRef getSeletedScenario(){
+    public ScenarioRef getSeletedScenario() {
         return seletedScenario;
     }
 
-    public ArrayList<Node> getSeletedNodes(){
+    public ArrayList<Node> getSeletedNodes() {
         return seletedNodes;
     }
 
-    public int getTabIndex(){
+    public int getTabIndex() {
         return tabIndex;
     }
 
-    public Granularity getGranularity(){
+    public Granularity getGranularity() {
         return granularity;
     }
 
     public boolean isCausalConsistency() {
-        if((getTabIndex() == 1) && causalConsistency)
+        if ((getTabIndex() == 1) && causalConsistency)
             return true;
         else
             return false;

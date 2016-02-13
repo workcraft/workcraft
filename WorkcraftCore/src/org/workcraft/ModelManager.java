@@ -45,7 +45,7 @@ public class ModelManager {
     @SuppressWarnings("unchecked")
     public LinkedList<Class<?>> getComponentsByModelUUID(UUID uuid) {
         LinkedList<Class<?>> lst = uuidComponentListMap.get(uuid);
-        if (lst!=null)
+        if (lst != null)
             return (LinkedList<Class<?>>) lst.clone();
         else
             return null;
@@ -54,7 +54,7 @@ public class ModelManager {
     @SuppressWarnings("unchecked")
     public LinkedList<Class<?>> getToolsByModelUUID(UUID uuid) {
         LinkedList<Class<?>> lst = uuidToolListMap.get(uuid);
-        if (lst!=null)
+        if (lst != null)
             return (LinkedList<Class<?>>) lst.clone();
         else
             return null;
@@ -91,9 +91,9 @@ public class ModelManager {
         try {
             uuid = (UUID) modelClass.getField("_modeluuid").get(null);
         } catch (NoSuchFieldException e) {
-            System.err.println("Model implementation class is improperly declared: static final String "+e.getMessage()+" is required");
+            System.err.println("Model implementation class is improperly declared: static final String " + e.getMessage() + " is required");
         } catch (IllegalAccessException e) {
-            System.err.println("Model implementation class is improperly declared: static final String "+e.getMessage()+" is required");
+            System.err.println("Model implementation class is improperly declared: static final String " + e.getMessage() + " is required");
         }
         return uuid;
     }
@@ -113,9 +113,9 @@ public class ModelManager {
         try {
             uuid = (UUID) modelClass.getField("_modeluuid").get(null);
         } catch (NoSuchFieldException e) {
-            System.err.println("Model implementation class is improperly declared: static final String "+e.getMessage()+" is required");
+            System.err.println("Model implementation class is improperly declared: static final String " + e.getMessage() + " is required");
         } catch (IllegalAccessException e) {
-            System.err.println("Model implementation class is improperly declared: static final String "+e.getMessage()+" is required");
+            System.err.println("Model implementation class is improperly declared: static final String " + e.getMessage() + " is required");
         }
         return uuid;
     }
@@ -126,9 +126,9 @@ public class ModelManager {
         try {
             return (String) modelClass.getField("_displayname").get(null);
         } catch (NoSuchFieldException e) {
-            System.err.println("Model implementation class is improperly declared: static final String "+e.getMessage()+" is required");
+            System.err.println("Model implementation class is improperly declared: static final String " + e.getMessage() + " is required");
         } catch (IllegalAccessException e) {
-            System.err.println("Model implementation class is improperly declared: static final String "+e.getMessage()+" is required");
+            System.err.println("Model implementation class is improperly declared: static final String " + e.getMessage() + " is required");
         }
         return null;
     }
@@ -139,9 +139,9 @@ public class ModelManager {
         try {
             return (String) toolClass.getField("_displayname").get(null);
         } catch (NoSuchFieldException e) {
-            System.err.println("Tool implementation class is improperly declared: static final String "+e.getMessage()+" is required");
+            System.err.println("Tool implementation class is improperly declared: static final String " + e.getMessage() + " is required");
         } catch (IllegalAccessException e) {
-            System.err.println("Tool implementation class is improperly declared: static final String "+e.getMessage()+" is required");
+            System.err.println("Tool implementation class is improperly declared: static final String " + e.getMessage() + " is required");
         }
         return null;
     }
@@ -150,17 +150,17 @@ public class ModelManager {
         try {
             UUID uuid = (UUID) cls.getField("_modeluuid").get(null);
             String modelName = (String) cls.getField("_displayname").get(null);
-            if (uuidModelMap.get(uuid)!=null) {
-                System.err.println("Duplicate model id ("+uuid.toString()+"), skipping");
+            if (uuidModelMap.get(uuid) != null) {
+                System.err.println("Duplicate model id (" + uuid.toString() + "), skipping");
                 return;
             }
             modelList.add(cls);
             uuidModelMap.put(uuid, cls);
-            System.out.println("\t"+modelName+"\t OK");
+            System.out.println("\t" + modelName + "\t OK");
         } catch (NoSuchFieldException e) {
-            System.err.println("Model implementation class is improperly declared: static final String "+e.getMessage()+" is required");
+            System.err.println("Model implementation class is improperly declared: static final String " + e.getMessage() + " is required");
         } catch (IllegalAccessException e) {
-            System.err.println("Model implementation class is improperly declared: static final String "+e.getMessage()+" is required");
+            System.err.println("Model implementation class is improperly declared: static final String " + e.getMessage() + " is required");
         }
     }
 
@@ -169,8 +169,8 @@ public class ModelManager {
             UUID uuid = (UUID) cls.getField("_modeluuid").get(null);
             String componentName = (String) cls.getField("_displayname").get(null);
 
-            if (uuidModelMap.get(uuid)==null) {
-                System.err.println("Component "+componentName+"(class "+cls.getName()+") refers to unknown model (id "+uuid.toString()+"), skipping");
+            if (uuidModelMap.get(uuid) == null) {
+                System.err.println("Component " + componentName + "(class " + cls.getName() + ") refers to unknown model (id " + uuid.toString() + "), skipping");
                 return;
             }
 
@@ -183,11 +183,11 @@ public class ModelManager {
 
             list.add(cls);
 
-            System.out.println("\t"+componentName+"\t OK");
+            System.out.println("\t" + componentName + "\t OK");
         } catch (NoSuchFieldException e) {
-            System.err.println("Component implementation class is improperly declared: static final String "+e.getMessage()+" is required");
+            System.err.println("Component implementation class is improperly declared: static final String " + e.getMessage() + " is required");
         } catch (IllegalAccessException e) {
-            System.err.println("Component implementation class is improperly declared: static final String "+e.getMessage()+" is required");
+            System.err.println("Component implementation class is improperly declared: static final String " + e.getMessage() + " is required");
         }
     }
 

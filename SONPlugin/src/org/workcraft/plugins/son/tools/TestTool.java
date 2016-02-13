@@ -37,7 +37,7 @@ import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class TestTool extends AbstractTool implements Tool{
+public class TestTool extends AbstractTool implements Tool {
 
     private String message = "";
 
@@ -46,19 +46,19 @@ public class TestTool extends AbstractTool implements Tool{
 
     }
 
-    public String getSection(){
+    public String getSection() {
         return "test";
     }
 
-    public String getDisplayName(){
+    public String getDisplayName() {
         return "Test";
     }
 
     GraphEditor editor1;
 
-    public void run(WorkspaceEntry we){
+    public void run(WorkspaceEntry we) {
         System.out.println("================================================================================");
-        SON net=(SON) we.getModelEntry().getMathModel();
+        SON net = (SON) we.getModelEntry().getMathModel();
         VisualSON vnet = (VisualSON) we.getModelEntry().getVisualModel();
         //reachableMarkingsTest(net);
         esitmationTest(net);
@@ -81,14 +81,14 @@ public class TestTool extends AbstractTool implements Tool{
         //conditionOutputTest(vnet);
     }
 
-    private void reachableMarkingsTest(SON net){
+    private void reachableMarkingsTest(SON net) {
         ASONAlg alg = new ASONAlg(net);
-        for(ONGroup group : net.getGroups()){
+        for (ONGroup group : net.getGroups()) {
             try {
                 Collection<Marking> markings = alg.getReachableMarkings(group);
-                for(Marking marking : markings){
+                for (Marking marking : markings) {
                     System.out.println();
-                    for(Node node : marking)
+                    for (Node node : marking)
                         System.out.print(net.getNodeReference(node) + ", ");
                 }
             } catch (UnboundedException e) {
@@ -97,7 +97,7 @@ public class TestTool extends AbstractTool implements Tool{
         }
     }
 
-    private void esitmationTest(SON net){
+    private void esitmationTest(SON net) {
         EstimationAlg timeAlg = new EstimationAlg(net, new Interval(0, 0), Granularity.YEAR_YEAR, null);
         BSONAlg bsonAlg = new BSONAlg(net);
 
@@ -108,7 +108,7 @@ public class TestTool extends AbstractTool implements Tool{
 //            e.printStackTrace();
 //        }
 
-        System.out.println(net.getConditions().size() + " "+net.getSONConnections().size());
+        System.out.println(net.getConditions().size() + " " + net.getSONConnections().size());
 //        try {
 //            Interval result = timeAlg.EstimateEndTime(bsonAlg.getInitial(net.getComponents()).iterator().next(), null);
 //              System.out.println("result" + result);
@@ -122,13 +122,13 @@ public class TestTool extends AbstractTool implements Tool{
 
     }
 
-/*    private void timeTest(SON net){
+/*    private void timeTest(SON net) {
         TimeAlg timeAlg = new TimeAlg(net);
 
-        for(Node node : net.getComponents()){
+        for (Node node : net.getComponents()) {
             System.out.println(net.getNodeReference(node));
             try {
-                for(String str : timeAlg.onConsistecy(node)){
+                for (String str : timeAlg.onConsistecy(node)) {
                     System.out.println(str);
                 }
             } catch (InvalidStructureException e) {
@@ -137,7 +137,7 @@ public class TestTool extends AbstractTool implements Tool{
         }
     }*/
 
-/*    private void bhvTimeTest(SON net){
+/*    private void bhvTimeTest(SON net) {
         BSONAlg bsonAlg = new BSONAlg(net);
 
         Collection<ONGroup> upperGroups = bsonAlg.getUpperGroups(net.getGroups());
@@ -146,27 +146,27 @@ public class TestTool extends AbstractTool implements Tool{
 
         TimeAlg timeAlg = new TimeAlg(net);
 
-        for(ONGroup group : upperGroups){
-            for(TransitionNode t : group.getTransitionNodes()){
+        for (ONGroup group : upperGroups) {
+            for (TransitionNode t : group.getTransitionNodes()) {
                 System.out.println(net.getNodeReference(t));
-                for(String str : timeAlg.bsonConsistency(t, phases)){
+                for (String str : timeAlg.bsonConsistency(t, phases)) {
                     System.out.println(str);
                 }
             }
         }
 
-        for(ONGroup group : lowerGroups){
-            for(Condition c : group.getConditions()){
-                if(net.getInputPNConnections(c).isEmpty()){
-                    System.out.println("ini: "+net.getNodeReference(c));
-                    for(String str : timeAlg.bsonConsistency2(c)){
+        for (ONGroup group : lowerGroups) {
+            for (Condition c : group.getConditions()) {
+                if (net.getInputPNConnections(c).isEmpty()) {
+                    System.out.println("ini: " + net.getNodeReference(c));
+                    for (String str : timeAlg.bsonConsistency2(c)) {
                         System.out.println(str);
                     }
                 }
 
-                if(net.getOutputPNConnections(c).isEmpty()){
-                    System.out.println("fine: "+net.getNodeReference(c));
-                    for(String str : timeAlg.bsonConsistency3(c)){
+                if (net.getOutputPNConnections(c).isEmpty()) {
+                    System.out.println("fine: " + net.getNodeReference(c));
+                    for (String str : timeAlg.bsonConsistency3(c)) {
                         System.out.println(str);
                     }
                 }
@@ -175,27 +175,27 @@ public class TestTool extends AbstractTool implements Tool{
         }
     }*/
 
-    protected Collection<ChannelPlace> getSyncCPs(SON net){
+    protected Collection<ChannelPlace> getSyncCPs(SON net) {
         Collection<ChannelPlace> result = new HashSet<ChannelPlace>();
         HashSet<Node> nodes = new HashSet<Node>();
         nodes.addAll(net.getTransitionNodes());
         nodes.addAll(net.getChannelPlaces());
         CSONCycleAlg cycleAlg = new CSONCycleAlg(net);
 
-        for(Path path : cycleAlg.syncCycleTask(nodes)){
-            for(Node node : path){
-                if(node instanceof ChannelPlace)
+        for (Path path : cycleAlg.syncCycleTask(nodes)) {
+            for (Node node : path) {
+                if (node instanceof ChannelPlace)
                     result.add((ChannelPlace) node);
             }
         }
         return result;
     }
 
-    private void getScenario(SON net){
+    private void getScenario(SON net) {
         ScenarioGeneratorTool s = new ScenarioGeneratorTool();
     }
 
-    private void dfsTest(SON net){
+    private void dfsTest(SON net) {
         PathAlgorithm alg = new PathAlgorithm(net);
         RelationAlgorithm alg2 = new RelationAlgorithm(net);
         ONGroup g = net.getGroups().iterator().next();
@@ -203,12 +203,12 @@ public class TestTool extends AbstractTool implements Tool{
                 alg2.getONFinal(g).iterator().next(),
                 net.getGroups().iterator().next().getComponents());
 
-        for(Path path : result){
+        for (Path path : result) {
             System.out.println(path.toString(net));
         }
     }
 
-    private void outputBefore(SON net){
+    private void outputBefore(SON net) {
 
         BSONAlg bsonAlg = new BSONAlg(net);
         System.out.println("\nOutput before(e):");
@@ -216,17 +216,17 @@ public class TestTool extends AbstractTool implements Tool{
 
         Collection<ONGroup> groups = bsonAlg.getUpperGroups(net.getGroups());
         Collection<TransitionNode> set = new HashSet<TransitionNode>();
-        for(ONGroup group : groups){
+        for (ONGroup group : groups) {
             set.addAll(group.getTransitionNodes());
         }
 
-        for(TransitionNode e : set){
+        for (TransitionNode e : set) {
             //before =  bsonAlg.before(e);
-            if(!before.isEmpty()){
+            if (!before.isEmpty()) {
                 Collection<String> subResult = new ArrayList<String>();
-                System.out.println("before("+ net.getComponentLabel(e)+"): ");
-                for(TransitionNode[] t : before)
-                    subResult.add("("+net.getComponentLabel(t[0]) + " " + net.getComponentLabel(t[1])+ ")");
+                System.out.println("before(" + net.getComponentLabel(e) + "): ");
+                for (TransitionNode[] t : before)
+                    subResult.add("(" + net.getComponentLabel(t[0]) + " " + net.getComponentLabel(t[1]) + ")");
                 System.out.println(subResult);
             }
         }
@@ -236,88 +236,88 @@ public class TestTool extends AbstractTool implements Tool{
     @Override
     public void drawInScreenSpace(final GraphEditor editor, Graphics2D g) {
         System.out.println("editor1111111");
-        int a =0;
-        if(a == 0)
+        int a = 0;
+        if (a == 0)
             GUI.drawEditorMessage(editor, g, Color.BLACK, "afdasfasd");
     }
 
-    private void relation(SON net, VisualSON vnet){
-        for(Node node : net.getComponents()){
-            System.out.println("node name: "+net.getName(node) + "  node pre size:" + net.getPreset(node).size()
+    private void relation(SON net, VisualSON vnet) {
+        for (Node node : net.getComponents()) {
+            System.out.println("node name: " + net.getName(node) + "  node pre size:" + net.getPreset(node).size()
                     + "  node post size:" + net.getPostset(node).size());
         }
     }
 
-    private void phaseTest(SON net){
+    private void phaseTest(SON net) {
         BSONAlg alg = new BSONAlg(net);
 
         System.out.println("phase test");
-        for(Condition c : alg.getAllPhases().keySet()){
+        for (Condition c : alg.getAllPhases().keySet()) {
             System.out.println("condition = " + net.getNodeReference(c));
 
-            for(Phase phase : alg.getAllPhases().get(c)){
+            for (Phase phase : alg.getAllPhases().get(c)) {
                 System.out.println("phase = " + phase.toString(net));
             }
 
         }
     }
 
-    private void syncCycleTest(SON net){
+    private void syncCycleTest(SON net) {
         CSONCycleAlg csonPath = new CSONCycleAlg(net);
         HashSet<Node> nodes = new HashSet<Node>();
         nodes.addAll(net.getChannelPlaces());
         nodes.addAll(net.getTransitionNodes());
 
-        for(Path path : csonPath.syncEventCycleTask(nodes)){
+        for (Path path : csonPath.syncEventCycleTask(nodes)) {
             System.out.println(path.toString(net));
         }
     }
 
-    private void csonCycleTest(SON net){
+    private void csonCycleTest(SON net) {
         CSONCycleAlg csonPath = new CSONCycleAlg(net);
 
-        for(Path path : csonPath.cycleTask(net.getComponents())){
+        for (Path path : csonPath.cycleTask(net.getComponents())) {
             System.out.println(path.toString(net));
         }
     }
 
-    private void exceptionTest() throws InvalidConnectionException{
+    private void exceptionTest() throws InvalidConnectionException {
         boolean a = true;
-        if(a){
+        if (a) {
             message = "adfa";
             throw new InvalidConnectionException(message);
         }
     }
 
-    private void abtreactConditionTest(SON net){
+    private void abtreactConditionTest(SON net) {
         BSONAlg alg = new BSONAlg(net);
-        for(Node node : net.getComponents()){
-            for(Condition c : alg.getUpperConditions(node)){
+        for (Node node : net.getComponents()) {
+            for (Condition c : alg.getUpperConditions(node)) {
                 System.out.println("abstract condition of   " + net.getNodeReference(node) + "  is  "  + net.getNodeReference(c));
             }
         }
         System.out.println("********************");
     }
 
-/*    private void convertBlockTest(SONModel net, VisualSON vnet){
-        for(Node node : net.getSONConnections()){
-            System.out.println("before "+net.getName(node)+ " parent "+ node.getParent().toString() + " type = " + ((SONConnection) node).getType());
+/*    private void convertBlockTest(SONModel net, VisualSON vnet) {
+        for (Node node : net.getSONConnections()) {
+            System.out.println("before " + net.getName(node) + " parent " + node.getParent().toString() + " type = " + ((SONConnection) node).getType());
     }
             vnet.connectToBlocks();
             System.out.println("node size =" + net.getComponents().size());
-            for(Node node : net.getSONConnections()){
-                    System.out.println("after "+net.getName(node)+ " parent "+ node.getParent().toString() + " type = " + ((SONConnection) node).getType());
+            for (Node node : net.getSONConnections()) {
+                    System.out.println("after " + net.getName(node) + " parent " + node.getParent().toString() + " type = " + ((SONConnection) node).getType());
             }
     }
     */
 
-    private void blockMathLevelTest(SON net, VisualSON vnet){
-        for(Block block : net.getBlocks()){
+    private void blockMathLevelTest(SON net, VisualSON vnet) {
+        for (Block block : net.getBlocks()) {
             System.out.println("block name :" + net.getName(block));
             System.out.println("connection size : " + block.getSONConnections().size());
         }
 
-/*        for(VisualBlock block : vnet.getVisualBlocks()){
+/*        for (VisualBlock block : vnet.getVisualBlocks()) {
             System.out.println("visual block name :" + vnet.getName(block));
             System.out.
             println("visual connection size : " + block.getVisualSONConnections().size());
@@ -325,8 +325,8 @@ public class TestTool extends AbstractTool implements Tool{
 
     }
 
-    private void mathLevelTest(SON net, VisualSON vnet){
-        for(ONGroup group: net.getGroups()){
+    private void mathLevelTest(SON net, VisualSON vnet) {
+        for (ONGroup group: net.getGroups()) {
             System.out.println(group.toString());
             System.out.println("Page size = " + group.getPageNodes().size());
             System.out.println("block size = " + group.getBlocks().size());
@@ -336,11 +336,11 @@ public class TestTool extends AbstractTool implements Tool{
             System.out.println();
         }
 
-/*        for(PageNode page : net.getPageNodes()){
-            System.out.println("page parent  "+ page.getParent().toString());
+/*        for (PageNode page : net.getPageNodes()) {
+            System.out.println("page parent  " + page.getParent().toString());
         }
         */
-/*        for(VisualONGroup vgroup: vnet.getVisualONGroups()){
+/*        for (VisualONGroup vgroup: vnet.getVisualONGroups()) {
             System.out.println(vgroup.toString());
             System.out.println("Visual Page size = " + vgroup.getVisualPages().size());
             System.out.println("Visual Condition size = " + vgroup.getVisualConditions().size());
@@ -349,22 +349,22 @@ public class TestTool extends AbstractTool implements Tool{
 
         }*/
 
-/*        for(VisualPage page : vnet.getVisualPages()){
+/*        for (VisualPage page : vnet.getVisualPages()) {
             System.out.println();
-            System.out.println("visual page parent  "+ page.getParent().toString());
+            System.out.println("visual page parent  " + page.getParent().toString());
         }*/
     }
 
-    private void connectionTypeTest(SON net, VisualSON vnet){
-        for(SONConnection con : net.getSONConnections()){
-            System.out.println("con type "+ con.getSemantics());
-            System.out.println("con fisrt "+ con.getFirst());
-            System.out.println("con fisrt "+ con.getSecond());
+    private void connectionTypeTest(SON net, VisualSON vnet) {
+        for (SONConnection con : net.getSONConnections()) {
+            System.out.println("con type " + con.getSemantics());
+            System.out.println("con fisrt " + con.getFirst());
+            System.out.println("con fisrt " + con.getSecond());
         }
-        for(VisualSONConnection con : vnet.getVisualSONConnections()){
-            System.out.println("con type "+ con.getSemantics());
-            System.out.println("con fisrt "+ con.getFirst());
-            System.out.println("con fisrt "+ con.getSecond());
+        for (VisualSONConnection con : vnet.getVisualSONConnections()) {
+            System.out.println("con type " + con.getSemantics());
+            System.out.println("con fisrt " + con.getFirst());
+            System.out.println("con fisrt " + con.getSecond());
         }
     }
 

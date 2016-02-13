@@ -36,7 +36,7 @@ public class SelectionTool extends PetriNetSelectionTool {
         controlPanel.add(bundlePanel);
         JButton bundleButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/icons/svg/selection-bundle.svg"), "Bundle selected transitions (Ctrl+B)");
-        bundleButton.addActionListener(new ActionListener(){
+        bundleButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 selectionBundle(editor);
@@ -45,7 +45,7 @@ public class SelectionTool extends PetriNetSelectionTool {
         bundlePanel.add(bundleButton);
         JButton unbundleButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/icons/svg/selection-unbundle.svg"), "Unbundle selected transitions (Ctrl+Shift+B)");
-        unbundleButton.addActionListener(new ActionListener(){
+        unbundleButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 selectionUnbundle(editor);

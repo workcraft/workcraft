@@ -49,7 +49,7 @@ public class GraphEditorKeyEvent {
     }
 
     private boolean isMaskHit(int mask) {
-        return (modifiers&mask) == mask;
+        return (modifiers & mask) == mask;
     }
 
     public boolean isCtrlDown() {

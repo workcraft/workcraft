@@ -87,7 +87,7 @@ public class DotGSerialiser implements ModelSerialiser {
                 return;
             }
         }
-        if (model.getPostset(node).size()>0) {
+        if (model.getPostset(node).size() > 0) {
             out.write(NamespaceHelper.hierarchicalToFlatName(model.getNodeReference(node)));
 
             for (Node n : sortNodes(model.getPostset(node), model)) {
@@ -174,7 +174,7 @@ public class DotGSerialiser implements ModelSerialiser {
             if (tokens == 1) {
                 markingEntries.add(reference);
             } else if (tokens > 1) {
-                markingEntries.add(reference + "=" + tokens);
+                markingEntries.add(reference + " = " + tokens);
             }
         }
         Collections.sort(markingEntries);

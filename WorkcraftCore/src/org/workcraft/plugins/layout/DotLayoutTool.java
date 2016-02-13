@@ -82,10 +82,10 @@ public class DotLayoutTool extends AbstractLayoutTool {
                 if ((ss.length < 2) || (ss.length > 3)) {
                     throw new ParseException("Bad connection position format.");
                 }
-                double pointsToInches = 1.0/72;
+                double pointsToInches = 1.0 / 72;
                 if (ss.length == 3) {
-                    double x = +Double.parseDouble(ss[1])*pointsToInches;
-                    double y = -Double.parseDouble(ss[2])*pointsToInches;
+                    double x = +Double.parseDouble(ss[1]) * pointsToInches;
+                    double y = -Double.parseDouble(ss[2]) * pointsToInches;
                     Point2D p = new Point2D.Double(x, y);
                     if (ss[0].equals("s")) {
                         result.add(0, p);
@@ -97,8 +97,8 @@ public class DotLayoutTool extends AbstractLayoutTool {
                         }
                     }
                 } else {
-                    double x = +Double.parseDouble(ss[0])*pointsToInches;
-                    double y = -Double.parseDouble(ss[1])*pointsToInches;
+                    double x = +Double.parseDouble(ss[0]) * pointsToInches;
+                    double y = -Double.parseDouble(ss[1]) * pointsToInches;
                     result.add(0, new Point2D.Double(x, y));
                 }
             }
@@ -107,7 +107,7 @@ public class DotLayoutTool extends AbstractLayoutTool {
                 result.add(0, end);
             }
             return result;
-        } catch(NumberFormatException ex) {
+        } catch (NumberFormatException ex) {
             throw new ParseException(ex.getMessage());
         }
     }
@@ -122,12 +122,12 @@ public class DotLayoutTool extends AbstractLayoutTool {
                     if (node instanceof VisualTransformableNode) {
                         VisualTransformableNode m = (VisualTransformableNode) node;
                         String posStr = properties.get("pos");
-                        if (posStr!=null) {
+                        if (posStr != null) {
                             String[] posParts = posStr.split(",");
-                            if(posParts.length==2) {
+                            if (posParts.length == 2) {
                                 // FIXME: MovableHelper.translate does not work with groups and pages. setRootSpacePosition may be a solution.
-                                double x = Double.parseDouble(posParts[0])*1.0/72;
-                                double y = -Double.parseDouble(posParts[1])*1.0/72;
+                                double x = Double.parseDouble(posParts[0]) * 1.0 / 72;
+                                double y = -Double.parseDouble(posParts[1]) * 1.0 / 72;
                                 m.setRootSpacePosition(new Point2D.Double(x, y));
 //                                MovableHelper.resetTransform(m);
 //                                MovableHelper.translate(m, x, y);
@@ -219,7 +219,7 @@ public class DotLayoutTool extends AbstractLayoutTool {
                 applyLayout(in, (VisualModel) model);
             } else {
                 throw new LayoutException("External process (dot) failed (code " +
-                    res.getReturnValue().getReturnCode() +")\n\n" +
+                    res.getReturnValue().getReturnCode() + ")\n\n" +
                     new String(res.getReturnValue().getOutput()) + "\n\n" +
                     new String(res.getReturnValue().getErrors()));
             }

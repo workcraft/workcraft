@@ -54,7 +54,7 @@ public class XmlUtil {
     public static List<Element> getChildElements(String tagName, Element element) {
         LinkedList<Element> result = new LinkedList<Element>();
         NodeList nl = element.getChildNodes();
-        for (int i=0; i<nl.getLength(); i++) {
+        for (int i = 0; i < nl.getLength(); i++) {
             Node n = nl.item(i);
             if (n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName().equals(tagName))
                 result.add((Element) n);
@@ -64,7 +64,7 @@ public class XmlUtil {
 
     public static Element getChildElement(String tagName, Element element) {
         NodeList nl = element.getChildNodes();
-        for (int i=0; i<nl.getLength(); i++) {
+        for (int i = 0; i < nl.getLength(); i++) {
             Node n = nl.item(i);
             if (n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName().equals(tagName))
                 return (Element) n;
@@ -178,7 +178,7 @@ public class XmlUtil {
     }
 
     public static void writeStringAttr(Element element, String attributeName, String value) {
-        element.setAttribute(attributeName, (value==null)?"":value);
+        element.setAttribute(attributeName, (value == null) ? "" : value);
     }
 
     public static Document createDocument() throws ParserConfigurationException {

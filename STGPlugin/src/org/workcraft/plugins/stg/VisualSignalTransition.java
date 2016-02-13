@@ -134,7 +134,7 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
         super.mixStyle(srcs);
         // Type priority: OUTPUT > INPUT > INTERNAL
         boolean foundOutput = false;
-        boolean foundInput= false;
+        boolean foundInput = false;
         boolean foundInternal = false;
         // Direction priority: TOGGLE > PLUS == MINUS
         boolean foundToggle = false;

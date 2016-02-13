@@ -87,7 +87,7 @@ public class WorkspaceTree implements TreeSource<Path<String>> {
 
     private WorkspaceListener wrap(TreeListener<Path<String>> listener) {
         WorkspaceListener res = wrappers.get(listener);
-        if(res == null) {
+        if (res == null) {
             res = new WorkspaceListenerWrapper(listener);
             wrappers.put(listener, res);
         }
@@ -99,13 +99,13 @@ public class WorkspaceTree implements TreeSource<Path<String>> {
         MountTree mount = workspace.getMountTree(node);
         Map<String, Path<String>> res = new TreeMap<String, Path<String>>();
         String[] list = mount.mountTo.list();
-        if(list != null) {
-            for(String name : list) {
+        if (list != null) {
+            for (String name : list) {
                 res.put(name, mount.getSubtree(name).path);
             }
         }
-        for(String name : mount.subDirs.keySet()) {
-            if(!res.containsKey(name)) {
+        for (String name : mount.subDirs.keySet()) {
+            if (!res.containsKey(name)) {
                 res.put(name, mount.subDirs.get(name).path);
             }
         }

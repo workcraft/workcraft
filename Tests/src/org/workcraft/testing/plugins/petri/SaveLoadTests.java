@@ -118,7 +118,7 @@ public class SaveLoadTests {
         StringWriter writer = new StringWriter();
         framework.save(new ModelEntry(new PetriNetDescriptor(), model), new Base16Writer(writer));
         String generatedValue = writer.toString();
-        if(currentValue.equals(generatedValue))
+        if (currentValue.equals(generatedValue))
             return;
         System.out.print("    private static final String ");
         System.out.print(sampleVarName);
@@ -141,11 +141,11 @@ public class SaveLoadTests {
 
     private void assertPetriEquals(PetriNet expected, PetriNet actual) {
         Assert.assertEquals(getComponents(expected).size(), getComponents(actual).size());
-        for(MathNode component : getComponents(expected))
+        for (MathNode component : getComponents(expected))
             assertComponentEquals(component, (MathNode) actual.getNodeByReference(expected.getNodeReference(component)));
 
         Assert.assertEquals(getConnections(expected).size(), getConnections(actual).size());
-        for(MathConnection connection : getConnections(expected))
+        for (MathConnection connection : getConnections(expected))
             assertConnectionEquals(connection, (MathConnection) actual.getNodeByReference(expected.getNodeReference(connection)));
     }
 
@@ -155,19 +155,19 @@ public class SaveLoadTests {
     }
 
     int toHexchar(int ch) {
-        if(ch<10)
-            return '0'+ch;
+        if (ch < 10)
+            return '0' + ch;
         else
-            return 'a'+ch-10;
+            return 'a' + ch - 10;
     }
 
     int fromHexchar(int ch) {
-        if(ch <= 'f' && ch >= 'a')
-            return ch-'a'+10;
-        if(ch <= 'F' && ch >= 'A')
-            return ch-'A'+10;
-        if(ch <= '9' && ch >= '0')
-            return ch-'0';
+        if (ch <= 'f' && ch >= 'a')
+            return ch - 'a' + 10;
+        if (ch <= 'F' && ch >= 'A')
+            return ch - 'A' + 10;
+        if (ch <= '9' && ch >= '0')
+            return ch - '0';
         throw new RuntimeException("Hex parse error");
     }
 
@@ -181,8 +181,8 @@ public class SaveLoadTests {
         @Override
         public void write(int b) throws IOException {
             b &= 0xff;
-            output.write(toHexchar(b/16));
-            output.write(toHexchar(b%16));
+            output.write(toHexchar(b / 16));
+            output.write(toHexchar(b % 16));
         }
     }
 
@@ -199,18 +199,18 @@ public class SaveLoadTests {
         @Override
         public int read() throws IOException {
             int ch1 = stringReader.read();
-            if(ch1 == -1)
+            if (ch1 == -1)
                 return -1;
             int ch2 = stringReader.read();
-            if(ch2 == -1)
+            if (ch2 == -1)
                 throw new RuntimeException("Length must be even");
 
-            return fromHexchar(ch1)*16+fromHexchar(ch2);
+            return fromHexchar(ch1) * 16 + fromHexchar(ch2);
         }
     }
 
     public void assertComponentEquals(MathNode node, MathNode node2) {
-        if(node == null) {
+        if (node == null) {
             Assert.assertNull(node2);
             return;
         }
@@ -219,9 +219,9 @@ public class SaveLoadTests {
         Class<? extends Node> type = node.getClass();
         Assert.assertEquals(type, node2.getClass());
 
-        if(type == Transition.class)
+        if (type == Transition.class)
             assertTransitionEquals((Transition) node, (Transition) node2);
-        if(type == Place.class)
+        if (type == Place.class)
             assertPlaceEquals((Place) node, (Place) node2);
     }
 
@@ -303,7 +303,7 @@ public class SaveLoadTests {
 
         r = new Random(1);
 
-        for(Node component : visual.getRoot().getChildren())
+        for (Node component : visual.getRoot().getChildren())
             randomPosition(component);
 
         /*randomPosition(vp1);
@@ -322,7 +322,7 @@ public class SaveLoadTests {
     Random r;
 
     private void randomPosition(Node node) {
-        if(node instanceof Movable)
-            MovableHelper.translate((Movable) node, r.nextDouble()*10, r.nextDouble()*10);
+        if (node instanceof Movable)
+            MovableHelper.translate((Movable) node, r.nextDouble() * 10, r.nextDouble() * 10);
     }
 }

@@ -53,7 +53,7 @@ public class FileUtils {
     public static String getFileNameWithoutExtension(File file) {
         String name = file.getName();
         int k = name.lastIndexOf('.');
-        if (k==-1) {
+        if (k == -1) {
             return name;
         } else {
             return name.substring(0, k);
@@ -150,7 +150,7 @@ public class FileUtils {
         StringBuilder result = new StringBuilder();
         while (true) {
             String s = reader.readLine();
-            if (s==null) {
+            if (s == null) {
                 return result.toString();
             }
             result.append(s);
@@ -219,7 +219,7 @@ public class FileUtils {
             }
             File[] files = file.listFiles();
             if (files != null) {
-                for(File f: files) {
+                for (File f: files) {
                     deleteFile(f, postponeTillExit);
                 }
             }

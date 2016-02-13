@@ -131,7 +131,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
     private Point2D getSetFormulaOffset() {
         double xOffset = size;
-        double yOffset = -size/2;
+        double yOffset = -size / 2;
         FormulaRenderingResult renderingResult = getRenderedSetFormula();
         if (renderingResult != null) {
             Direction dir = getDirection();
@@ -174,7 +174,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
 
     private Point2D getResetFormulaOffset() {
         double xOffset = size;
-        double yOffset = size/2;
+        double yOffset = size / 2;
         FormulaRenderingResult renderingResult = getRenderedResetFormula();
         if (renderingResult != null) {
             Direction dir = getDirection();
@@ -184,7 +184,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
             if ((dir == Direction.SOUTH) || (dir == Direction.WEST)) {
                 xOffset = -(size + renderingResult.boundingBox.getWidth());
             }
-            yOffset = size/2 + renderingResult.boundingBox.getHeight();
+            yOffset = size / 2 + renderingResult.boundingBox.getHeight();
         }
         return new Point2D.Double(xOffset, yOffset);
     }
@@ -211,21 +211,21 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
         g.setStroke(new BasicStroke((float) 0.02));
         if (arrowType == 1) {
             // arrow down
-            Line2D line = new Line2D.Double(arrX, arrY-0.15, arrX, arrY-0.375);
+            Line2D line = new Line2D.Double(arrX, arrY - 0.15, arrX, arrY - 0.375);
             Path2D path = new Path2D.Double();
-            path.moveTo(arrX-0.05, arrY-0.15);
-            path.lineTo(arrX+0.05, arrY-0.15);
+            path.moveTo(arrX - 0.05, arrY - 0.15);
+            path.lineTo(arrX + 0.05, arrY - 0.15);
             path.lineTo(arrX, arrY);
             path.closePath();
             g.fill(path);
             g.draw(line);
         } else if (arrowType == 2) {
             // arrow up
-            Line2D line = new Line2D.Double(arrX, arrY, arrX, arrY-0.225);
+            Line2D line = new Line2D.Double(arrX, arrY, arrX, arrY - 0.225);
             Path2D path = new Path2D.Double();
-            path.moveTo(arrX-0.05, arrY-0.225);
-            path.lineTo(arrX+0.05, arrY-0.225);
-            path.lineTo(arrX, arrY-0.375);
+            path.moveTo(arrX - 0.05, arrY - 0.225);
+            path.lineTo(arrX + 0.05, arrY - 0.225);
+            path.lineTo(arrX, arrY - 0.375);
             path.closePath();
             g.fill(path);
             g.draw(line);

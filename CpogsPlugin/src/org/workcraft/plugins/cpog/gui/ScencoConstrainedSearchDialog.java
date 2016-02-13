@@ -92,13 +92,13 @@ public class ScencoConstrainedSearchDialog extends JDialog {
         createCustomPanel(scenarios);
         createButtonPanel(mode);
 
-        if(mode != 1){
-            if(m < ScencoDialogSupport.MAX_POS_FOR_SEVERAL_SYNTHESIS){
+        if (mode != 1) {
+            if (m < ScencoDialogSupport.MAX_POS_FOR_SEVERAL_SYNTHESIS) {
                 height = 135;
             } else {
                 height = 110;
             }
-        }else{
+        } else {
             height = 110;
         }
 
@@ -127,9 +127,9 @@ public class ScencoConstrainedSearchDialog extends JDialog {
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-        if (mode != 1){
+        if (mode != 1) {
             sizeWindow(570, 570, 200, 100);
-        }else{
+        } else {
             sizeWindow(570, 530, 200, 100);
         }
     }
@@ -316,15 +316,15 @@ public class ScencoConstrainedSearchDialog extends JDialog {
         // SPEED UP MODE
         fast = new JRadioButton("Synthesise only optimal (w.r.t. heuristic function) solutions (fast)");
         group = new ButtonGroup();
-        if(m < ScencoDialogSupport.MAX_POS_FOR_SEVERAL_SYNTHESIS){
+        if (m < ScencoDialogSupport.MAX_POS_FOR_SEVERAL_SYNTHESIS) {
             normal = new JRadioButton("Synthesise all generated solutions (slow)", true);
             group.add(normal);
-        }else{
+        } else {
             fast.setSelected(true);
         }
         group.add(fast);
 
-        if (mode != 1){
+        if (mode != 1) {
             // NUMBER OF SOLUTIONS TO GENERATE
             numberOfSolutionsLabel = new JLabel(ScencoDialogSupport.textNumberSolutionLabel);
             numberOfSolutionsText = new JTextField();
@@ -338,7 +338,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
             generationPanel.add(numberOfSolutionsText);
             generationPanel.add(new SimpleFlowLayout.LineBreak());
         }
-        if(m < ScencoDialogSupport.MAX_POS_FOR_SEVERAL_SYNTHESIS){
+        if (m < ScencoDialogSupport.MAX_POS_FOR_SEVERAL_SYNTHESIS) {
             generationPanel.add(normal);
             generationPanel.add(new SimpleFlowLayout.LineBreak());
         }
@@ -372,10 +372,10 @@ public class ScencoConstrainedSearchDialog extends JDialog {
                 settings.setVerboseMode(verboseModeCheck.isSelected());
 
                 // continuous mode or number of solutions
-                if (mode != 1){
+                if (mode != 1) {
                     settings.setSolutionNumber(Integer
                             .parseInt(numberOfSolutionsText.getText()));
-                }else{
+                } else {
                     // dummy value
                     settings.setSolutionNumber(10);
                 }

@@ -11,7 +11,7 @@ import org.workcraft.plugins.son.gui.TextAreaAppender;
 
 public class OutputRedirect {
 
-    public static void redirect(int height, int width){
+    public static void redirect(int height, int width) {
 
         JTextArea jTextArea = new JTextArea(height, width);
 

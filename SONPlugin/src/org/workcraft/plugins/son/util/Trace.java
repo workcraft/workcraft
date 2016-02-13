@@ -57,7 +57,7 @@ public class Trace extends ArrayList<StepRef> {
         result.append(':');
         // trace
         boolean first = true;
-        for(StepRef step : this){
+        for (StepRef step : this) {
             if (!first) {
                 result.append(';');
             }

@@ -17,8 +17,8 @@ import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.util.Hierarchy;
 
 @VisualClass (org.workcraft.plugins.son.elements.VisualBlock.class)
-public class Block extends PageNode implements TransitionNode, Time{
-    private String label="";
+public class Block extends PageNode implements TransitionNode, Time {
+    private String label = "";
     private Color foregroundColor = CommonVisualSettings.getBorderColor();
     private Color fillColor  = CommonVisualSettings.getFillColor();
     private boolean isCollapsed = false;
@@ -29,7 +29,7 @@ public class Block extends PageNode implements TransitionNode, Time{
 
     private Color durationColor = Color.BLACK;
 
-    public Collection<Node> getComponents(){
+    public Collection<Node> getComponents() {
         ArrayList<Node> result = new ArrayList<Node>();
         result.addAll(getConditions());
         result.addAll(getEvents());
@@ -41,53 +41,53 @@ public class Block extends PageNode implements TransitionNode, Time{
         sendNotification(new PropertyChangedEvent(this, "Is collapsed"));
     }
 
-    public Collection<Condition> getConditions(){
+    public Collection<Condition> getConditions() {
         return Hierarchy.getDescendantsOfType(this, Condition.class);
     }
 
-    public Collection<Event> getEvents(){
+    public Collection<Event> getEvents() {
         return Hierarchy.getDescendantsOfType(this, Event.class);
     }
 
-    public Collection<PageNode> getPageNodes(){
+    public Collection<PageNode> getPageNodes() {
         return Hierarchy.getDescendantsOfType(this, PageNode.class);
     }
 
-    public Collection<Block> getBlock(){
+    public Collection<Block> getBlock() {
         return Hierarchy.getDescendantsOfType(this, Block.class);
     }
 
-    public Collection<SONConnection> getSONConnections(){
+    public Collection<SONConnection> getSONConnections() {
         return Hierarchy.getDescendantsOfType(this, SONConnection.class);
     }
 
     @Override
-    public boolean isFaulty(){
-        for(Event event : getEvents())
-            if(event.isFaulty())
+    public boolean isFaulty() {
+        for (Event event : getEvents())
+            if (event.isFaulty())
                 return true;
         return false;
     }
 
     @Override
-    public void setForegroundColor(Color color){
+    public void setForegroundColor(Color color) {
         this.foregroundColor = color;
         sendNotification(new PropertyChangedEvent(this, "foregroundColor"));
     }
 
     @Override
-    public Color getForegroundColor(){
+    public Color getForegroundColor() {
         return foregroundColor;
     }
 
     @Override
-    public void setFillColor(Color color){
+    public void setFillColor(Color color) {
         this.fillColor = color;
         sendNotification(new PropertyChangedEvent(this, "fillColor"));
     }
 
     @Override
-    public Color getFillColor(){
+    public Color getFillColor() {
         return fillColor;
     }
 
@@ -96,13 +96,13 @@ public class Block extends PageNode implements TransitionNode, Time{
     }
 
     @Override
-    public void setLabel(String label){
+    public void setLabel(String label) {
         this.label = label;
         sendNotification(new PropertyChangedEvent(this, "label"));
     }
 
     @Override
-    public String getLabel(){
+    public String getLabel() {
         return label;
     }
 
@@ -110,43 +110,43 @@ public class Block extends PageNode implements TransitionNode, Time{
     public void setFaulty(boolean fault) {
     }
 
-    public void setDuration(Interval duration){
+    public void setDuration(Interval duration) {
         this.duration = duration;
         sendNotification(new PropertyChangedEvent(this, DurationPropertyDescriptor.PROPERTY_DURATION));
     }
 
     @Override
-    public Interval getDuration(){
+    public Interval getDuration() {
         return duration;
     }
 
-    public Color getDurationColor(){
+    public Color getDurationColor() {
         return durationColor;
     }
 
-    public void setDurationColor(Color value){
+    public void setDurationColor(Color value) {
         this.durationColor = value;
     }
 
     @Override
-    public void setStartTime(Interval duration){
+    public void setStartTime(Interval duration) {
         this.statTime = duration;
         sendNotification(new PropertyChangedEvent(this, StartTimePropertyDescriptor.PROPERTY_START_TIME));
     }
 
     @Override
-    public Interval getStartTime(){
+    public Interval getStartTime() {
         return statTime;
     }
 
     @Override
-    public void setEndTime(Interval endTime){
+    public void setEndTime(Interval endTime) {
         this.endTime = endTime;
         sendNotification(new PropertyChangedEvent(this, EndTimePropertyDescriptor.PROPERTY_END_TIME));
     }
 
     @Override
-    public Interval getEndTime(){
+    public Interval getEndTime() {
         return endTime;
     }
 }

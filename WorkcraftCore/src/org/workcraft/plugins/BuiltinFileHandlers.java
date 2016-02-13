@@ -14,7 +14,7 @@ public class BuiltinFileHandlers implements Module {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
 
-        pm.registerClass(FileHandler.class, new Initialiser<FileHandler>(){
+        pm.registerClass(FileHandler.class, new Initialiser<FileHandler>() {
             @Override
             public FileHandler create() {
                 return new WorkcraftOpen();

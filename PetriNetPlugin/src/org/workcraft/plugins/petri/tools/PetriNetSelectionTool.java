@@ -25,12 +25,12 @@ public class PetriNetSelectionTool extends SelectionTool {
         VisualModel model = e.getEditor().getModel();
         if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() > 1)) {
             VisualNode node = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
-            if(node instanceof VisualPlace) {
+            if (node instanceof VisualPlace) {
                 VisualPlace place = (VisualPlace) node;
                 if (place.getReferencedPlace().getTokens() <= 1) {
                     e.getEditor().getWorkspaceEntry().saveMemento();
 
-                    if (place.getReferencedPlace().getTokens()==1) {
+                    if (place.getReferencedPlace().getTokens() == 1) {
                         place.getReferencedPlace().setTokens(0);
                     } else {
                         place.getReferencedPlace().setTokens(1);

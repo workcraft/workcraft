@@ -17,7 +17,7 @@ import java.util.zip.ZipOutputStream;
 import org.workcraft.util.LogUtils;
 
 public class CompatibilityManager {
-    private static final Pattern modelNamePattern = Pattern.compile("<model class=\"(.+?)\" ref=\"\">");
+    private static final Pattern modelNamePattern = Pattern.compile("<model class=\"(. + ?)\" ref=\"\">");
     private static final Pattern classNamePattern = Pattern.compile("<([A-Z]\\S*).*>");
 
     @SuppressWarnings("serial")

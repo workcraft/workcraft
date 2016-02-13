@@ -56,8 +56,8 @@ public class VisualCounterflowRegister extends VisualAbstractRegister {
         Decoration d = r.getDecoration();
         double w = size - strokeWidth;
         double h = size - strokeWidth;
-        double w2 = w/2;
-        double h2 = h/2;
+        double w2 = w / 2;
+        double h2 = h / 2;
         double dx = size / 5;
         double v2 = w2 - dx;
         double dt = (size - strokeWidth) / 8;

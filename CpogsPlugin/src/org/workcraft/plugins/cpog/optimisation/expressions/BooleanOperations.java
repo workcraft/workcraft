@@ -61,7 +61,7 @@ public class BooleanOperations {
             if (size == 1) {
                 return conditions.get(start);
             } else {
-                int split = (end+start)/2;
+                int split = (end + start) / 2;
                 return and(createAnd(conditions, start, split), createAnd(conditions, split, end));
             }
         }
@@ -87,7 +87,7 @@ public class BooleanOperations {
             if (size == 1) {
                 return conditions.get(start);
             } else {
-                int split = (end+start)/2;
+                int split = (end + start) / 2;
                 return or(createOr(conditions, start, split), createOr(conditions, split, end));
             }
         }

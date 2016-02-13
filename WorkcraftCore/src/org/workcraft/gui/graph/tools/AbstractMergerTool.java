@@ -80,7 +80,7 @@ abstract public class AbstractMergerTool extends TransformationTool {
                 MathNode mathNode = model.getMathModel().createNode(null, mContainer, mathNodeClass);
                 result = model.createVisualComponent(mathNode, vContainer, type);
                 int n = components.size();
-                result.setRootSpacePosition(new Point2D.Double(x / n, y/ n));
+                result.setRootSpacePosition(new Point2D.Double(x / n, y / n));
                 result.mixStyle(components.toArray(new VisualComponent[components.size()]));
             }
         }

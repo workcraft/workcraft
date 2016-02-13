@@ -104,7 +104,7 @@ public class PropertyEditorTableModel extends AbstractTableModel {
                     return rowClasses[row].toCellRendererValue(value);
                 } else {
                     Map<? extends Object, String> choice = declarations[row].getChoice();
-                    if(choice != null) {
+                    if (choice != null) {
                         return choice.get(value);
                     } else {
                         return value.toString();

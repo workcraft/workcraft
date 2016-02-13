@@ -99,7 +99,7 @@ public class SatBasedSolver {
         int[][] graph = new int[n][n];
         check = cpogBuilder.constructConstraints(constraints, graph, m, n,
                 scenarios, events, positions, count);
-        if(check.get(0).contains("ERROR")){
+        if (check.get(0).contains("ERROR")) {
             JOptionPane.showMessageDialog(null,
                     check.get(1),
                     check.get(2),
@@ -117,9 +117,9 @@ public class SatBasedSolver {
         resultDirectory.mkdir(); // ???
 
         int res;
-        if((res = cpogBuilder.writeCpogIntoFile(m, scenarios, scenarioFile, encodingFile, settings)) != 0){
+        if ((res = cpogBuilder.writeCpogIntoFile(m, scenarios, scenarioFile, encodingFile, settings)) != 0) {
             FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
-            if(res != -1){
+            if (res != -1) {
                 JOptionPane.showMessageDialog(null,
                         "Error on writing scenario file.",
                         "Workcraft error",
@@ -133,19 +133,19 @@ public class SatBasedSolver {
 
         // CALLING SCENCO
         boolean callScenco = false;
-        if(settings.isAbcFlag()){
+        if (settings.isAbcFlag()) {
             File f = new File(abcFolder);
-            if(!f.exists() || !f.isDirectory()){
+            if (!f.exists() || !f.isDirectory()) {
                 JOptionPane.showMessageDialog(null,
                         "Find out more information on \"http://www.eecs.berkeley.edu/~alanmi/abc/\" or try to " +
                                 "set path of the folder containing Abc inside Workcraft settings.",
                                 "Abc tool not installed correctly",
                                 JOptionPane.ERROR_MESSAGE);
-            } else{
+            } else {
                 abcFlag = "-a";
                 gateLibFlag = "-lib";
                 f = new File(abcFolder + gatesLibrary);
-                if(!f.exists() || f.isDirectory()){
+                if (!f.exists() || f.isDirectory()) {
                     FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
                     JOptionPane.showMessageDialog(null,
                             "It is needed to compute area of circuit properly",
@@ -155,7 +155,7 @@ public class SatBasedSolver {
                     return;
                 }
             }
-        }else{
+        } else {
             abcFlag = "";
             abcFolder = "";
             gateLibFlag = "";
@@ -163,12 +163,12 @@ public class SatBasedSolver {
         }
 
         // FILL IN PARAMETERS FOR CALLING PROGRAMER PROPERLY
-        if(settings.isCpogSize()) cpogSize = "-cs";
-        if(settings.isCostFunc()) disableFunction = "-d";
-        if(settings.isVerboseMode()) verbose = "-v";
-        if(settings.isEffort()) effort = "all";
+        if (settings.isCpogSize()) cpogSize = "-cs";
+        if (settings.isCostFunc()) disableFunction = "-d";
+        if (settings.isVerboseMode()) verbose = "-v";
+        if (settings.isEffort()) effort = "all";
         else effort = "min";
-        if(settings.isCustomEncMode()){
+        if (settings.isCustomEncMode()) {
             customFlag = "-set";
             customPath = encodingFile.getAbsolutePath();
         }
@@ -186,10 +186,10 @@ public class SatBasedSolver {
         char[][] matrix = new char[m][task.size()];
 
         String[] instance = new String[m];
-        for(String s : task.keySet())
-            for(int i = 0; i < m; i++) matrix[i][task.get(s)] = s.charAt(i);
+        for (String s : task.keySet())
+            for (int i = 0; i < m; i++) matrix[i][task.get(s)] = s.charAt(i);
 
-        for(int i = 0; i < m; i++) instance[i] = new String(matrix[i]);
+        for (int i = 0; i < m; i++) instance[i] = new String(matrix[i]);
 
         int freeVariables = settings.getBits();
         int derivedVariables = settings.getCircuitSize();
@@ -200,13 +200,13 @@ public class SatBasedSolver {
         // GET PREDICATES FROM WORKCRAFT ENVIRONMENT
         VisualVariable[] predicatives = new VisualVariable[n];
         int pr = 0;
-        for(VisualVariable variable : Hierarchy.getChildrenOfType(cpog.getRoot(), VisualVariable.class)) {
+        for (VisualVariable variable : Hierarchy.getChildrenOfType(cpog.getRoot(), VisualVariable.class)) {
             predicatives[pr++] = variable;
         }
 
         Variable[] vars = new Variable[freeVariables + pr];
-        for(int i = 0; i < freeVariables; i++) vars[i] = cpog.createVisualVariable().getMathVariable();
-        for(int i = 0; i< pr; i++) vars[freeVariables +i] = predicatives[i].getMathVariable();
+        for (int i = 0; i < freeVariables; i++) vars[i] = cpog.createVisualVariable().getMathVariable();
+        for (int i = 0; i < pr; i++) vars[freeVariables + i] = predicatives[i].getMathVariable();
 
         CpogEncoding solution = null;
         try {
@@ -235,35 +235,35 @@ public class SatBasedSolver {
                     System.out.println();
                 }
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             we.cancelMemento();
             FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
             JOptionPane.showMessageDialog(null, e.getMessage(), "Encoding result", JOptionPane.ERROR_MESSAGE);
         }
 
         // IF SOLUTION IS NULL AN ERROR OCCURRED
-        if(solution == null){
+        if (solution == null) {
             FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
             we.cancelMemento();
             return;
         }
 
-        try{
+        try {
             boolean[][] encoding = solution.getEncoding();
 
             // IF OLD SCENDO MODE IS SELECTED, GET THE ENCODING SOLUTION FROM IT AND
             // SYNTHESISE IT THROUGH SCENCO IN ORDER TO OUTPUT THE MICROCONTROLLER
             // AND AREA INFORMATION
 
-            try{
+            try {
                 PrintStream output = new PrintStream(encodingFile);
 
-                for(int i=0; i<m; i++){
-                    for(int j=0; j<settings.getBits(); j++){
-                        if(encoding[i][j]){
+                for (int i = 0; i < m; i++) {
+                    for (int j = 0; j < settings.getBits(); j++) {
+                        if (encoding[i][j]) {
                             output.print("1");
                             //System.out.print("1");
-                        } else{
+                        } else {
                             output.print("0");
                             //System.out.print("0");
                         }
@@ -278,33 +278,33 @@ public class SatBasedSolver {
 
                 // setting all the arguments for calling Scenco for synthesys
                 ArrayList<String> parameters = new ArrayList<String>();
-                if(!scencoCommand.isEmpty()) parameters.add(scencoCommand);
-                if(!scenarioFile.getAbsolutePath().isEmpty()) parameters.add(scenarioFile.getAbsolutePath());
+                if (!scencoCommand.isEmpty()) parameters.add(scencoCommand);
+                if (!scenarioFile.getAbsolutePath().isEmpty()) parameters.add(scenarioFile.getAbsolutePath());
                 parameters.add("-m");
-                if(!effort.isEmpty()) parameters.add(effort);
-                if(!genMode.isEmpty()) parameters.add(genMode);
-                if(!numSol.isEmpty()) parameters.add(numSol);
-                if(!customFlag.isEmpty()) parameters.add(customFlag);
-                if(!customPath.isEmpty()) parameters.add(customPath);
-                if(!verbose.isEmpty()) parameters.add(verbose);
-                if(!cpogSize.isEmpty()) parameters.add(cpogSize);
-                if(!disableFunction.isEmpty()) parameters.add(disableFunction);
-                if(!oldSynt.isEmpty()) parameters.add(oldSynt);
-                if(!espressoFlag.isEmpty()) parameters.add(espressoFlag);
-                if(!espressoCommand.isEmpty()) parameters.add(espressoCommand);
-                if(!abcFlag.isEmpty()) parameters.add(abcFlag);
-                if(!abcFolder.isEmpty()) parameters.add(abcFolder);
-                if(!gateLibFlag.isEmpty()) parameters.add(gateLibFlag);
-                if(!gatesLibrary.isEmpty()) parameters.add(gatesLibrary);
+                if (!effort.isEmpty()) parameters.add(effort);
+                if (!genMode.isEmpty()) parameters.add(genMode);
+                if (!numSol.isEmpty()) parameters.add(numSol);
+                if (!customFlag.isEmpty()) parameters.add(customFlag);
+                if (!customPath.isEmpty()) parameters.add(customPath);
+                if (!verbose.isEmpty()) parameters.add(verbose);
+                if (!cpogSize.isEmpty()) parameters.add(cpogSize);
+                if (!disableFunction.isEmpty()) parameters.add(disableFunction);
+                if (!oldSynt.isEmpty()) parameters.add(oldSynt);
+                if (!espressoFlag.isEmpty()) parameters.add(espressoFlag);
+                if (!espressoCommand.isEmpty()) parameters.add(espressoCommand);
+                if (!abcFlag.isEmpty()) parameters.add(abcFlag);
+                if (!abcFolder.isEmpty()) parameters.add(abcFolder);
+                if (!gateLibFlag.isEmpty()) parameters.add(gateLibFlag);
+                if (!gatesLibrary.isEmpty()) parameters.add(gatesLibrary);
                 parameters.add("-res");
-                if((resultDirectory != null) && !resultDirectory.getAbsolutePath().isEmpty()) parameters.add(resultDirectory.getAbsolutePath());
-                if(!modBitFlag.isEmpty()) parameters.add(modBitFlag);
-                if(!modBit.isEmpty()) parameters.add(modBit);
+                if ((resultDirectory != null) && !resultDirectory.getAbsolutePath().isEmpty()) parameters.add(resultDirectory.getAbsolutePath());
+                if (!modBitFlag.isEmpty()) parameters.add(modBitFlag);
+                if (!modBit.isEmpty()) parameters.add(modBit);
 
-                if(cpogBuilder.callingScenco(process, settings, parameters, Double.MAX_VALUE, we, 0,
+                if (cpogBuilder.callingScenco(process, settings, parameters, Double.MAX_VALUE, we, 0,
                         false, optEnc, optFormulaeVertices, truthTableVertices,
                         optVertices, optSources, optDests, optFormulaeArcs,
-                        truthTableArcs, arcNames, this) != 0){
+                        truthTableArcs, arcNames, this) != 0) {
                     FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
                     we.cancelMemento();
                     return;
@@ -320,7 +320,7 @@ public class SatBasedSolver {
 
                 // PRINT CONTROLLER FOR OLD SCENCO MODE
                 cpogBuilder.printController(m, resultDirectory.getAbsolutePath(), optEnc);
-            }catch (IOException e) {
+            } catch (IOException e) {
                 System.out.println("Error: " + e);
             }
 
@@ -336,7 +336,7 @@ public class SatBasedSolver {
             cpogBuilder.buildCpog(n, m, constraints, cpog, vertices, formulaeName);
 
             we.saveMemento();
-        }finally{
+        } finally {
             FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
         }
     }
@@ -346,39 +346,39 @@ public class SatBasedSolver {
     }
 
     // RESET ALL THE PARAMETERS TO CALL SCENCO TOOL
-    private void resetVars(){
+    private void resetVars() {
         verbose = "";
-        genMode= "";
-        numSol= "";
-        customFlag= "";
-        customPath= "";
-        effort= "";
-        espressoFlag= "";
-        abcFlag= "";
-        gateLibFlag= "";
-        cpogSize= "";
-        disableFunction= "";
-        oldSynt= "";
+        genMode = "";
+        numSol = "";
+        customFlag = "";
+        customPath = "";
+        effort = "";
+        espressoFlag = "";
+        abcFlag = "";
+        gateLibFlag = "";
+        cpogSize = "";
+        disableFunction = "";
+        oldSynt = "";
         return;
     }
 
-    private void instantiateParameters(int elements, int scenarios){
+    private void instantiateParameters(int elements, int scenarios) {
         optEnc = new String[scenarios];
-        optFormulaeVertices = new String[elements*elements];
-        truthTableVertices =  new String[elements*elements];
+        optFormulaeVertices = new String[elements * elements];
+        truthTableVertices =  new String[elements * elements];
         optVertices = new String[elements];
-        optSources = new String[elements*elements];
-        optDests = new String[elements*elements];
-        optFormulaeArcs = new String[elements*elements];
-        truthTableArcs =  new String[elements*elements];
-        arcNames = new String[elements*elements];
+        optSources = new String[elements * elements];
+        optDests = new String[elements * elements];
+        optFormulaeArcs = new String[elements * elements];
+        truthTableArcs =  new String[elements * elements];
+        arcNames = new String[elements * elements];
         scencoCommand = ToolUtils.getAbsoluteCommandPath(CpogSettings.getScencoCommand());
         espressoCommand = ToolUtils.getAbsoluteCommandPath(CpogSettings.getEspressoCommand());
         abcFolder = CpogSettings.getAbcFolder();
         gatesLibrary = CpogSettings.getGatesLibrary();
         espressoFlag = "-e";
-        v=0;
-        a=0;
+        v = 0;
+        a = 0;
     }
 
     public void setV(int v) {

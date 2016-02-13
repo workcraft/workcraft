@@ -7,27 +7,27 @@ import org.workcraft.plugins.son.algorithm.ConsistencyAlg;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class TimeValueDisable implements Tool{
+public class TimeValueDisable implements Tool {
 
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.canHas(we, SON.class);
     }
 
-    public String getSection(){
+    public String getSection() {
         return "Time analysis";
     }
 
-    public String getDisplayName(){
+    public String getDisplayName() {
         return "Enable/Disable time values";
     }
 
-    public void run(WorkspaceEntry we){
+    public void run(WorkspaceEntry we) {
         SON net = (SON) we.getModelEntry().getMathModel();
         ConsistencyAlg timeAlg = new ConsistencyAlg(net);
         SONSettings.setTimeVisibility(!SONSettings.getTimeVisibility());
-        if(SONSettings.getTimeVisibility()){
+        if (SONSettings.getTimeVisibility()) {
             timeAlg.setProperties();
-        }else{
+        } else {
             timeAlg.removeProperties();
         }
     }

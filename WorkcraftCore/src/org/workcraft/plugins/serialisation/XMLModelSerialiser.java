@@ -69,7 +69,7 @@ public class XMLModelSerialiser implements ModelSerialiser {
 
     public ReferenceProducer serialise(final Model model, OutputStream out, ReferenceProducer externalReferences)
     throws SerialisationException {
-        try{
+        try {
 
             ReferenceProducer internalReferences = new ReferenceProducer() {
                 public String getReference(Object obj) {

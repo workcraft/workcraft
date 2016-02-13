@@ -13,7 +13,7 @@ import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class TimeConsistencyChecker implements Tool{
+public class TimeConsistencyChecker implements Tool {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
@@ -21,7 +21,7 @@ public class TimeConsistencyChecker implements Tool{
     }
 
     @Override
-    public String getSection(){
+    public String getSection() {
         return "Time analysis";
     }
 
@@ -44,13 +44,13 @@ public class TimeConsistencyChecker implements Tool{
         GUI.centerToParent(dialog, mainWindow);
         dialog.setVisible(true);
 
-        if (dialog.getRun() == 1){
+        if (dialog.getRun() == 1) {
             OutputRedirect.redirect(30, 48);
             TimeConsistencyTask timeTask = new TimeConsistencyTask(we, dialog.getTimeConsistencySettings());
             framework.getTaskManager().queue(timeTask, "Verification");
         }
 
-        if(dialog.getTabIndex() !=1){
+        if (dialog.getTabIndex() != 1) {
             net.refreshAllColor();
         }
 

@@ -54,7 +54,7 @@ public class DockableTab extends JPanel {
         String title = dockableWindow.getTabText();
         String trimmedTitle;
         if (title.length() > 64) {
-            trimmedTitle = title.substring(0, 31) + "..." + title.substring(title.length()-32, title.length());
+            trimmedTitle = title.substring(0, 31) + "..." + title.substring(title.length() - 32, title.length());
         } else {
             trimmedTitle = title;
         }
@@ -76,7 +76,7 @@ public class DockableTab extends JPanel {
         }
 
         Dimension x = label.getPreferredSize();
-        Dimension y = (close != null)? close.getPreferredSize() : x;
+        Dimension y = (close != null) ? close.getPreferredSize() : x;
 
         this.add(label, BorderLayout.CENTER);
         this.add(buttonsPanel, BorderLayout.EAST);

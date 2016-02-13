@@ -94,7 +94,7 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
 
         Path2D connectionPath = new Path2D.Double();
         connectionPath.moveTo(startPt.getX(), startPt.getY());
-        for (int i=start; i<end; i++) {
+        for (int i = start; i < end; i++) {
             Line2D segment = getSegment(i);
             connectionPath.lineTo(segment.getX2(), segment.getY2());
         }
@@ -105,7 +105,7 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
         g.setStroke(connectionInfo.getStroke());
         g.draw(connectionPath);
 
-        if(connectionInfo.hasArrow()) {
+        if (connectionInfo.hasArrow()) {
             DrawHelper.drawArrowHead(g, curveInfo.headPosition,    curveInfo.headOrientation,
                     connectionInfo.getArrowLength(), connectionInfo.getArrowWidth(), color);
         }
@@ -120,9 +120,9 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
     public Rectangle2D getBoundingBox() {
         if (boundingBox == null) {
             int segments = getSegmentCount();
-            for (int i=0; i < segments; i++) {
+            for (int i = 0; i < segments; i++) {
                 Line2D seg = getSegment(i);
-                if (i==0) {
+                if (i == 0) {
                     boundingBox = getSegmentBoundsWithThreshold(seg);
                 } else {
                     boundingBox.add(getSegmentBoundsWithThreshold(seg));
@@ -143,10 +143,10 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
     protected int getSegmentIndex(double t) {
         int segments = getSegmentCount();
         double l = 1.0 / segments;
-        double tl = t/l;
+        double tl = t / l;
 
         int n = (int) Math.floor(tl);
-        if (n==segments) n -= 1;
+        if (n == segments) n -= 1;
         return n;
     }
 
@@ -158,7 +158,7 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
         double min = Double.MAX_VALUE;
         int nearest = -1;
 
-        for (int i=0; i<getSegmentCount(); i++) {
+        for (int i = 0; i < getSegmentCount(); i++) {
             Line2D segment = getSegment(i);
             Point2D a = new Point2D.Double(pt.getX() - segment.getX1(), pt.getY() - segment.getY1());
             Point2D b = new Point2D.Double(segment.getX2() - segment.getX1(), segment.getY2() - segment.getY1());
@@ -207,10 +207,10 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
         if (index <= 0) {
             return connectionInfo.getFirstCenter();
         }
-        if (index >= getAnchorPointCount()-1) {
+        if (index >= getAnchorPointCount() - 1) {
             return connectionInfo.getSecondCenter();
         }
-        return getControlPoint(index-1).getPosition();
+        return getControlPoint(index - 1).getPosition();
     }
 
     @SuppressWarnings("unchecked")
@@ -221,7 +221,7 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
 
     public ControlPoint getControlPoint(int index) {
         ControlPoint result = null;
-        if ((index >=0) && (index < getControlPointCount())) {
+        if ((index >= 0) && (index < getControlPointCount())) {
             result = getControlPoints().get(index);
         }
         return result;
@@ -230,7 +230,7 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
     protected Line2D getSegment(int index) {
         int segments = getSegmentCount();
         if (index < segments) {
-            return new Line2D.Double(getAnchorPointLocation(index), getAnchorPointLocation(index+1));
+            return new Line2D.Double(getAnchorPointLocation(index), getAnchorPointLocation(index + 1));
         } else {
             throw new RuntimeException("Segment index is greater than number of segments");
         }
@@ -246,8 +246,8 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
 
         double mag = lineVec.distance(0, 0);
         if (mag != 0) {
-            lineVec.setLocation(lineVec.getY() * VisualConnection.HIT_THRESHOLD/mag,
-                    -lineVec.getX() * VisualConnection.HIT_THRESHOLD/mag);
+            lineVec.setLocation(lineVec.getY() * VisualConnection.HIT_THRESHOLD / mag,
+                    -lineVec.getX() * VisualConnection.HIT_THRESHOLD / mag);
             bb.add(pt1.getX() + lineVec.getX(), pt1.getY() + lineVec.getY());
             bb.add(pt2.getX() + lineVec.getX(), pt2.getY() + lineVec.getY());
             bb.add(pt1.getX() - lineVec.getX(), pt1.getY() - lineVec.getY());
@@ -362,15 +362,15 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
         int segmentIndex = getSegmentIndex(t);
         double t2 = getParameterOnSegment(t, segmentIndex);
         Line2D segment = getSegment(segmentIndex);
-        double x = segment.getP1().getX() * (1-t2) + segment.getP2().getX() * t2;
-        double y = segment.getP1().getY() * (1-t2) + segment.getP2().getY() * t2;
+        double x = segment.getP1().getX() * (1 - t2) + segment.getP2().getX() * t2;
+        double y = segment.getP1().getY() * (1 - t2) + segment.getP2().getY() * t2;
         return new Point2D.Double(x, y);
     }
 
     @Override
     public double getDistanceToCurve(Point2D pt) {
         double min = Double.MAX_VALUE;
-        for (int i=0; i<getSegmentCount(); i++) {
+        for (int i = 0; i < getSegmentCount(); i++) {
             Line2D segment = getSegment(i);
             double dist = segment.ptSegDist(pt);
             if (dist < min)
@@ -470,7 +470,7 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
 
     private int getIndex(ControlPoint cp) {
         int index = -1;
-        for(Node node: getChildren()) {
+        for (Node node: getChildren()) {
             index++;
             if (node == cp) {
                 return index;
@@ -492,7 +492,7 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
         int index = getIndex(cp);
         Point2D pos = null;
         if (index >= 0) {
-            pos = getAnchorPointLocation(index+2);
+            pos = getAnchorPointLocation(index + 2);
         }
         return pos;
     }
@@ -502,7 +502,7 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
     }
 
     public ControlPoint getLastControlPoint() {
-        return getControlPoint(getControlPointCount()-1);
+        return getControlPoint(getControlPointCount() - 1);
     }
 
 }

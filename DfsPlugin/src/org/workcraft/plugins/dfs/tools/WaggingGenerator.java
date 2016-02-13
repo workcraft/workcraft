@@ -91,7 +91,7 @@ public class WaggingGenerator {
             for (VisualComponent component: selectedComponents) {
                 VisualComponent replicaComponenet = replicateComponent(component);
                 if (replicaComponenet != null) {
-                    replicaComponenet.setY(replicaComponenet.getY() + step * (2*i+1 - count)/2);
+                    replicaComponenet.setY(replicaComponenet.getY() + step * (2 * i + 1 - count) / 2);
                     mapComponentToReplica.put(component, replicaComponenet);
                     replicaToOriginalMap.put(replicaComponenet, component);
                     waggingData.dataComponents.add(replicaComponenet);
@@ -153,7 +153,7 @@ public class WaggingGenerator {
             for (VisualComponent cur: waggingData.dataComponents) {
                 for (Node pred: dfs.getPreset(replicaToOriginalMap.get(cur))) {
                     if (selectedComponents.contains(pred)) continue;
-                    Point2D.Double position = new Point2D.Double(cur.getX()/2 + ((VisualComponent) pred).getX()/2, cur.getY());
+                    Point2D.Double position = new Point2D.Double(cur.getX() / 2 + ((VisualComponent) pred).getX() / 2, cur.getY());
                     VisualPushRegister push = createPushRegister(Hierarchy.getNearestContainer(cur, pred), position);
                     createConnection((VisualComponent) pred, push);
                     createConnection(push, cur);
@@ -161,7 +161,7 @@ public class WaggingGenerator {
                 }
                 for (Node succ: dfs.getPostset(replicaToOriginalMap.get(cur))) {
                     if (selectedComponents.contains(succ)) continue;
-                    Point2D.Double position = new Point2D.Double(cur.getX()/2 + ((VisualComponent) succ).getX()/2, cur.getY());
+                    Point2D.Double position = new Point2D.Double(cur.getX() / 2 + ((VisualComponent) succ).getX() / 2, cur.getY());
                     VisualPopRegister pop = createPopRegister(Hierarchy.getNearestContainer(cur, succ),    position);
                     createConnection(cur, pop);
                     createConnection(pop, (VisualComponent) succ);
@@ -185,15 +185,15 @@ public class WaggingGenerator {
             VisualControlRegister reg0 = createControlRegister(container,
                     new Point2D.Double(xPos - 2.0, yPos + iPos * 2.0),
                     predReg1 == null ? Marking.TRUE_TOKEN : Marking.FALSE_TOKEN, SynchronisationType.AND);
-            reg0.getReferencedControlRegister().setProbability(1.0/count);
+            reg0.getReferencedControlRegister().setProbability(1.0 / count);
             VisualControlRegister reg1 = createControlRegister(container,
                     new Point2D.Double(xPos - 4.0, yPos + iPos * 2.0),
                     Marking.EMPTY, SynchronisationType.PLAIN);
-            reg1.getReferencedControlRegister().setProbability(1.0/count);
+            reg1.getReferencedControlRegister().setProbability(1.0 / count);
             VisualControlRegister reg2 = createControlRegister(container,
                     new Point2D.Double(xPos - 6.0, yPos + iPos * 2.0),
                     Marking.EMPTY, SynchronisationType.PLAIN);
-            reg2.getReferencedControlRegister().setProbability(1.0/count);
+            reg2.getReferencedControlRegister().setProbability(1.0 / count);
             waggingData.pushControls.add(reg0);
             waggingData.pushControls.add(reg1);
             waggingData.pushControls.add(reg2);
@@ -233,15 +233,15 @@ public class WaggingGenerator {
             VisualControlRegister reg0 = createControlRegister(container,
                     new Point2D.Double(xPos + 2.0, yPos + iPos * 2.0),
                     predReg1 == null ? Marking.TRUE_TOKEN : Marking.FALSE_TOKEN, SynchronisationType.AND);
-            reg0.getReferencedControlRegister().setProbability(1.0/count);
+            reg0.getReferencedControlRegister().setProbability(1.0 / count);
             VisualControlRegister reg1 = createControlRegister(container,
                     new Point2D.Double(xPos + 4.0, yPos + iPos * 2.0),
                     Marking.EMPTY, SynchronisationType.PLAIN);
-            reg1.getReferencedControlRegister().setProbability(1.0/count);
+            reg1.getReferencedControlRegister().setProbability(1.0 / count);
             VisualControlRegister reg2 = createControlRegister(container,
                     new Point2D.Double(xPos + 6.0, yPos + iPos * 2.0),
                     Marking.EMPTY, SynchronisationType.PLAIN);
-            reg2.getReferencedControlRegister().setProbability(1.0/count);
+            reg2.getReferencedControlRegister().setProbability(1.0 / count);
             waggingData.popControls.add(reg0);
             waggingData.popControls.add(reg1);
             waggingData.popControls.add(reg2);

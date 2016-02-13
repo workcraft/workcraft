@@ -20,7 +20,7 @@ public class CycleAlgorithm {
     private Stack<Integer> stack;
 
     /** function to get all strongly connected components - Tarjan algorithm **/
-    public List<List<Integer>> getCycles(List<Integer>[] graph){
+    public List<List<Integer>> getCycles(List<Integer>[] graph) {
         mV = graph.length;
         this.graph = graph;
         low = new int[mV];
@@ -36,13 +36,13 @@ public class CycleAlgorithm {
     }
 
     /** function dfs **/
-    private void dfs(int v){
+    private void dfs(int v) {
         low[v] = preCount++;
         visited[v] = true;
         stack.push(v);
         int min = low[v];
 
-        for (int w : graph[v]){
+        for (int w : graph[v]) {
             if (!visited[w])
                 dfs(w);
 
@@ -56,7 +56,7 @@ public class CycleAlgorithm {
 
         List<Integer> component = new ArrayList<Integer>();
         int w;
-        do{
+        do {
             w = stack.pop();
             component.add(w);
             low[w] = mV;

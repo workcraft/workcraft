@@ -86,8 +86,8 @@ import org.workcraft.util.Tools;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class SelectionTool extends AbstractTool {
-    private enum DrugState {NONE, MOVE, SELECT};
-    private enum SelectionMode {NONE, ADD, REMOVE, REPLACE};
+    private enum DrugState { NONE, MOVE, SELECT };
+    private enum SelectionMode { NONE, ADD, REMOVE, REPLACE };
 
     static private final Color highlightColor = new Color(1.0f, 0.5f, 0.0f).brighter();
     static private final Color selectionColor = new Color(99, 130, 191).brighter();
@@ -160,7 +160,7 @@ public class SelectionTool extends AbstractTool {
 
         JButton groupButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/icons/svg/selection-group.svg"), "Group selection (Ctrl+G)");
-        groupButton.addActionListener(new ActionListener(){
+        groupButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 selectionGroup(editor);
@@ -172,7 +172,7 @@ public class SelectionTool extends AbstractTool {
         if (enablePages) {
             JButton groupPageButton = GUI.createIconButton(GUI.createIconFromSVG(
                     "images/icons/svg/selection-page.svg"), "Combine selection into a page (Alt+G)");
-            groupPageButton.addActionListener(new ActionListener(){
+            groupPageButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     selectionPageGroup(editor);
@@ -184,7 +184,7 @@ public class SelectionTool extends AbstractTool {
 
         JButton ungroupButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/icons/svg/selection-ungroup.svg"), "Ungroup selection (Ctrl+Shift+G)");
-        ungroupButton.addActionListener(new ActionListener(){
+        ungroupButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 selectionUngroup(editor);
@@ -197,7 +197,7 @@ public class SelectionTool extends AbstractTool {
         controlPanel.add(levelPanel);
         JButton levelUpButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/icons/svg/selection-level_up.svg"), "Level up (PageUp)");
-        levelUpButton.addActionListener(new ActionListener(){
+        levelUpButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 changeLevelUp(editor);
@@ -207,7 +207,7 @@ public class SelectionTool extends AbstractTool {
         levelPanel.add(levelUpButton);
         JButton levelDownButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/icons/svg/selection-level_down.svg"), "Level down (PageDown)");
-        levelDownButton.addActionListener(new ActionListener(){
+        levelDownButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 changeLevelDown(editor);
@@ -220,7 +220,7 @@ public class SelectionTool extends AbstractTool {
         controlPanel.add(flipPanel);
         JButton flipHorizontalButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/icons/svg/selection-flip_horizontal.svg"), "Flip horizontal");
-        flipHorizontalButton.addActionListener(new ActionListener(){
+        flipHorizontalButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 selectionFlipHorizontal(editor);
@@ -230,7 +230,7 @@ public class SelectionTool extends AbstractTool {
         flipPanel.add(flipHorizontalButton);
         JButton flipVerticalButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/icons/svg/selection-flip_vertical.svg"), "Flip vertical");
-        flipVerticalButton.addActionListener(new ActionListener(){
+        flipVerticalButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 selectionFlipVertical(editor);
@@ -243,7 +243,7 @@ public class SelectionTool extends AbstractTool {
         controlPanel.add(rotatePanel);
         JButton rotateClockwiseButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/icons/svg/selection-rotate_clockwise.svg"), "Rotate clockwise");
-        rotateClockwiseButton.addActionListener(new ActionListener(){
+        rotateClockwiseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 selectionRotateClockwise(editor);
@@ -253,7 +253,7 @@ public class SelectionTool extends AbstractTool {
         rotatePanel.add(rotateClockwiseButton);
         JButton rotateCounterclockwiseButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/icons/svg/selection-rotate_counterclockwise.svg"), "Rotate counterclockwise");
-        rotateCounterclockwiseButton.addActionListener(new ActionListener(){
+        rotateCounterclockwiseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 selectionRotateCounterclockwise(editor);
@@ -510,9 +510,9 @@ public class SelectionTool extends AbstractTool {
     }
 
     private void cancelDrag(GraphEditor editor) {
-        if(dragState == DrugState.MOVE) {
+        if (dragState == DrugState.MOVE) {
             editor.getWorkspaceEntry().cancelMemento();
-        } else if(dragState == DrugState.SELECT) {
+        } else if (dragState == DrugState.SELECT) {
             selected.clear();
             selectionBox = null;
         }
@@ -599,13 +599,13 @@ public class SelectionTool extends AbstractTool {
 
     @Override
     public Decorator getDecorator(final GraphEditor editor) {
-        return new Decorator(){
+        return new Decorator() {
 
             @Override
             public Decoration getDecoration(Node node) {
                 VisualModel model = editor.getModel();
                 if (node == currentNode) {
-                    return new Decoration(){
+                    return new Decoration() {
                         @Override
                         public Color getColorisation() {
                             return highlightColor;
@@ -622,7 +622,7 @@ public class SelectionTool extends AbstractTool {
                 }
 
                 if (node == model.getRoot()) {
-                    return new Decoration(){
+                    return new Decoration() {
                         @Override
                         public Color getColorisation() {
                             return grayOutColor;
@@ -654,7 +654,7 @@ public class SelectionTool extends AbstractTool {
                     };
                 }
 
-                //if (node==mouseOverNode) return selectedDecoration;
+                //if (node == mouseOverNode) return selectedDecoration;
 
                 return null;
             }
@@ -745,7 +745,7 @@ public class SelectionTool extends AbstractTool {
         Collection<Node> selection = model.getSelection();
         if (selection.size() == 1) {
             Node node = selection.iterator().next();
-            if(node instanceof Container) {
+            if (node instanceof Container) {
                 editor.getWorkspaceEntry().saveMemento();
                 model.setCurrentLevel((Container) node);
                 editor.repaint();
@@ -769,8 +769,8 @@ public class SelectionTool extends AbstractTool {
         return new Rectangle2D.Double(
                 Math.min(startPosition.getX(), currentPosition.getX()),
                 Math.min(startPosition.getY(), currentPosition.getY()),
-                Math.abs(startPosition.getX()-currentPosition.getX()),
-                Math.abs(startPosition.getY()-currentPosition.getY())
+                Math.abs(startPosition.getX() - currentPosition.getX()),
+                Math.abs(startPosition.getY() - currentPosition.getY())
         );
     }
 
@@ -823,8 +823,8 @@ public class SelectionTool extends AbstractTool {
         VisualModel model = editor.getModel();
         if (!model.getSelection().isEmpty()) {
             beforeSelectionModification(editor);
-            VisualModelTransformer.rotateSelection(model, Math.PI/2);
-            for(Node node : model.getSelection()) {
+            VisualModelTransformer.rotateSelection(model, Math.PI / 2);
+            for (Node node : model.getSelection()) {
                 if (node instanceof Rotatable) {
                     ((Rotatable) node).rotateClockwise();
                 }
@@ -837,8 +837,8 @@ public class SelectionTool extends AbstractTool {
         VisualModel model = editor.getModel();
         if (!model.getSelection().isEmpty()) {
             beforeSelectionModification(editor);
-            VisualModelTransformer.rotateSelection(model, -Math.PI/2);
-            for(Node node : model.getSelection()) {
+            VisualModelTransformer.rotateSelection(model, -Math.PI / 2);
+            for (Node node : model.getSelection()) {
                 if (node instanceof Rotatable) {
                     ((Rotatable) node).rotateCounterclockwise();
                 }
@@ -852,7 +852,7 @@ public class SelectionTool extends AbstractTool {
         if (!model.getSelection().isEmpty()) {
             beforeSelectionModification(editor);
             VisualModelTransformer.scaleSelection(model, -1.0, 1.0);
-            for(Node node : model.getSelection()) {
+            for (Node node : model.getSelection()) {
                 if (node instanceof Flippable) {
                     ((Flippable) node).flipHorizontal();
                 }
@@ -866,7 +866,7 @@ public class SelectionTool extends AbstractTool {
         if (!model.getSelection().isEmpty()) {
             beforeSelectionModification(editor);
             VisualModelTransformer.scaleSelection(model, 1.0, -1.0);
-            for(Node node : model.getSelection()) {
+            for (Node node : model.getSelection()) {
                 if (node instanceof Flippable) {
                     ((Flippable) node).flipVertical();
                 }

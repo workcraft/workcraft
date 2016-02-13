@@ -139,8 +139,8 @@ public class ScencoSingleSequentialDialog extends JDialog {
         m = scenarios.size();
 
         int value = 2;
-        while(value < m){
-            value *=2;
+        while (value < m) {
+            value *= 2;
             bits++;
         }
 
@@ -169,14 +169,14 @@ public class ScencoSingleSequentialDialog extends JDialog {
 
                 // custom encodings
                 settings.setNumPO(m);
-                if(settings.getGenMode() == GenerationMode.SEQUENTIAL){
+                if (settings.getGenMode() == GenerationMode.SEQUENTIAL) {
                     settings.setCustomEncMode(true);
                     String[] encodings = new String[m];
-                    for(int i = 0; i<m; i++)
+                    for (int i = 0; i < m; i++)
                         encodings[i] = Integer.toBinaryString(i);
                     settings.setCustomEnc(encodings);
-                }else{
-                    settings.setBits(bits+1);
+                } else {
+                    settings.setBits(bits + 1);
                     settings.setCustomEncMode(false);
                 }
 
@@ -200,7 +200,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
 
     }
 
-    private void sizeWindow(int width, int height, int row1, int row2){
+    private void sizeWindow(int width, int height, int row1, int row2) {
         setMinimumSize(new Dimension(width, height));
         //setPreferredSize(new Dimension(width, height));
         setResizable(false);

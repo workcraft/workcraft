@@ -22,7 +22,7 @@ import org.workcraft.plugins.son.util.Interval;
 @DisplayName ("Event")
 @SVGIcon("images/icons/svg/transition.svg")
 
-public class VisualEvent extends VisualTransition implements VisualTransitionNode{
+public class VisualEvent extends VisualTransition implements VisualTransitionNode {
     //private boolean displayName = false;
 
     public VisualEvent(Event event) {
@@ -43,16 +43,16 @@ public class VisualEvent extends VisualTransition implements VisualTransitionNod
     }
 
     @Override
-    public void draw(DrawRequest r){
+    public void draw(DrawRequest r) {
         super.draw(r);
         drawFault(r);
     }
 
-    public void drawFault(DrawRequest r){
+    public void drawFault(DrawRequest r) {
         if (SONSettings.isErrorTracing()) {
             Graphics2D g = r.getGraphics();
-            GlyphVector glyphVector=null;
-            Rectangle2D labelBB=null;
+            GlyphVector glyphVector = null;
+            Rectangle2D labelBB = null;
 
             Font labelFont = new Font(Font.SANS_SERIF, Font.PLAIN, 1).deriveFont(0.5f);
 
@@ -67,25 +67,25 @@ public class VisualEvent extends VisualTransition implements VisualTransitionNod
         }
     }
 
-    public Event getMathTransitionNode(){
+    public Event getMathTransitionNode() {
         return (Event) this.getReferencedComponent();
     }
 
-    public void setLabel(String label){
+    public void setLabel(String label) {
         super.setLabel(label);
         ((Event) getReferencedComponent()).setLabel(label);
     }
 
-    public String getLabel(){
+    public String getLabel() {
         super.getLabel();
         return ((Event) getReferencedComponent()).getLabel();
     }
 
-    public void setFaulty(Boolean fault){
+    public void setFaulty(Boolean fault) {
         ((Event) getReferencedComponent()).setFaulty(fault);
     }
 
-    public boolean isFaulty(){
+    public boolean isFaulty() {
         return ((Event) getReferencedComponent()).isFaulty();
     }
 
@@ -97,29 +97,29 @@ public class VisualEvent extends VisualTransition implements VisualTransitionNod
         ((Event) getReferencedComponent()).setForegroundColor(foregroundColor);
     }
 
-    public void setFillColor(Color fillColor){
+    public void setFillColor(Color fillColor) {
         ((Event) getReferencedComponent()).setFillColor(fillColor);
     }
 
-    public Color getFillColor(){
+    public Color getFillColor() {
         return ((Event) getReferencedComponent()).getFillColor();
     }
 
-    public void setStartTime(String time){
+    public void setStartTime(String time) {
         Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
         ((Event) getReferencedComponent()).setStartTime(input);
     }
 
-    public String getStartTime(){
+    public String getStartTime() {
         return ((Event) getReferencedComponent()).getStartTime().toString();
     }
 
-    public void setEndTime(String time){
+    public void setEndTime(String time) {
         Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
         ((Event) getReferencedComponent()).setEndTime(input);
     }
 
-    public String getEndTime(){
+    public String getEndTime() {
         return ((Event) getReferencedComponent()).getEndTime().toString();
     }
 

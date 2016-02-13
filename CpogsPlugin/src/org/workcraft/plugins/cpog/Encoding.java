@@ -21,14 +21,14 @@ public class Encoding {
     public String toString() {
         String result = "";
         Set<Variable> sortedVariables = new TreeSet<Variable>(states.keySet());
-        for(Variable var : sortedVariables) result += getState(var).toString();
+        for (Variable var : sortedVariables) result += getState(var).toString();
         return result;
     }
 
     public void updateEncoding(String s) {
         int k = 0;
         Set<Variable> sortedVariables = new TreeSet<Variable>(states.keySet());
-        for(Variable var : sortedVariables) states.put(var, VariableState.fromChar(s.charAt(k++)));
+        for (Variable var : sortedVariables) states.put(var, VariableState.fromChar(s.charAt(k++)));
     }
 
     public VariableState getState(Variable var) {

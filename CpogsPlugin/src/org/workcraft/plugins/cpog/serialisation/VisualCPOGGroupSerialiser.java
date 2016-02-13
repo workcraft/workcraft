@@ -46,7 +46,7 @@ public class VisualCPOGGroupSerialiser implements CustomXMLSerialiser {
 
         Map<Variable, VariableState> states = encoding.getStates();
 
-        for(Variable var : states.keySet()) {
+        for (Variable var : states.keySet()) {
             VariableState state = states.get(var);
 
             Element subelement = element.getOwnerDocument().createElement("encoding");

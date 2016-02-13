@@ -216,7 +216,7 @@ public class CycleAnalyserTool extends AbstractTool {
                         double range = maxDelay - minDelay;
                         double offset = delay - minDelay;
                         final Color fgColor = (range > 0 &&  offset > 0.8 * range) ? Color.RED : null;
-                        return new Decoration(){
+                        return new Decoration() {
                             @Override
                             public Color getColorisation() {
                                 return fgColor;
@@ -236,7 +236,7 @@ public class CycleAnalyserTool extends AbstractTool {
                         }
                         final Color fgColor = (range > 0 &&  offset > 0.8 * range) ? Color.RED : null;
                         final Color bgColor = new Color(bgIintencity, 0, 0);
-                        return new Decoration(){
+                        return new Decoration() {
                             @Override
                             public Color getColorisation() {
                                 return fgColor;
@@ -275,7 +275,7 @@ public class CycleAnalyserTool extends AbstractTool {
         for (int i = 0; i < size; i++) {
             HashSet<Node> preset = new HashSet<Node>(dfs.getPreset(tmpComponents[i]));
             HashSet<Node> postset = new HashSet<Node>(dfs.getPostset(tmpComponents[i]));
-            for (int j = i+1; j < size; j++) {
+            for (int j = i + 1; j < size; j++) {
                 adjMatrix[i][j] = postset.contains(tmpComponents[j]);
                 adjMatrix[j][i] = preset.contains(tmpComponents[j]);
             }

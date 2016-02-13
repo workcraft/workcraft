@@ -163,12 +163,12 @@ public class VisualNodeTests {
 
     private void asserArrayEquals(double[] expected, double[] actual) {
         Assert.assertEquals(expected.length, actual.length);
-        for(int i=0; i<expected.length; i++)
+        for (int i = 0; i < expected.length; i++)
             assertClose(expected[i], actual[i]);
     }
 
     private void assertClose(double expected, double actual) {
         double eps = 1e-6;
-        Assert.assertTrue("Expected: "+expected+", actual: "+actual, expected-eps<=actual && expected+eps>=actual);
+        Assert.assertTrue("Expected: " + expected + ", actual: " + actual, expected - eps <= actual && expected + eps >= actual);
     }
 }

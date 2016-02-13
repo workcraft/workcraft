@@ -27,12 +27,12 @@ import static org.workcraft.plugins.cpog.optimisation.CnfOperations.*;
 
 public class CnfSorter {
     public static Cnf sortRound(List<Literal> result, List<Literal> x) {
-        if(x.size() != result.size())
+        if (x.size() != result.size())
             throw new RuntimeException("sizes do not match");
 
         List<Literal> s = new ArrayList<Literal>();
-        for(Literal var : x)
-            s.add(new Literal(var.getVariable().getLabel()+"_th"));
+        for (Literal var : x)
+            s.add(new Literal(var.getVariable().getLabel() + "_th"));
 
         return sortRound(result, s, x);
     }
@@ -44,9 +44,9 @@ public class CnfSorter {
 
         result.add(or(not(s.get(0)), x.get(0)));
         result.add(or(not(x.get(0)), s.get(0)));
-        for(int i=1; i<s.size(); i++) {
-            result.add(or(not(s.get(i)), s.get(i-1), x.get(i)));
-            result.add(or(not(s.get(i-1)), s.get(i)));
+        for (int i = 1; i < s.size(); i++) {
+            result.add(or(not(s.get(i)), s.get(i - 1), x.get(i)));
+            result.add(or(not(s.get(i - 1)), s.get(i)));
             result.add(or(not(x.get(i)), s.get(i)));
         }
 
@@ -62,13 +62,13 @@ public class CnfSorter {
 
         // y[x] = s[i] x[i+1]
         // (!y[i] + s[i]) (!y[i] + x[i+1]) (!s[i] + !x[i+1] + y[i])
-        for(int i=0; i<x.size()-1; i++) {
+        for (int i = 0; i < x.size() - 1; i++) {
             clauses.add(or(not(result.get(i)), s.get(i)));
-            clauses.add(or(not(result.get(i)), x.get(i+1)));
-            clauses.add(or(not(s.get(i)), not(x.get(i+1)), result.get(i)));
+            clauses.add(or(not(result.get(i)), x.get(i + 1)));
+            clauses.add(or(not(s.get(i)), not(x.get(i + 1)), result.get(i)));
         }
 
-        int n = x.size()-1;
+        int n = x.size() - 1;
         clauses.add(or(not(result.get(n)), s.get(n)));
         clauses.add(or(not(s.get(n)), result.get(n)));
 

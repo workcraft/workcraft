@@ -75,14 +75,14 @@ public class MpsatTask implements Task<ExternalProcessResult> {
         boolean printStderr = MpsatUtilitySettings.getPrintStderr();
         ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
         Result<? extends ExternalProcessResult> res = task.run(monitor);
-        if(res.getOutcome() == Outcome.CANCELLED) {
+        if (res.getOutcome() == Outcome.CANCELLED) {
             return res;
         }
 
         Map<String, byte[]> outputFiles = new HashMap<String, byte[]>();
         try {
             File g = new File(directory, "mpsat.g");
-            if(g.exists()) {
+            if (g.exists()) {
                 outputFiles.put("mpsat.g", FileUtils.readAllBytes(g));
             }
         } catch (IOException e) {

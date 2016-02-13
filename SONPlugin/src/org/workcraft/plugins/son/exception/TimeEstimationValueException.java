@@ -1,10 +1,10 @@
 package org.workcraft.plugins.son.exception;
 
-public class TimeEstimationValueException extends Exception{
+public class TimeEstimationValueException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-    public TimeEstimationValueException(String msg){
+    public TimeEstimationValueException(String msg) {
         super(msg);
     }
 

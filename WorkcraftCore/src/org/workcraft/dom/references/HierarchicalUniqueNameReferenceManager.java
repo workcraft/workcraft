@@ -86,7 +86,7 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
         // root must be a namespace provider
         topProvider = (NamespaceProvider) root;
         if (refs != null) {
-            for(Node n : Hierarchy.getDescendantsOfType(root, Node.class)) {
+            for (Node n : Hierarchy.getDescendantsOfType(root, Node.class)) {
                 setExistingReference(n);
             }
             refs = null;
@@ -133,7 +133,7 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
         if (topProvider == null) {
             System.err.println("HierarchicalUniqueNameReferenceManager created with topProvider==null!");
         }
-        if (provider==null) {
+        if (provider == null) {
             provider = topProvider;
         }
         if (reference.isEmpty() || reference.equals(NamespaceHelper.getHierarchySeparator())) {
@@ -180,7 +180,7 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
     public void handleEvent(HierarchyEvent e) {
         if (e instanceof NodesAddedEvent) {
             for (Node node : e.getAffectedNodes()) {
-                if (node.getParent()!=null) {
+                if (node.getParent() != null) {
                     // if it is not a root node
                     NamespaceProvider provider = getNamespaceProvider(node);
                     NameManager man = getNameManager(provider);
@@ -200,7 +200,7 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
         }
 
         if (e instanceof NodesDeletedEvent) {
-            for(Node node : e.getAffectedNodes()) {
+            for (Node node : e.getAffectedNodes()) {
                 getNameManager(getNamespaceProvider(node)).remove(node);
                 node2namespace.remove(node);
                 for (Node node2 : Hierarchy.getDescendantsOfType(node, Node.class)) {

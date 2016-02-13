@@ -176,14 +176,14 @@ public class PnToCpogDialog extends JDialog {
 
     }
 
-    private void sizeWindow(int width, int height, int row1, int row2){
+    private void sizeWindow(int width, int height, int row1, int row2) {
         setMinimumSize(new Dimension(width, height));
         //setPreferredSize(new Dimension(width, height));
         setResizable(false);
         pack();
     }
 
-    public int getModalResult(){
+    public int getModalResult() {
         return modalResult;
     }
 }

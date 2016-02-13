@@ -14,7 +14,7 @@ import javax.swing.text.AbstractDocument;
 
 import org.workcraft.plugins.son.util.Interval;
 
-public class DefaultDurationPanel extends JPanel{
+public class DefaultDurationPanel extends JPanel {
 
     private static final long serialVersionUID = 1L;
 
@@ -27,11 +27,11 @@ public class DefaultDurationPanel extends JPanel{
 
     protected Font font = new Font("Arial", Font.PLAIN, 12);
 
-    public DefaultDurationPanel(){
+    public DefaultDurationPanel() {
         this(new Interval(0000, 0000));
     }
 
-    public DefaultDurationPanel(Interval duration){
+    public DefaultDurationPanel(Interval duration) {
 
         durationLabel = new JLabel();
         durationLabel.setText("Default duration:");
@@ -59,7 +59,7 @@ public class DefaultDurationPanel extends JPanel{
             @Override
             public void focusLost(FocusEvent e) {
                 autoComplete(min);
-                if(!isValid(getDefaultDuration()))
+                if (!isValid(getDefaultDuration()))
                     validDuration = false;
                 else
                     validDuration = true;
@@ -71,7 +71,7 @@ public class DefaultDurationPanel extends JPanel{
             }
         });
 
-        min.addKeyListener(new KeyListener(){
+        min.addKeyListener(new KeyListener() {
 
             @Override
             public void keyTyped(KeyEvent e) {
@@ -79,7 +79,7 @@ public class DefaultDurationPanel extends JPanel{
 
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode()==KeyEvent.VK_ENTER){
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     requestFocus();
                 }
             }
@@ -95,7 +95,7 @@ public class DefaultDurationPanel extends JPanel{
             public void focusLost(FocusEvent e) {
 
                 autoComplete(max);
-                if(!isValid(getDefaultDuration()))
+                if (!isValid(getDefaultDuration()))
                     validDuration = false;
                 else
                     validDuration = true;
@@ -107,7 +107,7 @@ public class DefaultDurationPanel extends JPanel{
             }
         });
 
-        max.addKeyListener(new KeyListener(){
+        max.addKeyListener(new KeyListener() {
 
             @Override
             public void keyTyped(KeyEvent e) {
@@ -115,7 +115,7 @@ public class DefaultDurationPanel extends JPanel{
 
             @Override
             public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode()==KeyEvent.VK_ENTER){
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
                     requestFocus();
                 }
             }
@@ -127,11 +127,11 @@ public class DefaultDurationPanel extends JPanel{
         });
     }
 
-    private void autoComplete(JTextField field){
+    private void autoComplete(JTextField field) {
         String text = field.getText();
         int length = text.length();
 
-        if(length < 4){
+        if (length < 4) {
             while (length < 4) {
                 StringBuffer sb = new StringBuffer();
                 sb.append("0").append(text);
@@ -142,17 +142,17 @@ public class DefaultDurationPanel extends JPanel{
         }
     }
 
-    private boolean isValid(Interval value){
+    private boolean isValid(Interval value) {
         int start = value.getMin();
         int end = value.getMax();
 
-        if(start <= end){
+        if (start <= end) {
             return true;
         }
         return false;
     }
 
-    public Interval getDefaultDuration(){
+    public Interval getDefaultDuration() {
         int minValue = Interval.getInteger(min.getText());
         int maxValue = Interval.getInteger(max.getText());
         return new Interval(minValue, maxValue);
@@ -174,7 +174,7 @@ public class DefaultDurationPanel extends JPanel{
         return durationLabel;
     }
 
-    public void setIsEnable(boolean b){
+    public void setIsEnable(boolean b) {
         min.setEnabled(b);
         max.setEnabled(b);
     }

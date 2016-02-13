@@ -44,7 +44,7 @@ public class ControlPoint extends VisualTransformableNode implements Drawable, T
     }
 
     public Rectangle2D getBoundingBoxInLocalSpace() {
-        return new Rectangle2D.Double(-size, -size, size*2, size*2);
+        return new Rectangle2D.Double(-size, -size, size * 2, size * 2);
     }
 
     @Override

@@ -21,7 +21,7 @@ import org.workcraft.plugins.son.gui.TimeConsistencyDialog.Granularity;
 import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.plugins.son.util.ScenarioRef;
 
-public class EntireEstimationAlg extends EstimationAlg{
+public class EntireEstimationAlg extends EstimationAlg {
 
     private boolean narrow;
     private boolean twoDir;
@@ -34,8 +34,8 @@ public class EntireEstimationAlg extends EstimationAlg{
         consistency = new ConsistencyAlg(net);
     }
 
-    public void entireEst() throws AlternativeStructureException, TimeInconsistencyException, TimeEstimationException{
-        if(scenario == null)
+    public void entireEst() throws AlternativeStructureException, TimeInconsistencyException, TimeEstimationException {
+        if (scenario == null)
             throw new AlternativeStructureException("select a scenario first");
         //add super initial to SON
         Condition superIni = net.createCondition(null, null);
@@ -46,7 +46,7 @@ public class EntireEstimationAlg extends EstimationAlg{
         Collection<PlaceNode> finalM = sonAlg.getSONFinal();
 
         //add arcs from super initial to SON initial
-        for(PlaceNode p : initial){
+        for (PlaceNode p : initial) {
             try {
                 SONConnection con = net.connect(superIni, p, Semantics.PNLINE);
                 scenario.add(net.getNodeReference(con));
@@ -59,10 +59,10 @@ public class EntireEstimationAlg extends EstimationAlg{
 
         try {
             end = getEstimatedEndTime(superIni);
-        } catch (TimeEstimationException e){
+        } catch (TimeEstimationException e) {
             net.remove(superIni);
             throw new TimeEstimationException("");
-        } catch (TimeOutOfBoundsException e){
+        } catch (TimeOutOfBoundsException e) {
             net.remove(superIni);
             e.printStackTrace();
             return;
@@ -74,15 +74,15 @@ public class EntireEstimationAlg extends EstimationAlg{
         visited.add(superIni);
 
         //assign specified value from connections to nodes
-        for(SONConnection con : net.getSONConnections()){
-            if(con.getSemantics() == Semantics.PNLINE){
-                if(con.getTime().isSpecified()){
+        for (SONConnection con : net.getSONConnections()) {
+            if (con.getSemantics() == Semantics.PNLINE) {
+                if (con.getTime().isSpecified()) {
                     Node first = con.getFirst();
-                    if(first instanceof Time){
+                    if (first instanceof Time) {
                         ((Time) first).setEndTime(con.getTime());
                     }
                     Node second = con.getSecond();
-                    if(second instanceof Time){
+                    if (second instanceof Time) {
                         ((Time) second).setStartTime(con.getTime());
                     }
                 }
@@ -99,11 +99,11 @@ public class EntireEstimationAlg extends EstimationAlg{
 
         Condition superFinal = null;
         //super final
-        if(twoDir){
+        if (twoDir) {
             superFinal = net.createCondition(null, null);
             scenario.add(net.getNodeReference(superFinal));
 
-            for(PlaceNode p : finalM){
+            for (PlaceNode p : finalM) {
                 try {
                     SONConnection con = net.connect(p, superFinal, Semantics.PNLINE);
                     scenario.add(net.getNodeReference(con));
@@ -116,10 +116,10 @@ public class EntireEstimationAlg extends EstimationAlg{
 
             try {
                 start = getEstimatedStartTime(superFinal);
-            } catch (TimeEstimationException e){
+            } catch (TimeEstimationException e) {
                 net.remove(superFinal);
                 throw new TimeEstimationException("");
-            } catch (TimeOutOfBoundsException e){
+            } catch (TimeOutOfBoundsException e) {
                 net.remove(superFinal);
                 e.printStackTrace();
                 return;
@@ -137,15 +137,15 @@ public class EntireEstimationAlg extends EstimationAlg{
         }
 
         //assign estimated time value from nodes to connections
-        for(SONConnection con : net.getSONConnections()){
-            if(con.getSemantics() == Semantics.PNLINE){
+        for (SONConnection con : net.getSONConnections()) {
+            if (con.getSemantics() == Semantics.PNLINE) {
                 Node first = con.getFirst();
-                if(first instanceof Time){
-                    if(narrow){
+                if (first instanceof Time) {
+                    if (narrow) {
                         con.setTime(((Time) first).getEndTime());
                         con.setTimeLabelColor(color);
-                    } else{
-                        if(!con.getTime().isSpecified()){
+                    } else {
+                        if (!con.getTime().isSpecified()) {
                             con.setTime(((Time) first).getEndTime());
                             con.setTimeLabelColor(color);
                         }
@@ -154,18 +154,18 @@ public class EntireEstimationAlg extends EstimationAlg{
             }
         }
 
-        for(Time time : net.getTimeNodes()){
+        for (Time time : net.getTimeNodes()) {
             Interval defTime = new Interval();
-            if(!initial.contains(time)){
+            if (!initial.contains(time)) {
                 time.setStartTime(defTime);
             }
-            if(!finalM.contains(time)){
+            if (!finalM.contains(time)) {
                 time.setEndTime(defTime);
             }
         }
         //remove super initial
         net.remove(superIni);
-        if(twoDir){
+        if (twoDir) {
             net.remove(superFinal);
         }
     }
@@ -174,39 +174,39 @@ public class EntireEstimationAlg extends EstimationAlg{
         Time last = visited.getLast();
         LinkedList<Time> neighbours = getCausalPreset(last, nodes);
 
-        for(Time t : neighbours){
-            if(!visited.contains(t)){
-                if(!t.getEndTime().isSpecified()){
+        for (Time t : neighbours) {
+            if (!visited.contains(t)) {
+                if (!t.getEndTime().isSpecified()) {
                     t.setEndTime(last.getStartTime());
-                    if(finalM.contains(t)){
+                    if (finalM.contains(t)) {
                         ((Condition) t).setEndTimeColor(color);
                     }
-                }else{
-                    if(!t.getEndTime().isOverlapping(last.getStartTime()))
-                        throw new TimeInconsistencyException("Time inconsistency: "+net.getNodeReference(t));
-                    if(narrow){
+                } else {
+                    if (!t.getEndTime().isOverlapping(last.getStartTime()))
+                        throw new TimeInconsistencyException("Time inconsistency: " + net.getNodeReference(t));
+                    if (narrow) {
                         t.setEndTime(Interval.getOverlapping(t.getEndTime(), last.getEndTime()));
                     }
                 }
-                if(!t.getDuration().isSpecified()){
+                if (!t.getDuration().isSpecified()) {
                     t.setDuration(defaultDuration);
-                    if(t instanceof PlaceNode){
+                    if (t instanceof PlaceNode) {
                         ((PlaceNode) t).setDurationColor(color);
-                    }else if(t instanceof Block){
+                    } else if (t instanceof Block) {
                         ((Block) t).setDurationColor(color);
                     }
                 }
-                if(!t.getStartTime().isSpecified()){
+                if (!t.getStartTime().isSpecified()) {
                     Interval time = granularity.plusTD(t.getEndTime(), t.getDuration());
                     t.setStartTime(time);
-                    if(initial.contains(t)){
+                    if (initial.contains(t)) {
                         ((Condition) t).setStartTimeColor(color);
                     }
-                }else{
-                    ArrayList<String> check= consistency.nodeConsistency(t, t.getStartTime(), t.getEndTime(), t.getDuration(), g);
-                    if(!check.isEmpty())
-                        throw new TimeInconsistencyException("Time inconsistency: "+net.getNodeReference(t));
-                    if(narrow){
+                } else {
+                    ArrayList<String> check = consistency.nodeConsistency(t, t.getStartTime(), t.getEndTime(), t.getDuration(), g);
+                    if (!check.isEmpty())
+                        throw new TimeInconsistencyException("Time inconsistency: " + net.getNodeReference(t));
+                    if (narrow) {
                         t.setStartTime(Interval.getOverlapping(t.getEndTime(), last.getEndTime()));
                     }
                 }
@@ -221,39 +221,39 @@ public class EntireEstimationAlg extends EstimationAlg{
         Time last = visited.getLast();
         LinkedList<Time> neighbours = getCausalPostset(last, nodes);
 
-        for(Time t : neighbours){
-            if(!visited.contains(t)){
-                if(!t.getStartTime().isSpecified()){
+        for (Time t : neighbours) {
+            if (!visited.contains(t)) {
+                if (!t.getStartTime().isSpecified()) {
                     t.setStartTime(last.getEndTime());
-                    if(initial.contains(t)){
+                    if (initial.contains(t)) {
                         ((Condition) t).setStartTimeColor(color);
                     }
-                }else{
-                    if(!t.getStartTime().isOverlapping(last.getEndTime()))
-                        throw new TimeInconsistencyException("Time inconsistency: "+net.getNodeReference(t));
-                    if(narrow){
+                } else {
+                    if (!t.getStartTime().isOverlapping(last.getEndTime()))
+                        throw new TimeInconsistencyException("Time inconsistency: " + net.getNodeReference(t));
+                    if (narrow) {
                         t.setStartTime(Interval.getOverlapping(t.getStartTime(), last.getStartTime()));
                     }
                 }
-                if(!t.getDuration().isSpecified()){
+                if (!t.getDuration().isSpecified()) {
                     t.setDuration(defaultDuration);
-                    if(t instanceof PlaceNode){
+                    if (t instanceof PlaceNode) {
                         ((PlaceNode) t).setDurationColor(color);
-                    }else if(t instanceof Block){
+                    } else if (t instanceof Block) {
                         ((Block) t).setDurationColor(color);
                     }
                 }
-                if(!t.getEndTime().isSpecified()){
+                if (!t.getEndTime().isSpecified()) {
                     Interval time = granularity.plusTD(t.getStartTime(), t.getDuration());
                     t.setEndTime(time);
-                    if(finalM.contains(t)){
+                    if (finalM.contains(t)) {
                         ((Condition) t).setEndTimeColor(color);
                     }
-                }else{
-                    ArrayList<String> check= consistency.nodeConsistency(t, t.getStartTime(), t.getEndTime(), t.getDuration(), g);
-                    if(!check.isEmpty())
-                        throw new TimeInconsistencyException("Time inconsistency: "+net.getNodeReference(t));
-                    if(narrow){
+                } else {
+                    ArrayList<String> check = consistency.nodeConsistency(t, t.getStartTime(), t.getEndTime(), t.getDuration(), g);
+                    if (!check.isEmpty())
+                        throw new TimeInconsistencyException("Time inconsistency: " + net.getNodeReference(t));
+                    if (narrow) {
                         t.setEndTime(Interval.getOverlapping(t.getStartTime(), last.getStartTime()));
                     }
                 }

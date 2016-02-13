@@ -69,7 +69,7 @@ public class WorkspaceEntry implements ObservableState {
     }
 
     public void setChanged(boolean changed) {
-        if(this.changed != changed) {
+        if (this.changed != changed) {
             this.changed = changed;
             if (changed == false) {
                 savedMemento = null;
@@ -88,7 +88,7 @@ public class WorkspaceEntry implements ObservableState {
         return modelEntry;
     }
 
-    private StateObserver modelObserver = new StateObserver(){
+    private StateObserver modelObserver = new StateObserver() {
         @Override
         public void notify(StateEvent e) {
             if (e instanceof ModelModifiedEvent) {
@@ -99,7 +99,7 @@ public class WorkspaceEntry implements ObservableState {
     };
 
     public void setModelEntry(ModelEntry modelEntry) {
-        if(this.modelEntry != null) {
+        if (this.modelEntry != null) {
             if (this.modelEntry.isVisual()) {
                 this.modelEntry.getVisualModel().removeObserver(modelObserver);
             }

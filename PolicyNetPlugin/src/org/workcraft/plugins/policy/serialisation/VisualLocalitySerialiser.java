@@ -8,7 +8,7 @@ import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.serialisation.xml.CustomXMLSerialiser;
 import org.workcraft.serialisation.xml.NodeSerialiser;
 
-public class VisualLocalitySerialiser implements CustomXMLSerialiser{
+public class VisualLocalitySerialiser implements CustomXMLSerialiser {
 
     @Override
     public String getClassName() {

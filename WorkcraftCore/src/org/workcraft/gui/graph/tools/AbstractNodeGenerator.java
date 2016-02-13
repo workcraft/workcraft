@@ -57,7 +57,7 @@ public abstract class AbstractNodeGenerator implements NodeGenerator {
         }
 
         //TODO: this will brake at some point
-        if (visualNamespace!=null) {
+        if (visualNamespace != null) {
             mathContainer = (Container) ((VisualComponent) visualNamespace).getReferencedComponent();
         }
 

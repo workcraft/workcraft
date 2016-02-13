@@ -23,7 +23,7 @@ package org.workcraft.gui.actions;
 
 import java.util.LinkedList;
 
-public abstract class Action/* extends AbstractAction */{
+public abstract class Action/* extends AbstractAction */ {
     private static final long serialVersionUID = -2235480226869966860L;
     private LinkedList<Actor> actors = new LinkedList<Actor>();
     private boolean enabled = true;

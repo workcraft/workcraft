@@ -10,13 +10,13 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class ToolManager {
 
-    public static ToolboxPanel getToolboxPanel(WorkspaceEntry we){
+    public static ToolboxPanel getToolboxPanel(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
         GraphEditorPanel currentEditor = mainWindow.getCurrentEditor();
-        if(currentEditor == null || currentEditor.getWorkspaceEntry() != we) {
+        if (currentEditor == null || currentEditor.getWorkspaceEntry() != we) {
             final List<GraphEditorPanel> editors = mainWindow.getEditors(we);
-            if(editors.size()>0) {
+            if (editors.size() > 0) {
                 currentEditor = editors.get(0);
                 mainWindow.requestFocus(currentEditor);
             } else {

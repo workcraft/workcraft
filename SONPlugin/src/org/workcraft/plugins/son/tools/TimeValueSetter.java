@@ -6,7 +6,7 @@ import org.workcraft.plugins.son.SON;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class TimeValueSetter implements Tool{
+public class TimeValueSetter implements Tool {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
@@ -14,7 +14,7 @@ public class TimeValueSetter implements Tool{
     }
 
     @Override
-    public String getSection(){
+    public String getSection() {
         return "Time analysis";
     }
 

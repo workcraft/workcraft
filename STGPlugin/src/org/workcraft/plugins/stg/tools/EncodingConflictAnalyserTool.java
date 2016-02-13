@@ -215,7 +215,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
                     final String name = stg.getNodeMathReference(node);
                     if (selectedCores == null) {
                         final Color color = (density == null) ? null : density.getColor(name);
-                        return new Decoration(){
+                        return new Decoration() {
                             @Override
                             public Color getColorisation() {
                                 return null;
@@ -232,7 +232,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
                                 palette.add(core.getColor());
                             }
                         }
-                        return new CoreDecoration(){
+                        return new CoreDecoration() {
                             @Override
                             public Color getColorisation() {
                                 return null;

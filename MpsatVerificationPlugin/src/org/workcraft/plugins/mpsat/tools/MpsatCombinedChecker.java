@@ -45,7 +45,7 @@ public class MpsatCombinedChecker extends VerificationTool {
         String description = "MPSat tool chain";
         String title = we.getTitle();
         if (!title.isEmpty()) {
-            description += "(" + title +")";
+            description += "(" + title + ")";
         }
         MpsatCombinedChainResultHandler monitor = new MpsatCombinedChainResultHandler(mpsatTask);
         final Framework framework = Framework.getInstance();

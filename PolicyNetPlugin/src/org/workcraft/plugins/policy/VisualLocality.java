@@ -37,13 +37,13 @@ public class VisualLocality extends VisualGroup {
     }
 
     @Override
-    public void add(Collection<Node> nodes){
-        for(Node node : nodes)
+    public void add(Collection<Node> nodes) {
+        for (Node node : nodes)
             this.add(node);
     }
 
     @Override
-    public void remove(Collection<Node> nodes){
+    public void remove(Collection<Node> nodes) {
         super.remove(nodes);
     }
 
@@ -66,7 +66,7 @@ public class VisualLocality extends VisualGroup {
             Node refNode = null;
             if (node instanceof VisualComponent) {
                 refNode = ((VisualComponent) node).getReferencedComponent();
-            } else if (node instanceof VisualLocality){
+            } else if (node instanceof VisualLocality) {
                 refNode = ((VisualLocality) node).getLocality();
             }
             if (refNode != null && refNode.getParent() == locality) {

@@ -149,7 +149,7 @@ public class CreateWorkDialog extends JDialog {
         final Collection<PluginInfo<? extends ModelDescriptor>> modelDescriptors = framework.getPluginManager().getPlugins(ModelDescriptor.class);
         ArrayList<ListElement> elements = new ArrayList<ListElement>();
 
-        for(PluginInfo<? extends ModelDescriptor> plugin : modelDescriptors) {
+        for (PluginInfo<? extends ModelDescriptor> plugin : modelDescriptors) {
             elements.add(new ListElement(plugin.newInstance()));
         }
 
@@ -261,7 +261,7 @@ public class CreateWorkDialog extends JDialog {
         return modalResult;
     }
 
-    public boolean createVisualSelected(){
+    public boolean createVisualSelected() {
         return chkVisual.isSelected();
     }
 

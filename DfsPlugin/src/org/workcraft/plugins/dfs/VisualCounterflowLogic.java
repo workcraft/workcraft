@@ -76,8 +76,8 @@ public class VisualCounterflowLogic extends VisualDelayComponent {
         Decoration d = r.getDecoration();
         double w = size - strokeWidth;
         double h = size - strokeWidth;
-        double w2 = w/2;
-        double h2 = h/2;
+        double w2 = w / 2;
+        double h2 = h / 2;
         float strokeWidth1 = (float) strokeWidth;
         float strokeWidth2 = strokeWidth1 / 2;
         float strokeWidth4 = strokeWidth1 / 4;
@@ -91,18 +91,18 @@ public class VisualCounterflowLogic extends VisualDelayComponent {
         forwardShape.lineTo(w2, -strokeWidth4);
 
         Path2D forwardEarlyShape = new Path2D.Double();
-        forwardEarlyShape.moveTo(-2*dd + dd, (-kd-2) * dd);
-        forwardEarlyShape.lineTo(-2*dd - dd, (-kd-2) * dd);
-        forwardEarlyShape.lineTo(-2*dd - dd, (-kd+2) * dd);
-        forwardEarlyShape.lineTo(-2*dd + dd, (-kd+2) * dd);
-        forwardEarlyShape.moveTo(-2*dd + dd, (-kd+0) * dd);
-        forwardEarlyShape.lineTo(-2*dd - dd, (-kd+0) * dd);
-        forwardEarlyShape.moveTo(+2*dd + dd, (-kd-2) * dd);
-        forwardEarlyShape.lineTo(+2*dd - dd, (-kd-2) * dd);
-        forwardEarlyShape.lineTo(+2*dd - dd, (-kd+2) * dd);
-        forwardEarlyShape.lineTo(+2*dd + dd, (-kd+2) * dd);
-        forwardEarlyShape.moveTo(+2*dd + dd, (-kd+0) * dd);
-        forwardEarlyShape.lineTo(+2*dd - dd, (-kd+0) * dd);
+        forwardEarlyShape.moveTo(-2 * dd + dd, (-kd - 2) * dd);
+        forwardEarlyShape.lineTo(-2 * dd - dd, (-kd - 2) * dd);
+        forwardEarlyShape.lineTo(-2 * dd - dd, (-kd + 2) * dd);
+        forwardEarlyShape.lineTo(-2 * dd + dd, (-kd + 2) * dd);
+        forwardEarlyShape.moveTo(-2 * dd + dd, (-kd + 0) * dd);
+        forwardEarlyShape.lineTo(-2 * dd - dd, (-kd + 0) * dd);
+        forwardEarlyShape.moveTo(+2 * dd + dd, (-kd - 2) * dd);
+        forwardEarlyShape.lineTo(+2 * dd - dd, (-kd - 2) * dd);
+        forwardEarlyShape.lineTo(+2 * dd - dd, (-kd + 2) * dd);
+        forwardEarlyShape.lineTo(+2 * dd + dd, (-kd + 2) * dd);
+        forwardEarlyShape.moveTo(+2 * dd + dd, (-kd + 0) * dd);
+        forwardEarlyShape.lineTo(+2 * dd - dd, (-kd + 0) * dd);
 
         Path2D backwardShape = new Path2D.Double();
         backwardShape.moveTo(w2, strokeWidth4);
@@ -111,18 +111,18 @@ public class VisualCounterflowLogic extends VisualDelayComponent {
         backwardShape.lineTo(-w2, strokeWidth4);
 
         Path2D backwardEarlyShape = new Path2D.Double();
-        backwardEarlyShape.moveTo(-2*dd + dd, (+kd-2) * dd);
-        backwardEarlyShape.lineTo(-2*dd - dd, (+kd-2) * dd);
-        backwardEarlyShape.lineTo(-2*dd - dd, (+kd+2) * dd);
-        backwardEarlyShape.lineTo(-2*dd + dd, (+kd+2) * dd);
-        backwardEarlyShape.moveTo(-2*dd + dd, (+kd+0) * dd);
-        backwardEarlyShape.lineTo(-2*dd - dd, (+kd+0) * dd);
-        backwardEarlyShape.moveTo(+2*dd + dd, (+kd-2) * dd);
-        backwardEarlyShape.lineTo(+2*dd - dd, (+kd-2) * dd);
-        backwardEarlyShape.lineTo(+2*dd - dd, (+kd+2) * dd);
-        backwardEarlyShape.lineTo(+2*dd + dd, (+kd+2) * dd);
-        backwardEarlyShape.moveTo(+2*dd + dd, (+kd+0) * dd);
-        backwardEarlyShape.lineTo(+2*dd - dd, (+kd+0) * dd);
+        backwardEarlyShape.moveTo(-2 * dd + dd, (+kd - 2) * dd);
+        backwardEarlyShape.lineTo(-2 * dd - dd, (+kd - 2) * dd);
+        backwardEarlyShape.lineTo(-2 * dd - dd, (+kd + 2) * dd);
+        backwardEarlyShape.lineTo(-2 * dd + dd, (+kd + 2) * dd);
+        backwardEarlyShape.moveTo(-2 * dd + dd, (+kd + 0) * dd);
+        backwardEarlyShape.lineTo(-2 * dd - dd, (+kd + 0) * dd);
+        backwardEarlyShape.moveTo(+2 * dd + dd, (+kd - 2) * dd);
+        backwardEarlyShape.lineTo(+2 * dd - dd, (+kd - 2) * dd);
+        backwardEarlyShape.lineTo(+2 * dd - dd, (+kd + 2) * dd);
+        backwardEarlyShape.lineTo(+2 * dd + dd, (+kd + 2) * dd);
+        backwardEarlyShape.moveTo(+2 * dd + dd, (+kd + 0) * dd);
+        backwardEarlyShape.lineTo(+2 * dd - dd, (+kd + 0) * dd);
 
         Shape separatorShape = new Line2D.Double(-w2, 0, w2, 0);
 

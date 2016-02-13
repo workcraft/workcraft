@@ -361,7 +361,7 @@ public class MainWindowActions {
         }
     };
 
-    public static final Action VIEW_PAN_RIGHT= new Action() {
+    public static final Action VIEW_PAN_RIGHT = new Action() {
         @Override
         public String getText() {
             return "Pan right";

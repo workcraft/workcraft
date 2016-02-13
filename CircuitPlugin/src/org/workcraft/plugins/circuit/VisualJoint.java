@@ -63,12 +63,12 @@ public class VisualJoint extends VisualComponent {
 
     @Override
     public Rectangle2D getBoundingBoxInLocalSpace() {
-        return new Rectangle2D.Double(-size/2, -size/2, size, size);
+        return new Rectangle2D.Double(-size / 2, -size / 2, size, size);
     }
 
     @Override
     public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-        return pointInLocalSpace.distanceSq(0, 0) < size*size/4;
+        return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
     }
 
 }

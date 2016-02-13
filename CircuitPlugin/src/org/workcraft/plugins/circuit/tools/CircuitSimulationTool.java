@@ -137,7 +137,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
                 Place zeroPlace = (Place) zeroNode;
                 signalState.value = (zeroPlace.getTokens() > 0) ? 0 : 1;
             }
-            Node oneNode= net.getNodeByReference(signalName + "_1");
+            Node oneNode = net.getNodeByReference(signalName + "_1");
             if (oneNode instanceof Place) {
                 Place onePlace = (Place) oneNode;
                 signalState.value = (onePlace.getTokens() > 0) ? 1 : 0;
@@ -187,7 +187,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
         for (Node node: container.getChildren()) {
             if (node instanceof VisualContact) {
                 SignalTransition transition = getContactExcitedTransition((VisualContact) node);
-                ret=ret || (transition != null);
+                ret = ret || (transition != null);
             }
             if (node instanceof Container) {
                 ret = ret || isContainerExcited((Container) node);

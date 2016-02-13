@@ -206,7 +206,7 @@ public class VerilogImporter implements Importer {
                     System.out.print(", ");
                 }
                 if (connection.name != null) {
-                    System.out.print("." + connection.name + "(" + connection.netName +")");
+                    System.out.print("." + connection.name + "(" + connection.netName + ")");
                 } else {
                     System.out.print(connection.netName);
                 }
@@ -257,7 +257,7 @@ public class VerilogImporter implements Importer {
         try {
             circuit.setName(component, ASSIGN_GATE_PREFIX + assign.name);
         } catch (ArgumentException e) {
-            LogUtils.logWarningLine("Cannot set name '" + assign.name +"' for component '" + circuit.getName(component) + "'.");
+            LogUtils.logWarningLine("Cannot set name '" + assign.name + "' for component '" + circuit.getName(component) + "'.");
         }
 
         AssignGate assignGate = null;
@@ -528,7 +528,7 @@ public class VerilogImporter implements Importer {
         try {
             circuit.setName(component, verilogInstance.name);
         } catch (ArgumentException e) {
-            LogUtils.logWarningLine("Cannot set name '" + verilogInstance.name +"' for component '" + circuit.getName(component) + "'.");
+            LogUtils.logWarningLine("Cannot set name '" + verilogInstance.name + "' for component '" + circuit.getName(component) + "'.");
         }
         Module module = modules.get(verilogInstance.moduleName);
         HashMap<String, Port> instancePorts = getModulePortMap(module);

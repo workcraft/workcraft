@@ -37,8 +37,8 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Xor;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 public class FormulaToString implements BooleanVisitor<String> {
-    public final class Void{
-        private Void(){}
+    public final class Void {
+        private Void() { }
     }
 
     public static class PrinterSuite {
@@ -221,10 +221,10 @@ public class FormulaToString implements BooleanVisitor<String> {
         public Void visit(BooleanVariable var) {
             String label = var.getLabel();
             BooleanVariable nameHolder = varMap.get(label);
-            if(nameHolder == null)
+            if (nameHolder == null)
                 varMap.put(label, var);
             else
-                if(nameHolder != var)
+                if (nameHolder != var)
                     throw new RuntimeException("name conflict! duplicate name " + label);
 
             append(label);
@@ -271,7 +271,7 @@ public class FormulaToString implements BooleanVisitor<String> {
     }
 
     public static String toString(BooleanFormula f, boolean unicodeAllowed) {
-        if (f==null) return "";
+        if (f == null) return "";
         DelegatingPrinter printer = getPrinter(unicodeAllowed);
         f.accept(printer);
         return printer.builder.toString();

@@ -59,9 +59,9 @@ public class RandomLayoutTool extends AbstractLayoutTool {
                 transformableNode.setRootSpacePosition(pos);
             }
             if (node instanceof Container) {
-                Point2D childrenRange = new Point2D.Double(range.getX()/2.0, range.getY()/2.0);
-                double childenX = pos.getX() - childrenRange.getX()/2.0;
-                double childenY = pos.getY() - childrenRange.getY()/2.0;
+                Point2D childrenRange = new Point2D.Double(range.getX() / 2.0, range.getY() / 2.0);
+                double childenX = pos.getX() - childrenRange.getX() / 2.0;
+                double childenY = pos.getY() - childrenRange.getY() / 2.0;
                 Point2D childrenStart = new Point2D.Double(childenX, childenY);
                 setChildrenRandomPosition((Container) node, childrenStart, childrenRange);
             }

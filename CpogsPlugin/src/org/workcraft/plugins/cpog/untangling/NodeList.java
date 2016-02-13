@@ -23,9 +23,9 @@ public class NodeList extends ArrayList<UntanglingNode> {
             int id = Integer.parseInt(node.getLabel().replaceAll(".*-", ""));
             String label = node.getLabel().replaceAll("-.*", "");
 
-            if (node instanceof Place){
+            if (node instanceof Place) {
                 result = new UntanglingNode(id, label, NodeType.PLACE);
-            } else{
+            } else {
                 result = new UntanglingNode(id, label, NodeType.TRANSITION);
             }
             nodeToUntanglingNodMap.put(node, result);
@@ -51,20 +51,20 @@ public class NodeList extends ArrayList<UntanglingNode> {
      *  id, in order to be coherent with partial order notation    **/
     void rename() {
 
-        for(int i = 0; i < this.size(); i++){
+        for (int i = 0; i < this.size(); i++) {
             int k = 1;
-            for(int j = i+1; j < this.size(); j++){
+            for (int j = i + 1; j < this.size(); j++) {
 
                 // get names of the nodes
                 String formerNodeName = this.get(i).getLabel();
                 String latterNodeName = this.get(j).getLabel();
 
-                if(formerNodeName.equals(latterNodeName)){
+                if (formerNodeName.equals(latterNodeName)) {
 
                     // append a number at the end representing
                     // the number of times that node occurs
                     String replaceName = new String(latterNodeName);
-                    replaceName = replaceName.concat("_" + (k+1));
+                    replaceName = replaceName.concat("_" + (k + 1));
                     k++;
                     this.get(j).setLabel(replaceName);
                 }

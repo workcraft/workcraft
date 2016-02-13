@@ -151,7 +151,7 @@ public class SerialisationTestingUtils {
         Iterator<Node> i1 = p1.getChildren().iterator();
         Iterator<Node> i2 = p2.getChildren().iterator();
 
-        for (int i=0; i<p1.getChildren().size(); i++) {
+        for (int i = 0; i < p1.getChildren().size(); i++) {
             ControlPoint cp1 = (ControlPoint) i1.next();
             ControlPoint cp2 = (ControlPoint) i2.next();
 

@@ -45,7 +45,7 @@ public class AboutDialog extends JDialog {
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setModal(true);
         setTitle("About");
-        addWindowListener(new WindowAdapter(){
+        addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 ok();
@@ -55,7 +55,7 @@ public class AboutDialog extends JDialog {
         Dimension parentSize = owner.getSize();
         this.setSize(600, 320);
         Dimension mySize = getSize();
-        this.setLocation(((parentSize.width - mySize.width)/2) + 0, ((parentSize.height - mySize.height)/2) + 0);
+        this.setLocation(((parentSize.width - mySize.width) / 2) + 0, ((parentSize.height - mySize.height) / 2) + 0);
 
         owner.getLocationOnScreen();
 

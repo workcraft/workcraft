@@ -22,7 +22,7 @@
 package org.workcraft.exceptions;
 
 @SuppressWarnings("serial")
-public class LoadFromXMLException extends Exception{
+public class LoadFromXMLException extends Exception {
 
     public LoadFromXMLException() {
         super();

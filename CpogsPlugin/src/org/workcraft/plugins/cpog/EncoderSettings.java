@@ -12,7 +12,7 @@ public class EncoderSettings {
 
         public final String name;
 
-        GenerationMode(String name){
+        GenerationMode(String name) {
             this.name = name;
         }
 
@@ -127,12 +127,12 @@ public class EncoderSettings {
         return solutionNumber;
     }
 
-    public void setSolutionNumber(int number){
+    public void setSolutionNumber(int number) {
         solutionNumber = number;
     }
 
-    public void setGenerationModeInt(int index){
-        switch(index){
+    public void setGenerationModeInt(int index) {
+        switch (index) {
         case 0:
             genMode = GenerationMode.OPTIMAL_ENCODING;
             break;

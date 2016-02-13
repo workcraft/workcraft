@@ -63,7 +63,7 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
 
     public TimeConsistencyTask(WorkspaceEntry we, TimeConsistencySettings settings) {
         this.settings = settings;
-        net=(SON) we.getModelEntry().getMathModel();
+        net = (SON) we.getModelEntry().getMathModel();
         initialise();
     }
 
@@ -81,14 +81,14 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
         Collection<Node> causalInconsistencyNodes = new ArrayList<Node>();
 
         infoMsg("-------------------------Time Consistency Checking Result-------------------------");
-        if(settings.getTabIndex() == 0){
+        if (settings.getTabIndex() == 0) {
             checkList = new ArrayList<Node>();
             Collection<ONGroup> groups = settings.getSelectedGroups();
 
             //group info
             infoMsg("Initialising selected groups and components...");
 
-            for(ONGroup group : groups){
+            for (ONGroup group : groups) {
                 checkList.addAll(group.getComponents());
             }
 
@@ -98,33 +98,33 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
             relatedCPlaces.addAll(relationAlg.getRelatedChannelPlace(groups));
             checkList.addAll(relatedCPlaces);
 
-            infoMsg("Channel Places = " + relatedCPlaces.size()+"\n");
+            infoMsg("Channel Places = " + relatedCPlaces.size() + "\n");
 
-        }else if(settings.getTabIndex() == 1){
+        } else if (settings.getTabIndex() == 1) {
             infoMsg("Initialising selected scenario...");
-            if(settings.getSeletedScenario()!=null)
+            if (settings.getSeletedScenario() != null)
                 checkList = settings.getSeletedScenario().getNodes(net);
-            infoMsg("Nodes = " + checkList.size()+"\n");
+            infoMsg("Nodes = " + checkList.size() + "\n");
 
-        }else if(settings.getTabIndex() == 2){
+        } else if (settings.getTabIndex() == 2) {
             //node info
             infoMsg("Initialising selected components...");
             checkList = settings.getSeletedNodes();
-            infoMsg("Selected nodes = " + checkList.size()+"\n");
+            infoMsg("Selected nodes = " + checkList.size() + "\n");
 
         }
 
-        if(settings.getGranularity() == Granularity.YEAR_YEAR){
+        if (settings.getGranularity() == Granularity.YEAR_YEAR) {
             infoMsg("Time granularity: T:year  D:year");
-        }else if(settings.getGranularity() == Granularity.HOUR_MINS){
+        } else if (settings.getGranularity() == Granularity.HOUR_MINS) {
             infoMsg("Time granularity: T:24 hour clock  D:minutes");
             infoMsg("Running time granularity checking task...");
-            for(Node node : checkList){
+            for (Node node : checkList) {
                 ArrayList<String> result = consistencyAlg.granularityHourMinsTask(node);
-                if(!result.isEmpty()){
+                if (!result.isEmpty()) {
                     outOfBoundNodes.add(node);
                     infoMsg("Node:" + net.getNodeReference(node));
-                    for(String str : result){
+                    for (String str : result) {
                         totalErrNum++;
                         errMsg(str);
                     }
@@ -137,7 +137,7 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
 
         infoMsg("--------------------------------------------------");
         infoMsg("Running unspecified value checking task...");
-        for(Node node : checkList){
+        for (Node node : checkList) {
 
             String str = "";
             boolean startResult;
@@ -145,58 +145,58 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
             boolean durResult;
             String cpResult;
 
-            if(settings.getTabIndex() == 1){
+            if (settings.getTabIndex() == 1) {
                 ScenarioRef s = settings.getSeletedScenario();
 
                 startResult =  consistencyAlg.hasSpecifiedStart(node, s);
                 endResult =  consistencyAlg.hasSpecifiedEnd(node, s);
-                if(syncCPs.contains(node)){
+                if (syncCPs.contains(node)) {
                     cpResult = consistencyAlg.hasSpecifiedCP(node, true, s);
                     durResult =  consistencyAlg.hasSpecifiedDur(node, true, s);
-                }else{
+                } else {
                     cpResult = consistencyAlg.hasSpecifiedCP(node, false, s);
                     durResult =  consistencyAlg.hasSpecifiedDur(node, false, s);
                 }
-            }else{
+            } else {
                 startResult =  consistencyAlg.hasSpecifiedStart(node, null);
                 endResult =  consistencyAlg.hasSpecifiedEnd(node, null);
-                if(syncCPs.contains(node)){
+                if (syncCPs.contains(node)) {
                     cpResult = consistencyAlg.hasSpecifiedCP(node, true, null);
                     durResult =  consistencyAlg.hasSpecifiedDur(node, true, null);
-                }else{
+                } else {
                     cpResult = consistencyAlg.hasSpecifiedCP(node, false, null);
                     durResult =  consistencyAlg.hasSpecifiedDur(node, false, null);
                 }
             }
 
-            str=startResult?"":"start() ";
-            str= str+(endResult?"":"end() ");
-            str= str+(durResult?"":"duration() ");
-            str= str+(cpResult.equals("")?"":cpResult);
+            str = startResult ? "" : "start() ";
+            str = str + (endResult ? "" : "end() ");
+            str = str + (durResult ? "" : "duration() ");
+            str = str + (cpResult.equals("") ? "" : cpResult);
 
-            if(!str.equals("")){
+            if (!str.equals("")) {
                 unspecifyNodes.add(node);
             }
-            if((str.contains("start")&&!str.contains("end"))
-                    || (!str.contains("start")&&str.contains("end"))){
+            if ((str.contains("start") && !str.contains("end"))
+                    || (!str.contains("start") && str.contains("end"))) {
                 unspecifyPartialNodes.add(node);
             }
             //channel place will do causal checking iff
             //there is at least one specified value in its connected events
-            if((node instanceof ChannelPlace) && str.contains("partial")){
+            if ((node instanceof ChannelPlace) && str.contains("partial")) {
                 unspecifyPartialNodes.add(node);
             }
 
-            if(settings.getTabIndex() == 1 && settings.isCausalConsistency()){
-                if((str.contains("start") && str.contains("end"))
-                        || str.contains("events") && (node instanceof ChannelPlace)){
+            if (settings.getTabIndex() == 1 && settings.isCausalConsistency()) {
+                if ((str.contains("start") && str.contains("end"))
+                        || str.contains("events") && (node instanceof ChannelPlace)) {
                     infoMsg("Node:" + net.getNodeReference(node));
-                    infoMsg("-Unspecified time value: "+str);
+                    infoMsg("-Unspecified time value: " + str);
                 }
-            }else{
-                if(!str.equals("")){
+            } else {
+                if (!str.equals("")) {
                     infoMsg("Node:" + net.getNodeReference(node));
-                    infoMsg("-Unspecified time value: "+str);
+                    infoMsg("-Unspecified time value: " + str);
                 }
             }
 
@@ -209,20 +209,20 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
         infoMsg("Running time consistency checking task...");
         Map<Node, ArrayList<String>> consistencyResult;
 
-        if(settings.getTabIndex() == 1){
+        if (settings.getTabIndex() == 1) {
             consistencyResult = timeConsistencyTask(checkList, settings.getSeletedScenario(), false);
-        }else{
+        } else {
             consistencyResult = timeConsistencyTask(checkList, null, false);
         }
 
-        for(Node node : consistencyResult.keySet()){
+        for (Node node : consistencyResult.keySet()) {
             infoMsg("Node:" + net.getNodeReference(node));
             Time n = (Time) node;
-            infoMsg("-start="+(n.getStartTime())+" end="+(n.getEndTime())+" duration="+(n.getDuration()));
+            infoMsg("-start=" + (n.getStartTime()) + " end=" + (n.getEndTime()) + " duration=" + (n.getDuration()));
 
             ArrayList<String> strs = consistencyResult.get(node);
-            if(!strs.isEmpty()){
-                for(String str : strs){
+            if (!strs.isEmpty()) {
+                for (String str : strs) {
                     inconsistencyNodes.add(node);
                     errMsg(str);
                     totalErrNum++;
@@ -231,40 +231,40 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
             }
         }
 
-        if((settings.getTabIndex() == 1) && settings.isCausalConsistency()){
+        if ((settings.getTabIndex() == 1) && settings.isCausalConsistency()) {
             infoMsg("--------------------------------------------------");
             infoMsg("Assign estimated time for nodes with partial time infomation...");
-            infoMsg("Default duration = "+settings.getDefaultDuration().toString());
+            infoMsg("Default duration = " + settings.getDefaultDuration().toString());
 
-            for(Node node : unspecifyPartialNodes){
+            for (Node node : unspecifyPartialNodes) {
                 infoMsg("Node:" + net.getNodeReference(node));
                 ArrayList<String> estimationResult = timeEstimationTask((Time) node);
-                if(!estimationResult.isEmpty()){
-                    for(String str : estimationResult){
-                        infoMsg("-"+str);
+                if (!estimationResult.isEmpty()) {
+                    for (String str : estimationResult) {
+                        infoMsg("-" + str);
                     }
                 }
             }
             infoMsg("--------------------------------------------------");
             infoMsg("Running causal consistency checking task...");
-            infoMsg("Default duration = "+settings.getDefaultDuration().toString());
+            infoMsg("Default duration = " + settings.getDefaultDuration().toString());
             Map<Node, ArrayList<String>> causalResult;
 
-            if(settings.getTabIndex() == 1){
+            if (settings.getTabIndex() == 1) {
                 causalResult = timeConsistencyTask(unspecifyPartialNodes, settings.getSeletedScenario(), false);
-            }else{
+            } else {
                 causalResult = timeConsistencyTask(unspecifyPartialNodes, null, false);
             }
 
-            for(Node node : causalResult.keySet()){
+            for (Node node : causalResult.keySet()) {
                 infoMsg("Node:" + net.getNodeReference(node));
                 Time n = (Time) node;
-                infoMsg("-start="+(n.getStartTime())+" end="+(n.getEndTime())+" duration="+(n.getDuration()));
+                infoMsg("-start=" + (n.getStartTime()) + " end=" + (n.getEndTime()) + " duration=" + (n.getDuration()));
 
                 ArrayList<String> strs = causalResult.get(node);
-                if(!strs.isEmpty()){
+                if (!strs.isEmpty()) {
                     causalInconsistencyNodes.add(node);
-                    for(String str : strs){
+                    for (String str : strs) {
                         errMsg(str);
                         totalErrNum++;
                     }
@@ -279,54 +279,54 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
 
         removeAssignedProperties();
 
-        logger.info("\n\nVerification-Result : "+ totalErrNum + " Error(s).");
-        if(!SONSettings.getTimeVisibility()){
+        logger.info("\n\nVerification-Result : " + totalErrNum + " Error(s).");
+        if (!SONSettings.getTimeVisibility()) {
             consistencyAlg.removeProperties();
         }
         return new Result<VerificationResult>(Outcome.FINISHED);
     }
 
-    private Map<Node, ArrayList<String>> timeConsistencyTask(Collection<Node> nodes, ScenarioRef s, boolean isEstimated){
+    private Map<Node, ArrayList<String>> timeConsistencyTask(Collection<Node> nodes, ScenarioRef s, boolean isEstimated) {
         Map<Node, ArrayList<String>> result = new HashMap<Node, ArrayList<String>>();
 
         Granularity g = settings.getGranularity();
 
         //ON consistency checking
-        for(Node n : nodes){
+        for (Node n : nodes) {
             Time node = (Time) n;
             //add node to map
             result.put(node, new ArrayList<String>());
 
-            if((node instanceof Condition)||(node instanceof TransitionNode)){
-                if(!isEstimated){
+            if ((node instanceof Condition) || (node instanceof TransitionNode)) {
+                if (!isEstimated) {
                     try {
                         result.get(node).addAll(consistencyAlg.onConsistency(node, s, g));
                     } catch (InvalidStructureException e) {
                         e.printStackTrace();
                     }
-                }else{
+                } else {
                     result.get(node).addAll(consistencyAlg.nodeConsistency(node, node.getStartTime(), node.getEndTime(), node.getDuration(), g));
                 }
             }
         }
 
         //CSON and BSON consistency checking
-        for(Node n: nodes){
-            if(n instanceof ChannelPlace){
+        for (Node n: nodes) {
+            if (n instanceof ChannelPlace) {
                 ChannelPlace cp = (ChannelPlace) n;
                 try {
                     result.get(cp).addAll(consistencyAlg.csonConsistency(cp, syncCPs, g));
                 } catch (InvalidStructureException e) {
                     e.printStackTrace();
                 }
-            }else if(n instanceof TransitionNode){
+            } else if (n instanceof TransitionNode) {
                 result.get(n).addAll(consistencyAlg.bsonConsistency((TransitionNode) n, phases, s));
-            }else if(n instanceof Condition){
+            } else if (n instanceof Condition) {
                 Condition c = (Condition) n;
-                if(lowerConditions.contains(c) && c.isInitial()){
+                if (lowerConditions.contains(c) && c.isInitial()) {
                     result.get(n).addAll(consistencyAlg.bsonConsistency2(c, s));;
                 }
-                if(lowerConditions.contains(c) && c.isFinal()){
+                if (lowerConditions.contains(c) && c.isFinal()) {
                     result.get(n).addAll(consistencyAlg.bsonConsistency3(c, s));
                 }
             }
@@ -334,18 +334,18 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
         return result;
     }
 
-    protected ArrayList<String> timeEstimationTask(Time t){
+    protected ArrayList<String> timeEstimationTask(Time t) {
         ArrayList<String> result = new ArrayList<String>();
 
         //set default duration
-        if(!t.getDuration().isSpecified()){
+        if (!t.getDuration().isSpecified()) {
             t.setDuration(settings.getDefaultDuration());
             estimatedDurNodes.add(t);
         }
         try {
-            if(!t.getStartTime().isSpecified()){
+            if (!t.getStartTime().isSpecified()) {
                 estimationAlg.setEstimatedStartTime((Node) t);
-                if(relationAlg.isInitial(t))
+                if (relationAlg.isInitial(t))
                     estimatedIniNodes.add(t);
             }
         } catch (TimeOutOfBoundsException e1) {
@@ -356,9 +356,9 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
             result.add(e1.getMessage());
         }
         try {
-            if(!t.getEndTime().isSpecified()){
+            if (!t.getEndTime().isSpecified()) {
                 estimationAlg.setEstimatedEndTime((Node) t);
-                if(relationAlg.isFinal(t))
+                if (relationAlg.isFinal(t))
                     estimatedFinalNodes.add(t);
             }
         } catch (TimeOutOfBoundsException e) {
@@ -372,7 +372,7 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
         return result;
     }
 
-    protected void initialise(){
+    protected void initialise() {
         consistencyAlg = new ConsistencyAlg(net);
         consistencyAlg.removeProperties();
         consistencyAlg.setProperties();
@@ -384,81 +384,81 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
         relationAlg = new RelationAlgorithm(net);
         bsonAlg = new BSONAlg(net);
         phases = bsonAlg.getAllPhases();
-        lowerConditions= getLowerConditions();
+        lowerConditions = getLowerConditions();
     }
 
-    protected void removeAssignedProperties(){
+    protected void removeAssignedProperties() {
         //remove assigned time properties
         Interval interval = new Interval();
-        for(Node node: net.getComponents()){
+        for (Node node: net.getComponents()) {
             consistencyAlg.setDefaultTime(node);
         }
-        for(Time node : estimatedIniNodes){
+        for (Time node : estimatedIniNodes) {
             node.setStartTime(interval);
         }
-        for(Time node : estimatedFinalNodes){
+        for (Time node : estimatedFinalNodes) {
             node.setEndTime(interval);
         }
-        for(Time node : estimatedDurNodes){
+        for (Time node : estimatedDurNodes) {
             node.setDuration(interval);
         }
     }
 
-    private Collection<ChannelPlace> getSyncCPs(){
+    private Collection<ChannelPlace> getSyncCPs() {
         Collection<ChannelPlace> result = new HashSet<ChannelPlace>();
         HashSet<Node> nodes = new HashSet<Node>();
         nodes.addAll(net.getTransitionNodes());
         nodes.addAll(net.getChannelPlaces());
         CSONCycleAlg cycleAlg = new CSONCycleAlg(net);
 
-        for(Path path : cycleAlg.syncCycleTask(nodes)){
-            for(Node node : path){
-                if(node instanceof ChannelPlace)
+        for (Path path : cycleAlg.syncCycleTask(nodes)) {
+            for (Node node : path) {
+                if (node instanceof ChannelPlace)
                     result.add((ChannelPlace) node);
             }
         }
         return result;
     }
 
-    private Collection<Condition> getLowerConditions(){
+    private Collection<Condition> getLowerConditions() {
         Collection<Condition> result = new ArrayList<Condition>();
         Collection<ONGroup> lowerGroups = bsonAlg.getLowerGroups(net.getGroups());
 
-        for(ONGroup group : lowerGroups){
+        for (ONGroup group : lowerGroups) {
             result.addAll(group.getConditions());
         }
         return result;
     }
 
-    private void inconsistencyHighlight(boolean b, Collection<Node> nodes){
-        if(b){
-            for(Node node : nodes){
+    private void inconsistencyHighlight(boolean b, Collection<Node> nodes) {
+        if (b) {
+            for (Node node : nodes) {
                 net.setForegroundColor(node, inconsistencyColor);
             }
         }
     }
 
-    private void unspecifyHighlight(boolean b, Collection<Node> nodes){
-        if(b){
-            for(Node node : nodes){
+    private void unspecifyHighlight(boolean b, Collection<Node> nodes) {
+        if (b) {
+            for (Node node : nodes) {
                 net.setForegroundColor(node, new Color(204, 204, 255));
             }
         }
     }
 
-    private void causalHighlight(boolean b, Collection<Node> nodes){
-        if(b){
-            for(Node node : nodes){
+    private void causalHighlight(boolean b, Collection<Node> nodes) {
+        if (b) {
+            for (Node node : nodes) {
                 net.setForegroundColor(node, causalColor);
             }
         }
     }
 
-    public void infoMsg(String msg){
+    public void infoMsg(String msg) {
         logger.info(msg);
     }
 
-    public void errMsg(String msg){
-        logger.info("-ERR: "+msg);
+    public void errMsg(String msg) {
+        logger.info("-ERR: " + msg);
     }
 }

@@ -52,6 +52,6 @@ public class MathConnection extends MathNode implements Connection {
 
     @Override
     public String toString() {
-        return "MathConnection " + this.hashCode() + " (" + first +", " + second +")";
+        return "MathConnection " + this.hashCode() + " (" + first + ", " + second + ")";
     }
 }

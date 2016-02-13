@@ -82,13 +82,13 @@ public class ScencoSolver {
     private ArrayList<Integer> count;
     private File directory;
 
-    public ScencoSolver(EncoderSettings settings, WorkspaceEntry we){
+    public ScencoSolver(EncoderSettings settings, WorkspaceEntry we) {
         this.settings = settings;
         this.we = we;
         this.cpogBuilder = new ScencoExecutionSupport();
     }
 
-    public ArrayList<String> getScencoArguments(){
+    public ArrayList<String> getScencoArguments() {
         ArrayList<String> args = new ArrayList<String>();
         ArrayList<String> check;
 
@@ -113,7 +113,7 @@ public class ScencoSolver {
         graph = new int[n][n];
         check = cpogBuilder.constructConstraints(constraints, graph, m, n,
                 scenarios, events, positions, count);
-        if(check.get(0).contains("ERROR")){
+        if (check.get(0).contains("ERROR")) {
             return check;
         }
 
@@ -123,7 +123,7 @@ public class ScencoSolver {
         File encodingFile = new File(directory, "custom.enc");
         File resultDirectory = new File(directory, "result");
         resultDirectory.mkdir();
-        if((cpogBuilder.writeCpogIntoFile(m, scenarios, scenarioFile, encodingFile, settings)) != 0){
+        if ((cpogBuilder.writeCpogIntoFile(m, scenarios, scenarioFile, encodingFile, settings)) != 0) {
             FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
             args.add("ERROR");
             args.add("Error on writing scenario file.");
@@ -133,19 +133,19 @@ public class ScencoSolver {
 
         instantiateParameters(n, m);
 
-        if(settings.isAbcFlag()){
+        if (settings.isAbcFlag()) {
             File f = new File(abcFolder);
-            if(!f.exists() || !f.isDirectory()){
+            if (!f.exists() || !f.isDirectory()) {
                 FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
                 args.add("ERROR");
                 args.add(MSG_ABC_NOT_PRESENT);
                 args.add(ACCESS_SCENCO_ERROR);
                 return args;
-            } else{
+            } else {
                 abcFlag = "-a";
                 gateLibFlag = "-lib";
                 f = new File(abcFolder + gatesLibrary);
-                if(!f.exists() || f.isDirectory()){
+                if (!f.exists() || f.isDirectory()) {
                     FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
                     args.add("ERROR");
                     args.add(MSG_GATE_LIB_NOT_PRESENT);
@@ -153,7 +153,7 @@ public class ScencoSolver {
                     return args;
                 }
             }
-        }else{
+        } else {
             abcFlag = "";
             abcFolder = "";
             gateLibFlag = "";
@@ -161,29 +161,29 @@ public class ScencoSolver {
         }
 
         // FILL IN PARAMETERS FOR CALLING PROGRAMER PROPERLY
-        if(settings.isCpogSize()) cpogSize = "-cs";
-        if(settings.isCostFunc()) disableFunction = "-d";
-        if(settings.isVerboseMode()) verbose = "-v";
-        if(settings.isEffort()) effort = "all";
+        if (settings.isCpogSize()) cpogSize = "-cs";
+        if (settings.isCostFunc()) disableFunction = "-d";
+        if (settings.isVerboseMode()) verbose = "-v";
+        if (settings.isEffort()) effort = "all";
         else effort = "min";
-        if(settings.isCustomEncMode()){
+        if (settings.isCustomEncMode()) {
             customFlag = "-set";
             customPath = encodingFile.getAbsolutePath();
         }
-        switch(settings.getGenMode()){
+        switch (settings.getGenMode()) {
         case OPTIMAL_ENCODING:
             genMode = "-top";
             numSol = String.valueOf(settings.getSolutionNumber());
             break;
         case RECURSIVE:
-            if(settings.isCustomEncMode()){
+            if (settings.isCustomEncMode()) {
                 modBitFlag = "-bit";
                 modBit = String.valueOf(settings.getBits());
             }
             break;
         case RANDOM:
             genMode = "-r";
-            if(settings.isCustomEncMode()){
+            if (settings.isCustomEncMode()) {
                 customFlag = "-set";
                 customPath = encodingFile.getAbsolutePath();
                 modBitFlag = "-bit";
@@ -246,24 +246,24 @@ public class ScencoSolver {
         return args;
     }
 
-    public void handleResult(String[] outputLines, String resultDirectoryPath){
+    public void handleResult(String[] outputLines, String resultDirectoryPath) {
         optEnc = new String[m];
-        optFormulaeVertices = new String[n*n];
-        truthTableVertices =  new String[n*n];
+        optFormulaeVertices = new String[n * n];
+        truthTableVertices =  new String[n * n];
         optVertices = new String[n];
-        optSources = new String[n*n];
-        optDests = new String[n*n];
-        optFormulaeArcs = new String[n*n];
-        truthTableArcs =  new String[n*n];
-        arcNames = new String[n*n];
+        optSources = new String[n * n];
+        optDests = new String[n * n];
+        optFormulaeArcs = new String[n * n];
+        truthTableArcs =  new String[n * n];
+        arcNames = new String[n * n];
 
-        try{
-            for (int i=0; i <outputLines.length; i++){
-                if(settings.isVerboseMode())
+        try {
+            for (int i = 0; i < outputLines.length; i++) {
+                if (settings.isVerboseMode())
                     System.out.println(outputLines[i]);
 
                 // Read Optimal Encoding
-                if(outputLines[i].contains("MIN: ")){
+                if (outputLines[i].contains("MIN: ")) {
 
                     StringTokenizer string = new StringTokenizer(outputLines[i], " ");
                     int j = 0;
@@ -274,20 +274,20 @@ public class ScencoSolver {
                 }
 
                 // Read Optimal Formulae
-                if(outputLines[i].contains(".start_formulae")){
+                if (outputLines[i].contains(".start_formulae")) {
                     i++;
                     v = 0;
                     a = 0;
-                    while(outputLines[i].contains(".end_formulae") == false){
-                        if(settings.isVerboseMode())
+                    while (outputLines[i].contains(".end_formulae") == false) {
+                        if (settings.isVerboseMode())
                             System.out.println(outputLines[i]);
                         StringTokenizer st2 = new StringTokenizer(outputLines[i], ",");
                         String el = (String) st2.nextElement();
-                        if(el.equals("V")){ //formula of a vertex
+                        if (el.equals("V")) { //formula of a vertex
                             optVertices[v] = (String) st2.nextElement();
                             truthTableVertices[v] = (String) st2.nextElement();
                             optFormulaeVertices[v++] = (String) st2.nextElement();
-                        }else{
+                        } else {
                             optSources[a] = (String) st2.nextElement();
                             optDests[a] = (String) st2.nextElement();
                             arcNames[a] = optSources[a] + "->" + optDests[a];
@@ -300,9 +300,9 @@ public class ScencoSolver {
                 }
 
                 // Read statistics
-                if(outputLines[i].contains(".statistics")){
+                if (outputLines[i].contains(".statistics")) {
                     i++;
-                    while(outputLines[i].contains(".end_statistics") == false){
+                    while (outputLines[i].contains(".end_statistics") == false) {
                         System.out.println(outputLines[i]);
                         i++;
                     }
@@ -320,15 +320,15 @@ public class ScencoSolver {
 
             char[][] matrix = new char[m][task.size()];
             String[] instance = new String[m];
-            for(String s : task.keySet())
-                for(int i = 0; i < m; i++) matrix[i][task.get(s)] = s.charAt(i);
+            for (String s : task.keySet())
+                for (int i = 0; i < m; i++) matrix[i][task.get(s)] = s.charAt(i);
 
-            for(int i = 0; i < m; i++) instance[i] = new String(matrix[i]);
+            for (int i = 0; i < m; i++) instance[i] = new String(matrix[i]);
 
             int freeVariables;
-            if(settings.getGenMode() != GenerationMode.SCENCO)
+            if (settings.getGenMode() != GenerationMode.SCENCO)
                 freeVariables = optEnc[0].length();
-            else{
+            else {
                 freeVariables = settings.getBits();
             }
             settings.getCircuitSize();
@@ -336,20 +336,20 @@ public class ScencoSolver {
             // GET PREDICATES FROM WORKCRAFT ENVIRONMENT
             VisualVariable[] predicatives = new VisualVariable[n];
             int pr = 0;
-            for(VisualVariable variable : Hierarchy.getChildrenOfType(cpog.getRoot(), VisualVariable.class)) {
+            for (VisualVariable variable : Hierarchy.getChildrenOfType(cpog.getRoot(), VisualVariable.class)) {
                 predicatives[pr++] = variable;
             }
 
             Variable[] vars = new Variable[freeVariables + pr];
-            for(int i = 0; i < freeVariables; i++) vars[i] = cpog.createVisualVariable().getMathVariable();
-            for(int i = 0; i< pr; i++) vars[freeVariables +i] = predicatives[i].getMathVariable();
+            for (int i = 0; i < freeVariables; i++) vars[i] = cpog.createVisualVariable().getMathVariable();
+            for (int i = 0; i < pr; i++) vars[freeVariables + i] = predicatives[i].getMathVariable();
 
             CpogEncoding solution = null;
 
             // READ OUTPUT OF SCENCO INSTANTIATING THE OPTIMAL ENCODING SOLUTION
             // AND CONNECTING IT TO EACH VISUAL VERTEX EXPLOITING A MAP
             System.out.println("Op-code selected for graphs:");
-            for(int i=0; i<m; i++){
+            for (int i = 0; i < m; i++) {
                 optEnc[i] = optEnc[i].replace('-', 'X');
                 String name;
                 if (scenarios.get(i).getLabel().isEmpty()) {
@@ -377,13 +377,13 @@ public class ScencoSolver {
 
             // Set optimal encoding to graphs
             boolean[][] optEncoding = new boolean[m][];
-            for(int i=0; i<m; i++) {
+            for (int i = 0; i < m; i++) {
                 optEncoding[i] = new boolean[freeVariables + pr];
-                for(int j=0; j<freeVariables; j++){
-                    if(optEnc[i].charAt(j) == '0' || optEnc[i].charAt(j) == '-') optEncoding[i][j] = false;
+                for (int j = 0; j < freeVariables; j++) {
+                    if (optEnc[i].charAt(j) == '0' || optEnc[i].charAt(j) == '-') optEncoding[i][j] = false;
                     else    optEncoding[i][j] = true;
                 }
-                for(int j=freeVariables; j<freeVariables + pr; j++){
+                for (int j = freeVariables; j < freeVariables + pr; j++) {
                     optEncoding[i][j] = false;
                 }
 
@@ -405,13 +405,13 @@ public class ScencoSolver {
             cpogBuilder.buildCpog(n, m, constraints, cpog, vertices, formulaeName);
 
             we.saveMemento();
-        }finally{
+        } finally {
             // clean up temporary files
             FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
         }
     }
 
-    private void instantiateParameters(int elements, int scenarios){
+    private void instantiateParameters(int elements, int scenarios) {
         scencoCommand = ToolUtils.getAbsoluteCommandPath(CpogSettings.getScencoCommand());
         espressoCommand = ToolUtils.getAbsoluteCommandPath(CpogSettings.getEspressoCommand());
         abcFolder = CpogSettings.getAbcFolder();

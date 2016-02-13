@@ -31,7 +31,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 class Tools {
     static VisualGroup createGroup(Container parent) {
         VisualGroup node = new VisualGroup();
-        if(parent!=null)
+        if (parent != null)
             parent.add(node);
         return node;
     }

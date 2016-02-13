@@ -239,7 +239,7 @@ public class VisualSTG extends AbstractVisualModel {
         }
 
         VisualReadArc connection = null;
-        if ((mPlace != null) && (mTransition !=null)) {
+        if ((mPlace != null) && (mTransition != null)) {
             MathConnection mConsumingConnection = stg.connect(mPlace, mTransition).getSimpleResult();
             MathConnection mProducingConnection = stg.connect(mTransition, mPlace).getSimpleResult();
 

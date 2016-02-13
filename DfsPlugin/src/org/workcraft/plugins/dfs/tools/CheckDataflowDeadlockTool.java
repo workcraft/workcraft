@@ -24,7 +24,7 @@ public class CheckDataflowDeadlockTool extends VerificationTool {
         String description = "MPSat tool chain";
         String title = we.getTitle();
         if (!title.isEmpty()) {
-            description += "(" + title +")";
+            description += "(" + title + ")";
         }
         final Framework framework = Framework.getInstance();
         framework.getTaskManager().queue(task, description, new MpsatChainResultHandler(task));

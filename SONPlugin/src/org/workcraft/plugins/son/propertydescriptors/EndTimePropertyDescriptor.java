@@ -7,7 +7,7 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.son.elements.Time;
 import org.workcraft.plugins.son.util.Interval;
 
-public class EndTimePropertyDescriptor implements PropertyDescriptor{
+public class EndTimePropertyDescriptor implements PropertyDescriptor {
     private final Time t;
     public static final String PROPERTY_END_TIME = "End time";
 

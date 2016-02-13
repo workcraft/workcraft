@@ -35,29 +35,29 @@ public class SONConnectionTool extends ConnectionTool {
         interfacePanel.setLayout(new BoxLayout(interfacePanel, BoxLayout.Y_AXIS));
 
         polyButton = new JRadioButton("Causal Connection");
-        polyButton.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent arg0){
+        polyButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
                 semantic = Semantics.PNLINE;
             }
         });
 
         asynButton = new JRadioButton("A/Syn Communication");
-        asynButton.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent arg0){
+        asynButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
                 semantic = Semantics.ASYNLINE;
             }
         });
 
         synButton = new JRadioButton("Synchronous Communication");
-        synButton.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent arg0){
+        synButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
                 semantic = Semantics.SYNCLINE;
             }
         });
 
         bhvButton = new JRadioButton("Behavioural Abstraction");
-        bhvButton.addActionListener(new ActionListener(){
-            public void actionPerformed(ActionEvent arg0){
+        bhvButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent arg0) {
                 semantic = Semantics.BHVLINE;
             }
         });
@@ -85,7 +85,7 @@ public class SONConnectionTool extends ConnectionTool {
 
         vson.forceConnectionSemantics(semantic);
         //forbid to connect with collapsed block (bound).
-        if(currentNode instanceof VisualBlock){
+        if (currentNode instanceof VisualBlock) {
             JOptionPane.showMessageDialog(mainWindow,
                     "Connect with atomic block is not valid",
                     "Cannot create connection", JOptionPane.WARNING_MESSAGE);

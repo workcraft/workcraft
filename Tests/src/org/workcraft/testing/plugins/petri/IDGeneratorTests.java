@@ -13,7 +13,7 @@ public class IDGeneratorTests {
         IDGenerator generator = new IDGenerator();
         generator.reserveID(8);
         assertEquals(0, generator.getNextID());
-        for (int i=1; i<8; i++)
+        for (int i = 1; i < 8; i++)
             assertEquals(i, generator.getNextID());
         assertEquals(9, generator.getNextID());
     }
@@ -23,7 +23,7 @@ public class IDGeneratorTests {
         IDGenerator generator = new IDGenerator();
         generator.reserveID(8);
         assertEquals(0, generator.getNextID());
-        for (int i=1; i<8; i++)
+        for (int i = 1; i < 8; i++)
             assertEquals(i, generator.getNextID());
         assertEquals(9, generator.getNextID());
 

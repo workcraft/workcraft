@@ -39,7 +39,7 @@ public class CElementRenderer extends GateRenderer {
             isFirstNode = false;
             LinkedList<Pair<String, Boolean>> retX = node.getX().accept(this);
             LinkedList<Pair<String, Boolean>> retY = node.getY().accept(this);
-            if (retX!=null&&retY!=null) {
+            if (retX != null && retY != null) {
                 retX.addAll(retY);
             } else retX = retY;
             return retX;
@@ -50,7 +50,7 @@ public class CElementRenderer extends GateRenderer {
             isFirstNode = false;
             LinkedList<Pair<String, Boolean>> retX = node.getX().accept(this);
             LinkedList<Pair<String, Boolean>> retY = node.getY().accept(this);
-            if (retX!=null&&retY!=null) {
+            if (retX != null && retY != null) {
                 retX.addAll(retY);
             } else retX = retY;
             return retX;
@@ -61,7 +61,7 @@ public class CElementRenderer extends GateRenderer {
             isFirstNode = false;
             LinkedList<Pair<String, Boolean>> retX = node.getX().accept(this);
             LinkedList<Pair<String, Boolean>> retY = node.getY().accept(this);
-            if (retX!=null&&retY!=null) {
+            if (retX != null && retY != null) {
                 retX.addAll(retY);
             } else retX = retY;
             return retX;
@@ -94,7 +94,7 @@ public class CElementRenderer extends GateRenderer {
             isFirstNode = false;
             LinkedList<Pair<String, Boolean>> retX = node.getX().accept(this);
             LinkedList<Pair<String, Boolean>> retY = node.getY().accept(this);
-            if (retX!=null&&retY!=null) {
+            if (retX != null && retY != null) {
                 retX.addAll(retY);
             } else retX = retY;
             return retX;
@@ -105,7 +105,7 @@ public class CElementRenderer extends GateRenderer {
             isFirstNode = false;
             LinkedList<Pair<String, Boolean>> ret = new LinkedList<Pair<String, Boolean>>();
 
-            Pair<String, Boolean> vv = new Pair<String, Boolean>(variable.getLabel(), doNegate?!isNegated:isNegated);
+            Pair<String, Boolean> vv = new Pair<String, Boolean>(variable.getLabel(), doNegate ? !isNegated : isNegated);
 
             ret.add(vv);
             return ret;
@@ -116,7 +116,7 @@ public class CElementRenderer extends GateRenderer {
             isFirstNode = false;
             LinkedList<Pair<String, Boolean>> retX = node.getX().accept(this);
             LinkedList<Pair<String, Boolean>> retY = node.getY().accept(this);
-            if (retX!=null&&retY!=null) {
+            if (retX != null && retY != null) {
                 retX.addAll(retY);
             } else retX = retY;
             return retX;
@@ -159,8 +159,8 @@ public class CElementRenderer extends GateRenderer {
 
         return new CElementRenderingResult() {
 
-            final Ellipse2D.Double bubbleShape = new Ellipse2D.Double(-GateRenderer.bubbleSize/2,
-                    -GateRenderer.bubbleSize/2, GateRenderer.bubbleSize, GateRenderer.bubbleSize);
+            final Ellipse2D.Double bubbleShape = new Ellipse2D.Double(-GateRenderer.bubbleSize / 2,
+                    -GateRenderer.bubbleSize / 2, GateRenderer.bubbleSize, GateRenderer.bubbleSize);
 
             private Rectangle2D cachedBB = null;
             private Map<String, Point2D> cachedPositions = null;
@@ -169,7 +169,7 @@ public class CElementRenderer extends GateRenderer {
             private int svs = setVars.size();
             private int bvs = bothVars.size();
             private int rvs = resetVars.size();
-            private double sumY = 0.5*(svs+bvs+rvs);
+            private double sumY = 0.5 * (svs + bvs + rvs);
 
             private Point2D minusPosition = null;
             private Point2D plusPosition = null;
@@ -178,23 +178,23 @@ public class CElementRenderer extends GateRenderer {
             @Override
             public Rectangle2D boundingBox() {
                 if (cachedBB == null) {
-                    double h = bothVars.size()*0.5;
+                    double h = bothVars.size() * 0.5;
                     double x = h * GateRenderer.ANDGateAspectRatio;
                     maxX = 0;
                     if (isGlobalNegation) gX = GateRenderer.bubbleSize;
 
                     for (Pair<String, Boolean> p1: setVars)
-                        if (p1.getSecond()^(gX!=0)) maxX = GateRenderer.bubbleSize;
+                        if (p1.getSecond() ^ (gX != 0)) maxX = GateRenderer.bubbleSize;
                     for (Pair<String, Boolean> p2: resetVars)
-                        if (p2.getSecond()^(gX!=0)) maxX = GateRenderer.bubbleSize;
+                        if (p2.getSecond() ^ (gX != 0)) maxX = GateRenderer.bubbleSize;
                     for (Pair<String, Boolean> p3: bothVars)
-                        if (p3.getSecond()^(gX!=0)) maxX = GateRenderer.bubbleSize;
+                        if (p3.getSecond() ^ (gX != 0)) maxX = GateRenderer.bubbleSize;
 
-                    if (svs>0) plusPosition = new Point2D.Double(maxX/2-gX/2, -bvs*0.5/2-0.25);
-                    if (rvs>0) minusPosition = new Point2D.Double(maxX/2-gX/2, +bvs*0.5/2+0.25);
-                    labelPosition = new Point2D.Double(maxX/2-gX/2, 0);
+                    if (svs > 0) plusPosition = new Point2D.Double(maxX / 2 - gX / 2, -bvs * 0.5 / 2 - 0.25);
+                    if (rvs > 0) minusPosition = new Point2D.Double(maxX / 2 - gX / 2, +bvs * 0.5 / 2 + 0.25);
+                    labelPosition = new Point2D.Double(maxX / 2 - gX / 2, 0);
                     x += maxX + gX;
-                    cachedBB = new Rectangle2D.Double(-x/2, -svs*0.5-bvs*0.5/2, x, sumY);
+                    cachedBB = new Rectangle2D.Double(-x / 2, -svs * 0.5 - bvs * 0.5 / 2, x, sumY);
                 }
                 return cachedBB;
             }
@@ -204,26 +204,26 @@ public class CElementRenderer extends GateRenderer {
                 if (cachedPositions == null) {
                     Map<String, Point2D> positions = new HashMap<String, Point2D>();
 
-                    double x = boundingBox().getMaxX()-(bothVars.size()*0.5) * GateRenderer.ANDGateAspectRatio;
+                    double x = boundingBox().getMaxX() - (bothVars.size() * 0.5) * GateRenderer.ANDGateAspectRatio;
                     double y = boundingBox().getMinY();
 
                     for (Pair<String, Boolean> p: setVars) {
-                        double xx = (p.getSecond()^(gX!=0))?GateRenderer.bubbleSize:0;
-                        if (gX!=0) xx+=GateRenderer.bubbleSize;
-                        positions.put(p.getFirst(), new Point2D.Double(x - xx, y + 0.5/2));
-                        y+=0.5;
+                        double xx = (p.getSecond() ^ (gX != 0)) ? GateRenderer.bubbleSize : 0;
+                        if (gX != 0) xx += GateRenderer.bubbleSize;
+                        positions.put(p.getFirst(), new Point2D.Double(x - xx, y + 0.5 / 2));
+                        y += 0.5;
                     }
                     for (Pair<String, Boolean> p: bothVars) {
-                        double xx = (p.getSecond()^(gX!=0))?GateRenderer.bubbleSize:0;
-                        if (gX!=0) xx+=GateRenderer.bubbleSize;
-                        positions.put(p.getFirst(), new Point2D.Double(x - xx, y + 0.5/2));
-                        y+=0.5;
+                        double xx = (p.getSecond() ^ (gX != 0)) ? GateRenderer.bubbleSize : 0;
+                        if (gX != 0) xx += GateRenderer.bubbleSize;
+                        positions.put(p.getFirst(), new Point2D.Double(x - xx, y + 0.5 / 2));
+                        y += 0.5;
                     }
                     for (Pair<String, Boolean> p: resetVars) {
-                        double xx = (p.getSecond()^(gX!=0))?GateRenderer.bubbleSize:0;
-                        if (gX!=0) xx+=GateRenderer.bubbleSize;
-                        positions.put(p.getFirst(), new Point2D.Double(x - xx, y + 0.5/2));
-                        y+=0.5;
+                        double xx = (p.getSecond() ^ (gX != 0)) ? GateRenderer.bubbleSize : 0;
+                        if (gX != 0) xx += GateRenderer.bubbleSize;
+                        positions.put(p.getFirst(), new Point2D.Double(x - xx, y + 0.5 / 2));
+                        y += 0.5;
                     }
 
                     cachedPositions = positions;
@@ -241,7 +241,7 @@ public class CElementRenderer extends GateRenderer {
             @Override
             public void draw(Graphics2D g) {
 
-                double h = bothVars.size()*0.5;
+                double h = bothVars.size() * 0.5;
                 double x = boundingBox().getMaxX() - h * GateRenderer.ANDGateAspectRatio - gX;
                 double y = boundingBox().getMinY();
 
@@ -250,7 +250,7 @@ public class CElementRenderer extends GateRenderer {
                 y = boundingBox().getMinY();
 
                 double w = h * (GateRenderer.ANDGateAspectRatio / 0.8125);
-                double y1 = y+svs*0.5;
+                double y1 = y + svs * 0.5;
 
                 path.moveTo(x, y1);
                 path.lineTo(x + h / 4, y1);
@@ -263,41 +263,41 @@ public class CElementRenderer extends GateRenderer {
                 g.setColor(GateRenderer.foreground);
                 g.draw(path);
                 if (!setVars.isEmpty()) {
-                    Line2D line = new Line2D.Double(x, y1, x, y1-0.5*setVars.size());
+                    Line2D line = new Line2D.Double(x, y1, x, y1 - 0.5 * setVars.size());
                     g.draw(line);
                 }
 
                 if (!resetVars.isEmpty()) {
-                    Line2D line = new Line2D.Double(x, y1+h, x, y1+h+0.5*resetVars.size());
+                    Line2D line = new Line2D.Double(x, y1 + h, x, y1 + h + 0.5 * resetVars.size());
                     g.draw(line);
                 }
 
-                AffineTransform at= g.getTransform();
+                AffineTransform at = g.getTransform();
 
-                if (gX!=0) {
-                    g.translate(boundingBox().getMaxX()-gX/2, 0);
+                if (gX != 0) {
+                    g.translate(boundingBox().getMaxX() - gX / 2, 0);
                     drawBubble(g);
-                    g.translate(-boundingBox().getMaxX()+gX/2, 0);
+                    g.translate(-boundingBox().getMaxX() + gX / 2, 0);
                 }
 
                 g.translate(x, y);
 
                 for (Pair<String, Boolean> p: setVars) {
-                    g.translate(-GateRenderer.bubbleSize/2, 0.5/2);
-                    if (p.getSecond()^(gX!=0)) drawBubble(g);
-                    g.translate(+GateRenderer.bubbleSize/2, 0.5/2);
+                    g.translate(-GateRenderer.bubbleSize / 2, 0.5 / 2);
+                    if (p.getSecond() ^ (gX != 0)) drawBubble(g);
+                    g.translate(+GateRenderer.bubbleSize / 2, 0.5 / 2);
                 }
 
                 for (Pair<String, Boolean> p: bothVars) {
-                    g.translate(-GateRenderer.bubbleSize/2, 0.5/2);
-                    if (p.getSecond()^(gX!=0)) drawBubble(g);
-                    g.translate(+GateRenderer.bubbleSize/2, 0.5/2);
+                    g.translate(-GateRenderer.bubbleSize / 2, 0.5 / 2);
+                    if (p.getSecond() ^ (gX != 0)) drawBubble(g);
+                    g.translate(+GateRenderer.bubbleSize / 2, 0.5 / 2);
                 }
 
                 for (Pair<String, Boolean> p: resetVars) {
-                    g.translate(-GateRenderer.bubbleSize/2, 0.5/2);
-                    if (p.getSecond()^(gX!=0)) drawBubble(g);
-                    g.translate(+GateRenderer.bubbleSize/2, 0.5/2);
+                    g.translate(-GateRenderer.bubbleSize / 2, 0.5 / 2);
+                    if (p.getSecond() ^ (gX != 0)) drawBubble(g);
+                    g.translate(+GateRenderer.bubbleSize / 2, 0.5 / 2);
                 }
 
                 g.setTransform(at);
@@ -305,21 +305,21 @@ public class CElementRenderer extends GateRenderer {
 
             @Override
             public Point2D getLabelPosition() {
-                if (labelPosition!=null)
+                if (labelPosition != null)
                     return (Point2D) labelPosition.clone();
                 return null;
             }
 
             @Override
             public Point2D getMinusPosition() {
-                if (minusPosition!=null)
+                if (minusPosition != null)
                     return (Point2D) minusPosition.clone();
                 return null;
             }
 
             @Override
             public Point2D getPlusPosition() {
-                if (plusPosition!=null)
+                if (plusPosition != null)
                     return (Point2D) plusPosition.clone();
                 return null;
             }

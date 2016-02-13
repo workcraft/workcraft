@@ -57,16 +57,16 @@ public class MethodParametersMatcherTests {
         TestMethodInfo match;
         try {
             match = MethodParametersMatcher.match(getMethods(type), parameters);
-        } catch(NoSuchMethodException e) {
+        } catch (NoSuchMethodException e) {
             return -1;
-        } catch(AmbiguousMethodException e) {
+        } catch (AmbiguousMethodException e) {
             return -2;
         }
         return match.execute();
     }
 
-    static class Simple{
-        public static int qq(){
+    static class Simple {
+        public static int qq() {
             return 1;
         }
     }
@@ -77,20 +77,20 @@ public class MethodParametersMatcherTests {
         Assert.assertEquals(-1, match(Simple.class, Object.class));
     }
 
-    static class Advanced{
-        public static int qq(){
+    static class Advanced {
+        public static int qq() {
             return 1;
         }
-        public static int qq(A a){
+        public static int qq(A a) {
             return 2;
         }
-        public static int qq(ABq abq){
+        public static int qq(ABq abq) {
             return 3;
         }
-        public static int qq(AB ab){
+        public static int qq(AB ab) {
             return 4;
         }
-        public static int qq(AC ac){
+        public static int qq(AC ac) {
             return 5;
         }
     }
@@ -105,11 +105,11 @@ public class MethodParametersMatcherTests {
         Assert.assertEquals(5, match(Advanced.class, AC.class));
     }
 
-    static class Ambiguous{
-        public static int qq(A a, AC b){
+    static class Ambiguous {
+        public static int qq(A a, AC b) {
             return 1;
         }
-        public static int qq(ABq a, A b){
+        public static int qq(ABq a, A b) {
             return 2;
         }
     }
@@ -143,8 +143,8 @@ public class MethodParametersMatcherTests {
     private Collection<TestMethodInfo> getMethods(Class<?> clasz) {
         ArrayList<TestMethodInfo> result = new ArrayList<TestMethodInfo>();
 
-        for(Method method : clasz.getMethods())
-            if(method.getName() == "qq")
+        for (Method method : clasz.getMethods())
+            if (method.getName() == "qq")
                 result.add(new TestMethodInfo(method));
 
         return result;

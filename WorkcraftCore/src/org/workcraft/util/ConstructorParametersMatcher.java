@@ -41,16 +41,16 @@ public class ConstructorParametersMatcher {
     @SuppressWarnings("unchecked") // java sucks
     public <T> Constructor<? extends T> match(Class<? extends T> c, Class<?>... parameters) throws NoSuchMethodException {
         ArrayList<ConstructorInfo<T>> constructors = new ArrayList<ConstructorInfo<T>>();
-        for(Constructor<?> constructor : c.getConstructors())
+        for (Constructor<?> constructor : c.getConstructors())
             constructors.add(new ConstructorInfo<T>((Constructor<? extends T>) constructor));
 
         try {
             return MethodParametersMatcher.match(constructors, parameters).constructor;
-        } catch(NoSuchMethodException e) {
+        } catch (NoSuchMethodException e) {
             String s = "";
-            for(Class<?> parameter : parameters) {
-                if(s.length()>0)
-                    s+=", ";
+            for (Class<?> parameter : parameters) {
+                if (s.length() > 0)
+                    s += ", ";
                 s += parameter.getCanonicalName();
             }
             throw new NoSuchMethodException("Unable to find a constructor for class " + c.getCanonicalName() + " with parameters (" + s + ")");

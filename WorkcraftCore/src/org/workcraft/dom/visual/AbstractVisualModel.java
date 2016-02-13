@@ -195,7 +195,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
             container.add(component);
         } catch (NodeCreationException e) {
             String mathName = getMathName(mathNode);
-            throw new RuntimeException("Cannot create visual component for math node '" + mathName + "' of class '" + type +"'");
+            throw new RuntimeException("Cannot create visual component for math node '" + mathName + "' of class '" + type + "'");
         }
         return (T) component;
     }
@@ -263,7 +263,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
      */
     @Override
     public void selectAll() {
-        if(selection.size() == getCurrentLevel().getChildren().size()) {
+        if (selection.size() == getCurrentLevel().getChildren().size()) {
             return;
         }
         Collection<Node> s = saveSelection();
@@ -303,7 +303,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
         if (!Hierarchy.isDescendant(node, getCurrentLevel())) {
             throw new RuntimeException(
                 "Cannot select a node that is not in the current editing level ("
-                + node + "), parent (" + node.getParent() +")");
+                + node + "), parent (" + node.getParent() + ")");
         }
     }
 
@@ -506,7 +506,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     @Override
     public void ungroupSelection() {
         ArrayList<Node> toSelect = new ArrayList<Node>();
-        for(Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
+        for (Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
             if (node instanceof VisualGroup) {
                 VisualGroup group = (VisualGroup) node;
                 ArrayList<Node> nodesToReparent = new ArrayList<Node>(group.getChildren());

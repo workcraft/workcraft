@@ -16,7 +16,7 @@ public class Phase extends HashSet<Condition> {
             if (!first) {
                 result.append(' ');
                 result.append(',' + net.getNodeReference(node));
-            }else{
+            } else {
                 result.append(' ');
                 result.append(net.getNodeReference(node));
                 first = false;

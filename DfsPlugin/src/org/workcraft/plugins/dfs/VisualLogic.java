@@ -55,8 +55,8 @@ public class VisualLogic extends VisualDelayComponent {
         Decoration d = r.getDecoration();
         double w = size - strokeWidth;
         double h = size - strokeWidth;
-        double w2 = w/2;
-        double h2 = h/2;
+        double w2 = w / 2;
+        double h2 = h / 2;
         float strokeWidth1 = (float) strokeWidth;
         float strokeWidth4 = strokeWidth1 / 4;
         int kd = 6;
@@ -64,18 +64,18 @@ public class VisualLogic extends VisualDelayComponent {
 
         Shape shape = new Rectangle2D.Double(-w2, -h2, w, h);
         Path2D eeShape = new Path2D.Double();
-        eeShape.moveTo(-2*dd + dd, -2 * dd);
-        eeShape.lineTo(-2*dd - dd, -2 * dd);
-        eeShape.lineTo(-2*dd - dd, +2 * dd);
-        eeShape.lineTo(-2*dd + dd, +2 * dd);
-        eeShape.moveTo(-2*dd + dd, 0);
-        eeShape.lineTo(-2*dd - dd, 0);
-        eeShape.moveTo(+2*dd + dd, -2 * dd);
-        eeShape.lineTo(+2*dd - dd, -2 * dd);
-        eeShape.lineTo(+2*dd - dd, +2 * dd);
-        eeShape.lineTo(+2*dd + dd, +2 * dd);
-        eeShape.moveTo(+2*dd + dd, 0);
-        eeShape.lineTo(+2*dd - dd, 0);
+        eeShape.moveTo(-2 * dd + dd, -2 * dd);
+        eeShape.lineTo(-2 * dd - dd, -2 * dd);
+        eeShape.lineTo(-2 * dd - dd, +2 * dd);
+        eeShape.lineTo(-2 * dd + dd, +2 * dd);
+        eeShape.moveTo(-2 * dd + dd, 0);
+        eeShape.lineTo(-2 * dd - dd, 0);
+        eeShape.moveTo(+2 * dd + dd, -2 * dd);
+        eeShape.lineTo(+2 * dd - dd, -2 * dd);
+        eeShape.lineTo(+2 * dd - dd, +2 * dd);
+        eeShape.lineTo(+2 * dd + dd, +2 * dd);
+        eeShape.moveTo(+2 * dd + dd, 0);
+        eeShape.lineTo(+2 * dd - dd, 0);
 
         boolean computed = getReferencedLogic().isComputed();
         if (d instanceof LogicDecoration) {

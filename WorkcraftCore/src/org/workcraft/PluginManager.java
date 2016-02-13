@@ -64,7 +64,7 @@ public class PluginManager implements PluginProvider {
 
         @Override
         public T getSingleton() {
-            if(instance == null) {
+            if (instance == null) {
                 instance = newInstance();
             }
             return instance;
@@ -78,7 +78,7 @@ public class PluginManager implements PluginProvider {
     }
 
     public boolean tryLoadManifest(File file) {
-        if(!file.exists()) {
+        if (!file.exists()) {
             LogUtils.logMessageLine("Plugin manifest \"" + file.getAbsolutePath() + "\" does not exist, plugins will be reconfigured.");
             return false;
         }
@@ -90,7 +90,7 @@ public class PluginManager implements PluginProvider {
         try {
             db = dbf.newDocumentBuilder();
             doc = db.parse(file);
-        } catch(Exception e) {
+        } catch (Exception e) {
             e.printStackTrace();
             return false;
         }
@@ -110,13 +110,13 @@ public class PluginManager implements PluginProvider {
 
         plugins.clear();
 
-        for(Element pluginElement : XmlUtil.getChildElements("plugin", xmlroot)) {
+        for (Element pluginElement : XmlUtil.getChildElements("plugin", xmlroot)) {
             LegacyPluginInfo info = new LegacyPluginInfo(pluginElement);
             for (String interfaceName : info.getInterfaces())
                 try {
                     plugins.put(Class.forName(interfaceName), new PluginInstanceHolder<Object>(info));
                 } catch (ClassNotFoundException e) {
-                    LogUtils.logErrorLine("Class '" + info.getClassName() + "' implements unknown interface '" + interfaceName +"'. Skipping interface.");
+                    LogUtils.logErrorLine("Class '" + info.getClassName() + "' implements unknown interface '" + interfaceName + "'. Skipping interface.");
                 }
         }
 
@@ -124,7 +124,7 @@ public class PluginManager implements PluginProvider {
     }
 
     public void loadManifest(File file) throws IOException, FormatException, PluginInstantiationException {
-        if(!tryLoadManifest(file)) {
+        if (!tryLoadManifest(file)) {
             reconfigure();
         } else {
             initModules();
@@ -132,12 +132,12 @@ public class PluginManager implements PluginProvider {
     }
 
     private void initModules() {
-        for(PluginInfo<? extends Module> info : getPlugins(Module.class)) {
+        for (PluginInfo<? extends Module> info : getPlugins(Module.class)) {
             final Module module = info.newInstance();
             try {
                 LogUtils.logMessageLine("  Loading module: " + module.getDescription());
                 module.init();
-            } catch(Throwable th) {
+            } catch (Throwable th) {
                 LogUtils.logErrorLine("Failed initialisation of module " + module.toString());
             }
         }
@@ -165,7 +165,7 @@ public class PluginManager implements PluginProvider {
         doc.appendChild(root);
         root = doc.getDocumentElement();
 
-        for(LegacyPluginInfo info : plugins) {
+        for (LegacyPluginInfo info : plugins) {
             Element e = doc.createElement("plugin");
             info.toXml(e);
             root.appendChild(e);
@@ -183,7 +183,7 @@ public class PluginManager implements PluginProvider {
             try {
                 plugins.put(Class.forName(interfaceName), new PluginInstanceHolder<Object>(info));
             } catch (ClassNotFoundException e) {
-                LogUtils.logErrorLine("Class '" + info.getClassName() + "' implements unknown interface '" + interfaceName +"'. Skipping interface.");
+                LogUtils.logErrorLine("Class '" + info.getClassName() + "' implements unknown interface '" + interfaceName + "'. Skipping interface.");
             }
     }
 
@@ -203,7 +203,7 @@ public class PluginManager implements PluginProvider {
 
         LogUtils.logMessageLine("" + classes.size() + " plugin(s) found.");
 
-        for(Class<?> cls : classes) {
+        for (Class<?> cls : classes) {
             final LegacyPluginInfo info = new LegacyPluginInfo(cls);
             pluginInfos.add(info);
             processLegacyPlugin(cls, info);
@@ -211,7 +211,7 @@ public class PluginManager implements PluginProvider {
 
         try {
             saveManifest(pluginInfos);
-        } catch(IOException e) {
+        } catch (IOException e) {
             System.err.println(e.getMessage());
         }
 
@@ -224,7 +224,7 @@ public class PluginManager implements PluginProvider {
     }
 
     public <T> void registerClass(Class<T> interf, final Class<? extends T> cls) {
-        registerClass(interf, new Initialiser<T>(){
+        registerClass(interf, new Initialiser<T>() {
             @Override
             public T create() {
                 try {
@@ -245,12 +245,12 @@ public class PluginManager implements PluginProvider {
     }
 
     public <T> void registerClass(Class<T> interf, final Class<? extends T> cls, final Object ... constructorArgs) {
-        registerClass(interf, new Initialiser<T>(){
+        registerClass(interf, new Initialiser<T>() {
             @Override
             public T create() {
                 try {
                     Class<?>[] classes = new Class<?>[constructorArgs.length];
-                    for (int i=0; i<constructorArgs.length; i++) {
+                    for (int i = 0; i < constructorArgs.length; i++) {
                         classes[i] = constructorArgs[i].getClass();
                     }
                     return new ConstructorParametersMatcher().match(cls, classes).newInstance(constructorArgs);
@@ -272,7 +272,7 @@ public class PluginManager implements PluginProvider {
     }
 
     public <T> void registerClass(Class<T> interf, Initialiser<? extends T> initialiser) {
-        if(!interf.isInterface()) {
+        if (!interf.isInterface()) {
             throw new RuntimeException("'interf' argument must be an interface");
         }
         final PluginInfo<T> pluginInfo = new PluginInstanceHolder<T>(initialiser);

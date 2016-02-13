@@ -69,7 +69,7 @@ public class MpsatConformationChecker extends VerificationTool {
                 String description = "MPSat tool chain";
                 String title = we.getTitle();
                 if (!title.isEmpty()) {
-                    description += "(" + title +")";
+                    description += "(" + title + ")";
                 }
                 MpsatChainResultHandler monitor = new MpsatChainResultHandler(mpsatTask);
                 framework.getTaskManager().queue(mpsatTask, description, monitor);

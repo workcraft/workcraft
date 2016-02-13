@@ -36,7 +36,7 @@ import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
 @SuppressWarnings("rawtypes")
-public class StructureVerifyDialog extends JDialog{
+public class StructureVerifyDialog extends JDialog {
 
     protected WorkspaceEntry we;
     protected SON net;
@@ -74,29 +74,29 @@ public class StructureVerifyDialog extends JDialog{
         private boolean isSelected = true;
         private Object obj;
 
-        ListItem(String label, Object obj){
+        ListItem(String label, Object obj) {
             this.label = label;
             this.obj = obj;
         }
 
-        public boolean isSelected(){
+        public boolean isSelected() {
             return isSelected;
         }
 
-        public void setSelected(boolean isSelected){
+        public void setSelected(boolean isSelected) {
             this.isSelected = isSelected;
         }
 
-        public String toString(){
+        public String toString() {
             return label;
         }
 
-        public Object getListItem(){
+        public Object getListItem() {
             return obj;
         }
 
-        public void setItemColor(Color color){
-            if(obj instanceof Node)
+        public void setItemColor(Color color) {
+            if (obj instanceof Node)
                 net.setForegroundColor((Node) obj, color);
         }
     }
@@ -120,7 +120,7 @@ public class StructureVerifyDialog extends JDialog{
         }
     }
 
-    protected void createSelectionPanel(){
+    protected void createSelectionPanel() {
         createGroupItemsPanel();
         createSelectionButtonsPanel();
 
@@ -132,7 +132,7 @@ public class StructureVerifyDialog extends JDialog{
     }
 
     @SuppressWarnings("unchecked")
-    protected void createTypePanel(){
+    protected void createTypePanel() {
         typeCombo = new JComboBox();
         typeCombo.addItem(new TypeMode(0, "Structured Occurrence Nets"));
         typeCombo.addItem(new TypeMode(1, "Occurrence Net (Group)"));
@@ -146,15 +146,15 @@ public class StructureVerifyDialog extends JDialog{
     }
 
     @SuppressWarnings("unchecked")
-    protected void createGroupItemsPanel(){
+    protected void createGroupItemsPanel() {
         selectedGroups = new ArrayList<ONGroup>();
 
         DefaultListModel listModel = new DefaultListModel();
 
-        for(ONGroup group : net.getGroups()){
+        for (ONGroup group : net.getGroups()) {
             group.setForegroundColor(Color.ORANGE);
             selectedGroups.add(group);
-            if(group.getLabel().isEmpty())
+            if (group.getLabel().isEmpty())
                 listModel.addElement(new ListItem("Group: " + net.getNodeReference(group), group));
             else
                 listModel.addElement(new ListItem("Group: " + net.getNodeReference(group) + " (" + group.getLabel() + ")", group));
@@ -168,22 +168,22 @@ public class StructureVerifyDialog extends JDialog{
                 JList list = (JList) event.getSource();
 
                 int index = list.locationToIndex(event.getPoint());
-                try{
+                try {
                     ListItem item = (ListItem) list.getModel().getElementAt(index);
                     item.setSelected(!item.isSelected());
 
-                    if(item.isSelected()){
+                    if (item.isSelected()) {
                         selectedGroups.add((ONGroup) item.getListItem());
                         item.setItemColor(Color.ORANGE);
 
                     }
-                    if(!item.isSelected()){
+                    if (!item.isSelected()) {
                         selectedGroups.remove((ONGroup) item.getListItem());
                         item.setItemColor(Color.BLACK);
                     }
                     list.repaint(list.getCellBounds(index, index));
 
-                }catch (ArrayIndexOutOfBoundsException e){}
+                } catch (ArrayIndexOutOfBoundsException e) { }
             }
         });
 
@@ -191,7 +191,7 @@ public class StructureVerifyDialog extends JDialog{
         groupItemPanel.add(createJScrollPane(groupList));
     }
 
-    protected JScrollPane createJScrollPane(JList list){
+    protected JScrollPane createJScrollPane(JList list) {
         JScrollPane listScroller = new JScrollPane(list);
         listScroller.setPreferredSize(getListScrollerSize());
         listScroller.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -203,7 +203,7 @@ public class StructureVerifyDialog extends JDialog{
         return listScroller;
     }
 
-    protected void createSelectionButtonsPanel(){
+    protected void createSelectionButtonsPanel() {
 
         addAllButton = new JButton("Select All");
         addAllButton.setMaximumSize(buttonSize);
@@ -213,10 +213,10 @@ public class StructureVerifyDialog extends JDialog{
             @Override
             public void actionPerformed(ActionEvent e) {
                 selectedGroups.clear();
-                for (int i = 0; i < getList().getModel().getSize(); i++){
+                for (int i = 0; i < getList().getModel().getSize(); i++) {
                     ((ListItem) getList().getModel().getElementAt(i)).setSelected(true);
                     Object obj = ((ListItem) getList().getModel().getElementAt(i)).getListItem();
-                    if(obj instanceof ONGroup)
+                    if (obj instanceof ONGroup)
                         selectedGroups.add((ONGroup) obj);
                     ((ListItem) getList().getModel().getElementAt(i)).setItemColor(Color.ORANGE);
                 }
@@ -231,7 +231,7 @@ public class StructureVerifyDialog extends JDialog{
         removeAllButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                for (int i = 0; i < getList().getModel().getSize(); i++){
+                for (int i = 0; i < getList().getModel().getSize(); i++) {
                     ((ListItem) getList().getModel().getElementAt(i)).setSelected(false);
                     ((ListItem) getList().getModel().getElementAt(i)).setItemColor(Color.BLACK);
                 }
@@ -247,7 +247,7 @@ public class StructureVerifyDialog extends JDialog{
         selectionButtonPanel.add(removeAllButton);
     }
 
-    protected void createSettingPanel(){
+    protected void createSettingPanel() {
         settingPanel = new JPanel(new BorderLayout());
         settingPanel.setBorder(createTitileBorder("Setting"));
 
@@ -293,7 +293,7 @@ public class StructureVerifyDialog extends JDialog{
         confirmButtonsPanel.add(runButton);
     }
 
-    protected void createInterface(){
+    protected void createInterface() {
         createTypePanel();
         createSelectionPanel();
         createButtonsPanel();
@@ -314,7 +314,7 @@ public class StructureVerifyDialog extends JDialog{
         pack();
     }
 
-    public StructureVerifyDialog(Window owner, String title, ModalityType modalityType, WorkspaceEntry we){
+    public StructureVerifyDialog(Window owner, String title, ModalityType modalityType, WorkspaceEntry we) {
         //super(owner, "Structure Verification Setting",  ModalityType.APPLICATION_MODAL);
         super(owner, title, modalityType);
         this.we = we;
@@ -324,46 +324,46 @@ public class StructureVerifyDialog extends JDialog{
         createInterface();
     }
 
-    protected TitledBorder createTitileBorder(String title){
+    protected TitledBorder createTitileBorder(String title) {
         TitledBorder titledBorder = BorderFactory.createTitledBorder(title);
         titledBorder.setTitleColor(Color.BLUE.darker());
         return titledBorder;
     }
 
-    public StructureVerifyDialog(Window owner, WorkspaceEntry we){
+    public StructureVerifyDialog(Window owner, WorkspaceEntry we) {
         this(owner, "Structure Verification Setting",  ModalityType.APPLICATION_MODAL, we);
     }
 
-    protected String groupPanelTitle(){
+    protected String groupPanelTitle() {
         return "Group selection";
     }
 
-    public SON getSONModel(){
+    public SON getSONModel() {
         return this.net;
     }
 
-    public ArrayList<ONGroup> getSelectedGroups(){
+    public ArrayList<ONGroup> getSelectedGroups() {
         return selectedGroups;
     }
 
-    public JList getList(){
+    public JList getList() {
         return this.groupList;
     }
 
-    public StructureVerifySettings getSettings(){
+    public StructureVerifySettings getSettings() {
         return new StructureVerifySettings(highLight.isSelected(), outputBefore.isSelected(),
                 getSelectedGroups(), typeCombo.getSelectedIndex());
     }
 
-    public int getRun(){
+    public int getRun() {
         return run;
     }
 
-    public Dimension getListScrollerSize(){
+    public Dimension getListScrollerSize() {
         return listScrollerSize;
     }
 
-    public Font getPlainFont(){
+    public Font getPlainFont() {
         return font;
     }
 }

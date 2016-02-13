@@ -83,7 +83,7 @@ final class DrawMan {
     private void drawNode(final Decoration decoration, Node node) {
         if (node instanceof Drawable) {
             Drawable drawableNode = (Drawable) node;
-            drawableNode.draw(new DrawRequest(){
+            drawableNode.draw(new DrawRequest() {
                 @Override
                 public Decoration getDecoration() {
                     return decoration;

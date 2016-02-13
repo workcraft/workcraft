@@ -46,7 +46,7 @@ public abstract class BooleanFormulaSerialiser implements CustomXMLSerialiser {
 
     public static void writeFormulaAttribute(Element element, final ReferenceProducer internalReferences, BooleanFormula formula, String attributeName) {
 
-        if (formula==null) {
+        if (formula == null) {
             element.setAttribute(attributeName, "");
             return;
         }
@@ -62,7 +62,7 @@ public abstract class BooleanFormulaSerialiser implements CustomXMLSerialiser {
 
                 // old style naming, if number is used as an ID for a contact
                 if (Identifier.isNumber(ref)) {
-                    append("var_"+ref);
+                    append("var_" + ref);
                 } else
                     append(flat);
 

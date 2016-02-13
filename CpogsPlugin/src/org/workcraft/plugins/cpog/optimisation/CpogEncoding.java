@@ -31,13 +31,13 @@ public class CpogEncoding {
     public boolean[][] getEncoding() {
         return encoding;
     }
-    public void setEncoding(boolean[][] encoding){
+    public void setEncoding(boolean[][] encoding) {
         this.encoding = encoding;
     }
-    public void setFormula(BooleanFormula formula, int index){
+    public void setFormula(BooleanFormula formula, int index) {
         this.functions[index] = formula;
     }
-    public void setFormule(BooleanFormula[] formula){
+    public void setFormule(BooleanFormula[] formula) {
         this.functions = formula;
     }
     private  BooleanFormula[] functions;

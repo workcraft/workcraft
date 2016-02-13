@@ -209,7 +209,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
         speedSlider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                if(timer != null) {
+                if (timer != null) {
                     timer.stop();
                     timer.setInitialDelay(getAnimationDelay());
                     timer.setDelay(getAnimationDelay());
@@ -220,7 +220,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
             }
         });
 
-        randomButton.addActionListener(new ActionListener(){
+        randomButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (timer == null) {
@@ -244,7 +244,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
             }
         });
 
-        playButton.addActionListener(new ActionListener(){
+        playButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (timer == null) {
@@ -416,7 +416,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
             if (net.getPlaces().contains(p)) {
                 p.setTokens(marking.get(p));
             } else {
-                ExceptionDialog.show(null, new RuntimeException("Place "+p.toString()+" is not in the model"));
+                ExceptionDialog.show(null, new RuntimeException("Place " + p.toString() + " is not in the model"));
             }
         }
     }
@@ -462,7 +462,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
         int mainDec = 0;
         int branchDec = 0;
         if (branchTrace.getPosition() > 0) {
-            transitionId = branchTrace.get(branchTrace.getPosition()-1);
+            transitionId = branchTrace.get(branchTrace.getPosition() - 1);
             branchDec = 1;
         } else if (mainTrace.getPosition() > 0) {
             transitionId = mainTrace.get(mainTrace.getPosition() - 1);
@@ -618,11 +618,11 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
         Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
         Transferable contents = clip.getContents(null);
         boolean hasTransferableText = (contents != null) && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
-        String str="";
+        String str = "";
         if (hasTransferableText) {
             try {
                 str = (String) contents.getTransferData(DataFlavor.stringFlavor);
-            } catch (UnsupportedFlavorException ex){
+            } catch (UnsupportedFlavorException ex) {
                 System.out.println(ex);
                 ex.printStackTrace();
             } catch (IOException ex) {
@@ -713,7 +713,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
         };
 
         boolean isActive(int row, int column) {
-            if (column==0) {
+            if (column == 0) {
                 if (!mainTrace.isEmpty() && branchTrace.isEmpty()) {
                     return row == mainTrace.getPosition();
                 }
@@ -917,7 +917,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
                     Transition transition = ((VisualTransition) node).getReferencedTransition();
                     Node currentTraceTransition = getTraceCurrentNode();
                     if (transition == currentTraceTransition) {
-                        return new Decoration(){
+                        return new Decoration() {
                             @Override
                             public Color getColorisation() {
                                 return CommonSimulationSettings.getEnabledBackgroundColor();
@@ -930,7 +930,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
                     }
 
                     if (net.isEnabled(transition)) {
-                        return new Decoration(){
+                        return new Decoration() {
                             @Override
                             public Color getColorisation() {
                                 return CommonSimulationSettings.getEnabledForegroundColor();

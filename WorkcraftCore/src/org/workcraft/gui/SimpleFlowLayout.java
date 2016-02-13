@@ -79,7 +79,7 @@ public class SimpleFlowLayout implements LayoutManager {
     private Dimension doLayout(Container target) {
         synchronized (target.getTreeLock()) {
             Insets insets = target.getInsets();
-            int maxwidth = target.getWidth() - (insets.left + insets.right + hgap*2);
+            int maxwidth = target.getWidth() - (insets.left + insets.right + hgap * 2);
             int nmembers = target.getComponentCount();
 
             int x = insets.left, y = insets.top + vgap;
@@ -114,11 +114,11 @@ public class SimpleFlowLayout implements LayoutManager {
                     if (applyLayout)
                         m.setLocation(x, y);
 
-                    x+=d.width;
+                    x += d.width;
                 }
             }
 
-            return new Dimension(maxwidth, y + rowh + (rowh!=0?vgap:0));
+            return new Dimension(maxwidth, y + rowh + (rowh != 0 ? vgap : 0));
         }
     }
 }

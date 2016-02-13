@@ -90,17 +90,17 @@ public class DotGImporterTests {
         Assert.assertEquals(0, imported.getDummyTransitions().size());
 
         int explicitPlaces = 0;
-        for(Place p : imported.getPlaces()) {
-            if(!((STGPlace) p).isImplicit()) explicitPlaces++;
+        for (Place p : imported.getPlaces()) {
+            if (!((STGPlace) p).isImplicit()) explicitPlaces++;
         }
 
         Assert.assertEquals(2, explicitPlaces);
 
         Assert.assertEquals(18, imported.getPlaces().size());
 
-        for(Transition t : imported.getTransitions()) {
-            Assert.assertTrue(imported.getPreset(t).size()>0);
-            Assert.assertTrue(imported.getPostset(t).size()>0);
+        for (Transition t : imported.getTransitions()) {
+            Assert.assertTrue(imported.getPreset(t).size() > 0);
+            Assert.assertTrue(imported.getPostset(t).size() > 0);
         }
     }
 }

@@ -34,7 +34,7 @@ import org.workcraft.dom.visual.connections.VisualConnectionProperties;
 public class Geometry {
 
     public static Point2D lerp(Point2D p1, Point2D p2, double t) {
-        return new Point2D.Double(p1.getX()*(1-t)+p2.getX()*t, p1.getY()*(1-t)+p2.getY()*t);
+        return new Point2D.Double(p1.getX() * (1 - t) + p2.getX() * t, p1.getY() * (1 - t) + p2.getY() * t);
     }
     public static Point2D middle(Point2D p1, Point2D p2) {
         return lerp(p1, p2, 0.5);
@@ -149,15 +149,15 @@ public class Geometry {
     public static AffineTransform optimisticInverse(AffineTransform transform) {
         try {
             return transform.createInverse();
-        } catch(NoninvertibleTransformException ex) {
+        } catch (NoninvertibleTransformException ex) {
             throw new RuntimeException("Matrix inverse failed! Pessimists win :(");
         }
     }
 
     public static double getBorderPointParameter(Touchable collisionNode, ParametricCurve curve, double tStart, double tEnd) {
         Point2D point = new Point2D.Double();
-        while(Math.abs(tEnd-tStart) > 1e-6) {
-            double t = (tStart + tEnd)*0.5;
+        while (Math.abs(tEnd - tStart) > 1e-6) {
+            double t = (tStart + tEnd) * 0.5;
             point = curve.getPointOnCurve(t);
 
             if (collisionNode.hitTest(point))
@@ -179,7 +179,7 @@ public class Geometry {
         double arrowLengthSq = connectionInfo.getArrowLength() * connectionInfo.getArrowLength();
 
         Point2D pt = new Point2D.Double();
-        while(dt > 1e-6) {
+        while (dt > 1e-6) {
             dt /= 2.0;
             t += dt;
             pt = curve.getPointOnCurve(t);

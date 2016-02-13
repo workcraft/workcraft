@@ -9,7 +9,7 @@ import org.workcraft.serialisation.xml.CustomXMLDeserialiser;
 import org.workcraft.serialisation.xml.NodeFinaliser;
 import org.workcraft.serialisation.xml.NodeInitialiser;
 
-public class VisualLocalityDeserialiser implements CustomXMLDeserialiser{
+public class VisualLocalityDeserialiser implements CustomXMLDeserialiser {
 
     @Override
     public String getClassName() {

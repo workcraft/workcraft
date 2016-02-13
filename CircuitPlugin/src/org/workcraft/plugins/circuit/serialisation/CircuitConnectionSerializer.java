@@ -7,7 +7,7 @@ import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.serialisation.xml.CustomXMLSerialiser;
 import org.workcraft.serialisation.xml.NodeSerialiser;
 
-public class CircuitConnectionSerializer implements CustomXMLSerialiser{
+public class CircuitConnectionSerializer implements CustomXMLSerialiser {
 
     @Override
     public void serialise(Element element, Object object,

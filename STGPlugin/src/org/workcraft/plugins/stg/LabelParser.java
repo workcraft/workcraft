@@ -22,7 +22,7 @@ public class LabelParser {
         if (parts.length < 2 || !parts[0].startsWith("<") || !parts[1].endsWith(">")) {
             return null;
         }
-        return Pair.of(parts[0].substring(1), parts[1].substring(0, parts[1].length()-1));
+        return Pair.of(parts[0].substring(1), parts[1].substring(0, parts[1].length() - 1));
     }
 
     public static Triple<String, SignalTransition.Direction, Integer> parseSignalTransition(String s) {

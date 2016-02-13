@@ -108,7 +108,7 @@ public class ExternalProcess {
 
     public ExternalProcess(String[] command, String workingDirectoryPath) {
         processBuilder = new ProcessBuilder(command);
-        processBuilder.directory(workingDirectoryPath == null? null : new File(workingDirectoryPath));
+        processBuilder.directory(workingDirectoryPath == null ? null : new File(workingDirectoryPath));
     }
 
     public ExternalProcess(String[] array, File workingDir) {
@@ -128,7 +128,7 @@ public class ExternalProcess {
     }
 
     private void processFinished() {
-        for (ExternalProcessListener l : listeners){
+        for (ExternalProcessListener l : listeners) {
             l.processFinished(process.exitValue());
         }
         finished = true;

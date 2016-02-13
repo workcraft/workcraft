@@ -453,13 +453,13 @@ public class MainMenu extends JMenuBar {
 
     final public void utilityWindowClosed(int id) {
         ActionCheckBoxMenuItem mi = windowItems.get(id);
-        if (mi!=null)
+        if (mi != null)
             mi.setSelected(false);
     }
 
     final public void utilityWindowDisplayed(int id) {
         ActionCheckBoxMenuItem mi = windowItems.get(id);
-        if (mi!=null)
+        if (mi != null)
             mi.setSelected(true);
     }
 

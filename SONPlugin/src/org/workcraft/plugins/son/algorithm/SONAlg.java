@@ -8,7 +8,7 @@ import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.PlaceNode;
 
-public class SONAlg extends RelationAlgorithm{
+public class SONAlg extends RelationAlgorithm {
 
     private BSONAlg bsonAlg;
     private Collection<ONGroup> upperGroups;
@@ -23,31 +23,31 @@ public class SONAlg extends RelationAlgorithm{
     }
 
     //get SON initial marking
-    public Collection<PlaceNode> getSONInitial(){
+    public Collection<PlaceNode> getSONInitial() {
         Collection<PlaceNode> result = new ArrayList<PlaceNode>();
 
-        for(ONGroup group : net.getGroups()){
-            if(upperGroups.contains(group))
-                for(Condition c : getONInitial(group)){
+        for (ONGroup group : net.getGroups()) {
+            if (upperGroups.contains(group))
+                for (Condition c : getONInitial(group)) {
                     result.add(c);
                 }
             //an initial state of a lower group is the initial state of SON
             //if all of its upper conditions are the initial states.
-            else if(lowerGroups.contains(group)){
-                for(Condition c : getONInitial(group)){
+            else if (lowerGroups.contains(group)) {
+                for (Condition c : getONInitial(group)) {
                     boolean isInitial = true;
                     Collection<Condition> set = bsonAlg.getUpperConditions(c);
-                    for(Condition c2 : set){
-                        if(!isInitial(c2)){
+                    for (Condition c2 : set) {
+                        if (!isInitial(c2)) {
                             ONGroup group2 = net.getGroup(c2);
-                            if(!set.containsAll(getONInitial(group2)))
+                            if (!set.containsAll(getONInitial(group2)))
                                 isInitial = false;
                         }
                     }
-                    if(isInitial) result.add(c);
+                    if (isInitial) result.add(c);
                 }
-            } else{
-                for(Condition c : getONInitial(group)){
+            } else {
+                for (Condition c : getONInitial(group)) {
                     result.add(c);
                 }
             }
@@ -56,30 +56,30 @@ public class SONAlg extends RelationAlgorithm{
     }
 
     //get SON final marking
-    public Collection<PlaceNode> getSONFinal(){
+    public Collection<PlaceNode> getSONFinal() {
         Collection<PlaceNode> result = new ArrayList<PlaceNode>();
 
-        for(ONGroup group : net.getGroups()){
-            if(upperGroups.contains(group))
-                for(Condition c : getONFinal(group)){
+        for (ONGroup group : net.getGroups()) {
+            if (upperGroups.contains(group))
+                for (Condition c : getONFinal(group)) {
                     result.add(c);
                 }
 
-            else if(lowerGroups.contains(group)){
-                for(Condition c : getONFinal(group)){
+            else if (lowerGroups.contains(group)) {
+                for (Condition c : getONFinal(group)) {
                     boolean isFinal = true;
                     Collection<Condition> set = bsonAlg.getUpperConditions(c);
-                    for(Condition c2 : set){
-                        if(!isInitial(c2)){
+                    for (Condition c2 : set) {
+                        if (!isInitial(c2)) {
                             ONGroup group2 = net.getGroup(c2);
-                            if(!set.containsAll(getONFinal(group2)))
+                            if (!set.containsAll(getONFinal(group2)))
                                 isFinal = false;
                         }
                     }
-                    if(isFinal) result.add(c);
+                    if (isFinal) result.add(c);
                 }
-            } else{
-                for(Condition c : getONFinal(group)){
+            } else {
+                for (Condition c : getONFinal(group)) {
                     result.add(c);
                 }
             }

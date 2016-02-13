@@ -11,7 +11,7 @@ import org.workcraft.util.Pair;
 
 public class HierarchicalUniqueNameReferenceManagerTest {
 
-    static HashMap<String, Pair<String, String>> headTails = new HashMap<String, Pair<String, String>>(){
+    static HashMap<String, Pair<String, String>> headTails = new HashMap<String, Pair<String, String>>() {
         private static final long serialVersionUID = -2931077011392124649L;
         {
             put("/'abc'/'dfe'", new Pair<String, String>("abc", "/'dfe'"));
@@ -46,7 +46,7 @@ public class HierarchicalUniqueNameReferenceManagerTest {
         }
     }
 
-    static HashMap<String, String> flatNames = new HashMap<String, String>(){
+    static HashMap<String, String> flatNames = new HashMap<String, String>() {
         private static final long serialVersionUID = -2931077011392124649L;
         {
             put("abc/dfe", "abc__dfe");
@@ -76,7 +76,7 @@ public class HierarchicalUniqueNameReferenceManagerTest {
         }
     }
 
-    static HashMap<String, String> referencePaths = new HashMap<String, String>(){
+    static HashMap<String, String> referencePaths = new HashMap<String, String>() {
         private static final long serialVersionUID = -2931077011392124649L;
         {
             put("abc", "");
