@@ -6,7 +6,7 @@ import java.util.Set;
 import org.workcraft.plugins.cpog.VisualCPOG;
 import org.workcraft.plugins.cpog.VisualVertex;
 
-public class CpogConnector implements CpogVisitor< Set<VisualVertex> > {
+public class CpogConnector implements CpogVisitor<Set<VisualVertex>> {
 
     VisualCPOG cpog = null;
 

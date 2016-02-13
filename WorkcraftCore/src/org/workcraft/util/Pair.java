@@ -1,6 +1,6 @@
 package org.workcraft.util;
 
-public class Pair <T1, T2> {
+public class Pair<T1, T2> {
     final private T1 first;
     final private T2 second;
 

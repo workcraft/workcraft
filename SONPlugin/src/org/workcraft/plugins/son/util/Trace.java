@@ -3,7 +3,7 @@ package org.workcraft.plugins.son.util;
 import java.util.ArrayList;
 
 @SuppressWarnings("serial")
-public class Trace extends ArrayList<StepRef>{
+public class Trace extends ArrayList<StepRef> {
 
     private int position = 0;
 

@@ -59,6 +59,7 @@
         </module>
         <module name="NoLineWrap"/>
 
+        <module name="GenericWhitespace" />
         <module name="EmptyForIteratorPad" />
         <module name="MethodParamPad" />
         <module name="NoWhitespaceAfter" />

@@ -437,7 +437,7 @@ public class SyncTool implements Tool {
 
             synclist.clear();
             //Finds all sync connections + groups
-            Collection <VisualConnection> lvc = ((VisualGroup) vnet.getRoot()).getConnections();
+            Collection<VisualConnection> lvc = ((VisualGroup) vnet.getRoot()).getConnections();
             for(VisualConnection vc: lvc) {
                 VisualNode vc1 = vc.getFirst();
                 VisualNode vc2 = vc.getSecond();

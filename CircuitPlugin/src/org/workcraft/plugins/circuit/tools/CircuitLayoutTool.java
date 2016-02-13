@@ -140,7 +140,7 @@ public class CircuitLayoutTool extends AbstractLayoutTool {
         return result;
     }
 
-    private HashSet<VisualComponent> getNextLayer(final VisualCircuit model, HashSet<VisualComponent>layer) {
+    private HashSet<VisualComponent> getNextLayer(final VisualCircuit model, HashSet<VisualComponent> layer) {
         HashSet<VisualComponent> result = new HashSet<>();
         for (VisualComponent component: layer) {
             result.addAll(CircuitUtils.getComponentPostset(model, component));

@@ -3,7 +3,7 @@ package org.workcraft.plugins.shared.presets;
 import org.w3c.dom.Element;
 import org.workcraft.util.XmlUtil;
 
-public class Preset <T> {
+public class Preset<T> {
     private String description;
     private T settings;
     private boolean builtIn;

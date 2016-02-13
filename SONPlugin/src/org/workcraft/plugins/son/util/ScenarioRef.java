@@ -12,7 +12,7 @@ import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.exception.IncompatibleScenarioException;
 
 @SuppressWarnings("serial")
-public class ScenarioRef extends ArrayList<String>{
+public class ScenarioRef extends ArrayList<String> {
 
     public Collection<Node> getNodes(SON net){
         Collection<Node> result = new HashSet<Node>();

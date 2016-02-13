@@ -20,7 +20,7 @@ import org.workcraft.tasks.Task;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class SONMainTask implements Task<VerificationResult>{
+public class SONMainTask implements Task<VerificationResult> {
 
     private WorkspaceEntry we;
     private Logger logger = Logger.getLogger(this.getClass().getName());
@@ -39,7 +39,7 @@ public class SONMainTask implements Task<VerificationResult>{
     }
 
     @Override
-    public Result<? extends VerificationResult> run(ProgressMonitor <? super VerificationResult> monitor){
+    public Result<? extends VerificationResult> run(ProgressMonitor<? super VerificationResult> monitor){
         clearConsole();
         //all tasks
         SON net=(SON) we.getModelEntry().getMathModel();

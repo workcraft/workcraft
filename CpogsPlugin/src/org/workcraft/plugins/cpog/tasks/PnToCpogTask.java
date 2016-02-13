@@ -16,7 +16,7 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class PnToCpogTask implements Task<PnToCpogResult>{
+public class PnToCpogTask implements Task<PnToCpogResult> {
 
     private final WorkspaceEntry we;
 

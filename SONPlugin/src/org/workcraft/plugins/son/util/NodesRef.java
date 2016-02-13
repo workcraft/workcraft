@@ -7,7 +7,7 @@ import java.util.HashSet;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SON;
 
-public class NodesRef extends ArrayList<String>{
+public class NodesRef extends ArrayList<String> {
 
     private static final long serialVersionUID = 1L;
 

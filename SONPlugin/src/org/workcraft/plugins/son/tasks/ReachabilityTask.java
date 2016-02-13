@@ -29,7 +29,7 @@ import org.workcraft.tasks.Task;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class ReachabilityTask implements Task<VerificationResult>{
+public class ReachabilityTask implements Task<VerificationResult> {
 
     private SON net;
     private final WorkspaceEntry we;

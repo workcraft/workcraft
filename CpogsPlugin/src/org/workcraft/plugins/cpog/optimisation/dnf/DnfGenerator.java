@@ -126,7 +126,7 @@ public class DnfGenerator {
     private static Dnf simplifyDnf(Dnf clauses) {
         Dnf result = new Dnf();
 
-        Map <DnfClause, HashSet <String> > testClauses = new HashMap<DnfClause, HashSet <String> >();
+        Map<DnfClause, HashSet<String>> testClauses = new HashMap<DnfClause, HashSet<String>>();
 
         for (DnfClause clause: clauses.getClauses()) {
 

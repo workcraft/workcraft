@@ -6,7 +6,7 @@ import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.elements.Condition;
 
 @SuppressWarnings("serial")
-public class Phase extends HashSet<Condition>{
+public class Phase extends HashSet<Condition> {
 
     public String toString(SON net) {
         StringBuffer result = new StringBuffer("");

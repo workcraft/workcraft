@@ -37,7 +37,7 @@ import org.workcraft.tasks.Task;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class TimeConsistencyTask implements Task<VerificationResult>{
+public class TimeConsistencyTask implements Task<VerificationResult> {
 
     private SON net;
     private Logger logger = Logger.getLogger(this.getClass().getName());

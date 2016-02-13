@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.elements.PlaceNode;
 
-public class Marking extends ArrayList<PlaceNode>{
+public class Marking extends ArrayList<PlaceNode> {
 
     private static final long serialVersionUID = 3343743813175510454L;
 

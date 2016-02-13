@@ -2,7 +2,7 @@ package org.workcraft.plugins.son.util;
 
 import java.util.ArrayList;
 
-public class ScenarioSaveList extends ArrayList<ScenarioRef>{
+public class ScenarioSaveList extends ArrayList<ScenarioRef> {
 
     private static final long serialVersionUID = 1L;
 
