@@ -181,23 +181,23 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
         testTaskButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                framework.getTaskManager().queue(new Task<Object>(){
+                framework.getTaskManager().queue(new Task<Object>() {
                     @Override
                     public Result<Object> run(ProgressMonitor<Object> monitor) {
-                        for (int i=0; i < 100; i++) {
+                        for (int i = 0; i < 100; i++) {
                             try {
                                 if (monitor.isCancelRequested()) {
                                     return new Result<Object>(Outcome.CANCELLED);
                                 }
-                                Thread.sleep((int) (Math.random()*100+20));
+                                Thread.sleep((int) (Math.random() * 100 + 20));
                             } catch (InterruptedException e) {
                                 return new Result<Object>(Outcome.FAILED);
                             }
-                            monitor.progressUpdate(i/99.0);
+                            monitor.progressUpdate(i / 99.0);
                         }
                         return new Result<Object>(Outcome.FINISHED);
                     }
-                }, "Test task #" + counter++, new DummyProgressMonitor<Object>(){
+                }, "Test task #" + counter++, new DummyProgressMonitor<Object>() {
 
                         @Override
                         public void finished(Result<? extends Object> result, final String description) {

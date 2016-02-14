@@ -48,7 +48,7 @@ public class VerConfTool implements Tool {
         return WorkspaceUtils.canHas(we, Xmas.class);
     }
 
-    int cntSyncNodes=0;
+    int cntSyncNodes = 0;
     JFrame mainFrame = null;
     JComboBox trcombob = null;
     JComboBox lvcombob = null;
@@ -93,35 +93,35 @@ public class VerConfTool implements Tool {
         mainFrame.setVisible(false);
     }
 
-    public List<String> slist=new ArrayList<String>();
+    public List<String> slist = new ArrayList<String>();
 
     private void initSettings() {
         Scanner sc = null;
         try {
             File vsettingsFile = XmasSettings.getTempVxmVsettingsFile();
-            sc=new Scanner(vsettingsFile);
+            sc = new Scanner(vsettingsFile);
         } catch (FileNotFoundException e) {
             LogUtils.logErrorLine(e.getMessage());
         }
-        while(sc.hasNextLine()) {
-            Scanner line=new Scanner(sc.nextLine());
-            Scanner nxt=new Scanner(line.next());
-            String check=nxt.next();
+        while (sc.hasNextLine()) {
+            Scanner line = new Scanner(sc.nextLine());
+            Scanner nxt = new Scanner(line.next());
+            String check = nxt.next();
             String str;
-            if(check.startsWith("trace")) {
-                nxt=new Scanner(line.next());
+            if (check.startsWith("trace")) {
+                nxt = new Scanner(line.next());
                 trcombob.setSelectedItem(nxt.next());
-            } else if(check.startsWith("level")) {
-                nxt=new Scanner(line.next());
+            } else if (check.startsWith("level")) {
+                nxt = new Scanner(line.next());
                 lvcombob.setSelectedItem(nxt.next());
-            } else if(check.startsWith("display")) {
-                nxt=new Scanner(line.next());
+            } else if (check.startsWith("display")) {
+                nxt = new Scanner(line.next());
                 dycombob.setSelectedItem(nxt.next());
-            } else if(check.startsWith("highlight")) {
-                nxt=new Scanner(line.next());
+            } else if (check.startsWith("highlight")) {
+                nxt = new Scanner(line.next());
                 hlcombob.setSelectedItem(nxt.next());
-            } else if(check.startsWith("soln")) {
-                nxt=new Scanner(line.next());
+            } else if (check.startsWith("soln")) {
+                nxt = new Scanner(line.next());
                 slcombob.setSelectedItem(nxt.next());
             }
         }
@@ -162,7 +162,7 @@ public class VerConfTool implements Tool {
         System.out.println("Running tests");
         final VisualXmas vnet = (VisualXmas) we.getModelEntry().getVisualModel();
 
-        cntSyncNodes=0;
+        cntSyncNodes = 0;
 
         Xmas cnet = (Xmas) we.getModelEntry().getMathModel();
 
@@ -175,19 +175,19 @@ public class VerConfTool implements Tool {
 
         System.out.println("loaded = " + loaded);
         List<JPanel> panellist = new ArrayList<JPanel>();
-        cntSyncNodes=1;
-        for(int no = 0; no < cntSyncNodes; no = no+1) {
+        cntSyncNodes = 1;
+        for (int no = 0; no < cntSyncNodes; no = no + 1) {
             panellist.add(new JPanel());
-            panellist.get(panellist.size()-1).add(new JLabel(" Trace "));
-            panellist.get(panellist.size()-1).add(trcombob = new JComboBox(trchoices));
-            panellist.get(panellist.size()-1).add(new JLabel(" Level "));
-            panellist.get(panellist.size()-1).add(lvcombob = new JComboBox(lvlchoices));
-            panellist.get(panellist.size()-1).add(new JLabel(" Display "));
-            panellist.get(panellist.size()-1).add(dycombob = new JComboBox(solchoices));
-            panellist.get(panellist.size()-1).add(new JLabel(" Highlight "));
-            panellist.get(panellist.size()-1).add(hlcombob = new JComboBox(hlchoices));
-            panellist.get(panellist.size()-1).add(new JLabel(" Soln "));
-            panellist.get(panellist.size()-1).add(slcombob = new JComboBox(solno));
+            panellist.get(panellist.size() - 1).add(new JLabel(" Trace "));
+            panellist.get(panellist.size() - 1).add(trcombob = new JComboBox(trchoices));
+            panellist.get(panellist.size() - 1).add(new JLabel(" Level "));
+            panellist.get(panellist.size() - 1).add(lvcombob = new JComboBox(lvlchoices));
+            panellist.get(panellist.size() - 1).add(new JLabel(" Display "));
+            panellist.get(panellist.size() - 1).add(dycombob = new JComboBox(solchoices));
+            panellist.get(panellist.size() - 1).add(new JLabel(" Highlight "));
+            panellist.get(panellist.size() - 1).add(hlcombob = new JComboBox(hlchoices));
+            panellist.get(panellist.size() - 1).add(new JLabel(" Soln "));
+            panellist.get(panellist.size() - 1).add(slcombob = new JComboBox(solno));
             //panellist.get(panellist.size()-1).add(new JLabel(" Soln "));
             //panellist.get(panellist.size()-1).add(new JTextField("1", 1));
         }
@@ -197,17 +197,17 @@ public class VerConfTool implements Tool {
                 JComboBox comboBox = (JComboBox) event.getSource();
 
                 Object selected = comboBox.getSelectedItem();
-                if(selected.toString().equals("normal")) {
+                if (selected.toString().equals("normal")) {
                         hlcombob.removeItemAt(1);
                         hlcombob.addItem("local");
-                } else if(selected.toString().equals("advanced")) {
+                } else if (selected.toString().equals("advanced")) {
                         hlcombob.removeItemAt(1);
                         hlcombob.addItem("rel");
                 }
             }
         });
         initSettings();
-        loaded=1;
+        loaded = 1;
 
         for (JPanel plist : panellist) {
             panelmain.add(plist);
@@ -233,7 +233,7 @@ public class VerConfTool implements Tool {
         okButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                int no=1;
+                int no = 1;
 
                 dispose();
                 writeOutput();

@@ -36,8 +36,8 @@ public class PunfUtilitySettings implements Settings {
 
     private static final String keyCommand = prefix + ".command";
     private static final String keyExtraArgs = prefix + ".args";
-    private static final String keyPrintStdout= prefix + ".printStdout";
-    private static final String keyPrintStderr= prefix + ".printStderr";
+    private static final String keyPrintStdout = prefix + ".printStdout";
+    private static final String keyPrintStderr = prefix + ".printStderr";
     private static final String keyUsePnmlUnfolding = prefix + ".usePnmlUnfolding";
 
     private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\UnfoldingTools\\punf.exe" : "tools/UnfoldingTools/punf";

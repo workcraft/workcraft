@@ -7,7 +7,7 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.util.Interval;
 
-public class ConnectionTimePropertyDescriptor implements PropertyDescriptor{
+public class ConnectionTimePropertyDescriptor implements PropertyDescriptor {
     private final SONConnection con;
     public static final String PROPERTY_CONNECTION_TIME = "Time interval";
 

@@ -41,10 +41,10 @@ public class TouchableTransformer implements Touchable {
 
     private void minMax(double[] x, double[] minMax) {
         minMax[0] = minMax[1] = x[0];
-        for(int i=1; i<x.length; i++) {
-            if(x[i]>minMax[1])
+        for (int i = 1; i < x.length; i++) {
+            if (x[i] > minMax[1])
                 minMax[1] = x[i];
-            if(x[i]<minMax[0])
+            if (x[i] < minMax[0])
                 minMax[0] = x[i];
         }
     }
@@ -53,7 +53,7 @@ public class TouchableTransformer implements Touchable {
     public Rectangle2D getBoundingBox() {
         Rectangle2D bb = toTransform.getBoundingBox();
 
-        if(bb == null)
+        if (bb == null)
             return null;
 
         Point2D[] corners = new Point2D[4];
@@ -73,7 +73,7 @@ public class TouchableTransformer implements Touchable {
         minMax(x, minMaxX);
         minMax(y, minMaxY);
 
-        return new Rectangle2D.Double(minMaxX[0], minMaxY[0], minMaxX[1]-minMaxX[0], minMaxY[1]-minMaxY[0]);
+        return new Rectangle2D.Double(minMaxX[0], minMaxY[0], minMaxX[1] - minMaxX[0], minMaxY[1] - minMaxY[0]);
     }
 
     @Override

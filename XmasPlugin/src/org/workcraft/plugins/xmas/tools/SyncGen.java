@@ -34,7 +34,7 @@ public class SyncGen implements Tool {
 
     //ProgressMonitor<? super MpsatChainResult> monitor;
 
-    private static boolean printoutput=true;
+    private static boolean printoutput = true;
 
     public String getDisplayName() {
         return "Generate Sync";
@@ -44,21 +44,21 @@ public class SyncGen implements Tool {
         return "Sync";
     }
 
-    int cntSyncNodes=0;
+    int cntSyncNodes = 0;
     JFrame mainFrame = null;
 
-    public List<JRadioButton> rlist=new ArrayList<JRadioButton>();
+    public List<JRadioButton> rlist = new ArrayList<JRadioButton>();
 
-    private class RadioListener implements ActionListener{
+    private class RadioListener implements ActionListener {
 
         private JTextField textField;
 
-        public void actionPerformed(ActionEvent e){
+        public void actionPerformed(ActionEvent e) {
             JRadioButton button = (JRadioButton) e.getSource();
 
             // Set enabled based on button text (you can use whatever text you prefer)
             for (JRadioButton r : rlist) {
-                if(r==button) {
+                if (r == button) {
                     r.setSelected(true);
                 } else {
                     r.setSelected(false);
@@ -152,11 +152,11 @@ public class SyncGen implements Tool {
     }
 
     public void selectSync(int sel) {
-        if(sel==0) {
+        if (sel == 0) {
             createSynca();
-        } else if(sel==1) {
+        } else if (sel == 1) {
             createSyncm();
-        } else if(sel==2) {
+        } else if (sel == 2) {
             createSyncp();
         }
     }
@@ -177,10 +177,10 @@ public class SyncGen implements Tool {
 
         List<SyncComponent> scomps = new ArrayList<SyncComponent>();
         for (Node node : vnet.getNodes()) {
-            if(node instanceof VisualSyncComponent) {
+            if (node instanceof VisualSyncComponent) {
                 cntSyncNodes++;
-                VisualSyncComponent vsc=(VisualSyncComponent) node;
-                SyncComponent sc=vsc.getReferencedSyncComponent();
+                VisualSyncComponent vsc = (VisualSyncComponent) node;
+                SyncComponent sc = vsc.getReferencedSyncComponent();
                 scomps.add(sc);
             }
         }
@@ -190,15 +190,15 @@ public class SyncGen implements Tool {
         panelmain.setLayout(new BoxLayout(panelmain, BoxLayout.PAGE_AXIS));
         List<JPanel> panellist = new ArrayList<JPanel>();
         JRadioButton jr;
-        for(int no = 0; no < cntSyncNodes; no = no+1) {
-            //if(loaded==0) slist1.add(new String("1"));
-            //if(loaded==0) slist2.add(new String("1"));
+        for (int no = 0; no < cntSyncNodes; no = no + 1) {
+            //if (loaded == 0) slist1.add(new String("1"));
+            //if (loaded == 0) slist2.add(new String("1"));
             panellist.add(new JPanel());
-            panellist.get(panellist.size()-1).add(new JLabel(" Name" + no));
-            panellist.get(panellist.size()-1).add(new JTextField("Sync" + no));
-            panellist.get(panellist.size()-1).add(new JLabel(" Type "));
-            panellist.get(panellist.size()-1).add(jr = new JRadioButton(scomps.get(no).typ));
-            if(no==0) jr.setSelected(true);
+            panellist.get(panellist.size() - 1).add(new JLabel(" Name" + no));
+            panellist.get(panellist.size() - 1).add(new JTextField("Sync" + no));
+            panellist.get(panellist.size() - 1).add(new JLabel(" Type "));
+            panellist.get(panellist.size() - 1).add(jr = new JRadioButton(scomps.get(no).typ));
+            if (no == 0) jr.setSelected(true);
             rlist.add(jr);
             RadioListener listener = new RadioListener();
             jr.addActionListener(listener);
@@ -228,17 +228,17 @@ public class SyncGen implements Tool {
 
             public void actionPerformed(ActionEvent e) {
 
-                int no=0, sel=0;
+                int no = 0, sel = 0;
 
                 for (JRadioButton r : rlist) {
-                    if(r.isSelected()) {
+                    if (r.isSelected()) {
                         System.out.println("SELECTED=" + r.getText());
-                        if(r.getText().equals("asynchronous")) {
-                            sel=0;
-                        } else if(r.getText().equals("mesochronous")) {
-                            sel=1;
-                        } else if(r.getText().equals("pausible")) {
-                            sel=2;
+                        if (r.getText().equals("asynchronous")) {
+                            sel = 0;
+                        } else if (r.getText().equals("mesochronous")) {
+                            sel = 1;
+                        } else if (r.getText().equals("pausible")) {
+                            sel = 2;
                         }
                         //sel=no;
                         selectSync(sel);

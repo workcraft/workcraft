@@ -31,7 +31,7 @@ public class UniqueNameReferenceManager extends HierarchySupervisor implements R
     public void attach(Node root) {
         if (refs != null) {
             setExistingReference(root);
-            for(Node n : Hierarchy.getDescendantsOfType(root, Node.class)) {
+            for (Node n : Hierarchy.getDescendantsOfType(root, Node.class)) {
                 setExistingReference(n);
             }
             refs = null;
@@ -58,16 +58,16 @@ public class UniqueNameReferenceManager extends HierarchySupervisor implements R
 
     @Override
     public void handleEvent(HierarchyEvent e) {
-        if(e instanceof NodesAddedEvent) {
-            for(Node node : e.getAffectedNodes()) {
+        if (e instanceof NodesAddedEvent) {
+            for (Node node : e.getAffectedNodes()) {
                 mgr.setDefaultNameIfUnnamed(node);
                 for (Node node2 : Hierarchy.getDescendantsOfType(node, Node.class)) {
                     mgr.setDefaultNameIfUnnamed(node2);
                 }
             }
         }
-        if(e instanceof NodesDeletedEvent) {
-            for(Node node : e.getAffectedNodes()) {
+        if (e instanceof NodesDeletedEvent) {
+            for (Node node : e.getAffectedNodes()) {
                 mgr.remove(node);
                 for (Node node2 : Hierarchy.getDescendantsOfType(node, Node.class)) {
                     mgr.remove(node2);

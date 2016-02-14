@@ -69,7 +69,7 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
         } else {
             GraphEditorTool tool = toolProvider.getTool();
             if (tool != null) {
-                if(!tool.isDragging() && startPosition!=null) {
+                if (!tool.isDragging() && startPosition != null) {
                     tool.startDrag(adaptEvent(e));
                 }
                 tool.mouseMoved(adaptEvent(e));
@@ -112,7 +112,7 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
         } else {
             GraphEditorTool tool = toolProvider.getTool();
             if (tool != null) {
-                if(!tool.isDragging()) {
+                if (!tool.isDragging()) {
                     startPosition = editor.getViewport().screenToUser(e.getPoint());
                 }
                 tool.mousePressed(adaptEvent(e));
@@ -128,7 +128,7 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
         } else {
             GraphEditorTool tool = toolProvider.getTool();
             if (tool != null) {
-                if(tool.isDragging())
+                if (tool.isDragging())
                     tool.finishDrag(adaptEvent(e));
                 tool.mouseReleased(adaptEvent(e));
             }

@@ -60,7 +60,7 @@ public class GUI {
         Dimension parentSize = parent.getSize();
         Dimension mySize = frame.getSize();
         Point q = parent.getLocationOnScreen();
-        frame.setLocation(((parentSize.width - mySize.width)/2) + q.x, ((parentSize.height - mySize.height)/2) + q.y);
+        frame.setLocation(((parentSize.width - mySize.width) / 2) + q.x, ((parentSize.height - mySize.height) / 2) + q.y);
     }
 
     public static void centerAndSizeToParent(Window frame, Window parent) {
@@ -71,15 +71,15 @@ public class GUI {
 
     public static BufferedImage loadImageFromResource(String path) throws IOException {
         URL res = ClassLoader.getSystemResource(path);
-        if(res==null) {
-            throw new IOException("Resource not found: "+path);
+        if (res == null) {
+            throw new IOException("Resource not found: " + path);
         }
         return ImageIO.read(res);
     }
 
     public static ImageIcon createIconFromImage(String path) {
         URL res = ClassLoader.getSystemResource(path);
-        if(res==null) {
+        if (res == null) {
             System.err.println("Missing icon: " + path);
             return null;
         }
@@ -90,15 +90,15 @@ public class GUI {
         if (message != null) {
             g.setFont(UIManager.getFont("Button.font"));
             Rectangle r = g.getFont().getStringBounds(message, g.getFontRenderContext()).getBounds();
-            r.x = editor.getWidth()/2 - r.width/2;
+            r.x = editor.getWidth() / 2 - r.width / 2;
             r.y = editor.getHeight() - 20 - r.height;
             g.setColor(new Color(240, 240, 240, 192));
-            g.fillRoundRect(r.x-10, r.y-10, r.width+20, r.height+20, 5, 5);
+            g.fillRoundRect(r.x - 10, r.y - 10, r.width + 20, r.height + 20, 5, 5);
             g.setColor(new Color(224, 224, 224));
-            g.drawRoundRect(r.x-10, r.y-10, r.width+20, r.height+20, 5, 5);
+            g.drawRoundRect(r.x - 10, r.y - 10, r.width + 20, r.height + 20, 5, 5);
             g.setColor(color);
             LineMetrics lm = g.getFont().getLineMetrics(message, g.getFontRenderContext());
-            g.drawString(message, r.x, r.y+r.height-(int) (lm.getDescent()));
+            g.drawString(message, r.x, r.y + r.height - (int) (lm.getDescent()));
         }
     }
 
@@ -172,7 +172,7 @@ public class GUI {
         result.setMargin(new Insets(0, 0, 0, 0));
         int iconSize = CommonEditorSettings.getIconSize();
         Insets insets = result.getInsets();
-        int minSize = iconSize+Math.max(insets.left+insets.right, insets.top+insets.bottom);
+        int minSize = iconSize + Math.max(insets.left + insets.right, insets.top + insets.bottom);
         result.setPreferredSize(new Dimension(minSize, minSize));
         return result;
     }

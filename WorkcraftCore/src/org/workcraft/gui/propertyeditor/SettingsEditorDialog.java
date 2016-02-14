@@ -102,7 +102,7 @@ public class SettingsEditorDialog extends JDialog {
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setModal(true);
         setTitle("Settings");
-        addWindowListener(new WindowAdapter(){
+        addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 ok();
@@ -116,7 +116,7 @@ public class SettingsEditorDialog extends JDialog {
 
         Dimension parentSize = owner.getSize();
         owner.getLocationOnScreen();
-        setLocation(((parentSize.width - mySize.width)/2) + 0, ((parentSize.height - mySize.height)/2) + 0);
+        setLocation(((parentSize.width - mySize.width) / 2) + 0, ((parentSize.height - mySize.height) / 2) + 0);
 
         initComponents();
         loadSections();
@@ -132,12 +132,12 @@ public class SettingsEditorDialog extends JDialog {
             nextLevel = null;
         } else {
             thisLevel = section.substring(0, dotPos);
-            nextLevel = section.substring(dotPos+1);
+            nextLevel = section.substring(dotPos + 1);
         }
 
         DefaultMutableTreeNode thisLevelNode = null;
 
-        for (int i=0; i < node.getChildCount(); i++) {
+        for (int i = 0; i < node.getChildCount(); i++) {
             DefaultMutableTreeNode child = (DefaultMutableTreeNode) node.getChildAt(i);
             if (!(child.getUserObject() instanceof String)) {
                 continue;
@@ -178,7 +178,7 @@ public class SettingsEditorDialog extends JDialog {
         sectionTree.setModel(new DefaultTreeModel(sectionRoot));
 
         // Expand all tree branches
-        for(int i=0; i < sectionTree.getRowCount(); i++) {
+        for (int i = 0; i < sectionTree.getRowCount(); i++) {
             final TreePath treePath = sectionTree.getPathForRow(i);
             sectionTree.expandPath(treePath);
         }

@@ -59,6 +59,7 @@
         </module>
         <module name="NoLineWrap"/>
 
+        <module name="GenericWhitespace" />
         <module name="EmptyForIteratorPad" />
         <module name="MethodParamPad" />
         <module name="NoWhitespaceAfter" />
@@ -67,6 +68,7 @@
         <module name="TypecastParenPad" />
         <module name="UnnecessaryParentheses" />
         <module name="WhitespaceAfter" />
+        <module name="WhitespaceAround" />
 
         <module name="RedundantModifier" />
 

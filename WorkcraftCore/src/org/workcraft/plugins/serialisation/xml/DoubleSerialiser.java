@@ -25,7 +25,7 @@ import org.w3c.dom.Element;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.serialisation.xml.BasicXMLSerialiser;
 
-public class DoubleSerialiser implements BasicXMLSerialiser{
+public class DoubleSerialiser implements BasicXMLSerialiser {
 
     public static String doubleToString(double d) {
         return Double.toHexString(d);

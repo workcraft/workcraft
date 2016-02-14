@@ -96,8 +96,8 @@ public class Workspace {
 
         // Option 2: file already loaded
         Path<String> workspacePath = getWorkspacePath(file);
-        for(WorkspaceEntry we : openFiles.values()) {
-            if(we.getWorkspacePath().equals(workspacePath)) {
+        for (WorkspaceEntry we : openFiles.values()) {
+            if (we.getWorkspacePath().equals(workspacePath)) {
                 return we;
             }
         }
@@ -115,7 +115,7 @@ public class Workspace {
         } else {
             we.setModelEntry(framework.importFile(file));
             Path<String> parent;
-            if(workspacePath == null) {
+            if (workspacePath == null) {
                 parent = Path.empty();
             } else {
                 parent = workspacePath.getParent();
@@ -138,7 +138,7 @@ public class Workspace {
     public File getFile(Path<String> wsPath) {
         List<String> names = Path.getPath(wsPath);
         MountTree current = getHardMountsRoot();
-        for(String name : names)
+        for (String name : names)
             current = current.getSubtree(name);
         return current.mountTo;
     }
@@ -150,14 +150,14 @@ public class Workspace {
     public Path<String> getWorkspacePath(File file) {
         Entry<Path<String>, File> bestMount = null;
         Path<String> bestRel = null;
-        for(Entry<Path<String>, File> e : mounts.entrySet()) {
+        for (Entry<Path<String>, File> e : mounts.entrySet()) {
             Path<String> relative = getRelative(e.getValue(), file);
-            if(relative != null && (bestRel == null || Path.getPath(relative).size() < Path.getPath(bestRel).size())) {
+            if (relative != null && (bestRel == null || Path.getPath(relative).size() < Path.getPath(bestRel).size())) {
                 bestRel = relative;
                 bestMount = e;
             }
         }
-        if(bestMount == null)
+        if (bestMount == null)
             return null;
         return Path.combine(bestMount.getKey(), bestRel);
     }
@@ -167,11 +167,11 @@ public class Workspace {
         descendant = descendant.getAbsoluteFile();
 
         List<String> strs = new ArrayList<String>();
-        while(descendant != null) {
-            if(descendant.equals(ancestor)) {
+        while (descendant != null) {
+            if (descendant.equals(ancestor)) {
                 Path<String> result = Path.empty();
-                for(int i=0; i<strs.size(); i++)
-                    result = Path.append(result, strs.get(strs.size()-1-i));
+                for (int i = 0; i < strs.size(); i++)
+                    result = Path.append(result, strs.get(strs.size() - 1 - i));
                 return result;
             }
             strs.add(descendant.getName());
@@ -224,7 +224,7 @@ public class Workspace {
 
     private File tryMakeRelative(File file, File base) {
         final Path<String> relative = getRelative(base, file);
-        if(relative == null) {
+        if (relative == null) {
             return file;
         }
         return new File(relative.toString().replaceAll("/", File.pathSeparator));
@@ -232,7 +232,7 @@ public class Workspace {
 
     public void fireWorkspaceChanged() {
         // TODO : categorize and route events
-        for(WorkspaceListener listener : workspaceListeners) {
+        for (WorkspaceListener listener : workspaceListeners) {
             listener.workspaceLoaded();
         }
     }
@@ -241,7 +241,7 @@ public class Workspace {
         if ((desiredName == null) || desiredName.isEmpty()) {
             desiredName = "Untitled";
         }
-        int i=1;
+        int i = 1;
         int dotIndex = desiredName.lastIndexOf(".");
         String name;
         String ext;
@@ -254,7 +254,7 @@ public class Workspace {
         }
         Path<String> desiredPath = Path.append(dir, desiredName);
         while (pathTaken(desiredPath)) {
-            desiredPath = Path.append(dir, name + " " + i++ + (ext==null?"":"."+ext));
+            desiredPath = Path.append(dir, name + " " + i++ + (ext == null ? "" : "." + ext));
         }
         return desiredPath;
     }
@@ -289,7 +289,7 @@ public class Workspace {
             Document doc = XmlUtil.loadDocument(workspaceFile.getPath());
             Element xmlroot = doc.getDocumentElement();
 
-            if (xmlroot.getNodeName()!="workcraft-workspace")
+            if (xmlroot.getNodeName() != "workcraft-workspace")
                 throw new DeserialisationException("not a Workcraft workspace file");
 
             List<Element> mounts = XmlUtil.getChildElements("mount", xmlroot);
@@ -298,7 +298,7 @@ public class Workspace {
                 final String mountPoint = XmlUtil.readStringAttr(mountElement, "mountPoint");
                 final String filePath = XmlUtil.readStringAttr(mountElement, "filePath");
                 File file = new File(filePath);
-                if(!file.isAbsolute()) {
+                if (!file.isAbsolute()) {
                     file = new File(baseDir(), file.getPath());
                 }
                 addMount(Path.fromString(mountPoint), file, false);
@@ -338,8 +338,8 @@ public class Workspace {
             throw new RuntimeException("Workspace must be saved to a directory, not a file.");
         }
         try {
-            for(File f : baseDir().listFiles()) {
-                if(!f.getAbsoluteFile().equals(workspaceFile.getAbsoluteFile())) {
+            for (File f : baseDir().listFiles()) {
+                if (!f.getAbsoluteFile().equals(workspaceFile.getAbsoluteFile())) {
                     FileUtils.copyAll(f, newBaseDir);
                 }
             }
@@ -371,7 +371,7 @@ public class Workspace {
         Element root = doc.createElement("workcraft-workspace");
         doc.appendChild(root);
 
-        for(Entry<Path<String>, File> mountEntry : permanentMounts.entrySet()) {
+        for (Entry<Path<String>, File> mountEntry : permanentMounts.entrySet()) {
             Element e = doc.createElement("mount");
             e.setAttribute("mountPoint", mountEntry.getKey().toString());
             e.setAttribute("filePath", mountEntry.getValue().getPath());
@@ -385,7 +385,7 @@ public class Workspace {
             fireWorkspaceSaved();
 
             setTemporary(false);
-        } catch(IOException e) {
+        } catch (IOException e) {
             System.err.println(e.getMessage());
         }
     }
@@ -438,9 +438,9 @@ public class Workspace {
 
     public MountTree getRoot() {
         final Map<Path<String>, File> allMounts = new HashMap<>(mounts);
-        for(WorkspaceEntry we : new HashSet<>(openFiles.values())) {
+        for (WorkspaceEntry we : new HashSet<>(openFiles.values())) {
             final File file = getFile(we.getWorkspacePath());
-            if(!file.exists()) {
+            if (!file.exists()) {
                 Path<String> key = openFiles.getKey(we);
                 if (key != null) {
                     allMounts.put(key, file);
@@ -468,7 +468,7 @@ public class Workspace {
             mounts.remove(from);
             final File perm = permanentMounts.get(from);
             mounts.put(to, mountFrom);
-            if (perm!=null) {
+            if (perm != null) {
                 permanentMounts.remove(from);
                 permanentMounts.put(to, perm);
             }
@@ -499,7 +499,7 @@ public class Workspace {
 
     public MountTree getMountTree(Path<String> path) {
         MountTree result = getRoot();
-        for(String s : Path.getPath(path)) {
+        for (String s : Path.getPath(path)) {
             result = result.getSubtree(s);
         }
         return result;

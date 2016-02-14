@@ -42,7 +42,7 @@ public class VisualSyncComponent extends VisualXmasComponent {
         } else {
             int numInputs = ((XmasComponent) component).getInputs().size();
             int numOutputs = ((XmasComponent) component).getOutputs().size();
-            if(numInputs>numOutputs) {
+            if (numInputs > numOutputs) {
                 xOffset = numInputs - 1;
             } else {
                 xOffset = numOutputs - 1;

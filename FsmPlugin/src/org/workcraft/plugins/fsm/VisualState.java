@@ -59,8 +59,8 @@ public class VisualState extends VisualComponent {
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
 
-        double s = size-strokeWidth;
-        Shape shape = new Ellipse2D.Double(-s/2, -s/2, s, s);
+        double s = size - strokeWidth;
+        Shape shape = new Ellipse2D.Double(-s / 2, -s / 2, s, s);
         g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
         g.fill(shape);
         g.setStroke(new BasicStroke(strokeWidth));
@@ -74,7 +74,7 @@ public class VisualState extends VisualComponent {
         }
 
         if (getReferencedState().isFinal()) {
-            g.setStroke(new BasicStroke(strokeWidth/2));
+            g.setStroke(new BasicStroke(strokeWidth / 2));
             g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
             g.draw(getFinalMarkerShape());
         }
@@ -84,19 +84,19 @@ public class VisualState extends VisualComponent {
     }
 
     private Shape getInitialMarkerShape() {
-        double s = size/4;
+        double s = size / 4;
         Path2D shape = new Path2D.Double();
         shape.moveTo(0.0, -size);
-        shape.lineTo(0.0, -size/2);
-        shape.moveTo(-s/2, -size/2 - s);
-        shape.lineTo(0.0, -size/2);
-        shape.lineTo(s/2, -size/2 - s);
+        shape.lineTo(0.0, -size / 2);
+        shape.moveTo(-s / 2, -size / 2 - s);
+        shape.lineTo(0.0, -size / 2);
+        shape.lineTo(s / 2, -size / 2 - s);
         return shape;
     }
 
     private Shape getFinalMarkerShape() {
-        double s = 2*size/3;
-        Shape shape = new Ellipse2D.Double(-s/2, -s/2, s, s);
+        double s = 2 * size / 3;
+        Shape shape = new Ellipse2D.Double(-s / 2, -s / 2, s, s);
         return shape;
     }
 

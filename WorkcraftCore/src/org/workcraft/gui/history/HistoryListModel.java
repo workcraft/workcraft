@@ -29,7 +29,7 @@ import org.workcraft.history.HistoryEvent;
 
 @SuppressWarnings("serial")
 public class HistoryListModel extends AbstractListModel {
-    List <HistoryEvent> events;
+    List<HistoryEvent> events;
 
     public HistoryListModel(List<HistoryEvent> events) {
         super();

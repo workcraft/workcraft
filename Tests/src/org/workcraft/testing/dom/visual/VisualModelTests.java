@@ -52,7 +52,7 @@ import org.workcraft.exceptions.VisualModelInstantiationException;
 
 public class VisualModelTests {
 
-    private class MockMathModel extends AbstractModel implements MathModel{
+    private class MockMathModel extends AbstractModel implements MathModel {
         MockMathModel() {
             super(new MathGroup());
         }

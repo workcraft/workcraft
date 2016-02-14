@@ -61,7 +61,7 @@ public class TransitionBundler {
 
 /*
     private void printStep(Collection<Transition> step) {
-        boolean first =true;
+        boolean first = true;
         System.out.printf("{");
         for (Node n: step) {
             if (first) {

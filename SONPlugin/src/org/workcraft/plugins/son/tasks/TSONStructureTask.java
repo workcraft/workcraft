@@ -12,7 +12,7 @@ import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.TSONAlg;
 import org.workcraft.plugins.son.elements.Block;
 
-public class TSONStructureTask extends AbstractStructuralVerification{
+public class TSONStructureTask extends AbstractStructuralVerification {
 
     private SON net;
 
@@ -26,7 +26,7 @@ public class TSONStructureTask extends AbstractStructuralVerification{
     private int errNumber = 0;
     private int warningNumber = 0;
 
-    public TSONStructureTask(SON net){
+    public TSONStructureTask(SON net) {
         super(net);
         this.net = net;
 
@@ -44,38 +44,38 @@ public class TSONStructureTask extends AbstractStructuralVerification{
 
         Collection<Block> blocks = new ArrayList<Block>();
 
-        for(ONGroup cGroup : groups)
+        for (ONGroup cGroup : groups)
             blocks.addAll(cGroup.getBlocks());
 
         infoMsg("Selected Groups : " +  net.toString(groups));
         infoMsg("Collapsed Blocks : " + net.toString(blocks));
 
-        if(blocks.isEmpty()){
+        if (blocks.isEmpty()) {
             infoMsg("Task terminated: no blocks in selected groups.");
             return;
         }
 
-        for(Block block : blocks){
+        for (Block block : blocks) {
             infoMsg("Initialising block..." + net.getNodeReference(block));
             Collection<Node> inputs = getTSONAlg().getBlockInputs(block);
             Collection<Node> outputs = getTSONAlg().getBlockOutputs(block);
 
-            infoMsg("Block inputs: "+ net.toString(inputs));
-            infoMsg("Block outputs: "+ net.toString(outputs));
+            infoMsg("Block inputs: " + net.toString(inputs));
+            infoMsg("Block outputs: " + net.toString(outputs));
 
         //Causally Precede task result
             infoMsg("Running block structure tasks...");
-            if(onCycleAlg.cycleTask(block.getComponents()).isEmpty()){
+            if (onCycleAlg.cycleTask(block.getComponents()).isEmpty()) {
                 Collection<Node> result3 = causallyPrecedeTask(block);
-                if(!result3.isEmpty()){
+                if (!result3.isEmpty()) {
                     relationErrors.addAll(result3);
                     relationErrors.add(block);
                     errNumber = errNumber + result3.size();
-                    for(Node node : result3)
+                    for (Node node : result3)
                         errMsg("ERROR : Invalid causally relation, the input does not causally precede all block outputs.", node);
-                }else
+                } else
                     infoMsg("Valid causal relation between block inputs and outputs.");
-            }else{
+            } else {
                 warningNumber++;
                 infoMsg("Warning : Block contians cycle path, cannot run causal relation task.", block);
             }
@@ -89,16 +89,16 @@ public class TSONStructureTask extends AbstractStructuralVerification{
 
     //Check all inputs of a block causally precede all outputs of an un-collapsed block
     //Warning: run cycle check before
-    private Collection<Node> causallyPrecedeTask(Block block){
+    private Collection<Node> causallyPrecedeTask(Block block) {
         Collection<Node> result = new ArrayList<Node>();
-        for(Node input : getTSONAlg().getBlockPNInputs(block)){
-            if(!getTSONAlg().isCausallyPrecede(input, getTSONAlg().getBlockPNOutputs(block)))
+        for (Node input : getTSONAlg().getBlockPNInputs(block)) {
+            if (!getTSONAlg().isCausallyPrecede(input, getTSONAlg().getBlockPNOutputs(block)))
                 result.add(input);
         }
         return result;
     }
 
-    public TSONAlg getTSONAlg(){
+    public TSONAlg getTSONAlg() {
         return tsonAlg;
     }
 

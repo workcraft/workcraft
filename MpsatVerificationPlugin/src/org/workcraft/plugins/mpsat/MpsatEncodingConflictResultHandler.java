@@ -55,7 +55,7 @@ final class MpsatEncodingConflictResultHandler implements Runnable {
         GraphEditorPanel currentEditor = mainWindow.getCurrentEditor();
         if ((currentEditor == null) || (currentEditor.getWorkspaceEntry() != we)) {
             final List<GraphEditorPanel> editors = mainWindow.getEditors(we);
-            if (editors.size()>0) {
+            if (editors.size() > 0) {
                 currentEditor = editors.get(0);
                 mainWindow.requestFocus(currentEditor);
             } else {

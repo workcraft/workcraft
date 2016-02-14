@@ -13,9 +13,9 @@ import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.util.Before;
 
-public class ReachabilityAlg extends RelationAlgorithm{
+public class ReachabilityAlg extends RelationAlgorithm {
 
-    private static Collection<Node> predecessors =new HashSet<Node>();
+    private static Collection<Node> predecessors = new HashSet<Node>();
     private SON net;
 
     public ReachabilityAlg(SON net) {
@@ -55,17 +55,17 @@ public class ReachabilityAlg extends RelationAlgorithm{
 //        }
 //    }
 
-    private void causalPredecessors(LinkedList<Node> visited, Node n, Before before){
+    private void causalPredecessors(LinkedList<Node> visited, Node n, Before before) {
         predecessors.add(n);
         visited.add(n);
 
-        for(Node n2 : getCausalPreset(n, before)){
-            if(!visited.contains(n2))
+        for (Node n2 : getCausalPreset(n, before)) {
+            if (!visited.contains(n2))
                 causalPredecessors(visited, n2, before);
         }
     }
 
-    public Collection<Node> getCausalPredecessors(Node s){
+    public Collection<Node> getCausalPredecessors(Node s) {
         predecessors.clear();
         LinkedList<Node> visited = new LinkedList<Node>();
         BSONAlg bsonAlg = new BSONAlg(net);
@@ -76,37 +76,37 @@ public class ReachabilityAlg extends RelationAlgorithm{
         return predecessors;
     }
 
-    private LinkedList<Node> getCausalPreset(Node n, Before before){
+    private LinkedList<Node> getCausalPreset(Node n, Before before) {
         LinkedList<Node> result = new LinkedList<Node>();
 
-        if(isInitial(n) && (n instanceof Condition)){
+        if (isInitial(n) && (n instanceof Condition)) {
             result.addAll(getPostBhvSet((Condition) n));
         }
 
-        for(TransitionNode[] pre : before){
-            if(pre[1] == n)
+        for (TransitionNode[] pre : before) {
+            if (pre[1] == n)
                 result.add(pre[0]);
         }
 
         result.addAll(getPrePNSet(n));
 
-        if(isInitial(n) && (n instanceof Condition)){
+        if (isInitial(n) && (n instanceof Condition)) {
             result.addAll(getPostBhvSet((Condition) n));
-        }else if(n instanceof TransitionNode){
-            for(SONConnection con : net.getSONConnections(n)){
-                if(con.getSemantics() == Semantics.SYNCLINE){
-                    if(con.getFirst() == n)
+        } else if (n instanceof TransitionNode) {
+            for (SONConnection con : net.getSONConnections(n)) {
+                if (con.getSemantics() == Semantics.SYNCLINE) {
+                    if (con.getFirst() == n)
                         result.add(con.getSecond());
                     else
                         result.add(con.getFirst());
-                }else if(con.getSemantics() == Semantics.ASYNLINE && con.getSecond() == n)
+                } else if (con.getSemantics() == Semantics.ASYNLINE && con.getSecond() == n)
                     result.add(con.getFirst());
             }
-        }else if(n instanceof ChannelPlace){
+        } else if (n instanceof ChannelPlace) {
             Node input = net.getPreset(n).iterator().next();
             result.add(input);
             Collection<Semantics> semantics = net.getSONConnectionTypes(n);
-            if(semantics.iterator().next() == Semantics.SYNCLINE){
+            if (semantics.iterator().next() == Semantics.SYNCLINE) {
                 Node output = net.getPostset(n).iterator().next();
                 result.add(output);
             }

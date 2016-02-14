@@ -36,7 +36,7 @@ public class LegacyDefaultCpogSolver<T> implements LegacyCpogSolver {
         BooleanVariable[] vars = new BooleanVariable[freeVars];
 
         char nextVar = 'z';
-        for(int i = 0; i < freeVars; i++) {
+        for (int i = 0; i < freeVars; i++) {
             vars[i] = new FreeVariable("" + nextVar);
             nextVar--;
         }

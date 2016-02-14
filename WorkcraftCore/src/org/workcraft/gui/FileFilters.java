@@ -41,7 +41,7 @@ public class FileFilters {
 
         @Override
         public String getDescription() {
-            return "Workcraft documents (*"+DOCUMENT_EXTENSION+")";
+            return "Workcraft documents (*" + DOCUMENT_EXTENSION + ")";
         }
     }
 
@@ -58,7 +58,7 @@ public class FileFilters {
 
         @Override
         public String getDescription() {
-            return "Workcraft workspace (*"+WORKSPACE_EXTENSION+")";
+            return "Workcraft workspace (*" + WORKSPACE_EXTENSION + ")";
         }
     }
 
@@ -66,7 +66,7 @@ public class FileFilters {
     public static final FileFilter WORKSPACE_FILES = new WorkspaceFilesFilter();
 
     public static String addExtension(String path, String ext) {
-        return path.endsWith(ext)?path:path+ext;
+        return path.endsWith(ext) ? path : path + ext;
     }
 
     public static class GenericFileFilter extends FileFilter {

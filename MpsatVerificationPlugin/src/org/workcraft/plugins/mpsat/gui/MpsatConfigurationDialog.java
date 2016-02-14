@@ -263,7 +263,7 @@ public class MpsatConfigurationDialog extends JDialog {
         }
 
         int n = settings.getSolutionNumberLimit();
-        if (n>0) {
+        if (n > 0) {
             solutionLimitText.setText(Integer.toString(n));
         } else {
             solutionLimitText.setText("");

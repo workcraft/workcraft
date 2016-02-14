@@ -113,7 +113,7 @@ public class VisualModelTransformer {
     private static Rectangle2D getNodesCoordinateBox(Collection<Node> nodes) {
         Rectangle2D selectionBB = null;
         for (Node vn: nodes) {
-            if(vn instanceof VisualTransformableNode) {
+            if (vn instanceof VisualTransformableNode) {
                 Point2D pos = ((VisualTransformableNode) vn).getPosition();
                 selectionBB = bbUnion(selectionBB, pos);
             }

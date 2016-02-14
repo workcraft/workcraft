@@ -7,7 +7,7 @@ package org.workcraft.plugins.cpog.expressions;
 
 import org.workcraft.util.Func;
 
-public interface GraphFunc <Arg, Result> extends Func<Arg, Result>{
+public interface GraphFunc<Arg, Result> extends Func<Arg, Result> {
 
     GraphFunc<Arg, Result> removeGraphName(String graphName);
 

@@ -49,7 +49,7 @@ public class LimBooleCnfGenerator implements RawCnfGenerator<BooleanFormula> {
         formula.accept(collector);
         Map<String, BooleanVariable> vars = collector.getVars();
 
-        return new CnfTask(ProcessIO.runViaStreams(FormulaToString.toString(BooleanOperations.not(formula))+"|0|!1", new String[]{limboolePath, "-d"}), vars);
+        return new CnfTask(ProcessIO.runViaStreams(FormulaToString.toString(BooleanOperations.not(formula)) + "|0|!1", new String[]{limboolePath, "-d"}), vars);
     }
 
 }

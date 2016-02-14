@@ -14,7 +14,7 @@ public class SelectionHelper {
         HashSet<Node> result = new HashSet<Node>();
         Collection<Node> selection = model.getSelection();
         Container currentLevel = model.getCurrentLevel();
-        for(Node node : currentLevel.getChildren()) {
+        for (Node node : currentLevel.getChildren()) {
             if (selection.contains(node)) {
                 result.add(node);
             }

@@ -11,16 +11,16 @@ public class ColorResetTool implements Tool {
         return WorkspaceUtils.canHas(we, SON.class);
     }
 
-    public String getSection(){
+    public String getSection() {
         return "Custom tools";
     }
 
-    public String getDisplayName(){
+    public String getDisplayName() {
         return "Reset color to default";
     }
 
-    public void run(WorkspaceEntry we){
-        SON net=(SON) we.getModelEntry().getMathModel();
+    public void run(WorkspaceEntry we) {
+        SON net = (SON) we.getModelEntry().getMathModel();
         net.refreshAllColor();
     }
 

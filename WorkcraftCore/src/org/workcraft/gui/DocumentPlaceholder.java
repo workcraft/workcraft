@@ -41,8 +41,8 @@ public class DocumentPlaceholder extends JPanel {
             int w = logoImage.getWidth();
             int h = logoImage.getHeight();
 
-            int x = (getWidth() - w)/2;
-            int y = (getHeight() - h)/2;
+            int x = (getWidth() - w) / 2;
+            int y = (getHeight() - h) / 2;
 
             g.drawImage(logoImage, x, y, null);
         }

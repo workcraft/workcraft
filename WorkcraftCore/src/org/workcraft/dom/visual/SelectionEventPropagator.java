@@ -44,10 +44,10 @@ public class SelectionEventPropagator extends HierarchySupervisor implements Sta
     @Override
     public void handleEvent(HierarchyEvent e) {
         if (e instanceof NodesAddedEvent || e instanceof NodesReparentedEvent) {
-            for (Node n:e.getAffectedNodes())
+            for (Node n : e.getAffectedNodes())
                 nodeAdded(n);
         } else if (e instanceof NodesDeletedEvent) {
-            for (Node n:e.getAffectedNodes())
+            for (Node n : e.getAffectedNodes())
                 nodeRemoved(n);
         }
     }

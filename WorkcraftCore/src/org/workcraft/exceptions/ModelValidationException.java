@@ -43,7 +43,7 @@ public class ModelValidationException extends Exception {
     public String getMessage() {
         String r = "Model contains following errors:\n";
         for (String e: errors)
-            r += e+"\n";
+            r += e + "\n";
         return r;
     }
 }

@@ -21,7 +21,7 @@ public class GenlibUtils {
             try {
                 circuit.setName(component, instanceName);
             } catch (ArgumentException e) {
-                LogUtils.logWarningLine("Cannot set name '" + instanceName +"' for component '" + circuit.getName(component) + "'.");
+                LogUtils.logWarningLine("Cannot set name '" + instanceName + "' for component '" + circuit.getName(component) + "'.");
             }
         }
 

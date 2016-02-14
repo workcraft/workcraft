@@ -50,7 +50,7 @@ public class ExpressionUtils {
         List<String> result = new LinkedList<>();
         int b = 0;
         String term = "";
-        for (int i = 0; i < expression.length(); i++){
+        for (int i = 0; i < expression.length(); i++) {
             char c = expression.charAt(i);
             if (c == ' ') continue;
             if ((c == TERM_DELIMITER) && (b == 0)) {
@@ -70,8 +70,8 @@ public class ExpressionUtils {
 
     private static String negateExpression(String expression) {
         String result = null;
-        if (expression.contains(""+TERM_DELIMITER) || expression.contains(""+FACTOR_DELIMITER)) {
-            result= NEGATION_DELIMITER + "(" + expression + ")";
+        if (expression.contains("" + TERM_DELIMITER) || expression.contains("" + FACTOR_DELIMITER)) {
+            result = NEGATION_DELIMITER + "(" + expression + ")";
         } else {
             if (expression.startsWith("!")) {
                 result = expression.substring(1, expression.length());

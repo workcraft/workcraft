@@ -25,14 +25,14 @@ import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
 public class SolutionPrettifier {
     public static <T> CpogEncoding prettifySolution(CpogOptimisationTask<T> task, BooleanSolution solution) {
-        if(solution==null)
+        if (solution == null)
             return null;
 
         BooleanFormula[][] encodingVars = task.getEncodingVars();
         BooleanFormula[] functionVars = task.getFunctionVars();
-        if(functionVars == null)
+        if (functionVars == null)
             throw new RuntimeException("functionVars is null");
-        if(encodingVars == null)
+        if (encodingVars == null)
             throw new RuntimeException("encodingVars is null");
 
         BooleanVisitor<BooleanFormula> substitutor = new SolutionSubstitutor(solution);
@@ -40,13 +40,13 @@ public class SolutionPrettifier {
 
         BooleanFormula[] functions = new BooleanFormula[functionVars.length];
 
-        for(int i=0; i<functions.length; i++)
+        for (int i = 0; i < functions.length; i++)
             functions[i] = functionVars[i].accept(substitutor);
 
         boolean[][] encoding = new boolean[encodingVars.length][];
-        for(int i=0; i<encodingVars.length; i++) {
+        for (int i = 0; i < encodingVars.length; i++) {
             encoding[i] = new boolean[encodingVars[i].length];
-            for(int j=0; j<encodingVars[i].length; j++)
+            for (int j = 0; j < encodingVars[i].length; j++)
                 encoding[i][j] = encodingVars[i][j].accept(substitutor).accept(evaluator);
         }
 

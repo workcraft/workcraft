@@ -22,7 +22,7 @@ public class SolutionsDialog1 extends JDialog {
         contents = new JPanel();
         contents.setLayout(new BorderLayout());
 
-        if(n==1) {
+        if (n == 1) {
             JLabel label = new JLabel("The system has a deadlock");
             contents.add(label, BorderLayout.NORTH);
         } else {

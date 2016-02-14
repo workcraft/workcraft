@@ -69,19 +69,19 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
 
         public GraphEditorTool getNextTool() {
             GraphEditorTool ret = tools.get(nextIndex);
-            setNext(nextIndex+1);
+            setNext(nextIndex + 1);
             return ret;
         }
 
         private void setNext(int next) {
-            if(next >= tools.size()) {
+            if (next >= tools.size()) {
                 next %= tools.size();
             }
             nextIndex = next;
         }
 
         public void track(GraphEditorTool tool) {
-            setNext(tools.indexOf(tool)+1);
+            setNext(tools.indexOf(tool) + 1);
         }
     }
 
@@ -126,23 +126,23 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
 
         Insets insets = button.getInsets();
         int iconSize = CommonEditorSettings.getIconSize();
-        int minSize = iconSize+Math.max(insets.left+insets.right, insets.top+insets.bottom);
+        int minSize = iconSize + Math.max(insets.left + insets.right, insets.top + insets.bottom);
 
         Icon icon = tool.getIcon();
-        if(icon==null) {
+        if (icon == null) {
             button.setText(tool.getLabel());
             button.setPreferredSize(new Dimension(120, minSize));
         } else {
             BufferedImage crop = new BufferedImage(iconSize, iconSize,
                     BufferedImage.TYPE_INT_ARGB);
-            icon.paintIcon(button, crop.getGraphics(), (iconSize-icon.getIconWidth())/2, (iconSize-icon.getIconHeight())/2);
+            icon.paintIcon(button, crop.getGraphics(), (iconSize - icon.getIconWidth()) / 2, (iconSize - icon.getIconHeight()) / 2);
             button.setIcon(new ImageIcon(crop));
             button.setPreferredSize(new Dimension(minSize, minSize));
         }
 
         int hotKeyCode = tool.getHotKeyCode();
         if (hotKeyCode != -1) {
-            button.setToolTipText("["+Character.toString((char) hotKeyCode)+"] " + tool.getLabel());
+            button.setToolTipText("[" + Character.toString((char) hotKeyCode) + "] " + tool.getLabel());
         } else {
             button.setToolTipText(tool.getLabel());
         }
@@ -215,8 +215,8 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
             } catch (Exception e) {
                 e.printStackTrace();
             }
-            if(provider != null) {
-                for(GraphEditorTool tool : provider.getTools()) {
+            if (provider != null) {
+                for (GraphEditorTool tool : provider.getTools()) {
                     addTool(tool, selected);
                     selected = false;
                 }

@@ -147,7 +147,7 @@ public class DockableWindowContentPanel extends JPanel {
             }
 
             if (icons != 0) {
-                buttonPanel.setPreferredSize(new Dimension((UIManager.getIcon("InternalFrame.closeIcon").getIconWidth()+4) * icons, UIManager.getIcon("InternalFrame.closeIcon").getIconHeight()+4));
+                buttonPanel.setPreferredSize(new Dimension((UIManager.getIcon("InternalFrame.closeIcon").getIconWidth() + 4) * icons, UIManager.getIcon("InternalFrame.closeIcon").getIconHeight() + 4));
             }
 
             titleLabel = new JLabel(title);

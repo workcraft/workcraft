@@ -29,7 +29,7 @@ import java.util.Collection;
 public class BoundingBoxHelper {
 
     public static Rectangle2D copy(Rectangle2D rect) {
-        if(rect == null) {
+        if (rect == null) {
             return null;
         }
         Rectangle2D result = new Rectangle2D.Double();
@@ -49,7 +49,7 @@ public class BoundingBoxHelper {
 
     public static Rectangle2D mergeBoundingBoxes(Collection<Touchable> nodes) {
         Rectangle2D bb = null;
-        for(Touchable node : nodes) {
+        for (Touchable node : nodes) {
             bb = union(bb, node.getBoundingBox());
         }
         return bb;
@@ -77,7 +77,7 @@ public class BoundingBoxHelper {
     }
 
     public static Rectangle2D transform(Rectangle2D rect, AffineTransform transform) {
-        if(rect == null) {
+        if (rect == null) {
             return null;
         }
         Point2D p0 = new Point2D.Double(rect.getMinX(), rect.getMinY());

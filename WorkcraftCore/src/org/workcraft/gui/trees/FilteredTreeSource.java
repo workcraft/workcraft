@@ -52,7 +52,7 @@ public class FilteredTreeSource<T> implements TreeSource<T> {
 
     private boolean hasAcceptableChildren(T node, int depth) {
         for (T t : source.getChildren(node))
-            if (isAcceptable(t, depth-1))
+            if (isAcceptable(t, depth - 1))
                 return true;
         return false;
     }

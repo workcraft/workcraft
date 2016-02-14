@@ -217,11 +217,11 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
     }
 
     @Override
-    public void remove(Node node) {}
+    public void remove(Node node) { }
 
     @Override
     public void add(Collection<Node> nodes) {
-        for(Node x : nodes){
+        for (Node x : nodes) {
             add(x);
         }
     }

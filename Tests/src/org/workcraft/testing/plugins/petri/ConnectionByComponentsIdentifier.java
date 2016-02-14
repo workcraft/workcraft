@@ -78,7 +78,7 @@ class Finder<T> {
     Finder(Iterable<T> items, KeyProvider<T> keyProvider) {
         this.keyProvider = keyProvider;
         map = new HashMap<Object, T>();
-        for(T item : items)
+        for (T item : items)
             map.put(keyProvider.getKey(item), item);
     }
 

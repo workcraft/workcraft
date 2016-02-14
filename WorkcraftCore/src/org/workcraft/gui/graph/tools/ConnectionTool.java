@@ -294,7 +294,7 @@ public class ConnectionTool extends AbstractTool {
 
     @Override
     public void keyPressed(GraphEditorKeyEvent e) {
-        if(e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
             resetState(e.getEditor());
             e.getEditor().repaint();
         }
@@ -328,7 +328,7 @@ public class ConnectionTool extends AbstractTool {
             @Override
             public Decoration getDecoration(Node node) {
                 if (node == currentNode) {
-                    return new Decoration(){
+                    return new Decoration() {
                         @Override
                         public Color getColorisation() {
                             return highlightColor;

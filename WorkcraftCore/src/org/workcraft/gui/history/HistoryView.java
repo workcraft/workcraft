@@ -103,7 +103,7 @@ public class HistoryView extends JInternalFrame implements HistoryListener {
             this.provider.removeHistoryListener(this);
 
         // populate list of existing events
-        List <HistoryEvent> events = provider.getHistory();
+        List<HistoryEvent> events = provider.getHistory();
         listModel = new HistoryListModel(events);
         getListHistory().setModel(listModel);
 
@@ -118,7 +118,7 @@ public class HistoryView extends JInternalFrame implements HistoryListener {
 
     public void eventAdded(HistoryEvent event) {
         listModel.events.add(event);
-        getListHistory().setSelectedIndex(listModel.events.size()-1);
+        getListHistory().setSelectedIndex(listModel.events.size() - 1);
     }
 
     public void movedToState(int index) {

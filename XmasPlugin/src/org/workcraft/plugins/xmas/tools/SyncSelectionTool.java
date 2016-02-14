@@ -50,7 +50,7 @@ public class SyncSelectionTool extends SelectionTool {
             removeInputMenuItem.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    for(VisualXmasContact contact : component.getContacts()) {
+                    for (VisualXmasContact contact : component.getContacts()) {
                         contact = null;
                     }
                 }

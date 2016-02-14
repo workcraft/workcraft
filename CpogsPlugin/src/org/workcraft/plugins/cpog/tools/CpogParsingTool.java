@@ -123,7 +123,7 @@ public class CpogParsingTool {
                 y = centre.getY();
             }
             for (Node n : inner) {
-                if (n instanceof VisualVertex){
+                if (n instanceof VisualVertex) {
                     VisualVertex v = (VisualVertex) n;
                     if ((v.getParent() instanceof VisualPage) && (refMap.containsKey(((VisualPage) v.getParent()).getLabel()))) {
                         VisualPage p = (VisualPage) v.getParent();
@@ -226,9 +226,9 @@ public class CpogParsingTool {
 
                 Iterator<Node> i = roots.iterator();
 
-                while(i.hasNext()) {
+                while (i.hasNext()) {
                     q.add(i.next());
-                    while(!q.isEmpty()){
+                    while (!q.isEmpty()) {
                         connections.clear();
                         current = (VisualVertex) q.remove();
 
@@ -285,10 +285,10 @@ public class CpogParsingTool {
             HashSet<Connection> visitedConnections = new HashSet<Connection>();
             ConcurrentLinkedQueue<Node> q = new ConcurrentLinkedQueue<Node>();
 
-            while(i.hasNext()) {
+            while (i.hasNext()) {
 
                 q.add(i.next());
-                while(!q.isEmpty()){
+                while (!q.isEmpty()) {
                     connections.clear();
                     current = (VisualVertex) q.remove();
 
@@ -319,15 +319,15 @@ public class CpogParsingTool {
         }
 
         for (String ex : expression) {
-            if (ex.contains("=")) {
+            if (ex.contains(" = ")) {
                 total = total + ex;
             } else if (ex.equals("\n")) {
-                while(total.endsWith(" ") || total.endsWith("+")) {
+                while (total.endsWith(" ") || total.endsWith(" + ")) {
                     total = total.substring(0, total.length() - 1);
                 }
                 total = total + ex;
-            } else if (((ex.contains(" ")) || (ex.equals("+"))) || (!(total.contains(" " + ex + " ")) && !(total.startsWith(ex + " ")) && !(total.endsWith(" " + ex)))) {
-                if (!(ex.equals("+") && total.endsWith("+"))) {
+            } else if (((ex.contains(" ")) || (ex.equals(" + "))) || (!(total.contains(" " + ex + " ")) && !(total.startsWith(ex + " ")) && !(total.endsWith(" " + ex)))) {
+                if (!(ex.equals("+") && total.endsWith(" + "))) {
                     if ((total.endsWith("\n")) || (total.equals(""))) {
                         total = total + ex;
                     } else {
@@ -412,7 +412,7 @@ public class CpogParsingTool {
             expression.add(insert);
         } else if (connections.size() > 1) {
 
-            while(!connections.isEmpty()) {
+            while (!connections.isEmpty()) {
                 VisualArc arc  = (VisualArc) connections.get(0);
                 String insert = "";
 
@@ -444,7 +444,7 @@ public class CpogParsingTool {
                     insert = insert + ((VisualVertex) a.getSecond()).getLabel() + " + ";
                 }
 
-                while ((insert.endsWith(" ")) || (insert.endsWith("+"))) {
+                while ((insert.endsWith(" ")) || (insert.endsWith(" + "))) {
                     insert = insert.substring(0, insert.length() - 1);
                 }
 
@@ -512,7 +512,7 @@ public class CpogParsingTool {
         ArrayList<Node> prevSelection = copySelected(visualCpog);
         visualCpog.selectAll();
 
-        for(Node n : visualCpog.getSelection()) {
+        for (Node n : visualCpog.getSelection()) {
             if ((n instanceof VisualPage) || (n instanceof VisualGroup)) {
                 if (prevSelection.contains(n)) {
                     groups.add((VisualTransformableNode) n);
@@ -529,7 +529,7 @@ public class CpogParsingTool {
         ArrayList<Node> prevSelection = copySelected(visualCpog);
         visualCpog.selectAll();
 
-        for(Node n : visualCpog.getSelection()) {
+        for (Node n : visualCpog.getSelection()) {
             if ((n instanceof VisualScenarioPage) || (n instanceof VisualScenario)) {
                 if (prevSelection.contains(n)) {
                     scenarios.add((VisualTransformableNode) n);
@@ -664,7 +664,7 @@ public class CpogParsingTool {
         boolean added;
         for (String k : refMap.keySet()) {
             added = false;
-            if (text.contains(" " + k + " ")){
+            if (text.contains(" " + k + " ")) {
                 if (k.startsWith("[")) {
                     text = text.replaceAll(" " + k + " ", " (" + refMap.get(k).getNormalForm() + ") ");
                     added = true;
@@ -719,7 +719,7 @@ public class CpogParsingTool {
                 String first, second;
                 VisualArc arc;
 
-                while(it.hasNext()) {
+                while (it.hasNext()) {
                     first = it.next();
                     for (int c = index + 1; c < vertexList.size(); c++) {
                         second = vertexList.get(c);
@@ -730,10 +730,10 @@ public class CpogParsingTool {
                         if (first.contains("(")) {
                             first = first.replace("(", "");
                             first = first.replace(")", "");
-                            while(first.contains("+")) {
+                            while (first.contains("+")) {
                                 ind = first.indexOf("+");
                                 verts1.add(first.substring(0, ind));
-                                first = first.substring(ind+1);
+                                first = first.substring(ind + 1);
                             }
                             verts1.add(first);
                         }
@@ -741,10 +741,10 @@ public class CpogParsingTool {
                         if (second.contains("(")) {
                             second = second.replace("(", "");
                             second = second.replace(")", "");
-                            while(second.contains("+")) {
+                            while (second.contains("+")) {
                                 ind = second.indexOf("+");
                                 verts2.add(second.substring(0, ind));
-                                second = second.substring(ind+1);
+                                second = second.substring(ind + 1);
                             }
                         }
                         verts2.add(second);
@@ -825,7 +825,7 @@ public class CpogParsingTool {
 
         Point2D.Double centre, startPoint = null;
 
-        for(VisualVertex vertex : vertices) {
+        for (VisualVertex vertex : vertices) {
             centre = (Double) vertex.getCenter();
             if (startPoint == null) {
                 startPoint = new Point2D.Double(centre.getX(), centre.getY());
@@ -833,14 +833,14 @@ public class CpogParsingTool {
                 if (centre.getY() > startPoint.getY()) {
                     startPoint.setLocation(startPoint.getX(), centre.getY());
                 }
-                if (centre.getX() < startPoint.getX()){
+                if (centre.getX() < startPoint.getX()) {
                     startPoint.setLocation(centre.getX(), startPoint.getY());
                 }
             }
         }
-        for(VisualScenarioPage page : pages) {
+        for (VisualScenarioPage page : pages) {
             Rectangle2D.Double rect = (java.awt.geom.Rectangle2D.Double) page.getBoundingBox();
-            Point2D.Double bl = new Point2D.Double(0, rect.getCenterY() + (rect.getHeight()/2));
+            Point2D.Double bl = new Point2D.Double(0, rect.getCenterY() + (rect.getHeight() / 2));
 
             if (startPoint == null) {
                 startPoint = new Point2D.Double(bl.getX(), bl.getY());
@@ -893,7 +893,7 @@ public class CpogParsingTool {
                 result.addAll(getAllArcs((VisualPage) node, visualCpog));
             } else if (node instanceof VisualScenario) {
                 result.addAll(getAllArcs((VisualScenario) node, visualCpog));
-            }else if (node instanceof VisualArc) {
+            } else if (node instanceof VisualArc) {
                 result.add((VisualArc) node);
             }
         }
@@ -906,10 +906,10 @@ public class CpogParsingTool {
         return getScenarios(cpog).size() > 1;
     }
 
-    public static boolean hasTooScenarios(WorkspaceEntry we){
+    public static boolean hasTooScenarios(WorkspaceEntry we) {
         DesktopApi.OsType os = DesktopApi.getOs();
         VisualCPOG cpog = (VisualCPOG) (we.getModelEntry().getVisualModel());
-        if(os.isLinux()){
+        if (os.isLinux()) {
             return getScenarios(cpog).size() > MAX_SCENARIOS_LINUX;
         } else {
             return getScenarios(cpog).size() > MAX_SCENARIOS_OTHER_OS;
@@ -918,7 +918,7 @@ public class CpogParsingTool {
 
     public boolean[][] copyArray(boolean[][] c) {
         boolean[][] t = new boolean[c.length][c.length];
-        for (int i =0; i < c.length; i++) {
+        for (int i = 0; i < c.length; i++) {
             for (int j = 0; j < c.length; j++) {
                 t[i][j] = c[i][j];
             }

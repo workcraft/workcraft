@@ -28,7 +28,7 @@ public class ConsistencyEnforcer extends HierarchySupervisor {
     }
 
     private void createDefaultLabels(HierarchyEvent e) {
-        for(Node node : e.getAffectedNodes()) {
+        for (Node node : e.getAffectedNodes()) {
             if (node instanceof VisualVertex) {
                 VisualVertex vertex = (VisualVertex) node;
                 if (vertex.getLabel().isEmpty())
@@ -44,11 +44,11 @@ public class ConsistencyEnforcer extends HierarchySupervisor {
     }
 
     private void updateEncoding() {
-        for(VisualScenario group : visualCPOG.getGroups()) {
+        for (VisualScenario group : visualCPOG.getGroups()) {
             Encoding oldEncoding = group.getEncoding();
             Encoding newEncoding = new Encoding();
 
-            for(VisualVariable var : visualCPOG.getVariables()) {
+            for (VisualVariable var : visualCPOG.getVariables()) {
                 Variable mathVariable = var.getMathVariable();
                 newEncoding.setState(mathVariable, oldEncoding.getState(mathVariable));
             }

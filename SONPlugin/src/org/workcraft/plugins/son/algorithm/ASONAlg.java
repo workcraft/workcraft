@@ -15,7 +15,7 @@ import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.exception.UnboundedException;
 import org.workcraft.plugins.son.util.Marking;
 
-public class ASONAlg extends RelationAlgorithm{
+public class ASONAlg extends RelationAlgorithm {
 
     public ASONAlg(SON net) {
         super(net);
@@ -31,32 +31,32 @@ public class ASONAlg extends RelationAlgorithm{
         return true;
     }
 
-    public Marking fire(Marking marking, TransitionNode t) throws UnboundedException{
+    public Marking fire(Marking marking, TransitionNode t) throws UnboundedException {
         Marking result = new Marking();
 
-        for(Node n : getPostPNSet(t)){
-            if(marking.contains(n))
+        for (Node n : getPostPNSet(t)) {
+            if (marking.contains(n))
                 throw new UnboundedException(net.getNodeReference(n), n);
             else
                 result.add((PlaceNode) n);
         }
 
-        for(Node n : marking){
-            if(!getPrePNSet(t).contains(n))
+        for (Node n : marking) {
+            if (!getPrePNSet(t).contains(n))
                 result.add((PlaceNode) n);
         }
 
         return result;
     }
 
-    public List<Marking> getReachableMarkings(ONGroup group) throws UnboundedException{
+    public List<Marking> getReachableMarkings(ONGroup group) throws UnboundedException {
         List<Marking> result = new ArrayList<Marking>();
         Collection<Marking> search = new ArrayList<Marking>();
 
         Map<TransitionNode, ArrayList<Marking>> visited = new HashMap<TransitionNode, ArrayList<Marking>>();
 
         Marking initial = new Marking();
-        for(Condition c : getONInitial(group)){
+        for (Condition c : getONInitial(group)) {
             initial.add(c);
         }
 
@@ -64,21 +64,21 @@ public class ASONAlg extends RelationAlgorithm{
         search.add(initial);
 
         boolean hasEnabled = true;
-        while(hasEnabled){
+        while (hasEnabled) {
             Collection<Marking> newMarkings = new ArrayList<Marking>();
 
-            for(Marking marking : search){
-                for(TransitionNode t : group.getTransitionNodes()){
-                    if(!visited(visited, t, marking) && isEnabled(marking, t)){
+            for (Marking marking : search) {
+                for (TransitionNode t : group.getTransitionNodes()) {
+                    if (!visited(visited, t, marking) && isEnabled(marking, t)) {
                         Marking newMarking = fire(marking, t);
-                        if(!contains(result, newMarking) && !contains(newMarkings, newMarking))
+                        if (!contains(result, newMarking) && !contains(newMarkings, newMarking))
                             newMarkings.add(newMarking);
                     }
-                    if(visited.containsKey(t)){
+                    if (visited.containsKey(t)) {
                         ArrayList<Marking> markings = visited.get(t);
                         markings.add(marking);
                         visited.put(t, markings);
-                    }else{
+                    } else {
                         ArrayList<Marking> markings = new ArrayList<Marking>();
                         markings.add(marking);
                         visited.put(t, markings);
@@ -86,9 +86,9 @@ public class ASONAlg extends RelationAlgorithm{
                 }
             }
 
-            if(newMarkings.isEmpty()){
+            if (newMarkings.isEmpty()) {
                 hasEnabled = false;
-            }else{
+            } else {
                 search = newMarkings;
                 result.addAll(newMarkings);
             }
@@ -97,18 +97,18 @@ public class ASONAlg extends RelationAlgorithm{
         return result;
     }
 
-    public boolean contains(Collection<Marking> result, Marking marking){
-        for(Marking ref : result){
-            if(ref.equals(marking)){
+    public boolean contains(Collection<Marking> result, Marking marking) {
+        for (Marking ref : result) {
+            if (ref.equals(marking)) {
                 return true;
             }
         }
         return false;
     }
-    private boolean visited(Map<TransitionNode, ArrayList<Marking>> visited, TransitionNode t, Marking marking){
-        if(visited.containsKey(t))
-            for(Marking ref : visited.get(t)){
-                if(ref.equals(marking))
+    private boolean visited(Map<TransitionNode, ArrayList<Marking>> visited, TransitionNode t, Marking marking) {
+        if (visited.containsKey(t))
+            for (Marking ref : visited.get(t)) {
+                if (ref.equals(marking))
                     return true;
             }
         return false;

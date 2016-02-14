@@ -67,7 +67,7 @@ public class VisualONGroup extends VisualPage {
             if (labelBB != null) {
                 g.setColor(Coloriser.colorise(Color.WHITE, colorisation));
                 g.fill(labelBB);
-                g.setStroke(new BasicStroke(strokeWidth-0.005f, BasicStroke.CAP_BUTT,
+                g.setStroke(new BasicStroke(strokeWidth - 0.005f, BasicStroke.CAP_BUTT,
                         BasicStroke.JOIN_ROUND, 3.0f, new float[]{0.1f,  0.05f}, 0f));
                 g.setColor(Coloriser.colorise(getLabelColor(), colorisation));
                 g.draw(labelBB);
@@ -116,27 +116,27 @@ public class VisualONGroup extends VisualPage {
         return Hierarchy.getDescendantsOfType(this, VisualCondition.class);
     }
 
-    public Collection<VisualEvent> getVisualEvents(){
+    public Collection<VisualEvent> getVisualEvents() {
         return Hierarchy.getDescendantsOfType(this, VisualEvent.class);
     }
 
-    public Collection<VisualSONConnection> getVisualSONConnections(){
+    public Collection<VisualSONConnection> getVisualSONConnections() {
         return Hierarchy.getDescendantsOfType(this, VisualSONConnection.class);
     }
 
-    public Collection<VisualPage> getVisualPages(){
+    public Collection<VisualPage> getVisualPages() {
         return Hierarchy.getDescendantsOfType(this, VisualPage.class);
     }
 
-    public Collection<VisualBlock> getVisualBlocks(){
+    public Collection<VisualBlock> getVisualBlocks() {
         return Hierarchy.getDescendantsOfType(this, VisualBlock.class);
     }
 
-    public Collection<VisualComment> getVisualComment(){
+    public Collection<VisualComment> getVisualComment() {
         return Hierarchy.getDescendantsOfType(this, VisualComment.class);
     }
 
-    public Collection<VisualComponent> getVisualComponents(){
+    public Collection<VisualComponent> getVisualComponents() {
         return Hierarchy.getDescendantsOfType(this, VisualComponent.class);
     }
 

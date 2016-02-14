@@ -43,7 +43,7 @@ public class NaryFormulaBuilder {
     public static NaryBooleanFormula make(BooleanFormula f) {
         return f.accept(new BooleanVisitor<NaryBooleanFormula>() {
 
-            List<NaryBooleanFormula> visitBinaryOp(BinaryBooleanFormula op, NaryBooleanFormulaVisitor<List<NaryBooleanFormula>> extractor){
+            List<NaryBooleanFormula> visitBinaryOp(BinaryBooleanFormula op, NaryBooleanFormulaVisitor<List<NaryBooleanFormula>> extractor) {
                 NaryBooleanFormula x = op.getX().accept(this);
                 NaryBooleanFormula y = op.getY().accept(this);
                 return extractAndMerge(x, y, extractor);

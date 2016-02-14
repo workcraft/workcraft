@@ -96,7 +96,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
     protected Collection<Path> sync;
     protected Map<Condition, Collection<Phase>> phases;
-    protected Map<PlaceNode, Boolean>initialMarking;
+    protected Map<PlaceNode, Boolean> initialMarking;
 
     protected JPanel interfacePanel;
     protected JPanel controlPanel;
@@ -192,7 +192,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         speedSlider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
-                if(timer != null) {
+                if (timer != null) {
                     timer.stop();
                     timer.setInitialDelay(getAnimationDelay());
                     timer.setDelay(getAnimationDelay());
@@ -202,7 +202,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
             }
         });
 
-        playButton.addActionListener(new ActionListener(){
+        playButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (timer == null) {
@@ -244,9 +244,9 @@ public class SONSimulationTool extends PetriNetSimulationTool {
             }
         });
 
-        reverseButton.addActionListener(new ActionListener(){
+        reverseButton.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent e){
+            public void actionPerformed(ActionEvent e) {
                 Map<PlaceNode, Boolean> currentMarking = readSONMarking();
                 setReverse(editor, !isRev);
                 applyMarking(currentMarking);
@@ -260,15 +260,15 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         autoSimuButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if(autoSimuButton.isSelected()){
-                    if(!acyclicChecker()){
+                if (autoSimuButton.isSelected()) {
+                    if (!acyclicChecker()) {
                         autoSimuButton.setSelected(false);
                         try {
                             throw new InvalidStructureException("Cyclic structure error");
                         } catch (InvalidStructureException e1) {
                             errorMsg(e1.getMessage(), editor);
                         }
-                    }else{
+                    } else {
                         autoSimulator(editor);
                     }
                 }
@@ -381,16 +381,16 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         editor.getModel().setTemplateNode(null);
     }
 
-    protected void initialise(){
+    protected void initialise() {
         relationAlg = new RelationAlgorithm(net);
         bsonAlg = new BSONAlg(net);
         simuAlg = new SimulationAlg(net);
-        initialMarking=simuAlg.getInitialMarking();
+        initialMarking = simuAlg.getInitialMarking();
         sync = getSyncEventCycles();
         phases = bsonAlg.getAllPhases();
     }
 
-    protected Collection<Path> getSyncEventCycles(){
+    protected Collection<Path> getSyncEventCycles() {
         HashSet<Node> nodes = new HashSet<Node>();
         nodes.addAll(net.getTransitionNodes());
         nodes.addAll(net.getChannelPlaces());
@@ -426,10 +426,10 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         backwardButton.setEnabled((mainTrace.getPosition() > 0) || (branchTrace.getPosition() > 0));
         forwardButton.setEnabled(branchTrace.canProgress() || (branchTrace.isEmpty() && mainTrace.canProgress()));
         traceTable.tableChanged(new TableModelEvent(traceTable.getModel()));
-        if(!isRev){
+        if (!isRev) {
             reverseButton.setIcon(GUI.createIconFromSVG("images/icons/svg/son-forward-simulation.svg"));
             reverseButton.setToolTipText("Switch to reverse simulation");
-        } else{
+        } else {
             reverseButton.setIcon(GUI.createIconFromSVG("images/icons/svg/son-reverse-simulation.svg"));
             reverseButton.setToolTipText("Switch to forward simulation");
         }
@@ -473,7 +473,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         }
     }
 
-    protected void errorMsg(String message, final GraphEditor editor){
+    protected void errorMsg(String message, final GraphEditor editor) {
 
         final Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
@@ -499,12 +499,12 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         int branchInc = 0;
         if (branchTrace.canProgress()) {
             StepRef stepRef = branchTrace.getCurrent();
-            step=this.getStep(stepRef);
+            step = this.getStep(stepRef);
             setReverse(editor, stepRef);
             branchInc = 1;
         } else if (mainTrace.canProgress()) {
             StepRef stepRef = mainTrace.getCurrent();
-            step=this.getStep(stepRef);
+            step = this.getStep(stepRef);
             setReverse(editor, stepRef);
             mainInc = 1;
         }
@@ -543,13 +543,13 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         int mainDec = 0;
         int branchDec = 0;
         if (branchTrace.getPosition() > 0) {
-            StepRef stepRef = branchTrace.get(branchTrace.getPosition()-1);
-            step=getStep(stepRef);
+            StepRef stepRef = branchTrace.get(branchTrace.getPosition() - 1);
+            step = getStep(stepRef);
             setReverse(editor, stepRef);
             branchDec = 1;
         } else if (mainTrace.getPosition() > 0) {
             StepRef stepRef = mainTrace.get(mainTrace.getPosition() - 1);
-            step=getStep(stepRef);
+            step = getStep(stepRef);
             setReverse(editor, stepRef);
             mainDec = 1;
         }
@@ -598,11 +598,11 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         Clipboard clip = Toolkit.getDefaultToolkit().getSystemClipboard();
         Transferable contents = clip.getContents(null);
         boolean hasTransferableText = (contents != null) && contents.isDataFlavorSupported(DataFlavor.stringFlavor);
-        String str="";
+        String str = "";
         if (hasTransferableText) {
             try {
                 str = (String) contents.getTransferData(DataFlavor.stringFlavor);
-            } catch (UnsupportedFlavorException ex){
+            } catch (UnsupportedFlavorException ex) {
                 System.out.println(ex);
                 ex.printStackTrace();
             } catch (IOException ex) {
@@ -651,82 +651,82 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         updateState(editor);
     }
 
-    private void setErrNum(Step step, boolean isRev){
-        if (SONSettings.isErrorTracing()){
+    private void setErrNum(Step step, boolean isRev) {
+        if (SONSettings.isErrorTracing()) {
             Collection<TransitionNode> upperEvents = new ArrayList<TransitionNode>();
 
             //get high level events
-            for(TransitionNode node : step){
-                if(bsonAlg.isUpperEvent(node))
+            for (TransitionNode node : step) {
+                if (bsonAlg.isUpperEvent(node))
                     upperEvents.add(node);
             }
             //get low level events
             step.removeAll(upperEvents);
 
-            if(!isRev){
+            if (!isRev) {
                 //set error number for upper events
                 errAlg.setErrNum(upperEvents, sync, phases, false);
                 //set error number for lower events
                 errAlg.setErrNum(step, sync, phases, true);
-            } else{
+            } else {
                 errAlg.setRevErrNum(upperEvents, sync, phases, false);
                 errAlg.setRevErrNum(step, sync, phases, true);
             }
         }
     }
 
-    protected void applyMarking(Map<PlaceNode, Boolean> marking){
+    protected void applyMarking(Map<PlaceNode, Boolean> marking) {
         for (PlaceNode c: marking.keySet())
             c.setMarked(marking.get(c));
     }
 
-    protected void autoSimulator(final GraphEditor editor){
-        if(!acyclicChecker()){
+    protected void autoSimulator(final GraphEditor editor) {
+        if (!acyclicChecker()) {
             autoSimuButton.setSelected(false);
-        }else{
+        } else {
             autoSimulationTask(editor);
         }
     }
 
-    protected boolean acyclicChecker(){
+    protected boolean acyclicChecker() {
         SONCycleAlg cycle = new SONCycleAlg(net, phases);
-        if(!cycle.cycleTask(net.getComponents()).isEmpty())
+        if (!cycle.cycleTask(net.getComponents()).isEmpty())
             return false;
         else
             return true;
     }
 
-    protected void autoSimulationTask(final GraphEditor editor){
+    protected void autoSimulationTask(final GraphEditor editor) {
         Step step = simuAlg.getEnabledNodes(sync, phases, isRev);
 
-        if(step.isEmpty()){
+        if (step.isEmpty()) {
             autoSimuButton.setSelected(false);
             return;
         }
         step = conflictfilter(step);
-        if(!step.isEmpty()){
+        if (!step.isEmpty()) {
             step = simuAlg.getMinFire(step.iterator().next(), sync, step, isRev);
             executeEvents(editor, step);
             autoSimulationTask(editor);
         }
     }
 
-    protected Step conflictfilter(Step step){
+    protected Step conflictfilter(Step step) {
         Step result = new Step();
         result.addAll(step);
 
-        for(PlaceNode c : readSONMarking().keySet()){
+        for (PlaceNode c : readSONMarking().keySet()) {
             Collection<TransitionNode> conflict = new ArrayList<TransitionNode>();
-            if(c.isMarked()){
-                if(!isRev){
+            if (c.isMarked()) {
+                if (!isRev) {
                     conflict.addAll(relationAlg.getPostConflictEvents(c));
-                }else{
+                } else {
                     conflict.addAll(relationAlg.getPreConflictEvents(c));
                 }
             }
 
-            if(!conflict.isEmpty()){
-                for(TransitionNode e : conflict){
+            if (!conflict.isEmpty()) {
+                for (TransitionNode e : conflict) {
                     result.removeAll(simuAlg.getMinFire(e, sync, step, isRev));
                     result.removeAll(simuAlg.getMinFire(e, sync, step, !isRev));
                 }
@@ -735,36 +735,36 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         return result;
     }
 
-    public Map<PlaceNode, Boolean> reachabilitySimulator(final GraphEditor editor, Collection<String> causalPredecessorRefs, Collection<String> markingRefs){
+    public Map<PlaceNode, Boolean> reachabilitySimulator(final GraphEditor editor, Collection<String> causalPredecessorRefs, Collection<String> markingRefs) {
         Collection<TransitionNode> causalPredecessors = new ArrayList<TransitionNode>();
-        for(String ref : causalPredecessorRefs){
+        for (String ref : causalPredecessorRefs) {
             Node node = net.getNodeByReference(ref);
-            if(node instanceof TransitionNode)
+            if (node instanceof TransitionNode)
                 causalPredecessors.add((TransitionNode) net.getNodeByReference(ref));
         }
         return reachabilitySimulationTask(editor, causalPredecessors, markingRefs);
     }
 
-    private Map<PlaceNode, Boolean> reachabilitySimulationTask(final GraphEditor editor, Collection<TransitionNode> causalPredecessors,  Collection<String> markingRefs){
+    private Map<PlaceNode, Boolean> reachabilitySimulationTask(final GraphEditor editor, Collection<TransitionNode> causalPredecessors,  Collection<String> markingRefs) {
         Step enabled = null;
         enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
 
         Step step = new Step();
-        for(Node node : relationAlg.getCommonElements(enabled, causalPredecessors)){
-            if(node instanceof TransitionNode)
+        for (Node node : relationAlg.getCommonElements(enabled, causalPredecessors)) {
+            if (node instanceof TransitionNode)
                 step.add((TransitionNode) node);
         }
 
         //causalPredecessors.removeAll(fireList);
 
-        if(!step.isEmpty()){
+        if (!step.isEmpty()) {
             executeEvents(editor, step);
             reachabilitySimulationTask(editor, causalPredecessors, markingRefs);
         }
 
-        for(String ref : markingRefs){
+        for (String ref : markingRefs) {
             Node node = net.getNodeByReference(ref);
-            if(node instanceof PlaceNode){
+            if (node instanceof PlaceNode) {
                 ((PlaceNode) node).setForegroundColor(Color.BLUE);
                 ((PlaceNode) node).setTokenColor(Color.BLUE);
             }
@@ -779,14 +779,14 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         // if clicked on the trace event, do the step forward
         if (branchTrace.isEmpty() && !mainTrace.isEmpty() && (mainTrace.getPosition() < mainTrace.size())) {
             StepRef stepRef = mainTrace.get(mainTrace.getPosition());
-            traceList=getStep(stepRef);
+            traceList = getStep(stepRef);
         }
         // otherwise form/use the branch trace
         if (!branchTrace.isEmpty() && (branchTrace.getPosition() < branchTrace.size())) {
             StepRef stepRef = branchTrace.get(branchTrace.getPosition());
-            traceList=getStep(stepRef);
+            traceList = getStep(stepRef);
         }
-        if (!traceList.isEmpty() && traceList.containsAll(step) && step.containsAll(traceList)){
+        if (!traceList.isEmpty() && traceList.containsAll(step) && step.containsAll(traceList)) {
             step(editor);
             return;
         }
@@ -795,11 +795,11 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         }
 
         StepRef newStep = new StepRef();
-        if(!isRev)
+        if (!isRev)
             newStep.add(">");
         else
             newStep.add("<");
-        for(TransitionNode e : step)
+        for (TransitionNode e : step)
             newStep.add(net.getNodeReference(e));
 
         branchTrace.add(newStep);
@@ -807,11 +807,11 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         return;
     }
 
-    protected Step getStep(StepRef stepRef){
+    protected Step getStep(StepRef stepRef) {
         Step result = new Step();
-        for(int i =0; i<stepRef.size(); i++){
+        for (int i = 0; i < stepRef.size(); i++) {
             final Node node = net.getNodeByReference(stepRef.get(i));
-            if(node instanceof TransitionNode)
+            if (node instanceof TransitionNode)
                 result.add((TransitionNode) node);
         }
         return result;
@@ -829,7 +829,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         };
 
         boolean isActive(int row, int column) {
-            if (column==0) {
+            if (column == 0) {
                 if (!mainTrace.isEmpty() && branchTrace.isEmpty()) {
                     return row == mainTrace.getPosition();
                 }
@@ -859,10 +859,10 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         }
     }
 
-    protected void setDecoration(Step enabled){
+    protected void setDecoration(Step enabled) {
         net.refreshAllColor();
 
-        for(TransitionNode e : enabled){
+        for (TransitionNode e : enabled) {
             //e.setFillColor(CommonSimulationSettings.getEnabledForegroundColor());
             e.setForegroundColor(CommonSimulationSettings.getEnabledForegroundColor());
         }
@@ -870,16 +870,16 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         StepRef refStep = null;
         if (branchTrace.canProgress()) {
             refStep = branchTrace.get(branchTrace.getPosition());
-        }else if (branchTrace.isEmpty() && mainTrace.canProgress()) {
+        } else if (branchTrace.isEmpty() && mainTrace.canProgress()) {
             refStep = mainTrace.get(mainTrace.getPosition());
         }
 
-        if(refStep != null){
-            if(refStep.isReverse() == isRev){
-                for(String ref : refStep){
+        if (refStep != null) {
+            if (refStep.isReverse() == isRev) {
+                for (String ref : refStep) {
                     Node n = net.getNodeByReference(ref);
-                    if(n != null){
-                        if(n instanceof TransitionNode){
+                    if (n != null) {
+                        if (n instanceof TransitionNode) {
                             ((TransitionNode) n).setFillColor(new Color(255, 228, 181));
                         }
                     }
@@ -888,8 +888,8 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         }
     }
 
-    private boolean isEnabled(Node e, Step step){
-        if(step.contains(e))
+    private boolean isEnabled(Node e, Step step) {
+        if (step.contains(e))
             return true;
         return false;
     }
@@ -901,12 +901,12 @@ public class SONSimulationTool extends PetriNetSimulationTool {
                 new Func<Node, Boolean>() {
                     @Override
                     public Boolean eval(Node node) {
-                        if(node instanceof VisualTransitionNode){
+                        if (node instanceof VisualTransitionNode) {
                             TransitionNode node1 = ((VisualTransitionNode) node).getMathTransitionNode();
                             Step enabled = null;
 
                             enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
-                            if(isEnabled(node1, enabled))
+                            if (isEnabled(node1, enabled))
                                 return true;
                         }
                         return false;
@@ -935,26 +935,26 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
             minFire.remove(select);
 
-            if(possibleFire.isEmpty()){
+            if (possibleFire.isEmpty()) {
                 executeEvents(e.getEditor(), step);
-            }else{
+            } else {
                 e.getEditor().requestFocus();
                 ParallelSimDialog dialog = new ParallelSimDialog(mainWindow,
                         net, possibleFire, minFire, select, isRev, sync);
                 GUI.centerToParent(dialog, mainWindow);
                 dialog.setVisible(true);
 
-                if (dialog.getRun() == 1){
+                if (dialog.getRun() == 1) {
                     step.addAll(dialog.getSelectedEvent());
                     executeEvents(e.getEditor(), step);
                 }
-                if(dialog.getRun()==2){
+                if (dialog.getRun() == 2) {
                     setDecoration(enabled);
                     return;
                 }
             }
 
-            if(autoSimuButton.isSelected()){
+            if (autoSimuButton.isSelected()) {
                 autoSimulator(editor);
             }
         }
@@ -967,16 +967,16 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         boolean ret = false;
 
         for (Node node: container.getChildren()) {
-            try{
+            try {
                 Step enabled = null;
 
                 enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
 
                 if (node instanceof VisualTransitionNode) {
                     TransitionNode event = ((VisualTransitionNode) node).getMathTransitionNode();
-                    ret=ret || isEnabled(event, enabled);
+                    ret = ret || isEnabled(event, enabled);
                 }
-            }catch(NullPointerException ex){
+            } catch (NullPointerException ex) {
 
             }
 
@@ -991,14 +991,14 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         return ret;
     }
 
-    public void setReverse(final GraphEditor editor, boolean rev){
+    public void setReverse(final GraphEditor editor, boolean rev) {
         this.isRev = rev;
         updateState(editor);
     }
 
-    public void setReverse(final GraphEditor editor, StepRef stepRef){
+    public void setReverse(final GraphEditor editor, StepRef stepRef) {
 
-        if(stepRef.contains(">"))
+        if (stepRef.contains(">"))
             this.setReverse(editor, false);
         else
             this.setReverse(editor, true);
@@ -1042,7 +1042,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         };
     }
 
-    public GraphEditor getGraphEditor(){
+    public GraphEditor getGraphEditor() {
         return editor;
     }
 

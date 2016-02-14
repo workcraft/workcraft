@@ -33,11 +33,11 @@ public class DnfGenerator {
                     }
 
                     private Dnf and(Dnf left, Dnf right) {
-                        return negation?addDnf(left, right):multiplyDnf(left, right);
+                        return negation ? addDnf(left, right) : multiplyDnf(left, right);
                     }
 
                     private Dnf or(Dnf left, Dnf right) {
-                        return negation?multiplyDnf(left, right):addDnf(left, right);
+                        return negation ? multiplyDnf(left, right) : addDnf(left, right);
                     }
 
                     @Override
@@ -73,27 +73,27 @@ public class DnfGenerator {
 
                     @Override
                     public Dnf visit(One node) {
-                        negation=!negation;
+                        negation = !negation;
                         Dnf result = zero();
-                        negation=!negation;
+                        negation = !negation;
                         return result;
                     }
 
                     @Override
                     public Dnf visit(Not node) {
                         negation = !negation;
-                        try{
+                        try {
                         return node.getX().accept(this);
-                        } finally{
-                            negation=!negation;
+                        } finally {
+                            negation = !negation;
                         }
                     }
 
                     @Override
                     public Dnf visit(Imply node) {
-                        negation=!negation;
+                        negation = !negation;
                         Dnf x = node.getX().accept(this);
-                        negation=!negation;
+                        negation = !negation;
                         Dnf y = node.getY().accept(this);
                         return or(x, y);
                     }
@@ -115,7 +115,7 @@ public class DnfGenerator {
             HashSet<String> set2, boolean equalWins) {
 
         if (set2.containsAll(set1)) {
-            if (set2.size()>set1.size()) return true;
+            if (set2.size() > set1.size()) return true;
             return equalWins;
         }
 
@@ -126,26 +126,26 @@ public class DnfGenerator {
     private static Dnf simplifyDnf(Dnf clauses) {
         Dnf result = new Dnf();
 
-        Map <DnfClause, HashSet <String> > testClauses = new HashMap<DnfClause, HashSet <String> >();
+        Map<DnfClause, HashSet<String>> testClauses = new HashMap<DnfClause, HashSet<String>>();
 
         for (DnfClause clause: clauses.getClauses()) {
 
-            if (clause.getLiterals().size()==0) return  new Dnf(new DnfClause());
+            if (clause.getLiterals().size() == 0) return  new Dnf(new DnfClause());
 
             HashSet<String> lset = new HashSet<String>();
 
             for (Literal lit: clause.getLiterals())
-                lset.add(lit.getVariable().getLabel()+(lit.getNegation()?"'":""));
+                lset.add(lit.getVariable().getLabel() + (lit.getNegation() ? "'" : ""));
 
             testClauses.put(clause, lset);
         }
 
         for (DnfClause cleft: testClauses.keySet()) {
             for (DnfClause cright: testClauses.keySet()) {
-                if (cleft==cright) continue;
+                if (cleft == cright) continue;
 
-                if (testClauses.get(cleft)==null) break;
-                if (testClauses.get(cright)==null) continue;
+                if (testClauses.get(cleft) == null) break;
+                if (testClauses.get(cright) == null) continue;
 
                 // left to right comparison
                 if (isFirstSmaller(testClauses.get(cleft), testClauses.get(cright), true)) {
@@ -158,7 +158,7 @@ public class DnfGenerator {
         }
 
         for (DnfClause cleft: testClauses.keySet())
-            if (testClauses.get(cleft)!=null)
+            if (testClauses.get(cleft) != null)
                 result.add(cleft);
 
         return result;
@@ -175,29 +175,29 @@ public class DnfGenerator {
 
     private static Dnf multiplyDnf(Dnf left, Dnf right) {
         Dnf result = new Dnf();
-        for(DnfClause leftClause : left.getClauses()) {
+        for (DnfClause leftClause : left.getClauses()) {
 
-            for(DnfClause rightClause : right.getClauses()) {
+            for (DnfClause rightClause : right.getClauses()) {
                 boolean foundSameLiteral;
                 boolean clauseDiscarded = false;
-                boolean sameNegation=false;
+                boolean sameNegation = false;
 
                 DnfClause newClause = new DnfClause();
 
                 newClause.add(leftClause.getLiterals());
 
-                for(Literal rlit : rightClause.getLiterals()) {
+                for (Literal rlit : rightClause.getLiterals()) {
                     foundSameLiteral = false;
 
-                    for(Literal llit : leftClause.getLiterals()) {
+                    for (Literal llit : leftClause.getLiterals()) {
 
                         // TODO: work with 0 and 1 literals
 
                         if (rlit.getVariable().getLabel().equals(
                                 llit.getVariable().getLabel())) {
 
-                            foundSameLiteral=true;
-                            sameNegation=llit.getNegation()==rlit.getNegation();
+                            foundSameLiteral = true;
+                            sameNegation = llit.getNegation() == rlit.getNegation();
                             break;
                         }
                     }

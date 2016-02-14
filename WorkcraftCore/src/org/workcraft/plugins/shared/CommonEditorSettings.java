@@ -188,7 +188,7 @@ public class CommonEditorSettings implements Settings {
                 if (value.length() < 2) {
                     JOptionPane.showMessageDialog(null,
                             "Short flat name separator increases the risk of name clashing.\n"
-                            +"Consider making it at least two characters long.",
+                             + "Consider making it at least two characters long.",
                             "Common editor settings", JOptionPane.WARNING_MESSAGE);
                 }
                 boolean badValue = false;
@@ -300,7 +300,7 @@ public class CommonEditorSettings implements Settings {
     }
 
     public static void setRecentCount(int value) {
-        if(value < 0) {
+        if (value < 0) {
             value = 0;
         }
         if (value > 99) {

@@ -145,7 +145,7 @@ public class XmasSimulationTool extends StgSimulationTool {
             double tailThreshold = 0.5 * queue.slotHeight - queue.tailSize;
             if (posNode.getY() < -headThreshold) {
                 result = getExcitedTransition(slot.hd.rdy.getAllTransitions());
-            } else if (posNode.getY() > tailThreshold){
+            } else if (posNode.getY() > tailThreshold) {
                 result = getExcitedTransition(slot.tl.rdy.getAllTransitions());
             } else {
                 result = getExcitedTransition(slot.mem.getAllTransitions());
@@ -351,7 +351,7 @@ public class XmasSimulationTool extends StgSimulationTool {
                                 SlotStg slot = queueStg.slotList.get(i);
                                 boolean isFull = slot.mem.one.getReferencedPlace().getTokens() != 0;
                                 boolean isHead = slot.hd.rdy.one.getReferencedPlace().getTokens() != 0;
-                                boolean isTail= slot.tl.rdy.one.getReferencedPlace().getTokens() != 0;
+                                boolean isTail = slot.tl.rdy.one.getReferencedPlace().getTokens() != 0;
                                 boolean isMemExcited = getExcitedTransition(slot.mem.getAllTransitions()) != null;
                                 boolean isHeadExcited = getExcitedTransition(slot.hd.rdy.getAllTransitions()) != null;
                                 boolean isTailExcited = getExcitedTransition(slot.tl.rdy.getAllTransitions()) != null;
@@ -393,26 +393,26 @@ public class XmasSimulationTool extends StgSimulationTool {
     private HashSet<VisualSignalTransition> getSkipTransitions(VisualXmas xmas) {
         HashSet<VisualSignalTransition> result = new HashSet<>();
         result.addAll(generator.getClockStg().riseList);
-        for(VisualSourceComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSourceComponent.class)) {
+        for (VisualSourceComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSourceComponent.class)) {
             SourceStg sourceStg = generator.getSourceStg(component);
             if (sourceStg != null) {
                 result.addAll(sourceStg.o.dn.getAllTransitions());
             }
         }
-        for(VisualSinkComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSinkComponent.class)) {
+        for (VisualSinkComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSinkComponent.class)) {
             SinkStg sinkStg = generator.getSinkStg(component);
             if (sinkStg != null) {
                 result.addAll(sinkStg.i.dn.getAllTransitions());
             }
         }
-        for(VisualFunctionComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualFunctionComponent.class)) {
+        for (VisualFunctionComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualFunctionComponent.class)) {
             FunctionStg funcStg = generator.getFunctionStg(component);
             if (funcStg != null) {
                 result.addAll(funcStg.i.dn.getAllTransitions());
                 result.addAll(funcStg.o.dn.getAllTransitions());
             }
         }
-        for(VisualForkComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualForkComponent.class)) {
+        for (VisualForkComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualForkComponent.class)) {
             ForkStg forkStg = generator.getForkStg(component);
             if (forkStg != null) {
                 result.addAll(forkStg.i.dn.getAllTransitions());
@@ -420,7 +420,7 @@ public class XmasSimulationTool extends StgSimulationTool {
                 result.addAll(forkStg.b.dn.getAllTransitions());
             }
         }
-        for(VisualJoinComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualJoinComponent.class)) {
+        for (VisualJoinComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualJoinComponent.class)) {
             JoinStg joinStg = generator.getJoinStg(component);
             if (joinStg != null) {
                 result.addAll(joinStg.a.dn.getAllTransitions());
@@ -428,7 +428,7 @@ public class XmasSimulationTool extends StgSimulationTool {
                 result.addAll(joinStg.o.dn.getAllTransitions());
             }
         }
-        for(VisualSwitchComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSwitchComponent.class)) {
+        for (VisualSwitchComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualSwitchComponent.class)) {
             SwitchStg switchStg = generator.getSwitchStg(component);
             if (switchStg != null) {
                 result.addAll(switchStg.i.dn.getAllTransitions());
@@ -436,7 +436,7 @@ public class XmasSimulationTool extends StgSimulationTool {
                 result.addAll(switchStg.b.dn.getAllTransitions());
             }
         }
-        for(VisualMergeComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualMergeComponent.class)) {
+        for (VisualMergeComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualMergeComponent.class)) {
             MergeStg mergeStg = generator.getMergeStg(component);
             if (mergeStg != null) {
                 result.addAll(mergeStg.a.dn.getAllTransitions());
@@ -444,7 +444,7 @@ public class XmasSimulationTool extends StgSimulationTool {
                 result.addAll(mergeStg.o.dn.getAllTransitions());
             }
         }
-        for(VisualQueueComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualQueueComponent.class)) {
+        for (VisualQueueComponent component : Hierarchy.getDescendantsOfType(xmas.getRoot(), VisualQueueComponent.class)) {
             QueueStg queueStg = generator.getQueueStg(component);
             if (queueStg != null) {
                 result.addAll(queueStg.i.dn.getAllTransitions());

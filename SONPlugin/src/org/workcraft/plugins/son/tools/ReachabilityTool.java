@@ -7,7 +7,7 @@ import org.workcraft.plugins.son.tasks.ReachabilityTask;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class ReachabilityTool implements Tool{
+public class ReachabilityTool implements Tool {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {

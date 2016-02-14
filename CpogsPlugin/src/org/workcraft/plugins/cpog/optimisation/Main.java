@@ -141,10 +141,10 @@ public class Main {
         ),
         ProcessIO.readFile(new File("C:\\Documents and Settings\\User\\My Documents\\weirdCpog\\stream3616042594776122168out")));
 
-        for(BooleanVariable var : sol.getVariables()) {
-            System.out.println(var.getLabel()+"\t"+sol.getSolution(var));
+        for (BooleanVariable var : sol.getVariables()) {
+            System.out.println(var.getLabel() + "\t" + sol.getSolution(var));
         }
-        if(true)
+        if (true)
             throw new RuntimeException("qwe"); */
 
         //System.out.println(cnf.toString(new MiniSatCnfPrinter()));
@@ -156,21 +156,21 @@ public class Main {
         CpogEncoding solution = solverCnf.solve(phaseEncoder4, freeVariables, derivedVariables);
         long end = System.currentTimeMillis();
 
-        System.out.println("time: " + (end-start)/1000.0);
+        System.out.println("time: " + (end - start) / 1000.0);
 
-        if(solution == null)
+        if (solution == null)
             System.out.println("No solution.");
         else {
             boolean[][] encoding = solution.getEncoding();
-            for(int i=0; i<encoding.length; i++) {
-                for(int j=0; j<encoding[i].length; j++)
-                    System.out.print(encoding[i][j]?1:0);
+            for (int i = 0; i < encoding.length; i++) {
+                for (int j = 0; j < encoding[i].length; j++)
+                    System.out.print(encoding[i][j] ? 1 : 0);
                 System.out.println();
             }
 
             System.out.println("Functions:");
             BooleanFormula[] functions = solution.getFunctions();
-            for(int i=0; i<functions.length; i++) {
+            for (int i = 0; i < functions.length; i++) {
                 System.out.println(FormulaToString.toString(functions[i]));
             }
         }

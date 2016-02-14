@@ -18,7 +18,7 @@ public class InstanceManager {
 
     private IDGenerator getGenerator(String label)    {
         IDGenerator result = generators.get(label);
-        if(result == null)     {
+        if (result == null)     {
             result = new IDGenerator();
             generators.put(label, result);
         }
@@ -42,7 +42,7 @@ public class InstanceManager {
         final Integer instance;
         if (assigned != null) {
             throw new ArgumentException("Instance already assigned to '"
-                    + getLabel(node) + "/" + assigned.getSecond() +"'");
+                    + getLabel(node) + "/" + assigned.getSecond() + "'");
         }
         final String label = getLabel(node);
         instance = getGenerator(label).getNextID();
@@ -88,7 +88,7 @@ public class InstanceManager {
             if (refHolder == node) {
                 // requested instance already taken by t, do nothing
                 return;
-            } else if(refHolder != null) {
+            } else if (refHolder != null) {
                 // requested instance taken by somebody else
                 throw new DuplicateIDException(reference.getSecond());
             } else if (assigned != null) {
@@ -110,7 +110,7 @@ public class InstanceManager {
 
     public void remove(Node node) {
         final Pair<String, Integer> assignment = instances.getValue(node);
-        if(assignment == null) {
+        if (assignment == null) {
             throw new NotFoundException("Instance not assigned");
         }
 

@@ -50,7 +50,7 @@ public class DrawHelper {
     }
 
     public static void drawBubbleHead(Graphics2D g, Point2D headPosition, double orientation, double size, Color color, Stroke stroke) {
-        double size2 = size/2;
+        double size2 = size / 2;
         double x = headPosition.getX() - size2 * Math.cos(orientation);
         double y = headPosition.getY() - size2 * Math.sin(orientation);
 

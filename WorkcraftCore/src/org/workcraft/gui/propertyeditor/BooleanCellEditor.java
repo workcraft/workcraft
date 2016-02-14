@@ -31,7 +31,7 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 
 @SuppressWarnings("serial")
-public class BooleanCellEditor extends AbstractCellEditor implements TableCellEditor, ItemListener{
+public class BooleanCellEditor extends AbstractCellEditor implements TableCellEditor, ItemListener {
 
     private JCheckBox checkBox;
 

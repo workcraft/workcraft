@@ -98,7 +98,7 @@ public class HitMan {
     }
 
     public static Node hitFirst(Point2D point, Node node) {
-        return hitFirst(point, node, new Func<Node, Boolean>(){
+        return hitFirst(point, node, new Func<Node, Boolean>() {
             public Boolean eval(Node arg0) {
                 return true;
             }
@@ -114,7 +114,7 @@ public class HitMan {
     }
 
     private static Node hitBranch(Point2D point, Node node) {
-        if(node instanceof CustomTouchable) {
+        if (node instanceof CustomTouchable) {
             return ((CustomTouchable) node).customHitTest(point);
         }
         return isBranchHit(point, node) ? node : null;
@@ -163,7 +163,7 @@ public class HitMan {
                 return new Iterator<T>() {
                     private int cur = list.size();
                     public boolean hasNext() {
-                        return cur>0;
+                        return cur > 0;
                     }
                     public T next() {
                         return list.get(--cur);
@@ -269,7 +269,7 @@ public class HitMan {
      */
     public static Collection<Node> boxHitTest(Container container, Point2D p1, Point2D p2) {
 
-        if(container instanceof Movable) {
+        if (container instanceof Movable) {
             AffineTransform toLocal = Geometry.optimisticInverse(((Movable) container).getTransform());
             toLocal.transform(p1, p1);
             toLocal.transform(p2, p2);
@@ -280,14 +280,14 @@ public class HitMan {
         Rectangle2D rect = new Rectangle2D.Double(
                 Math.min(p1.getX(), p2.getX()),
                 Math.min(p1.getY(), p2.getY()),
-                Math.abs(p1.getX()-p2.getX()),
-                Math.abs(p1.getY()-p2.getY()));
+                Math.abs(p1.getX() - p2.getX()),
+                Math.abs(p1.getY() - p2.getY()));
 
         for (Touchable n : Hierarchy.getChildrenOfType(container, Touchable.class)) {
             if (n instanceof Hidable && ((Hidable) n).isHidden())
                 continue;
 
-            if (p1.getX()<=p2.getX()) {
+            if (p1.getX() <= p2.getX()) {
                 if (TouchableHelper.insideRectangle(n, rect))
                     hit.add((Node) n);
             } else {

@@ -104,14 +104,14 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
         boolean printStderr = MpsatSynthesisUtilitySettings.getPrintStderr();
         ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
         Result<? extends ExternalProcessResult> res = task.run(monitor);
-        if(res.getOutcome() == Outcome.CANCELLED) {
+        if (res.getOutcome() == Outcome.CANCELLED) {
             return res;
         }
 
         Map<String, byte[]> outputFiles = new HashMap<String, byte[]>();
         try {
             File g = new File(directory, outputFileName);
-            if(g.exists()) {
+            if (g.exists()) {
                 outputFiles.put(outputFileName, FileUtils.readAllBytes(g));
             }
         } catch (IOException e) {

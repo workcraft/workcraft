@@ -71,7 +71,7 @@ public class MpsatSettings {
     private static final String reachConformationDevPlaces = "// insert device place names here"; // For example: "p0", "<a-,b+>"
 /*
             "    PDEV_NAMES={ \"GUID\", \n" +
-            "        " +reachConformationDevPlaces + "\n" +
+            "        "  + reachConformationDevPlaces + "\n" +
             "    } \\ {\"GUID\"},\n" +
 */
     private static final String reachConformation =
@@ -85,7 +85,7 @@ public class MpsatSettings {
                 // places from the composed STG, it substitutes them with equivalent places that remain.
                 // LIMITATION: syntax error if any of these sets is empty.
             "    PDEV_NAMES={\n" +
-            "        " +reachConformationDevPlaces + "\n" +
+            "        "  + reachConformationDevPlaces + "\n" +
             "    },\n" +
                   // PDEV is the set of places with the names in PDEV_NAMES.
                   // XML-based PUNF / MPSAT are needed here to process dead places correctly.

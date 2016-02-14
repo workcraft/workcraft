@@ -42,7 +42,7 @@ public class DotGExporter implements Exporter {
     }
 
     public String getDescription() {
-        return serialiser.getExtension() + " (" + serialiser.getDescription()+")";
+        return serialiser.getExtension() + " (" + serialiser.getDescription() + ")";
     }
 
     public String getExtenstion() {

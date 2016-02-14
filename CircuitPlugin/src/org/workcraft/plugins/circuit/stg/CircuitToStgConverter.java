@@ -53,8 +53,8 @@ import org.workcraft.util.TwoWayMap;
 public class CircuitToStgConverter {
     public static final String NAME_SUFFIX_0 = "_0";
     public static final String NAME_SUFFIX_1 = "_1";
-    public static final String LABEL_SUFFIX_0 = "=0";
-    public static final String LABEL_SUFFIX_1 = "=1";
+    public static final String LABEL_SUFFIX_0 = " = 0";
+    public static final String LABEL_SUFFIX_1 = " = 1";
 
     private static final double SCALE_X = 4.0;
     private static final double SCALE_Y = 4.0;
@@ -145,7 +145,7 @@ public class CircuitToStgConverter {
         String nodeReference = circuit.getMathModel().getNodeReference(contact.getReferencedComponent());
         String parentReference = NamespaceHelper.getParentReference(nodeReference);
         Container container = (Container) refToPageMap.get(parentReference);
-        while (container==null) {
+        while (container == null) {
             parentReference = NamespaceHelper.getParentReference(parentReference);
             container = (Container) refToPageMap.get(parentReference);
         }
@@ -279,7 +279,7 @@ public class CircuitToStgConverter {
         Container container = getContainer(signal);
         String signalName = CircuitUtils.getSignalName(circuit, signal);
         SignalTransition.Type signalType = CircuitUtils.getSignalType(circuit, signal);
-        for(DnfClause clause : clauses) {
+        for (DnfClause clause : clauses) {
             // In self-looped signals the read-arcs will clash with producing/consuming arcs:
             // 1) a read-arc from a preset place is redundant (is superseded by a consuming arc);
             // 2) a read-arc from a postset place makes the transition dead.

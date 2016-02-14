@@ -77,7 +77,7 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 
         final Framework framework = Framework.getInstance();
         PluginManager pluginManager = framework.getPluginManager();
-        for(PluginInfo<? extends PropertyClassProvider> plugin : pluginManager.getPlugins(PropertyClassProvider.class)) {
+        for (PluginInfo<? extends PropertyClassProvider> plugin : pluginManager.getPlugins(PropertyClassProvider.class)) {
             PropertyClassProvider instance = plugin.newInstance();
             propertyClasses.put(instance.getPropertyType(), instance.getPropertyGui());
         }
@@ -174,7 +174,7 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
             try {
                 setValueAt(value, editingRow, editingColumn);
                 removeEditor();
-            } catch(Throwable t) {
+            } catch (Throwable t) {
                 t.printStackTrace();
                 JOptionPane.showMessageDialog(null, t.getMessage(), "Cannot change property", JOptionPane.WARNING_MESSAGE);
             }

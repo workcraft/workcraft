@@ -21,7 +21,7 @@
 
 package org.workcraft.exceptions;
 
-public class UnsupportedComponentException extends Exception{
+public class UnsupportedComponentException extends Exception {
     private static final long serialVersionUID = 1L;
 
     public UnsupportedComponentException() {

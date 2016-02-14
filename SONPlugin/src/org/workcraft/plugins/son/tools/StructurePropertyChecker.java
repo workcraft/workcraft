@@ -19,15 +19,15 @@ public class StructurePropertyChecker implements Tool {
         return WorkspaceUtils.canHas(we, SON.class);
     }
 
-    public String getSection(){
+    public String getSection() {
         return "Verification";
     }
 
-    public String getDisplayName(){
+    public String getDisplayName() {
         return "Structural properties...";
     }
 
-    public void run(WorkspaceEntry we){
+    public void run(WorkspaceEntry we) {
 
         VisualSON visualNet = (VisualSON) we.getModelEntry().getVisualModel();
         SON net = (SON) we.getModelEntry().getMathModel();
@@ -40,7 +40,7 @@ public class StructurePropertyChecker implements Tool {
         GUI.centerToParent(dialog, mainWindow);
         dialog.setVisible(true);
 
-        if (dialog.getRun() == 1){
+        if (dialog.getRun() == 1) {
             OutputRedirect.redirect(30, 40);
             BlockConnector.blockBoundingConnector(visualNet);
             SONMainTask sonTask = new SONMainTask(dialog.getSettings(), we);

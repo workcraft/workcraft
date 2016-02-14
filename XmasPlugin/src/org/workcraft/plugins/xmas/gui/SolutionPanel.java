@@ -36,10 +36,10 @@ public class SolutionPanel extends JPanel {
                 /*final WorkspaceEntry we = task.getWorkspaceEntry();
                 final MainWindow mainWindow = task.getFramework().getMainWindow();
                 GraphEditorPanel currentEditor = mainWindow.getCurrentEditor();
-                if(currentEditor == null || currentEditor.getWorkspaceEntry() != we)
+                if (currentEditor == null || currentEditor.getWorkspaceEntry() != we)
                 {
                     final List<GraphEditorPanel> editors = mainWindow.getEditors(we);
-                    if(editors.size()>0) {
+                    if (editors.size() > 0) {
                         currentEditor = editors.get(0);
                         mainWindow.requestFocus(currentEditor);
                     }

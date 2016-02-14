@@ -64,9 +64,9 @@ public class BooleanEvaluator implements BooleanVisitor<Boolean> {
 
     @Override
     public Boolean visit(BooleanVariable variable) {
-        if(variable.getLabel().equals("0"))
+        if (variable.getLabel().equals("0"))
             return false;
-        if(variable.getLabel().equals("1"))
+        if (variable.getLabel().equals("1"))
             return true;
         throw new RuntimeException("Unable to evaluate a function containing a free variable: " + variable.getLabel());
     }

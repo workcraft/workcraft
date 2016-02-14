@@ -113,9 +113,9 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
         // gather number of connections for each post-place
         Map<Place, Integer> map = new HashMap<Place, Integer>();
         for (Connection c: net.getConnections(t)) {
-            if (c.getFirst()==t) {
+            if (c.getFirst() == t) {
                 if (map.containsKey(c.getSecond())) {
-                    map.put((Place) c.getSecond(), map.get(c.getSecond())+1);
+                    map.put((Place) c.getSecond(), map.get(c.getSecond()) + 1);
                 } else {
                     map.put((Place) c.getSecond(), 1);
                 }
@@ -133,9 +133,9 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
         // gather number of connections for each pre-place
         Map<Place, Integer> map = new HashMap<Place, Integer>();
         for (Connection c: net.getConnections(t)) {
-            if (c.getSecond()==t) {
+            if (c.getSecond() == t) {
                 if (map.containsKey(c.getFirst())) {
-                    map.put((Place) c.getFirst(), map.get(c.getFirst())+1);
+                    map.put((Place) c.getFirst(), map.get(c.getFirst()) + 1);
                 } else {
                     map.put((Place) c.getFirst(), 1);
                 }
@@ -167,13 +167,13 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
         for (Connection c : net.getConnections(t)) {
             if (t == c.getFirst()) {
                 Place to = (Place) c.getSecond();
-                to.setTokens(((Place) to).getTokens()-1);
+                to.setTokens(((Place) to).getTokens() - 1);
             }
         }
         for (Connection c : net.getConnections(t)) {
             if (t == c.getSecond()) {
                 Place from = (Place) c.getFirst();
-                from.setTokens(((Place) from).getTokens()+1);
+                from.setTokens(((Place) from).getTokens() + 1);
             }
         }
     }
@@ -184,13 +184,13 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
             for (Connection c : net.getConnections(t)) {
                 if (t == c.getSecond()) {
                     Place from = (Place) c.getFirst();
-                    from.setTokens(((Place) from).getTokens()-1);
+                    from.setTokens(((Place) from).getTokens() - 1);
                 }
             }
             for (Connection c : net.getConnections(t)) {
                 if (t == c.getFirst()) {
                     Place to = (Place) c.getSecond();
-                    to.setTokens(((Place) to).getTokens()+1);
+                    to.setTokens(((Place) to).getTokens() + 1);
                 }
             }
         }

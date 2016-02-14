@@ -72,7 +72,7 @@ public class GraphStatisticsTool implements Tool {
         int allVariables = 0;
         for (Container scenario: scenarios) {
             allVertices += cpog.getVertices(scenario).size();
-            for(VisualVertex v : cpog.getVertices(scenario)) {
+            for (VisualVertex v : cpog.getVertices(scenario)) {
                 if (v.getCondition() == One.instance() || v.getCondition() == Zero.instance()) {
                     simpleVertices++;
                 } else {
@@ -81,7 +81,7 @@ public class GraphStatisticsTool implements Tool {
             }
 
             allArcs += cpog.getArcs(scenario).size();
-            for(VisualArc a : cpog.getArcs(scenario)) {
+            for (VisualArc a : cpog.getArcs(scenario)) {
                 if (a.getCondition() == One.instance() || a.getCondition() == Zero.instance()) {
                     simpleArcs++;
                 } else {
@@ -96,7 +96,7 @@ public class GraphStatisticsTool implements Tool {
         System.out.println("Number of arcs: " + allArcs + " (" + simpleArcs + " unconditional)");
         System.out.println("Number of variables: " + allVariables);
         System.out.println("Number of conditions: " + conditions.size());
-        for(String condition : conditions) {
+        for (String condition : conditions) {
             System.out.println("  " + condition);
         }
     }

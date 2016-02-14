@@ -24,7 +24,7 @@ import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.tools.PlaceNodeDecoration;
 import org.workcraft.plugins.son.util.Interval;
 
-public class VisualPlaceNode extends VisualComponent{
+public class VisualPlaceNode extends VisualComponent {
 
     protected Font errorFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.45f);
     protected Font timeFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.35f);
@@ -111,7 +111,7 @@ public class VisualPlaceNode extends VisualComponent{
             token = ((PlaceNodeDecoration) d).hasToken();
         }
 
-        if(token){
+        if (token) {
             Graphics2D g = r.getGraphics();
             double singleTokenSize = getSingleTokenSize();
             Color tokenColor = Coloriser.colorise(getTokenColor(), r.getDecoration().getColorisation());
@@ -128,10 +128,10 @@ public class VisualPlaceNode extends VisualComponent{
     }
 
     private void cahceErrorRenderedText(DrawRequest r) {
-        String error = "Err = "+((Integer) getErrors()).toString();
+        String error = "Err = " + ((Integer) getErrors()).toString();
 
         Point2D offset = getOffset(errLabelPositioning);
-        if (errLabelPositioning.ySign<0) {
+        if (errLabelPositioning.ySign < 0) {
             offset.setLocation(offset.getX(), offset.getY() - labelOffset);
         } else {
             offset.setLocation(offset.getX(), offset.getY() + labelOffset);
@@ -153,10 +153,10 @@ public class VisualPlaceNode extends VisualComponent{
     }
 
     private void cahceDurationRenderedText(DrawRequest r) {
-        String duration = "D: "+ getDuration().toString();
+        String duration = "D: " + getDuration().toString();
 
         Point2D offset = getOffset(durationLabelPositioning);
-        if (durationLabelPositioning.ySign<0) {
+        if (durationLabelPositioning.ySign < 0) {
             offset.setLocation(offset.getX(), offset.getY() - labelOffset);
         } else {
             offset.setLocation(offset.getX(), offset.getY() + labelOffset);
@@ -198,15 +198,15 @@ public class VisualPlaceNode extends VisualComponent{
         return bb;
     }
 
-    public double getSize(){
+    public double getSize() {
         return size;
     }
 
-    public double getStrokeWidth(){
+    public double getStrokeWidth() {
         return strokeWidth;
     }
 
-    public double getSingleTokenSize(){
+    public double getSingleTokenSize() {
         return singleTokenSize;
     }
 
@@ -218,11 +218,11 @@ public class VisualPlaceNode extends VisualComponent{
         ((PlaceNode) getReferencedComponent()).setMarked(b);
     }
 
-    public int getErrors(){
+    public int getErrors() {
         return ((PlaceNode) getReferencedComponent()).getErrors();
     }
 
-    public void setErrors(int errors){
+    public void setErrors(int errors) {
         ((PlaceNode) getReferencedComponent()).setErrors(errors);
     }
 
@@ -242,73 +242,73 @@ public class VisualPlaceNode extends VisualComponent{
         ((PlaceNode) getReferencedComponent()).setForegroundColor(foregroundColor);
     }
 
-    public void setFillColor(Color fillColor){
+    public void setFillColor(Color fillColor) {
         ((PlaceNode) getReferencedComponent()).setFillColor(fillColor);
     }
 
-    public Color getFillColor(){
+    public Color getFillColor() {
         return ((PlaceNode) getReferencedComponent()).getFillColor();
     }
 
-    public void setLabel(String label){
+    public void setLabel(String label) {
         super.setLabel(label);
         ((PlaceNode) getReferencedComponent()).setLabel(label);
     }
 
-    public String getLabel(){
+    public String getLabel() {
         super.getLabel();
         return ((PlaceNode) getReferencedComponent()).getLabel();
     }
 
-    public void setInterface(String value){
+    public void setInterface(String value) {
         this.value = value;
         sendNotification(new PropertyChangedEvent(this, "Interface"));
     }
 
-    public String getInterface(){
+    public String getInterface() {
         return value;
     }
 
-    public Color getErrLabelColor(){
+    public Color getErrLabelColor() {
         return this.errLabelColor;
     }
 
-    public void setErrLabelColor(Color errLabelColor){
+    public void setErrLabelColor(Color errLabelColor) {
         this.errLabelColor = errLabelColor;
     }
 
-    public String getDuration(){
+    public String getDuration() {
         return ((PlaceNode) getReferencedComponent()).getDuration().toString();
     }
 
-    public void setDuration(String time){
+    public void setDuration(String time) {
         Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
         ((PlaceNode) getReferencedComponent()).setDuration(input);
     }
 
-    public String getStartTime(){
+    public String getStartTime() {
         return ((PlaceNode) getReferencedComponent()).getStartTime().toString();
     }
 
-    public void setStartTime(String time){
+    public void setStartTime(String time) {
         Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
         ((PlaceNode) getReferencedComponent()).setStartTime(input);
     }
 
-    public String getEndTime(){
+    public String getEndTime() {
         return ((PlaceNode) getReferencedComponent()).getEndTime().toString();
     }
 
-    public void setEndTime(String time){
+    public void setEndTime(String time) {
         Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
         ((PlaceNode) getReferencedComponent()).setEndTime(input);
     }
 
-    public Color getDurationColor(){
+    public Color getDurationColor() {
         return ((PlaceNode) getReferencedComponent()).getDurationColor();
     }
 
-    public void setDurationColor(Color value){
+    public void setDurationColor(Color value) {
         ((PlaceNode) getReferencedComponent()).setDurationColor(value);
     }
 

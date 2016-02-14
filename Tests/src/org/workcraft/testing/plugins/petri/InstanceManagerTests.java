@@ -29,7 +29,7 @@ public class InstanceManagerTests {
         return new InstanceManager() {
             @Override public String getLabel(Node node) {
                 final String label = expectedRequests.get(node);
-                if(label==null)
+                if (label == null)
                     throw new RuntimeException("unexpected request: " + node);
                 return label;
             }
@@ -102,7 +102,7 @@ public class InstanceManagerTests {
         assertNull(mgr.getInstance(o1));
     }
 
-    @Test(expected=ArgumentException.class)
+    @Test(expected = ArgumentException.class)
     public void testDoubleAssign() {
         Map<Node, String> expectedRequests = new HashMap<Node, String>();
         Node o1 = new DefaultNodeImpl(null);
@@ -122,7 +122,7 @@ public class InstanceManagerTests {
         assertEquals(Pair.of("abc", 8), mgr.getInstance(o1));
     }
 
-    @Test(expected=DuplicateIDException.class)
+    @Test(expected = DuplicateIDException.class)
     public void testAssignForcedExistingId() {
         Map<Node, String> expectedRequests = new HashMap<Node, String>();
         Node o1 = new DefaultNodeImpl(null);

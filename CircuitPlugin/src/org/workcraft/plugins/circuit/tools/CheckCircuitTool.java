@@ -42,7 +42,7 @@ public class CheckCircuitTool extends VerificationTool {
         String description = "MPSat tool chain";
         String title = we.getTitle();
         if (!title.isEmpty()) {
-            description += "(" + title +")";
+            description += "(" + title + ")";
         }
         framework.getTaskManager().queue(task, description, new MpsatChainResultHandler(task));
     }

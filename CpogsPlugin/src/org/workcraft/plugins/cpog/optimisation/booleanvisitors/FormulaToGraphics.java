@@ -47,8 +47,8 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Xor;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 public class FormulaToGraphics {
-    public final class Void{
-        private Void(){}
+    public final class Void {
+        private Void() { }
     }
 
     public static Font defaultFont;
@@ -86,7 +86,7 @@ public class FormulaToGraphics {
         int subIndex = CpogSettings.getUseSubscript() ? text.lastIndexOf('_') : -1;
         if (subIndex < 0) subIndex = text.length();
 
-        for(int i = 1; i < text.length(); i++) {
+        for (int i = 1; i < text.length(); i++) {
             if (i == subIndex) continue;
 
             if (i < subIndex) {
@@ -326,7 +326,7 @@ public class FormulaToGraphics {
             if (nameHolder == null) {
                 varMap.put(label, var);
             } else {
-                if(nameHolder != var) {
+                if (nameHolder != var) {
                     throw new RuntimeException("name conflict! duplicate name " + label);
                 }
             }

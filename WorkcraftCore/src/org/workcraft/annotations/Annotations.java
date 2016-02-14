@@ -68,7 +68,7 @@ public class Annotations {
         return ndcba.value();
     }
 
-    public static int getHotKeyCode(Class <?> cls) {
+    public static int getHotKeyCode(Class<?> cls) {
         Hotkey hkd = cls.getAnnotation(Hotkey.class);
         if (hkd == null)
             return -1;
@@ -76,7 +76,7 @@ public class Annotations {
             return hkd.value();
     }
 
-    public static Class<?> getVisualClass(Class <?> cls) {
+    public static Class<?> getVisualClass(Class<?> cls) {
         VisualClass vcat = cls.getAnnotation(VisualClass.class);
         // The component/connection does not define a visual representation
         if (vcat == null)

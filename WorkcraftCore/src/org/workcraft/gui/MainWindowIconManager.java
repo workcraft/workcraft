@@ -19,10 +19,10 @@ public class MainWindowIconManager {
                 final Image inactive = GUI.createIconFromSVG("images/icons/svg/place_empty.svg", 32, 32, Color.WHITE).getImage();
 
                 try {
-                    SwingUtilities.invokeAndWait(new Runnable(){
+                    SwingUtilities.invokeAndWait(new Runnable() {
                         @Override
                         public void run() {
-                            window.setIconImage(window.isActive()?active:inactive);
+                            window.setIconImage(window.isActive() ? active : inactive);
                             window.addWindowListener(new WindowAdapter() {
                                 @Override
                                 public void windowDeactivated(WindowEvent e) {

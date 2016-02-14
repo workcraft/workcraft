@@ -39,7 +39,7 @@ public class GraphReference {
         this.normalForm = normalForm;
     }
 
-    public void updateVertMap(HashMap<String, VisualVertex> newVertMap){
+    public void updateVertMap(HashMap<String, VisualVertex> newVertMap) {
         this.vertMap = newVertMap;
     }
 
@@ -56,7 +56,7 @@ public class GraphReference {
         v.setPosition(new Point2D.Double(v.getPosition().getX() + xDiff, v.getPosition().getY() + yDiff));
     }
 
-    public void setPageCentre(Point2D.Double centre){
+    public void setPageCentre(Point2D.Double centre) {
         System.out.println("Page centre set");
         pageCentre = centre;
     }

@@ -127,11 +127,11 @@ public class VisualPlace extends VisualComponent {
             Graphics2D g = r.getGraphics();
             Decoration d = r.getDecoration();
             String capacityString = Integer.toString(capacity);
-            Font superFont = g.getFont().deriveFont((float) CommonVisualSettings.getBaseSize()/2);
+            Font superFont = g.getFont().deriveFont((float) CommonVisualSettings.getBaseSize() / 2);
             Rectangle2D rect = superFont.getStringBounds(capacityString, g.getFontRenderContext());
             g.setFont(superFont);
             g.setColor(Coloriser.colorise(getTokenColor(), d.getColorisation()));
-            g.drawString(capacityString, (float) (size/3), (float) (size/3 + rect.getHeight()));
+            g.drawString(capacityString, (float) (size / 3), (float) (size / 3 + rect.getHeight()));
         }
     }
 
@@ -169,7 +169,7 @@ public class VisualPlace extends VisualComponent {
                 double radius = (diameter / 2 - borderWidth - separation) / (1 + 1 / Math.sin(alpha));
                 double step = radius / Math.sin(alpha);
                 radius -= separation;
-                for(int i = 0; i < count; i++)     {
+                for (int i = 0; i < count; i++)     {
                     if (i == 6) {
                         shape = new Ellipse2D.Double(-radius, -radius, radius * 2, radius * 2);
                     } else {
@@ -183,7 +183,7 @@ public class VisualPlace extends VisualComponent {
                 }
             } else if (count > 7)    {
                 String tokenString = Integer.toString(count);
-                Font superFont = g.getFont().deriveFont((float) CommonVisualSettings.getBaseSize()/2);
+                Font superFont = g.getFont().deriveFont((float) CommonVisualSettings.getBaseSize() / 2);
                 Rectangle2D rect = superFont.getStringBounds(tokenString, g.getFontRenderContext());
                 g.setFont(superFont);
                 g.setColor(Coloriser.colorise(color, d.getColorisation()));

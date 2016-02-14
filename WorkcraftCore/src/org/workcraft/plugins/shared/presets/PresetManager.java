@@ -14,7 +14,7 @@ import org.w3c.dom.Element;
 import org.workcraft.util.XmlUtil;
 import org.xml.sax.SAXException;
 
-public class PresetManager <T> {
+public class PresetManager<T> {
     private ArrayList<Preset<T>> presets = new ArrayList<Preset<T>>();
     private File presetFile;
     private final SettingsSerialiser<T> serialiser;

@@ -13,7 +13,7 @@ public class PnToCpogSettings {
         TREE_OF_RUNS
     }
 
-    public PnToCpogSettings(){
+    public PnToCpogSettings() {
         this.reduce = false;
         this.isomorphism = false;
         this.removeNodes = false;
@@ -44,8 +44,8 @@ public class PnToCpogSettings {
         this.significance = significance;
     }
 
-    public void setSignificance(SignificanceCheckType type){
-        switch(type){
+    public void setSignificance(SignificanceCheckType type) {
+        switch (type) {
         case EXHAUSTIVE:
             significance = 0;
             break;

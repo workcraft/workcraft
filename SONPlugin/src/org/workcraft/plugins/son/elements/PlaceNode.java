@@ -10,9 +10,9 @@ import org.workcraft.plugins.son.propertydescriptors.EndTimePropertyDescriptor;
 import org.workcraft.plugins.son.propertydescriptors.StartTimePropertyDescriptor;
 import org.workcraft.plugins.son.util.Interval;
 
-public class PlaceNode extends MathNode implements Time{
+public class PlaceNode extends MathNode implements Time {
 
-    private Color foregroundColor=CommonVisualSettings.getBorderColor();
+    private Color foregroundColor = CommonVisualSettings.getBorderColor();
     private Color fillColor = CommonVisualSettings.getFillColor();
     private String label = "";
     private int errors = 0;
@@ -26,8 +26,8 @@ public class PlaceNode extends MathNode implements Time{
     private boolean marked = false;
     private Color tokenColor = CommonVisualSettings.getBorderColor();
 
-    public void setMarked(boolean token){
-        this.marked=token;
+    public void setMarked(boolean token) {
+        this.marked = token;
         sendNotification(new PropertyChangedEvent(this, "marked"));
     }
 
@@ -35,12 +35,12 @@ public class PlaceNode extends MathNode implements Time{
         return marked;
     }
 
-    public void setErrors(int errors){
+    public void setErrors(int errors) {
         this.errors = errors;
         sendNotification(new PropertyChangedEvent(this, "errors"));
     }
 
-    public int getErrors(){
+    public int getErrors() {
         return errors;
     }
 
@@ -53,7 +53,7 @@ public class PlaceNode extends MathNode implements Time{
         sendNotification(new PropertyChangedEvent(this, "foregroundColor"));
     }
 
-    public void setFillColor(Color fillColor){
+    public void setFillColor(Color fillColor) {
         this.fillColor = fillColor;
         sendNotification(new PropertyChangedEvent(this, "fillColor"));
     }
@@ -62,12 +62,12 @@ public class PlaceNode extends MathNode implements Time{
         return fillColor;
     }
 
-    public void setLabel(String label){
-        this.label=label;
+    public void setLabel(String label) {
+        this.label = label;
         sendNotification(new PropertyChangedEvent(this, "label"));
     }
 
-    public String getLabel(){
+    public String getLabel() {
         return label;
     }
 
@@ -80,38 +80,38 @@ public class PlaceNode extends MathNode implements Time{
         sendNotification(new PropertyChangedEvent(this, "tokenColor"));
     }
 
-    public void setStartTime(Interval startTime){
+    public void setStartTime(Interval startTime) {
         this.startTime = startTime;
         sendNotification(new PropertyChangedEvent(this, StartTimePropertyDescriptor.PROPERTY_START_TIME));
     }
 
-    public Interval getStartTime(){
+    public Interval getStartTime() {
         return startTime;
     }
 
-    public void setEndTime(Interval endTime){
+    public void setEndTime(Interval endTime) {
         this.endTime = endTime;
         sendNotification(new PropertyChangedEvent(this, EndTimePropertyDescriptor.PROPERTY_END_TIME));
     }
 
-    public Interval getEndTime(){
+    public Interval getEndTime() {
         return endTime;
     }
 
-    public void setDuration(Interval duration){
+    public void setDuration(Interval duration) {
         this.duration = duration;
         sendNotification(new PropertyChangedEvent(this, DurationPropertyDescriptor.PROPERTY_DURATION));
     }
 
-    public Interval getDuration(){
+    public Interval getDuration() {
         return duration;
     }
 
-    public Color getDurationColor(){
+    public Color getDurationColor() {
         return durationColor;
     }
 
-    public void setDurationColor(Color value){
+    public void setDurationColor(Color value) {
         this.durationColor = value;
     }
 }

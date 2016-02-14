@@ -165,12 +165,12 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         modeSelector.setSize(size, size);
         this.add(modeSelector);
 
-        int size2 = size/2+1;
+        int size2 = size / 2 + 1;
         gridToggler = new JToggleButton();
         gridToggler.setSize(size2, size2);
         gridToggler.setFocusable(false);
         gridToggler.setToolTipText("Show/hide grid");
-        gridToggler.addActionListener(new ActionListener(){
+        gridToggler.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 CommonEditorSettings.setShowGrid(!CommonEditorSettings.getShowGrid());
@@ -183,7 +183,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         nameToggler.setSize(size2, size2);
         nameToggler.setFocusable(false);
         nameToggler.setToolTipText("Show/hide node names");
-        nameToggler.addActionListener(new ActionListener(){
+        nameToggler.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 CommonVisualSettings.setNameVisibility(!CommonVisualSettings.getNameVisibility());
@@ -196,7 +196,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         labelToggler.setSize(size2, size2);
         labelToggler.setFocusable(false);
         labelToggler.setToolTipText("Show/hide node labels");
-        labelToggler.addActionListener(new ActionListener(){
+        labelToggler.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 CommonVisualSettings.setLabelVisibility(!CommonVisualSettings.getLabelVisibility());
@@ -209,7 +209,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         rulerToggler.setSize(size2, size2);
         rulerToggler.setFocusable(false);
         rulerToggler.setToolTipText("Show/hide rulers");
-        rulerToggler.addActionListener(new ActionListener(){
+        rulerToggler.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 CommonEditorSettings.setShowRulers(!CommonEditorSettings.getShowRulers());
@@ -276,7 +276,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     }
 
     private void reshape() {
-        view.setShape(15, 15, getWidth()-15, getHeight()-15);
+        view.setShape(15, 15, getWidth() - 15, getHeight() - 15);
         ruler.setShape(0, 0, getWidth(), getHeight());
     }
 
@@ -329,7 +329,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
             g2d.setStroke(borderStroke);
             g2d.setColor(CommonVisualSettings.getBorderColor());
-            g2d.drawRect(0, 0, getWidth()-1, getHeight()-1);
+            g2d.drawRect(0, 0, getWidth() - 1, getHeight() - 1);
         }
 
         paintChildren(g2d);
@@ -448,7 +448,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
             @Override
             public Collection<PropertyDescriptor> getDescriptors() {
                 ArrayList<PropertyDescriptor> list = new ArrayList<PropertyDescriptor>();
-                for(final PropertyDescriptor d : mix.getDescriptors()) {
+                for (final PropertyDescriptor d : mix.getDescriptors()) {
                     list.add(new PropertyDescriptor() {
                         @Override
                         public void setValue(Object value) throws InvocationTargetException {
@@ -568,7 +568,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         }
 
         final PropertyEditorWindow propertyEditorWindow = mainWindow.getPropertyView();
-        if(properties.getDescriptors().isEmpty()) {
+        if (properties.getDescriptors().isEmpty()) {
             propertyEditorWindow.clearObject();
         } else {
             propertyEditorWindow.setObject(propertiesWrapper(properties));

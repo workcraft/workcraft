@@ -58,9 +58,9 @@ public class VisualControlRegister extends VisualBinaryRegister {
         Decoration d = r.getDecoration();
         double w = size - strokeWidth;
         double h = size - strokeWidth;
-        double w2 = w/2;
-        double w4 = w/4;
-        double h2 = h/2;
+        double w2 = w / 2;
+        double w4 = w / 4;
+        double h2 = h / 2;
         double dx = size / 5;
         double dy = strokeWidth / 4;
         float strokeWidth1 = (float) strokeWidth;
@@ -92,20 +92,20 @@ public class VisualControlRegister extends VisualBinaryRegister {
         falseInnerShape.lineTo(-w2 + dx, dy);
 
         Path2D trueMarkerShape = new Path2D.Double();
-        trueMarkerShape.moveTo(-dd, (-kd-2) * dd);
-        trueMarkerShape.lineTo(+dd, (-kd-2) * dd);
-        trueMarkerShape.moveTo(0, (-kd-2) * dd);
-        trueMarkerShape.lineTo(0, (-kd+2) * dd);
+        trueMarkerShape.moveTo(-dd, (-kd - 2) * dd);
+        trueMarkerShape.lineTo(+dd, (-kd - 2) * dd);
+        trueMarkerShape.moveTo(0, (-kd - 2) * dd);
+        trueMarkerShape.lineTo(0, (-kd + 2) * dd);
 
         Path2D falseMarkerShape = new Path2D.Double();
-        falseMarkerShape.moveTo(+dd, (+kd-2) * dd);
-        falseMarkerShape.lineTo(-dd, (+kd-2) * dd);
-        falseMarkerShape.lineTo(-dd, (+kd+2) * dd);
-        falseMarkerShape.moveTo(+dd, (+kd+0) * dd);
-        falseMarkerShape.lineTo(-dd, (+kd+0) * dd);
+        falseMarkerShape.moveTo(+dd, (+kd - 2) * dd);
+        falseMarkerShape.lineTo(-dd, (+kd - 2) * dd);
+        falseMarkerShape.lineTo(-dd, (+kd + 2) * dd);
+        falseMarkerShape.moveTo(+dd, (+kd + 0) * dd);
+        falseMarkerShape.lineTo(-dd, (+kd + 0) * dd);
 
-        Shape trueTokenShape = new Ellipse2D.Double(-tr, -w4 - tr + strokeWidth4, 2*tr, 2*tr);
-        Shape falseTokenShape = new Ellipse2D.Double(-tr, +w4 - tr - strokeWidth4, 2*tr, 2*tr);
+        Shape trueTokenShape = new Ellipse2D.Double(-tr, -w4 - tr + strokeWidth4, 2 * tr, 2 * tr);
+        Shape falseTokenShape = new Ellipse2D.Double(-tr, +w4 - tr - strokeWidth4, 2 * tr, 2 * tr);
         Shape separatorShape = new Line2D.Double(-w2 + dx, 0, w2 - dx, 0);
 
         Color defaultColor = Coloriser.colorise(getForegroundColor(), d.getColorisation());
@@ -188,8 +188,8 @@ public class VisualControlRegister extends VisualBinaryRegister {
 
     @Override
     public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-        double w2 = size/2;
-        double h2 = size/2;
+        double w2 = size / 2;
+        double h2 = size / 2;
         double dx = size / 5 - strokeWidth / 2;
 
         Path2D shape = new Path2D.Double();

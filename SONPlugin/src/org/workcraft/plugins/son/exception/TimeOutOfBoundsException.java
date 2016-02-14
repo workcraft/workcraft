@@ -4,7 +4,7 @@ public class TimeOutOfBoundsException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-    public TimeOutOfBoundsException(String msg){
+    public TimeOutOfBoundsException(String msg) {
         super(msg);
     }
 

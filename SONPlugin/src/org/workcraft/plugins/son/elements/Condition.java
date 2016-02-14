@@ -6,7 +6,7 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.observation.PropertyChangedEvent;
 
 @VisualClass (org.workcraft.plugins.son.elements.VisualCondition.class)
-public class Condition extends PlaceNode{
+public class Condition extends PlaceNode {
 
     private boolean initialState = false;
     private boolean finalState = false;
@@ -32,19 +32,19 @@ public class Condition extends PlaceNode{
         sendNotification(new PropertyChangedEvent(this, "final"));
     }
 
-    public Color getStartTimeColor(){
+    public Color getStartTimeColor() {
         return startTimeColor;
     }
 
-    public void setStartTimeColor(Color value){
+    public void setStartTimeColor(Color value) {
         startTimeColor = value;
     }
 
-    public Color getEndTimeColor(){
+    public Color getEndTimeColor() {
         return endTimeColor;
     }
 
-    public void setEndTimeColor(Color value){
+    public void setEndTimeColor(Color value) {
         endTimeColor = value;
     }
 }

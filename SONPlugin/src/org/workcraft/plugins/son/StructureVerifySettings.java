@@ -8,26 +8,26 @@ public class StructureVerifySettings {
     private ArrayList<ONGroup> selectedGroups;
     private int type;
 
-    public StructureVerifySettings(boolean errNodesHighlight, boolean outputBefore, ArrayList<ONGroup> selectedGroups, int type){
+    public StructureVerifySettings(boolean errNodesHighlight, boolean outputBefore, ArrayList<ONGroup> selectedGroups, int type) {
         this.errNodesHighlight = errNodesHighlight;
         this.outputBefore = outputBefore;
         this.selectedGroups = selectedGroups;
         this.type = type;
     }
 
-    public boolean getErrNodesHighlight(){
+    public boolean getErrNodesHighlight() {
         return errNodesHighlight;
     }
 
-    public boolean getOuputBefore(){
+    public boolean getOuputBefore() {
         return outputBefore;
     }
 
-    public ArrayList<ONGroup> getSelectedGroups(){
+    public ArrayList<ONGroup> getSelectedGroups() {
         return selectedGroups;
     }
 
-    public int getType(){
+    public int getType() {
         return type;
     }
 }

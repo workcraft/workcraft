@@ -40,7 +40,7 @@ public class Console {
     static {
         // Workaround for Java 7 bug http://bugs.java.com/bugdatabase/view_bug.do?bug_id=7075600
         // TODO: Remove again when switching to Java 8
-        if(System.getProperty("java.version").startsWith("1.7")) {
+        if (System.getProperty("java.version").startsWith("1.7")) {
             System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
         }
     }
@@ -100,7 +100,7 @@ public class Console {
                 arglist.remove(arg);
                 framework.setArgs(arglist);
                 try {
-                    LogUtils.logMessageLine("Executing "+ arg.substring(6) + "...");
+                    LogUtils.logMessageLine("Executing " + arg.substring(6) + "...");
                     framework.execJavaScript(new File(arg.substring(6)));
                 } catch (FileNotFoundException e) {
                     LogUtils.logErrorLine("Script specified from command line not found: " + arg);

@@ -12,11 +12,11 @@ import org.workcraft.plugins.son.propertydescriptors.StartTimePropertyDescriptor
 import org.workcraft.plugins.son.util.Interval;
 
 @VisualClass (org.workcraft.plugins.son.elements.VisualEvent.class)
-public class Event extends Transition implements TransitionNode, Time{
+public class Event extends Transition implements TransitionNode, Time {
 
-    private Color foregroundColor=CommonVisualSettings.getBorderColor();
+    private Color foregroundColor = CommonVisualSettings.getBorderColor();
     private Color fillColor = CommonVisualSettings.getFillColor();
-    private String label="";
+    private String label = "";
     private Boolean faulty = false;
 
     private Interval statTime = new Interval(0000, 9999);
@@ -24,13 +24,13 @@ public class Event extends Transition implements TransitionNode, Time{
     private Interval duration = new Interval(0000, 0000);
 
     @Override
-    public void setLabel(String label){
-        this.label=label;
+    public void setLabel(String label) {
+        this.label = label;
         sendNotification(new PropertyChangedEvent(this, "label"));
     }
 
     @Override
-    public String getLabel(){
+    public String getLabel() {
         return label;
     }
 
@@ -40,40 +40,40 @@ public class Event extends Transition implements TransitionNode, Time{
     }
 
     @Override
-    public void setFaulty(boolean fault){
+    public void setFaulty(boolean fault) {
         this.faulty = fault;
         sendNotification(new PropertyChangedEvent(this, "fault"));
     }
 
     @Override
-    public boolean isFaulty(){
+    public boolean isFaulty() {
         return faulty;
     }
 
-    public void setStartTime(Interval duration){
+    public void setStartTime(Interval duration) {
         this.statTime = duration;
         sendNotification(new PropertyChangedEvent(this, StartTimePropertyDescriptor.PROPERTY_START_TIME));
     }
 
-    public Interval getStartTime(){
+    public Interval getStartTime() {
         return statTime;
     }
 
-    public void setEndTime(Interval endTime){
+    public void setEndTime(Interval endTime) {
         this.endTime = endTime;
         sendNotification(new PropertyChangedEvent(this, EndTimePropertyDescriptor.PROPERTY_END_TIME));
     }
 
-    public Interval getEndTime(){
+    public Interval getEndTime() {
         return endTime;
     }
 
-    public void setDuration(Interval duration){
+    public void setDuration(Interval duration) {
         this.duration = duration;
         sendNotification(new PropertyChangedEvent(this, DurationPropertyDescriptor.PROPERTY_DURATION));
     }
 
-    public Interval getDuration(){
+    public Interval getDuration() {
         return duration;
     }
 
@@ -84,7 +84,7 @@ public class Event extends Transition implements TransitionNode, Time{
     }
 
     @Override
-    public void setFillColor(Color fillColor){
+    public void setFillColor(Color fillColor) {
         this.fillColor = fillColor;
         sendNotification(new PropertyChangedEvent(this, "fillColor"));
     }

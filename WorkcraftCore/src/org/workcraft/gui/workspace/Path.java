@@ -75,7 +75,7 @@ class NormalPath<Node> extends Path<Node> {
     private final Node node;
 
     NormalPath(Path<Node> parent, Node node) {
-        if(node == null || parent == null)
+        if (node == null || parent == null)
             throw new NullPointerException();
         this.parent = parent;
         this.node = node;
@@ -109,8 +109,8 @@ public abstract class Path<Node> {
         }
         int n = list.size();
         List<Node> result = new ArrayList<Node>();
-        for(int i=0; i<n; i++) {
-            result.add(list.get(n-1-i));
+        for (int i = 0; i < n; i++) {
+            result.add(list.get(n - 1 - i));
         }
         return result;
     }
@@ -120,14 +120,14 @@ public abstract class Path<Node> {
     }
 
     public static <Node> Path<Node> append(Path<Node> path, Node suffix) {
-        if(path.isEmpty())
+        if (path.isEmpty())
             return root(suffix);
         else
             return new NormalPath<Node>(path, suffix);
     }
 
     private static boolean equal(Object o1, Object o2) {
-        if(o1 == null)
+        if (o1 == null)
             return o2 == null;
         else
             return o1.equals(o2);
@@ -135,12 +135,12 @@ public abstract class Path<Node> {
 
     @Override
     public boolean equals(Object obj) {
-        if(obj == this)
+        if (obj == this)
             return true;
-        if(!(obj instanceof Path<?>))
+        if (!(obj instanceof Path<?>))
             return false;
         Path<?> other = (Path<?>) obj;
-        if(isEmpty())
+        if (isEmpty())
             return other.isEmpty();
 
         return !other.isEmpty() && equal(getNode(), other.getNode()) && equal(getParent(), other.getParent());
@@ -148,36 +148,36 @@ public abstract class Path<Node> {
 
     @Override
     public int hashCode() {
-        return isEmpty() ? 5675678 : getParent().hashCode()*10241 + getNode().hashCode();
+        return isEmpty() ? 5675678 : getParent().hashCode() * 10241 + getNode().hashCode();
     }
 
     public static <Node> Path<Node> combine(Path<Node> left, Path<Node> right) {
-        if(left.isEmpty())
+        if (left.isEmpty())
             return right;
-        if(right.isEmpty())
+        if (right.isEmpty())
             return left;
         Path<Node> current = left;
-        for(Node node : getPath(right))
+        for (Node node : getPath(right))
             current = new NormalPath<Node>(current, node);
         return current;
     }
 
     public static Path<String> fromString(String relative) {
-        if(relative.length() == 0)
+        if (relative.length() == 0)
             return empty();
         return create(relative.split("/"));
     }
 
     public static <Node> Path<Node> create(List<Node> values) {
         Path<Node> result = EmptyPath.instance();
-        for(Node val : values)
+        for (Node val : values)
             result = append(result, val);
         return result;
     }
 
     public static <Node> Path<Node> create(Node[] values) {
         Path<Node> result = empty();
-        for(Node val : values)
+        for (Node val : values)
             result = append(result, val);
         return result;
     }
@@ -188,11 +188,11 @@ public abstract class Path<Node> {
 
     @Override
     public String toString() {
-        if(isEmpty())
+        if (isEmpty())
             return "";
         final Path<Node> parent = getParent();
         final Node node = getNode();
-        if(parent.isEmpty())
+        if (parent.isEmpty())
             return node.toString();
         return parent.toString() + "/" + node.toString();
     }

@@ -109,13 +109,13 @@ public class TreeWindow<Node> extends JPanel {
                     @Override
                     public void restructured(Path<Node> path) {
                         List<TreePath> expanded = new ArrayList<TreePath>();
-                        for(int i=0; i<tree.getRowCount(); i++) {
+                        for (int i = 0; i < tree.getRowCount(); i++) {
                             final TreePath treePath = tree.getPathForRow(i);
-                            if(tree.isExpanded(i))
+                            if (tree.isExpanded(i))
                                 expanded.add(treePath);
                         }
 
-                        if(!externalExpanded) {
+                        if (!externalExpanded) {
                             for (Node n : source.getChildren(getRoot())) {
                                 if (Workspace.EXTERNAL_PATH.equals(decorator.getName(n))) {
                                     expanded.add(new TreePath(Path.getPath(source.getPath(n)).toArray()));
@@ -126,7 +126,7 @@ public class TreeWindow<Node> extends JPanel {
 
                         super.restructured(path);
 
-                        for(TreePath p : expanded)
+                        for (TreePath p : expanded)
                             tree.expandPath(p);
                     }
                 };
@@ -136,7 +136,7 @@ public class TreeWindow<Node> extends JPanel {
         final TreeModelWrapper<Node> modelWrapper = new TreeModelWrapper<Node>(sourceWithRestructuredTrapped);
         tree.setModel(modelWrapper);
 
-        if (popupProvider!=null)
+        if (popupProvider != null)
             tree.addMouseListener(new MouseAdapter() {
                 public void mousePressed(java.awt.event.MouseEvent e) {
                     maybeShowPopup(e);
@@ -146,7 +146,7 @@ public class TreeWindow<Node> extends JPanel {
                 }
 
                 private void maybeShowPopup(MouseEvent e) {
-                    if(e.isPopupTrigger()) {
+                    if (e.isPopupTrigger()) {
                         final int x = e.getX();
                         final int y = e.getY();
                         tree.setSelectionPath(tree.getClosestPathForLocation(x, y));
@@ -175,7 +175,7 @@ public class TreeWindow<Node> extends JPanel {
                     final Rectangle rowBounds = tree.getRowBounds(row);
                     if (rowBounds.contains(x, y)) {
 
-                        if (checkBox.getBounds().contains(x-rowBounds.x, y-rowBounds.y)) {
+                        if (checkBox.getBounds().contains(x - rowBounds.x, y - rowBounds.y)) {
                             Node node = (Node) tree.getPathForRow(row).getLastPathComponent();
                             if (checkedNodes.contains(node))
                                 checkedNodes.remove(node);
@@ -218,7 +218,7 @@ public class TreeWindow<Node> extends JPanel {
                     res.setFont(res.getFont().deriveFont(Font.PLAIN));
 
                 final Icon icon = decorator.getIcon(node);
-                //if(icon!=null)
+                //if (icon != null)
                 setIcon(icon);
 
                 cellRenderer.removeAll();
@@ -250,7 +250,7 @@ public class TreeWindow<Node> extends JPanel {
         tree.addKeyListener(new KeyAdapter() {
             @Override
             public void keyPressed(KeyEvent e) {
-                if(e.getKeyCode() == KeyEvent.VK_F5) {
+                if (e.getKeyCode() == KeyEvent.VK_F5) {
                     sourceWithRestructuredTrapped.getListener().restructured(Path.root(source.getRoot()));
                 }
             }

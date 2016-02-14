@@ -48,9 +48,9 @@ public class ScencoExecutionSupport {
     // FUNCTION TO CONVERT BINARY TO INT
     protected String binaryToInt(String string) {
         int value = 0, wg = 1;
-        if(string != null){
-            for(int i = string.length()-1; i>=0; i--){
-                if(string.charAt(i) == '1'){
+        if (string != null) {
+            for (int i = string.length() - 1; i >= 0; i--) {
+                if (string.charAt(i) == '1') {
                     value += wg;
                 }
                 wg *= 2;
@@ -64,7 +64,7 @@ public class ScencoExecutionSupport {
     // BUILD CONSTRAINT FOR EACH ELEMENTS LOOPING ON THE SCENARIOS
     protected String generateConstraint(char[][][] constraints, int numScenarios, int event1, int event2) {
         StringBuilder s = new StringBuilder();
-        for(int k = 0; k < numScenarios; k++) s.append(constraints[k][event1][event2]);
+        for (int k = 0; k < numScenarios; k++) s.append(constraints[k][event1][event2]);
         return s.toString();
     }
 
@@ -72,7 +72,7 @@ public class ScencoExecutionSupport {
     protected char trivialEncoding(char[][][] constraints, int numScenarios, int event1, int event2) {
         char trivial = '-';
 
-        for(int k = 0; k < numScenarios; k++) {
+        for (int k = 0; k < numScenarios; k++) {
             if (constraints[k][event1][event2] == '0') {
                 if (trivial == '1') return '?';
                 trivial = '0';
@@ -89,17 +89,17 @@ public class ScencoExecutionSupport {
 
     // FUNCTION FOR PARSING FILE CONTAINING BEST SOLUTION FOUND. IT PRINTS
     // THE MICROCONTROLLER SYNTHESISED WITH ABC TOOL
-    protected void printController(int m, String resultDirectoryPath, String[] optEnc){
+    protected void printController(int m, String resultDirectoryPath, String[] optEnc) {
         System.out.println();
         String fileName = resultDirectoryPath;
-        for(int i=0; i<m; i++) {
+        for (int i = 0; i < m; i++) {
             fileName = fileName.concat(binaryToInt(optEnc[i]) + "_");
         }
         fileName = fileName.concat(".prg");
         File f = new File(fileName);
-        if(f.exists() && !f.isDirectory()){
+        if (f.exists() && !f.isDirectory()) {
             System.out.println("Boolean controller:");
-            try{
+            try {
                 FileInputStream fstream = new FileInputStream(fileName);
                 DataInputStream in = new DataInputStream(fstream);
                 BufferedReader bre = new BufferedReader(new InputStreamReader(in));
@@ -110,7 +110,7 @@ public class ScencoExecutionSupport {
                     System.out.println(strLine);
                 }
                 in.close();
-            }catch (Exception e){ //Catch exception if any
+            } catch (Exception e) { //Catch exception if any
                 System.err.println("Error: " + e.getMessage());
             }
             System.out.println();
@@ -119,31 +119,31 @@ public class ScencoExecutionSupport {
     }
 
     // RESET ALL THE PARAMETERS TO CALL SCENCO TOOL
-    protected void resetVars(String verbose, String genMode, String numSol, String customFlag, String customPath, String effort, String espressoFlag, String abcFlag, String gateLibFlag, String cpogSize, String disableFunction, String oldSynt){
+    protected void resetVars(String verbose, String genMode, String numSol, String customFlag, String customPath, String effort, String espressoFlag, String abcFlag, String gateLibFlag, String cpogSize, String disableFunction, String oldSynt) {
         verbose = "";
-        genMode= "";
-        numSol= "";
-        customFlag= "";
-        customPath= "";
-        effort= "";
-        espressoFlag= "";
-        abcFlag= "";
-        gateLibFlag= "";
-        cpogSize= "";
-        disableFunction= "";
-        oldSynt= "";
+        genMode = "";
+        numSol = "";
+        customFlag = "";
+        customPath = "";
+        effort = "";
+        espressoFlag = "";
+        abcFlag = "";
+        gateLibFlag = "";
+        cpogSize = "";
+        disableFunction = "";
+        oldSynt = "";
         return;
     }
 
     protected int scanScenarios(int m, ArrayList<VisualTransformableNode> scenarios,
             HashMap<String, Integer> events, ArrayList<Point2D> positions,
-            ArrayList<Integer> count){
+            ArrayList<Integer> count) {
         int n = 0;
         // Scan every scenario
-        for(int k = 0; k < m; k++) {
+        for (int k = 0; k < m; k++) {
 
             // Scan every elements of each scenario
-            for(VisualComponent component : scenarios.get(k).getComponents())
+            for (VisualComponent component : scenarios.get(k).getComponents())
                 if (component instanceof VisualVertex) {
                     // If element is a vertex
                     VisualVertex vertex = (VisualVertex) component;
@@ -170,28 +170,28 @@ public class ScencoExecutionSupport {
     protected ArrayList<String> constructConstraints(char[][][] constraints, int[][] graph, int m, int n,
             ArrayList<VisualTransformableNode> scenarios,
             HashMap<String, Integer> events, ArrayList<Point2D> positions,
-            ArrayList<Integer> count){
+            ArrayList<Integer> count) {
 
         ArrayList<String> args = new ArrayList<String>();
 
-        for(int k = 0; k < m; k++) {
-            for(int i = 0; i < n; i++)
-                for(int j = 0; j < n; j++) {
+        for (int k = 0; k < m; k++) {
+            for (int i = 0; i < n; i++)
+                for (int j = 0; j < n; j++) {
                     constraints[k][i][j] = '0';
                 }
 
-            for(VisualComponent component : scenarios.get(k).getComponents())
+            for (VisualComponent component : scenarios.get(k).getComponents())
                 if (component instanceof VisualVertex) {
                     VisualVertex vertex = (VisualVertex) component;
                     int id = events.get(vertex.getLabel());
                     constraints[k][id][id] = '1';
                 }
 
-            for(int i = 0; i < n; i++)
-                for(int j = 0; j < n; j++)
+            for (int i = 0; i < n; i++)
+                for (int j = 0; j < n; j++)
                     graph[i][j] = 0;
 
-            for(VisualConnection c : scenarios.get(k).getConnections())
+            for (VisualConnection c : scenarios.get(k).getConnections())
                 if (c instanceof VisualArc) {
                     VisualArc arc = (VisualArc) c;
                     VisualNode c1 = arc.getFirst(), c2 = arc.getSecond();
@@ -204,23 +204,23 @@ public class ScencoExecutionSupport {
 
             // compute transitive closure
 
-            for(int t = 0; t < n; t++)
-                for(int i = 0; i < n; i++)
+            for (int t = 0; t < n; t++)
+                for (int i = 0; i < n; i++)
                     if (graph[i][t] > 0)
-                        for(int j = 0; j < n; j++)
+                        for (int j = 0; j < n; j++)
                             if (graph[t][j] > 0) graph[i][j] = 1;
 
             // detect transitive arcs
 
-            for(int t = 0; t < n; t++)
-                for(int i = 0; i < n; i++)
+            for (int t = 0; t < n; t++)
+                for (int i = 0; i < n; i++)
                     if (graph[i][t] > 0)
-                        for(int j = 0; j < n; j++)
+                        for (int j = 0; j < n; j++)
                             if (graph[t][j] > 0) graph[i][j] = 2;
 
             // report cyclic scenario
 
-            for(int i = 0; i < n; i++)
+            for (int i = 0; i < n; i++)
                 if (graph[i][i] > 0) {
                     args.add("ERROR");
                     args.add("Scenario '" + scenarios.get(k).getLabel() + "' is cyclic.");
@@ -228,8 +228,8 @@ public class ScencoExecutionSupport {
                     return args;
                 }
 
-            for(int i = 0; i < n; i++)
-                for(int j = 0; j < n; j++)
+            for (int i = 0; i < n; i++)
+                for (int j = 0; j < n; j++)
                     if (i != j) {
                         char ch = '0';
 
@@ -250,15 +250,15 @@ public class ScencoExecutionSupport {
     // FILE, IF USER WANTS TO USE A CUSTOM SOLUTION.
     protected int writeCpogIntoFile(int m, ArrayList<VisualTransformableNode> scenarios,
             File scenarioFile, File encodingFile, EncoderSettings settings) {
-        try{
+        try {
 
             PrintStream output = new PrintStream(scenarioFile);
 
-            for(int k = 0; k < m; k++) {
+            for (int k = 0; k < m; k++) {
                 Map<String, Integer> nodes = new HashMap<String, Integer>();
                 // Print arcs
                 output.println(".scenario CPOG_" + k);
-                for(VisualConnection c : scenarios.get(k).getConnections()){
+                for (VisualConnection c : scenarios.get(k).getConnections()) {
                     if (c instanceof VisualArc) {
                         VisualArc arc = (VisualArc) c;
                         VisualNode c1 = arc.getFirst(), c2 = arc.getSecond();
@@ -271,19 +271,19 @@ public class ScencoExecutionSupport {
                 }
 
                 // Print conditions on vertices
-                for(VisualComponent component : scenarios.get(k).getComponents()){
-                    if(component instanceof VisualVertex){
+                for (VisualComponent component : scenarios.get(k).getComponents()) {
+                    if (component instanceof VisualVertex) {
                         VisualVertex vertex = (VisualVertex) component;
                         BooleanFormula condition = vertex.getCondition();
-                        if (condition != One.instance() && condition != Zero.instance()){
+                        if (condition != One.instance() && condition != Zero.instance()) {
 
                             // Format output by substituting ' with !
                             String cond = FormulaToString.toString(condition).replaceAll("'", "!");
                             String result = "";
                             String tmp = "";
-                            for(int i=0; i<cond.length(); i++){
-                                if(cond.charAt(i) != '(' && cond.charAt(i) != ')' && cond.charAt(i) != '+' &&
-                                        cond.charAt(i) != '*' && cond.charAt(i) != '!' && cond.charAt(i) != ' '){
+                            for (int i = 0; i < cond.length(); i++) {
+                                if (cond.charAt(i) != '(' && cond.charAt(i) != ')' && cond.charAt(i) != '+' &&
+                                        cond.charAt(i) != '*' && cond.charAt(i) != '!' && cond.charAt(i) != ' ') {
                                     tmp = "";
                                     while (i < cond.length() && cond.charAt(i) != '(' && cond.charAt(i) != ')' && cond.charAt(i) != '+' &&
                                             cond.charAt(i) != '*' && cond.charAt(i) != '!' && cond.charAt(i) != ' ') {
@@ -291,58 +291,58 @@ public class ScencoExecutionSupport {
                                         i++;
                                     }
                                     //System.out.println("TMP: " + tmp);
-                                    for(int j= tmp.length()-1; j >= 0; j--){
+                                    for (int j = tmp.length() - 1; j >= 0; j--) {
                                         //System.out.println(j + ") " +  tmp.charAt(j));
                                         result += tmp.charAt(j);
                                     }
-                                    if(i < cond.length()){
+                                    if (i < cond.length()) {
                                         result += cond.charAt(i);
                                     }
-                                } else{
+                                } else {
                                     result += cond.charAt(i); ;
                                 }
                             }
 
                             String end = "";
-                            for(int i = 0; i<result.length(); i++){
-                                if(result.charAt(i) == '(') end += ')';
+                            for (int i = 0; i < result.length(); i++) {
+                                if (result.charAt(i) == '(') end += ')';
                                 else if (result.charAt(i) == ')') end += '(';
                                 else end += result.charAt(i);
                             }
 
                             // Print conditions on each vertices
                             output.print(":");
-                            for(int i=end.length()-1; i>=0; i--){
+                            for (int i = end.length() - 1; i >= 0; i--) {
                                 output.print(end.charAt(i));
                             }
                             output.println(" " + vertex.getLabel());
                         }
 
                         //VisualVertex vertex = (VisualVertex) component;
-                        if(!nodes.containsKey(vertex.getLabel())){
+                        if (!nodes.containsKey(vertex.getLabel())) {
                             output.println(vertex.getLabel());
                         }
                     }
 
                 }
                 output.println(".end");
-                if(k != m-1){
+                if (k != m - 1) {
                     output.println();
                 }
             }
             output.close();
 
             // WRITING CUSTOM ENCODING FILE
-            if(settings.getGenMode() != GenerationMode.SCENCO){
+            if (settings.getGenMode() != GenerationMode.SCENCO) {
 
-                if(settings.isCustomEncMode()){
+                if (settings.isCustomEncMode()) {
                     PrintStream output1 = new PrintStream(encodingFile);
 
                     String[] enc = settings.getCustomEnc();
-                    for(int k = 0; k < m; k++) {
-                        if(enc[k].contains("2") || enc[k].contains("3") || enc[k].contains("4") ||
+                    for (int k = 0; k < m; k++) {
+                        if (enc[k].contains("2") || enc[k].contains("3") || enc[k].contains("4") ||
                                 enc[k].contains("5") || enc[k].contains("6") || enc[k].contains("7") ||
-                                enc[k].contains("8") || enc[k].contains("9")){
+                                enc[k].contains("8") || enc[k].contains("9")) {
                             JOptionPane.showMessageDialog(null,
                                     "Op-code " + enc[k] + " not allowed.",
                                     "Custom encoding error",
@@ -352,8 +352,8 @@ public class ScencoExecutionSupport {
 
                         }
                         String empty = "";
-                        for (int i=0; i<settings.getBits(); i++) empty += 'X';
-                        if (enc[k].isEmpty() || enc[k].equals(empty)){
+                        for (int i = 0; i < settings.getBits(); i++) empty += 'X';
+                        if (enc[k].isEmpty() || enc[k].equals(empty)) {
                             output1.println("/");
                         } else {
                             output1.println(enc[k]);
@@ -363,7 +363,7 @@ public class ScencoExecutionSupport {
                     output1.close();
                 }
             }
-        }catch (IOException e) {
+        } catch (IOException e) {
             System.out.println("Error: " + e);
         }
 
@@ -377,7 +377,7 @@ public class ScencoExecutionSupport {
             Double currArea, WorkspaceEntry we, int it, boolean continuous, String[] optEnc,
             String[] optFormulaeVertices, String[] truthTableVertices, String[] optVertices,
             String[] optSources, String[] optDests, String[] optFormulaeArcs, String[] truthTableArcs,
-            String[] arcNames, SatBasedSolver satSolver) throws IOException{
+            String[] arcNames, SatBasedSolver satSolver) throws IOException {
         int a = 0;
         int v = 0;
         //Debug Printing: launching executable
@@ -392,12 +392,12 @@ public class ScencoExecutionSupport {
         InputStreamReader isr = new InputStreamReader(is);
         BufferedReader br = new BufferedReader(isr);
         String line;
-        while ((line = br.readLine()) != null){
-            if(settings.isVerboseMode())
+        while ((line = br.readLine()) != null) {
+            if (settings.isVerboseMode())
                 System.out.println(line);
 
             // Read Optimal Encoding
-            if(line.contains("MIN: ")){
+            if (line.contains("MIN: ")) {
                 StringTokenizer st2 = new StringTokenizer(line, " ");
                 int j = 0;
                 st2.nextElement();
@@ -407,18 +407,18 @@ public class ScencoExecutionSupport {
             }
 
             // Read Optimal Formulae
-            if(line.contains(".start_formulae")){
+            if (line.contains(".start_formulae")) {
                 line = br.readLine();
-                while(line.contains(".end_formulae") == false){
-                    if(settings.isVerboseMode())
+                while (line.contains(".end_formulae") == false) {
+                    if (settings.isVerboseMode())
                         System.out.println(line);
                     StringTokenizer st2 = new StringTokenizer(line, ",");
                     String el = (String) st2.nextElement();
-                    if(el.equals("V")){ //formula of a vertex
+                    if (el.equals("V")) { //formula of a vertex
                         optVertices[v] = (String) st2.nextElement();
                         truthTableVertices[v] = (String) st2.nextElement();
                         optFormulaeVertices[v++] = (String) st2.nextElement();
-                    }else{
+                    } else {
                         optSources[a] = (String) st2.nextElement();
                         optDests[a] = (String) st2.nextElement();
                         arcNames[a] = optSources[a] + "->" + optDests[a];
@@ -431,18 +431,18 @@ public class ScencoExecutionSupport {
             }
 
             // Read statistics
-            if(line.contains(".statistics")){
+            if (line.contains(".statistics")) {
                 line = br.readLine();
-                while(line.contains(".end_statistics") == false){
+                while (line.contains(".end_statistics") == false) {
                     System.out.println(line);
                     line = br.readLine();
                 }
             }
 
             // Read errors
-            if(line.contains(".error")){
+            if (line.contains(".error")) {
                 line = br.readLine();
-                while(line.contains(".end_error") == false){
+                while (line.contains(".end_error") == false) {
                     JOptionPane.showMessageDialog(null,
                             line,
                             "scenco error",
@@ -469,10 +469,10 @@ public class ScencoExecutionSupport {
     // FOR THE ARCS, THE NAME CORRESPOND TO NAME OF SOURCE -> NAME OF DEST
     protected void connectFormulaeToVisualVertex(int v, int a, Variable[] vars, HashMap<String,
             BooleanFormula> formulaeName, String[] optFormulaeVertices, String[] optVertices,
-            String[] optFormulaeArcs, String[] arcNames) throws ParseException{
+            String[] optFormulaeArcs, String[] arcNames) throws ParseException {
         final Variable[] variables = vars;
-        for(int i=0; i<v; i++){
-            if(optFormulaeVertices[i].contains("x")){
+        for (int i = 0; i < v; i++) {
+            if (optFormulaeVertices[i].contains("x")) {
                 BooleanFormula formulaOpt = null;
                 formulaOpt = BooleanParser.parse(optFormulaeVertices[i], new Func<String, BooleanFormula>() {
 
@@ -488,8 +488,8 @@ public class ScencoExecutionSupport {
 
             }
         }
-        for(int i=0; i<a; i++){
-            if(optFormulaeArcs[i].contains("x")){
+        for (int i = 0; i < a; i++) {
+            if (optFormulaeArcs[i].contains("x")) {
                 BooleanFormula formulaOpt = null;
                 formulaOpt = BooleanParser.parse(optFormulaeArcs[i], new Func<String, BooleanFormula>() {
                     @Override
@@ -511,9 +511,9 @@ public class ScencoExecutionSupport {
             boolean[][] encoding, int pr, HashMap<String, Integer> events,
             VisualVertex[] vertices, VisualCPOG cpog, VisualScenario resultCpog,
             ArrayList<Point2D> positions, ArrayList<Integer> count,
-            HashMap<String, BooleanFormula> formulaeName){
-        for(int k = 0; k < m; k++) {
-            for(int i = 0; i < freeVariables; i++){
+            HashMap<String, BooleanFormula> formulaeName) {
+        for (int k = 0; k < m; k++) {
+            for (int i = 0; i < freeVariables; i++) {
                 if (scenarios.get(k) instanceof VisualScenario) {
                     VisualScenario scenario = (VisualScenario) scenarios.get(k);
                     scenario.getEncoding().setState(vars[i], VariableState.fromBoolean(encoding[k][i]));
@@ -523,7 +523,7 @@ public class ScencoExecutionSupport {
                 }
                 //scenario.getEncoding().setState(vars[i], VariableState.fromBoolean(encoding[k][i]));
             }
-            for(int i = freeVariables; i < freeVariables + pr; i++){
+            for (int i = freeVariables; i < freeVariables + pr; i++) {
                 if (scenarios.get(k) instanceof  VisualScenario) {
                     VisualScenario scenario = (VisualScenario) scenarios.get(k);
                     scenario.getEncoding().setState(vars[i], VariableState.fromBoolean(encoding[k][i]));
@@ -535,14 +535,14 @@ public class ScencoExecutionSupport {
             }
         }
 
-        for(String eventName : events.keySet()) {
+        for (String eventName : events.keySet()) {
             int id = events.get(eventName);
             vertices[id] = cpog.createVisualVertex(resultCpog);
             vertices[id].setLabel(eventName);
-            vertices[id].setPosition(Geometry.multiply(positions.get(id), 1.0/count.get(id)));
-            if(formulaeName.containsKey(eventName)){
+            vertices[id].setPosition(Geometry.multiply(positions.get(id), 1.0 / count.get(id)));
+            if (formulaeName.containsKey(eventName)) {
                 vertices[id].setCondition(formulaeName.get(eventName));
-            }else
+            } else
                 vertices[id].setCondition(One.instance());
         }
 
@@ -551,9 +551,9 @@ public class ScencoExecutionSupport {
     // Build up the Cpog into Workcraft window
     protected void buildCpog(int n, int m, char[][][] constraints,
             VisualCPOG cpog, VisualVertex[] vertices, HashMap<String,
-            BooleanFormula> formulaeName){
-        for(int i = 0; i < n; i++)
-            for(int j = 0; j < n; j++) {
+            BooleanFormula> formulaeName) {
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++) {
                 BooleanFormula condition;
 
                 char trivial = trivialEncoding(constraints, m, i, j);
@@ -568,9 +568,9 @@ public class ScencoExecutionSupport {
                     VisualArc arc = cpog.connect(vertices[i], vertices[j]);
                     String arcName = vertices[i].getLabel() + "->" + vertices[j].getLabel();
 
-                    if(formulaeName.containsKey(arcName)){
+                    if (formulaeName.containsKey(arcName)) {
                         condition = formulaeName.get(arcName);
-                    }else
+                    } else
                         condition = One.instance();
 
                     arc.setCondition(condition);
@@ -579,12 +579,12 @@ public class ScencoExecutionSupport {
     }
 
     // group similar constraints
-    protected void groupConstraints(int n, int m, char[][][] constraints, HashMap<String, Integer> task){
-        for(int i = 0; i < n; i++)
-            for(int j = 0; j < n; j++)
+    protected void groupConstraints(int n, int m, char[][][] constraints, HashMap<String, Integer> task) {
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < n; j++)
                 if (trivialEncoding(constraints, m, i, j) == '?') {
                     String constraint = generateConstraint(constraints, m, i, j);
-                    if (!task.containsKey(constraint)){
+                    if (!task.containsKey(constraint)) {
                         task.put(constraint, task.size());
                     }
                 }

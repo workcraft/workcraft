@@ -95,7 +95,7 @@ public class PolicySimulationTool extends PetriNetSimulationTool {
         for (Node node: container.getChildren()) {
 
             if (node instanceof VisualBundledTransition) {
-                ret=ret || (getExcitedTransitionOfNode(node) != null);
+                ret = ret || (getExcitedTransitionOfNode(node) != null);
             }
 
             if (node instanceof Container) {
@@ -160,7 +160,7 @@ public class PolicySimulationTool extends PetriNetSimulationTool {
 
                 if (node instanceof VisualPage || node instanceof VisualGroup) {
 
-                    if (node.getParent()==null) return null; // do not work with the root node
+                    if (node.getParent() == null) return null; // do not work with the root node
 
                     final boolean ret = isContainerExcited((Container) node);
 

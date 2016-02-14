@@ -26,7 +26,7 @@ public final class One implements BooleanFormula {
 
     private static final One instance = new One();
 
-    private One(){
+    private One() {
     }
 
     public static One instance() {

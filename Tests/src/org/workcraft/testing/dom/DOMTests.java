@@ -63,7 +63,7 @@ public class DOMTests {
         try {
             pn.getNodeReference(null);
             thrown = false;
-        }catch(Throwable th) {}
+        } catch (Throwable th) { }
 
         assertTrue(thrown);
     }

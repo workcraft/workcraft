@@ -5,7 +5,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.DocumentFilter;
 
-public class TimeInputFilter extends DocumentFilter{
+public class TimeInputFilter extends DocumentFilter {
 
     private int maxLength;
 

@@ -58,7 +58,7 @@ public class StgSimulationTool extends PetriNetSimulationTool {
 
         @Override
         public String getColumnName(int column) {
-            if (column==0) return "Signal";
+            if (column == 0) return "Signal";
             return "State";
         }
 
@@ -221,7 +221,7 @@ public class StgSimulationTool extends PetriNetSimulationTool {
             }
         }
 
-        for(Node node: net.getTransitions()) {
+        for (Node node: net.getTransitions()) {
             if (node instanceof SignalTransition) {
                 SignalTransition transition = (SignalTransition) node;
                 String signalReference = ((STG) net).getSignalReference(transition);

@@ -58,7 +58,7 @@ public class SONSelectionTool extends SelectionTool {
         //Create groupButton
         final JButton groupButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/icons/svg/selection-group.svg"), "Group selection (Ctrl+G)");
-        groupButton.addActionListener(new ActionListener(){
+        groupButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 selectionGroup(editor);
@@ -69,7 +69,7 @@ public class SONSelectionTool extends SelectionTool {
         //Create blockButton
         JButton blockButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/icons/svg/son-block.svg"), "Group selection into a block (Alt+B)");
-        blockButton.addActionListener(new ActionListener(){
+        blockButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 selectionBlock(editor);
@@ -81,7 +81,7 @@ public class SONSelectionTool extends SelectionTool {
         //Create pageButton
         JButton groupPageButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/icons/svg/selection-page.svg"), "Group selection into a page (Alt+G)");
-        groupPageButton.addActionListener(new ActionListener(){
+        groupPageButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 selectionPageGroup(editor);
@@ -93,7 +93,7 @@ public class SONSelectionTool extends SelectionTool {
         //Create ungroupButton
         JButton ungroupButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/icons/svg/selection-ungroup.svg"), "Ungroup selection (Ctrl+Shift+G)");
-        ungroupButton.addActionListener(new ActionListener(){
+        ungroupButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 selectionUngroup(editor);
@@ -106,7 +106,7 @@ public class SONSelectionTool extends SelectionTool {
         controlPanel.add(levelPanel);
         JButton levelUpButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/icons/svg/selection-level_up.svg"), "Level up (PageUp)");
-        levelUpButton.addActionListener(new ActionListener(){
+        levelUpButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 changeLevelUp(editor);
@@ -116,7 +116,7 @@ public class SONSelectionTool extends SelectionTool {
 
         JButton levelDownButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/icons/svg/selection-level_down.svg"), "Level down (PageDown)");
-        levelDownButton.addActionListener(new ActionListener(){
+        levelDownButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 changeLevelDown(editor);
@@ -128,7 +128,7 @@ public class SONSelectionTool extends SelectionTool {
         controlPanel.add(flipPanel);
         JButton flipHorizontalButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/icons/svg/selection-flip_horizontal.svg"), "Flip horizontal (Ctrl+F)");
-        flipHorizontalButton.addActionListener(new ActionListener(){
+        flipHorizontalButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 selectionFlipHorizontal(editor);
@@ -137,7 +137,7 @@ public class SONSelectionTool extends SelectionTool {
         flipPanel.add(flipHorizontalButton);
         JButton flipVerticalButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/icons/svg/selection-flip_vertical.svg"), "Flip vertical (Ctrl+Shift+F)");
-        flipVerticalButton.addActionListener(new ActionListener(){
+        flipVerticalButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 selectionFlipVertical(editor);
@@ -149,7 +149,7 @@ public class SONSelectionTool extends SelectionTool {
         controlPanel.add(rotatePanel);
         JButton rotateClockwiseButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/icons/svg/selection-rotate_clockwise.svg"), "Rotate clockwise (Ctrl+R)");
-        rotateClockwiseButton.addActionListener(new ActionListener(){
+        rotateClockwiseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 selectionRotateClockwise(editor);
@@ -158,7 +158,7 @@ public class SONSelectionTool extends SelectionTool {
         rotatePanel.add(rotateClockwiseButton);
         JButton rotateCounterclockwiseButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/icons/svg/selection-rotate_counterclockwise.svg"), "Rotate counterclockwise (Ctrl+Shift+R)");
-        rotateCounterclockwiseButton.addActionListener(new ActionListener(){
+        rotateCounterclockwiseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 selectionRotateCounterclockwise(editor);
@@ -168,19 +168,19 @@ public class SONSelectionTool extends SelectionTool {
     }
 
     @Override
-    public void mouseClicked(GraphEditorMouseEvent e){
+    public void mouseClicked(GraphEditorMouseEvent e) {
         VisualSON model = (VisualSON) e.getEditor().getModel();
 
         if (e.getClickCount() > 1) {
             VisualNode node = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
             Collection<Node> selection = e.getModel().getSelection();
 
-            if(selection.size() == 1) {
+            if (selection.size() == 1) {
                 Node selectedNode = selection.iterator().next();
                 selectedNode = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
 
                 if (selectedNode instanceof VisualBlock) {
-                    if(!((VisualBlock) selectedNode).getIsCollapsed())
+                    if (!((VisualBlock) selectedNode).getIsCollapsed())
                         ((VisualBlock) selectedNode).setIsCollapsed(true);
                     else
                         ((VisualBlock) selectedNode).setIsCollapsed(false);
@@ -204,9 +204,9 @@ public class SONSelectionTool extends SelectionTool {
                         ve.setFaulty(false);
                 }
 
-                if(selectedNode instanceof VisualChannelPlace) {
+                if (selectedNode instanceof VisualChannelPlace) {
                     VisualChannelPlace cPlace = (VisualChannelPlace) node;
-                    for (Connection con : model.getConnections(cPlace)){
+                    for (Connection con : model.getConnections(cPlace)) {
 
                         if (((VisualSONConnection) con).getSemantics() == Semantics.ASYNLINE)
                             this.sync = false;
@@ -214,16 +214,16 @@ public class SONSelectionTool extends SelectionTool {
                             this.asyn = false;
                     }
                     if (sync && !asyn)
-                        for (Connection con : model.getConnections(cPlace)){
+                        for (Connection con : model.getConnections(cPlace)) {
                             ((VisualSONConnection) con).setSemantics(Semantics.ASYNLINE);
                         }
 
                     if (!sync && asyn)
-                        for (Connection con : model.getConnections(cPlace)){
+                        for (Connection con : model.getConnections(cPlace)) {
                             ((VisualSONConnection) con).setSemantics(Semantics.SYNCLINE);
                         }
                     if (!sync && !asyn)
-                        for (Connection con : model.getConnections(cPlace)){
+                        for (Connection con : model.getConnections(cPlace)) {
                             ((VisualSONConnection) con).setSemantics(Semantics.SYNCLINE);
                         }
                     asyn = true;
@@ -253,9 +253,9 @@ public class SONSelectionTool extends SelectionTool {
         Collection<Node> selection = model.getSelection();
         if (selection.size() == 1) {
             Node node = selection.iterator().next();
-            if(node instanceof Container && !(node instanceof VisualBlock)) {
+            if (node instanceof Container && !(node instanceof VisualBlock)) {
                 model.setCurrentLevel((Container) node);
-                if(node instanceof VisualONGroup)
+                if (node instanceof VisualONGroup)
                     setChannelPlaceToolState(editor, false);
                 else
                     setChannelPlaceToolState(editor, true);
@@ -271,7 +271,7 @@ public class SONSelectionTool extends SelectionTool {
         Container parent = Hierarchy.getNearestAncestor(level.getParent(), Container.class);
         if (parent != null && !(level instanceof VisualBlock)) {
             model.setCurrentLevel(parent);
-            if(parent instanceof VisualONGroup)
+            if (parent instanceof VisualONGroup)
                 setChannelPlaceToolState(editor, false);
             else
                 setChannelPlaceToolState(editor, true);

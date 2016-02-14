@@ -28,7 +28,7 @@ public class Untanglings {
     private ReductionBasedRepresentativeUntangling untangling;
     private ArrayList<PartialOrder> partialOrders;
 
-    public Untanglings(PnToCpogSettings settings){
+    public Untanglings(PnToCpogSettings settings) {
         this.sys = new NetSystem();
         this.p = new LinkedList<Place>();
         this.t = new LinkedList<Transition>();
@@ -38,7 +38,7 @@ public class Untanglings {
         // settings
         this.setup.ISOMORPHISM_REDUCTION = settings.isIsomorphism();
         this.setup.REDUCE = settings.isReduce();
-        switch(settings.getSignificance()){
+        switch (settings.getSignificance()) {
         case 0 :
             this.setup.SIGNIFICANCE_CHECK = SignificanceCheckType.EXHAUSTIVE;
             break;
@@ -53,18 +53,18 @@ public class Untanglings {
     }
 
     /** adds place inside the conversion system **/
-    public boolean addPlace(String placeName){
-        if(p.add(new Place(placeName))){
+    public boolean addPlace(String placeName) {
+        if (p.add(new Place(placeName))) {
             return true;
         }
         return false;
     }
 
     /** adds token inside a place inside the conversion system **/
-    public boolean insertTokens(String placeName, int tokens){
+    public boolean insertTokens(String placeName, int tokens) {
 
-        for(Place place : p){
-            if (place.getLabel().equals(placeName)){
+        for (Place place : p) {
+            if (place.getLabel().equals(placeName)) {
                 sys.putTokens(place, tokens);
 
                 // debug printing: tokens inserted inside the place
@@ -78,25 +78,25 @@ public class Untanglings {
     }
 
     /** adds transition inside the conversion system **/
-    public boolean addTransition(String transitionName){
-        if(t.add(new Transition(transitionName))){
+    public boolean addTransition(String transitionName) {
+        if (t.add(new Transition(transitionName))) {
             return true;
         }
         return false;
     }
 
     /** adds a connection from a place to a transition **/
-    public boolean placeToTransition(String node1, String node2){
+    public boolean placeToTransition(String node1, String node2) {
 
-        for(Place place : p){
+        for (Place place : p) {
 
             // checking existence of the place
-            if(!place.getName().equals(node1)) continue;
+            if (!place.getName().equals(node1)) continue;
 
             // checking existence of the transition
-            for (Transition transition : t){
+            for (Transition transition : t) {
 
-                if(!transition.getName().equals(node2)) continue;
+                if (!transition.getName().equals(node2)) continue;
 
                 // adding arc to the system
                 sys.addFlow(place, transition);
@@ -114,16 +114,16 @@ public class Untanglings {
     }
 
     /** adds a connection from a transition to a place  **/
-    public boolean transitionToPlace(String node1, String node2){
+    public boolean transitionToPlace(String node1, String node2) {
 
-        for(Transition transition : t){
+        for (Transition transition : t) {
 
             // checking existence of the place
-            if(!transition.getName().equals(node1)) continue;
+            if (!transition.getName().equals(node1)) continue;
 
             // checking existence of the transition
-            for (Place place : p){
-                if(!place.getName().equals(node2)) continue;
+            for (Place place : p) {
+                if (!place.getName().equals(node2)) continue;
 
                 // adding arc to the system
                 sys.addFlow(transition, place);
@@ -143,20 +143,20 @@ public class Untanglings {
 
     /** converts the Petri net introduced into multiple *
      *  processes which compose the untangling         **/
-    public boolean startConversion(){
+    public boolean startConversion() {
 
         // starting conversion
         untangling = new ReductionBasedRepresentativeUntangling(sys, setup);
 
         // if Petri Net is not safe, stop the conversion
-        if(untangling.isSafe() == false){
+        if (untangling.isSafe() == false) {
             System.out.println("Untangling cannot be constructed because the Petri Net is not safe.");
             return false;
         }
         // checking correct execution of conversion
-        for(IProcess<BPNode, Condition, Event, Flow, Node, Place, Transition, Marking> pi : untangling.getProcesses()){
+        for (IProcess<BPNode, Condition, Event, Flow, Node, Place, Transition, Marking> pi : untangling.getProcesses()) {
 
-            if(pi.getOccurrenceNet().getVertices().isEmpty() == false){
+            if (pi.getOccurrenceNet().getVertices().isEmpty() == false) {
 
                 // printing out how many processes are needed to represent the untangling representation
                 System.out.println("Number of untangled processes: " + untangling.getProcesses().size());
@@ -170,9 +170,9 @@ public class Untanglings {
 
     /** converts the set of processes that compose the *
      *  untangling into a set of partial order graph  **/
-    public ArrayList<PartialOrder> getPartialOrders(PnToCpogSettings settings){
+    public ArrayList<PartialOrder> getPartialOrders(PnToCpogSettings settings) {
 
-        for(IProcess<BPNode, Condition, Event, Flow, Node, Place, Transition, Marking> pi : untangling.getProcesses()){
+        for (IProcess<BPNode, Condition, Event, Flow, Node, Place, Transition, Marking> pi : untangling.getProcesses()) {
 
             PartialOrder process = new PartialOrder();
             NodeList places = new NodeList();
@@ -181,13 +181,13 @@ public class Untanglings {
             HashMap<Integer, UntanglingNode> idToTransitionsMap = new HashMap<>();
 
             // adding places into the places map
-            for(Place place : pi.getOccurrenceNet().getPlaces()){
+            for (Place place : pi.getOccurrenceNet().getPlaces()) {
                 UntanglingNode untanglingNode = places.addNode(place);
                 idToPlacesMap.put(untanglingNode.getId(), untanglingNode);
             }
 
             // adding transitions into the transitions map
-            for(Transition transition : pi.getOccurrenceNet().getTransitions()){
+            for (Transition transition : pi.getOccurrenceNet().getTransitions()) {
                 UntanglingNode untanglingNode = transitions.addNode(transition);
                 idToTransitionsMap.put(untanglingNode.getId(), untanglingNode);
             }
@@ -203,7 +203,7 @@ public class Untanglings {
             }
 
             // connecting transitions while skipping the places
-            if (settings.isRemoveNodes()){
+            if (settings.isRemoveNodes()) {
                 connectTransitionsOnly(pi, process, idToTransitionsMap);
             } else {
                 // places need to be present
@@ -222,10 +222,10 @@ public class Untanglings {
             PartialOrder process, HashMap<Integer, UntanglingNode> idToPlacesMap, HashMap<Integer,
             UntanglingNode> idToTransitionsMap) {
 
-        for(Flow edge : pi.getOccurrenceNet().getEdges()){
+        for (Flow edge : pi.getOccurrenceNet().getEdges()) {
             Node source = edge.getSource();
             Node target = edge.getTarget();
-            if(edge.getSource() instanceof Place){
+            if (edge.getSource() instanceof Place) {
                 // place to transition connection
                 UntanglingEdge connection = connectNodes(source, target,
                         idToPlacesMap, idToTransitionsMap);
@@ -249,9 +249,9 @@ public class Untanglings {
             IProcess<BPNode, Condition, Event, Flow, Node, Place, Transition, Marking> pi,
             PartialOrder process, HashMap<Integer, UntanglingNode> idToTransitionMap) {
 
-        for(Flow edge1 : pi.getOccurrenceNet().getEdges()){
+        for (Flow edge1 : pi.getOccurrenceNet().getEdges()) {
             if (!(edge1.getSource() instanceof Transition)) continue;
-            for(Flow edge2 : pi.getOccurrenceNet().getEdges()){
+            for (Flow edge2 : pi.getOccurrenceNet().getEdges()) {
 
                 String sourceName = edge2.getSource().getLabel();
                 String targetName = edge1.getTarget().getLabel();

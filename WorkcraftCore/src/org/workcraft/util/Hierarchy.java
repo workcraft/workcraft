@@ -33,7 +33,7 @@ import org.workcraft.dom.visual.NodeHelper;
 
 public class Hierarchy {
     public static <T> Func<Node, Boolean> getTypeFilter(final Class<T> type) {
-        return new Func<Node, Boolean>(){
+        return new Func<Node, Boolean>() {
             public Boolean eval(Node node) {
                 if (type.isInstance(node)) {
                     return true;
@@ -54,7 +54,7 @@ public class Hierarchy {
         return result;
     }
 
-    public static <T extends Node> Collection <T> filterNodesByType(Collection<Node> nodes, final Class<T> type) {
+    public static <T extends Node> Collection<T> filterNodesByType(Collection<Node> nodes, final Class<T> type) {
         LinkedList<T> result = new LinkedList<T>();
         for (Node node : nodes) {
             if (type.isInstance(node)) {
@@ -67,13 +67,13 @@ public class Hierarchy {
     public static Node[] getPath(Node node) {
         Node n = node;
         int i = 0;
-        while(n!=null) {
+        while (n != null) {
             i++;
             n = n.getParent();
         }
         Node[] result = new Node[i];
         n = node;
-        while(n!=null) {
+        while (n != null) {
             result[--i] = n;
             n = n.getParent();
         }
@@ -82,7 +82,7 @@ public class Hierarchy {
 
     public static Node getTopParent(Node node) {
         Node top = node;
-        while (top.getParent()!=null) top=top.getParent();
+        while (top.getParent() != null) top = top.getParent();
         return top;
     }
 
@@ -98,7 +98,7 @@ public class Hierarchy {
         }
 
         Node result = null;
-        for(int i=0; i<minPathLength; i++) {
+        for (int i = 0; i < minPathLength; i++) {
             Node node = paths.get(0)[i];
             boolean good = true;
             for (Node[] path : paths) {
@@ -135,8 +135,8 @@ public class Hierarchy {
 
     public static boolean isDescendant(Node descendant, Node parent) {
         Node node = descendant;
-        while(node != parent) {
-            if(node == null) {
+        while (node != parent) {
+            if (node == null) {
                 return false;
             }
             node = node.getParent();
@@ -165,8 +165,8 @@ public class Hierarchy {
 
     public static Node getNearestAncestor(Node node, Func<Node, Boolean> filter) {
         Node parent = node;
-        while(parent != null) {
-            if(filter.eval(parent)) {
+        while (parent != null) {
+            if (filter.eval(parent)) {
                 return parent;
             }
             parent = parent.getParent();
@@ -184,7 +184,7 @@ public class Hierarchy {
 
     public static <T> Collection<T> getDescendantsOfType(Node node, Class<T> type) {
         ArrayList<T> result = new ArrayList<T>();
-        for(Node n : node.getChildren()) {
+        for (Node n : node.getChildren()) {
             result.addAll(getDescendantsOfType(n, type));
         }
         result.addAll(getChildrenOfType(node, type));
@@ -193,7 +193,7 @@ public class Hierarchy {
 
     public static <T> Collection<T> getDescendantsOfType(Node node, Class<T> type, Func<T, Boolean> filter) {
         ArrayList<T> result = new ArrayList<T>();
-        for(Node n : node.getChildren()) {
+        for (Node n : node.getChildren()) {
             result.addAll(getDescendantsOfType(n, type, filter));
         }
         result.addAll(getChildrenOfType(node, type, filter));
@@ -202,7 +202,7 @@ public class Hierarchy {
 
     public static Collection<Node> getDescendants(Node node) {
         ArrayList<Node> result = new ArrayList<Node>();
-        for(Node n : node.getChildren()) {
+        for (Node n : node.getChildren()) {
             result.addAll(getDescendants(n));
         }
         result.addAll(node.getChildren());

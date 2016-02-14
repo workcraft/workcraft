@@ -83,7 +83,7 @@ public class TouchableTransformerTests {
         Dummy dummy = new Dummy() {
             @Override
             public Rectangle2D getBoundingBox() {
-                if(bb == null)
+                if (bb == null)
                     return null;
                 return new Rectangle2D.Double(bb.getMinX(), bb.getMinY(), bb.getWidth(), bb.getHeight());
             }
@@ -96,10 +96,10 @@ public class TouchableTransformerTests {
     @Test
     public void testRotateBoundingBox() {
         final Rectangle2D bb = new Rectangle2D.Double(0, 0, 1, 1);
-        AffineTransform transform = AffineTransform.getRotateInstance(3.1415926535897932384626433832795/4.0);
+        AffineTransform transform = AffineTransform.getRotateInstance(3.1415926535897932384626433832795 / 4.0);
 
         Rectangle2D result = new TouchableTransformer(
-                new Dummy(){
+                new Dummy() {
                     @Override
                     public Rectangle2D getBoundingBox() {
                         return bb;
@@ -119,7 +119,7 @@ public class TouchableTransformerTests {
     @Test
     public void testTranslateHitTest() {
         TouchableTransformer toucher = new TouchableTransformer(
-                new Dummy(){
+                new Dummy() {
                     @Override
                     public boolean hitTest(Point2D point) {
                         return point.distanceSq(0, 0) < 1.0;

@@ -156,7 +156,7 @@ public class PresetManagerPanel<T> extends JPanel {
 
     public void selectFirst() {
 
-        if (presetCombo.getItemCount()>0)
+        if (presetCombo.getItemCount() > 0)
             presetCombo.setSelectedIndex(0);
     }
 }

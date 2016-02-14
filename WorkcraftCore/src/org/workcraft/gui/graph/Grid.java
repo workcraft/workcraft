@@ -199,8 +199,8 @@ public class Grid implements ViewportListener {
         // Compute the visible user space area from the viewport
         Point2D visibleUL = new Point2D.Double();
         Point2D visibleLR = new Point2D.Double();
-        Point viewLL = new Point(view.x, view.height+view.y);
-        Point viewUR = new Point(view.width+view.x, view.y);
+        Point viewLL = new Point(view.x, view.height + view.y);
+        Point viewUR = new Point(view.width + view.x, view.y);
         viewport.getInverseTransform().transform(viewLL, visibleUL);
         viewport.getInverseTransform().transform(viewUR, visibleLR);
 
@@ -215,77 +215,77 @@ public class Grid implements ViewportListener {
             }
         }
         // Compute the leftmost, rightmost, topmost and bottom visible grid lines
-        int majorBottom  = (int) Math.ceil(visibleLR.getY()/majorInterval);
-        int majorTop = (int) Math.floor(visibleUL.getY()/majorInterval);
+        int majorBottom  = (int) Math.ceil(visibleLR.getY() / majorInterval);
+        int majorTop = (int) Math.floor(visibleUL.getY() / majorInterval);
 
-        int majorLeft = (int) Math.ceil(visibleUL.getX()/majorInterval);
-        int majorRight = (int) Math.floor(visibleLR.getX()/majorInterval);
+        int majorLeft = (int) Math.ceil(visibleUL.getX() / majorInterval);
+        int majorRight = (int) Math.floor(visibleLR.getX() / majorInterval);
 
         double minorInterval = majorInterval * minorIntervalFactor;
 
-        int minorLeft = (int) Math.ceil(visibleUL.getX()/minorInterval);
-        int minorRight = (int) Math.floor(visibleLR.getX()/minorInterval);
+        int minorLeft = (int) Math.ceil(visibleUL.getX() / minorInterval);
+        int minorRight = (int) Math.floor(visibleLR.getX() / minorInterval);
 
-        int minorBottom = (int) Math.ceil(visibleLR.getY()/minorInterval);
-        int minorTop = (int) Math.floor(visibleUL.getY()/minorInterval);
+        int minorBottom = (int) Math.ceil(visibleLR.getY() / minorInterval);
+        int minorTop = (int) Math.floor(visibleUL.getY() / minorInterval);
 
         // Build the gridlines positions, store them as user-space coordinates,
         // screen-space coordinates, and as a drawable path (in screen-space)
         minorLinesPath = new Path2D.Double();
         majorLinesPath = new Path2D.Double();
 
-        final int countMinH = Math.max(0, minorRight-minorLeft+1);
+        final int countMinH = Math.max(0, minorRight - minorLeft + 1);
         minorLinePositions[0] = new double[countMinH];
         minorLinePositionsScreen[0] = new int[countMinH];
 
         Point2D p1 = new Point2D.Double(), p2 = new Point();
 
-        for (int x=minorLeft; x<=minorRight; x++) {
-            minorLinePositions[0][x-minorLeft] = x*minorInterval;
-            p1.setLocation(x*minorInterval, 0);
+        for (int x = minorLeft; x <= minorRight; x++) {
+            minorLinePositions[0][x - minorLeft] = x * minorInterval;
+            p1.setLocation(x * minorInterval, 0);
             viewport.getTransform().transform(p1, p2);
-            minorLinePositionsScreen[0][x-minorLeft] = (int) p2.getX();
+            minorLinePositionsScreen[0][x - minorLeft] = (int) p2.getX();
 
             minorLinesPath.moveTo(p2.getX(), viewLL.getY());
             minorLinesPath.lineTo(p2.getX(), viewUR.getY());
         }
 
-        final int countMinV = Math.max(0, minorTop-minorBottom+1);
+        final int countMinV = Math.max(0, minorTop - minorBottom + 1);
         minorLinePositions[1] = new double[countMinV];
         minorLinePositionsScreen[1] = new int[countMinV];
 
-        for (int y=minorBottom; y<=minorTop; y++) {
-            minorLinePositions[1][y-minorBottom] = y*minorInterval;
-            p1.setLocation(0, y*minorInterval);
+        for (int y = minorBottom; y <= minorTop; y++) {
+            minorLinePositions[1][y - minorBottom] = y * minorInterval;
+            p1.setLocation(0, y * minorInterval);
             viewport.getTransform().transform(p1, p2);
-            minorLinePositionsScreen[1][y-minorBottom] = (int) p2.getY();
+            minorLinePositionsScreen[1][y - minorBottom] = (int) p2.getY();
 
             minorLinesPath.moveTo(viewLL.getX(), p2.getY());
             minorLinesPath.lineTo(viewUR.getX(), p2.getY());
         }
 
-        final int countMajH = Math.max(0, majorRight-majorLeft+1);
+        final int countMajH = Math.max(0, majorRight - majorLeft + 1);
         majorLinePositions[0] = new double[countMajH];
         majorLinePositionsScreen[0] = new int[countMajH];
 
-        for (int x=majorLeft; x<=majorRight; x++) {
-            majorLinePositions[0][x-majorLeft] = x*majorInterval;
-            p1.setLocation(x*majorInterval, 0);
+        for (int x = majorLeft; x <= majorRight; x++) {
+            majorLinePositions[0][x - majorLeft] = x * majorInterval;
+            p1.setLocation(x * majorInterval, 0);
             viewport.getTransform().transform(p1, p2);
-            majorLinePositionsScreen[0][x-majorLeft] = (int) p2.getX();
+            majorLinePositionsScreen[0][x - majorLeft] = (int) p2.getX();
             majorLinesPath.moveTo((int) p2.getX(), viewLL.getY());
             majorLinesPath.lineTo((int) p2.getX(), viewUR.getY());
         }
 
-        final int countMajV = Math.max(0, majorTop-majorBottom+1);
+        final int countMajV = Math.max(0, majorTop - majorBottom + 1);
         majorLinePositions[1] = new double[countMajV];
         majorLinePositionsScreen[1] = new int[countMajV];
 
-        for (int y=majorBottom; y<=majorTop; y++) {
-            majorLinePositions[1][y-majorBottom] = y*majorInterval;
-            p1.setLocation(0, y*majorInterval);
+        for (int y = majorBottom; y <= majorTop; y++) {
+            majorLinePositions[1][y - majorBottom] = y * majorInterval;
+            p1.setLocation(0, y * majorInterval);
             viewport.getTransform().transform(p1, p2);
-            majorLinePositionsScreen[1][y-majorBottom] = (int) p2.getY();
+            majorLinePositionsScreen[1][y - majorBottom] = (int) p2.getY();
 
             majorLinesPath.moveTo(viewLL.getX(), p2.getY());
             majorLinesPath.lineTo(viewUR.getX(), p2.getY());
@@ -393,7 +393,7 @@ public class Grid implements ViewportListener {
      * @return snapped coordinate value
      */
     public double snapCoordinate(double x) {
-        double m = majorInterval*minorIntervalFactor;
-        return Math.floor(x/m+0.5)*m;
+        double m = majorInterval * minorIntervalFactor;
+        return Math.floor(x / m + 0.5) * m;
     }
 }

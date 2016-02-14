@@ -33,7 +33,7 @@ import org.workcraft.util.ConstructorParametersMatcher;
 
 public class ModelFactory {
     public static Model createModel(String className) throws ModelInstantiationException {
-        try{
+        try {
             Class<?> modelClass = Class.forName(className);
             Constructor<?> ctor = modelClass.getConstructor();
             Model model = (Model) ctor.newInstance();

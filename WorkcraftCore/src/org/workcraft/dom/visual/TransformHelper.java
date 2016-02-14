@@ -34,7 +34,7 @@ import org.workcraft.util.Hierarchy;
 public class TransformHelper {
 
     public static void applyTransform(Node node, AffineTransform transform) {
-        if(node instanceof Movable) {
+        if (node instanceof Movable) {
             ((Movable) node).applyTransform(transform);
         }
     }
@@ -46,7 +46,7 @@ public class TransformHelper {
             if (next == null) {
                 throw new NotAnAncestorException();
             }
-            if(next instanceof Movable) {
+            if (next instanceof Movable) {
                 t.preConcatenate(((Movable) next).getTransform());
             }
             node = next;
@@ -82,7 +82,7 @@ public class TransformHelper {
 
     public static Point2D getCentre(Collection<Node> nodes) {
         Rectangle2D bb = null;
-        for(Node node : nodes) {
+        for (Node node : nodes) {
             if (node instanceof Touchable) {
                 Rectangle2D nodeBoundingBox = ((Touchable) node).getBoundingBox();
                 bb = BoundingBoxHelper.union(bb, nodeBoundingBox);

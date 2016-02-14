@@ -7,7 +7,7 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.son.elements.Time;
 import org.workcraft.plugins.son.util.Interval;
 
-public class StartTimePropertyDescriptor implements PropertyDescriptor{
+public class StartTimePropertyDescriptor implements PropertyDescriptor {
     private final Time t;
     public static final String PROPERTY_START_TIME = "Start time";
 

@@ -22,7 +22,7 @@
 package org.workcraft.exceptions;
 
 @SuppressWarnings("serial")
-public class PasteException extends Exception{
+public class PasteException extends Exception {
     public PasteException() {
         super();
     }

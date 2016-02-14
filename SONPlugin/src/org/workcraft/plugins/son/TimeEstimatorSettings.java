@@ -7,12 +7,12 @@ public class TimeEstimatorSettings {
     private Interval duration;
     private int position;
 
-    public TimeEstimatorSettings(){
+    public TimeEstimatorSettings() {
         duration = new Interval(0000, 0000);
         position = 0;
     }
 
-    public TimeEstimatorSettings(Interval duration, int position){
+    public TimeEstimatorSettings(Interval duration, int position) {
         this.duration = duration;
         this.position = position;
     }

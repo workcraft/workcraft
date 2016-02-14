@@ -85,9 +85,9 @@ public class ColorUtils {
 
     public static Color[] getHsbPalette(float[] hs, float[] ss, float[] bs) {
         ArrayList<Color> palette = new ArrayList<>();
-        for (float b: bs){
-            for (float s: ss){
-                for (float h: hs){
+        for (float b: bs) {
+            for (float s: ss) {
+                for (float h: hs) {
                     Color color = Color.getHSBColor(h, s, b);
                     palette.add(color);
                 }

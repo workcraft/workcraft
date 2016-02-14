@@ -48,7 +48,7 @@ public class ControlPointScaler {
             int i = 0;
             for (ControlPoint cp : controlPoints) {
                 Point2D delta;
-                if (i < n/2) {
+                if (i < n / 2) {
                     delta = dC1;
                 } else {
                     if (i > (n - 1) / 2) {

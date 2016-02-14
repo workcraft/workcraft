@@ -110,7 +110,7 @@ public class FstSimulationTool extends StgSimulationTool {
         boolean ret = false;
         for (Node node: container.getChildren()) {
             if (node instanceof VisualEvent) {
-                ret=ret || (getExcitedTransitionOfNode(node) != null);
+                ret = ret || (getExcitedTransitionOfNode(node) != null);
             }
             if (node instanceof Container) {
                 ret = ret || isContainerExcited((Container) node);
@@ -164,7 +164,7 @@ public class FstSimulationTool extends StgSimulationTool {
                 }
 
                 if (node instanceof VisualPage || node instanceof VisualGroup) {
-                    if (node.getParent()==null) return null; // do not work with the root node
+                    if (node.getParent() == null) return null; // do not work with the root node
                     final boolean ret = isContainerExcited((Container) node);
                     return new ContainerDecoration() {
                         @Override

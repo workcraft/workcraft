@@ -151,7 +151,7 @@ public class CpogSelectionTool extends SelectionTool {
                     coordinate = getLowestVertex(visualCpog);
                     coordinate.setLocation(coordinate.getX(), coordinate.getY() + 2);
                     for (String s : expressions) {
-                        if (!s.contains("=")) {
+                        if (!s.contains(" = ")) {
                             exp = exp + " " + s;
                         } else {
                             if (exp.compareTo("") != 0) {
@@ -228,7 +228,7 @@ public class CpogSelectionTool extends SelectionTool {
                     coordinate = getLowestVertex(visualCpog);
                     coordinate.setLocation(coordinate.getX(), coordinate.getY() + 2);
                     for (String s : expressions) {
-                        if (!s.contains("=")) {
+                        if (!s.contains(" = ")) {
                             exp = exp + " " + s;
                         } else {
                             if (exp.compareTo("") != 0) {
@@ -273,7 +273,7 @@ public class CpogSelectionTool extends SelectionTool {
     public void scenarioPageGroupButton(JPanel groupPanel) {
         JButton groupPageButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/icons/svg/selection-page.svg"), "Combine selection as a scenario (Alt+G)");
-        groupPageButton.addActionListener(new ActionListener(){
+        groupPageButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 VisualCPOG visualCpog = (VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel();
@@ -326,10 +326,10 @@ public class CpogSelectionTool extends SelectionTool {
         text = text.replace("\n", "");
         text = parsingTool.replaceReferences(text);
 
-        if (text.contains("=")) {
-            name = text.substring(0, text.indexOf("="));
+        if (text.contains(" = ")) {
+            name = text.substring(0, text.indexOf(" = "));
             name = name.trim();
-            text = text.substring(text.indexOf("=") + 1);
+            text = text.substring(text.indexOf(" = ") + 1);
             text = text.trim();
         }
 
@@ -467,7 +467,7 @@ public class CpogSelectionTool extends SelectionTool {
             CpogConnector cc = new CpogConnector(visualCpog);
             f.accept(cc);
             VisualPage inserted = null;
-            if (!ref) {//If this graph is not for reference
+            if (!ref) { //If this graph is not for reference
 
                 graphMap.put(name, f);
 
@@ -635,7 +635,7 @@ public class CpogSelectionTool extends SelectionTool {
         Iterator<Node> root = roots.iterator();
         ConcurrentLinkedQueue<Node> q = new ConcurrentLinkedQueue<Node>();
         double originalX = 0, originalY = 0;
-        while(root.hasNext()) {
+        while (root.hasNext()) {
             q.add(root.next());
             parsingTool.bfsLayout(q, visualCpog, originalX, originalY);
             originalY += 2.5;
@@ -698,7 +698,7 @@ public class CpogSelectionTool extends SelectionTool {
         }
     }
 
-    public void startDrag(GraphEditorMouseEvent e){
+    public void startDrag(GraphEditorMouseEvent e) {
         super.startDrag(e);
         WorkspaceEntry we = e.getEditor().getWorkspaceEntry();
         final VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
@@ -744,7 +744,7 @@ public class CpogSelectionTool extends SelectionTool {
             if (referenceMap.containsKey(k)) {
                 GraphReference g = referenceMap.get(k);
                 HashMap<String, VisualVertex> vMap = g.getVertMap();
-                for(String k1 : vMap.keySet()) {
+                for (String k1 : vMap.keySet()) {
                     localVertices.get(k1).setPosition(new Point2D.Double(vMap.get(k1).getX(), vMap.get(k1).getY()));
                     pageVerts.add(localVertices.get(k1));
                     if (visualCpog.getVertices(visualCpog.getCurrentLevel()).contains(localVertices.get(k1))) {
@@ -830,7 +830,7 @@ public class CpogSelectionTool extends SelectionTool {
                                                     for (Node n1 : p.getChildren()) {
                                                         if (n1 instanceof VisualVertex) {
                                                             VisualVertex s = (VisualVertex) n1;
-                                                            if (s.getLabel().equals(second)){
+                                                            if (s.getLabel().equals(second)) {
                                                                 Connection c = visualCpog.getConnection(f, s);
                                                                 if (!(e.getAffectedNodes().contains(c))) {
                                                                     toBeRemoved.add(c);
@@ -982,7 +982,7 @@ public class CpogSelectionTool extends SelectionTool {
             String second = "";
 
             first = events[c];
-            second = events[c+1];
+            second = events[c + 1];
 
             if (vertexMap.containsKey(first)) {
                 vertex1 = vertexMap.get(first);
@@ -1001,7 +1001,7 @@ public class CpogSelectionTool extends SelectionTool {
                 vertex2.setLabel(second + "_" + d);
                 vertexMap.put(second + "_" + d, vertex2);
 
-                events[c+1] = second + "_" + d;
+                events[c + 1] = second + "_" + d;
             } else {
                 vertex2 = visualCpog.createVisualVertex(visualCpog.getCurrentLevel());
                 vertex2.setLabel(second);
@@ -1013,8 +1013,8 @@ public class CpogSelectionTool extends SelectionTool {
         }
 
         double xPos = vertexMap.values().size();
-        xPos = xPos*2.5;
-        xPos = 0 - xPos/2;
+        xPos = xPos * 2.5;
+        xPos = 0 - xPos / 2;
 
         PageNode pageNode = new PageNode();
         visualCpog.getMathModel().add(pageNode);

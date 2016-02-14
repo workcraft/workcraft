@@ -16,7 +16,7 @@ import org.workcraft.plugins.son.tools.SONSelectionTool;
 import org.workcraft.plugins.son.tools.ScenarioGeneratorTool;
 import org.workcraft.plugins.son.tools.TimeValueSetterTool;
 
-public class SONToolProvider implements CustomToolsProvider{
+public class SONToolProvider implements CustomToolsProvider {
 
     @Override
     public Iterable<GraphEditorTool> getTools() {

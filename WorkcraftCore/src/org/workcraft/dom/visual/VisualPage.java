@@ -48,11 +48,11 @@ public class VisualPage extends VisualComponent implements Collapsible, Containe
         return referencedModel;
     }
 
-    public Collection<VisualComponent> getComponents(){
+    public Collection<VisualComponent> getComponents() {
         return Hierarchy.getDescendantsOfType(this, VisualComponent.class);
     }
 
-    public Collection<VisualConnection> getConnections(){
+    public Collection<VisualConnection> getConnections() {
         return Hierarchy.getDescendantsOfType(this, VisualConnection.class);
     }
 

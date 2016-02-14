@@ -35,7 +35,7 @@ public class OutputArea extends JFrame {
 
     JToolBar toolBar = new JToolBar();
 
-    private void createMenu(){
+    private void createMenu() {
         menu = new JMenuBar();
         file = new JMenu(" File ");
         export = new JMenuItem("Export result");
@@ -46,14 +46,14 @@ public class OutputArea extends JFrame {
         file.add(exit);
         toolBar.setFloatable(true);
 
-        class SaveAs implements ActionListener{
-            public void actionPerformed(ActionEvent e){
+        class SaveAs implements ActionListener {
+            public void actionPerformed(ActionEvent e) {
                 export();
             }
         }
 
-        class Exit implements ActionListener{
-            public void actionPerformed(ActionEvent e){
+        class Exit implements ActionListener {
+            public void actionPerformed(ActionEvent e) {
                 fileExit();
             }
         }
@@ -62,44 +62,44 @@ public class OutputArea extends JFrame {
         exit.addActionListener(new Exit());
     }
 
-    private void export(){
+    private void export() {
         JFileChooser chooser = new JFileChooser();
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
         int r = chooser.showSaveDialog(this);
-        if(r==JFileChooser.CANCEL_OPTION)
+        if (r == JFileChooser.CANCEL_OPTION)
             return;
         File myfile = chooser.getSelectedFile();
 
-        if (myfile != null && r == JFileChooser.APPROVE_OPTION){
+        if (myfile != null && r == JFileChooser.APPROVE_OPTION) {
 
-            Pattern pattern=Pattern.compile(".*\\.[a-z]+", Pattern.CASE_INSENSITIVE);
+            Pattern pattern = Pattern.compile(".*\\.[a-z]+", Pattern.CASE_INSENSITIVE);
             Matcher matcher = pattern.matcher(myfile.getAbsolutePath());
-            if(!matcher.find()){
-                myfile=new File(myfile.getAbsolutePath().concat(".txt"));
+            if (!matcher.find()) {
+                myfile = new File(myfile.getAbsolutePath().concat(".txt"));
             }
         }
-        if(myfile==null || myfile.getName().isEmpty()) {
+        if (myfile == null || myfile.getName().isEmpty()) {
             JOptionPane.showMessageDialog(this, "Please enter a file name!", "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        if(myfile.exists()) {
+        if (myfile.exists()) {
             r = JOptionPane.showConfirmDialog(this, "A file with same name already exists. Do you want to overwrite it?");
-            if(r != 0)
+            if (r != 0)
                 return;
         }
         try {
             FileWriter fw = new FileWriter(myfile);
             fw.write(textArea.getText());
-            setTitle(myfile.getName()+" - Output");
+            setTitle(myfile.getName() + " - Output");
             fw.close();
-        } catch(IOException e) {
+        } catch (IOException e) {
             JOptionPane.showMessageDialog(this, "Failed to save the file", "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
-    public void fileExit(){
+    public void fileExit() {
         this.setVisible(false);
     }
 
@@ -125,10 +125,10 @@ public class OutputArea extends JFrame {
         this.setTitle("Structure Verification Result");
 
         Toolkit kit = Toolkit.getDefaultToolkit();
-        Dimension screenSize=kit.getScreenSize();
+        Dimension screenSize = kit.getScreenSize();
         int width = screenSize.width;
         int height = screenSize.height;
-        setLocation(width/2, height/4);
+        setLocation(width / 2, height / 4);
 
     }
 

@@ -37,10 +37,10 @@ import org.workcraft.observation.TransformEvent;
 import org.workcraft.observation.TransformObserver;
 
 public class TransformEventPropagator extends HierarchySupervisor implements StateObserver, TransformDispatcher {
-    HashMap <Node, LinkedList<TransformObserver>> nodeToObservers
+    HashMap<Node, LinkedList<TransformObserver>> nodeToObservers
             = new HashMap<Node, LinkedList<TransformObserver>>();
 
-    HashMap <TransformObserver, LinkedList<Node>> observerToNodes
+    HashMap<TransformObserver, LinkedList<Node>> observerToNodes
             = new HashMap<TransformObserver, LinkedList<Node>>();
 
     private void addObserver(Node node, TransformObserver to) {
@@ -79,10 +79,10 @@ public class TransformEventPropagator extends HierarchySupervisor implements Sta
     @Override
     public void handleEvent(HierarchyEvent e) {
         if (e instanceof NodesAddedEvent || e instanceof NodesReparentedEvent) {
-            for (Node n:e.getAffectedNodes())
+            for (Node n : e.getAffectedNodes())
                 nodeAdded(n);
         } else if (e instanceof NodesDeletedEvent) {
-            for (Node n:e.getAffectedNodes())
+            for (Node n : e.getAffectedNodes())
                 nodeRemoved(n);
         }
     }

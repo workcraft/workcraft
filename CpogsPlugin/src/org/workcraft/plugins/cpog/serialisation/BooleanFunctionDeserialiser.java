@@ -43,13 +43,13 @@ public abstract class BooleanFunctionDeserialiser implements CustomXMLDeserialis
             this.internalReferenceResolver = internalReferenceResolver;
         }
 
-        public BooleanVariable eval(String ref){
+        public BooleanVariable eval(String ref) {
 
             if (ref.startsWith("var_")) {
                 ref = ref.substring("var_".length());
 
                 BooleanVariable bv = (BooleanVariable) internalReferenceResolver.getObject(ref);
-                if (bv!=null)
+                if (bv != null)
                     return bv;
 
 //                for (Object o: internalReferenceResolver.getObjects()) {
@@ -83,7 +83,7 @@ public abstract class BooleanFunctionDeserialiser implements CustomXMLDeserialis
             String attributeName) throws DeserialisationException {
         String string = element.getAttribute(attributeName);
 
-        BooleanFormula formula=null;
+        BooleanFormula formula = null;
         try {
             if (!string.isEmpty()) {
                 formula = BooleanParser.parse(string, new VariableResolver(internalReferenceResolver));

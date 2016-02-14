@@ -311,33 +311,33 @@ public class VisualCircuitComponent extends VisualComponent implements
     }
 
     private Rectangle2D getContactMinimalBox() {
-        double x1 = -size/2;
-        double y1 = -size/2;
-        double x2 = size/2;
-        double y2 = size/2;
+        double x1 = -size / 2;
+        double y1 = -size / 2;
+        double x2 = size / 2;
+        double y2 = size / 2;
         for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
             switch (vc.getDirection()) {
             case WEST:
                 double westX = vc.getX() + contactLength;
-                if ((westX < -size/2) && (westX > x1)) {
+                if ((westX < -size / 2) && (westX > x1)) {
                     x1 = westX;
                 }
                 break;
             case NORTH:
                 double northY = vc.getY() + contactLength;
-                if ((northY < -size/2) && (northY > y1)) {
+                if ((northY < -size / 2) && (northY > y1)) {
                     y1 = northY;
                 }
                 break;
             case EAST:
                 double eastX = vc.getX() - contactLength;
-                if ((eastX > size/2) && (eastX < x2)) {
+                if ((eastX > size / 2) && (eastX < x2)) {
                     x2 = eastX;
                 }
                 break;
             case SOUTH:
                 double southY = vc.getY() - contactLength;
-                if ((southY > size/2) && (southY < y2)) {
+                if ((southY > size / 2) && (southY < y2)) {
                     y2 = southY;
                 }
                 break;

@@ -104,7 +104,7 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
         g.setStroke(connectionInfo.getStroke());
         g.draw(visibleCurve);
 
-        if(connectionInfo.hasArrow()) {
+        if (connectionInfo.hasArrow()) {
             DrawHelper.drawArrowHead(g, curveInfo.headPosition,    curveInfo.headOrientation,
                     connectionInfo.getArrowLength(), connectionInfo.getArrowWidth(), color);
         }
@@ -120,10 +120,10 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
         if (boundingBox == null) {
             CubicCurve2D curve = getCurve();
             boundingBox = curve.getBounds2D();
-            boundingBox.add(boundingBox.getMinX()-VisualConnection.HIT_THRESHOLD, boundingBox.getMinY()-VisualConnection.HIT_THRESHOLD);
-            boundingBox.add(boundingBox.getMinX()-VisualConnection.HIT_THRESHOLD, boundingBox.getMaxY()+VisualConnection.HIT_THRESHOLD);
-            boundingBox.add(boundingBox.getMaxX()+VisualConnection.HIT_THRESHOLD, boundingBox.getMinY()-VisualConnection.HIT_THRESHOLD);
-            boundingBox.add(boundingBox.getMaxX()+VisualConnection.HIT_THRESHOLD, boundingBox.getMaxY()+VisualConnection.HIT_THRESHOLD);
+            boundingBox.add(boundingBox.getMinX() - VisualConnection.HIT_THRESHOLD, boundingBox.getMinY() - VisualConnection.HIT_THRESHOLD);
+            boundingBox.add(boundingBox.getMinX() - VisualConnection.HIT_THRESHOLD, boundingBox.getMaxY() + VisualConnection.HIT_THRESHOLD);
+            boundingBox.add(boundingBox.getMaxX() + VisualConnection.HIT_THRESHOLD, boundingBox.getMinY() - VisualConnection.HIT_THRESHOLD);
+            boundingBox.add(boundingBox.getMaxX() + VisualConnection.HIT_THRESHOLD, boundingBox.getMaxY() + VisualConnection.HIT_THRESHOLD);
         }
         return boundingBox;
     }
@@ -168,7 +168,7 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
         fullCurve.setCurve(connectionInfo.getFirstCenter(), cp1.getPosition(), cp2.getPosition(), connectionInfo.getSecondCenter());
 
         CurveSplitResult firstSplit = Geometry.splitCubicCurve(fullCurve, tStart);
-        CurveSplitResult secondSplit = Geometry.splitCubicCurve(firstSplit.curve2, (tEnd-tStart)/(1-tStart));
+        CurveSplitResult secondSplit = Geometry.splitCubicCurve(firstSplit.curve2, (tEnd - tStart) / (1 - tStart));
 
         return secondSplit.curve1;
     }
@@ -205,7 +205,7 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
         Point2D nearest = new Point2D.Double(curve.getX1(), curve.getY1());
         double nearestDist = Double.MAX_VALUE;
 
-        for (double t=0.01; t<=1.0; t+=0.01) {
+        for (double t = 0.01; t <= 1.0; t += 0.01) {
             Point2D samplePoint = Geometry.getPointOnCubicCurve(curve, t);
             double distance = pt.distance(samplePoint);
             if (distance < nearestDist)    {

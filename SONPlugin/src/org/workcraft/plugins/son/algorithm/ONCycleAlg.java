@@ -8,7 +8,7 @@ import java.util.List;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SON;
 
-public class ONCycleAlg{
+public class ONCycleAlg {
 
     private SON net;
     protected RelationAlgorithm relationAlg;
@@ -28,25 +28,25 @@ public class ONCycleAlg{
      * result[3] = <1>
      */
     @SuppressWarnings("unchecked")
-    protected List<Integer>[] createGraph(List<Node> nodes){
+    protected List<Integer>[] createGraph(List<Node> nodes) {
         List<Integer>[] result = new List[nodes.size()];
         LinkedHashMap<Node, Integer> nodeIndex = new LinkedHashMap<Node, Integer>();
-        for(int i = 0; i < nodes.size(); i++){
+        for (int i = 0; i < nodes.size(); i++) {
             nodeIndex.put(nodes.get(i), i);
         }
-        if(nodes.size() == nodeIndex.size()){
-            for(int i = 0; i < nodes.size(); i++){
+        if (nodes.size() == nodeIndex.size()) {
+            for (int i = 0; i < nodes.size(); i++) {
                 int index = nodeIndex.get(nodes.get(i));
-                if(result[index] == null){
+                if (result[index] == null) {
                     result[index] = new ArrayList<Integer>();
                 }
-                for(Node post: net.getPostset(nodes.get(index))){
-                    if(nodes.contains(post)){
+                for (Node post: net.getPostset(nodes.get(index))) {
+                    if (nodes.contains(post)) {
                         result[index].add(nodeIndex.get(post));
                     }
                 }
             }
-        }else{
+        } else {
             throw new RuntimeException("fail to create graph, input size is not equal to nodeIndex size");
         }
         return result;
@@ -56,7 +56,7 @@ public class ONCycleAlg{
      * Using Tarjan algorithm to get all strongly connected components
      * then convert to cycle path
      */
-    public Collection<Path> cycleTask(Collection<? extends Node> nodes){
+    public Collection<Path> cycleTask(Collection<? extends Node> nodes) {
         List<Path> result = new ArrayList<Path>();
 
         List<Node> list = new ArrayList<Node>();
@@ -64,10 +64,10 @@ public class ONCycleAlg{
 
         CycleAlgorithm cycleAlg = new CycleAlgorithm();
 
-        for(List<Integer> cycleIndex : cycleAlg.getCycles(createGraph(list))){
-            if(cycleIndex.size() > 1){
+        for (List<Integer> cycleIndex : cycleAlg.getCycles(createGraph(list))) {
+            if (cycleIndex.size() > 1) {
                 Path cycle = new Path();
-                for(Integer index : cycleIndex){
+                for (Integer index : cycleIndex) {
                     cycle.add(list.get(index));
                 }
                 result.add(cycle);
@@ -77,7 +77,7 @@ public class ONCycleAlg{
         return result;
     }
 
-    protected Collection<Path> cycleFliter(Collection<Path> paths){
+    protected Collection<Path> cycleFliter(Collection<Path> paths) {
         return paths;
     }
 }

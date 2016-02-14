@@ -1,6 +1,6 @@
 package org.workcraft.util;
 
-public class Triple <T1, T2, T3> {
+public class Triple<T1, T2, T3> {
     final private T1 first;
     final private T2 second;
     final private T3 third;

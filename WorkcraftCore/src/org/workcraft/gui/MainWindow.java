@@ -805,7 +805,7 @@ public class MainWindow extends JFrame {
     }
 
     public void createWork() throws OperationCancelledException {
-        createWork(Path.<String> empty());
+        createWork(Path.<String>empty());
     }
 
     public void createWork(Path<String> path) throws OperationCancelledException {
@@ -1173,7 +1173,7 @@ public class MainWindow extends JFrame {
                         String title = FileUtils.getFileNameWithoutExtension(f);
                         me.getModel().setTitle(title);
                         boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
-                        framework.getWorkspace().add(Path.<String> empty(), f.getName(), me, false, openInEditor);
+                        framework.getWorkspace().add(Path.<String>empty(), f.getName(), me, false, openInEditor);
                         lastOpenPath = f.getParent();
                         break;
                     } catch (IOException e) {

@@ -80,7 +80,7 @@ abstract public class AbstractModelConverter<TSrcModel extends VisualModel, TDst
     private void convertComponents() {
         for (Class<? extends MathNode> srcMathNodeClass: getComponentClassMap().keySet()) {
             Class<? extends VisualComponent> srcVisualComponentClass = getVisualComponentClass(srcMathNodeClass);
-            for(VisualComponent srcComponent: Hierarchy.getDescendantsOfType(getSrcModel().getRoot(), srcVisualComponentClass)) {
+            for (VisualComponent srcComponent: Hierarchy.getDescendantsOfType(getSrcModel().getRoot(), srcVisualComponentClass)) {
                 VisualComponent dstComponent = convertComponent(srcComponent);
                 putSrcToDstNode(srcComponent, dstComponent);
             }
@@ -89,7 +89,7 @@ abstract public class AbstractModelConverter<TSrcModel extends VisualModel, TDst
 
     private void convertReplicas() {
         for (Class<? extends VisualReplica> srcVisualReplicaClass: getReplicaClassMap().keySet()) {
-            for(VisualReplica srcReplica: Hierarchy.getDescendantsOfType(getSrcModel().getRoot(), srcVisualReplicaClass)) {
+            for (VisualReplica srcReplica: Hierarchy.getDescendantsOfType(getSrcModel().getRoot(), srcVisualReplicaClass)) {
                 VisualReplica dstReplica = convertReplica(srcReplica);
                 putSrcToDstNode(srcReplica, dstReplica);
             }
@@ -97,14 +97,14 @@ abstract public class AbstractModelConverter<TSrcModel extends VisualModel, TDst
     }
 
     private void convertConnections() {
-        for(VisualConnection srcConnection : Hierarchy.getDescendantsOfType(getSrcModel().getRoot(), VisualConnection.class)) {
+        for (VisualConnection srcConnection : Hierarchy.getDescendantsOfType(getSrcModel().getRoot(), VisualConnection.class)) {
             VisualConnection dstConnection = convertConnection(srcConnection);
             putSrcToDstNode(srcConnection, dstConnection);
         }
     }
 
     private void convertGroups() {
-        for(VisualGroup srcGroup: Hierarchy.getDescendantsOfType(getSrcModel().getRoot(), VisualGroup.class)) {
+        for (VisualGroup srcGroup: Hierarchy.getDescendantsOfType(getSrcModel().getRoot(), VisualGroup.class)) {
             VisualGroup dstGroup = convertGroup(srcGroup);
             putSrcToDstNode(srcGroup, dstGroup);
         }

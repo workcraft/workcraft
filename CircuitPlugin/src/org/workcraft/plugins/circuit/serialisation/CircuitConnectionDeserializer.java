@@ -8,7 +8,7 @@ import org.workcraft.serialisation.xml.CustomXMLDeserialiser;
 import org.workcraft.serialisation.xml.NodeFinaliser;
 import org.workcraft.serialisation.xml.NodeInitialiser;
 
-public class CircuitConnectionDeserializer implements CustomXMLDeserialiser{
+public class CircuitConnectionDeserializer implements CustomXMLDeserialiser {
 
     @Override
     public Object createInstance(Element element,

@@ -3,7 +3,7 @@ package org.workcraft.plugins.son.util;
 import java.util.ArrayList;
 
 @SuppressWarnings("serial")
-public class Trace extends ArrayList<StepRef>{
+public class Trace extends ArrayList<StepRef> {
 
     private int position = 0;
 
@@ -57,7 +57,7 @@ public class Trace extends ArrayList<StepRef>{
         result.append(':');
         // trace
         boolean first = true;
-        for(StepRef step : this){
+        for (StepRef step : this) {
             if (!first) {
                 result.append(';');
             }

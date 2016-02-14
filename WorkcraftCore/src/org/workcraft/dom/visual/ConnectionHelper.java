@@ -133,12 +133,12 @@ public class ConnectionHelper {
         while (i < polyline.getControlPointCount()) {
             Point2D predPos = startPos;
             if (i > 0) {
-                ControlPoint pred = polyline.getControlPoint(i-1);
+                ControlPoint pred = polyline.getControlPoint(i - 1);
                 predPos = pred.getPosition();
             }
             Point2D succPos = endPos;
             if (i < polyline.getControlPointCount() - 1) {
-                ControlPoint succ = polyline.getControlPoint(i+1);
+                ControlPoint succ = polyline.getControlPoint(i + 1);
                 succPos = succ.getPosition();
             }
             ControlPoint cur = polyline.getControlPoint(i);

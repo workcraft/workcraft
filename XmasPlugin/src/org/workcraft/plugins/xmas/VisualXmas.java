@@ -85,12 +85,12 @@ public class VisualXmas extends AbstractVisualModel {
 
     public VisualXmas(Xmas model, VisualGroup root) {
         super(model, root);
-        circuit=model;
+        circuit = model;
     }
 
     public VisualXmas(Xmas model) throws VisualModelInstantiationException {
         super(model);
-        circuit=model;
+        circuit = model;
         try {
             createDefaultFlatStructure();
         } catch (NodeCreationException e) {
@@ -122,7 +122,7 @@ public class VisualXmas extends AbstractVisualModel {
 
     public Collection<Node> getNodes() {
         ArrayList<Node> result =  new ArrayList<Node>();
-        for (Node node : Hierarchy.getDescendantsOfType(getRoot(), Node.class)){
+        for (Node node : Hierarchy.getDescendantsOfType(getRoot(), Node.class)) {
             if ((node instanceof VisualSourceComponent)
                     || (node instanceof VisualFunctionComponent)
                     || (node instanceof VisualQueueComponent)

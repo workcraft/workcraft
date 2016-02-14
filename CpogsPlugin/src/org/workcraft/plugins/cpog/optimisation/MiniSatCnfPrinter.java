@@ -33,10 +33,10 @@ public class MiniSatCnfPrinter implements CnfPrinter {
     public String print(Cnf cnf) {
         this.cnf = cnf;
         StringBuilder result = new StringBuilder();
-        for(CnfClause clause : cnf.getClauses()) {
-            for(Literal literal : clause.getLiterals()) {
+        for (CnfClause clause : cnf.getClauses()) {
+            for (Literal literal : clause.getLiterals()) {
                 Integer number = getNumber(literal.getVariable());
-                if(literal.getNegation())
+                if (literal.getNegation())
                     result.append("-");
                 result.append(number.toString());
                 result.append(" ");
@@ -54,22 +54,22 @@ public class MiniSatCnfPrinter implements CnfPrinter {
     private String getHeadComments() {
         StringBuilder result = new StringBuilder();
 
-        for(BooleanVariable var : new TreeMap<BooleanVariable, Integer>(numbers).keySet()) {
+        for (BooleanVariable var : new TreeMap<BooleanVariable, Integer>(numbers).keySet()) {
             String label = var.getLabel();
-            if(!label.isEmpty())
-                result.append("c " + numbers.get(var) + " " + label+"\n");
+            if (!label.isEmpty())
+                result.append("c " + numbers.get(var) + " " + label + "\n");
         }
 
         return result.toString();
     }
 
     private String getHeadLine() {
-        return "p cnf " + varCount + " " + cnf.getClauses().size()+"\n";
+        return "p cnf " + varCount + " " + cnf.getClauses().size() + "\n";
     }
 
     private Integer getNumber(BooleanVariable variable) {
         Integer res = numbers.get(variable);
-        if(res == null) {
+        if (res == null) {
             res = ++varCount;
             numbers.put(variable, res);
         }

@@ -59,7 +59,7 @@ public class BooleanReplacer implements BooleanVisitor<BooleanFormula> {
         if (from.size() != to.size()) {
             throw new RuntimeException("Length of the variable list must be equal to that of formula list.");
         }
-        for(int i = 0; i < from.size(); i++) {
+        for (int i = 0; i < from.size(); i++) {
             this.map.put(from.get(i), to.get(i));
         }
         this.worker = worker;
@@ -72,10 +72,10 @@ public class BooleanReplacer implements BooleanVisitor<BooleanFormula> {
 
     protected BooleanFormula visitBinaryFunc(BinaryBooleanFormula node, BinaryOperation op) {
         BooleanFormula result = map.get(node);
-        if(result == null) {
+        if (result == null) {
             BooleanFormula x = node.getX().accept(this);
             BooleanFormula y = node.getY().accept(this);
-            if(node.getX() == x && node.getY() == y) {
+            if (node.getX() == x && node.getY() == y) {
                 result = node;
             } else {
                 result = op.apply(x, y);
@@ -106,7 +106,7 @@ public class BooleanReplacer implements BooleanVisitor<BooleanFormula> {
         BooleanFormula result = map.get(node);
         if (result == null) {
             BooleanFormula x = node.getX().accept(this);
-            if(node.getX() == x) {
+            if (node.getX() == x) {
                 result = node;
             } else {
                 result = not(x);

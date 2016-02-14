@@ -91,11 +91,11 @@ public class VisualScenario extends VisualGroup {
         Rectangle2D bb = getContentsBoundingBox();
 
         // Increase bb by the label height (to include the latter into the bb)
-        if(labelBB != null) {
+        if (labelBB != null) {
             bb.add(bb.getMinX(), bb.getMinY() - labelBB.getHeight());
         }
         // Increase bb by the encoding height (to include the latter into the bb)
-        if(encodingBB != null) {
+        if (encodingBB != null) {
             bb.add(bb.getMinX(), bb.getMaxY() + encodingBB.getHeight());
         }
 
@@ -105,13 +105,13 @@ public class VisualScenario extends VisualGroup {
     private Rectangle2D getContentsBoundingBox() {
         Rectangle2D bb = null;
 
-        for(VisualVertex v : Hierarchy.getChildrenOfType(this, VisualVertex.class)) {
+        for (VisualVertex v : Hierarchy.getChildrenOfType(this, VisualVertex.class)) {
             bb = BoundingBoxHelper.union(bb, v.getBoundingBox());
         }
-        for(VisualVariable v : Hierarchy.getChildrenOfType(this, VisualVariable.class)) {
+        for (VisualVariable v : Hierarchy.getChildrenOfType(this, VisualVariable.class)) {
             bb = BoundingBoxHelper.union(bb, v.getBoundingBox());
         }
-        for(VisualArc a : Hierarchy.getChildrenOfType(this, VisualArc.class)) {
+        for (VisualArc a : Hierarchy.getChildrenOfType(this, VisualArc.class)) {
             bb = BoundingBoxHelper.union(bb, a.getLabelBoundingBox());
         }
         if (bb == null) bb = contentsBB;
@@ -176,10 +176,10 @@ public class VisualScenario extends VisualGroup {
 
             boolean perfectMatch = true;
 
-            for(Variable var : sortedVariables)
+            for (Variable var : sortedVariables)
                 if (!var.getState().matches(encoding.getState(var))) perfectMatch = false;
 
-            for(Variable var : sortedVariables) {
+            for (Variable var : sortedVariables) {
                 String text = var.getLabel();
 
                 result = FormulaToGraphics.print(text, labelFont, g.getFontRenderContext());
@@ -255,7 +255,7 @@ public class VisualScenario extends VisualGroup {
     public Variable getVariableAt(Point2D p) {
         Point2D q = new Point2D.Double();
         getParentToLocalTransform().transform(p, q);
-        for(Rectangle2D rect : variableBBs.keySet()) {
+        for (Rectangle2D rect : variableBBs.keySet()) {
             if (rect.contains(q)) return variableBBs.get(rect);
         }
         return null;

@@ -4,11 +4,11 @@ public class VerificationResult {
 
     private int result;
 
-    public VerificationResult(int result){
+    public VerificationResult(int result) {
         this.result = result;
     }
 
-    public int getOutcome(){
+    public int getOutcome() {
         return result;
     }
 }

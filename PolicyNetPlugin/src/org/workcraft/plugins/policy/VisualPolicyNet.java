@@ -82,11 +82,11 @@ public class VisualPolicyNet extends VisualPetriNet {
     }
 
     @Override
-    public VisualGroup groupSelection(){
+    public VisualGroup groupSelection() {
         ArrayList<Node> selected = new ArrayList<Node>();
         ArrayList<Node> refSelected = new ArrayList<Node>();
-        for(Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
-            if(node instanceof VisualTransformableNode) {
+        for (Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
+            if (node instanceof VisualTransformableNode) {
                 selected.add((VisualTransformableNode) node);
                 if (node instanceof VisualComponent) {
                     refSelected.add(((VisualComponent) node).getReferencedComponent());
@@ -117,21 +117,21 @@ public class VisualPolicyNet extends VisualPetriNet {
     @Override
     public void ungroupSelection() {
         int count = 0;
-        for(Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)){
-            if(node instanceof VisualLocality) {
+        for (Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
+            if (node instanceof VisualLocality) {
                 count++;
             }
         }
         if (count == 1) {
             ArrayList<Node> toSelect = new ArrayList<Node>();
             Collection<Node> mathNodes = new ArrayList<Node>();
-            for(Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
-                if(node instanceof VisualLocality) {
+            for (Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
+                if (node instanceof VisualLocality) {
                     VisualLocality locality = (VisualLocality) node;
-                    for(Node subNode : locality.unGroup()){
+                    for (Node subNode : locality.unGroup()) {
                         toSelect.add(subNode);
                     }
-                    for(Node child : locality.getLocality().getChildren()){
+                    for (Node child : locality.getLocality().getChildren()) {
                         mathNodes.add(child);
                     }
                     locality.getLocality().reparent(mathNodes, ((VisualLocality) getCurrentLevel()).getLocality());
@@ -261,7 +261,7 @@ public class VisualPolicyNet extends VisualPetriNet {
 
     public Collection<VisualBundledTransition> getTransitionsOfBundle(VisualBundle b) {
         Collection<VisualBundledTransition> result = new HashSet<VisualBundledTransition>();
-        for(VisualBundledTransition t: getVisualBundledTransitions()) {
+        for (VisualBundledTransition t: getVisualBundledTransitions()) {
             if (b.getReferencedBundle().contains(t.getReferencedTransition())) {
                 result.add(t);
             }

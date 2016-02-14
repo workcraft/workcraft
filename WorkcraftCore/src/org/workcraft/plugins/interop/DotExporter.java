@@ -48,8 +48,8 @@ public class DotExporter implements Exporter {
 
         for (ExportNode node : nodes) {
             out.println("\"" + node.id + "\" [width=\"" + node.width + "\", height=\"" + node.height + "\", fixedsize=\"true\"];  // " + node.comment);
-            for(String target : node.destinations) {
-                out.println("\"" + node.id + "\" -> \"" + target +"\";");
+            for (String target : node.destinations) {
+                out.println("\"" + node.id + "\" -> \"" + target + "\";");
             }
         }
         out.println("}");
@@ -70,7 +70,7 @@ public class DotExporter implements Exporter {
             if ((id != null) && (bb != null)) {
                 List<String> destinations = new ArrayList<String>();
                 Set<Node> postset = visualModel.getPostset(component);
-                for(Node target : postset) {
+                for (Node target : postset) {
                     String targetId = visualModel.getNodeReference(target);
                     if (targetId != null) {
                         destinations.add(targetId);

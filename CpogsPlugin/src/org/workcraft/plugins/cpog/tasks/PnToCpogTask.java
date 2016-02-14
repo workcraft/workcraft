@@ -16,7 +16,7 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class PnToCpogTask implements Task<PnToCpogResult>{
+public class PnToCpogTask implements Task<PnToCpogResult> {
 
     private final WorkspaceEntry we;
 
@@ -47,10 +47,10 @@ public class PnToCpogTask implements Task<PnToCpogResult>{
         cpog = converter.run(settings);
 
         // checking that conversion process terminated correctly
-        if (cpog == null){
+        if (cpog == null) {
             result = new PnToCpogResult("Conversion failed.", null);
             outcome = Outcome.FAILED;
-        }else{
+        } else {
             result = new PnToCpogResult("Conversion terminated correctly.", cpog);
             outcome = Outcome.FINISHED;
 

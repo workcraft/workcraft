@@ -1,6 +1,6 @@
 package org.workcraft.util;
 
-public class Pair <T1, T2> {
+public class Pair<T1, T2> {
     final private T1 first;
     final private T2 second;
 
@@ -54,6 +54,6 @@ public class Pair <T1, T2> {
 
     @Override
     public String toString() {
-        return "<" + first.toString() + ", " + ((second == null)?"NULL" : second.toString()) + ">";
+        return "<" + first.toString() + ", " + ((second == null) ? "NULL" : second.toString()) + ">";
     }
 }

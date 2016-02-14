@@ -26,7 +26,7 @@ import org.workcraft.plugins.son.SONSettings;
 @DisplayName("Condition")
 @Hotkey(KeyEvent.VK_B)
 @SVGIcon("images/icons/svg/place_empty.svg")
-public class VisualCondition extends VisualPlaceNode{
+public class VisualCondition extends VisualPlaceNode {
 
     private static double size = 1.0;
     private static float strokeWidth = 0.1f;
@@ -73,22 +73,22 @@ public class VisualCondition extends VisualPlaceNode{
         Decoration d = r.getDecoration();
 
         if (isInitial()) {
-            double s = size/4;
+            double s = size / 4;
             Path2D shape = new Path2D.Double();
             shape.moveTo(-size, 0.0);
-            shape.lineTo(-size/2, 0.0);
-            shape.moveTo(-size/2 - s, -s/2);
-            shape.lineTo(-size/2, 0.0);
-            shape.lineTo(-size/2 - s, s/2);
+            shape.lineTo(-size / 2, 0.0);
+            shape.moveTo(-size / 2 - s, -s / 2);
+            shape.lineTo(-size / 2, 0.0);
+            shape.lineTo(-size / 2 - s, s / 2);
             g.setStroke(new BasicStroke(strokeWidth));
             g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
             g.draw(shape);
         }
 
         if (isFinal()) {
-            double s = 2*size/3;
-            Shape shape = new Ellipse2D.Double(-s/2, -s/2, s, s);
-            g.setStroke(new BasicStroke(strokeWidth/2));
+            double s = 2 * size / 3;
+            Shape shape = new Ellipse2D.Double(-s / 2, -s / 2, s, s);
+            g.setStroke(new BasicStroke(strokeWidth / 2));
             g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
             g.draw(shape);
         }
@@ -103,7 +103,7 @@ public class VisualCondition extends VisualPlaceNode{
     }
 
     private void cahceStartTimeRenderedText(DrawRequest r) {
-        String start = "Start: "+ getStartTime().toString();
+        String start = "Start: " + getStartTime().toString();
 
         Point2D offset = getOffset(startTimePositioning);
         offset.setLocation(offset.getX(), offset.getY() - labelOffset);
@@ -124,7 +124,7 @@ public class VisualCondition extends VisualPlaceNode{
     }
 
     private void cahceEndTimeRenderedText(DrawRequest r) {
-        String end = "End: "+ getEndTime().toString();
+        String end = "End: " + getEndTime().toString();
 
         Point2D offset = getOffset(endTimePositioning);
         offset.setLocation(offset.getX(), offset.getY() - labelOffset);
@@ -183,19 +183,19 @@ public class VisualCondition extends VisualPlaceNode{
         sendNotification(new PropertyChangedEvent(this, "final"));
     }
 
-    public Color getStartTimeColor(){
+    public Color getStartTimeColor() {
         return ((Condition) getReferencedComponent()).getStartTimeColor();
     }
 
-    public void setStartTimeColor(Color value){
+    public void setStartTimeColor(Color value) {
         ((Condition) getReferencedComponent()).setStartTimeColor(value);
     }
 
-    public Color getEndTimeColor(){
+    public Color getEndTimeColor() {
         return ((Condition) getReferencedComponent()).getEndTimeColor();
     }
 
-    public void setEndTimeColor(Color value){
+    public void setEndTimeColor(Color value) {
         ((Condition) getReferencedComponent()).setEndTimeColor(value);
     }
 

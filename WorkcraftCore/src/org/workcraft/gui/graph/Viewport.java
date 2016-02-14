@@ -127,10 +127,10 @@ public class Viewport {
      */
     protected void shapeChanged() {
         userToScreenTransform.setToIdentity();
-        userToScreenTransform.translate(shape.width/2 + shape.x, shape.height/2 + shape.y);
+        userToScreenTransform.translate(shape.width / 2 + shape.x, shape.height / 2 + shape.y);
 
         if ((shape.height != 0) && (shape.width != 0)) {
-            double s = Math.min(shape.height/2, shape.width/2);
+            double s = Math.min(shape.height / 2, shape.width / 2);
             userToScreenTransform.scale(s, s);
         }
         updateFinalTransform();
@@ -221,7 +221,7 @@ public class Viewport {
         Point ul = userToScreen(new Point2D.Double(rectInUserSpace.getMinX(), rectInUserSpace.getMinY()));
         Point lr = userToScreen(new Point2D.Double(rectInUserSpace.getMaxX(), rectInUserSpace.getMaxY()));
 
-        return new Rectangle(ul.x, ul.y, lr.x-ul.x, lr.y-ul.y);
+        return new Rectangle(ul.x, ul.y, lr.x - ul.x, lr.y - ul.y);
     }
 
     /**

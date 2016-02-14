@@ -52,8 +52,8 @@ public class VisualVertex extends VisualComponent {
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
         Shape shape = new Ellipse2D.Double(
-                -size/2+strokeWidth/2, -size/2+strokeWidth/2,
-                size-strokeWidth, size-strokeWidth);
+                -size / 2 + strokeWidth / 2, -size / 2 + strokeWidth / 2,
+                size - strokeWidth, size - strokeWidth);
         g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
         g.fill(shape);
         g.setStroke(new BasicStroke((float) strokeWidth));

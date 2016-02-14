@@ -80,7 +80,7 @@ public class PSExporter implements Exporter {
                     throw new SerialisationException(drawAstgResult.getCause());
                 } else {
                     throw new SerialisationException("draw_astg failed with return code " + drawAstgResult.getReturnValue().getReturnCode() + "\n\n" +
-                            new String(drawAstgResult.getReturnValue().getErrors()) +"\n");
+                            new String(drawAstgResult.getReturnValue().getErrors()) + "\n");
                 }
             }
         }

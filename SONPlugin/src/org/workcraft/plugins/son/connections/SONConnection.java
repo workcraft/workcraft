@@ -9,11 +9,11 @@ import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.propertydescriptors.ConnectionTimePropertyDescriptor;
 import org.workcraft.plugins.son.util.Interval;
 
-public class SONConnection extends MathConnection{
+public class SONConnection extends MathConnection {
 
     private Interval time = new Interval(0000, 9999);
     private Color timeColor = Color.BLACK;
-    private Color color=CommonVisualSettings.getBorderColor();
+    private Color color = CommonVisualSettings.getBorderColor();
 
     public enum Semantics {
         PNLINE("Petri net connection"),
@@ -35,7 +35,7 @@ public class SONConnection extends MathConnection{
 
     private Semantics semantics = Semantics.PNLINE;
 
-    public SONConnection(){
+    public SONConnection() {
     }
 
     public Color getColor() {
@@ -61,11 +61,11 @@ public class SONConnection extends MathConnection{
         sendNotification(new PropertyChangedEvent(this, "semantics"));
     }
 
-    public Interval getTime(){
+    public Interval getTime() {
         return time;
     }
 
-    public void setTime(Interval time){
+    public void setTime(Interval time) {
         this.time = time;
         sendNotification(new PropertyChangedEvent(this, ConnectionTimePropertyDescriptor.PROPERTY_CONNECTION_TIME));
     }

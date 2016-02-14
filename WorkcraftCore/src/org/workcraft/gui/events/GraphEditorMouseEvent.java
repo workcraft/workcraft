@@ -43,7 +43,7 @@ public class GraphEditorMouseEvent {
         this.editor = editor;
 
         event = e;
-        if(editor!=null)
+        if (editor != null)
             position = editor.getViewport().screenToUser(e.getPoint());
         else
             position = new Point2D.Double(0, 0);
@@ -113,11 +113,11 @@ public class GraphEditorMouseEvent {
     }
 
     public int getKeyModifiers() {
-        return event.getModifiersEx() & (MouseEvent.SHIFT_DOWN_MASK|MouseEvent.CTRL_DOWN_MASK|MouseEvent.ALT_DOWN_MASK);
+        return event.getModifiersEx() & (MouseEvent.SHIFT_DOWN_MASK | MouseEvent.CTRL_DOWN_MASK | MouseEvent.ALT_DOWN_MASK);
     }
 
     public int getButtonModifiers() {
         // BUTTON2 is ignored as it is reserved for panning
-        return event.getModifiersEx() & (MouseEvent.BUTTON1_DOWN_MASK|MouseEvent.BUTTON3_DOWN_MASK);
+        return event.getModifiersEx() & (MouseEvent.BUTTON1_DOWN_MASK | MouseEvent.BUTTON3_DOWN_MASK);
     }
 }

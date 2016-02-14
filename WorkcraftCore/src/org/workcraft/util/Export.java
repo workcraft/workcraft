@@ -90,7 +90,7 @@ public class Export {
                 } catch (IOException e) {
                     return new Result<Boolean>(e);
                 }
-                if(!ok) {
+                if (!ok) {
                     file.delete();
                 }
             }

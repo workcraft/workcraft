@@ -242,7 +242,7 @@ abstract public class StgGenerator {
         setPosition(one, x + xSign * 4.0, y - ySign * 2.0);
 
         ArrayList<VisualSignalTransition> fallList = new ArrayList<>(fallCount);
-        for (int i = fallCount-1; i >= 0; --i) {
+        for (int i = fallCount - 1; i >= 0; --i) {
             VisualSignalTransition fall = stg.createSignalTransition(signalName, type, SignalTransition.Direction.MINUS, null);
             createConsumingArc(one, fall);
             createProducingArc(fall, zero);
@@ -251,7 +251,7 @@ abstract public class StgGenerator {
         }
 
         ArrayList<VisualSignalTransition> riseList = new ArrayList<>(riseCount);
-        for (int i = riseCount-1; i >= 0; --i) {
+        for (int i = riseCount - 1; i >= 0; --i) {
             VisualSignalTransition rise = stg.createSignalTransition(signalName, type, SignalTransition.Direction.PLUS, null);
             createConsumingArc(zero, rise);
             createProducingArc(rise, one);

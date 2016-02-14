@@ -15,17 +15,17 @@ import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.util.Phase;
 
-public class BSONCycleAlg extends ONCycleAlg{
+public class BSONCycleAlg extends ONCycleAlg {
 
     private SON net;
     protected BSONAlg bsonAlg;
     private Map<Condition, Collection<Phase>> phases;
 
-    public BSONCycleAlg(SON net, Map<Condition, Collection<Phase>> phases){
+    public BSONCycleAlg(SON net, Map<Condition, Collection<Phase>> phases) {
         super(net);
         this.net = net;
         this.phases = phases;
-        bsonAlg =new BSONAlg(net);
+        bsonAlg = new BSONAlg(net);
     }
 
     /**
@@ -34,30 +34,30 @@ public class BSONCycleAlg extends ONCycleAlg{
      */
     @Override
     @SuppressWarnings("unchecked")
-    protected List<Integer>[] createGraph(List<Node> nodes){
+    protected List<Integer>[] createGraph(List<Node> nodes) {
         List<Integer>[] result = new List[nodes.size()];
 
         LinkedHashMap<Node, Integer> nodeIndex = new LinkedHashMap<Node, Integer>();
-        for(int i = 0; i < nodes.size(); i++){
+        for (int i = 0; i < nodes.size(); i++) {
             nodeIndex.put(nodes.get(i), i);
         }
 
-        if(nodes.size() == nodeIndex.size()){
-            for(int i = 0; i < nodes.size(); i++){
+        if (nodes.size() == nodeIndex.size()) {
+            for (int i = 0; i < nodes.size(); i++) {
                 int index = nodeIndex.get(nodes.get(i));
 
-                if(result[index] == null){
+                if (result[index] == null) {
                     result[index] = new ArrayList<Integer>();
                 }
 
-                for(Node post: net.getPostset(nodes.get(index))){
-                    if(nodes.contains(post) && net.getSONConnectionType(nodes.get(index), post) != Semantics.BHVLINE){
+                for (Node post: net.getPostset(nodes.get(index))) {
+                    if (nodes.contains(post) && net.getSONConnectionType(nodes.get(index), post) != Semantics.BHVLINE) {
                         result[index].add(nodeIndex.get(post));
 
                         //reverse direction for synchronous connection
-                        if(net.getSONConnectionType(nodes.get(index), post) == Semantics.SYNCLINE){
+                        if (net.getSONConnectionType(nodes.get(index), post) == Semantics.SYNCLINE) {
                             int index2 = nodeIndex.get(post);
-                            if(result[index2] == null){
+                            if (result[index2] == null) {
                                 result[index2] = new ArrayList<Integer>();
                             }
                             result[index2].add(index);
@@ -65,25 +65,25 @@ public class BSONCycleAlg extends ONCycleAlg{
                     }
                 }
             }
-        }else{
+        } else {
             throw new RuntimeException("fail to create graph, input size is not equal to nodeIndex size");
         }
 
         //get upper-level transition nodes.
         Collection<ONGroup> upperGroups = bsonAlg.getUpperGroups(net.getGroups());
         Collection<TransitionNode> upperT = new ArrayList<TransitionNode>();
-        for(ONGroup group : upperGroups)
+        for (ONGroup group : upperGroups)
             upperT.addAll(group.getTransitionNodes());
 
-        for(int i = 0; i < nodes.size(); i++){
+        for (int i = 0; i < nodes.size(); i++) {
             //add before relation
             Node n = nodes.get(i);
-            if(upperT.contains(n)){
-                for(TransitionNode[] v : bsonAlg.before((TransitionNode) n, phases)){
+            if (upperT.contains(n)) {
+                for (TransitionNode[] v : bsonAlg.before((TransitionNode) n, phases)) {
                     TransitionNode v0 = v[0];
                     TransitionNode v1 = v[1];
                     int index = nodeIndex.get(v0);
-                    if(result[index] == null){
+                    if (result[index] == null) {
                         result[index] = new ArrayList<Integer>();
                     }
                     result[index].add(nodeIndex.get(v1));
@@ -94,29 +94,29 @@ public class BSONCycleAlg extends ONCycleAlg{
     }
 
     @Override
-    public Collection<Path> cycleTask(Collection<? extends Node> nodes){
+    public Collection<Path> cycleTask(Collection<? extends Node> nodes) {
         //remove all paths which do not involve before(e) relation.
         return cycleFliter(super.cycleTask(nodes));
     }
 
     @Override
-    protected Collection<Path> cycleFliter(Collection<Path> paths){
+    protected Collection<Path> cycleFliter(Collection<Path> paths) {
         List<Path> delList = new ArrayList<Path>();
 
-        for(Path cycle : paths){
+        for (Path cycle : paths) {
             int upper = 0;
             int lower = 0;
 
-            for(Node n : cycle){
-                if(n instanceof ChannelPlace)
+            for (Node n : cycle) {
+                if (n instanceof ChannelPlace)
                     continue;
-                else if(bsonAlg.isUpperNode(n))
+                else if (bsonAlg.isUpperNode(n))
                     upper++;
                 else
                     lower++;
             }
             //all cycle nodes are in the same level
-            if(upper==0 || lower==0)
+            if (upper == 0 || lower == 0)
                 delList.add(cycle);
         }
         paths.removeAll(delList);

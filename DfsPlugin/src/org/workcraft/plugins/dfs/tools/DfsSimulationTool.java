@@ -92,7 +92,7 @@ public class DfsSimulationTool extends StgSimulationTool {
         }
         editor.getWorkspaceEntry().saveMemento();
         VisualDfs dfs = (VisualDfs) editor.getModel();
-        for(VisualLogic l : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualLogic.class)) {
+        for (VisualLogic l : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualLogic.class)) {
             String refC = StgGenerator.nameC + dfs.getNodeMathReference(l) + StgGenerator.name1;
             Node nodeC = net.getNodeByReference(refC);
             if ((nodeC instanceof Place) && savedState.containsKey(nodeC)) {
@@ -100,7 +100,7 @@ public class DfsSimulationTool extends StgSimulationTool {
                 l.getReferencedLogic().setComputed(computed);
             }
         }
-        for(VisualRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualRegister.class)) {
+        for (VisualRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualRegister.class)) {
             String refM = StgGenerator.nameM + dfs.getNodeMathReference(r) + StgGenerator.name1;
             Node nodeM = net.getNodeByReference(refM);
             if ((nodeM instanceof Place) && savedState.containsKey(nodeM)) {
@@ -109,7 +109,7 @@ public class DfsSimulationTool extends StgSimulationTool {
                 copyTokenColor(r, nodeM);
             }
         }
-        for(VisualCounterflowLogic l : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualCounterflowLogic.class)) {
+        for (VisualCounterflowLogic l : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualCounterflowLogic.class)) {
             String refFwC = StgGenerator.nameFwC + dfs.getNodeMathReference(l) + StgGenerator.name1;
             Node nodeFwC = net.getNodeByReference(refFwC);
             if ((nodeFwC instanceof Place) && savedState.containsKey(nodeFwC)) {
@@ -123,7 +123,7 @@ public class DfsSimulationTool extends StgSimulationTool {
                 l.getReferencedCounterflowLogic().setBackwardComputed(backwardComputed);
             }
         }
-        for(VisualCounterflowRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualCounterflowRegister.class)) {
+        for (VisualCounterflowRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualCounterflowRegister.class)) {
             String refOrM = StgGenerator.nameOrM + dfs.getNodeMathReference(r) + StgGenerator.name1;
             Node nodeOrM = net.getNodeByReference(refOrM);
             if ((nodeOrM instanceof Place) && savedState.containsKey(nodeOrM)) {
@@ -139,7 +139,7 @@ public class DfsSimulationTool extends StgSimulationTool {
                 copyTokenColor(r, nodeAndM);
             }
         }
-        for(VisualBinaryRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualBinaryRegister.class)) {
+        for (VisualBinaryRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualBinaryRegister.class)) {
             r.getReferencedBinaryRegister().setMarking(Marking.EMPTY);
             String refTrueM = StgGenerator.nameTrueM + dfs.getNodeMathReference(r) + StgGenerator.name1;
             Node nodeTrueM = net.getNodeByReference(refTrueM);

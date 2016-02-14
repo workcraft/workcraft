@@ -97,7 +97,7 @@ public class VisualBundle extends VisualNode implements Drawable, Dependent {
             shape.lineTo(l.getX2(), l.getY2());
         }
         g.setColor(Coloriser.colorise(color, d.getColorisation()));
-        g.setStroke(new BasicStroke(w, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, new float[]{10*w, 10*w}, 0.0f));
+        g.setStroke(new BasicStroke(w, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, new float[]{10 * w, 10 * w}, 0.0f));
         g.draw(shape);
     }
 

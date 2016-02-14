@@ -55,7 +55,7 @@ public enum VariableState {
     }
 
     public VariableState toggle() {
-        switch(this) {
+        switch (this) {
         case TRUE: return VariableState.FALSE;
         case FALSE: return VariableState.UNDEFINED;
         default: return VariableState.TRUE;

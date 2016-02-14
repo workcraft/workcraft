@@ -54,7 +54,7 @@ public class FsmToPnConverter {
 
     private Map<VisualState, VisualPlace> convertStates() {
         Map<VisualState, VisualPlace> result = new HashMap<VisualState, VisualPlace>();
-        for(VisualState state: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualState.class)) {
+        for (VisualState state: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualState.class)) {
             String name = srcModel.getMathModel().getNodeReference(state.getReferencedState());
             VisualPlace place = dstModel.createPlace(name, null);
             place.copyPosition(state);
@@ -70,7 +70,7 @@ public class FsmToPnConverter {
         Map<VisualEvent, VisualTransition> result = new HashMap<VisualEvent, VisualTransition>();
         HierarchicalUniqueNameReferenceManager refManager = (HierarchicalUniqueNameReferenceManager) dstModel.getPetriNet().getReferenceManager();
         NameManager nameManagerer = refManager.getNameManager(null);
-        for(VisualEvent event : Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualEvent.class)) {
+        for (VisualEvent event : Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualEvent.class)) {
             Symbol symbol = event.getReferencedEvent().getSymbol();
             String symbolName = (symbol == null) ? Fsm.EPSILON_SERIALISATION : srcModel.getMathName(symbol);
             String name = nameManagerer.getDerivedName(null, symbolName);
@@ -87,7 +87,7 @@ public class FsmToPnConverter {
     }
 
     private void connectEvents() throws InvalidConnectionException {
-        for(VisualEvent event: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualEvent.class)) {
+        for (VisualEvent event: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualEvent.class)) {
             VisualTransition transition = eventToTransitionMap.get(event);
             if (transition != null) {
                 Node first = event.getFirst();

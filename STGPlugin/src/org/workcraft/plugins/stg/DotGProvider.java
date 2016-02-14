@@ -46,9 +46,9 @@ public class DotGProvider {
             } catch (SerialisationException e) {
                 throw new RuntimeException(e);
             }
-        } else if (source.getNode().endsWith(".g")){
+        } else if (source.getNode().endsWith(".g")) {
             return workspace.getFile(source);
-        } else if (source.getNode().endsWith(FileFilters.DOCUMENT_EXTENSION)){
+        } else if (source.getNode().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
             throw new NotImplementedException();
         } else {
             throw new RuntimeException("Don't know how to create a .g file from " + source);

@@ -62,17 +62,17 @@ public class VisualBundledTransition extends VisualTransition {
 
         Collection<VisualBundle> bundles = model.getBundlesOfTransition(this);
         if (bundles.size() > 0) {
-            h = (h - strokeWidth) /bundles.size();
-            h2 = h/2;
+            h = (h - strokeWidth) / bundles.size();
+            h2 = h / 2;
         }
 
         if (bundles.isEmpty()) {
             g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
             g.fill(shape);
         } else {
-            double y = -size/2 + strokeWidth + h2;
+            double y = -size / 2 + strokeWidth + h2;
             for (VisualBundle b: bundles) {
-                Shape bundleShape = new Rectangle2D.Double(-w2, y-h2, w, h);
+                Shape bundleShape = new Rectangle2D.Double(-w2, y - h2, w, h);
                 g.setColor(Coloriser.colorise(b.getColor(), d.getBackground()));
                 g.fill(bundleShape);
                 y += h;

@@ -19,7 +19,7 @@ public class STGConv {
 
     public STGConv(int sel) throws InvalidConnectionException {
         this.stg = new VisualSTG(new STG());
-        if(sel==0) genSTG0();
+        if (sel == 0) genSTG0();
         else genSTG2();
     }
 
@@ -54,7 +54,7 @@ public class STGConv {
     private class STGSignal {
         private static final double xScaling = 6;
         private static final double yScaling = 6;
-        public final String name="";
+        public final String name = "";
         public final int x;
         public final int y;
         public final VisualPlace p0;
@@ -102,7 +102,7 @@ public class STGConv {
     public class STGInv {
         private static final double xScaling = 6;
         private static final double yScaling = 6;
-        public final String name="";
+        public final String name = "";
         public final int x;
         public final int y;
         public final VisualSTG stg;
@@ -154,7 +154,7 @@ public class STGConv {
     public class STGAnd {
         private static final double xScaling = 6;
         private static final double yScaling = 6;
-        public final String name="";
+        public final String name = "";
         public final int x;
         public final int y;
         public final VisualPlace p0;
@@ -211,7 +211,7 @@ public class STGConv {
     public class STGOr {
         private static final double xScaling = 6;
         private static final double yScaling = 6;
-        public final String name="";
+        public final String name = "";
         public final int x;
         public final int y;
         public final VisualPlace p0;
@@ -273,21 +273,21 @@ public class STGConv {
 
         GenSTG(String name, int x, int offset) throws InvalidConnectionException {
 
-            Collection<VisualPlace> p=null;
+            Collection<VisualPlace> p = null;
 
             SignalTransition.Type type = SignalTransition.Type.INTERNAL;
 
-            i1 = new STGInv(name+"i1", 15+x, 0+offset, stg);
-            STGAnd a1 = new STGAnd(name+"a1", 30+x, 0+offset, stg);
-            STGInv i2 = new STGInv(name+"i2", 45+x, 0+offset, stg);
-            STGAnd a2 = new STGAnd(name+"a2", 60+x, 0+offset, stg);
-            i3 = new STGInv(name+"i3", 75+x, 0+offset, stg);
+            i1 = new STGInv(name + "i1", 15 + x, 0 + offset, stg);
+            STGAnd a1 = new STGAnd(name + "a1", 30 + x, 0 + offset, stg);
+            STGInv i2 = new STGInv(name + "i2", 45 + x, 0 + offset, stg);
+            STGAnd a2 = new STGAnd(name + "a2", 60 + x, 0 + offset, stg);
+            i3 = new STGInv(name + "i3", 75 + x, 0 + offset, stg);
 
-            STGSignal s2 = new STGSignal(name+"s2", 0+x, 10+offset, stg);
-            a3 = new STGAnd(name+"a3", 30+x, 10+offset, stg);
-            STGInv i4 = new STGInv(name+"i4", 45+x, 10+offset, stg);
-            STGAnd a4 = new STGAnd(name+"a4", 60+x, 10+offset, stg);
-            STGInv i5 = new STGInv(name+"i5", 75+x, 10+offset, stg);
+            STGSignal s2 = new STGSignal(name + "s2", 0 + x, 10 + offset, stg);
+            a3 = new STGAnd(name + "a3", 30 + x, 10 + offset, stg);
+            STGInv i4 = new STGInv(name + "i4", 45 + x, 10 + offset, stg);
+            STGAnd a4 = new STGAnd(name + "a4", 60 + x, 10 + offset, stg);
+            STGInv i5 = new STGInv(name + "i5", 75 + x, 10 + offset, stg);
 
             connections(s2.p0, s2.p1, a1.t0, a1.t2);
             connections(s2.p0, s2.p1, a3.t0, a3.t2);
@@ -308,10 +308,10 @@ public class STGConv {
 
     private void genSTG0() throws InvalidConnectionException {
 
-        double x=100;
-        double y=1;
+        double x = 100;
+        double y = 1;
 
-        Collection<VisualPlace> p=null;
+        Collection<VisualPlace> p = null;
 
         SignalTransition.Type type = SignalTransition.Type.INTERNAL;
 
@@ -357,10 +357,10 @@ public class STGConv {
 
     private void genSTG1() throws InvalidConnectionException {
 
-        double x=1;
-        double y=1;
+        double x = 1;
+        double y = 1;
 
-        Collection<VisualPlace> p=null;
+        Collection<VisualPlace> p = null;
 
         SignalTransition.Type type = SignalTransition.Type.INTERNAL;
 
@@ -399,7 +399,7 @@ public class STGConv {
         connections(a4.p0, a4.p1, a5.t0, a5.t1);
 
         GenSTG a = new GenSTG("a", 0, 20);
-        GenSTG b =new GenSTG("b", 0, 45);
+        GenSTG b = new GenSTG("b", 0, 45);
 
         connections(b.i3.p0, b.i3.p1, a3.t0, a3.t2);
         connections(i6.p0, i6.p1, a.i1.t0, a.i1.t1);
@@ -410,10 +410,10 @@ public class STGConv {
 
     private void genSTG2() throws InvalidConnectionException {
 
-        double x=1;
-        double y=1;
+        double x = 1;
+        double y = 1;
 
-        Collection<VisualPlace> p=null;
+        Collection<VisualPlace> p = null;
 
         //STGSignal s1 = new STGSignal("s1", 0, 0, stg);
         STGSignal s2 = new STGSignal("s2", 0, 10, stg);

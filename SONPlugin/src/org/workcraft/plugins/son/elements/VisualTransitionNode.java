@@ -4,7 +4,7 @@ import java.awt.Color;
 
 import org.workcraft.dom.visual.DrawRequest;
 
-public interface VisualTransitionNode{
+public interface VisualTransitionNode {
 
     void setFillColor(Color color);
 

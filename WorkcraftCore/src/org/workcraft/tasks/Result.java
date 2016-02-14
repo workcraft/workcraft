@@ -52,11 +52,11 @@ public class Result<T> {
         return new Result<R>(e);
     }
 
-    public static <R> Result<R> cancelled(){
+    public static <R> Result<R> cancelled() {
         return new Result<R>(Outcome.CANCELLED);
     }
 
-    public static <R> Result<R> finished(R res){
+    public static <R> Result<R> finished(R res) {
         return new Result<R>(res);
     }
 

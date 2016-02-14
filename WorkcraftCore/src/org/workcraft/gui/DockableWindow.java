@@ -121,7 +121,7 @@ public class DockableWindow extends AbstractDockable {
 
     public static int getTabIndex(JTabbedPane tabbedPane, DockableWindow window) {
         int myTabIndex = -2;
-        for (int i=0; i<tabbedPane.getTabCount(); i++) {
+        for (int i = 0; i < tabbedPane.getTabCount(); i++) {
             if (tabbedPane.getComponentAt(i) == window.getComponent()) {
                 myTabIndex = i;
                 break;
@@ -138,7 +138,7 @@ public class DockableWindow extends AbstractDockable {
             if (inTab && !dockable.isMaximized()) {
                 contentPanel.setHeaderVisible(false);
                 JTabbedPane tabbedPane = (JTabbedPane) dockable.getComponent().getParent();
-                for (int i=0; i<tabbedPane.getComponentCount(); i++) {
+                for (int i = 0; i < tabbedPane.getComponentCount(); i++) {
                     if (dockable.getComponent() == tabbedPane.getComponentAt(i)) {
                         tabbedPane.setTabComponentAt(i, new DockableTab(dockable, actionListener));
                         break;
