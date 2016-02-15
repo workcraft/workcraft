@@ -1,24 +1,6 @@
 #!/usr/bin/bash -e
 
-model_plugin_dirs="
-    CircuitPlugin
-    CpogsPlugin
-    DfsPlugin
-    FsmPlugin
-    FstPlugin
-    GraphPlugin
-    PetriNetPlugin
-    PolicyNetPlugin
-    SONPlugin
-    STGPlugin
-    XmasPlugin"
-tool_plugin_dirs="
-    MpsatSynthesisPlugin
-    MpsatVerificationPlugin
-    PcompPlugin
-    PunfPlugin
-    PetrifyExtraPlugin
-    PetrifyPlugin"
+plugin_dirs="*Plugin/"
 core_dir="WorkcraftCore"
 core_files="LICENSE README.md workcraft workcraft.bat"
 
@@ -65,7 +47,7 @@ cp $core_dir/build/libs/*.jar $dist_dir/workcraft.jar
 
 mkdir -p $dist_dir/plugins
 
-for d in $tool_plugin_dirs $model_plugin_dirs; do
+for d in $plugin_dirs; do
     cp $d/build/libs/*.jar $dist_dir/plugins/
 done
 
