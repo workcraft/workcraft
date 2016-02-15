@@ -32,28 +32,28 @@ enforce a sane code style throughout the Java codebase.
 
 ### Building in Eclipse
 
-[Eclipse IDE](https://www.eclipse.org/)	is a convenient environemnt for
-developing and debuging Workcraft. When setting Eclipse from Gradle
+[Eclipse IDE](https://www.eclipse.org/)	is a convenient environment for
+developing and debugging Workcraft. When setting Eclipse from Gradle
 scripts it is important to separate its *Workspace* directory from the
 *Project* directory (otherwise Gradle integration may fail).
 
-* As an example, create `workcraft-workspace` directory and clone the workcraft git repo into it:
+* As an example, create `workcraft-workspace` directory and clone the Workcraft repo into it:
 
     $ mkdir workcraft-workspace
     $ cd workcraft-workspace
     $ git clone https://github.com/tuura/workcraft workcraft-master
 
 * Install [Buildship Gradle Integration](https://marketplace.eclipse.org/content/buildship-gradle-integration)
-  plugin in Eclipse via the *Help->Instal New Software…* menu.
+  plugin in Eclipse via the *Help->Instal New Software...* menu.
 
 * In Eclipse select the `workcraft-workspace` directory as the current
   *Workspace*.
 
-* Import the project from Gradle config via the *File->Import..->Gradle*
+* Import the project from Gradle config via the *File->Import...->Gradle*
   menu. Select `workcraft-workspace/workcraft-master` as the *Project*
   directory. Follow the import accepting the default settings.
 
-* Import `WorkcraftRunner` project via the *File->Import…* as a
+* Import `WorkcraftRunner` project via the *File->Import...* as a
   *General->Existing Projects into Workspace* item.
 
 * Create a *Java Application* runner with the following configuration:
