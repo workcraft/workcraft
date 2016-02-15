@@ -8,9 +8,9 @@ IF ERRORLEVEL 1 (
 
 :: Change to Workcraft home directory and put it into the WORKCRAFT_HOME variable
 SET WORKCRAFT_HOME=%~dp0
-PUSHD "%WORKCRAFT_HOME%"
+CD "%WORKCRAFT_HOME%"
 
-:: SET the JVM executable in the JAVA_BIN variable (if not defined yet)
+:: SET the JVM executable in JAVA_BIN variable (if not defined yet)
 IF NOT DEFINED JAVA_BIN (
     IF NOT DEFINED JAVA_HOME (
         SET JAVA_BIN=javaw.exe
@@ -23,33 +23,8 @@ IF NOT DEFINED JAVA_BIN (
     )
 )
 
-:: Add all the plugins and third-party JARs to the CLASSPATH variable
-SET CLASSPATH=^
-%WORKCRAFT_HOME%\CircuitPlugin\bin;^
-%WORKCRAFT_HOME%\CpogsPlugin\bin;^
-%WORKCRAFT_HOME%\DfsPlugin\bin;^
-%WORKCRAFT_HOME%\FsmPlugin\bin;^
-%WORKCRAFT_HOME%\FstPlugin\bin;^
-%WORKCRAFT_HOME%\GraphPlugin\bin;^
-%WORKCRAFT_HOME%\MpsatSynthesisPlugin\bin;^
-%WORKCRAFT_HOME%\MpsatVerificationPlugin\bin;^
-%WORKCRAFT_HOME%\PcompPlugin\bin;^
-%WORKCRAFT_HOME%\PetriNetPlugin\bin;^
-%WORKCRAFT_HOME%\PetrifyExtraPlugin\bin;^
-%WORKCRAFT_HOME%\PetrifyPlugin\bin;^
-%WORKCRAFT_HOME%\PolicyNetPlugin\bin;^
-%WORKCRAFT_HOME%\PunfPlugin\bin;^
-%WORKCRAFT_HOME%\SONPlugin\bin;^
-%WORKCRAFT_HOME%\STGPlugin\bin;^
-%WORKCRAFT_HOME%\ThirdParty\*;^
-%WORKCRAFT_HOME%\ThirdParty\batik\*;^
-%WORKCRAFT_HOME%\WorkcraftCore\bin;^
-%WORKCRAFT_HOME%\XmasPlugin\bin;^
-;
+SET CLASSPATH=%WORKCRAFT_HOME%\workcraft.jar;%WORKCRAFT_HOME%\plugins\*
 
-:: Run Workcraft with the specific JAVA_BIN and CLASSPATH
 "%JAVA_BIN%" org.workcraft.Console %*
 
-:: Restore the current working directory
-POPD
 ENDLOCAL
