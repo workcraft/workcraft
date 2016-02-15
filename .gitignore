@@ -2,21 +2,23 @@
 .gradle/
 build/
 
-bin
-distr
-*.log
-*.dot
-*.stackdump
-generated
+dist/
+
+# Eclipse
 /.metadata
 .classpath
 .project
 .settings
 !/WorkcraftRunner/.classpath
 !/WorkcraftRunner/.project
+bin/
+
+*.log
+*.dot
+*.stackdump
+generated
 *.orig
 *.moved
 *.BASE
 *.OTHER
 *.THIS
-RE:\.?[^.]+
