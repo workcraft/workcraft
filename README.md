@@ -32,7 +32,7 @@ enforce a sane code style throughout the Java codebase.
 
 ### Building in Eclipse
 
-[Eclipse IDE](https://www.eclipse.org/)	is a convenient environment for
+[Eclipse IDE](https://www.eclipse.org/) is a convenient environment for
 developing and debugging Workcraft. When setting Eclipse from Gradle
 scripts it is important to separate its *Workspace* directory from the
 *Project* directory (otherwise Gradle integration may fail).
