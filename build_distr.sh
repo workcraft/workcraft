@@ -19,7 +19,6 @@ tool_plugin_dirs="
     PunfPlugin
     PetrifyExtraPlugin
     PetrifyPlugin"
-third_party_dirs="ThirdParty"
 core_dirs="WorkcraftCore"
 core_files="LICENSE README.md workcraft workcraft.bat"
 
@@ -65,12 +64,6 @@ for i in $core_dirs $tool_plugin_dirs $model_plugin_dirs
 do
     mkdir $distr_dir/$i
     cp -r $i/bin $distr_dir/$i/
-done
-
-for i in $third_party_dirs
-do
-    mkdir $distr_dir/$i
-    cp -r $i/* $distr_dir/$i/
 done
 
 for d in doc/*; do
