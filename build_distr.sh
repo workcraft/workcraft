@@ -36,7 +36,7 @@ params_msg="
   -d DISTR_DIR : distribution directory (default: $distr_dir)\n
   -t TEMPLATE_DIRECTORY: template directory (default: $template_dir))\n
   -h, --help : print this help"
-help_msg=$description_msg"\n\n"$usage_msg"\n\n"$params_msg
+help_msg="${description_msg}\n\n${usage_msg}\n\n${params_msg}"
 
 echo_command='echo -e'
 
@@ -47,7 +47,7 @@ do
         -s) src_dir=$2; shift 2;;
         -d) distr_dir=$2; shift 2;;
         -t) template_dir=$2; shift 2;;
-        -h | --help) $echo_command $help_msg; exit 0;
+        -h | --help) $echo_command "$help_msg"; exit 0;
     esac
 done
 
