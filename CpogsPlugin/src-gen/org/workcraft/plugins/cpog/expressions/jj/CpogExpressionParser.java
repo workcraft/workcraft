@@ -50,7 +50,7 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
 
   CpogFormula var(String name) throws ParseException
   {
-        CpogFormula result = vars.eval(name);
+    CpogFormula result = vars.eval(name);
     if (result == null)
     throw new ParseException("Undefined variable: '" + name + "'");
     return result;
@@ -58,7 +58,7 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
 
   CpogFormula var(String name, String boolExpression) throws ParseException
   {
-        CpogFormula result = vars.eval(name, boolExpression);
+    CpogFormula result = vars.eval(name, boolExpression);
     if (result == null)
     throw new ParseException("Undefined variable: '" + name + "'");
     return result;
@@ -71,7 +71,7 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
   CpogFormula sequence(CpogFormula a, CpogFormula b)
   {
     CpogFormula result = worker.sequence(a, b);
-        vars.setSequenceCondition(result, globalBool);
+    vars.setSequenceCondition(result, globalBool);
     return result;
   }
 
@@ -108,11 +108,11 @@ public class CpogExpressionParser implements CpogExpressionParserConstants {
                 return map.get(label);
         }
 
-                @Override
-                                public void setSequenceCondition(CpogFormula formula, String boolForm) {
-                                        // TODO Auto-generated method stub
+        @Override
+                public void setSequenceCondition(CpogFormula formula, String boolForm) {
+                    // TODO Auto-generated method stub
 
-                                }
+                }
 
 
     });
@@ -146,7 +146,7 @@ result = overlay(result, op);
   }
 
   final public CpogFormula overlayOp1() throws ParseException {CpogFormula result;
-        CpogFormula op;
+      CpogFormula op;
     result = overlayOp();
     label_2:
     while (true) {
@@ -169,7 +169,7 @@ result = overlay(result, op);
   }
 
   final public CpogFormula overlayOp() throws ParseException {CpogFormula result;
-        CpogFormula op;
+      CpogFormula op;
     result = literal();
     label_3:
     while (true) {
@@ -197,19 +197,19 @@ result = sequence(result, op);
     case VARIABLE:{
       t = jj_consume_token(VARIABLE);
 if (globalBool != "")
-          {
-                result = var(t.image, globalBool);
-          }  else
-          {
-                result = var(t.image);
-          }
+      {
+        result = var(t.image, globalBool);
+      }  else
+      {
+          result = var(t.image);
+      }
       break;
       }
     case BOOLOPEN:{
       t = jj_consume_token(BOOLOPEN);
 bool = stringLiteral();
-          boolClose();
-          result = literal1(bool);
+      boolClose();
+      result = literal1(bool);
       break;
       }
     case BRACKOPEN:{
@@ -238,22 +238,22 @@ if (globalBool == "")
         result = var(t.image, bool);
       } else
       {
-                result = var (t.image, globalBool + "&" + bool);
+        result = var (t.image, globalBool + "&" + bool);
       }
       break;
       }
     case BRACKOPEN:{
       t = jj_consume_token(BRACKOPEN);
 while (str.compareTo(")") != 0)
+        {
+          if (str.compareTo("]") == 0)
           {
-            if (str.compareTo("]") == 0)
-            {
-                  exp = exp.substring(0, exp.length() - 1);
-            }
-            exp = exp + str;
-            str = bracketInternals();
+          exp = exp.substring(0, exp.length() - 1);
           }
-          result = new CpogExpressionParser(new StringReader(exp), vars , graphName, bool).formula();
+          exp = exp + str;
+          str = bracketInternals();
+        }
+        result = new CpogExpressionParser(new StringReader(exp), vars , graphName, bool).formula();
       break;
       }
     default:
@@ -313,12 +313,12 @@ result = t.image;
     case BRACKOPEN:{
       t = jj_consume_token(BRACKOPEN);
 String r = "";
-          result = "(";
-          while (r.compareTo(")") != 0)
-          {
-                r = bracketInternals();
-                result = result + r;
-          }
+      result = "(";
+      while (r.compareTo(")") != 0)
+      {
+        r = bracketInternals();
+        result = result + r;
+      }
       break;
       }
     case VARIABLE:{

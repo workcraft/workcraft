@@ -40,7 +40,7 @@ rules.add(rule);
   final public SubstitutionRule parseSubstitutionRule() throws ParseException {
     trace_call("parseSubstitutionRule");
     try {Pair<String, String> gateSubstitution;
-        Pair<String, String> portSubstitution;
+    Pair<String, String> portSubstitution;
     Map<String, String> portSubstitutions = new HashMap<String, String>();
       gateSubstitution = parseSubstitution();
       switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
@@ -68,7 +68,7 @@ rules.add(rule);
             ;
           }
 String oldPortName = portSubstitution.getFirst();
-                        String newPortName = portSubstitution.getSecond();
+                String newPortName = portSubstitution.getSecond();
                 portSubstitutions.put(oldPortName, newPortName);
         }
         jj_consume_token(9);

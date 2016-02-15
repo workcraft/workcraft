@@ -27,7 +27,7 @@ public class ExpressionParser implements ExpressionParserConstants {
   final public Expression parseExpression() throws ParseException {
     trace_call("parseExpression");
     try {Expression term;
-        List<Expression> terms = new LinkedList<Expression>();
+    List<Expression> terms = new LinkedList<Expression>();
       term = parseTerm();
 terms.add(term);
       label_1:
@@ -65,10 +65,10 @@ terms.add(term);
 terms.add(term);
       }
 if (terms.size() > 1) {
-                        {if ("" != null) return new Formula(terms);}
-                } else {
-                        {if ("" != null) return term;}
-                }
+            {if ("" != null) return new Formula(terms);}
+        } else {
+            {if ("" != null) return term;}
+        }
     throw new Error("Missing return statement in function");
     } finally {
       trace_return("parseExpression");
@@ -78,7 +78,7 @@ if (terms.size() > 1) {
   final public Expression parseTerm() throws ParseException {
     trace_call("parseTerm");
     try {Expression factor;
-        List<Expression> factors = new LinkedList<Expression>();
+    List<Expression> factors = new LinkedList<Expression>();
       factor = parseFactor();
 factors.add(factor);
       label_2:
@@ -132,10 +132,10 @@ factors.add(factor);
 factors.add(factor);
       }
 if (factors.size() > 1) {
-                        {if ("" != null) return new Term(factors);}
-                } else {
-                        {if ("" != null) return factor;}
-                }
+            {if ("" != null) return new Term(factors);}
+        } else {
+            {if ("" != null) return factor;}
+        }
     throw new Error("Missing return statement in function");
     } finally {
       trace_return("parseTerm");
@@ -199,7 +199,7 @@ if (factors.size() > 1) {
     try {Token nameToken;
       nameToken = jj_consume_token(NAME);
 String name = nameToken.image;
-                {if ("" != null) return new Literal(name);}
+        {if ("" != null) return new Literal(name);}
     throw new Error("Missing return statement in function");
     } finally {
       trace_return("parseLiteral");
