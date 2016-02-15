@@ -1,6 +1,5 @@
 #!/usr/bin/bash -e
 
-unsupported_plugin_dirs="BalsaPluginBase BalsaWrapperGenerator DesiJPlugi"
 model_plugin_dirs="
     CircuitPlugin
     CpogsPlugin
@@ -46,16 +45,15 @@ do
 done
 
 # Create distr directory
-if [ -e $distr_dir ] 
+if [[ -e $distr_dir ]]
 then
     echo "Error: Distribution directory already exists: $distr_dir"
     exit 1
-else
-    mkdir $distr_dir
 fi
+mkdir $distr_dir
 
 # Copy the template content
-if [[ ! -a $template_dir ]] || [[ ! -d $template_dir ]] 
+if [[ ! -d $template_dir ]]
 then
     echo "Warning: Template directory not found: $template_dir"
 else
