@@ -31,21 +31,21 @@ PARSER_END(DotParser)
 
 SKIP :
 {
- 	" "
-|	"\t"
-|	"\r"
-|	"\n"
-|	<"#" (~["\r","\n"])* (["\r", "\n"])*>
-|	<"//" (~["\r","\n"])* (["\r", "\n"])*>
+     " "
+|    "\t"
+|    "\r"
+|    "\n"
+|    <"#" (~["\r","\n"])* (["\r", "\n"])*>
+|    <"//" (~["\r","\n"])* (["\r", "\n"])*>
 }
 
 TOKEN :
 {
-	"strict" | "graph" | "digraph" | "node" | "edge"
-  	| <NAME: (["_","A"-"Z","a"-"z","0"-"9"])+>
-  	| <INTEGER: (["0"-"9"])+>
-  	| <QUOTED: "\""(~["\""] | "\\\"")*"\"" >
-  	| <NUMERAL: (["-"])?("."(["0"-"9"])+ | (["0"-"9"])+ ("."(["0"-"9"])*)?)>
+    "strict" | "graph" | "digraph" | "node" | "edge"
+      | <NAME: (["_","A"-"Z","a"-"z","0"-"9"])+>
+      | <INTEGER: (["0"-"9"])+>
+      | <QUOTED: "\""(~["\""] | "\\\"")*"\"" >
+      | <NUMERAL: (["-"])?("."(["0"-"9"])+ | (["0"-"9"])+ ("."(["0"-"9"])*)?)>
 }
 
 String id() :
@@ -76,19 +76,19 @@ void graph(DotListener listener) :
 {
 }
 {
-	["strict"] ("graph" | "digraph") id() "{"
-	( statement(listener) )* "}"
+    ["strict"] ("graph" | "digraph") id() "{"
+    ( statement(listener) )* "}"
 }
 
 int integer() :
 {
-	Token token;
+    Token token;
 }
 {
-	token = < INTEGER >
-	{
-	  return Integer.parseInt(token.image);
-	}
+    token = < INTEGER >
+    {
+      return Integer.parseInt(token.image);
+    }
 }
 
 void attr(Map<String, String> attrs):
@@ -97,15 +97,15 @@ void attr(Map<String, String> attrs):
   String value = null;
 }
 {
-	name=id()
-	["="
-	(value=id())
-	]
-	[","]
+    name=id()
+    ["="
+    (value=id())
+    ]
+    [","]
 
-	{
-		attrs.put(name, value);
-	}
+    {
+        attrs.put(name, value);
+    }
 }
 
 Map<String, String> attr_list() :
@@ -114,20 +114,20 @@ Map<String, String> attr_list() :
 }
 {
   "["
-	(
-	  attr(result)
-	)*
-	"]"
-	{
-	  return result;
-	}
+    (
+      attr(result)
+    )*
+    "]"
+    {
+      return result;
+    }
 }
 
 void attr_statement() :
 {
 }
 {
-	("graph"|"node"|"edge") attr_list()
+    ("graph"|"node"|"edge") attr_list()
 }
 
 void statement(DotListener listener) :
@@ -139,7 +139,7 @@ void statement(DotListener listener) :
 {
   (
     attr_statement()
-  	| i = id()
+      | i = id()
     (
       prop = attr_list()
       {

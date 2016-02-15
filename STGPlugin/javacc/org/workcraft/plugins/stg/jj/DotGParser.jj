@@ -27,112 +27,112 @@ import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.NotFoundException;
 
 public class DotGParser {
-	private HashMap<String, Type> signals;
-	private HashSet<String> dummies;
-	private HashMap<Pair<Node, Node>, STGPlace> implicitPlaces;
-	private STG stg;
+    private HashMap<String, Type> signals;
+    private HashSet<String> dummies;
+    private HashMap<Pair<Node, Node>, STGPlace> implicitPlaces;
+    private STG stg;
 
-	private void init() {
-		signals = new HashMap<String, Type>();
-		dummies = new HashSet<String>();
-		stg = new STG();
-		implicitPlaces = new HashMap<Pair<Node, Node>, STGPlace>();
-	}
+    private void init() {
+        signals = new HashMap<String, Type>();
+        dummies = new HashSet<String>();
+        stg = new STG();
+        implicitPlaces = new HashMap<Pair<Node, Node>, STGPlace>();
+    }
 
-	private Node getOrCreate (String name) {
-		Node node = stg.getNodeByReference(name);
-		if (node == null) {
-			node = stg.getNodeByReference(name + "/0");
-		}
-		if (node == null) {
-		  	if (dummies.contains(name)) {
-				node = stg.createDummyTransition(name, null);
-			} else if (signals.containsKey(name)) {
-				node = getOrCreate(Triple.of(name, Direction.TOGGLE, 0));
-			} else {
-				node = stg.createPlace(name, null);
-			}
-		}
-		return node;
-	}
+    private Node getOrCreate (String name) {
+        Node node = stg.getNodeByReference(name);
+        if (node == null) {
+            node = stg.getNodeByReference(name + "/0");
+        }
+        if (node == null) {
+              if (dummies.contains(name)) {
+                node = stg.createDummyTransition(name, null);
+            } else if (signals.containsKey(name)) {
+                node = getOrCreate(Triple.of(name, Direction.TOGGLE, 0));
+            } else {
+                node = stg.createPlace(name, null);
+            }
+        }
+        return node;
+    }
 
-	private Node getOrCreate (Pair<String, Integer> ref) {
-		String reference = stg.makeReference(ref);
-		String name = ref.getFirst();
-		Node node = stg.getNodeByReference(reference);
-		if (node == null) {
-		  	if (dummies.contains(name)) {
-				DummyTransition dt = stg.createDummyTransition(null, null);
-				stg.setName(dt, reference, true);
-				dt.setName(name);
-				node = dt;
-		  	} else if (signals.containsKey(name)) {
-				node = getOrCreate(Triple.of(name, Direction.TOGGLE, ref.getSecond()));
-			}
-		}
-		return node;
-	}
+    private Node getOrCreate (Pair<String, Integer> ref) {
+        String reference = stg.makeReference(ref);
+        String name = ref.getFirst();
+        Node node = stg.getNodeByReference(reference);
+        if (node == null) {
+              if (dummies.contains(name)) {
+                DummyTransition dt = stg.createDummyTransition(null, null);
+                stg.setName(dt, reference, true);
+                dt.setName(name);
+                node = dt;
+              } else if (signals.containsKey(name)) {
+                node = getOrCreate(Triple.of(name, Direction.TOGGLE, ref.getSecond()));
+            }
+        }
+        return node;
+    }
 
-	private Node getOrCreate (Triple<String, Direction, Integer> ref) {
-		String reference = stg.makeReference(ref);
-		String name = ref.getFirst();
-		Node node = stg.getNodeByReference (reference);
-		if (node == null) {
-			SignalTransition st = stg.createSignalTransition();
-			stg.setName(st, reference, true);
-			if (signals.containsKey(name)) {
-				st.setSignalType(signals.get(name));
-				node = st;
-			} else {
-				throw new FormatException ("Undeclared signal encountered: "
-					+ name + " ("+reference+"). Possibly malformed header.");
-			}
-		}
-		return node;
-	}
+    private Node getOrCreate (Triple<String, Direction, Integer> ref) {
+        String reference = stg.makeReference(ref);
+        String name = ref.getFirst();
+        Node node = stg.getNodeByReference (reference);
+        if (node == null) {
+            SignalTransition st = stg.createSignalTransition();
+            stg.setName(st, reference, true);
+            if (signals.containsKey(name)) {
+                st.setSignalType(signals.get(name));
+                node = st;
+            } else {
+                throw new FormatException ("Undeclared signal encountered: "
+                    + name + " ("+reference+"). Possibly malformed header.");
+            }
+        }
+        return node;
+    }
 
-	private void createArc (Node first, Node second) {
-		try {
-			ConnectionResult result = stg.connect(first, second);
-			STGPlace implicitPlace = result.getImplicitPlace();
-			if (implicitPlace != null) {
-				implicitPlaces.put(Pair.of(first, second), implicitPlace);
-				implicitPlace.setImplicit(true);
-			}
-		} catch (InvalidConnectionException e) {
-			throw new FormatException ("Cannot create arc from " + stg.getNodeReference(first) +
-			 " to " + stg.getNodeReference(second) + ".", e);
-		}
-	}
+    private void createArc (Node first, Node second) {
+        try {
+            ConnectionResult result = stg.connect(first, second);
+            STGPlace implicitPlace = result.getImplicitPlace();
+            if (implicitPlace != null) {
+                implicitPlaces.put(Pair.of(first, second), implicitPlace);
+                implicitPlace.setImplicit(true);
+            }
+        } catch (InvalidConnectionException e) {
+            throw new FormatException ("Cannot create arc from " + stg.getNodeReference(first) +
+             " to " + stg.getNodeReference(second) + ".", e);
+        }
+    }
 
-	private void addSignals (List<String> list, Type type) {
-		for (String name : list) {
-			if (signals.containsKey(name)) {
-				Type prevType = signals.get(name);
-				if (!prevType.equals(type)) {
-					throw new FormatException ("The " + type + " signal '" + name
-					   + "' was already listed as an " + prevType + " signal.");
-				}
-			} else if (dummies.contains(name)) {
-				throw new FormatException ("The " + type + " '" + name
-				    + "' was already listed as a dummy.");
-			} else {
-				signals.put(name, type);
-			}
-		}
-	}
+    private void addSignals (List<String> list, Type type) {
+        for (String name : list) {
+            if (signals.containsKey(name)) {
+                Type prevType = signals.get(name);
+                if (!prevType.equals(type)) {
+                    throw new FormatException ("The " + type + " signal '" + name
+                       + "' was already listed as an " + prevType + " signal.");
+                }
+            } else if (dummies.contains(name)) {
+                throw new FormatException ("The " + type + " '" + name
+                    + "' was already listed as a dummy.");
+            } else {
+                signals.put(name, type);
+            }
+        }
+    }
 
-	private void addDummies (List<String> list) {
-		for (String name : list) {
-			if (signals.containsKey(name)) {
-				Type type = signals.get(name);
-				throw new FormatException ("The dummy '" + name
-				    + "' was already listed as an " + type + " signal.");
-			} else {
-				dummies.add(name);
-			}
-		}
-	}
+    private void addDummies (List<String> list) {
+        for (String name : list) {
+            if (signals.containsKey(name)) {
+                Type type = signals.get(name);
+                throw new FormatException ("The dummy '" + name
+                    + "' was already listed as an " + type + " signal.");
+            } else {
+                dummies.add(name);
+            }
+        }
+    }
 }
 PARSER_END(DotGParser)
 

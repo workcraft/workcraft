@@ -45,14 +45,14 @@ SKIP:
 
 <WITHIN_SPECIFY> SKIP:
 {
-	"endspecify" : DEFAULT
-|	<~[]>
+    "endspecify" : DEFAULT
+|    <~[]>
 }
 
 <WITHIN_PRIMITIVE> SKIP:
 {
-	"endprimitive" : DEFAULT
-|	<~[]>
+    "endprimitive" : DEFAULT
+|    <~[]>
 }
 
 TOKEN :
@@ -80,8 +80,8 @@ TOKEN :
 |   <MPSAT_ZERO_DELAY : "// #PRAGMA: zero delay" <WS> <NL>>
 |   <PETRIFY_INIT_STATE : "// signal values at the initial state:" <WS> <NL> <WS> "//">
 |   <MPSAT_INIT_STATE : "// initial values of the signals" <WS> <NL> <WS> "//">
-|	<#WS: ([" ", "\t"])*>
-|	<#NL: (["\n", "\r"])+>
+|    <#WS: ([" ", "\t"])*>
+|    <#NL: (["\n", "\r"])+>
 |   "("
 |   ")"
 |   "["
@@ -136,16 +136,16 @@ Module parseModule():
     assigns = parseAssigns()
     instances = parseInstances()
     [<PETRIFY_UNMAPPED>
-    	(<PETRIFY_EQUATION>
-    		group = parseInstances()
-    		{
-    			instances.addAll(group);
-    			groups.add(group);
-    		}
-    	)*
+        (<PETRIFY_EQUATION>
+            group = parseInstances()
+            {
+                instances.addAll(group);
+                groups.add(group);
+            }
+        )*
     ]
     [ (<PETRIFY_INIT_STATE> | <MPSAT_INIT_STATE>)
-    	signalStates = parseInitialState()
+        signalStates = parseInitialState()
     ]
     <ENDMODULE>
     {
@@ -170,9 +170,9 @@ List<Port> parsePorts():
 }
 {
     (
-    	LOOKAHEAD(parseCompactPorts())
+        LOOKAHEAD(parseCompactPorts())
         ports = parseCompactPorts()
-  	|   ports = parseComplexPorts()
+      |   ports = parseComplexPorts()
     )
     {
         return ports;
@@ -185,15 +185,15 @@ List<Port> parseCompactPorts():
     List<Port> ports = new LinkedList<Port>();
 }
 {
-	[
-		"("
-   		(
-       		port = parseCompactPort() [","]
-       		{
-	           	ports.add(port);
-    	   	}
-   		)*
-    	")"
+    [
+        "("
+           (
+               port = parseCompactPort() [","]
+               {
+                   ports.add(port);
+               }
+           )*
+        ")"
     ]
     ";"
     {
@@ -209,7 +209,7 @@ Port parseCompactPort():
 {
     type = parsePortType() nameToken = <NAME>
     {
-    	return new Port(nameToken.image, type);
+        return new Port(nameToken.image, type);
     }
 }
 
@@ -218,14 +218,14 @@ Port.Type parsePortType():
 }
 {
     (
-    	<INPUT>
-    	{
-    		return Port.Type.INPUT;
-    	}
-    |	<OUTPUT>
-    	{
-    		return Port.Type.OUTPUT;
-    	}
+        <INPUT>
+        {
+            return Port.Type.INPUT;
+        }
+    |    <OUTPUT>
+        {
+            return Port.Type.OUTPUT;
+        }
     )
 }
 
@@ -235,18 +235,18 @@ List<Port> parseComplexPorts():
     List<Port> definitions;
 }
 {
-	declarations = parsePortsDeclaration()
-	definitions = parsePortsDefinitions()
+    declarations = parsePortsDeclaration()
+    definitions = parsePortsDefinitions()
     {
-    	HashMap<String, Port.Type> nameToType = new HashMap<String, Port.Type>();
-    	for (Port port: definitions) {
-    		nameToType.put(port.name, port.type);
-    	}
-    	List<Port> ports = new LinkedList<Port>();
-   		for (String name: declarations) {
-   			Port.Type type = nameToType.get(name);
-    		ports.add(new Port(name, type));
-    	}
+        HashMap<String, Port.Type> nameToType = new HashMap<String, Port.Type>();
+        for (Port port: definitions) {
+            nameToType.put(port.name, port.type);
+        }
+        List<Port> ports = new LinkedList<Port>();
+           for (String name: declarations) {
+               Port.Type type = nameToType.get(name);
+            ports.add(new Port(name, type));
+        }
         return ports;
     }
 }
@@ -257,13 +257,13 @@ List<String> parsePortsDeclaration():
 }
 {
     ["(" names = parseNames() ")"] ";"
-	{
-		List<String> ports = new LinkedList<String>();
-		if (names != null) {
-			ports.addAll(names);
-		}
-		return ports;
-	}
+    {
+        List<String> ports = new LinkedList<String>();
+        if (names != null) {
+            ports.addAll(names);
+        }
+        return ports;
+    }
 }
 
 List<Port> parsePortsDefinitions():
@@ -273,15 +273,15 @@ List<Port> parsePortsDefinitions():
 }
 {
     (
-    	ports = parsePortsDefinition()
-    	{
-    		if (ports != null) {
-    			allPorts.addAll(ports);
-    		}
-    	}
+        ports = parsePortsDefinition()
+        {
+            if (ports != null) {
+                allPorts.addAll(ports);
+            }
+        }
     )*
     {
-    	return allPorts;
+        return allPorts;
     }
 }
 
@@ -291,21 +291,21 @@ List<Port> parsePortsDefinition():
     Port.Type type;
 }
 {
-   	(
-   		( type = parsePortType() names = parseNames() ";")
-	    {
-    		List<Port> ports = new LinkedList<Port>();
-    		for (String name: names) {
-    			Port port = new Port(name, type);
-    			ports.add(port);
-        	}
-     		return ports;
-    	}
-   	| 	( (<WIRE> | <INOUT> | <REG>) parseNames() ";")
-   		{
-   			return null;
-   		}
-   	)
+       (
+           ( type = parsePortType() names = parseNames() ";")
+        {
+            List<Port> ports = new LinkedList<Port>();
+            for (String name: names) {
+                Port port = new Port(name, type);
+                ports.add(port);
+            }
+             return ports;
+        }
+       |     ( (<WIRE> | <INOUT> | <REG>) parseNames() ";")
+           {
+               return null;
+           }
+       )
 }
 
 List<String> parseNames():
@@ -317,53 +317,53 @@ List<String> parseNames():
     (
         nameToken = <NAME> [","]
         {
-        	String name = nameToken.image;
+            String name = nameToken.image;
             names.add(name);
         }
     )*
     {
-    	return names;
+        return names;
     }
 }
 
 Map<String, Boolean> parseInitialState():
 {
-	Boolean state;
+    Boolean state;
     Token nameToken;
     Map<String, Boolean> signalStates = new HashMap<String, Boolean>();
 }
 {
     (
         (
-        	("!" nameToken = <NAME>)
-        	{
-        		state = false;
-        	}
-        |	(nameToken = <NAME>)
-	        {
-    	    	state = true;
-        	}
+            ("!" nameToken = <NAME>)
+            {
+                state = false;
+            }
+        |    (nameToken = <NAME>)
+            {
+                state = true;
+            }
         ) [","]
         {
-   	    	String name = nameToken.image;
-       	    signalStates.put(name, state);
-       	}
+               String name = nameToken.image;
+               signalStates.put(name, state);
+           }
     )*
     {
-    	return signalStates;
+        return signalStates;
     }
 }
 
 List<Assign> parseAssigns():
 {
-	Assign assign;
+    Assign assign;
     List<Assign> assigns = new LinkedList<Assign>();
 }
 {
     (
         assign = parseAssign()
         {
-        	assigns.add(assign);
+            assigns.add(assign);
         }
     )*
     {
@@ -391,7 +391,7 @@ List<Instance> parseInstances():
 }
 {
     (
-       	instance = parseInstance()
+           instance = parseInstance()
         {
             instances.add(instance);
         }
@@ -411,15 +411,15 @@ Instance parseInstance():
 }
 {
     [ (<PETRIFY_ZERO_DELAY> | <MPSAT_ZERO_DELAY>)
-    	{
-    		zeroDelay = true;
-    	}
+        {
+            zeroDelay = true;
+        }
     ]
     moduleName = parseModuleName()
     [nameToken = <NAME>]
     "(" pins = parsePins() ")" ";"
     {
-    	String name = (nameToken == null ? null : nameToken.image);
+        String name = (nameToken == null ? null : nameToken.image);
         return new Instance(name, moduleName, pins, zeroDelay);
     }
 }
@@ -430,7 +430,7 @@ List<Pin> parsePins():
 }
 {
     (
-   		LOOKAHEAD(parseNamedPins())
+           LOOKAHEAD(parseNamedPins())
         pins = parseNamedPins()
     |   pins = parseOrderedPins()
     )
@@ -474,12 +474,12 @@ List<Pin> parseOrderedPins():
     List<Pin> pins = new LinkedList<Pin>();
 }
 {
-	wires = parseNames()
+    wires = parseNames()
     {
-    	for (String wire: wires) {
-    		Pin pin = new Pin(null, wire);
-    		pins.add(pin);
-    	}
+        for (String wire: wires) {
+            Pin pin = new Pin(null, wire);
+            pins.add(pin);
+        }
         return pins;
     }
 }
@@ -487,7 +487,7 @@ List<Pin> parseOrderedPins():
 /*
 List<String> parseWires():
 {
-	String wire;
+    String wire;
     List<String> wires = new LinkedList<String>();
 }
 {
@@ -498,22 +498,22 @@ List<String> parseWires():
         }
     )*
     {
-    	return wires;
+        return wires;
     }
 }
 
 String parseWire():
 {
-	Token wireToken = null;
+    Token wireToken = null;
 }
 {
     (
-    	wireToken = <NAME>
-    |	wireToken = <LOGIC0>
-    |	wireToken = <LOGIC1>
+        wireToken = <NAME>
+    |    wireToken = <LOGIC0>
+    |    wireToken = <LOGIC1>
     )
-	{
-		return (wireToken == null ? null : wireToken.image);
-	}
+    {
+        return (wireToken == null ? null : wireToken.image);
+    }
 }
 */

@@ -58,7 +58,7 @@ public class CpogExpressionParser {
 
   CpogFormula var(String name) throws ParseException
   {
-	CpogFormula result = vars.eval(name);
+    CpogFormula result = vars.eval(name);
     if (result == null)
     throw new ParseException("Undefined variable: '" + name + "'");
     return result;
@@ -66,7 +66,7 @@ public class CpogExpressionParser {
 
   CpogFormula var(String name, String boolExpression) throws ParseException
   {
-	CpogFormula result = vars.eval(name, boolExpression);
+    CpogFormula result = vars.eval(name, boolExpression);
     if (result == null)
     throw new ParseException("Undefined variable: '" + name + "'");
     return result;
@@ -79,7 +79,7 @@ public class CpogExpressionParser {
   CpogFormula sequence(CpogFormula a, CpogFormula b)
   {
     CpogFormula result = worker.sequence(a, b);
-	vars.setSequenceCondition(result, globalBool);
+    vars.setSequenceCondition(result, globalBool);
     return result;
   }
 
@@ -116,11 +116,11 @@ public class CpogExpressionParser {
                 return map.get(label);
         }
 
-		@Override
-				public void setSequenceCondition(CpogFormula formula, String boolForm) {
-					// TODO Auto-generated method stub
+        @Override
+                public void setSequenceCondition(CpogFormula formula, String boolForm) {
+                    // TODO Auto-generated method stub
 
-				}
+                }
 
 
     });
@@ -137,18 +137,18 @@ PARSER_END(CpogExpressionParser)
 
 SKIP :
 {
- 	" "
-|	"\r"
-|	"\t"
-|	"\n"
+     " "
+|    "\r"
+|    "\t"
+|    "\n"
 }
 TOKEN : /* OPERATORS */
 {
-  	< OVERLAY: "+" >
-|  	< SEQUENCE: "->" | "^" >
+      < OVERLAY: "+" >
+|      < SEQUENCE: "->" | "^" >
 |   < BOOLOPEN: "[" >
 |   < BOOLCLOSE: "]" >
-| 	< BRACKOPEN: "(" >
+|     < BRACKOPEN: "(" >
 |   < BRACKCLOSE: ")" >
 }
 TOKEN :
@@ -174,8 +174,8 @@ CpogFormula formula() :
 
 CpogFormula overlayOp1() :
 {
-  	CpogFormula result;
-  	CpogFormula op;
+      CpogFormula result;
+      CpogFormula op;
 }
 {
   result = overlayOp() ( op = overlayOp()
@@ -188,8 +188,8 @@ CpogFormula overlayOp1() :
 
 CpogFormula overlayOp() :
 {
-  	CpogFormula result;
-  	CpogFormula op;
+      CpogFormula result;
+      CpogFormula op;
 }
 {
   result = literal() ( < SEQUENCE > op = literal()
@@ -209,21 +209,21 @@ CpogFormula literal() :
 {
    (
      t = < VARIABLE >
-	{
-	  if (globalBool != "")
-	  {
-		result = var(t.image, globalBool);
-	  }  else
-	  {
-	  	result = var(t.image);
-	  }
-	}
-	| t = < BOOLOPEN >
-	{
-	  bool = stringLiteral();
-	  boolClose();
-	  result = literal1(bool);
-	}
+    {
+      if (globalBool != "")
+      {
+        result = var(t.image, globalBool);
+      }  else
+      {
+          result = var(t.image);
+      }
+    }
+    | t = < BOOLOPEN >
+    {
+      bool = stringLiteral();
+      boolClose();
+      result = literal1(bool);
+    }
     | "(" result = formula() ")"
   )
   {
@@ -245,26 +245,26 @@ CpogFormula literal1(String bool) :
         result = var(t.image, bool);
       } else
       {
-		result = var (t.image, globalBool + "&" + bool);
+        result = var (t.image, globalBool + "&" + bool);
       }
     }
-  	| t = < BRACKOPEN >
-  	{
-  	  while (str.compareTo(")") != 0)
-  	  {
-  	    if (str.compareTo("]") == 0)
-  	    {
-		  exp = exp.substring(0, exp.length() - 1);
-  	    }
-  	    exp = exp + str;
-  	    str = bracketInternals();
-  	  }
-  	  result = new CpogExpressionParser(new StringReader(exp), vars , graphName, bool).formula();
-  	}
+      | t = < BRACKOPEN >
+      {
+        while (str.compareTo(")") != 0)
+        {
+          if (str.compareTo("]") == 0)
+          {
+          exp = exp.substring(0, exp.length() - 1);
+          }
+          exp = exp + str;
+          str = bracketInternals();
+        }
+        result = new CpogExpressionParser(new StringReader(exp), vars , graphName, bool).formula();
+      }
   )
-	{
-  	  return result;
-	}
+    {
+        return result;
+    }
 }
 
 String stringLiteral() :
@@ -280,9 +280,9 @@ String stringLiteral() :
       result = t.image;
     }
   )
-	{
-  	  return result;
-	}
+    {
+        return result;
+    }
 }
 
 String boolClose() :
@@ -297,9 +297,9 @@ String boolClose() :
       result = t.image;
     }
   )
-	{
-  	return result;
-	}
+    {
+      return result;
+    }
 }
 
 String bracketInternals() :
@@ -311,35 +311,35 @@ String bracketInternals() :
   (
   t = < OVERLAY >
     {
-	  result = "+" + " ";
-	}
+      result = "+" + " ";
+    }
   | t = < SEQUENCE >
     {
-	  result = t.image + " ";
-	}
+      result = t.image + " ";
+    }
   | t = < BOOLOPEN >
     {
-	  result = t.image;
-	}
+      result = t.image;
+    }
   | t = < BOOLCLOSE >
     {
       result = t.image;
     }
   | t = < BRACKCLOSE >
     {
-	  result = t.image;
-	}
+      result = t.image;
+    }
   | t = < BRACKOPEN >
-  	{
-  	  String r = "";
-	  result = "(";
-	  while (r.compareTo(")") != 0)
-	  {
-		r = bracketInternals();
-		result = result + r;
-	  }
+      {
+        String r = "";
+      result = "(";
+      while (r.compareTo(")") != 0)
+      {
+        r = bracketInternals();
+        result = result + r;
+      }
 
-	}
+    }
   | t = < VARIABLE >
     {
       result = t.image + " ";

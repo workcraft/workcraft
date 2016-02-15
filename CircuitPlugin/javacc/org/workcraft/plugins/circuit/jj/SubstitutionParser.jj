@@ -46,7 +46,7 @@ TOKEN :
 
 List<SubstitutionRule> parseSubstitutionRules() :
 {
-	SubstitutionRule rule;
+    SubstitutionRule rule;
     List<SubstitutionRule> rules = new LinkedList<SubstitutionRule>();
 }
 {
@@ -63,26 +63,26 @@ List<SubstitutionRule> parseSubstitutionRules() :
 
 SubstitutionRule parseSubstitutionRule() :
 {
-	Pair<String, String> gateSubstitution;
-	Pair<String, String> portSubstitution;
+    Pair<String, String> gateSubstitution;
+    Pair<String, String> portSubstitution;
     Map<String, String> portSubstitutions = new HashMap<String, String>();
 }
 {
     gateSubstitution = parseSubstitution()
     [ "("
-    	(
-    		portSubstitution = parseSubstitution() [","]
-        	{
-		    	String oldPortName = portSubstitution.getFirst();
-    			String newPortName = portSubstitution.getSecond();
-            	portSubstitutions.put(oldPortName, newPortName);
-        	}
-    	)*
-    	")"
+        (
+            portSubstitution = parseSubstitution() [","]
+            {
+                String oldPortName = portSubstitution.getFirst();
+                String newPortName = portSubstitution.getSecond();
+                portSubstitutions.put(oldPortName, newPortName);
+            }
+        )*
+        ")"
     ]
     {
-    	String oldGateName = gateSubstitution.getFirst();
-    	String newGateName = gateSubstitution.getSecond();
+        String oldGateName = gateSubstitution.getFirst();
+        String newGateName = gateSubstitution.getSecond();
         return new SubstitutionRule(oldGateName, newGateName, portSubstitutions);
     }
 }

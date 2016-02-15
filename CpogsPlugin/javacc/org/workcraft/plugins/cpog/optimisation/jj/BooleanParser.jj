@@ -30,7 +30,7 @@ public class BooleanParser {
   Func<String, ? extends BooleanFormula> vars;
   BooleanFormula var(String name) throws ParseException
   {
-	BooleanFormula result = vars.eval(name);
+    BooleanFormula result = vars.eval(name);
     if (result == null)
     throw new ParseException("Undefined variable: '" + name + "'");
     return result;
@@ -73,7 +73,7 @@ public class BooleanParser {
   {
     final HashMap<String, BooleanVariable> map = new HashMap<String, BooleanVariable>();
     for(BooleanVariable var : variables)
-	  map.put(var.getLabel(), var);
+      map.put(var.getLabel(), var);
     return parse(text, new Func<String, BooleanVariable>()
     {
       public BooleanVariable eval(String label)
@@ -92,20 +92,20 @@ PARSER_END(BooleanParser)
 
 SKIP :
 {
- 	" "
-|	"\r"
-|	"\t"
-|	"\n"
+     " "
+|    "\r"
+|    "\t"
+|    "\n"
 }
 TOKEN : /* OPERATORS */
 {
-  	< EQUALS: "eq" | "=" | "==" | "<->" | "<=>" >
-|  	< NOTEQUALS: "neq" | "!=" >
-|  	< IMPLIES: "imp" | "=>" | "\u21d2" | "->" >
-|  	< OR: "or" | "|" | "+" | "\u2228" >
-|  	< XOR: "xor" | "^" | "\u2295" >
-|	< AND: "and" | "&" | "*" | "\u2227" | "\u2022" >
-|	< NOT: "not" | "!" | "�" >
+      < EQUALS: "eq" | "=" | "==" | "<->" | "<=>" >
+|      < NOTEQUALS: "neq" | "!=" >
+|      < IMPLIES: "imp" | "=>" | "\u21d2" | "->" >
+|      < OR: "or" | "|" | "+" | "\u2228" >
+|      < XOR: "xor" | "^" | "\u2295" >
+|    < AND: "and" | "&" | "*" | "\u2227" | "\u2022" >
+|    < NOT: "not" | "!" | "�" >
 |   < POSTNOT: "'" >
 }
 TOKEN :
@@ -115,8 +115,8 @@ TOKEN :
 }
 BooleanFormula formula() :
 {
-  	BooleanFormula result;
-  	BooleanFormula op;
+      BooleanFormula result;
+      BooleanFormula op;
 }
 {
   result = eqOp() ( < EQUALS > op = eqOp()
@@ -126,8 +126,8 @@ BooleanFormula formula() :
 
 BooleanFormula eqOp() :
 {
-  	BooleanFormula result;
-  	BooleanFormula op;
+      BooleanFormula result;
+      BooleanFormula op;
 }
 {
   result = neqOp() ( < NOTEQUALS > op = neqOp()
@@ -137,8 +137,8 @@ BooleanFormula eqOp() :
 
 BooleanFormula neqOp() :
 {
-  	BooleanFormula result;
-  	BooleanFormula op;
+      BooleanFormula result;
+      BooleanFormula op;
 }
 {
   result = implyOp() [ < IMPLIES > op = implyOp()
@@ -148,8 +148,8 @@ BooleanFormula neqOp() :
 
 BooleanFormula implyOp() :
 {
-  	BooleanFormula result;
-  	BooleanFormula op;
+      BooleanFormula result;
+      BooleanFormula op;
 }
 {
   result = orOp() ( < OR > op = orOp()
@@ -159,8 +159,8 @@ BooleanFormula implyOp() :
 
 BooleanFormula orOp() :
 {
-  	BooleanFormula result;
-  	BooleanFormula op;
+      BooleanFormula result;
+      BooleanFormula op;
 }
 {
   result = xorOp() ( < XOR > op = xorOp()
@@ -170,8 +170,8 @@ BooleanFormula orOp() :
 
 BooleanFormula xorOp() :
 {
-  	BooleanFormula result;
-  	BooleanFormula op;
+      BooleanFormula result;
+      BooleanFormula op;
 }
 {
   result = andOp() ( < AND > op = andOp()
@@ -185,10 +185,10 @@ BooleanFormula andOp() :
   BooleanFormula result;
 }
 {
-  	(< NOT > { inverse = !inverse; } )*
-  	result = literal()
-  	(< POSTNOT > { inverse = !inverse; } )*
-  	{ return inverse ? not(result) : result; }
+      (< NOT > { inverse = !inverse; } )*
+      result = literal()
+      (< POSTNOT > { inverse = !inverse; } )*
+      { return inverse ? not(result) : result; }
 }
 
 BooleanFormula literal() :
@@ -199,10 +199,10 @@ BooleanFormula literal() :
 {
    (
      t = < VARIABLE >
-	{ result = var(t.image); }
+    { result = var(t.image); }
     |
     t = < CONSTANT >
-	{ result = constant(t.image); }
+    { result = constant(t.image); }
     | "(" result = formula() ")"
   )
   { return result; }
