@@ -32,13 +32,11 @@ template_dir="../../distr-template"
 description_msg="`basename $0`: creates a distribution for Workcraft"
 usage_msg="Usage: `basename $0` [-s SRC_DIR] [-d DISTR_DIR] [-t TEMPLATE_DIR] [-h | --help]"
 params_msg="
-  -s SRC_DIR : source directory (default: $src_dir)\n
-  -d DISTR_DIR : distribution directory (default: $distr_dir)\n
-  -t TEMPLATE_DIRECTORY: template directory (default: $template_dir))\n
+  -s SRC_DIR : source directory (default: $src_dir)
+  -d DISTR_DIR : distribution directory (default: $distr_dir)
+  -t TEMPLATE_DIRECTORY: template directory (default: $template_dir))
   -h, --help : print this help"
-help_msg="${description_msg}\n\n${usage_msg}\n\n${params_msg}"
-
-echo_command='echo -e'
+help_msg="${description_msg}\n\n${usage_msg}\n${params_msg}\n"
 
 # Process parameters
 for param in $*
@@ -47,21 +45,21 @@ do
         -s) src_dir=$2; shift 2;;
         -d) distr_dir=$2; shift 2;;
         -t) template_dir=$2; shift 2;;
-        -h | --help) $echo_command "$help_msg"; exit 0;
+        -h | --help) printf "$help_msg"; exit 0;
     esac
 done
 
 # Check source directory existance
 if [[ ! -a $src_dir ]] || [[ ! -d $src_dir ]] 
 then
-    $echo_command "Error: Source directory not found: $src_dir"
+    echo "Error: Source directory not found: $src_dir"
     exit 1
 fi
 
 # Create distr directory
 if [ -e $distr_dir ] 
 then
-    $echo_command "Error: Distribution directory already exists: $distr_dir"
+    echo "Error: Distribution directory already exists: $distr_dir"
     exit 1
 else
     mkdir $distr_dir
@@ -70,7 +68,7 @@ fi
 # Copy the template content
 if [[ ! -a $template_dir ]] || [[ ! -d $template_dir ]] 
 then
-    $echo_command "Warning: Template directory not found: $template_dir"
+    echo "Warning: Template directory not found: $template_dir"
 else
     cp -r $template_dir/* $distr_dir/
 fi
