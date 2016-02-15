@@ -38,11 +38,11 @@ scripts it is important to separate its *Workspace* directory from the
 *Project* directory (otherwise Gradle integration may fail).
 
 * As an example, create `workcraft-workspace` directory and clone the Workcraft repo into it:
-
-    $ mkdir workcraft-workspace
-    $ cd workcraft-workspace
-    $ git clone https://github.com/tuura/workcraft workcraft-master
-
+```
+$ mkdir workcraft-workspace
+$ cd workcraft-workspace
+$ git clone https://github.com/tuura/workcraft workcraft-master
+```
 * Install [Buildship Gradle Integration](https://marketplace.eclipse.org/content/buildship-gradle-integration)
   plugin in Eclipse via the *Help->Instal New Software...* menu.
 
