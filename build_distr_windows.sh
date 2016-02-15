@@ -1,8 +1,8 @@
 #!/usr/bin/bash -e
 
-template_dir="../../distr-template-windows"
+template_dir="dist-template/windows"
+dist_dir="dist_windows"
 
-./build_distr.sh -t $template_dir
-rm -f  ${distr_dir}/workcraft
-7z a -r "${distr_dir}.zip" $distr_dir
-rm -rf $distr_dir
+./build_distr.sh -t $template_dir -d $dist_dir
+rm -f  ${dist_dir}/workcraft
+7z a -r "${dist_dir}.zip" $dist_dir
