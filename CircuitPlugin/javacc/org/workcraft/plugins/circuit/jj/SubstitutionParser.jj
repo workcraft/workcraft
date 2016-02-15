@@ -1,7 +1,7 @@
 /**
  * JavaCC file
  */
- 
+
 options {
   JDK_VERSION = "1.7";
   LOOKAHEAD = 1;
@@ -33,7 +33,7 @@ SKIP:
 |   "\r"
 |   "\n"
 |   <"//" (~["\r", "\n"])*>
-|   < "`" (~["\r", "\n"])*> 
+|   < "`" (~["\r", "\n"])*>
 }
 
 TOKEN :
@@ -42,8 +42,8 @@ TOKEN :
 |   "("
 |   ")"
 |   ","
-}    
-    
+}
+
 List<SubstitutionRule> parseSubstitutionRules() :
 {
 	SubstitutionRule rule;
@@ -60,7 +60,7 @@ List<SubstitutionRule> parseSubstitutionRules() :
         return rules;
     }
 }
-    
+
 SubstitutionRule parseSubstitutionRule() :
 {
 	Pair<String, String> gateSubstitution;
@@ -71,7 +71,7 @@ SubstitutionRule parseSubstitutionRule() :
     gateSubstitution = parseSubstitution()
     [ "("
     	(
-    		portSubstitution = parseSubstitution() [","] 
+    		portSubstitution = parseSubstitution() [","]
         	{
 		    	String oldPortName = portSubstitution.getFirst();
     			String newPortName = portSubstitution.getSecond();

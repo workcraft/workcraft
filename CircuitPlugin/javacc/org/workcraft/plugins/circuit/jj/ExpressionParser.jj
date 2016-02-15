@@ -1,7 +1,7 @@
 /**
  * JavaCC file
  */
- 
+
 options {
   JDK_VERSION = "1.7";
   LOOKAHEAD = 1;
@@ -66,10 +66,10 @@ Expression parseExpression():
 		{
 			terms.add(term);
 		}
-		( 
+		(
 			("+" | "|" | "||")  term = parseTerm()
 			{
-				terms.add(term); 
+				terms.add(term);
 			}
 		)*
 	)
@@ -92,12 +92,12 @@ Expression parseTerm():
 		factor = parseFactor()
 		{
 			factors.add(factor);
-		} 
-		( 
-			["*" | "&" | "&&"] factor = parseFactor() 
+		}
+		(
+			["*" | "&" | "&&"] factor = parseFactor()
 			{
 				factors.add(factor);
-			} 
+			}
 		)*
 	)
 	{
@@ -147,7 +147,7 @@ Expression parseConstant():
 {
 }
 {
-	( 
+	(
 		<CONST0>
 		{
 			return new Constant(false);

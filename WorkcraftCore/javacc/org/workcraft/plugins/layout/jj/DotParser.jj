@@ -1,7 +1,7 @@
 /**
  * JavaCC file
  */
- 
+
 options {
   JDK_VERSION = "1.7";
   LOOKAHEAD = 1;
@@ -57,7 +57,7 @@ String id() :
   {
     return t.image.substring(1, t.image.length()-1);
   }
-| 
+|
   (
     t = "strict"
   | t = "graph"
@@ -102,7 +102,7 @@ void attr(Map<String, String> attrs):
 	(value=id())
 	]
 	[","]
-	
+
 	{
 		attrs.put(name, value);
 	}

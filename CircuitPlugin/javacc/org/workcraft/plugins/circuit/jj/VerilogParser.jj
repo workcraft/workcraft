@@ -1,7 +1,7 @@
 /**
  * JavaCC file
  */
- 
+
 options {
   JDK_VERSION = "1.7";
   LOOKAHEAD = 1;
@@ -38,8 +38,8 @@ SKIP:
 |   "\r"
 |   "\n"
 |   <"//" (~["\r", "\n"])*>
-|   < "`" (~["\r", "\n"])*> 
-|   "specify" : WITHIN_SPECIFY 
+|   < "`" (~["\r", "\n"])*>
+|   "specify" : WITHIN_SPECIFY
 |   "primitive" : WITHIN_PRIMITIVE
 }
 
@@ -90,11 +90,11 @@ TOKEN :
 |   "!"
 |   ";"
 |   "."
-}    
-    
+}
+
 List<Module> parseCircuit() :
 {
-    List<Module> modules; 
+    List<Module> modules;
 }
 {
     modules = parseModules()
@@ -119,24 +119,24 @@ List<Module> parseModules():
         return modules;
     }
 }
-    
+
 Module parseModule():
 {
     String name;
-    List<Port> ports; 
+    List<Port> ports;
     List<Assign> assigns;
     List<Instance> instances;
     List<Instance> group;
     Set<List<Instance>> groups = new HashSet<List<Instance>>();
-    Map<String, Boolean> signalStates = null; 
+    Map<String, Boolean> signalStates = null;
 }
 {
-    <MODULE> name = parseModuleName() 
+    <MODULE> name = parseModuleName()
     ports = parsePorts()
     assigns = parseAssigns()
     instances = parseInstances()
     [<PETRIFY_UNMAPPED>
-    	(<PETRIFY_EQUATION> 
+    	(<PETRIFY_EQUATION>
     		group = parseInstances()
     		{
     			instances.addAll(group);
@@ -144,7 +144,7 @@ Module parseModule():
     		}
     	)*
     ]
-    [ (<PETRIFY_INIT_STATE> | <MPSAT_INIT_STATE>) 
+    [ (<PETRIFY_INIT_STATE> | <MPSAT_INIT_STATE>)
     	signalStates = parseInitialState()
     ]
     <ENDMODULE>
@@ -221,11 +221,11 @@ Port.Type parsePortType():
     	<INPUT>
     	{
     		return Port.Type.INPUT;
-    	} 
+    	}
     |	<OUTPUT>
     	{
     		return Port.Type.OUTPUT;
-    	} 
+    	}
     )
 }
 
@@ -292,7 +292,7 @@ List<Port> parsePortsDefinition():
 }
 {
    	(
-   		( type = parsePortType() names = parseNames() ";") 
+   		( type = parsePortType() names = parseNames() ";")
 	    {
     		List<Port> ports = new LinkedList<Port>();
     		for (String name: names) {
@@ -305,7 +305,7 @@ List<Port> parsePortsDefinition():
    		{
    			return null;
    		}
-   	) 
+   	)
 }
 
 List<String> parseNames():
@@ -338,7 +338,7 @@ Map<String, Boolean> parseInitialState():
         	("!" nameToken = <NAME>)
         	{
         		state = false;
-        	} 
+        	}
         |	(nameToken = <NAME>)
 	        {
     	    	state = true;
@@ -413,7 +413,7 @@ Instance parseInstance():
     [ (<PETRIFY_ZERO_DELAY> | <MPSAT_ZERO_DELAY>)
     	{
     		zeroDelay = true;
-    	} 
+    	}
     ]
     moduleName = parseModuleName()
     [nameToken = <NAME>]
@@ -508,10 +508,10 @@ String parseWire():
 }
 {
     (
-    	wireToken = <NAME> 
-    |	wireToken = <LOGIC0> 
+    	wireToken = <NAME>
+    |	wireToken = <LOGIC0>
     |	wireToken = <LOGIC1>
-    ) 
+    )
 	{
 		return (wireToken == null ? null : wireToken.image);
 	}

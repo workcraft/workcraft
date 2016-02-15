@@ -1,7 +1,7 @@
 /**
  * JavaCC file
  */
- 
+
 options {
   JDK_VERSION = "1.7";
   STATIC = false;
@@ -63,7 +63,7 @@ public class BooleanParser {
   {
     return worker.not(a);
   }
-  
+
   public static BooleanFormula parse(String text, Func<String, ? extends BooleanFormula> vars) throws ParseException
   {
     return new BooleanParser(new StringReader(text), vars).formula();

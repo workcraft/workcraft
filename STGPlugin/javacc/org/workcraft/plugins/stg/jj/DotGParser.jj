@@ -1,7 +1,7 @@
 /**
  * JavaCC file
  */
- 
+
 options {
   JDK_VERSION = "1.7";
   LOOKAHEAD = 1;
@@ -38,12 +38,12 @@ public class DotGParser {
 		stg = new STG();
 		implicitPlaces = new HashMap<Pair<Node, Node>, STGPlace>();
 	}
-	
+
 	private Node getOrCreate (String name) {
 		Node node = stg.getNodeByReference(name);
 		if (node == null) {
 			node = stg.getNodeByReference(name + "/0");
-		}			
+		}
 		if (node == null) {
 		  	if (dummies.contains(name)) {
 				node = stg.createDummyTransition(name, null);
@@ -55,7 +55,7 @@ public class DotGParser {
 		}
 		return node;
 	}
-	
+
 	private Node getOrCreate (Pair<String, Integer> ref) {
 		String reference = stg.makeReference(ref);
 		String name = ref.getFirst();
@@ -72,10 +72,10 @@ public class DotGParser {
 		}
 		return node;
 	}
-	
+
 	private Node getOrCreate (Triple<String, Direction, Integer> ref) {
 		String reference = stg.makeReference(ref);
-		String name = ref.getFirst(); 
+		String name = ref.getFirst();
 		Node node = stg.getNodeByReference (reference);
 		if (node == null) {
 			SignalTransition st = stg.createSignalTransition();
@@ -90,7 +90,7 @@ public class DotGParser {
 		}
 		return node;
 	}
-	
+
 	private void createArc (Node first, Node second) {
 		try {
 			ConnectionResult result = stg.connect(first, second);
@@ -104,7 +104,7 @@ public class DotGParser {
 			 " to " + stg.getNodeReference(second) + ".", e);
 		}
 	}
-	
+
 	private void addSignals (List<String> list, Type type) {
 		for (String name : list) {
 			if (signals.containsKey(name)) {
@@ -121,7 +121,7 @@ public class DotGParser {
 			}
 		}
 	}
-	
+
 	private void addDummies (List<String> list) {
 		for (String name : list) {
 			if (signals.containsKey(name)) {
@@ -193,7 +193,7 @@ STG parse() :
     (
         footer() < LINEBREAK >
     )*
-    < END > (< ANY >)* 
+    < END > (< ANY >)*
     < EOF >
     {
         return stg;

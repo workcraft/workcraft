@@ -1,7 +1,7 @@
 /**
  * JavaCC file
 */
- 
+
 options {
   JDK_VERSION = "1.7";
   STATIC = false;
@@ -47,15 +47,15 @@ public class CpogExpressionParser {
     this.graphName = graphName;
     nameSet = true;
     this.globalBool = bool;
-  } 
-  
+  }
+
   CpogWorker worker = new CleverCpogWorker();
   GraphFunc<String, ? extends CpogFormula> vars;
   String graphName, globalBool = "";
   boolean nameSet = false;
-  final HashMap<String, FreeVariable> map = new HashMap<String, FreeVariable>();	
+  final HashMap<String, FreeVariable> map = new HashMap<String, FreeVariable>();
 
-  
+
   CpogFormula var(String name) throws ParseException
   {
 	CpogFormula result = vars.eval(name);
@@ -70,19 +70,19 @@ public class CpogExpressionParser {
     if (result == null)
     throw new ParseException("Undefined variable: '" + name + "'");
     return result;
-  } 
+  }
   CpogFormula overlay(CpogFormula a, CpogFormula b)
   {
     return worker.overlay(a, b);
   }
-  
+
   CpogFormula sequence(CpogFormula a, CpogFormula b)
   {
     CpogFormula result = worker.sequence(a, b);
 	vars.setSequenceCondition(result, globalBool);
     return result;
   }
-  
+
   public static CpogFormula parse(String text, GraphFunc<String, ? extends CpogFormula> vars) throws ParseException
   {
     return new CpogExpressionParser(new StringReader(text), vars).formula();
@@ -96,7 +96,7 @@ public class CpogExpressionParser {
     return parse(text, new GraphFunc<String, CpogFormulaVariable>()
     {
       private String graphName;
-      
+
       public CpogFormulaVariable eval(String label)
       {
         return map.get(label);
@@ -119,7 +119,7 @@ public class CpogExpressionParser {
 		@Override
 				public void setSequenceCondition(CpogFormula formula, String boolForm) {
 					// TODO Auto-generated method stub
-					
+
 				}
 
 
@@ -182,7 +182,7 @@ CpogFormula overlayOp1() :
   {
     result = overlay(result, op);
   } )*
-  
+
   { return result; }
 }
 
@@ -198,9 +198,9 @@ CpogFormula overlayOp() :
 } ) *
   {
     return result; }
-} 
+}
 
-CpogFormula literal() : 
+CpogFormula literal() :
 {
   Token t = null;
   String bool, str;
@@ -208,7 +208,7 @@ CpogFormula literal() :
 }
 {
    (
-     t = < VARIABLE > 
+     t = < VARIABLE >
 	{
 	  if (globalBool != "")
 	  {
@@ -223,7 +223,7 @@ CpogFormula literal() :
 	  bool = stringLiteral();
 	  boolClose();
 	  result = literal1(bool);
-	} 
+	}
     | "(" result = formula() ")"
   )
   {
@@ -284,7 +284,7 @@ String stringLiteral() :
   	  return result;
 	}
 }
- 
+
 String boolClose() :
 {
   Token t = null;
@@ -306,7 +306,7 @@ String bracketInternals() :
 {
   Token t = null;
   String result = "";
-} 
+}
 {
   (
   t = < OVERLAY >
@@ -338,8 +338,8 @@ String bracketInternals() :
 		r = bracketInternals();
 		result = result + r;
 	  }
-	  
-	} 
+
+	}
   | t = < VARIABLE >
     {
       result = t.image + " ";
