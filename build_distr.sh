@@ -21,7 +21,6 @@ tool_plugin_dirs="
     PetrifyExtraPlugin
     PetrifyPlugin"
 third_party_dirs="ThirdParty"
-doc_dirs="overview help tutorial"
 core_dirs="WorkcraftCore"
 core_files="LICENSE README workcraft workcraft.bat"
 
@@ -76,10 +75,8 @@ do
     cp -r $i/* $distr_dir/$i/
 done
 
-for i in $doc_dirs
-do
-    mkdir $distr_dir/$i
-    cp -r $i/* $distr_dir/$i/
+for d in doc/*; do
+    cp -r $d $distr_dir/
 done
 
 for i in $core_files
