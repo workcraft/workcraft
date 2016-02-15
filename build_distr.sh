@@ -43,12 +43,12 @@ echo_command='echo -e'
 # Process parameters
 for param in $*
 do
-  case $param in
-    -s) src_dir=$2; shift 2;;
-    -d) distr_dir=$2; shift 2;;
-    -t) template_dir=$2; shift 2;;
-    -h | --help) $echo_command $help_msg; exit 0;
-  esac
+    case $param in
+        -s) src_dir=$2; shift 2;;
+        -d) distr_dir=$2; shift 2;;
+        -t) template_dir=$2; shift 2;;
+        -h | --help) $echo_command $help_msg; exit 0;
+    esac
 done
 
 # Check source directory existance
@@ -72,7 +72,7 @@ if [[ ! -a $template_dir ]] || [[ ! -d $template_dir ]]
 then
     $echo_command "Warning: Template directory not found: $template_dir"
 else
-    cp -r $template_dir/*  $distr_dir/
+    cp -r $template_dir/* $distr_dir/
 fi
 
 # Copy core and plugin classes, third-party libraries, documentation and misc files
