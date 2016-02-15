@@ -106,13 +106,17 @@ List<Module> parseCircuit() :
 List<Module> parseModules():
 {
     Module module;
-    List<Module> modules = new LinkedList<Module>();}
+    List<Module> modules = new LinkedList<Module>();
+}
 {
-    (        module = parseModule()
-        {            modules.add(module);
+    (
+        module = parseModule()
+        {
+            modules.add(module);
         }
     )*
-    {        return modules;
+    {
+        return modules;
     }
 }
     
@@ -144,7 +148,8 @@ Module parseModule():
     	signalStates = parseInitialState()
     ]
     <ENDMODULE>
-    {        return new Module(name, ports, assigns, instances, signalStates, groups);
+    {
+        return new Module(name, ports, assigns, instances, signalStates, groups);
     }
 }
 
@@ -165,7 +170,8 @@ List<Port> parsePorts():
 }
 {
     (
-    	LOOKAHEAD(parseCompactPorts())        ports = parseCompactPorts()
+    	LOOKAHEAD(parseCompactPorts())
+        ports = parseCompactPorts()
   	|   ports = parseComplexPorts()
     )
     {
@@ -280,7 +286,8 @@ List<Port> parsePortsDefinitions():
 }
 
 List<Port> parsePortsDefinition():
-{    List<String> names;
+{
+    List<String> names;
     Port.Type type;
 }
 {
@@ -290,7 +297,8 @@ List<Port> parsePortsDefinition():
     		List<Port> ports = new LinkedList<Port>();
     		for (String name: names) {
     			Port port = new Port(name, type);
-    			ports.add(port);        	}
+    			ports.add(port);
+        	}
      		return ports;
     	}
    	| 	( (<WIRE> | <INOUT> | <REG>) parseNames() ";")

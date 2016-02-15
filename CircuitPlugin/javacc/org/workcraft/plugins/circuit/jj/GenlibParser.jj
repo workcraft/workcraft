@@ -83,13 +83,17 @@ Library parseGenlib() :
 List<Gate> parseGates():
 {
     Gate gate;
-    List<Gate> gates = new LinkedList<Gate>();}
+    List<Gate> gates = new LinkedList<Gate>();
+}
 {
-    (        ( gate = parseGate() | gate = parseLatch() )
-        {            gates.add(gate);
+    (
+        ( gate = parseGate() | gate = parseLatch() )
+        {
+            gates.add(gate);
         }
     )*
-    {        return gates;
+    {
+        return gates;
     }
 }
     

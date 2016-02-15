@@ -74,9 +74,13 @@ public class BooleanParser {
     final HashMap<String, BooleanVariable> map = new HashMap<String, BooleanVariable>();
     for(BooleanVariable var : variables)
 	  map.put(var.getLabel(), var);
-    return parse(text, new Func<String, BooleanVariable>()    {
-      public BooleanVariable eval(String label)      {
-        return map.get(label);      }    });
+    return parse(text, new Func<String, BooleanVariable>()
+    {
+      public BooleanVariable eval(String label)
+      {
+        return map.get(label);
+      }
+    });
   }
 
   public static void main(String [] args) throws Exception
@@ -115,8 +119,10 @@ BooleanFormula formula() :
   	BooleanFormula op;
 }
 {
-  result = eqOp() ( < EQUALS > op = eqOp()  { result = eq(result, op); } )*
-  { return result; }}
+  result = eqOp() ( < EQUALS > op = eqOp()
+  { result = eq(result, op); } )*
+  { return result; }
+}
 
 BooleanFormula eqOp() :
 {
@@ -176,7 +182,8 @@ BooleanFormula xorOp() :
 BooleanFormula andOp() :
 {
   boolean inverse = false;
-  BooleanFormula result;}
+  BooleanFormula result;
+}
 {
   	(< NOT > { inverse = !inverse; } )*
   	result = literal()
@@ -187,12 +194,16 @@ BooleanFormula andOp() :
 BooleanFormula literal() :
 {
   Token t;
-  BooleanFormula result;}
+  BooleanFormula result;
+}
 {
-   (     t = < VARIABLE >
+   (
+     t = < VARIABLE >
 	{ result = var(t.image); }
     |
     t = < CONSTANT >
-	{ result = constant(t.image); }    | "(" result = formula() ")"
+	{ result = constant(t.image); }
+    | "(" result = formula() ")"
   )
-  { return result; }}
+  { return result; }
+}

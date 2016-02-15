@@ -48,30 +48,47 @@ TOKEN :
   	| <NUMERAL: (["-"])?("."(["0"-"9"])+ | (["0"-"9"])+ ("."(["0"-"9"])*)?)>
 }
 
-String id() :{  Token t;}{
-  t=< QUOTED >  {
-    return t.image.substring(1, t.image.length()-1);  }
-|   (    t = "strict"
+String id() :
+{
+  Token t;
+}
+{
+  t=< QUOTED >
+  {
+    return t.image.substring(1, t.image.length()-1);
+  }
+| 
+  (
+    t = "strict"
   | t = "graph"
   | t = "digraph"
   | t = "node"
   | t = "edge"
   | t = < NAME >
-  | t = < NUMERAL >  )  {    return t.image;  }
+  | t = < NUMERAL >
+  )
+  {
+    return t.image;
+  }
 }
 
 void graph(DotListener listener) :
-{}
-{	["strict"] ("graph" | "digraph") id() "{"
+{
+}
+{
+	["strict"] ("graph" | "digraph") id() "{"
 	( statement(listener) )* "}"
 }
 
 int integer() :
-{	Token token;
+{
+	Token token;
 }
-{	token = < INTEGER >
+{
+	token = < INTEGER >
 	{
-	  return Integer.parseInt(token.image);	}
+	  return Integer.parseInt(token.image);
+	}
 }
 
 void attr(Map<String, String> attrs):
@@ -79,29 +96,60 @@ void attr(Map<String, String> attrs):
   String name;
   String value = null;
 }
-{	name=id()
+{
+	name=id()
 	["="
 	(value=id())
 	]
 	[","]
 	
-	{		attrs.put(name, value);
+	{
+		attrs.put(name, value);
 	}
 }
 
 Map<String, String> attr_list() :
 {
-  Map<String, String> result = new HashMap<String, String>();}
+  Map<String, String> result = new HashMap<String, String>();
+}
 {
-  "["	(	  attr(result)
+  "["
+	(
+	  attr(result)
 	)*
 	"]"
-	{	  return result;	}
+	{
+	  return result;
+	}
 }
 
 void attr_statement() :
-{}
-{	("graph"|"node"|"edge") attr_list()
+{
+}
+{
+	("graph"|"node"|"edge") attr_list()
 }
 
-void statement(DotListener listener) :{  Token name;  Map < String, String > prop;  String i, j;}{  (    attr_statement()  	| i = id()    (      prop = attr_list()      {        listener.node(i, prop);      }    | "->" j = id() prop = attr_list()      {        listener.arc(i, j, prop);      }    )  )  ";"}
+void statement(DotListener listener) :
+{
+  Token name;
+  Map < String, String > prop;
+  String i, j;
+}
+{
+  (
+    attr_statement()
+  	| i = id()
+    (
+      prop = attr_list()
+      {
+        listener.node(i, prop);
+      }
+    | "->" j = id() prop = attr_list()
+      {
+        listener.arc(i, j, prop);
+      }
+    )
+  )
+  ";"
+}
