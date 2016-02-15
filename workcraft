@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash -e
 
 # Remember the current working directory
 CURRENT_DIR="$PWD"

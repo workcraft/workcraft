@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash -e
 
 template_dir="../../distr-template-linux"
 
