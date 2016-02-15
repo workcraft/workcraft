@@ -22,7 +22,7 @@ tool_plugin_dirs="
     PetrifyPlugin"
 third_party_dirs="ThirdParty"
 core_dirs="WorkcraftCore"
-core_files="LICENSE README workcraft workcraft.bat"
+core_files="LICENSE README.md workcraft workcraft.bat"
 
 distr_dir=dist
 template_dir="../../distr-template"
