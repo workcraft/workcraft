@@ -1,7 +1,7 @@
-#!/usr/bin/bash -e
+#!/bin/sh -e
 
 template_dir="dist-template/windows"
-dist_dir="dist_windows"
+dist_dir="workcraft-windows"
 
 ./dist.sh -t $template_dir -d $dist_dir
 rm -f  ${dist_dir}/workcraft

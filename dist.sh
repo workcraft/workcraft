@@ -1,10 +1,10 @@
-#!/usr/bin/bash -e
+#!/bin/sh -e
 
 plugin_dirs="*Plugin/"
 core_dir="WorkcraftCore"
 core_files="LICENSE README.md workcraft workcraft.bat"
 
-dist_dir=dist
+dist_dir="dist"
 template_dir="dist-template/linux"
 
 description_msg="`basename $0`: creates a distribution for Workcraft"
@@ -29,15 +29,15 @@ for param in $*; do
     esac
 done
 
-if [[ ! -e $core_dir/build ]]; then
+if [ ! -e "$core_dir/build" ]; then
     err "You need to run 'gradle assemble' first"
 fi
 
-if [[ ! -d $template_dir ]]; then
+if [ ! -d "$template_dir" ]; then
     err "Template directory not found: $template_dir"
 fi
 
-if [[ -e $dist_dir ]]; then
+if [ -e "$dist_dir" ]; then
     err "Distribution directory already exists: $dist_dir"
 fi
 
