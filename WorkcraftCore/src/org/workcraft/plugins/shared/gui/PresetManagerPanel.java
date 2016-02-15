@@ -133,14 +133,16 @@ public class PresetManagerPanel<T> extends JPanel {
 
         for (Preset<T> p : presets) {
             presetCombo.addItem(p);
-            if (p == selected)
+            if (p == selected) {
                 haveOldSelection = true;
+            }
         }
 
-        if (haveOldSelection)
+        if (haveOldSelection) {
             presetCombo.setSelectedItem(selected);
-        else
+        } else {
             presetCombo.setSelectedIndex(0);
+        }
     }
 
     public void createPreset() {
@@ -155,8 +157,8 @@ public class PresetManagerPanel<T> extends JPanel {
     }
 
     public void selectFirst() {
-
-        if (presetCombo.getItemCount() > 0)
+        if (presetCombo.getItemCount() > 0) {
             presetCombo.setSelectedIndex(0);
+        }
     }
 }

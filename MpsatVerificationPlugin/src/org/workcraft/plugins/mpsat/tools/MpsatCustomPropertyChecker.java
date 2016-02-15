@@ -6,12 +6,12 @@ import org.workcraft.Framework;
 import org.workcraft.VerificationTool;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
-import org.workcraft.plugins.mpsat.MpsatSettings;
+import org.workcraft.plugins.mpsat.MpsatPresetManager;
 import org.workcraft.plugins.mpsat.MpsatSettingsSerialiser;
 import org.workcraft.plugins.mpsat.gui.MpsatConfigurationDialog;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.petri.PetriNetModel;
-import org.workcraft.plugins.shared.presets.PresetManager;
+import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -36,7 +36,8 @@ public class MpsatCustomPropertyChecker extends VerificationTool {
     @Override
     public void run(WorkspaceEntry we) {
         File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, "mpsat_presets.xml");
-        PresetManager<MpsatSettings> pmgr = new PresetManager<MpsatSettings>(presetFile, new MpsatSettingsSerialiser());
+        boolean allowStgPresets = WorkspaceUtils.canHas(we, STGModel.class);
+        MpsatPresetManager pmgr = new MpsatPresetManager(presetFile, new MpsatSettingsSerialiser(), allowStgPresets);
         final Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
         MpsatConfigurationDialog dialog = new MpsatConfigurationDialog(mainWindow, pmgr);

@@ -42,6 +42,6 @@ public class Preset<T> {
 
     @Override
     public String toString() {
-        return description + (builtIn ? " [built-in]" : "");
+        return description.trim() + (builtIn ? " [built-in]" : "");
     }
 }

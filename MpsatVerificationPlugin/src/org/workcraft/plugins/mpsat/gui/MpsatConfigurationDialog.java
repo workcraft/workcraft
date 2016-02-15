@@ -30,11 +30,11 @@ import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.plugins.mpsat.MpsatBuiltinPresets;
 import org.workcraft.plugins.mpsat.MpsatMode;
+import org.workcraft.plugins.mpsat.MpsatPresetManager;
 import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.mpsat.MpsatSettings.SolutionMode;
 import org.workcraft.plugins.shared.gui.PresetManagerPanel;
 import org.workcraft.plugins.shared.presets.Preset;
-import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.plugins.shared.presets.SettingsToControlsMapper;
 import org.workcraft.util.GUI;
 import org.workcraft.util.IntDocument;
@@ -51,7 +51,7 @@ public class MpsatConfigurationDialog extends JDialog {
     private JTextArea reachText;
     private JRadioButton allSolutionsRadioButton, firstSolutionRadioButton, cheapestSolutionRadioButton;
     private JRadioButton satisfiebleRadioButton, unsatisfiebleRadioButton;
-    private PresetManager<MpsatSettings> presetManager;
+    private MpsatPresetManager presetManager;
 
     private TableLayout layout;
     private int modalResult = 0;
@@ -71,7 +71,7 @@ public class MpsatConfigurationDialog extends JDialog {
         }
     }
 
-    public MpsatConfigurationDialog(Window owner, PresetManager<MpsatSettings> presetManager) {
+    public MpsatConfigurationDialog(Window owner, MpsatPresetManager presetManager) {
         super(owner, "Custom property definition", ModalityType.APPLICATION_MODAL);
         this.presetManager = presetManager;
 
@@ -117,9 +117,11 @@ public class MpsatConfigurationDialog extends JDialog {
 
         builtInPresets.add(MpsatBuiltinPresets.DEADLOCK_CHECKER);
         builtInPresets.add(MpsatBuiltinPresets.DEADLOCK_CHECKER_ALL_TRACES);
-        builtInPresets.add(MpsatBuiltinPresets.CONSISTENCY_CHECKER);
-        builtInPresets.add(MpsatBuiltinPresets.PERSISTENCY_CHECKER);
-        builtInPresets.add(MpsatBuiltinPresets.NORMALCY_CHECKER);
+        if (presetManager.isAllowStgPresets()) {
+            builtInPresets.add(MpsatBuiltinPresets.CONSISTENCY_CHECKER);
+            builtInPresets.add(MpsatBuiltinPresets.PERSISTENCY_CHECKER);
+            builtInPresets.add(MpsatBuiltinPresets.NORMALCY_CHECKER);
+        }
 
         SettingsToControlsMapper<MpsatSettings> guiMapper = new SettingsToControlsMapper<MpsatSettings>() {
             @Override
@@ -147,9 +149,12 @@ public class MpsatConfigurationDialog extends JDialog {
         modeComboDimention.width = 318;
         modeCombo.setPreferredSize(modeComboDimention);
         modeCombo.addItem(MpsatMode.DEADLOCK);
-        modeCombo.addItem(MpsatMode.REACHABILITY);
-        modeCombo.addItem(MpsatMode.STG_REACHABILITY);
-        modeCombo.addItem(MpsatMode.NORMALCY);
+        if (presetManager.isAllowStgPresets()) {
+            modeCombo.addItem(MpsatMode.STG_REACHABILITY);
+            modeCombo.addItem(MpsatMode.NORMALCY);
+        } else {
+            modeCombo.addItem(MpsatMode.REACHABILITY);
+        }
         modeCombo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

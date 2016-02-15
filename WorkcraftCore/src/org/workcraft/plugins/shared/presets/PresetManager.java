@@ -50,9 +50,9 @@ public class PresetManager<T> {
         try {
             if (presetFile.exists()) {
                 Document doc = XmlUtil.loadDocument(presetFile);
-
-                for (Element p : XmlUtil.getChildElements("preset", doc.getDocumentElement()))
+                for (Element p : XmlUtil.getChildElements("preset", doc.getDocumentElement())) {
                     presets.add(new Preset<T>(p, serialiser));
+                }
             }
         } catch (ParserConfigurationException e) {
             throw new RuntimeException(e);
@@ -96,14 +96,17 @@ public class PresetManager<T> {
     }
 
     private void checkBuiltIn(Preset<T> preset) {
-        if (preset.isBuiltIn())
-            throw new RuntimeException("Invalid operation attempted on a built-in MPSat preset.");
+        if (preset.isBuiltIn()) {
+            throw new RuntimeException("Invalid operation attempted on a built-in preset.");
+        }
     }
 
     public Preset<T> find(String description) {
-        for (Preset<T> p : presets)
-            if (p.getDescription().equals(description))
+        for (Preset<T> p : presets) {
+            if (p.getDescription().equals(description)) {
                 return p;
+            }
+        }
         return null;
     }
 
