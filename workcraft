@@ -1,53 +1,24 @@
 #!/usr/bin/env bash
 
 # Remember the current working directory
-CURRENT_DIR=`pwd -P`
+CURRENT_DIR="$PWD"
 
 # Change to Workcraft home directory and put it into the WORKCRAFT_HOME variable
-cd `dirname "$0"`
-WORKCRAFT_HOME=`pwd -P`
+cd "$(dirname "$0")"
+WORKCRAFT_HOME="$PWD"
 
 # Set the JVM executable in JAVA_BIN variable (if not defined yet)
-if [ -z "$JAVA_BIN" ]
-then
-    if [ -z "$JAVA_HOME" ]
-    then
+if [[ -z $JAVA_BIN ]]; then
+    if [[ -z $JAVA_HOME ]]; then
         JAVA_BIN=java
     else
-        if [ -e "$JAVA_HOME"/bin/java ]
-        then
-            JAVA_BIN="$JAVA_HOME"/bin/java
+        if [ -e $JAVA_HOME/bin/java ]; then
+            JAVA_BIN="$JAVA_HOME/bin/java"
         else
-            JAVA_BIN="$JAVA_HOME"/java
+            JAVA_BIN="$JAVA_HOME/java"
         fi
     fi
 fi
 
-# Add all the plugins and third-party JARs to the CLASSPATH variable 
-export CLASSPATH=\
-"$WORKCRAFT_HOME/CircuitPlugin/bin:"\
-"$WORKCRAFT_HOME/CpogsPlugin/bin:"\
-"$WORKCRAFT_HOME/DfsPlugin/bin:"\
-"$WORKCRAFT_HOME/FsmPlugin/bin:"\
-"$WORKCRAFT_HOME/FstPlugin/bin:"\
-"$WORKCRAFT_HOME/GraphPlugin/bin:"\
-"$WORKCRAFT_HOME/MpsatSynthesisPlugin/bin:"\
-"$WORKCRAFT_HOME/MpsatVerificationPlugin/bin:"\
-"$WORKCRAFT_HOME/PcompPlugin/bin:"\
-"$WORKCRAFT_HOME/PetriNetPlugin/bin:"\
-"$WORKCRAFT_HOME/PetrifyExtraPlugin/bin:"\
-"$WORKCRAFT_HOME/PetrifyPlugin/bin:"\
-"$WORKCRAFT_HOME/PolicyNetPlugin/bin:"\
-"$WORKCRAFT_HOME/PunfPlugin/bin:"\
-"$WORKCRAFT_HOME/SONPlugin/bin:"\
-"$WORKCRAFT_HOME/STGPlugin/bin:"\
-"$WORKCRAFT_HOME/ThirdParty/*:"\
-"$WORKCRAFT_HOME/ThirdParty/batik/*:"\
-"$WORKCRAFT_HOME/WorkcraftCore/bin:"\
-"$WORKCRAFT_HOME/XmasPlugin/bin:"\
-
 # Run Workcraft with the specific JAVA_BIN and CLASSPATH
-"$JAVA_BIN" org.workcraft.Console -dir:"$CURRENT_DIR" "$@"
-
-# Restore the current working directory
-cd "$CURRENT_DIR"
+"$JAVA_BIN" -cp "$WORKCRAFT_HOME/workcraft.jar:$WORKCRAFT_HOME/plugins/*" org.workcraft.Console -dir:"$CURRENT_DIR" "$@"
