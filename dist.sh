@@ -29,17 +29,19 @@ for param in $*; do
     esac
 done
 
-# Create distr directory
+if [[ ! -e $core_dir/build ]]; then
+    err "You need to run 'gradle assemble' first"
+fi
+
+if [[ ! -d $template_dir ]]; then
+    err "Template directory not found: $template_dir"
+fi
+
 if [[ -e $dist_dir ]]; then
     err "Distribution directory already exists: $dist_dir"
 fi
 
 mkdir -p $dist_dir
-
-# Copy the template content
-if [[ ! -d $template_dir ]]; then
-    err "Template directory not found: $template_dir"
-fi
 
 cp -r $template_dir/* $dist_dir/
 
