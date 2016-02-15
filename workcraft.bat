@@ -1,8 +1,8 @@
 :: Enable command line extensions
 VERIFY OTHER 2>NUL
 SETLOCAL ENABLEEXTENSIONS
-IF ERRORLEVEL 1 (    
-    ECHO "Cannot enable command line extensions." 
+IF ERRORLEVEL 1 (
+    ECHO "Cannot enable command line extensions."
     EXIT /B 1
 )
 
@@ -48,7 +48,7 @@ SET CLASSPATH=^
 ;
 
 :: Run Workcraft with the specific JAVA_BIN and CLASSPATH
-"%JAVA_BIN%" org.workcraft.Console %* 
+"%JAVA_BIN%" org.workcraft.Console %*
 
 :: Restore the current working directory
 POPD
