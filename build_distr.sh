@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/bash -e
 
 unsupported_plugin_dirs="BalsaPluginBase BalsaWrapperGenerator DesiJPlugi"
 model_plugin_dirs="
