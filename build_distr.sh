@@ -33,6 +33,11 @@ params_msg="
   -h, --help : print this help"
 help_msg="${description_msg}\n\n${usage_msg}\n${params_msg}\n"
 
+err() {
+    echo "Error: $@" >&2
+    exit 1
+}
+
 # Process parameters
 for param in $*
 do
@@ -46,18 +51,15 @@ done
 # Create distr directory
 if [[ -e $distr_dir ]]
 then
-    echo "Error: Distribution directory already exists: $distr_dir"
-    exit 1
+    err "Distribution directory already exists: $distr_dir"
 fi
 mkdir $distr_dir
 
 # Copy the template content
-if [[ ! -d $template_dir ]]
-then
-    echo "Warning: Template directory not found: $template_dir"
-else
-    cp -r $template_dir/* $distr_dir/
+if [[ ! -d $template_dir ]]; then
+    err "Template directory not found: $template_dir"
 fi
+cp -r $template_dir/* $distr_dir/
 
 # Copy core and plugin classes, third-party libraries, documentation and misc files
 for i in $core_dirs $tool_plugin_dirs $model_plugin_dirs
