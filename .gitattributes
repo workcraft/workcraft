@@ -1,5 +1,6 @@
 # Normalize line endings on text files
 *.java   text
+*.jj     text
 *.sh     text
 *.yml    text
 *.md     text

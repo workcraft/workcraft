@@ -1,7 +1,7 @@
 /**
  * JavaCC file
  */
- 
+
 options {
   JDK_VERSION = "1.7";
   LOOKAHEAD = 1;
@@ -57,104 +57,104 @@ TOKEN :
 
 Expression parseExpression():
 {
-	Expression term;
-	List<Expression> terms = new LinkedList<Expression>();
+    Expression term;
+    List<Expression> terms = new LinkedList<Expression>();
 }
 {
-	(
-		term = parseTerm()
-		{
-			terms.add(term);
-		}
-		( 
-			("+" | "|" | "||")  term = parseTerm()
-			{
-				terms.add(term); 
-			}
-		)*
-	)
-	{
-		if (terms.size() > 1) {
-			return new Formula(terms);
-		} else {
-			return term;
-		}
-	}
+    (
+        term = parseTerm()
+        {
+            terms.add(term);
+        }
+        (
+            ("+" | "|" | "||")  term = parseTerm()
+            {
+                terms.add(term);
+            }
+        )*
+    )
+    {
+        if (terms.size() > 1) {
+            return new Formula(terms);
+        } else {
+            return term;
+        }
+    }
 }
 
 Expression parseTerm():
 {
-	Expression factor;
-	List<Expression> factors = new LinkedList<Expression>();
+    Expression factor;
+    List<Expression> factors = new LinkedList<Expression>();
 }
 {
-	(
-		factor = parseFactor()
-		{
-			factors.add(factor);
-		} 
-		( 
-			["*" | "&" | "&&"] factor = parseFactor() 
-			{
-				factors.add(factor);
-			} 
-		)*
-	)
-	{
-		if (factors.size() > 1) {
-			return new Term(factors);
-		} else {
-			return factor;
-		}
-	}
+    (
+        factor = parseFactor()
+        {
+            factors.add(factor);
+        }
+        (
+            ["*" | "&" | "&&"] factor = parseFactor()
+            {
+                factors.add(factor);
+            }
+        )*
+    )
+    {
+        if (factors.size() > 1) {
+            return new Term(factors);
+        } else {
+            return factor;
+        }
+    }
 }
 
 Expression parseFactor():
 {
-	Expression expression;
+    Expression expression;
 }
 {
-	(
-		expression = parseLiteral()
-	|	expression = parseConstant()
-	|	("!" | "~") expression = parseFactor()
-		{
-			return new Negation(expression);
-		}
-	| 	"(" expression = parseExpression() ")"
-		{
-			return new Factor(expression);
-		}
-	)
-	{
-		return expression;
-	}
+    (
+        expression = parseLiteral()
+    |    expression = parseConstant()
+    |    ("!" | "~") expression = parseFactor()
+        {
+            return new Negation(expression);
+        }
+    |     "(" expression = parseExpression() ")"
+        {
+            return new Factor(expression);
+        }
+    )
+    {
+        return expression;
+    }
 }
 
 Expression parseLiteral():
 {
-	Token nameToken;
+    Token nameToken;
 }
 {
-	nameToken = <NAME>
-	{
-		String name = nameToken.image;
-		return new Literal(name);
-	}
+    nameToken = <NAME>
+    {
+        String name = nameToken.image;
+        return new Literal(name);
+    }
 }
 
 Expression parseConstant():
 {
 }
 {
-	( 
-		<CONST0>
-		{
-			return new Constant(false);
-		}
-	|	<CONST1>
-		{
-			return new Constant(true);
-		}
-	)
+    (
+        <CONST0>
+        {
+            return new Constant(false);
+        }
+    |    <CONST1>
+        {
+            return new Constant(true);
+        }
+    )
 }

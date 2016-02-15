@@ -1,7 +1,7 @@
 /**
  * JavaCC file
  */
- 
+
 options {
   JDK_VERSION = "1.7";
   STATIC = false;
@@ -30,7 +30,7 @@ public class BooleanParser {
   Func<String, ? extends BooleanFormula> vars;
   BooleanFormula var(String name) throws ParseException
   {
-	BooleanFormula result = vars.eval(name);
+    BooleanFormula result = vars.eval(name);
     if (result == null)
     throw new ParseException("Undefined variable: '" + name + "'");
     return result;
@@ -63,7 +63,7 @@ public class BooleanParser {
   {
     return worker.not(a);
   }
-  
+
   public static BooleanFormula parse(String text, Func<String, ? extends BooleanFormula> vars) throws ParseException
   {
     return new BooleanParser(new StringReader(text), vars).formula();
@@ -73,10 +73,14 @@ public class BooleanParser {
   {
     final HashMap<String, BooleanVariable> map = new HashMap<String, BooleanVariable>();
     for(BooleanVariable var : variables)
-	  map.put(var.getLabel(), var);
-    return parse(text, new Func<String, BooleanVariable>()    {
-      public BooleanVariable eval(String label)      {
-        return map.get(label);      }    });
+      map.put(var.getLabel(), var);
+    return parse(text, new Func<String, BooleanVariable>()
+    {
+      public BooleanVariable eval(String label)
+      {
+        return map.get(label);
+      }
+    });
   }
 
   public static void main(String [] args) throws Exception
@@ -88,20 +92,20 @@ PARSER_END(BooleanParser)
 
 SKIP :
 {
- 	" "
-|	"\r"
-|	"\t"
-|	"\n"
+     " "
+|    "\r"
+|    "\t"
+|    "\n"
 }
 TOKEN : /* OPERATORS */
 {
-  	< EQUALS: "eq" | "=" | "==" | "<->" | "<=>" >
-|  	< NOTEQUALS: "neq" | "!=" >
-|  	< IMPLIES: "imp" | "=>" | "\u21d2" | "->" >
-|  	< OR: "or" | "|" | "+" | "\u2228" >
-|  	< XOR: "xor" | "^" | "\u2295" >
-|	< AND: "and" | "&" | "*" | "\u2227" | "\u2022" >
-|	< NOT: "not" | "!" | "�" >
+      < EQUALS: "eq" | "=" | "==" | "<->" | "<=>" >
+|      < NOTEQUALS: "neq" | "!=" >
+|      < IMPLIES: "imp" | "=>" | "\u21d2" | "->" >
+|      < OR: "or" | "|" | "+" | "\u2228" >
+|      < XOR: "xor" | "^" | "\u2295" >
+|    < AND: "and" | "&" | "*" | "\u2227" | "\u2022" >
+|    < NOT: "not" | "!" | "�" >
 |   < POSTNOT: "'" >
 }
 TOKEN :
@@ -111,17 +115,19 @@ TOKEN :
 }
 BooleanFormula formula() :
 {
-  	BooleanFormula result;
-  	BooleanFormula op;
+      BooleanFormula result;
+      BooleanFormula op;
 }
 {
-  result = eqOp() ( < EQUALS > op = eqOp()  { result = eq(result, op); } )*
-  { return result; }}
+  result = eqOp() ( < EQUALS > op = eqOp()
+  { result = eq(result, op); } )*
+  { return result; }
+}
 
 BooleanFormula eqOp() :
 {
-  	BooleanFormula result;
-  	BooleanFormula op;
+      BooleanFormula result;
+      BooleanFormula op;
 }
 {
   result = neqOp() ( < NOTEQUALS > op = neqOp()
@@ -131,8 +137,8 @@ BooleanFormula eqOp() :
 
 BooleanFormula neqOp() :
 {
-  	BooleanFormula result;
-  	BooleanFormula op;
+      BooleanFormula result;
+      BooleanFormula op;
 }
 {
   result = implyOp() [ < IMPLIES > op = implyOp()
@@ -142,8 +148,8 @@ BooleanFormula neqOp() :
 
 BooleanFormula implyOp() :
 {
-  	BooleanFormula result;
-  	BooleanFormula op;
+      BooleanFormula result;
+      BooleanFormula op;
 }
 {
   result = orOp() ( < OR > op = orOp()
@@ -153,8 +159,8 @@ BooleanFormula implyOp() :
 
 BooleanFormula orOp() :
 {
-  	BooleanFormula result;
-  	BooleanFormula op;
+      BooleanFormula result;
+      BooleanFormula op;
 }
 {
   result = xorOp() ( < XOR > op = xorOp()
@@ -164,8 +170,8 @@ BooleanFormula orOp() :
 
 BooleanFormula xorOp() :
 {
-  	BooleanFormula result;
-  	BooleanFormula op;
+      BooleanFormula result;
+      BooleanFormula op;
 }
 {
   result = andOp() ( < AND > op = andOp()
@@ -176,23 +182,28 @@ BooleanFormula xorOp() :
 BooleanFormula andOp() :
 {
   boolean inverse = false;
-  BooleanFormula result;}
+  BooleanFormula result;
+}
 {
-  	(< NOT > { inverse = !inverse; } )*
-  	result = literal()
-  	(< POSTNOT > { inverse = !inverse; } )*
-  	{ return inverse ? not(result) : result; }
+      (< NOT > { inverse = !inverse; } )*
+      result = literal()
+      (< POSTNOT > { inverse = !inverse; } )*
+      { return inverse ? not(result) : result; }
 }
 
 BooleanFormula literal() :
 {
   Token t;
-  BooleanFormula result;}
+  BooleanFormula result;
+}
 {
-   (     t = < VARIABLE >
-	{ result = var(t.image); }
+   (
+     t = < VARIABLE >
+    { result = var(t.image); }
     |
     t = < CONSTANT >
-	{ result = constant(t.image); }    | "(" result = formula() ")"
+    { result = constant(t.image); }
+    | "(" result = formula() ")"
   )
-  { return result; }}
+  { return result; }
+}

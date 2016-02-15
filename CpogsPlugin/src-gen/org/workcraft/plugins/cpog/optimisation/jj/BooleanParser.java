@@ -22,7 +22,7 @@ public class BooleanParser implements BooleanParserConstants {
   Func<String, ? extends BooleanFormula> vars;
   BooleanFormula var(String name) throws ParseException
   {
-        BooleanFormula result = vars.eval(name);
+    BooleanFormula result = vars.eval(name);
     if (result == null)
     throw new ParseException("Undefined variable: '" + name + "'");
     return result;
@@ -65,7 +65,7 @@ public class BooleanParser implements BooleanParserConstants {
   {
     final HashMap<String, BooleanVariable> map = new HashMap<String, BooleanVariable>();
     for(BooleanVariable var : variables)
-          map.put(var.getLabel(), var);
+      map.put(var.getLabel(), var);
     return parse(text, new Func<String, BooleanVariable>()
     {
       public BooleanVariable eval(String label)
@@ -81,7 +81,7 @@ public class BooleanParser implements BooleanParserConstants {
   }
 
   final public BooleanFormula formula() throws ParseException {BooleanFormula result;
-        BooleanFormula op;
+      BooleanFormula op;
     result = eqOp();
     label_1:
     while (true) {
@@ -103,7 +103,7 @@ result = eq(result, op);
   }
 
   final public BooleanFormula eqOp() throws ParseException {BooleanFormula result;
-        BooleanFormula op;
+      BooleanFormula op;
     result = neqOp();
     label_2:
     while (true) {
@@ -125,7 +125,7 @@ result = xor(result, op);
   }
 
   final public BooleanFormula neqOp() throws ParseException {BooleanFormula result;
-        BooleanFormula op;
+      BooleanFormula op;
     result = implyOp();
     switch ((jj_ntk==-1)?jj_ntk_f():jj_ntk) {
     case IMPLIES:{
@@ -143,7 +143,7 @@ result = imply(result, op);
   }
 
   final public BooleanFormula implyOp() throws ParseException {BooleanFormula result;
-        BooleanFormula op;
+      BooleanFormula op;
     result = orOp();
     label_3:
     while (true) {
@@ -165,7 +165,7 @@ result = or(result, op);
   }
 
   final public BooleanFormula orOp() throws ParseException {BooleanFormula result;
-        BooleanFormula op;
+      BooleanFormula op;
     result = xorOp();
     label_4:
     while (true) {
@@ -187,7 +187,7 @@ result = xor(result, op);
   }
 
   final public BooleanFormula xorOp() throws ParseException {BooleanFormula result;
-        BooleanFormula op;
+      BooleanFormula op;
     result = andOp();
     label_5:
     while (true) {

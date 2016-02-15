@@ -84,7 +84,7 @@ modules.add(module);
           jj_consume_token(PETRIFY_EQUATION);
           group = parseInstances();
 instances.addAll(group);
-                        groups.add(group);
+                groups.add(group);
         }
         break;
         }
@@ -265,12 +265,12 @@ ports.add(port);
       definitions = parsePortsDefinitions();
 HashMap<String, Port.Type> nameToType = new HashMap<String, Port.Type>();
         for (Port port: definitions) {
-                nameToType.put(port.name, port.type);
+            nameToType.put(port.name, port.type);
         }
         List<Port> ports = new LinkedList<Port>();
-                for (String name: declarations) {
-                        Port.Type type = nameToType.get(name);
-                ports.add(new Port(name, type));
+           for (String name: declarations) {
+               Port.Type type = nameToType.get(name);
+            ports.add(new Port(name, type));
         }
         {if ("" != null) return ports;}
     throw new Error("Missing return statement in function");
@@ -295,10 +295,10 @@ HashMap<String, Port.Type> nameToType = new HashMap<String, Port.Type>();
       }
       jj_consume_token(44);
 List<String> ports = new LinkedList<String>();
-                if (names != null) {
-                        ports.addAll(names);
-                }
-                {if ("" != null) return ports;}
+        if (names != null) {
+            ports.addAll(names);
+        }
+        {if ("" != null) return ports;}
     throw new Error("Missing return statement in function");
     } finally {
       trace_return("parsePortsDeclaration");
@@ -326,8 +326,8 @@ List<String> ports = new LinkedList<String>();
         }
         ports = parsePortsDefinition();
 if (ports != null) {
-                        allPorts.addAll(ports);
-                }
+                allPorts.addAll(ports);
+            }
       }
 {if ("" != null) return allPorts;}
     throw new Error("Missing return statement in function");
@@ -347,11 +347,11 @@ if (ports != null) {
         names = parseNames();
         jj_consume_token(44);
 List<Port> ports = new LinkedList<Port>();
-                for (String name: names) {
-                        Port port = new Port(name, type);
-                        ports.add(port);
-                }
-                {if ("" != null) return ports;}
+            for (String name: names) {
+                Port port = new Port(name, type);
+                ports.add(port);
+            }
+             {if ("" != null) return ports;}
         break;
         }
       case INOUT:
@@ -470,7 +470,7 @@ state = true;
           ;
         }
 String name = nameToken.image;
-            signalStates.put(name, state);
+               signalStates.put(name, state);
       }
 {if ("" != null) return signalStates;}
     throw new Error("Missing return statement in function");
@@ -671,8 +671,8 @@ pins.add(pin);
     List<Pin> pins = new LinkedList<Pin>();
       wires = parseNames();
 for (String wire: wires) {
-                Pin pin = new Pin(null, wire);
-                pins.add(pin);
+            Pin pin = new Pin(null, wire);
+            pins.add(pin);
         }
         {if ("" != null) return pins;}
     throw new Error("Missing return statement in function");
@@ -697,18 +697,6 @@ for (String wire: wires) {
     finally { jj_save(1, xla); }
   }
 
-  private boolean jj_3R_12()
- {
-    if (jj_scan_token(38)) return true;
-    Token xsp;
-    while (true) {
-      xsp = jj_scanpos;
-      if (jj_3R_14()) { jj_scanpos = xsp; break; }
-    }
-    if (jj_scan_token(39)) return true;
-    return false;
-  }
-
   private boolean jj_3R_13()
  {
     if (jj_3R_15()) return true;
@@ -726,6 +714,12 @@ for (String wire: wires) {
     return false;
   }
 
+  private boolean jj_3_2()
+ {
+    if (jj_3R_11()) return true;
+    return false;
+  }
+
   private boolean jj_3R_11()
  {
     Token xsp;
@@ -737,12 +731,15 @@ for (String wire: wires) {
     return false;
   }
 
-  private boolean jj_3R_10()
+  private boolean jj_3R_12()
  {
+    if (jj_scan_token(38)) return true;
     Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_12()) jj_scanpos = xsp;
-    if (jj_scan_token(44)) return true;
+    while (true) {
+      xsp = jj_scanpos;
+      if (jj_3R_14()) { jj_scanpos = xsp; break; }
+    }
+    if (jj_scan_token(39)) return true;
     return false;
   }
 
@@ -756,6 +753,15 @@ for (String wire: wires) {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_scan_token(42)) jj_scanpos = xsp;
+    return false;
+  }
+
+  private boolean jj_3R_10()
+ {
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_12()) jj_scanpos = xsp;
+    if (jj_scan_token(44)) return true;
     return false;
   }
 
@@ -778,24 +784,18 @@ for (String wire: wires) {
     return false;
   }
 
-  private boolean jj_3R_14()
- {
-    if (jj_3R_16()) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_scan_token(42)) jj_scanpos = xsp;
-    return false;
-  }
-
   private boolean jj_3R_18()
  {
     if (jj_scan_token(INPUT)) return true;
     return false;
   }
 
-  private boolean jj_3_2()
+  private boolean jj_3R_14()
  {
-    if (jj_3R_11()) return true;
+    if (jj_3R_16()) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_scan_token(42)) jj_scanpos = xsp;
     return false;
   }
 
