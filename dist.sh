@@ -73,7 +73,7 @@ done
 case $platform in
     windows)
         rm -f $dist_dir/workcraft
-        7z a -r ${dist_dir}.zip $dist_dir
+        7z a -r ${dist_dir}.zip $dist_dir >/dev/null
         ;;
     linux)
         rm -f $dist_dir/workcraft.bat
