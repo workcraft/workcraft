@@ -7,12 +7,16 @@ core_files="LICENSE README.md workcraft workcraft.bat"
 platform=""
 bname="$(basename $0)"
 
-description_msg="$bname: creates a distribution for Workcraft"
-usage_msg="Usage: $bname PLATFORM [-h]"
-params_msg="
+usage() {
+    cat <<EOF
+$bname: create a distribution for Workcraft
+
+Usage: $bname PLATFORM [-h]
+
   PLATFORM:   distribution platform (linux, windows)
-  -h, --help: print this help"
-help_msg="${description_msg}\n\n${usage_msg}\n${params_msg}\n"
+  -h, --help: print this help
+EOF
+}
 
 err() {
     echo "Error: $@" >&2
@@ -23,7 +27,7 @@ err() {
 for param in $*; do
     case $param in
         -h | --help)
-            printf "$help_msg"
+            usage
             exit 0 ;;
         *)
             platform=$1
