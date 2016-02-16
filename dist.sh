@@ -39,7 +39,7 @@ if [ -z "$platform" ]; then
     err "No platform was specified"
 fi
 
-dist_dir="workcraft-$platform"
+dist_dir="workcraft-$(git describe --tags)-$platform"
 template_dir="dist-template/$platform"
 
 if [ ! -e "$core_dir/build" ]; then
