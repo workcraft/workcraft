@@ -4,15 +4,14 @@ plugin_dirs="*Plugin/"
 core_dir="WorkcraftCore"
 core_files="LICENSE README.md workcraft workcraft.bat"
 
-dist_dir="dist"
-template_dir="dist-template/linux"
+platform=""
+bname="$(basename $0)"
 
-description_msg="`basename $0`: creates a distribution for Workcraft"
-usage_msg="Usage: `basename $0` [-d DIST_DIR] [-t TEMPLATE_DIR] [-h | --help]"
+description_msg="$bname: creates a distribution for Workcraft"
+usage_msg="Usage: $bname PLATFORM [-h]"
 params_msg="
-  -d DIST_DIR : distribution directory (default: $dist_dir)
-  -t TEMPLATE_DIR: template directory (default: $template_dir))
-  -h, --help : print this help"
+  PLATFORM:   distribution platform (linux, windows)
+  -h, --help: print this help"
 help_msg="${description_msg}\n\n${usage_msg}\n${params_msg}\n"
 
 err() {
@@ -23,11 +22,21 @@ err() {
 # Process parameters
 for param in $*; do
     case $param in
-        -d) dist_dir=$2; shift 2;;
-        -t) template_dir=$2; shift 2;;
-        -h | --help) printf "$help_msg"; exit 0;
+        -h | --help)
+            printf "$help_msg"
+            exit 0 ;;
+        *)
+            platform=$1
+            shift ;;
     esac
 done
+
+if [ -z "$platform" ]; then
+    err "No platform was specified"
+fi
+
+dist_dir="workcraft-$platform"
+template_dir="dist-template/$platform"
 
 if [ ! -e "$core_dir/build" ]; then
     err "You need to run 'gradle assemble' first"
