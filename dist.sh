@@ -69,3 +69,14 @@ done
 for f in $core_files; do
     cp $f $dist_dir/
 done
+
+case $platform in
+    windows)
+        rm -f $dist_dir/workcraft
+        7z a -r ${dist_dir}.zip $dist_dir
+        ;;
+    linux)
+        rm -f $dist_dir/workcraft.bat
+        tar -czf ${dist_dir}.tar.gz $dist_dir
+        ;;
+esac
