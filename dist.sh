@@ -39,7 +39,9 @@ if [ -z "$platform" ]; then
     err "No platform was specified"
 fi
 
-dist_dir="workcraft-$(git describe --tags)-$platform"
+dist_dir="dist"
+dist_name="workcraft-$(git describe --tags)-$platform"
+dist_path="$dist_dir/$dist_name"
 template_dir="dist-template/$platform"
 
 if [ ! -e "$core_dir/build" ]; then
@@ -50,37 +52,39 @@ if [ ! -d "$template_dir" ]; then
     err "Template directory not found: $template_dir"
 fi
 
-if [ -e "$dist_dir" ]; then
-    err "Distribution directory already exists: $dist_dir"
+if [ -e "$dist_path" ]; then
+    err "Distribution directory already exists: $dist_path"
 fi
 
-mkdir -p $dist_dir
+mkdir -p $dist_path
 
-cp -r $template_dir/* $dist_dir/
+cp -r $template_dir/* $dist_path/
 
-cp $core_dir/build/libs/*.jar $dist_dir/workcraft.jar
+cp $core_dir/build/libs/*.jar $dist_path/workcraft.jar
 
-mkdir -p $dist_dir/plugins
+mkdir -p $dist_path/plugins
 
 for d in $plugin_dirs; do
-    cp $d/build/libs/*.jar $dist_dir/plugins/
+    cp $d/build/libs/*.jar $dist_path/plugins/
 done
 
 for d in doc/*; do
-    cp -r $d $dist_dir/
+    cp -r $d $dist_path/
 done
 
 for f in $core_files; do
-    cp $f $dist_dir/
+    cp $f $dist_path/
 done
 
 case $platform in
     windows)
-        rm -f $dist_dir/workcraft
-        7z a -r ${dist_dir}.zip $dist_dir >/dev/null
+        rm -f $dist_path/workcraft
+        cd $dist_dir
+        7z a -r ${dist_name}.zip $dist_name >/dev/null
         ;;
     linux)
-        rm -f $dist_dir/workcraft.bat
-        tar -czf ${dist_dir}.tar.gz $dist_dir
+        rm -f $dist_path/workcraft.bat
+        cd $dist_dir
+        tar -czf ${dist_name}.tar.gz $dist_name
         ;;
 esac
