@@ -52,13 +52,15 @@ public class DrawAstgTask implements Task<ExternalProcessResult> {
         ExternalProcessTask task = new ExternalProcessTask(command, null);
         Result<? extends ExternalProcessResult> res = task.run(monitor);
 
-        if (res.getOutcome() != Outcome.FINISHED)
+        if (res.getOutcome() != Outcome.FINISHED) {
             return res;
+        }
 
         ExternalProcessResult retVal = res.getReturnValue();
-        if (retVal.getReturnCode() == 0)
+        if (retVal.getReturnCode() == 0) {
             return Result.finished(retVal);
-        else
+        } else {
             return Result.failed(retVal);
+        }
     }
 }

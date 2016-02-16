@@ -34,8 +34,9 @@ public class CnfOperations {
 
     public static CnfClause or(List<BooleanVariable> literals) {
         CnfClause result = new CnfClause();
-        for (BooleanVariable var : literals)
+        for (BooleanVariable var : literals) {
             result.getLiterals().add(literal(var));
+        }
         return result;
     }
 

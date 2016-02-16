@@ -46,10 +46,11 @@ public class SimulationAlg extends RelationAlgorithm {
         Collection<PlaceNode> initialM = sonAlg.getSONInitial();
 
         for (PlaceNode c : net.getPlaceNodes()) {
-            if (initialM.contains(c))
+            if (initialM.contains(c)) {
                 result.put(c, true);
-            else
+            } else {
                 result.put(c, false);
+            }
         }
 
         return result;
@@ -62,10 +63,11 @@ public class SimulationAlg extends RelationAlgorithm {
         Collection<PlaceNode> finalM = sonAlg.getSONFinal();
 
         for (PlaceNode c : net.getPlaceNodes()) {
-            if (finalM.contains(c))
+            if (finalM.contains(c)) {
                 result.put(c, true);
-            else
+            } else {
                 result.put(c, false);
+            }
         }
 
         return result;
@@ -102,7 +104,7 @@ public class SimulationAlg extends RelationAlgorithm {
                 }
                 //event in sync cycle belongs to the result
                 for (Path cycle : sync) {
-                    if (cycle.contains(e))
+                    if (cycle.contains(e)) {
                         for (Node e2 : cycle) {
                             if (e2 instanceof TransitionNode && u.contains(e2)) {
                                 u.remove(e2);
@@ -111,6 +113,7 @@ public class SimulationAlg extends RelationAlgorithm {
                                 throw new RuntimeException("algorithm error: unenabled event in sync cycle" + net.getNodeReference(e2));
                             }
                         }
+                    }
                 }
                 //event which is the preset w.r.t weak causality, of selected event belongs to the result.
                 if (!getPreAsynEvents(e).isEmpty()) {
@@ -142,7 +145,7 @@ public class SimulationAlg extends RelationAlgorithm {
                 }
 
                 for (Path cycle : sync) {
-                    if (cycle.contains(e))
+                    if (cycle.contains(e)) {
                         for (Node e2 : cycle) {
                             if (e2 instanceof TransitionNode && u.contains(e2)) {
                                 u.remove(e2);
@@ -151,6 +154,7 @@ public class SimulationAlg extends RelationAlgorithm {
                                 throw new RuntimeException("algorithm error: unenabled event in sync cycle" + net.getNodeReference(e2));
                             }
                         }
+                    }
                 }
                 if (!getPostAsynEvents(e).isEmpty()) {
                     for (TransitionNode e3 : getPostAsynEvents(e)) {
@@ -167,22 +171,26 @@ public class SimulationAlg extends RelationAlgorithm {
 
     final public Step getEnabledNodes(Collection<Path> sync, Map<Condition, Collection<Phase>> phases, boolean isRev) {
         Step result = null;
-        if (!isRev)
+        if (!isRev) {
             result = getEnabled(sync, phases);
-        else
+        } else {
             result = getRevEnabled(sync, phases);
+        }
 
         return result;
     }
 
     private boolean isONEnabled(TransitionNode e) {
-        if (net.getPreset(e).isEmpty())
+        if (net.getPreset(e).isEmpty()) {
             return false;
+        }
 
         for (Node n : net.getPreset(e)) {
-            if (n instanceof Condition)
-                if (!((Condition) n).isMarked())
+            if (n instanceof Condition) {
+                if (!((Condition) n).isMarked()) {
                     return false;
+                }
+            }
         }
 
         return true;
@@ -196,9 +204,11 @@ public class SimulationAlg extends RelationAlgorithm {
                     Condition c = (Condition) pre;
                     Collection<Phase> phase = getActivatedPhases(phases.get(c));
                     Collection<Condition> max = bsonAlg.getMaximalPhase(phase);
-                    for (Condition c2 : max)
-                        if (!c2.isMarked())
+                    for (Condition c2 : max) {
+                        if (!c2.isMarked()) {
                             return false;
+                        }
+                    }
                 }
                 return true;
             }
@@ -207,9 +217,11 @@ public class SimulationAlg extends RelationAlgorithm {
         //if e is lower event, e is BSON enabled if every e's upper condition is marked
         for (ONGroup group : lowerGroups) {
             if (group.getComponents().contains(e)) {
-                for (Condition c : bsonAlg.getUpperConditions(e))
-                    if (!c.isMarked())
+                for (Condition c : bsonAlg.getUpperConditions(e)) {
+                    if (!c.isMarked()) {
                         return false;
+                    }
+                }
             }
         }
         return true;
@@ -299,13 +311,16 @@ public class SimulationAlg extends RelationAlgorithm {
 
     //reverse simulation
     private boolean isRevONEnabled(TransitionNode e) {
-        if (net.getPostset(e).isEmpty())
+        if (net.getPostset(e).isEmpty()) {
             return false;
+        }
 
         for (Node n : net.getPostset(e)) {
-            if (n instanceof Condition)
-                if (!((Condition) n).isMarked())
+            if (n instanceof Condition) {
+                if (!((Condition) n).isMarked()) {
                     return false;
+                }
+            }
         }
 
         return true;
@@ -319,9 +334,11 @@ public class SimulationAlg extends RelationAlgorithm {
                     Condition c = (Condition) post;
                     Collection<Phase> phase = getActivatedPhases(phases.get(c));
                     Collection<Condition> min = bsonAlg.getMinimalPhase(phase);
-                    for (Condition c2 : min)
-                        if (!c2.isMarked())
+                    for (Condition c2 : min) {
+                        if (!c2.isMarked()) {
                             return false;
+                        }
+                    }
                 }
                 return true;
             }
@@ -330,9 +347,11 @@ public class SimulationAlg extends RelationAlgorithm {
         //if e is lower event, e is BSON enabled if every e's upper condition is marked
         for (ONGroup group : lowerGroups) {
             if (group.getComponents().contains(e)) {
-                for (Condition c : bsonAlg.getUpperConditions(e))
-                    if (!c.isMarked())
+                for (Condition c : bsonAlg.getUpperConditions(e)) {
+                    if (!c.isMarked()) {
                         return false;
+                    }
+                }
             }
         }
         return true;
@@ -410,10 +429,11 @@ public class SimulationAlg extends RelationAlgorithm {
     }
 
     public void setMarking(Step step, Map<Condition, Collection<Phase>> phases, boolean isRev) throws UnboundedException {
-        if (!isRev)
+        if (!isRev) {
             fire(step, phases);
-        else
+        } else {
             revFire(step, phases);
+        }
     }
 
     /**
@@ -425,18 +445,21 @@ public class SimulationAlg extends RelationAlgorithm {
         //marking for ON and CSON
         for (TransitionNode e : step) {
             for (Node post : net.getPostset(e)) {
-                if ((post instanceof PlaceNode) && net.getSONConnectionType(e, post) != Semantics.SYNCLINE)
-                    if (((PlaceNode) post).isMarked())
+                if ((post instanceof PlaceNode) && net.getSONConnectionType(e, post) != Semantics.SYNCLINE) {
+                    if (((PlaceNode) post).isMarked()) {
                         throw new UnboundedException(net.getNodeReference(post), post);
-                    else
+                    } else {
                         ((PlaceNode) post).setMarked(true);
+                    }
+                }
             }
         }
 
         for (TransitionNode e : step) {
             for (Node pre : net.getPreset(e)) {
-                if ((pre instanceof PlaceNode) && net.getSONConnectionType(e, pre) != Semantics.SYNCLINE)
+                if ((pre instanceof PlaceNode) && net.getSONConnectionType(e, pre) != Semantics.SYNCLINE) {
                     ((PlaceNode) pre).setMarked(false);
+                }
             }
         }
 
@@ -451,11 +474,13 @@ public class SimulationAlg extends RelationAlgorithm {
                     boolean hasMarking = false;
                     for (Condition c2 : maxSet) {
                         for (Condition c3 : bsonAlg.getUpperConditions(c2)) {
-                            if (c3.isMarked())
+                            if (c3.isMarked()) {
                                 hasMarking = true;
+                            }
                         }
-                        if (!hasMarking)
+                        if (!hasMarking) {
                             c2.setMarked(false);
+                        }
                     }
                 }
             }
@@ -466,8 +491,9 @@ public class SimulationAlg extends RelationAlgorithm {
                     Condition c = (Condition) post;
                     Collection<Condition> minSet = bsonAlg.getMinimalPhase(phases.get(c));
                     for (Condition min : minSet) {
-                        if (isInitial(min) && !min.isMarked())
+                        if (isInitial(min) && !min.isMarked()) {
                             min.setMarked(true);
+                        }
                     }
                 }
             }
@@ -483,18 +509,21 @@ public class SimulationAlg extends RelationAlgorithm {
         //marking for ON and CSON
         for (TransitionNode e : step) {
             for (Node pre : net.getPreset(e)) {
-                if ((pre instanceof PlaceNode) && net.getSONConnectionType(e, pre) != Semantics.SYNCLINE)
-                    if (((PlaceNode) pre).isMarked())
+                if ((pre instanceof PlaceNode) && net.getSONConnectionType(e, pre) != Semantics.SYNCLINE) {
+                    if (((PlaceNode) pre).isMarked()) {
                         throw new UnboundedException(net.getNodeReference(pre), pre);
-                    else
+                    } else {
                         ((PlaceNode) pre).setMarked(true);
+                    }
+                }
             }
         }
 
         for (TransitionNode e : step) {
             for (Node post : net.getPostset(e)) {
-                if ((post instanceof PlaceNode) && net.getSONConnectionType(e, post) != Semantics.SYNCLINE)
+                if ((post instanceof PlaceNode) && net.getSONConnectionType(e, post) != Semantics.SYNCLINE) {
                     ((PlaceNode) post).setMarked(false);
+                }
             }
         }
 
@@ -509,11 +538,13 @@ public class SimulationAlg extends RelationAlgorithm {
                     boolean hasMarking = false;
                     for (Condition c2 : minSet) {
                         for (Condition c3 : bsonAlg.getUpperConditions(c2)) {
-                            if (c3.isMarked())
+                            if (c3.isMarked()) {
                                 hasMarking = true;
+                            }
                         }
-                        if (!hasMarking)
+                        if (!hasMarking) {
                             c2.setMarked(false);
+                        }
                     }
                 }
             }
@@ -524,8 +555,9 @@ public class SimulationAlg extends RelationAlgorithm {
                     Condition c = (Condition) pre;
                     Collection<Condition> maxSet = bsonAlg.getMaximalPhase(phases.get(c));
                     for (Condition max : maxSet) {
-                        if (isFinal(max) && !max.isMarked())
+                        if (isFinal(max) && !max.isMarked()) {
                             max.setMarked(true);
+                        }
                     }
                 }
             }

@@ -57,8 +57,9 @@ public class Config {
             return rootGroup.get(k[0]);
         } else {
             group = groups.get(k[0]);
-            if (group == null)
+            if (group == null) {
                 return null;
+            }
             return group.get(k[1]);
         }
     }
@@ -114,8 +115,9 @@ public class Config {
 
     public double getDouble(String key, double defaultValue) {
         String s = get(key);
-        if (s == null)
+        if (s == null) {
             return defaultValue;
+        }
         try {
             return Double.parseDouble(s);
         } catch (NumberFormatException e) {
@@ -225,8 +227,9 @@ public class Config {
                             continue;
                         }
                         Element e2 = (Element) nl2.item(j);
-                        if (e2.getTagName().equals("var"))
+                        if (e2.getTagName().equals("var")) {
                             set(name + "." + e2.getAttribute("name"),  e2.getAttribute("value"));
+                        }
                     }
                 }
             }

@@ -141,8 +141,9 @@ public class TimeValueSetterTool extends AbstractTool {
                 visualNet.setForegroundColor(selection, selectedColor);
                 GUI.centerToParent(estimator, editor.getMainWindow());
                 estimator.setVisible(true);
-                if (estimator.getRun() == 1)
+                if (estimator.getRun() == 1) {
                     updateTimePanel(editor, visualSelection);
+                }
             }
         });
 
@@ -607,8 +608,9 @@ public class TimeValueSetterTool extends AbstractTool {
                     }
                 });
         if (node3 instanceof VisualPlaceNode || node3 instanceof VisualEvent) {
-            if (!(node3 instanceof VisualChannelPlace))
+            if (!(node3 instanceof VisualChannelPlace)) {
                 estimatorButton.setEnabled(true);
+            }
 
             selection = ((VisualComponent) node3).getReferencedComponent();
             visualSelection = node3;

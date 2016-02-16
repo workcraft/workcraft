@@ -69,10 +69,11 @@ public class VisualPolicyNet extends VisualPetriNet {
             public void handleEvent(StateEvent e) {
                 if (e instanceof ModelModifiedEvent
                         || e instanceof PropertyChangedEvent
-                        || e instanceof TransformChangedEvent)
+                        || e instanceof TransformChangedEvent) {
                     for (VisualBundle b: getVisualBundles()) {
                         b.invalidateSpanningTree();
                     }
+                }
             }
         }.attach(getRoot());
     }

@@ -98,16 +98,18 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                     String name;
                     while (true) {
                         name = JOptionPane.showInputDialog("Please enter the name of the new folder:", "");
-                        if (name == null)
+                        if (name == null) {
                             throw new OperationCancelledException();
+                        }
                         File newDir = workspace.getFile(Path.append(path, name));
                         if (!newDir.mkdir()) {
                             JOptionPane
                                     .showMessageDialog(
                                             framework.getMainWindow(),
                                             "The directory could not be created. Please check that the name does not contain any special characters.");
-                        } else
+                        } else {
                             break;
+                        }
                     }
 
                     workspace.fireWorkspaceChanged();

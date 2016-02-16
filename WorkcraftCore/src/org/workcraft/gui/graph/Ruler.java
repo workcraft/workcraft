@@ -171,11 +171,13 @@ public class Ruler implements GridListener {
         horizontalMajorCaptions = new String[majorLines[0].length];
         verticalMajorCaptions = new String[majorLines[1].length];
 
-        for (int i = 0; i < majorLines[0].length; i++)
+        for (int i = 0; i < majorLines[0].length; i++) {
             horizontalMajorCaptions[i] = String
             .format("%.2f", majorLines[0][i]);
-        for (int i = 0; i < majorLines[1].length; i++)
+        }
+        for (int i = 0; i < majorLines[1].length; i++) {
             verticalMajorCaptions[i] = String.format("%.2f", majorLines[1][i]);
+        }
 
     }
 

@@ -38,8 +38,9 @@ public class VisualLocality extends VisualGroup {
 
     @Override
     public void add(Collection<Node> nodes) {
-        for (Node node : nodes)
+        for (Node node : nodes) {
             this.add(node);
+        }
     }
 
     @Override

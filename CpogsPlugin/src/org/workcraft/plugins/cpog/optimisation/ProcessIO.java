@@ -44,8 +44,9 @@ public class ProcessIO {
             BufferedReader reader = new BufferedReader(new InputStreamReader(limboole.getInputStream()));
             String line;
             StringBuilder result = new StringBuilder();
-            while ((line = reader.readLine()) != null)
+            while ((line = reader.readLine()) != null) {
                 result.append(line + "\n");
+            }
 
             String output = result.toString();
             writeFile(output, File.createTempFile("stream", "out"));
@@ -67,8 +68,9 @@ public class ProcessIO {
             minisat.getOutputStream().close();
             while (true) {
                 int r = minisat.getInputStream().read();
-                if (r == -1)
+                if (r == -1) {
                     break;
+                }
             }
             minisat.getInputStream().close();
             try {
@@ -91,8 +93,9 @@ public class ProcessIO {
 
         StringBuilder sb = new StringBuilder();
         String line;
-        while ((line = reader.readLine()) != null)
+        while ((line = reader.readLine()) != null) {
             sb.append(line + "\n");
+        }
 
         reader.close();
         result = sb.toString();

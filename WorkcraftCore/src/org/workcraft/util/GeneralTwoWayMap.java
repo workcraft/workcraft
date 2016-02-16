@@ -28,8 +28,9 @@ import org.workcraft.exceptions.ArgumentException;
 
 public class GeneralTwoWayMap<T1, T2> {
     public GeneralTwoWayMap(Map<T1, T2> map1, Map<T2, T1> map2) {
-        if (!map1.isEmpty() || !map2.isEmpty())
+        if (!map1.isEmpty() || !map2.isEmpty()) {
             throw new ArgumentException("maps should be empty");
+        }
         this.from1to2 = map1;
         this.from2to1 = map2;
     }
@@ -38,8 +39,9 @@ public class GeneralTwoWayMap<T1, T2> {
     public void put(T1 first, T2 second) {
         removeKey(first);
         removeValue(second);
-        if (first == null || second == null)
+        if (first == null || second == null) {
             throw new NullPointerException();
+        }
         from1to2.put(first, second);
         from2to1.put(second, first);
     }
@@ -57,13 +59,15 @@ public class GeneralTwoWayMap<T1, T2> {
     }
     public void removeKey(T1 first) {
         T2 second = getValue(first);
-        if (second != null)
+        if (second != null) {
             remove(first, second);
+        }
     }
     public void removeValue(T2 second) {
         T1 first = getKey(second);
-        if (first != null)
+        if (first != null) {
             remove(first, second);
+        }
     }
     private void remove(T1 first, T2 second) {
         from1to2.remove(first);

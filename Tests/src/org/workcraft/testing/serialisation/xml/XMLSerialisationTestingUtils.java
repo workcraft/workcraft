@@ -62,8 +62,9 @@ public class XMLSerialisationTestingUtils {
         public <T> Collection<PluginInfo<? extends T>> getPlugins(Class<T> interfaceType) {
             Initialiser<Object>[] legacy = getLegacyPlugins(interfaceType);
             ArrayList<PluginInfo<? extends T>> result = new ArrayList<PluginInfo<? extends T>>();
-            for (Initialiser<Object> l : legacy)
+            for (Initialiser<Object> l : legacy) {
                 result.add(new PluginManager.PluginInstanceHolder<T>((Initialiser<? extends T>) l));
+            }
             return result;
         }
 
@@ -95,8 +96,9 @@ public class XMLSerialisationTestingUtils {
                         new LegacyPluginInfo(VisualConnectionDeserialiser.class),
                         new LegacyPluginInfo(ImplicitPlaceArcDeserialiser.class),
                 };
-            } else
+            } else {
                 throw new RuntimeException("Mock plugin manager doesn't know interface " + interfaceType.getCanonicalName());
+            }
         }
 
     }

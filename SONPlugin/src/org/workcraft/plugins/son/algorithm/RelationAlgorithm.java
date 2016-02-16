@@ -26,10 +26,11 @@ public class RelationAlgorithm {
      * check if a given condition has more than one input events
      */
     public boolean hasPostConflictEvents(Node c) {
-        if (getPostConflictEvents(c).isEmpty())
+        if (getPostConflictEvents(c).isEmpty()) {
             return false;
-        else
+        } else {
             return true;
+        }
     }
 
     public Collection<TransitionNode> getPostConflictEvents(Node c) {
@@ -39,8 +40,9 @@ public class RelationAlgorithm {
             Collection<Node> postset = getPostPNSet(c);
             if (postset.size() > 1) {
                 for (Node post : postset) {
-                    if (post instanceof TransitionNode)
+                    if (post instanceof TransitionNode) {
                         result.add((TransitionNode) post);
+                    }
                 }
             }
         }
@@ -51,10 +53,11 @@ public class RelationAlgorithm {
      * check if a given condition has more than one output events
      */
     public boolean hasPreConflictEvents(Node c) {
-        if (getPreConflictEvents(c).isEmpty())
+        if (getPreConflictEvents(c).isEmpty()) {
             return false;
-        else
+        } else {
             return true;
+        }
     }
 
     public Collection<TransitionNode> getPreConflictEvents(Node c) {
@@ -64,8 +67,9 @@ public class RelationAlgorithm {
             Collection<Node> preset = getPrePNSet(c);
             if (preset.size() > 1) {
                 for (Node pre : preset) {
-                    if (pre instanceof TransitionNode)
+                    if (pre instanceof TransitionNode) {
                         result.add((TransitionNode) pre);
+                    }
                 }
             }
         }
@@ -78,16 +82,18 @@ public class RelationAlgorithm {
     public boolean isInitial(Node n) {
         boolean conType = true;
 
-        if (net.getPreset(n).size() == 0)
+        if (net.getPreset(n).size() == 0) {
             return true;
-        else {
+        } else {
             if (n instanceof Condition) {
                 for (SONConnection con : net.getInputSONConnections(n)) {
-                    if (con.getSemantics() == Semantics.PNLINE)
+                    if (con.getSemantics() == Semantics.PNLINE) {
                         conType = false;
+                    }
                 }
-                if (conType)
+                if (conType) {
                     return true;
+                }
             }
         }
 
@@ -100,16 +106,18 @@ public class RelationAlgorithm {
     public boolean isFinal(Node n) {
         boolean conType = true;
 
-        if (net.getPostset(n).size() == 0)
+        if (net.getPostset(n).size() == 0) {
             return true;
-        else {
+        } else {
             if (n instanceof Condition) {
                 for (SONConnection con : net.getOutputSONConnections(n)) {
-                    if (con.getSemantics() == Semantics.PNLINE)
+                    if (con.getSemantics() == Semantics.PNLINE) {
                         conType = false;
+                    }
                 }
-                if (conType)
+                if (conType) {
                     return true;
+                }
             }
         }
 
@@ -122,9 +130,11 @@ public class RelationAlgorithm {
     public boolean hasInitial(Collection<? extends Node> nodes) {
         boolean result = false;
 
-        for (Node node : nodes)
-            if (isInitial(node))
+        for (Node node : nodes) {
+            if (isInitial(node)) {
                 result = true;
+            }
+        }
         return result;
     }
 
@@ -134,9 +144,11 @@ public class RelationAlgorithm {
     public boolean hasFinal(Collection<? extends Node> nodes) {
         boolean result = false;
 
-        for (Node node : nodes)
-            if (isFinal(node))
+        for (Node node : nodes) {
+            if (isFinal(node)) {
                 result = true;
+            }
+        }
         return result;
     }
 
@@ -145,9 +157,11 @@ public class RelationAlgorithm {
      */
     public Collection<Condition> getONInitial(ONGroup group) {
         ArrayList<Condition> result =  new ArrayList<Condition>();
-        for (Condition node : group.getConditions())
-            if (isInitial(node))
+        for (Condition node : group.getConditions()) {
+            if (isInitial(node)) {
                 result.add(node);
+            }
+        }
         return result;
     }
 
@@ -156,9 +170,11 @@ public class RelationAlgorithm {
      */
     public Collection<Condition> getONFinal(ONGroup group) {
         ArrayList<Condition> result =  new ArrayList<Condition>();
-        for (Condition node : group.getConditions())
-            if (isFinal(node))
+        for (Condition node : group.getConditions()) {
+            if (isFinal(node)) {
                 result.add(node);
+            }
+        }
         return result;
     }
 
@@ -168,17 +184,20 @@ public class RelationAlgorithm {
     public Collection<ChannelPlace> getRelatedChannelPlace(Collection<ONGroup> groups) {
         HashSet<ChannelPlace> result = new HashSet<ChannelPlace>();
 
-        for (ChannelPlace cPlace : net.getChannelPlaces())
+        for (ChannelPlace cPlace : net.getChannelPlaces()) {
             for (ONGroup group : groups) {
                 for (Node node : net.getPostset(cPlace)) {
-                    if (group.contains(node))
+                    if (group.contains(node)) {
                         result.add(cPlace);
+                    }
                 }
                 for (Node node : net.getPreset(cPlace)) {
-                    if (group.contains(node))
+                    if (group.contains(node)) {
                         result.add(cPlace);
+                    }
                 }
             }
+        }
 
         return result;
     }
@@ -188,12 +207,17 @@ public class RelationAlgorithm {
      */
     public Collection<Condition> getPrePNCondition(Condition c) {
         Collection<Condition> result = new ArrayList<Condition>();
-        for (Node pre : net.getPreset(c))
-            if (pre instanceof TransitionNode)
-                if (net.getSONConnectionType(c, pre) == Semantics.PNLINE)
-                    for (Node n2 : net.getPreset(pre))
-                        if ((n2 instanceof Condition) && net.getSONConnectionType(pre, n2) == Semantics.PNLINE)
+        for (Node pre : net.getPreset(c)) {
+            if (pre instanceof TransitionNode) {
+                if (net.getSONConnectionType(c, pre) == Semantics.PNLINE) {
+                    for (Node n2 : net.getPreset(pre)) {
+                        if ((n2 instanceof Condition) && net.getSONConnectionType(pre, n2) == Semantics.PNLINE) {
                             result.add((Condition) n2);
+                        }
+                    }
+                }
+            }
+        }
 
         return result;
     }
@@ -203,12 +227,17 @@ public class RelationAlgorithm {
      */
     public Collection<Condition> getPostPNCondition(Condition c) {
         Collection<Condition> result = new ArrayList<Condition>();
-        for (Node post : net.getPostset(c))
-            if (post instanceof TransitionNode)
-                if (net.getSONConnectionType(c, post) == Semantics.PNLINE)
-                    for (Node n2 : net.getPostset(post))
-                        if ((n2 instanceof Condition) && net.getSONConnectionType(post, n2) == Semantics.PNLINE)
+        for (Node post : net.getPostset(c)) {
+            if (post instanceof TransitionNode) {
+                if (net.getSONConnectionType(c, post) == Semantics.PNLINE) {
+                    for (Node n2 : net.getPostset(post)) {
+                        if ((n2 instanceof Condition) && net.getSONConnectionType(post, n2) == Semantics.PNLINE) {
                             result.add((Condition) n2);
+                        }
+                    }
+                }
+            }
+        }
 
         return result;
     }
@@ -236,7 +265,7 @@ public class RelationAlgorithm {
      */
     public Collection<TransitionNode> getPostAsynEvents(TransitionNode e) {
         Collection<TransitionNode> result = new ArrayList<TransitionNode>();
-        for (Node post : net.getPostset(e))
+        for (Node post : net.getPostset(e)) {
             if ((post instanceof ChannelPlace) && net.getSONConnectionType(post, e) == Semantics.ASYNLINE) {
 
                 Iterator<Node> it = net.getPostset(post).iterator();
@@ -245,6 +274,7 @@ public class RelationAlgorithm {
                     result.add((TransitionNode) it.next());
                 }
             }
+        }
         return result;
     }
 
@@ -314,16 +344,19 @@ public class RelationAlgorithm {
     public Collection<Condition> getPREset(TransitionNode e) {
         Collection<Condition> result = new ArrayList<Condition>();
         for (Node n : net.getPreset(e)) {
-            if (n instanceof Condition)
+            if (n instanceof Condition) {
                 result.add((Condition) n);
+            }
             if (n instanceof ChannelPlace) {
 
                 Iterator<Node> it = net.getPreset(n).iterator();
 
                 while (it.hasNext()) {
-                    for (Node preCondition : net.getPreset((TransitionNode) it.next()))
-                        if (preCondition instanceof Condition)
+                    for (Node preCondition : net.getPreset((TransitionNode) it.next())) {
+                        if (preCondition instanceof Condition) {
                             result.add((Condition) preCondition);
+                        }
+                    }
                 }
             }
         }
@@ -334,9 +367,11 @@ public class RelationAlgorithm {
                 Iterator<Node> it = net.getPostset(n).iterator();
 
                 while (it.hasNext()) {
-                    for (Node preCondition : net.getPreset((TransitionNode) it.next()))
-                        if (preCondition instanceof Condition)
+                    for (Node preCondition : net.getPreset((TransitionNode) it.next())) {
+                        if (preCondition instanceof Condition) {
                             result.add((Condition) preCondition);
+                        }
+                    }
                 }
             }
         }
@@ -351,16 +386,19 @@ public class RelationAlgorithm {
         Collection<Condition> result = new ArrayList<Condition>();
 
         for (Node n : net.getPostset(e)) {
-            if (n instanceof Condition)
+            if (n instanceof Condition) {
                 result.add((Condition) n);
+            }
             if (n instanceof ChannelPlace) {
 
                 Iterator<Node> it = net.getPostset(n).iterator();
 
                 while (it.hasNext()) {
-                    for (Node postCondition : net.getPostset((TransitionNode) it.next()))
-                        if (postCondition instanceof Condition)
+                    for (Node postCondition : net.getPostset((TransitionNode) it.next())) {
+                        if (postCondition instanceof Condition) {
                             result.add((Condition) postCondition);
+                        }
+                    }
                 }
             }
         }
@@ -371,9 +409,11 @@ public class RelationAlgorithm {
                 Iterator<Node> it = net.getPreset(n).iterator();
 
                 while (it.hasNext()) {
-                    for (Node postCondition : net.getPostset(it.next()))
-                        if (postCondition instanceof Condition)
+                    for (Node postCondition : net.getPostset(it.next())) {
+                        if (postCondition instanceof Condition) {
                             result.add((Condition) postCondition);
+                        }
+                    }
                 }
             }
         }
@@ -387,8 +427,9 @@ public class RelationAlgorithm {
     public Collection<Node> getPrePNSet(Node node) {
         Collection<Node> result = new ArrayList<Node>();
         for (Node n : net.getPreset(node)) {
-            if (net.getSONConnectionType(node, n) == Semantics.PNLINE)
+            if (net.getSONConnectionType(node, n) == Semantics.PNLINE) {
                 result.add(n);
+            }
         }
         return result;
     }
@@ -399,8 +440,9 @@ public class RelationAlgorithm {
     public Collection<Node> getPostPNSet(Node node) {
         Collection<Node> result = new ArrayList<Node>();
         for (Node n : net.getPostset(node)) {
-            if (net.getSONConnectionType(node, n) == Semantics.PNLINE)
+            if (net.getSONConnectionType(node, n) == Semantics.PNLINE) {
                 result.add(n);
+            }
         }
         return result;
     }
@@ -411,8 +453,9 @@ public class RelationAlgorithm {
     public Collection<Condition> getPostBhvSet(Condition c) {
         Collection<Condition> result = new ArrayList<Condition>();
         for (Node n : net.getPostset(c)) {
-            if (net.getSONConnectionType(c, n) == Semantics.BHVLINE)
+            if (net.getSONConnectionType(c, n) == Semantics.BHVLINE) {
                 result.add((Condition) n);
+            }
         }
         return result;
     }
@@ -423,8 +466,9 @@ public class RelationAlgorithm {
     public Collection<Condition> getPreBhvSet(Condition c) {
         Collection<Condition> result = new ArrayList<Condition>();
         for (Node n : net.getPreset(c)) {
-            if (net.getSONConnectionType(c, n) == Semantics.BHVLINE)
+            if (net.getSONConnectionType(c, n) == Semantics.BHVLINE) {
                 result.add((Condition) n);
+            }
         }
         return result;
     }
@@ -432,9 +476,11 @@ public class RelationAlgorithm {
     public Collection<Node> getPreset(Collection<Node> nodes) {
         Collection<Node> result = new HashSet<Node>();
         for (Node node : nodes) {
-            for (Node pre : net.getPreset(node))
-                if (!nodes.contains(pre))
+            for (Node pre : net.getPreset(node)) {
+                if (!nodes.contains(pre)) {
                     result.add(pre);
+                }
+            }
         }
 
         return result;
@@ -443,13 +489,15 @@ public class RelationAlgorithm {
     public Collection<Node> getCommonElements(Collection<? extends Node> set1, Collection<? extends Node> set2) {
         Collection<Node> result = new HashSet<Node>();
         for (Node node : set1) {
-            if (set2.contains(node))
+            if (set2.contains(node)) {
                 result.add(node);
+            }
         }
 
         for (Node node : set2) {
-            if (set1.contains(node))
+            if (set1.contains(node)) {
                 result.add(node);
+            }
         }
         return result;
     }

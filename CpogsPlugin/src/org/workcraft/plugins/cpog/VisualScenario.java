@@ -115,9 +115,10 @@ public class VisualScenario extends VisualGroup {
             bb = BoundingBoxHelper.union(bb, a.getLabelBoundingBox());
         }
         if (bb == null) bb = contentsBB;
-        else
-        bb.setRect(bb.getMinX() - frameDepth, bb.getMinY() - frameDepth,
-                   bb.getWidth() + 2.0 * frameDepth, bb.getHeight() + 2.0 * frameDepth);
+        else {
+            bb.setRect(bb.getMinX() - frameDepth, bb.getMinY() - frameDepth,
+                    bb.getWidth() + 2.0 * frameDepth, bb.getHeight() + 2.0 * frameDepth);
+        }
 
         if (bb == null) bb = new Rectangle2D.Double(0, 0, 1, 1);
 
@@ -176,8 +177,9 @@ public class VisualScenario extends VisualGroup {
 
             boolean perfectMatch = true;
 
-            for (Variable var : sortedVariables)
+            for (Variable var : sortedVariables) {
                 if (!var.getState().matches(encoding.getState(var))) perfectMatch = false;
+            }
 
             for (Variable var : sortedVariables) {
                 String text = var.getLabel();

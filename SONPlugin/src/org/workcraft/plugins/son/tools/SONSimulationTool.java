@@ -485,8 +485,9 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
     protected Map<PlaceNode, Boolean> readSONMarking() {
         HashMap<PlaceNode, Boolean> result = new HashMap<PlaceNode, Boolean>();
-        for (PlaceNode c : net.getPlaceNodes())
+        for (PlaceNode c : net.getPlaceNodes()) {
             result.put(c, c.isMarked());
+        }
 
         return result;
     }
@@ -657,8 +658,9 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
             //get high level events
             for (TransitionNode node : step) {
-                if (bsonAlg.isUpperEvent(node))
+                if (bsonAlg.isUpperEvent(node)) {
                     upperEvents.add(node);
+                }
             }
             //get low level events
             step.removeAll(upperEvents);
@@ -676,8 +678,9 @@ public class SONSimulationTool extends PetriNetSimulationTool {
     }
 
     protected void applyMarking(Map<PlaceNode, Boolean> marking) {
-        for (PlaceNode c: marking.keySet())
+        for (PlaceNode c: marking.keySet()) {
             c.setMarked(marking.get(c));
+        }
     }
 
     protected void autoSimulator(final GraphEditor editor) {
@@ -690,10 +693,11 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
     protected boolean acyclicChecker() {
         SONCycleAlg cycle = new SONCycleAlg(net, phases);
-        if (!cycle.cycleTask(net.getComponents()).isEmpty())
+        if (!cycle.cycleTask(net.getComponents()).isEmpty()) {
             return false;
-        else
+        } else {
             return true;
+        }
     }
 
     protected void autoSimulationTask(final GraphEditor editor) {
@@ -739,8 +743,9 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         Collection<TransitionNode> causalPredecessors = new ArrayList<TransitionNode>();
         for (String ref : causalPredecessorRefs) {
             Node node = net.getNodeByReference(ref);
-            if (node instanceof TransitionNode)
+            if (node instanceof TransitionNode) {
                 causalPredecessors.add((TransitionNode) net.getNodeByReference(ref));
+            }
         }
         return reachabilitySimulationTask(editor, causalPredecessors, markingRefs);
     }
@@ -751,8 +756,9 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
         Step step = new Step();
         for (Node node : relationAlg.getCommonElements(enabled, causalPredecessors)) {
-            if (node instanceof TransitionNode)
+            if (node instanceof TransitionNode) {
                 step.add((TransitionNode) node);
+            }
         }
 
         //causalPredecessors.removeAll(fireList);
@@ -795,12 +801,14 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         }
 
         StepRef newStep = new StepRef();
-        if (!isRev)
+        if (!isRev) {
             newStep.add(">");
-        else
+        } else {
             newStep.add("<");
-        for (TransitionNode e : step)
+        }
+        for (TransitionNode e : step) {
             newStep.add(net.getNodeReference(e));
+        }
 
         branchTrace.add(newStep);
         step(editor);
@@ -811,8 +819,9 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         Step result = new Step();
         for (int i = 0; i < stepRef.size(); i++) {
             final Node node = net.getNodeByReference(stepRef.get(i));
-            if (node instanceof TransitionNode)
+            if (node instanceof TransitionNode) {
                 result.add((TransitionNode) node);
+            }
         }
         return result;
     }
@@ -889,8 +898,9 @@ public class SONSimulationTool extends PetriNetSimulationTool {
     }
 
     private boolean isEnabled(Node e, Step step) {
-        if (step.contains(e))
+        if (step.contains(e)) {
             return true;
+        }
         return false;
     }
 
@@ -906,8 +916,9 @@ public class SONSimulationTool extends PetriNetSimulationTool {
                             Step enabled = null;
 
                             enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
-                            if (isEnabled(node1, enabled))
+                            if (isEnabled(node1, enabled)) {
                                 return true;
+                            }
                         }
                         return false;
 
@@ -998,10 +1009,11 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
     public void setReverse(final GraphEditor editor, StepRef stepRef) {
 
-        if (stepRef.contains(">"))
+        if (stepRef.contains(">")) {
             this.setReverse(editor, false);
-        else
+        } else {
             this.setReverse(editor, true);
+        }
     }
 
     @Override

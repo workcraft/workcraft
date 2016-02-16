@@ -23,8 +23,9 @@ public class Path extends ArrayList<Node> {
                 first = false;
             }
         }
-        if (!this.isEmpty())
+        if (!this.isEmpty()) {
             result.append(']');
+        }
         return result.toString();
     }
 }

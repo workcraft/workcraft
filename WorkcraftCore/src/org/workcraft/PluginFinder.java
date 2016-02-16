@@ -25,10 +25,12 @@ public class PluginFinder {
     private static class ClassFileFilter implements FilenameFilter {
         public boolean accept(File dir, String name) {
             File f = new File(dir.getPath() + File.separator + name);
-            if (f.isDirectory())
+            if (f.isDirectory()) {
                 return true;
-            if (f.getPath().endsWith(".class"))
+            }
+            if (f.getPath().endsWith(".class")) {
                 return true;
+            }
             return false;
         }
     }
@@ -36,19 +38,22 @@ public class PluginFinder {
     private static ClassFileFilter classFilter = new ClassFileFilter();
 
     private static void search(File starting, File current, List<Class<?>> result) throws PluginInstantiationException {
-        if (!current.exists())
+        if (!current.exists()) {
             return;
+        }
 
         if (current.isDirectory()) {
             File[] list = current.listFiles(classFilter);
 
-            for (File f : list)
-                if (f.isDirectory())
+            for (File f : list) {
+                if (f.isDirectory()) {
                     search(starting, f, result);
-                else
+                } else {
                     processPathEntry(f.getPath().substring(starting.getPath().length()), result);
+                }
+            }
         } else if (current.isFile()) {
-            if (current.getPath().endsWith(".jar"))
+            if (current.getPath().endsWith(".jar")) {
                 try {
                     JarFile jf = new JarFile(current);
                     Enumeration<JarEntry> entries = jf.entries();
@@ -61,24 +66,28 @@ public class PluginFinder {
                 } catch (IOException e) {
                     throw new PluginInstantiationException(e);
                 }
+            }
         }
     }
 
     private static void processPathEntry(String path, List<Class<?>> result) throws PluginInstantiationException {
-        if (!path.endsWith(".class"))
+        if (!path.endsWith(".class")) {
             return;
+        }
 
         String className;
 
-        if (path.startsWith(File.separator))
+        if (path.startsWith(File.separator)) {
             className = path.substring(File.separator.length());
-        else
+        } else {
             className = path;
+        }
 
         className = className.replace(File.separatorChar, '.').replace('/', '.');
 
-        if (!className.startsWith("org.workcraft.plugins"))
+        if (!className.startsWith("org.workcraft.plugins")) {
             return;
+        }
 
         className = className.substring(0, className.length() - ".class".length());
 

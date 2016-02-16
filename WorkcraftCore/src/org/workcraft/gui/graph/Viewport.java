@@ -136,8 +136,9 @@ public class Viewport {
         updateFinalTransform();
 
         // notify listeners
-        for (ViewportListener l: listeners)
+        for (ViewportListener l: listeners) {
             l.shapeChanged(this);
+        }
     }
 
     /**

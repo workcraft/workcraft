@@ -60,8 +60,9 @@ public class ReachabilityAlg extends RelationAlgorithm {
         visited.add(n);
 
         for (Node n2 : getCausalPreset(n, before)) {
-            if (!visited.contains(n2))
+            if (!visited.contains(n2)) {
                 causalPredecessors(visited, n2, before);
+            }
         }
     }
 
@@ -84,8 +85,9 @@ public class ReachabilityAlg extends RelationAlgorithm {
         }
 
         for (TransitionNode[] pre : before) {
-            if (pre[1] == n)
+            if (pre[1] == n) {
                 result.add(pre[0]);
+            }
         }
 
         result.addAll(getPrePNSet(n));
@@ -95,12 +97,14 @@ public class ReachabilityAlg extends RelationAlgorithm {
         } else if (n instanceof TransitionNode) {
             for (SONConnection con : net.getSONConnections(n)) {
                 if (con.getSemantics() == Semantics.SYNCLINE) {
-                    if (con.getFirst() == n)
+                    if (con.getFirst() == n) {
                         result.add(con.getSecond());
-                    else
+                    } else {
                         result.add(con.getFirst());
-                } else if (con.getSemantics() == Semantics.ASYNLINE && con.getSecond() == n)
+                    }
+                } else if (con.getSemantics() == Semantics.ASYNLINE && con.getSecond() == n) {
                     result.add(con.getFirst());
+                }
             }
         } else if (n instanceof ChannelPlace) {
             Node input = net.getPreset(n).iterator().next();

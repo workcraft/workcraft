@@ -79,8 +79,9 @@ public class Workspace {
         try {
             File baseDir = File.createTempFile("workspace", "");
             baseDir.delete();
-            if (!baseDir.mkdir())
+            if (!baseDir.mkdir()) {
                 throw new RuntimeException("Could not create a temporary workspace directory.");
+            }
             baseDir.deleteOnExit();
             this.workspaceFile = new File(baseDir, "workspace.works");
         } catch (IOException e) {
@@ -138,8 +139,9 @@ public class Workspace {
     public File getFile(Path<String> wsPath) {
         List<String> names = Path.getPath(wsPath);
         MountTree current = getHardMountsRoot();
-        for (String name : names)
+        for (String name : names) {
             current = current.getSubtree(name);
+        }
         return current.mountTo;
     }
 
@@ -157,8 +159,9 @@ public class Workspace {
                 bestMount = e;
             }
         }
-        if (bestMount == null)
+        if (bestMount == null) {
             return null;
+        }
         return Path.combine(bestMount.getKey(), bestRel);
     }
 
@@ -170,8 +173,9 @@ public class Workspace {
         while (descendant != null) {
             if (descendant.equals(ancestor)) {
                 Path<String> result = Path.empty();
-                for (int i = 0; i < strs.size(); i++)
+                for (int i = 0; i < strs.size(); i++) {
                     result = Path.append(result, strs.get(strs.size() - 1 - i));
+                }
                 return result;
             }
             strs.add(descendant.getName());
@@ -289,8 +293,9 @@ public class Workspace {
             Document doc = XmlUtil.loadDocument(workspaceFile.getPath());
             Element xmlroot = doc.getDocumentElement();
 
-            if (xmlroot.getNodeName() != "workcraft-workspace")
+            if (xmlroot.getNodeName() != "workcraft-workspace") {
                 throw new DeserialisationException("not a Workcraft workspace file");
+            }
 
             List<Element> mounts = XmlUtil.getChildElements("mount", xmlroot);
 
@@ -525,8 +530,9 @@ public class Workspace {
     public void delete(Path<String> path) throws OperationCancelledException {
         final File file = getFile(path);
 
-        if (!file.exists())
+        if (!file.exists()) {
             return;
+        }
 
         if (file.isDirectory()) {
             for (File f : file.listFiles()) {

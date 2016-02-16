@@ -153,16 +153,18 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
             boolean ltr = target.getComponentOrientation().isLeftToRight();
 
             boolean useBaseline = getAlignOnBaseline();
-            if (useBaseline)
+            if (useBaseline) {
                 throw new NotSupportedException("BaseLine is not supported.");
+            }
 
             for (int i = 0; i < nmembers; i++) {
                 Component m = target.getComponent(i);
                 if (m.isVisible()) {
                     Dimension d = m.getPreferredSize();
 
-                    if (applyLayout)
+                    if (applyLayout) {
                         m.setSize(d.width, d.height);
+                    }
 
                     if (x > 0) {
                         x += hgap;
@@ -178,8 +180,9 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
                             rowh = 0;
                         } else {
                             int end = i;
-                            if (start == end)
+                            if (start == end) {
                                 end++;
+                            }
                             stretch(target, insets.left + hgap, y, maxwidth, rowh, start, end, ltr);
                             start = end;
                             x = d.width;
@@ -224,11 +227,12 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
             }
         };
 
-        if (!resize(target, start, end, width, minimumExtremeProvider))
+        if (!resize(target, start, end, width, minimumExtremeProvider)) {
             return false;
-        else {
-            if (applyLayout)
+        } else {
+            if (applyLayout) {
                 moveComponents(target, x, y, 0, height, start, end, ltr);
+            }
             return true;
         }
     }
@@ -256,8 +260,9 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
         if ((double) totalChange / totalFreedom > 1.0) {
             failed = true;
             totalChange = totalFreedom;
-        } else
+        } else {
             failed = false;
+        }
 
         for (int i = start; i < end; i++) {
             Component component = target.getComponent(i);
@@ -272,8 +277,9 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
                 totalFreedom -= freedom;
                 totalChange -= change;
 
-                if (applyLayout)
+                if (applyLayout) {
                     component.setSize(pref.width + change, pref.height);
+                }
             }
         }
 

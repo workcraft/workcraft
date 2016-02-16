@@ -11,8 +11,9 @@ public class BeanInfoCache {
 
     static BeanInfo getBeanInfo(Class<?> c) throws IntrospectionException {
         BeanInfo cached = beanInfo.get(c);
-        if (cached != null)
+        if (cached != null) {
             return cached;
+        }
         BeanInfo info = Introspector.getBeanInfo(c, c.getSuperclass());
         beanInfo.put(c, info);
         return info;

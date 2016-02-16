@@ -63,10 +63,11 @@ public class TimeConsistencySettings {
     }
 
     public boolean isCausalConsistency() {
-        if ((getTabIndex() == 1) && causalConsistency)
+        if ((getTabIndex() == 1) && causalConsistency) {
             return true;
-        else
+        } else {
             return false;
+        }
     }
 
     public Interval getDefaultDuration() {

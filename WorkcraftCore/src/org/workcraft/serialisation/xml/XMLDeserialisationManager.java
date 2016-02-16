@@ -59,8 +59,9 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
     }
 
     public void processPlugins(PluginProvider manager) {
-        for (PluginInfo<? extends XMLDeserialiser> info : manager.getPlugins(XMLDeserialiser.class))
+        for (PluginInfo<? extends XMLDeserialiser> info : manager.getPlugins(XMLDeserialiser.class)) {
             registerDeserialiser(info.newInstance());
+        }
     }
 
     public Object initInstance(Element element, Object ... constructorParameters) throws DeserialisationException {
@@ -73,8 +74,9 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
             for (Element subNodeElement : XmlUtil.getChildElements("node", element)) {
                 Object subNode = initInstance(subNodeElement);
 
-                if (subNode instanceof Node)
+                if (subNode instanceof Node) {
                     state.addChildNode((Container) instance, (Node) subNode);
+                }
             }
         }
         return instance;
@@ -125,8 +127,9 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
 
     public void finaliseInstances() throws DeserialisationException {
         // finalise all instances
-        for (Object o : state.instanceElements.keySet())
+        for (Object o : state.instanceElements.keySet()) {
             finaliseInstance(o);
+        }
 
         // now add children to their respective containers
         for (Object o : state.instanceElements.keySet()) {

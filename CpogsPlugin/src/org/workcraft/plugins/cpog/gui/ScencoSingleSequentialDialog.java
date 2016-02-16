@@ -172,8 +172,9 @@ public class ScencoSingleSequentialDialog extends JDialog {
                 if (settings.getGenMode() == GenerationMode.SEQUENTIAL) {
                     settings.setCustomEncMode(true);
                     String[] encodings = new String[m];
-                    for (int i = 0; i < m; i++)
+                    for (int i = 0; i < m; i++) {
                         encodings[i] = Integer.toBinaryString(i);
+                    }
                     settings.setCustomEnc(encodings);
                 } else {
                     settings.setBits(bits + 1);

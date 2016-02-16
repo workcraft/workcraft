@@ -40,10 +40,11 @@ public class GranularityPanel extends JPanel {
     }
 
     public Granularity getSelection() {
-        if (yearYearButton.isSelected())
+        if (yearYearButton.isSelected()) {
             return Granularity.YEAR_YEAR;
-        else if (hourMinsButton.isSelected())
+        } else if (hourMinsButton.isSelected()) {
             return Granularity.HOUR_MINS;
+        }
         return null;
     }
 

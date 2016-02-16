@@ -48,19 +48,23 @@ public class VisualSuperGroup extends VisualGroup {
     private Rectangle2D getContentsBoundingBox() {
         Rectangle2D bb = null;
 
-        for (VisualComponent v: Hierarchy.getChildrenOfType(this, VisualComponent.class))
+        for (VisualComponent v: Hierarchy.getChildrenOfType(this, VisualComponent.class)) {
             bb = BoundingBoxHelper.union(bb, v.getBoundingBox());
+        }
 
-        for (VisualONGroup v: Hierarchy.getChildrenOfType(this, VisualONGroup.class))
+        for (VisualONGroup v: Hierarchy.getChildrenOfType(this, VisualONGroup.class)) {
             bb = BoundingBoxHelper.union(bb, v.getBoundingBox());
+        }
 
-        for (VisualSONConnection v: Hierarchy.getChildrenOfType(this, VisualSONConnection.class))
-                bb = BoundingBoxHelper.union(bb, v.getBoundingBox());
+        for (VisualSONConnection v: Hierarchy.getChildrenOfType(this, VisualSONConnection.class)) {
+            bb = BoundingBoxHelper.union(bb, v.getBoundingBox());
+        }
 
         if (bb == null) bb = contentsBB;
-        else
-        bb.setRect(bb.getMinX() - frameDepth, bb.getMinY() - frameDepth,
-                   bb.getWidth() + 2.0 * frameDepth, bb.getHeight() + 2.0 * frameDepth);
+        else {
+            bb.setRect(bb.getMinX() - frameDepth, bb.getMinY() - frameDepth,
+                    bb.getWidth() + 2.0 * frameDepth, bb.getHeight() + 2.0 * frameDepth);
+        }
 
         if (bb == null) bb = new Rectangle2D.Double(0, 0, 1, 1);
 
@@ -135,8 +139,9 @@ public class VisualSuperGroup extends VisualGroup {
 
         result.addAll(getVisualComponents());
         result.addAll(getVisualSONConnections());
-        for (VisualONGroup vg : this.getVisualONGroups())
+        for (VisualONGroup vg : this.getVisualONGroups()) {
             result.addAll(vg.getVisualComment());
+        }
 
         return result;
     }

@@ -27,12 +27,14 @@ import static org.workcraft.plugins.cpog.optimisation.CnfOperations.*;
 
 public class CnfSorter {
     public static Cnf sortRound(List<Literal> result, List<Literal> x) {
-        if (x.size() != result.size())
+        if (x.size() != result.size()) {
             throw new RuntimeException("sizes do not match");
+        }
 
         List<Literal> s = new ArrayList<Literal>();
-        for (Literal var : x)
+        for (Literal var : x) {
             s.add(new Literal(var.getVariable().getLabel() + "_th"));
+        }
 
         return sortRound(result, s, x);
     }

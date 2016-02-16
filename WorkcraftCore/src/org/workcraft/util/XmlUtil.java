@@ -56,8 +56,9 @@ public class XmlUtil {
         NodeList nl = element.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
             Node n = nl.item(i);
-            if (n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName().equals(tagName))
+            if (n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName().equals(tagName)) {
                 result.add((Element) n);
+            }
         }
         return result;
     }
@@ -66,8 +67,9 @@ public class XmlUtil {
         NodeList nl = element.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
             Node n = nl.item(i);
-            if (n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName().equals(tagName))
+            if (n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName().equals(tagName)) {
                 return (Element) n;
+            }
         }
         return null;
     }
@@ -127,8 +129,9 @@ public class XmlUtil {
     public static Color readColorAttr(Element element, String attributeName, Color defaultValue) {
         String s = element.getAttribute(attributeName);
 
-        if (s == null || s.charAt(0) != '#')
+        if (s == null || s.charAt(0) != '#') {
             return defaultValue;
+        }
 
         try {
             return new Color(Integer.parseInt(s.substring(1), 16), false);

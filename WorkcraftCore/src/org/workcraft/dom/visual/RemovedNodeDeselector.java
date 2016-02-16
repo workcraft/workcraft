@@ -34,7 +34,8 @@ public class RemovedNodeDeselector extends HierarchySupervisor {
 
     @Override
     public void handleEvent(HierarchyEvent e) {
-        if (e instanceof NodesDeletedEvent)
+        if (e instanceof NodesDeletedEvent) {
             visualModel.removeFromSelection(e.getAffectedNodes());
+        }
     }
 }

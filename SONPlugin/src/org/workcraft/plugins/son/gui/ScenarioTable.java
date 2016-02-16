@@ -53,10 +53,11 @@ public class ScenarioTable extends JTable {
             updateColor(selection);
         }
 
-        if (model == null)
+        if (model == null) {
             this.setModel(new ScenarioTableModel());
-        else
+        } else {
             this.setModel(model);
+        }
 
         this.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         this.setDefaultRenderer(Object.class, new ScenarioTableCellRendererImplementation());
@@ -77,12 +78,13 @@ public class ScenarioTable extends JTable {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
-            if (value instanceof String)
+            if (value instanceof String) {
                 label.setText((String) value);
-            else if (value instanceof ScenarioRef) {
+            } else if (value instanceof ScenarioRef) {
                 label.setText("Senario " + (row + 1));
-            } else
+            } else {
                 return null;
+            }
 
             if (row == saveList.getPosition() && column == 0 && !saveList.isEmpty() && isCellColorized) {
                 label.setBackground(Color.PINK);
@@ -167,8 +169,9 @@ public class ScenarioTable extends JTable {
 
     private void setColors(Collection<? extends Node> nodes, Node exclude, Color color) {
         for (Node node : nodes) {
-            if (node != exclude)
+            if (node != exclude) {
                 net.setForegroundColor(node, color);
+            }
         }
     }
 

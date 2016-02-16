@@ -69,8 +69,9 @@ public class XMLModelDeserialiser implements ModelDeserialiser {
 
             // create model
             String modelClassName = modelElement.getAttribute("class");
-            if (modelClassName == null || modelClassName.isEmpty())
+            if (modelClassName == null || modelClassName.isEmpty()) {
                 throw new DeserialisationException("Class name attribute is not set\n" + modelElement.toString());
+            }
             Class<?> cls = Class.forName(modelClassName);
 
             References intRef = deserialisation.getReferenceResolver();

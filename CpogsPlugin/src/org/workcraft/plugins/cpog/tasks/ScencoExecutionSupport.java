@@ -143,7 +143,7 @@ public class ScencoExecutionSupport {
         for (int k = 0; k < m; k++) {
 
             // Scan every elements of each scenario
-            for (VisualComponent component : scenarios.get(k).getComponents())
+            for (VisualComponent component : scenarios.get(k).getComponents()) {
                 if (component instanceof VisualVertex) {
                     // If element is a vertex
                     VisualVertex vertex = (VisualVertex) component;
@@ -163,6 +163,7 @@ public class ScencoExecutionSupport {
                         positions.set(id, Geometry.add(positions.get(id), p));
                     }
                 }
+            }
         }
         return n;
     }
@@ -175,23 +176,27 @@ public class ScencoExecutionSupport {
         ArrayList<String> args = new ArrayList<String>();
 
         for (int k = 0; k < m; k++) {
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i < n; i++) {
                 for (int j = 0; j < n; j++) {
                     constraints[k][i][j] = '0';
                 }
+            }
 
-            for (VisualComponent component : scenarios.get(k).getComponents())
+            for (VisualComponent component : scenarios.get(k).getComponents()) {
                 if (component instanceof VisualVertex) {
                     VisualVertex vertex = (VisualVertex) component;
                     int id = events.get(vertex.getLabel());
                     constraints[k][id][id] = '1';
                 }
+            }
 
-            for (int i = 0; i < n; i++)
-                for (int j = 0; j < n; j++)
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
                     graph[i][j] = 0;
+                }
+            }
 
-            for (VisualConnection c : scenarios.get(k).getConnections())
+            for (VisualConnection c : scenarios.get(k).getConnections()) {
                 if (c instanceof VisualArc) {
                     VisualArc arc = (VisualArc) c;
                     VisualNode c1 = arc.getFirst(), c2 = arc.getSecond();
@@ -201,35 +206,45 @@ public class ScencoExecutionSupport {
                         graph[id1][id2] = 1;
                     }
                 }
+            }
 
             // compute transitive closure
 
-            for (int t = 0; t < n; t++)
-                for (int i = 0; i < n; i++)
-                    if (graph[i][t] > 0)
-                        for (int j = 0; j < n; j++)
+            for (int t = 0; t < n; t++) {
+                for (int i = 0; i < n; i++) {
+                    if (graph[i][t] > 0) {
+                        for (int j = 0; j < n; j++) {
                             if (graph[t][j] > 0) graph[i][j] = 1;
+                        }
+                    }
+                }
+            }
 
             // detect transitive arcs
 
-            for (int t = 0; t < n; t++)
-                for (int i = 0; i < n; i++)
-                    if (graph[i][t] > 0)
-                        for (int j = 0; j < n; j++)
+            for (int t = 0; t < n; t++) {
+                for (int i = 0; i < n; i++) {
+                    if (graph[i][t] > 0) {
+                        for (int j = 0; j < n; j++) {
                             if (graph[t][j] > 0) graph[i][j] = 2;
+                        }
+                    }
+                }
+            }
 
             // report cyclic scenario
 
-            for (int i = 0; i < n; i++)
+            for (int i = 0; i < n; i++) {
                 if (graph[i][i] > 0) {
                     args.add("ERROR");
                     args.add("Scenario '" + scenarios.get(k).getLabel() + "' is cyclic.");
                     args.add("Invalid scenario");
                     return args;
                 }
+            }
 
-            for (int i = 0; i < n; i++)
-                for (int j = 0; j < n; j++)
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
                     if (i != j) {
                         char ch = '0';
 
@@ -239,6 +254,8 @@ public class ScencoExecutionSupport {
 
                         constraints[k][i][j] = ch;
                     }
+                }
+            }
         }
 
         args.add("OK");
@@ -305,9 +322,13 @@ public class ScencoExecutionSupport {
 
                             String end = "";
                             for (int i = 0; i < result.length(); i++) {
-                                if (result.charAt(i) == '(') end += ')';
-                                else if (result.charAt(i) == ')') end += '(';
-                                else end += result.charAt(i);
+                                if (result.charAt(i) == '(') {
+                                    end += ')';
+                                } else if (result.charAt(i) == ')') {
+                                    end += '(';
+                                } else {
+                                    end += result.charAt(i);
+                                }
                             }
 
                             // Print conditions on each vertices
@@ -393,8 +414,9 @@ public class ScencoExecutionSupport {
         BufferedReader br = new BufferedReader(isr);
         String line;
         while ((line = br.readLine()) != null) {
-            if (settings.isVerboseMode())
+            if (settings.isVerboseMode()) {
                 System.out.println(line);
+            }
 
             // Read Optimal Encoding
             if (line.contains("MIN: ")) {
@@ -410,8 +432,9 @@ public class ScencoExecutionSupport {
             if (line.contains(".start_formulae")) {
                 line = br.readLine();
                 while (line.contains(".end_formulae") == false) {
-                    if (settings.isVerboseMode())
+                    if (settings.isVerboseMode()) {
                         System.out.println(line);
+                    }
                     StringTokenizer st2 = new StringTokenizer(line, ",");
                     String el = (String) st2.nextElement();
                     if (el.equals("V")) { //formula of a vertex
@@ -542,8 +565,9 @@ public class ScencoExecutionSupport {
             vertices[id].setPosition(Geometry.multiply(positions.get(id), 1.0 / count.get(id)));
             if (formulaeName.containsKey(eventName)) {
                 vertices[id].setCondition(formulaeName.get(eventName));
-            } else
+            } else {
                 vertices[id].setCondition(One.instance());
+            }
         }
 
     }
@@ -552,7 +576,7 @@ public class ScencoExecutionSupport {
     protected void buildCpog(int n, int m, char[][][] constraints,
             VisualCPOG cpog, VisualVertex[] vertices, HashMap<String,
             BooleanFormula> formulaeName) {
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 BooleanFormula condition;
 
@@ -570,24 +594,28 @@ public class ScencoExecutionSupport {
 
                     if (formulaeName.containsKey(arcName)) {
                         condition = formulaeName.get(arcName);
-                    } else
+                    } else {
                         condition = One.instance();
+                    }
 
                     arc.setCondition(condition);
                 }
             }
+        }
     }
 
     // group similar constraints
     protected void groupConstraints(int n, int m, char[][][] constraints, HashMap<String, Integer> task) {
-        for (int i = 0; i < n; i++)
-            for (int j = 0; j < n; j++)
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
                 if (trivialEncoding(constraints, m, i, j) == '?') {
                     String constraint = generateConstraint(constraints, m, i, j);
                     if (!task.containsKey(constraint)) {
                         task.put(constraint, task.size());
                     }
                 }
+            }
+        }
     }
 
 }

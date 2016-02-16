@@ -41,15 +41,17 @@ public class BSONAlg extends RelationAlgorithm {
         HashSet<SONConnection> result = new HashSet<SONConnection>();
 
         for (SONConnection con : net.getSONConnections()) {
-            if (con.getSemantics() == Semantics.BHVLINE)
+            if (con.getSemantics() == Semantics.BHVLINE) {
                 for (ONGroup group : groups) {
                     if (group.contains(con.getFirst())) {
                         for (ONGroup nextGroup : groups) {
-                            if (nextGroup.contains(con.getSecond()))
+                            if (nextGroup.contains(con.getSecond())) {
                                 result.add(con);
+                            }
                         }
                     }
                 }
+            }
         }
         return result;
     }
@@ -59,10 +61,12 @@ public class BSONAlg extends RelationAlgorithm {
      */
     public boolean isLineLikeGroup(ONGroup group) {
         for (Node node : group.getComponents()) {
-            if (net.getPostset(node).size() > 1 && group.containsAll(net.getPostset(node)))
+            if (net.getPostset(node).size() > 1 && group.containsAll(net.getPostset(node))) {
                 return false;
-            if (net.getPreset(node).size() > 1 && group.containsAll(net.getPreset(node)))
+            }
+            if (net.getPreset(node).size() > 1 && group.containsAll(net.getPreset(node))) {
                 return false;
+            }
         }
         return true;
     }
@@ -87,8 +91,9 @@ public class BSONAlg extends RelationAlgorithm {
                 if (!allMarkings.keySet().contains(group)) {
                     Phase phase = new Phase();
                     for (Node node : PathAlgorithm.dfs2(min, max, net)) {
-                        if (node instanceof Condition)
+                        if (node instanceof Condition) {
                             phase.add((Condition) node);
+                        }
                     }
                     result.add(phase);
                 } else {
@@ -113,8 +118,9 @@ public class BSONAlg extends RelationAlgorithm {
                         for (Marking max1 : maxMarkings) {
                             Phase phase = new Phase();
                             for (Node node : PathAlgorithm.dfs2(min1, max1, net)) {
-                                if (node instanceof Condition)
+                                if (node instanceof Condition) {
                                     phase.add((Condition) node);
+                                }
                             }
                             result.add(phase);
                         }
@@ -127,14 +133,15 @@ public class BSONAlg extends RelationAlgorithm {
                         err = "ERROR: Minimal phase "  + net.toString(min) + " is not a cut:";
                     }
                     if (!max.isEmpty()) {
-                        if (err == null)
+                        if (err == null) {
                             err = "ERROR: Maximal phase "  + net.toString(max) + " is not a cut:";
-                        else {
+                        } else {
                             err += "\nERROR: Maximal phase "  + net.toString(max) + " is not a cut:";
                         }
                     }
-                    if (err != null)
+                    if (err != null) {
                         phaseCutErr.put(c, err);
+                    }
                 }
             }
         }
@@ -157,10 +164,11 @@ public class BSONAlg extends RelationAlgorithm {
             dfsResult.add((Condition) n);
         } else {
             Collection<Node> neighbours = null;
-            if (getMin)
+            if (getMin) {
                 neighbours = getPostPNSet(n);
-            else
+            } else {
                 neighbours = getPrePNSet(n);
+            }
 
             for (Node node : neighbours) {
                 if (!visited.contains(node)) {
@@ -189,8 +197,9 @@ public class BSONAlg extends RelationAlgorithm {
                     break;
                 }
             }
-            if (b)
+            if (b) {
                 errMsg("Fail to get phase: occurrence net is unsafe " + net.getNodeReference(group));
+            }
         }
 
         return result;
@@ -211,8 +220,9 @@ public class BSONAlg extends RelationAlgorithm {
         Collection<ONGroup> upperGroups = getUpperGroups(net.getGroups());
 
         for (ONGroup group : upperGroups) {
-            for (Condition c : group.getConditions())
+            for (Condition c : group.getConditions()) {
                 result.put(c, getPhases(c, allMarkings));
+            }
         }
         return result;
     }
@@ -220,14 +230,16 @@ public class BSONAlg extends RelationAlgorithm {
     public Map<Condition, Collection<Phase>> getAllPhases(Map<ONGroup, List<Marking>> allMarkings) {
         Map<Condition, Collection<Phase>> result = new HashMap<Condition, Collection<Phase>>();
 
-        if (allMarkings == null)
+        if (allMarkings == null) {
             return getAllPhases();
+        }
 
         Collection<ONGroup> upperGroups = getUpperGroups(net.getGroups());
 
         for (ONGroup group : upperGroups) {
-            for (Condition c : group.getConditions())
+            for (Condition c : group.getConditions()) {
                 result.put(c, getPhases(c, allMarkings));
+            }
         }
         return result;
     }
@@ -307,18 +319,20 @@ public class BSONAlg extends RelationAlgorithm {
         Collection<Condition> result = new HashSet<Condition>();
 
         if (isUpperNode(node)) {
-            if (node instanceof Condition)
+            if (node instanceof Condition) {
                 result.add((Condition) node);
-            else
+            } else {
                 return result;
+            }
         }
 
         Collection<Condition> min = backWardSearch(node);
         Collection<Condition> max = forwardSearch(node);
 
         for (Condition c : max) {
-            if (min.contains(c))
+            if (min.contains(c)) {
                 result.add(c);
+            }
         }
         return result;
     }
@@ -339,8 +353,9 @@ public class BSONAlg extends RelationAlgorithm {
     public boolean isUpperCondition(Node node) {
         if ((node instanceof Condition)
                 && !(net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE))
-                && (net.getInputSONConnectionTypes(node).contains(Semantics.BHVLINE)))
+                && (net.getInputSONConnectionTypes(node).contains(Semantics.BHVLINE))) {
             return true;
+        }
 
         return false;
     }
@@ -349,11 +364,14 @@ public class BSONAlg extends RelationAlgorithm {
      * return true if the given node is in upper-level group.
      */
     public boolean isUpperNode(Node node) {
-        if (isUpperCondition(node))
+        if (isUpperCondition(node)) {
             return true;
-        for (Node pre : getPrePNSet(node))
-            if (isUpperCondition(pre))
+        }
+        for (Node pre : getPrePNSet(node)) {
+            if (isUpperCondition(pre)) {
                 return true;
+            }
+        }
 
         return false;
     }
@@ -362,8 +380,9 @@ public class BSONAlg extends RelationAlgorithm {
      * get lower-level group for a set of phase bounds
      */
     public ONGroup getLowerGroup(Phase phase) {
-        if (phase.isEmpty())
+        if (phase.isEmpty()) {
             return null;
+        }
 
         return net.getGroup(phase.iterator().next());
     }
@@ -404,13 +423,16 @@ public class BSONAlg extends RelationAlgorithm {
             boolean isInput = false;
             boolean isOutput = false;
             for (Node node : group.getComponents()) {
-                if (net.getInputSONConnectionTypes(node).contains(Semantics.BHVLINE))
+                if (net.getInputSONConnectionTypes(node).contains(Semantics.BHVLINE)) {
                     isInput = true;
-                if (net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE))
+                }
+                if (net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE)) {
                     isOutput = true;
+                }
             }
-            if (!isInput && isOutput)
+            if (!isInput && isOutput) {
                 result.add(group);
+            }
 
         }
         return result;
@@ -426,13 +448,16 @@ public class BSONAlg extends RelationAlgorithm {
             boolean isOutput = false;
             if (this.isLineLikeGroup(group)) {
                 for (Node node : group.getComponents()) {
-                    if (net.getInputSONConnectionTypes(node).contains(Semantics.BHVLINE))
+                    if (net.getInputSONConnectionTypes(node).contains(Semantics.BHVLINE)) {
                         isInput = true;
-                    if (net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE))
+                    }
+                    if (net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE)) {
                         isOutput = true;
+                    }
                 }
-                if (isInput && !isOutput)
+                if (isInput && !isOutput) {
                     result.add(group);
+                }
             }
         }
         return result;
@@ -451,8 +476,9 @@ public class BSONAlg extends RelationAlgorithm {
                     break;
                 }
             }
-            if (isMinimal)
+            if (isMinimal) {
                 result.add(c);
+            }
         }
         return result;
     }
@@ -481,8 +507,9 @@ public class BSONAlg extends RelationAlgorithm {
                     break;
                 }
             }
-            if (isMaximal)
+            if (isMaximal) {
                 result.add(c);
+            }
         }
         return result;
     }
@@ -507,10 +534,12 @@ public class BSONAlg extends RelationAlgorithm {
             if (net.getInputSONConnectionTypes(c).contains(Semantics.BHVLINE)
                     && !net.getOutputSONConnectionTypes(c).contains(Semantics.BHVLINE)) {
                 return true;
-            } else
+            } else {
                 return false;
-        } else
+            }
+        } else {
             return false;
+        }
     }
 
     /**
@@ -587,10 +616,11 @@ public class BSONAlg extends RelationAlgorithm {
         Map<Condition, Collection<Phase>> phases = getAllPhases();
         Collection<ONGroup> upperGroups = getUpperGroups(net.getGroups());
 
-        for (ONGroup group : upperGroups)
+        for (ONGroup group : upperGroups) {
             for (TransitionNode e : group.getTransitionNodes()) {
                 result.put(e, before(e, phases));
             }
+        }
 
         return result;
     }

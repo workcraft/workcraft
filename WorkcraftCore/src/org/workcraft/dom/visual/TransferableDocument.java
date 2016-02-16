@@ -77,8 +77,9 @@ public class TransferableDocument implements Transferable {
                     e.printStackTrace();
                     return null;
                 }
-            } else
+            } else {
                 return doc;
+            }
         } else {
             throw new UnsupportedFlavorException(flavor);
         }

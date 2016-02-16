@@ -221,11 +221,13 @@ public class FormulaToString implements BooleanVisitor<String> {
         public Void visit(BooleanVariable var) {
             String label = var.getLabel();
             BooleanVariable nameHolder = varMap.get(label);
-            if (nameHolder == null)
+            if (nameHolder == null) {
                 varMap.put(label, var);
-            else
-                if (nameHolder != var)
+            } else {
+                if (nameHolder != var) {
                     throw new RuntimeException("name conflict! duplicate name " + label);
+                }
+            }
 
             append(label);
 

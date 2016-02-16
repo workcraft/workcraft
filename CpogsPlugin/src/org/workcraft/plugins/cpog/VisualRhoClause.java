@@ -107,13 +107,15 @@ public class VisualRhoClause extends VisualComponent {
 
     private Color getColor() {
         BooleanFormula value = evaluate();
-        if (value == One.instance())
+        if (value == One.instance()) {
             return new Color(0x00cc00);
-        else
-            if (value == Zero.instance())
+        } else {
+            if (value == Zero.instance()) {
                 return Color.RED;
-            else
+            } else {
                 return getForegroundColor();
+            }
+        }
     }
 
     private BooleanFormula evaluate() {

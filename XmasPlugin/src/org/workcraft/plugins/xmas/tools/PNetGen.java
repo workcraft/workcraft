@@ -319,9 +319,13 @@ public class PNetGen implements Tool {
             String s = id1.replace("Sync", ""); //new
             id1 = "Qs" + s;                    //new
         }
-        if (idp.equals("0")) writelink(id, id1, "a" + label1, label2, writer);
-        else if (idp.equals("1")) writelink(id, id1, "b" + label1, label2, writer);
-        else writelink(id, id1, "i" + label1, label2, writer);
+        if (idp.equals("0")) {
+            writelink(id, id1, "a" + label1, label2, writer);
+        } else if (idp.equals("1")) {
+            writelink(id, id1, "b" + label1, label2, writer);
+        } else {
+            writelink(id, id1, "i" + label1, label2, writer);
+        }
     }
 
     private static void writelinki(String id, String id1, String label1, String label2, String idi, PrintWriter writer) {
@@ -330,9 +334,13 @@ public class PNetGen implements Tool {
             String s = id1.replace("Sync", ""); //new
             id1 = "Qs" + s;                    //new
         }
-        if (idi.equals("a")) writelink(id, id1, "a" + label1, label2, writer);
-        else if (idi.equals("b")) writelink(id, id1, "b" + label1, label2, writer);
-        else writelink(id, id1, "o" + label1, label2, writer);
+        if (idi.equals("a")) {
+            writelink(id, id1, "a" + label1, label2, writer);
+        } else if (idi.equals("b")) {
+            writelink(id, id1, "b" + label1, label2, writer);
+        } else {
+            writelink(id, id1, "o" + label1, label2, writer);
+        }
     }
 
     private static void writemarking(String id, String label, PrintWriter writer) {
@@ -397,9 +405,13 @@ public class PNetGen implements Tool {
         writebidir(id, "_oracle1", "i_trdyplus", writer);
         String id2 = searchList(id);
         String id3 = searchList2(id);
-        if (id3.equals("a")) writelink(id, id2, "a_irdy1", "i_trdyminus", writer);
-        else if (id3.equals("b")) writelink(id, id2, "b_irdy1", "i_trdyminus", writer);
-        else writelink(id, id2, "o_irdy1", "i_trdyminus", writer);
+        if (id3.equals("a")) {
+            writelink(id, id2, "a_irdy1", "i_trdyminus", writer);
+        } else if (id3.equals("b")) {
+            writelink(id, id2, "b_irdy1", "i_trdyminus", writer);
+        } else {
+            writelink(id, id2, "o_irdy1", "i_trdyminus", writer);
+        }
     }
 
     private static void genfunction(String id, String id1, String idp, JsonNode y,  int fieldgr, PrintWriter writer) {
@@ -417,12 +429,20 @@ public class PNetGen implements Tool {
         writeblock(id, "i_trdy", writer);
         String id2 = searchList(id);
         String id3 = searchList2(id);
-        if (id3.equals("a")) writelink(id, id2, "a_irdy0", "o_irdyminus", writer);
-        else if (id3.equals("b")) writelink(id, id2, "b_irdy0", "o_irdyminus", writer);
-        else writelink(id, id2, "o_irdy0", "o_irdyminus", writer);
-        if (id3.equals("a")) writelink(id, id2, "a_irdy1", "o_irdyplus", writer);
-        else if (id3.equals("b")) writelink(id, id2, "b_irdy1", "o_irdyplus", writer);
-        else writelink(id, id2, "o_irdy1", "o_irdyplus", writer);
+        if (id3.equals("a")) {
+            writelink(id, id2, "a_irdy0", "o_irdyminus", writer);
+        } else if (id3.equals("b")) {
+            writelink(id, id2, "b_irdy0", "o_irdyminus", writer);
+        } else {
+            writelink(id, id2, "o_irdy0", "o_irdyminus", writer);
+        }
+        if (id3.equals("a")) {
+            writelink(id, id2, "a_irdy1", "o_irdyplus", writer);
+        } else if (id3.equals("b")) {
+            writelink(id, id2, "b_irdy1", "o_irdyplus", writer);
+        } else {
+            writelink(id, id2, "o_irdy1", "o_irdyplus", writer);
+        }
         //writer.println("Function checking id = " + ' ' + id + "id2 = " + ' ' + id2);
         writelinkp(id, id1, "_trdy0", "i_trdyminus", idp, writer);
         writelinkp(id, id1, "_trdy1", "i_trdyplus", idp, writer);
@@ -464,18 +484,34 @@ public class PNetGen implements Tool {
         writer.println("t_" + id + "i_trdyminus1  p_" + id + "i_trdy0");
         String id2b = searchList(id);
         String id3 = searchList2(id);
-        if (id3.equals("a")) writelink(id, id2b, "a_irdy0", "a_irdyminus1", writer);
-        else if (id3.equals("b")) writelink(id, id2b, "b_irdy0", "a_irdyminus1", writer);
-        else writelink(id, id2b, "o_irdy0", "a_irdyminus1", writer);
-        if (id3.equals("a")) writelink(id, id2b, "a_irdy1", "a_irdyplus", writer);
-        else if (id3.equals("b")) writelink(id, id2b, "b_irdy1", "a_irdyplus", writer);
-        else writelink(id, id2b, "o_irdy1", "a_irdyplus", writer);
-        if (id3.equals("a")) writelink(id, id2b, "a_irdy0", "b_irdyminus1", writer);
-        else if (id3.equals("b")) writelink(id, id2b, "b_irdy0", "b_irdyminus1", writer);
-        else writelink(id, id2b, "o_irdy0", "b_irdyminus1", writer);
-        if (id3.equals("a")) writelink(id, id2b, "a_irdy1", "b_irdyplus", writer);
-        else if (id3.equals("b")) writelink(id, id2b, "b_irdy1", "b_irdyplus", writer);
-        else writelink(id, id2b, "o_irdy1", "b_irdyplus", writer);
+        if (id3.equals("a")) {
+            writelink(id, id2b, "a_irdy0", "a_irdyminus1", writer);
+        } else if (id3.equals("b")) {
+            writelink(id, id2b, "b_irdy0", "a_irdyminus1", writer);
+        } else {
+            writelink(id, id2b, "o_irdy0", "a_irdyminus1", writer);
+        }
+        if (id3.equals("a")) {
+            writelink(id, id2b, "a_irdy1", "a_irdyplus", writer);
+        } else if (id3.equals("b")) {
+            writelink(id, id2b, "b_irdy1", "a_irdyplus", writer);
+        } else {
+            writelink(id, id2b, "o_irdy1", "a_irdyplus", writer);
+        }
+        if (id3.equals("a")) {
+            writelink(id, id2b, "a_irdy0", "b_irdyminus1", writer);
+        } else if (id3.equals("b")) {
+            writelink(id, id2b, "b_irdy0", "b_irdyminus1", writer);
+        } else {
+            writelink(id, id2b, "o_irdy0", "b_irdyminus1", writer);
+        }
+        if (id3.equals("a")) {
+            writelink(id, id2b, "a_irdy1", "b_irdyplus", writer);
+        } else if (id3.equals("b")) {
+            writelink(id, id2b, "b_irdy1", "b_irdyplus", writer);
+        } else {
+            writelink(id, id2b, "o_irdy1", "b_irdyplus", writer);
+        }
         writelinkp(id, id1, "_trdy0", "a_irdyminus", idp1, writer);
         writelinkp(id, id1, "_trdy1", "a_irdyplus", idp1, writer);
         writelinkp(id, id2, "_trdy0", "b_irdyminus", idp2, writer);
@@ -596,18 +632,34 @@ public class PNetGen implements Tool {
         writebidir(id, "b_irdy0", "i_trdyminus1", writer);
         String id2b = searchList(id);
         String id3 = searchList2(id);
-        if (id3.equals("a")) writelink(id, id2b, "a_irdy0", "a_irdyminus", writer);
-        else if (id3.equals("b")) writelink(id, id2b, "b_irdy0", "a_irdyminus", writer);
-        else writelink(id, id2b, "o_irdy0", "a_irdyminus", writer);
-        if (id3.equals("a")) writelink(id, id2b, "a_irdy1", "a_irdyplus", writer);
-        else if (id3.equals("b")) writelink(id, id2b, "b_irdy1", "a_irdyplus", writer);
-        else writelink(id, id2b, "o_irdy1", "a_irdyplus", writer);
-        if (id3.equals("a")) writelink(id, id2b, "a_irdy0", "b_irdyminus", writer);
-        else if (id3.equals("b")) writelink(id, id2b, "b_irdy0", "b_irdyminus", writer);
-        else writelink(id, id2b, "o_irdy0", "b_irdyminus", writer);
-        if (id3.equals("a")) writelink(id, id2b, "a_irdy1", "b_irdyplus", writer);
-        else if (id3.equals("b")) writelink(id, id2b, "b_irdy1", "b_irdyplus", writer);
-        else writelink(id, id2b, "o_irdy1", "b_irdyplus", writer);
+        if (id3.equals("a")) {
+            writelink(id, id2b, "a_irdy0", "a_irdyminus", writer);
+        } else if (id3.equals("b")) {
+            writelink(id, id2b, "b_irdy0", "a_irdyminus", writer);
+        } else {
+            writelink(id, id2b, "o_irdy0", "a_irdyminus", writer);
+        }
+        if (id3.equals("a")) {
+            writelink(id, id2b, "a_irdy1", "a_irdyplus", writer);
+        } else if (id3.equals("b")) {
+            writelink(id, id2b, "b_irdy1", "a_irdyplus", writer);
+        } else {
+            writelink(id, id2b, "o_irdy1", "a_irdyplus", writer);
+        }
+        if (id3.equals("a")) {
+            writelink(id, id2b, "a_irdy0", "b_irdyminus", writer);
+        } else if (id3.equals("b")) {
+            writelink(id, id2b, "b_irdy0", "b_irdyminus", writer);
+        } else {
+            writelink(id, id2b, "o_irdy0", "b_irdyminus", writer);
+        }
+        if (id3.equals("a")) {
+            writelink(id, id2b, "a_irdy1", "b_irdyplus", writer);
+        } else if (id3.equals("b")) {
+            writelink(id, id2b, "b_irdy1", "b_irdyplus", writer);
+        } else {
+            writelink(id, id2b, "o_irdy1", "b_irdyplus", writer);
+        }
         writelinkp(id, id1, "_trdy1", "i_trdyplus", idp1, writer);
         writelinkp(id, id2, "_trdy1", "i_trdyplus1", idp2, writer);
         writelinkp(id, id1, "_trdy0", "i_trdyminus", idp1, writer);
@@ -717,9 +769,13 @@ public class PNetGen implements Tool {
         writebidir(id, "i_trdy1", "_qplus", writer);
         String id2 = searchList(id);
         String id3 = searchList2(id);
-        if (id3.equals("a")) writelink(id, id2, "a_irdy1", "_qplus", writer);
-        else if (id3.equals("b")) writelink(id, id2, "b_irdy1", "_qplus", writer);
-        else writelink(id, id2, "o_irdy1", "_qplus", writer);
+        if (id3.equals("a")) {
+            writelink(id, id2, "a_irdy1", "_qplus", writer);
+        } else if (id3.equals("b")) {
+            writelink(id, id2, "b_irdy1", "_qplus", writer);
+        } else {
+            writelink(id, id2, "o_irdy1", "_qplus", writer);
+        }
         writelinkp(id, id1, "_trdy1", "_qminus", idp, writer);
         if (dl == 1) {
             if (!id2.contains("Src") && !id2.contains("Qu") && !id2.contains("Sync")) writelink(id, id2, "_dl1", "_qplus", writer);
@@ -820,9 +876,13 @@ public class PNetGen implements Tool {
         String id2 = searchList(id);
         String id3 = searchList2(id);
         for (int i = 1; i <= size; i++) {
-            if (id3.equals("a")) writelink(id, id2, "a_irdy1", "_q" + i + "plus", writer);
-            else if (id3.equals("b")) writelink(id, id2, "b_irdy1", "_q" + i + "plus", writer);
-            else writelink(id, id2, "o_irdy1", "_q" + i + "plus", writer);
+            if (id3.equals("a")) {
+                writelink(id, id2, "a_irdy1", "_q" + i + "plus", writer);
+            } else if (id3.equals("b")) {
+                writelink(id, id2, "b_irdy1", "_q" + i + "plus", writer);
+            } else {
+                writelink(id, id2, "o_irdy1", "_q" + i + "plus", writer);
+            }
         }
         for (int i = 1; i <= size; i++) {
             writelinkp(id, id1, "_trdy1", "_q" + i + "minus", idp, writer);
@@ -873,9 +933,13 @@ public class PNetGen implements Tool {
                                     if (i == 0) {
                                         idName1 = y.get(i).get("id").getValueAsText();
                                         idNamep1 = y.get(i).get("in_port").getValueAsText();
-                                        if (typeName.equals("xfork")) lst.add(new Info(idName1, idName, "b", idNamep1));
-                                        else if (typeName.equals("xswitch")) lst.add(new Info(idName1, idName, "a", idNamep1));
-                                        else lst.add(new Info(idName1, idName, "", idNamep1));
+                                        if (typeName.equals("xfork")) {
+                                            lst.add(new Info(idName1, idName, "b", idNamep1));
+                                        } else if (typeName.equals("xswitch")) {
+                                            lst.add(new Info(idName1, idName, "a", idNamep1));
+                                        } else {
+                                            lst.add(new Info(idName1, idName, "", idNamep1));
+                                        }
                                         if (idName1.contains("Sync")) {
                                             //System.out.println("id: " + idName + "sync: " + idName1);
                                             slsti.add(new Info(idName, idName1, "", idNamep1));   //swapped order slsti slsto
@@ -887,9 +951,13 @@ public class PNetGen implements Tool {
                                     } else if (i == 1) {
                                         idName2 = y.get(i).get("id").getValueAsText();
                                         idNamep2 = y.get(i).get("in_port").getValueAsText();
-                                        if (typeName.equals("xfork")) lst.add(new Info(idName2, idName, "a", idNamep2));
-                                        else if (typeName.equals("xswitch")) lst.add(new Info(idName2, idName, "b", idNamep2));
-                                        else lst.add(new Info(idName2, idName, "", idNamep2));
+                                        if (typeName.equals("xfork")) {
+                                            lst.add(new Info(idName2, idName, "a", idNamep2));
+                                        } else if (typeName.equals("xswitch")) {
+                                            lst.add(new Info(idName2, idName, "b", idNamep2));
+                                        } else {
+                                            lst.add(new Info(idName2, idName, "", idNamep2));
+                                        }
                                         if (idName2.contains("Sync")) slsti.add(new Info(idName, idName2, "", idNamep2));
                                         if (idName.contains("Sync")) {
                                             slsto2.add(new Info(idName2, idName, "", idNamep2));
@@ -1017,7 +1085,9 @@ public class PNetGen implements Tool {
                                                 //idNamep1 = y.get(i).get("in_port").getValueAsText();
                                                 if (y.get(i).get("in_port").getValueAsText().equals("0")) idNamep1 = "1";
                                                 else idNamep1 = "0";
-                                            } else if (searchtyp.equals("merge")) idNamep1 = y.get(i).get("in_port").getValueAsText();
+                                            } else if (searchtyp.equals("merge")) {
+                                                idNamep1 = y.get(i).get("in_port").getValueAsText();
+                                            }
                                         } else if (i == 1) {
                                             String searchtyp1 = "";
                                             searchtyp1 = searchList3(idName2);
@@ -1025,7 +1095,9 @@ public class PNetGen implements Tool {
                                                 //idNamep2 = y.get(i).get("in_port").getValueAsText();
                                                 if (y.get(i).get("in_port").getValueAsText().equals("0")) idNamep2 = "1";
                                                 else idNamep2 = "0";
-                                            } else if (searchtyp1.equals("merge")) idNamep2 = y.get(i).get("in_port").getValueAsText();
+                                            } else if (searchtyp1.equals("merge")) {
+                                                idNamep2 = y.get(i).get("in_port").getValueAsText();
+                                            }
                                         }
                                     }
                                 }
@@ -1067,8 +1139,11 @@ public class PNetGen implements Tool {
                                 int size = Integer.parseInt(fieldsize);
                                 //if (fieldsize.equals("1")) genqueue(idName, idName1, idNamep1, y, fieldinit, writer);
                                 //else genqueue2p(2, idName, idName1, idNamep1, y, writer);
-                                if (size <= 1) genqueue(idName, idName1, idNamep1, y, fieldinit, fieldgpf, fieldgr, writer);
-                                else if (size > 0) genqueue2p(size, idName, idName1, idNamep1, y, fieldinit, fieldgpf, fieldgr, writer);
+                                if (size <= 1) {
+                                    genqueue(idName, idName1, idNamep1, y, fieldinit, fieldgpf, fieldgr, writer);
+                                } else if (size > 0) {
+                                    genqueue2p(size, idName, idName1, idNamep1, y, fieldinit, fieldgpf, fieldgr, writer);
+                                }
                             }
                             if (typeName.equals("sink")) gensink(idName, fieldgr, writer);
                             //if (typeName.equals("sync")) sync_inf(idName, idName1, idName2, fieldgpf, fieldgpf1, styp, writer_s);
@@ -1091,8 +1166,7 @@ public class PNetGen implements Tool {
                 PNetExt pnconv = new PNetExt(srcNodes, funNodes, swNodes, syncflag);
                 //printlst();
             }
-            /*if (writer_s != null)
-              {
+            /*if (writer_s != null) {
               writer_s.close();
               }*/
         }

@@ -43,8 +43,9 @@ public class NodeFactory {
         VisualClass vcat = connection.getClass().getAnnotation(VisualClass.class);
 
         // The component/connection does not define a visual representation
-        if (vcat == null)
+        if (vcat == null) {
             return null;
+        }
 
         try {
             Class<?> visualClass = vcat.value();

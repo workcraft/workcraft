@@ -27,16 +27,19 @@ public class CPOGHangingConnectionRemover extends DefaultHangingConnectionRemove
                 }
             };
 
-            for (Node node : e.getAffectedNodes())
+            for (Node node : e.getAffectedNodes()) {
                 findHangingConnections(node, hangingConnections, hanging);
+            }
 
-            for (Connection con : hangingConnections)
-                if (con.getParent() instanceof VisualPage)
+            for (Connection con : hangingConnections) {
+                if (con.getParent() instanceof VisualPage) {
                     ((VisualPage) con.getParent()).removeWithoutNotify(con);
-                else if (con.getParent() instanceof VisualGroup)
+                } else if (con.getParent() instanceof VisualGroup) {
                     ((VisualGroup) con.getParent()).removeWithoutNotify(con);
-                else if (con.getParent() != null)
+                } else if (con.getParent() != null) {
                     throw new RuntimeException("Cannot remove a hanging connection because its parent is not a Container.");
+                }
+            }
 
         }
     }

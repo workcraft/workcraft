@@ -28,23 +28,30 @@ public class Pair<T1, T2> {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj)
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (obj == null) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
+        }
         Pair<?, ?> other = (Pair<?, ?>) obj;
         if (first == null) {
-            if (other.first != null)
+            if (other.first != null) {
                 return false;
-        } else if (!first.equals(other.first))
+            }
+        } else if (!first.equals(other.first)) {
             return false;
+        }
         if (second == null) {
-            if (other.second != null)
+            if (other.second != null) {
                 return false;
-        } else if (!second.equals(other.second))
+            }
+        } else if (!second.equals(other.second)) {
             return false;
+        }
         return true;
     }
 

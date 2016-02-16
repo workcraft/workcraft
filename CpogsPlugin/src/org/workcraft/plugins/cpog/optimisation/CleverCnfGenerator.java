@@ -75,15 +75,18 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
                 } else {
                     Literal[][] side1 = getBiClause(and.getX());
                     Literal[][] side2 = getBiClause(and.getY());
-                    for (int i = 0; i < side1.length; i++)
+                    for (int i = 0; i < side1.length; i++) {
                         for (int j = 0; j < side2.length; j++) {
                             List<Literal> list = new ArrayList<Literal>();
-                            for (int k = 0; k < side1[i].length; k++)
+                            for (int k = 0; k < side1[i].length; k++) {
                                 list.add(not(side1[i][k]));
-                            for (int k = 0; k < side2[j].length; k++)
+                            }
+                            for (int k = 0; k < side2[j].length; k++) {
                                 list.add(not(side2[j][k]));
+                            }
                             result.add(new CnfClause(list));
                         }
+                    }
                 }
 
             }
@@ -118,8 +121,9 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
             @Override
             public Literal[][] visit(Not node) {
                 Literal[][] preres = node.getX().accept(this);
-                if (preres.length != 1)
+                if (preres.length != 1) {
                     throw new RuntimeException("something wrong...");
+                }
                 Literal[][]res = new Literal[preres[0].length][];
                 for (int i = 0; i < res.length; i++) {
                     res[i] = new Literal[1];
@@ -177,10 +181,11 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
 
         @Override
         public Void visit(BooleanVariable node) {
-            if (currentResult)
+            if (currentResult) {
                 result.add(or(literal(node)));
-            else
+            } else {
                 result.add(or(not(node)));
+            }
             return null;
         }
         @Override
@@ -225,10 +230,11 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
         protected Object visitBinary(BinaryBooleanFormula node) {
             count++;
             Integer m = met.get(node);
-            if (m == null)
+            if (m == null) {
                 met.put(node, 1);
-            else
+            } else {
                 met.put(node, m + 1);
+            }
             return super.visitBinary(node);
         }
 

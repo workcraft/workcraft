@@ -19,8 +19,9 @@ public class ScenarioRef extends ArrayList<String> {
 
         for (String ref : this) {
             Node node = net.getNodeByReference(ref);
-            if ((node instanceof PlaceNode) || (node instanceof TransitionNode))
+            if ((node instanceof PlaceNode) || (node instanceof TransitionNode)) {
                 result.add(node);
+            }
         }
         return result;
     }
@@ -29,16 +30,18 @@ public class ScenarioRef extends ArrayList<String> {
         Collection<String> result = new HashSet<String>();
         for (String ref : this) {
             Node node = net.getNodeByReference(ref);
-            if ((node instanceof PlaceNode) || (node instanceof TransitionNode))
+            if ((node instanceof PlaceNode) || (node instanceof TransitionNode)) {
                 result.add(ref);
+            }
         }
         return result;
     }
 
     public boolean isNodeRef(String str, SON net) {
         Node node = net.getNodeByReference(str);
-        if ((node instanceof PlaceNode) || (node instanceof TransitionNode))
+        if ((node instanceof PlaceNode) || (node instanceof TransitionNode)) {
             return true;
+        }
         return false;
     }
 
@@ -46,8 +49,9 @@ public class ScenarioRef extends ArrayList<String> {
         Collection<SONConnection> result = new HashSet<SONConnection>();
         for (String ref : this) {
             Node node = net.getNodeByReference(ref);
-            if (node instanceof SONConnection)
+            if (node instanceof SONConnection) {
                 result.add((SONConnection) node);
+            }
         }
         return result;
     }

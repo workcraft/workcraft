@@ -31,8 +31,9 @@ public class ConsistencyEnforcer extends HierarchySupervisor {
         for (Node node : e.getAffectedNodes()) {
             if (node instanceof VisualVertex) {
                 VisualVertex vertex = (VisualVertex) node;
-                if (vertex.getLabel().isEmpty())
-                vertex.setLabel("v_" + vertexCount++);
+                if (vertex.getLabel().isEmpty()) {
+                    vertex.setLabel("v_" + vertexCount++);
+                }
             }
             if (node instanceof VisualVariable) {
                 VisualVariable variable = (VisualVariable) node;

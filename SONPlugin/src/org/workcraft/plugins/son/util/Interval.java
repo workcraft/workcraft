@@ -79,8 +79,9 @@ public class Interval {
     }
 
     public boolean isSpecified() {
-        if (getMin() != 0000 || getMax() != 9999)
+        if (getMin() != 0000 || getMax() != 9999) {
             return true;
+        }
         return false;
     }
 
@@ -135,10 +136,12 @@ public class Interval {
         int min = getMin() + other.getMin();
         int max = getMax() + other.getMax();
 
-        if (min >= 9999)
+        if (min >= 9999) {
             min = 9999;
-        if (max >= 9999)
+        }
+        if (max >= 9999) {
             max = 9999;
+        }
 
         return new Interval(min, max);
     }
@@ -175,8 +178,9 @@ public class Interval {
     public boolean equals(Object obj) {
         if (obj instanceof Interval) {
             Interval interval = (Interval) obj;
-            if (this.getMin().equals(interval.getMin()) && this.getMax().equals(interval.getMax()))
+            if (this.getMin().equals(interval.getMin()) && this.getMax().equals(interval.getMax())) {
                 return true;
+            }
         }
         return false;
     }

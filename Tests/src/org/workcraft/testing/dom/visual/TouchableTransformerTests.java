@@ -83,8 +83,9 @@ public class TouchableTransformerTests {
         Dummy dummy = new Dummy() {
             @Override
             public Rectangle2D getBoundingBox() {
-                if (bb == null)
+                if (bb == null) {
                     return null;
+                }
                 return new Rectangle2D.Double(bb.getMinX(), bb.getMinY(), bb.getWidth(), bb.getHeight());
             }
         };

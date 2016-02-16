@@ -44,17 +44,19 @@ public class ListMap<K, V> {
         LinkedList<V> list = map.get(key);
         if (list != null) {
             list.remove(value);
-            if (list.isEmpty())
+            if (list.isEmpty()) {
                 map.remove(key);
+            }
         }
     }
 
     public List<V> get(K key) {
         LinkedList<V> list = map.get(key);
-        if (list != null)
+        if (list != null) {
             return Collections.unmodifiableList(list);
-        else
+        } else {
             return Collections.emptyList();
+        }
     }
 
     public Set<K> keySet() {

@@ -35,15 +35,17 @@ public class ASONAlg extends RelationAlgorithm {
         Marking result = new Marking();
 
         for (Node n : getPostPNSet(t)) {
-            if (marking.contains(n))
+            if (marking.contains(n)) {
                 throw new UnboundedException(net.getNodeReference(n), n);
-            else
+            } else {
                 result.add((PlaceNode) n);
+            }
         }
 
         for (Node n : marking) {
-            if (!getPrePNSet(t).contains(n))
+            if (!getPrePNSet(t).contains(n)) {
                 result.add((PlaceNode) n);
+            }
         }
 
         return result;
@@ -71,8 +73,9 @@ public class ASONAlg extends RelationAlgorithm {
                 for (TransitionNode t : group.getTransitionNodes()) {
                     if (!visited(visited, t, marking) && isEnabled(marking, t)) {
                         Marking newMarking = fire(marking, t);
-                        if (!contains(result, newMarking) && !contains(newMarkings, newMarking))
+                        if (!contains(result, newMarking) && !contains(newMarkings, newMarking)) {
                             newMarkings.add(newMarking);
+                        }
                     }
                     if (visited.containsKey(t)) {
                         ArrayList<Marking> markings = visited.get(t);
@@ -106,11 +109,13 @@ public class ASONAlg extends RelationAlgorithm {
         return false;
     }
     private boolean visited(Map<TransitionNode, ArrayList<Marking>> visited, TransitionNode t, Marking marking) {
-        if (visited.containsKey(t))
+        if (visited.containsKey(t)) {
             for (Marking ref : visited.get(t)) {
-                if (ref.equals(marking))
+                if (ref.equals(marking)) {
                     return true;
+                }
             }
+        }
         return false;
     }
 

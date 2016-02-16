@@ -158,13 +158,14 @@ public class Main {
 
         System.out.println("time: " + (end - start) / 1000.0);
 
-        if (solution == null)
+        if (solution == null) {
             System.out.println("No solution.");
-        else {
+        } else {
             boolean[][] encoding = solution.getEncoding();
             for (int i = 0; i < encoding.length; i++) {
-                for (int j = 0; j < encoding[i].length; j++)
+                for (int j = 0; j < encoding[i].length; j++) {
                     System.out.print(encoding[i][j] ? 1 : 0);
+                }
                 System.out.println();
             }
 

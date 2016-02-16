@@ -45,19 +45,21 @@ public class ModelManager {
     @SuppressWarnings("unchecked")
     public LinkedList<Class<?>> getComponentsByModelUUID(UUID uuid) {
         LinkedList<Class<?>> lst = uuidComponentListMap.get(uuid);
-        if (lst != null)
+        if (lst != null) {
             return (LinkedList<Class<?>>) lst.clone();
-        else
+        } else {
             return null;
+        }
     }
 
     @SuppressWarnings("unchecked")
     public LinkedList<Class<?>> getToolsByModelUUID(UUID uuid) {
         LinkedList<Class<?>> lst = uuidToolListMap.get(uuid);
-        if (lst != null)
+        if (lst != null) {
             return (LinkedList<Class<?>>) lst.clone();
-        else
+        } else {
             return null;
+        }
     }
 
     @SuppressWarnings("unchecked")
@@ -86,8 +88,9 @@ public class ModelManager {
 
     public  UUID getModelUUID(Class<?> modelClass) {
         UUID uuid = null;
-        if (!isValidModelClass(modelClass))
+        if (!isValidModelClass(modelClass)) {
             return null;
+        }
         try {
             uuid = (UUID) modelClass.getField("_modeluuid").get(null);
         } catch (NoSuchFieldException e) {
@@ -107,8 +110,9 @@ public class ModelManager {
             return null;
         }
 
-        if (!isValidModelClass(modelClass))
+        if (!isValidModelClass(modelClass)) {
             return null;
+        }
 
         try {
             uuid = (UUID) modelClass.getField("_modeluuid").get(null);
@@ -121,8 +125,9 @@ public class ModelManager {
     }
 
     public static String getModelDisplayName(Class<?> modelClass) {
-        if (!isValidModelClass(modelClass))
+        if (!isValidModelClass(modelClass)) {
             return null;
+        }
         try {
             return (String) modelClass.getField("_displayname").get(null);
         } catch (NoSuchFieldException e) {
@@ -134,8 +139,9 @@ public class ModelManager {
     }
 
     public static String getToolDisplayName(Class<?> toolClass) {
-        if (!isValidToolClass(toolClass))
+        if (!isValidToolClass(toolClass)) {
             return null;
+        }
         try {
             return (String) toolClass.getField("_displayname").get(null);
         } catch (NoSuchFieldException e) {

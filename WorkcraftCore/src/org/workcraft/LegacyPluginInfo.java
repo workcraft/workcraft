@@ -37,8 +37,9 @@ public class LegacyPluginInfo implements Initialiser<Object> {
     private String[] interfaceNames;
 
     private void addInterfaces(Class<?> cls, Set<String> set) {
-        if (cls == null || cls.equals(Object.class))
+        if (cls == null || cls.equals(Object.class)) {
             return;
+        }
 
         for (Class<?> interf : cls.getInterfaces()) {
             set.add(interf.getName());
@@ -53,10 +54,11 @@ public class LegacyPluginInfo implements Initialiser<Object> {
 
         DisplayName name = cls.getAnnotation(DisplayName.class);
 
-        if (name == null)
+        if (name == null) {
             displayName = className.substring(className.lastIndexOf('.') + 1);
-        else
+        } else {
             displayName = name.value();
+        }
 
         HashSet<String> interfaces = new HashSet<String>();
         addInterfaces(cls, interfaces);
@@ -86,18 +88,21 @@ public class LegacyPluginInfo implements Initialiser<Object> {
 
     public LegacyPluginInfo(Element element) throws FormatException {
         className = XmlUtil.readStringAttr(element, "class");
-        if (className == null || className.isEmpty())
+        if (className == null || className.isEmpty()) {
             throw new FormatException();
+        }
 
         displayName = XmlUtil.readStringAttr(element, "displayName");
-        if (displayName.isEmpty())
+        if (displayName.isEmpty()) {
             displayName = className.substring(className.lastIndexOf('.') + 1);
+        }
 
         NodeList nl = element.getElementsByTagName("interface");
         interfaceNames = new String[nl.getLength()];
 
-        for (int i = 0; i < nl.getLength(); i++)
+        for (int i = 0; i < nl.getLength(); i++) {
             interfaceNames[i] = ((Element) nl.item(i)).getAttribute("name");
+        }
     }
 
     public void toXml(Element element) {
@@ -120,9 +125,11 @@ public class LegacyPluginInfo implements Initialiser<Object> {
     }
 
     public boolean isInterfaceImplemented(String interfaceClassName) {
-        for (String s : interfaceNames)
-            if (s.equals(interfaceClassName))
+        for (String s : interfaceNames) {
+            if (s.equals(interfaceClassName)) {
                 return true;
+            }
+        }
         return false;
     }
 

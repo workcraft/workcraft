@@ -105,13 +105,15 @@ public class VisualModelTests {
 
         int dc = 0;
         for (int oc = 0; oc < oldNodes.length; oc++) {
-            if (oldNodes[oc] == newNodes[oc - dc])
+            if (oldNodes[oc] == newNodes[oc - dc]) {
                 continue;
+            }
             diffs[dc] = oldNodes[oc];
             dc++;
         }
-        if (dc != diffs.length)
+        if (dc != diffs.length) {
             throw new RuntimeException("incorrect arrays!");
+        }
 
         return diffs;
     }
@@ -132,28 +134,33 @@ public class VisualModelTests {
 
         ArrayList<VisualNode> missingList = new ArrayList<VisualNode>();
 
-        for (VisualNode node : diff)
+        for (VisualNode node : diff) {
             missingList.add(node);
+        }
 
         Assert.assertEquals(toGroup.length, missingList.size());
-        for (VisualNode node : toGroup)
+        for (VisualNode node : toGroup) {
             Assert.assertTrue(missingList.contains(node));
+        }
 
         ArrayList<VisualNode> oldList = new ArrayList<VisualNode>();
-        for (VisualNode node : old)
+        for (VisualNode node : old) {
             oldList.add(node);
+        }
 
         VisualGroup newGroup = (VisualGroup) newNode[newNode.length - 1];
         Assert.assertFalse(oldList.contains(newGroup));
         Assert.assertTrue(newGroup instanceof VisualGroup);
 
         ArrayList<Node> newNodeList = new ArrayList<Node>();
-        for (Node node : newGroup.getChildren())
+        for (Node node : newGroup.getChildren()) {
             newNodeList.add(node);
+        }
 
         Assert.assertEquals(toGroup.length, newNodeList.size());
-        for (VisualNode node : toGroup)
+        for (VisualNode node : toGroup) {
             Assert.assertTrue(newNodeList.contains(node));
+        }
     }
 
     @Test

@@ -167,7 +167,7 @@ public class DockableWindowContentPanel extends JPanel {
         public void setMaximized(boolean maximized) {
             this.maximized = maximized;
 
-            if (btnMax != null)
+            if (btnMax != null) {
                 if (maximized) {
                     btnMax.setIcon(UIManager.getIcon("InternalFrame.minimizeIcon"));
                     btnMax.setToolTipText("Restore window");
@@ -175,6 +175,7 @@ public class DockableWindowContentPanel extends JPanel {
                     btnMax.setIcon(UIManager.getIcon("InternalFrame.maximizeIcon"));
                     btnMax.setToolTipText("Maximize window");
                 }
+            }
         }
 
         public void setTitle(String title) {
@@ -235,8 +236,9 @@ public class DockableWindowContentPanel extends JPanel {
     }
 
     public void setMaximized(boolean maximized) {
-        if (header != null)
+        if (header != null) {
             header.setMaximized(maximized);
+        }
     }
 
     public void setHeaderVisible(boolean headerVisible) {

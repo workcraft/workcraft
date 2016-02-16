@@ -42,8 +42,9 @@ public abstract class Action/* extends AbstractAction */ {
     public void setEnabled(boolean enabled) {
         if (this.enabled != enabled) {
             this.enabled = enabled;
-            for (Actor actor : actors)
+            for (Actor actor : actors) {
                 actor.actionEnableStateChanged(enabled);
+            }
         }
     }
     public boolean isEnabled() {

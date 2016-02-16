@@ -82,22 +82,30 @@ public class Xmas extends AbstractMathModel {
     public Collection<Node> getNodes() {
         ArrayList<Node> result =  new ArrayList<Node>();
         for (Node node : Hierarchy.getDescendantsOfType(getRoot(), Node.class)) {
-            if (node instanceof SourceComponent)
+            if (node instanceof SourceComponent) {
                 result.add(node);
-            if (node instanceof FunctionComponent)
+            }
+            if (node instanceof FunctionComponent) {
                 result.add(node);
-            if (node instanceof QueueComponent)
+            }
+            if (node instanceof QueueComponent) {
                 result.add(node);
-            if (node instanceof ForkComponent)
+            }
+            if (node instanceof ForkComponent) {
                 result.add(node);
-            if (node instanceof JoinComponent)
+            }
+            if (node instanceof JoinComponent) {
                 result.add(node);
-            if (node instanceof SwitchComponent)
+            }
+            if (node instanceof SwitchComponent) {
                 result.add(node);
-            if (node instanceof MergeComponent)
+            }
+            if (node instanceof MergeComponent) {
                 result.add(node);
-            if (node instanceof SinkComponent)
+            }
+            if (node instanceof SinkComponent) {
                 result.add(node);
+            }
         }
         return result;
     }

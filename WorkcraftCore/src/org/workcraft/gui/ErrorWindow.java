@@ -168,17 +168,19 @@ public class ErrorWindow extends JPanel implements ComponentListener {
     }
 
     public void componentShown(ComponentEvent e) {
-        if (colorBack == null)
+        if (colorBack == null) {
             return;
+        }
 
         Container parent =     getParent().getParent().getParent();
         if (parent instanceof JTabbedPane) {
             JTabbedPane tab = (JTabbedPane) parent;
-            for (int i = 0; i < tab.getComponentCount(); i++)
+            for (int i = 0; i < tab.getComponentCount(); i++) {
                 if (tab.getComponentAt(i) == ErrorWindow.this.getParent().getParent()) {
                     tab.setForegroundAt(i, colorBack);
                     colorBack = null;
                 }
+            }
         }
     }
 }

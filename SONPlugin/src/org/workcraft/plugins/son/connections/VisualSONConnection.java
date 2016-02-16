@@ -180,8 +180,9 @@ public class VisualSONConnection extends VisualConnection {
 
     @Override
     public void draw(DrawRequest r) {
-        if (getSemantics() == Semantics.PNLINE || getSemantics() == Semantics.ASYNLINE)
+        if (getSemantics() == Semantics.PNLINE || getSemantics() == Semantics.ASYNLINE) {
             drawLabelInLocalSpace(r);
+        }
     }
 
     private Rectangle2D getLabelBoundingBox() {

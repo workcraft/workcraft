@@ -64,10 +64,11 @@ public class StgSelectionTool extends SelectionTool {
         if (place.getTokens() <= 1) {
             editor.getWorkspaceEntry().saveMemento();
 
-            if (place.getTokens() == 1)
+            if (place.getTokens() == 1) {
                 place.setTokens(0);
-            else
+            } else {
                 place.setTokens(1);
+            }
         }
     }
 

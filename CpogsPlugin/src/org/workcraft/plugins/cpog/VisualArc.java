@@ -85,9 +85,10 @@ public class VisualArc extends VisualConnection {
     public Stroke getStroke() {
         BooleanFormula value = evaluate();
 
-        if (value == Zero.instance())
+        if (value == Zero.instance()) {
             return new BasicStroke((float) super.getLineWidth(), BasicStroke.CAP_BUTT,
                 BasicStroke.JOIN_MITER, 1.0f, new float[] {0.18f, 0.18f}, 0.00f);
+        }
 
         return super.getStroke();
     }

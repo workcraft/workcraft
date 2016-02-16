@@ -101,8 +101,9 @@ public class MultiSet<T> implements Set<T> {
         int idx = 0;
         for (T o: map.keySet()) {
             for (int i = 0; i < count(o); i++) {
-                if (idx > a.length)
-                a[idx] = (R) o;
+                if (idx > a.length) {
+                    a[idx] = (R) o;
+                }
             }
         }
         return a;

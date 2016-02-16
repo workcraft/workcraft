@@ -29,12 +29,14 @@ public class TSONAlg extends RelationAlgorithm {
 
         for (Node node : components) {
             for (Node pre : net.getPreset(node)) {
-                if (!components.contains(pre))
+                if (!components.contains(pre)) {
                     result.add(pre);
+                }
             }
             for (Node post : net.getPostset(node)) {
-                if (!components.contains(post) && net.getSONConnectionType(node, post) == Semantics.SYNCLINE)
+                if (!components.contains(post) && net.getSONConnectionType(node, post) == Semantics.SYNCLINE) {
                     result.add(post);
+                }
             }
         }
         result.addAll(net.getPreset(block));
@@ -50,12 +52,14 @@ public class TSONAlg extends RelationAlgorithm {
 
         for (Node node: components) {
             for (Node post : net.getPostset(node)) {
-                if (!components.contains(post))
+                if (!components.contains(post)) {
                     result.add(post);
+                }
             }
             for (Node pre : net.getPreset(node)) {
-                if (!components.contains(pre) && net.getSONConnectionType(node, pre) == Semantics.SYNCLINE)
+                if (!components.contains(pre) && net.getSONConnectionType(node, pre) == Semantics.SYNCLINE) {
                     result.add(pre);
+                }
             }
         }
         result.addAll(net.getPostset(block));
@@ -71,13 +75,16 @@ public class TSONAlg extends RelationAlgorithm {
 
         for (Node node : components) {
             for (Node pre : net.getPreset(node)) {
-                if (!components.contains(pre) && net.getSONConnectionType(node, pre) == Semantics.PNLINE)
+                if (!components.contains(pre) && net.getSONConnectionType(node, pre) == Semantics.PNLINE) {
                     result.add(pre);
+                }
             }
         }
-        for (Node pre : net.getPreset(block))
-            if (net.getSONConnectionType(block, pre) == Semantics.PNLINE)
+        for (Node pre : net.getPreset(block)) {
+            if (net.getSONConnectionType(block, pre) == Semantics.PNLINE) {
                 result.add(pre);
+            }
+        }
 
         return result;
     }
@@ -91,13 +98,16 @@ public class TSONAlg extends RelationAlgorithm {
 
         for (Node node : components) {
             for (Node post : net.getPostset(node)) {
-                if (!components.contains(post) && net.getSONConnectionType(node, post) == Semantics.PNLINE)
+                if (!components.contains(post) && net.getSONConnectionType(node, post) == Semantics.PNLINE) {
                     result.add(post);
+                }
             }
         }
-        for (Node post : net.getPostset(block))
-            if (net.getSONConnectionType(block, post) == Semantics.PNLINE)
+        for (Node post : net.getPostset(block)) {
+            if (net.getSONConnectionType(block, post) == Semantics.PNLINE) {
                 result.add(post);
+            }
+        }
 
         return result;
     }
@@ -110,11 +120,13 @@ public class TSONAlg extends RelationAlgorithm {
         Collection<Node> components = block.getComponents();
 
         for (Node node : components) {
-            if (node instanceof TransitionNode)
+            if (node instanceof TransitionNode) {
                 for (Node pre : this.getPreASynEvents((TransitionNode) node)) {
-                    if (!components.contains(pre) && pre != null)
+                    if (!components.contains(pre) && pre != null) {
                         result.add(pre);
+                    }
                 }
+            }
         }
         return result;
     }
@@ -127,11 +139,13 @@ public class TSONAlg extends RelationAlgorithm {
         Collection<Node> components = block.getComponents();
 
         for (Node node : components) {
-            if (node instanceof TransitionNode)
+            if (node instanceof TransitionNode) {
                 for (Node post : this.getPostASynEvents((TransitionNode) node)) {
-                    if (!components.contains(post) && post != null)
+                    if (!components.contains(post) && post != null) {
                         result.add(post);
+                    }
                 }
+            }
         }
         return result;
     }
@@ -141,15 +155,17 @@ public class TSONAlg extends RelationAlgorithm {
      */
     public boolean isCausallyPrecede(Node input, Collection<Node> outputs) {
         for (Node post : relation.getPostPNSet(input)) {
-            if (outputs.contains(post))
+            if (outputs.contains(post)) {
                 outputs.remove(post);
-            else
+            } else {
                 isCausallyPrecede(post, outputs);
+            }
         }
-        if (outputs.isEmpty())
+        if (outputs.isEmpty()) {
             return true;
-        else
+        } else {
             return false;
+        }
     }
 
 }

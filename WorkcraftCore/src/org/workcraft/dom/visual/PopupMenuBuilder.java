@@ -41,8 +41,9 @@ public class PopupMenuBuilder {
     public JPopupMenu build(ScriptedActionListener actionListener) {
         JPopupMenu menu = new JPopupMenu();
 
-        for (PopupMenuSegment segment : segments)
+        for (PopupMenuSegment segment : segments) {
             segment.addItems(menu, actionListener);
+        }
 
         return menu;
     }

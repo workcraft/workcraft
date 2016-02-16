@@ -27,11 +27,12 @@ public class CpogConnector implements CpogVisitor<Set<VisualVertex>> {
         Set<VisualVertex> left = node.getX().accept(this);
         Set<VisualVertex> right = node.getY().accept(this);
 
-        for (VisualVertex l : left)
+        for (VisualVertex l : left) {
             for (VisualVertex r : right) {
                 // TODO: handle self-loops properly
                 cpog.connect(l, r);
             }
+        }
 
         left.addAll(right);
         return left;

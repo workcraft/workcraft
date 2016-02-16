@@ -163,32 +163,32 @@ public class SerialisationTestingUtils {
     public static void compareNodes(Node node1, Node node2) {
         assertEquals(node1.getClass(), node2.getClass());
 
-        if (node1 instanceof MathNode)
+        if (node1 instanceof MathNode) {
             comparePreAndPostSets((MathNode) node1, (MathNode) node2);
-        else if (node1 instanceof VisualComponent)
+        } else if (node1 instanceof VisualComponent) {
             comparePreAndPostSets((VisualComponent) node1, (VisualComponent) node2);
-        else if (node1 instanceof Place)
+        } else if (node1 instanceof Place) {
             comparePlaces((Place) node1, (Place) node2);
-        else if (node1 instanceof MathConnection)
+        } else if (node1 instanceof MathConnection) {
             compareConnections((MathConnection) node1, (MathConnection) node2);
-        else if (node1 instanceof SignalTransition)
+        } else if (node1 instanceof SignalTransition) {
             compareTransitions((SignalTransition) node1, (SignalTransition) node2);
-        else if (node1 instanceof VisualPlace)
+        } else if (node1 instanceof VisualPlace) {
             compareVisualPlaces((VisualPlace) node1, (VisualPlace) node2);
-        else if (node1 instanceof VisualSignalTransition)
+        } else if (node1 instanceof VisualSignalTransition) {
             compareVisualSignalTransitions((VisualSignalTransition) node1, (VisualSignalTransition) node2);
-        else if (node1 instanceof VisualDummyTransition)
+        } else if (node1 instanceof VisualDummyTransition) {
             compareVisualDummyTransitions((VisualDummyTransition) node1, (VisualDummyTransition) node2);
-        else if (node1 instanceof VisualImplicitPlaceArc)
+        } else if (node1 instanceof VisualImplicitPlaceArc) {
             compareImplicitPlaceArcs((VisualImplicitPlaceArc) node1, (VisualImplicitPlaceArc) node2);
-        else if (node1 instanceof VisualConnection)
+        } else if (node1 instanceof VisualConnection) {
             compareVisualConnections((VisualConnection) node1, (VisualConnection) node2);
-        else if (node1 instanceof Polyline)
+        } else if (node1 instanceof Polyline) {
             comparePolylines((Polyline) node1, (Polyline) node2);
-        else if (node1 instanceof MathGroup);
-        else if (node1 instanceof VisualGroup);
-        else if (node1 instanceof ComponentsTransformObserver);
-        else fail("Unexpected class " + node1.getClass().getName());
+        } else if (node1 instanceof MathGroup) {
+        } else if (node1 instanceof VisualGroup) {
+        } else if (node1 instanceof ComponentsTransformObserver) {
+        } else fail("Unexpected class " + node1.getClass().getName());
 
         Collection<Node> ch1 = node1.getChildren();
         Collection<Node> ch2 = node2.getChildren();

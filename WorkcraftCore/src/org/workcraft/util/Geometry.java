@@ -61,10 +61,11 @@ public class Geometry {
     public static Point2D normalize(Point2D p) {
         Point2D result = (Point2D) p.clone();
         double length = p.distance(0, 0);
-        if (length < 0.0000001)
+        if (length < 0.0000001) {
             result.setLocation(0, 0);
-        else
+        } else {
             result.setLocation(p.getX() / length, p.getY() / length);
+        }
         return result;
     }
 
@@ -160,10 +161,11 @@ public class Geometry {
             double t = (tStart + tEnd) * 0.5;
             point = curve.getPointOnCurve(t);
 
-            if (collisionNode.hitTest(point))
+            if (collisionNode.hitTest(point)) {
                 tStart = t;
-            else
+            } else {
                 tEnd = t;
+            }
         }
         return tStart;
     }
@@ -195,14 +197,16 @@ public class Geometry {
     public static Point2D changeBasis(Point2D p, Point2D vx, Point2D vy) {
         Point2D result = (Point2D) p.clone();
 
-        if (dotProduct(vx, vy) > 0.0000001)
+        if (dotProduct(vx, vy) > 0.0000001) {
             throw new RuntimeException("Vectors vx and vy must be orthogonal");
+        }
 
         double vysq = vy.distanceSq(0, 0);
         double vxsq = vx.distanceSq(0, 0);
 
-        if (vysq < 0.0000001 || vxsq < 0.0000001)
+        if (vysq < 0.0000001 || vxsq < 0.0000001) {
             throw new RuntimeException("Vectors vx and vy must not have zero length");
+        }
 
         result.setLocation(dotProduct(p, vx) / vxsq, dotProduct(p, vy) / vysq);
 

@@ -50,8 +50,9 @@ public class WorkspaceTreeDecorator implements TreeDecorator<Path<String>> {
     public String getName(Path<String> node) {
         final WorkspaceEntry openFile = workspace.getOpenFile(node);
         String name = node.isEmpty() ? "!Workspace" : node.getNode();
-        if (openFile != null && openFile.isChanged())
+        if (openFile != null && openFile.isChanged()) {
             name += " *";
+        }
         return name;
     }
 }

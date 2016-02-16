@@ -91,9 +91,11 @@ public class PathAlgorithm {
 
     private LinkedList<Node> getPostset(Node n, Collection<Node> nodes) {
         LinkedList<Node> list = new LinkedList<Node>();
-        for (Node post : net.getPostset(n))
-            if (nodes.contains(post))
+        for (Node post : net.getPostset(n)) {
+            if (nodes.contains(post)) {
                 list.add(post);
+            }
+        }
         return list;
     }
     //get nodes between two given node sets. (iteration)

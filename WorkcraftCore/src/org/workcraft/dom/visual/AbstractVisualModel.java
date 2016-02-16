@@ -308,8 +308,9 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     }
 
     private void validateSelection(Collection<Node> nodes) {
-        for (Node node : nodes)
+        for (Node node : nodes) {
             validateSelection(node);
+        }
     }
 
     public boolean isSelected(Node node) {

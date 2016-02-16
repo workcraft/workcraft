@@ -54,8 +54,9 @@ public class ErrorTracingAlg extends SimulationAlg {
                             if (n instanceof TransitionNode) {
                                 eventCycle.add((TransitionNode) n);
                                 if (!getPreAsynEvents((TransitionNode) n).isEmpty()
-                                        && hasCommonElements(fireList2, getPreAsynEvents((TransitionNode) n)))
+                                        && hasCommonElements(fireList2, getPreAsynEvents((TransitionNode) n))) {
                                     hasPreAsyn = true;
+                                }
                             }
                         }
                         if (!hasPreAsyn) {
@@ -66,41 +67,49 @@ public class ErrorTracingAlg extends SimulationAlg {
                         }
                     }
                 }
-                if (b)
+                if (b) {
                     break;
+                }
             }
             fireList.removeAll(removeList);
         }
     }
 
     private boolean hasCommonElements(Collection<TransitionNode> cycle1, Collection<TransitionNode> cycle2) {
-        for (Node n : cycle1)
-            if (cycle2.contains(n))
+        for (Node n : cycle1) {
+            if (cycle2.contains(n)) {
                 return true;
-        for (Node n : cycle2)
-            if (cycle1.contains(n))
+            }
+        }
+        for (Node n : cycle2) {
+            if (cycle1.contains(n)) {
                 return true;
+            }
+        }
         return false;
     }
 
     private void setAsynErrNum(TransitionNode e, Map<Condition, Collection<Phase>> phases, boolean isLower) {
         int err = 0;
-        if (e.isFaulty())
+        if (e.isFaulty()) {
             err++;
+        }
         //get err number from lower conditions and channel places
         for (Node pre : net.getPreset(e)) {
-            if (pre instanceof PlaceNode)
+            if (pre instanceof PlaceNode) {
                 err = err + ((PlaceNode) pre).getErrors();
+            }
         }
 
         for (Node post: net.getPostset(e)) {
             if (post instanceof Condition) {
                 ((Condition) post).setErrors(err);
                 //set err number for lower condition
-                if (!isLower)
+                if (!isLower) {
                     for (Condition min : bsonAlg.getMinimalPhase(getActivatedPhases(phases.get(post)))) {
                         ((Condition) min).setErrors(((Condition) min).getErrors() + ((Condition) post).getErrors());
                     }
+                }
             }
             if (post instanceof ChannelPlace) {
                 ((ChannelPlace) post).setErrors(err);
@@ -112,15 +121,19 @@ public class ErrorTracingAlg extends SimulationAlg {
         int err = 0;
 
         for (TransitionNode e : sync) {
-            if (((TransitionNode) e).isFaulty())
+            if (((TransitionNode) e).isFaulty()) {
                 err++;
+            }
             for (Node pre : net.getPreset(e)) {
-                if (pre instanceof Condition)
+                if (pre instanceof Condition) {
                     err = err + ((Condition) pre).getErrors();
+                }
                 if (pre instanceof ChannelPlace) {
-                    for (Node n : net.getPreset(pre))
-                        if (!sync.contains(n))
+                    for (Node n : net.getPreset(pre)) {
+                        if (!sync.contains(n)) {
                             err = err + ((ChannelPlace) pre).getErrors();
+                        }
+                    }
                 }
             }
         }
@@ -130,16 +143,19 @@ public class ErrorTracingAlg extends SimulationAlg {
                 if (post instanceof Condition) {
                     ((Condition) post).setErrors(err);
                     //set err number for upper conditions
-                    if (!isLower)
+                    if (!isLower) {
                         for (Condition min : bsonAlg.getMinimalPhase(getActivatedPhases(phases.get(post)))) {
                             ((Condition) min).setErrors(((Condition) min).getErrors() + ((Condition) post).getErrors());
                         }
+                    }
                 }
 
                 if (post instanceof ChannelPlace) {
-                    for (Node n : net.getPostset(post))
-                        if (!sync.contains(n))
+                    for (Node n : net.getPostset(post)) {
+                        if (!sync.contains(n)) {
                             ((ChannelPlace) post).setErrors(err);
+                        }
+                    }
                 }
             }
         }
@@ -175,8 +191,9 @@ public class ErrorTracingAlg extends SimulationAlg {
                             if (n instanceof TransitionNode) {
                                 eventCycle.add((TransitionNode) n);
                                 if (!getPostAsynEvents((TransitionNode) n).isEmpty()
-                                        && hasCommonElements(fireList2, getPostAsynEvents((TransitionNode) n)))
+                                        && hasCommonElements(fireList2, getPostAsynEvents((TransitionNode) n))) {
                                     hasPostAsyn = true;
+                                }
                             }
                         }
                         if (!hasPostAsyn) {
@@ -187,8 +204,9 @@ public class ErrorTracingAlg extends SimulationAlg {
                         }
                     }
                 }
-                if (b)
+                if (b) {
                     break;
+                }
             }
             fireList.removeAll(removeList);
         }
@@ -196,22 +214,25 @@ public class ErrorTracingAlg extends SimulationAlg {
 
     private void setRevAsynErrNum(TransitionNode e, Map<Condition, Collection<Phase>> phases, boolean isLower) {
         int err = 0;
-        if (e.isFaulty())
+        if (e.isFaulty()) {
             err++;
+        }
         //get err number from lower conditions and channel places
         for (Node pre : net.getPreset(e)) {
-            if (pre instanceof PlaceNode)
+            if (pre instanceof PlaceNode) {
                 err = err + ((PlaceNode) pre).getErrors();
+            }
         }
 
         for (Node post: net.getPostset(e)) {
             if (post instanceof Condition) {
                 ((Condition) post).setErrors(err);
                 //set err number for lower condition
-                if (!isLower)
+                if (!isLower) {
                     for (Condition min : bsonAlg.getMinimalPhase(getActivatedPhases(phases.get(post)))) {
                         ((Condition) min).setErrors(((Condition) min).getErrors() - ((Condition) post).getErrors());
                     }
+                }
                 ((Condition) post).setErrors(((Condition) post).getErrors() - err);
             }
             if (post instanceof ChannelPlace) {
@@ -224,15 +245,19 @@ public class ErrorTracingAlg extends SimulationAlg {
         int err = 0;
 
         for (TransitionNode e : sync) {
-            if (((TransitionNode) e).isFaulty())
+            if (((TransitionNode) e).isFaulty()) {
                 err++;
+            }
             for (Node pre : net.getPreset(e)) {
-                if (pre instanceof Condition)
+                if (pre instanceof Condition) {
                     err = err + ((Condition) pre).getErrors();
+                }
                 if (pre instanceof ChannelPlace) {
-                    for (Node n : net.getPreset(pre))
-                        if (!sync.contains(n))
+                    for (Node n : net.getPreset(pre)) {
+                        if (!sync.contains(n)) {
                             err = err + ((ChannelPlace) pre).getErrors();
+                        }
+                    }
                 }
             }
         }
@@ -242,17 +267,20 @@ public class ErrorTracingAlg extends SimulationAlg {
                 if (post instanceof Condition) {
                     ((Condition) post).setErrors(err);
                     //set err number for upper conditions
-                    if (!isLower)
+                    if (!isLower) {
                         for (Condition min : bsonAlg.getMinimalPhase(getActivatedPhases(phases.get(post)))) {
                             ((Condition) min).setErrors(((Condition) min).getErrors() - ((Condition) post).getErrors());
                         }
+                    }
                     ((Condition) post).setErrors(((Condition) post).getErrors() - err);
                 }
 
                 if (post instanceof ChannelPlace) {
-                    for (Node n : net.getPostset(post))
-                        if (!sync.contains(n))
+                    for (Node n : net.getPostset(post)) {
+                        if (!sync.contains(n)) {
                             ((ChannelPlace) post).setErrors(((ChannelPlace) post).getErrors() - err);
+                        }
+                    }
                 }
             }
         }

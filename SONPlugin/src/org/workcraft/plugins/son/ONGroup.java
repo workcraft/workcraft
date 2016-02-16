@@ -25,9 +25,11 @@ public class ONGroup extends PageNode {
     public Collection<Node> getComponents() {
         ArrayList<Node> result = new ArrayList<Node>();
 
-        for (Node node : Hierarchy.getDescendantsOfType(this, MathNode.class))
-            if (node instanceof Condition || node instanceof Event)
+        for (Node node : Hierarchy.getDescendantsOfType(this, MathNode.class)) {
+            if (node instanceof Condition || node instanceof Event) {
                 result.add(node);
+            }
+        }
 
         //remove the nodes in isolate blocks
         for (Block block : this.getBlocks()) {
@@ -47,34 +49,40 @@ public class ONGroup extends PageNode {
     }
 
     public boolean contains(Node node) {
-        if (this.getComponents().contains(node))
+        if (this.getComponents().contains(node)) {
             return true;
-        else
+        } else {
             return false;
+        }
     }
 
     public boolean containsAll(Collection<Node> nodes) {
         for (Node node: nodes) {
-            if (!this.contains(node))
+            if (!this.contains(node)) {
                 return false;
+            }
         }
         return true;
     }
 
     public Collection<Condition> getConditions() {
         ArrayList<Condition> result =  new ArrayList<Condition>();
-        for (Node node : getComponents())
-            if (node instanceof Condition)
+        for (Node node : getComponents()) {
+            if (node instanceof Condition) {
                 result.add((Condition) node);
+            }
+        }
 
         return result;
     }
 
     public Collection<Event> getEvents() {
         ArrayList<Event> result =  new ArrayList<Event>();
-        for (Node node : getComponents())
-            if (node instanceof Event)
+        for (Node node : getComponents()) {
+            if (node instanceof Event) {
                 result.add((Event) node);
+            }
+        }
 
         return result;
     }
@@ -82,11 +90,14 @@ public class ONGroup extends PageNode {
     public Collection<TransitionNode> getTransitionNodes() {
         ArrayList<TransitionNode> result =  new ArrayList<TransitionNode>();
         for (Node node : getComponents()) {
-            if (node instanceof Event)
+            if (node instanceof Event) {
                 result.add((Event) node);
-            if (node instanceof Block)
-                if (((Block) node).getIsCollapsed())
+            }
+            if (node instanceof Block) {
+                if (((Block) node).getIsCollapsed()) {
                     result.add((Block) node);
+                }
+            }
         }
 
         return result;
@@ -103,8 +114,9 @@ public class ONGroup extends PageNode {
     public Collection<Block> getCollapsedBlocks() {
         Collection<Block> result = new ArrayList<Block>();
         for (Block block : getBlocks()) {
-            if (block.getIsCollapsed())
+            if (block.getIsCollapsed()) {
                 result.add(block);
+            }
         }
         return result;
     }
@@ -112,8 +124,9 @@ public class ONGroup extends PageNode {
     public Collection<Block> getUncollapsedBlocks() {
         Collection<Block> result = new ArrayList<Block>();
         for (Block block : getBlocks()) {
-            if (!block.getIsCollapsed())
+            if (!block.getIsCollapsed()) {
                 result.add(block);
+            }
         }
         return result;
     }

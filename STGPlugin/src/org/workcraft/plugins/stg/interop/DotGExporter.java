@@ -50,10 +50,11 @@ public class DotGExporter implements Exporter {
     }
 
     public int getCompatibility(Model model) {
-        if (serialiser.isApplicableTo(model))
+        if (serialiser.isApplicableTo(model)) {
             return Exporter.BEST_COMPATIBILITY;
-        else
+        } else {
             return Exporter.NOT_COMPATIBLE;
+        }
     }
 
     @Override

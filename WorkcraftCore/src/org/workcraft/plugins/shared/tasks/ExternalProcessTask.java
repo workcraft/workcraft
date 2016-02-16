@@ -58,8 +58,9 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
                 process.cancel();
                 userCancelled = true;
             }
-            if (finished)
+            if (finished) {
                 break;
+            }
             try {
                 Thread.sleep(20);
             } catch (InterruptedException e) {
