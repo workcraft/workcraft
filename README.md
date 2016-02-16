@@ -37,12 +37,15 @@ developing and debugging Workcraft. When setting Eclipse from Gradle
 scripts it is important to separate its *Workspace* directory from the
 *Project* directory (otherwise Gradle integration may fail).
 
-* As an example, create `workcraft-workspace` directory and clone the Workcraft repo into it:
+* As an example, create `workcraft-workspace` directory and clone the
+  Workcraft repo into it:
+
 ```
 $ mkdir workcraft-workspace
 $ cd workcraft-workspace
 $ git clone https://github.com/tuura/workcraft workcraft-master
 ```
+
 * Install [Buildship Gradle Integration](https://marketplace.eclipse.org/content/buildship-gradle-integration)
   plugin in Eclipse via the *Help->Instal New Software...* menu.
 
@@ -75,4 +78,8 @@ plugins:
 Help and tutorial pages are available in the
 [workcraft-doc](https://github.com/tuura/workcraft-doc) repo.
 
-For more information about Workcraft look at [workcraft.org](http://workcraft.org/).
+For more information about Workcraft look at
+[workcraft.org](http://workcraft.org/).
+
+If you would like to contribute or hack on Workcraft, have a look at the
+[HACKING](HACKING.md) document.
