@@ -4,16 +4,19 @@ plugin_dirs="*Plugin/"
 core_dir="WorkcraftCore"
 core_files="LICENSE README.md workcraft workcraft.bat"
 
-dist_dir="dist"
-template_dir="dist-template/linux"
+platform=""
+bname="$(basename $0)"
 
-description_msg="`basename $0`: creates a distribution for Workcraft"
-usage_msg="Usage: `basename $0` [-d DIST_DIR] [-t TEMPLATE_DIR] [-h | --help]"
-params_msg="
-  -d DIST_DIR : distribution directory (default: $dist_dir)
-  -t TEMPLATE_DIR: template directory (default: $template_dir))
-  -h, --help : print this help"
-help_msg="${description_msg}\n\n${usage_msg}\n${params_msg}\n"
+usage() {
+    cat <<EOF
+$bname: create a distribution for Workcraft
+
+Usage: $bname PLATFORM [-h]
+
+  PLATFORM:   distribution platform (linux, windows)
+  -h, --help: print this help
+EOF
+}
 
 err() {
     echo "Error: $@" >&2
@@ -23,11 +26,23 @@ err() {
 # Process parameters
 for param in $*; do
     case $param in
-        -d) dist_dir=$2; shift 2;;
-        -t) template_dir=$2; shift 2;;
-        -h | --help) printf "$help_msg"; exit 0;
+        -h | --help)
+            usage
+            exit 0 ;;
+        *)
+            platform=$1
+            shift ;;
     esac
 done
+
+if [ -z "$platform" ]; then
+    err "No platform was specified"
+fi
+
+dist_dir="dist"
+dist_name="workcraft-$(git describe --tags)-$platform"
+dist_path="$dist_dir/$dist_name"
+template_dir="dist-template/$platform"
 
 if [ ! -e "$core_dir/build" ]; then
     err "You need to run 'gradle assemble' first"
@@ -37,26 +52,39 @@ if [ ! -d "$template_dir" ]; then
     err "Template directory not found: $template_dir"
 fi
 
-if [ -e "$dist_dir" ]; then
-    err "Distribution directory already exists: $dist_dir"
+if [ -e "$dist_path" ]; then
+    err "Distribution directory already exists: $dist_path"
 fi
 
-mkdir -p $dist_dir
+mkdir -p $dist_path
 
-cp -r $template_dir/* $dist_dir/
+cp -r $template_dir/* $dist_path/
 
-cp $core_dir/build/libs/*.jar $dist_dir/workcraft.jar
+cp $core_dir/build/libs/*.jar $dist_path/workcraft.jar
 
-mkdir -p $dist_dir/plugins
+mkdir -p $dist_path/plugins
 
 for d in $plugin_dirs; do
-    cp $d/build/libs/*.jar $dist_dir/plugins/
+    cp $d/build/libs/*.jar $dist_path/plugins/
 done
 
 for d in doc/*; do
-    cp -r $d $dist_dir/
+    cp -r $d $dist_path/
 done
 
 for f in $core_files; do
-    cp $f $dist_dir/
+    cp $f $dist_path/
 done
+
+case $platform in
+    windows)
+        rm -f $dist_path/workcraft
+        cd $dist_dir
+        7z a -r ${dist_name}.zip $dist_name >/dev/null
+        ;;
+    linux)
+        rm -f $dist_path/workcraft.bat
+        cd $dist_dir
+        tar -czf ${dist_name}.tar.gz $dist_name
+        ;;
+esac
