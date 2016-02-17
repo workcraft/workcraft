@@ -241,8 +241,9 @@ public class TimeEstimatorDialog extends JDialog {
                                     "", JOptionPane.ERROR_MESSAGE);
                         }
                     } else {
-                        if (setDuration.isSelected())
+                        if (setDuration.isSelected()) {
                             alg.setDefaultDuration();
+                        }
 
                         try {
                             alg.twoDirEstimation(selection, intermediate.isSelected());
@@ -324,10 +325,11 @@ public class TimeEstimatorDialog extends JDialog {
     }
 
     public ScenarioRef getScenarioRef() {
-        if (scenarioTable.getScenarioRef().isEmpty())
+        if (scenarioTable.getScenarioRef().isEmpty()) {
             return null;
-        else
+        } else {
             return scenarioTable.getScenarioRef();
+        }
     }
 
     public int getRun() {

@@ -35,8 +35,9 @@ public class EntireEstimationAlg extends EstimationAlg {
     }
 
     public void entireEst() throws AlternativeStructureException, TimeInconsistencyException, TimeEstimationException {
-        if (scenario == null)
+        if (scenario == null) {
             throw new AlternativeStructureException("select a scenario first");
+        }
         //add super initial to SON
         Condition superIni = net.createCondition(null, null);
         scenario.add(net.getNodeReference(superIni));
@@ -182,8 +183,9 @@ public class EntireEstimationAlg extends EstimationAlg {
                         ((Condition) t).setEndTimeColor(color);
                     }
                 } else {
-                    if (!t.getEndTime().isOverlapping(last.getStartTime()))
+                    if (!t.getEndTime().isOverlapping(last.getStartTime())) {
                         throw new TimeInconsistencyException("Time inconsistency: " + net.getNodeReference(t));
+                    }
                     if (narrow) {
                         t.setEndTime(Interval.getOverlapping(t.getEndTime(), last.getEndTime()));
                     }
@@ -204,8 +206,9 @@ public class EntireEstimationAlg extends EstimationAlg {
                     }
                 } else {
                     ArrayList<String> check = consistency.nodeConsistency(t, t.getStartTime(), t.getEndTime(), t.getDuration(), g);
-                    if (!check.isEmpty())
+                    if (!check.isEmpty()) {
                         throw new TimeInconsistencyException("Time inconsistency: " + net.getNodeReference(t));
+                    }
                     if (narrow) {
                         t.setStartTime(Interval.getOverlapping(t.getEndTime(), last.getEndTime()));
                     }
@@ -229,8 +232,9 @@ public class EntireEstimationAlg extends EstimationAlg {
                         ((Condition) t).setStartTimeColor(color);
                     }
                 } else {
-                    if (!t.getStartTime().isOverlapping(last.getEndTime()))
+                    if (!t.getStartTime().isOverlapping(last.getEndTime())) {
                         throw new TimeInconsistencyException("Time inconsistency: " + net.getNodeReference(t));
+                    }
                     if (narrow) {
                         t.setStartTime(Interval.getOverlapping(t.getStartTime(), last.getStartTime()));
                     }
@@ -251,8 +255,9 @@ public class EntireEstimationAlg extends EstimationAlg {
                     }
                 } else {
                     ArrayList<String> check = consistency.nodeConsistency(t, t.getStartTime(), t.getEndTime(), t.getDuration(), g);
-                    if (!check.isEmpty())
+                    if (!check.isEmpty()) {
                         throw new TimeInconsistencyException("Time inconsistency: " + net.getNodeReference(t));
+                    }
                     if (narrow) {
                         t.setEndTime(Interval.getOverlapping(t.getStartTime(), last.getStartTime()));
                     }

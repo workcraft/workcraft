@@ -72,8 +72,9 @@ public class BSONCycleAlg extends ONCycleAlg {
         //get upper-level transition nodes.
         Collection<ONGroup> upperGroups = bsonAlg.getUpperGroups(net.getGroups());
         Collection<TransitionNode> upperT = new ArrayList<TransitionNode>();
-        for (ONGroup group : upperGroups)
+        for (ONGroup group : upperGroups) {
             upperT.addAll(group.getTransitionNodes());
+        }
 
         for (int i = 0; i < nodes.size(); i++) {
             //add before relation
@@ -108,16 +109,18 @@ public class BSONCycleAlg extends ONCycleAlg {
             int lower = 0;
 
             for (Node n : cycle) {
-                if (n instanceof ChannelPlace)
+                if (n instanceof ChannelPlace) {
                     continue;
-                else if (bsonAlg.isUpperNode(n))
+                } else if (bsonAlg.isUpperNode(n)) {
                     upper++;
-                else
+                } else {
                     lower++;
+                }
             }
             //all cycle nodes are in the same level
-            if (upper == 0 || lower == 0)
+            if (upper == 0 || lower == 0) {
                 delList.add(cycle);
+            }
         }
         paths.removeAll(delList);
         return paths;

@@ -36,8 +36,9 @@ public class MiniSatCnfPrinter implements CnfPrinter {
         for (CnfClause clause : cnf.getClauses()) {
             for (Literal literal : clause.getLiterals()) {
                 Integer number = getNumber(literal.getVariable());
-                if (literal.getNegation())
+                if (literal.getNegation()) {
                     result.append("-");
+                }
                 result.append(number.toString());
                 result.append(" ");
             }
@@ -56,8 +57,9 @@ public class MiniSatCnfPrinter implements CnfPrinter {
 
         for (BooleanVariable var : new TreeMap<BooleanVariable, Integer>(numbers).keySet()) {
             String label = var.getLabel();
-            if (!label.isEmpty())
+            if (!label.isEmpty()) {
                 result.append("c " + numbers.get(var) + " " + label + "\n");
+            }
         }
 
         return result.toString();

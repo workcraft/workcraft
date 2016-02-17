@@ -98,8 +98,9 @@ public class MemoryConservingBooleanWorker implements ReducedBooleanWorker {
     }
 
     private Integer newCode(BooleanFormula f) {
-        if (codes.containsKey(f))
+        if (codes.containsKey(f)) {
             throw new RuntimeException("Code already exists for formula: ");
+        }
         int code = nextCode++;
         codes.put(f, code);
         return code;
@@ -121,15 +122,19 @@ public class MemoryConservingBooleanWorker implements ReducedBooleanWorker {
 
         @Override
         public boolean equals(Object obj) {
-            if (obj == this)
+            if (obj == this) {
                 return true;
-            if (obj == null)
+            }
+            if (obj == null) {
                 return false;
+            }
             IntPair other = (IntPair) obj;
-            if (!other.x.equals(x))
+            if (!other.x.equals(x)) {
                 return false;
-            if (!other.y.equals(y))
+            }
+            if (!other.y.equals(y)) {
                 return false;
+            }
             return true;
         }
 
@@ -186,7 +191,8 @@ public class MemoryConservingBooleanWorker implements ReducedBooleanWorker {
     }
 
     private void ensureHaveCode(BooleanFormula inverted) {
-        if (!codes.containsKey(inverted))
+        if (!codes.containsKey(inverted)) {
             newCode(inverted);
+        }
     }
 }

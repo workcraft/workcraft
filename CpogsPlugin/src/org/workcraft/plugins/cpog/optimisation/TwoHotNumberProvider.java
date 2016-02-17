@@ -45,8 +45,9 @@ public abstract class TwoHotNumberProvider implements NumberProvider<TwoHotNumbe
             //TwoHotNumber result = rangeProvider.getSecond(htRes);
         }
 
-        if (range < 2)
+        if (range < 2) {
             throw new RuntimeException("can't select 2 hot out of " + range);
+        }
 
         List<Literal> literals = createLiterals(name + "_sel", range);
         List<Literal> sort1 = createLiterals(name + "_sorta_", range);
@@ -56,8 +57,9 @@ public abstract class TwoHotNumberProvider implements NumberProvider<TwoHotNumbe
         constraints.add(CnfSorter.sortRound(sort1, thermo, literals));
         constraints.add(CnfSorter.sortRound(sort2, sort1));
 
-        for (int i = 0; i < range - 2; i++)
+        for (int i = 0; i < range - 2; i++) {
             constraints.add(or(not(sort2.get(i))));
+        }
 
         for (int i = 0; i < range - 2; i += 2) {
             constraints.add(or(not(literals.get(i)), not(literals.get(i + 1))));
@@ -72,20 +74,23 @@ public abstract class TwoHotNumberProvider implements NumberProvider<TwoHotNumbe
     private List<Literal> createLiterals(String name, int range) {
         List<Literal> literals = new ArrayList<Literal>();
 
-        for (int i = 0; i < range; i++)
+        for (int i = 0; i < range; i++) {
             literals.add(new Literal(name + i));
+        }
         return literals;
     }
 
     public static List<CnfClause> selectAnd(Literal result, Literal[] vars, TwoHotRange code) {
         List<CnfClause> conditions = new ArrayList<CnfClause>();
 
-        if (code.size() != vars.length)
+        if (code.size() != vars.length) {
             throw new RuntimeException("Lengths do not match: code=" + code.size() + ", vars=" + vars.length);
+        }
 
         List<Literal> preResult = new ArrayList<Literal>();
-        for (int i = 0; i < vars.length; i++)
+        for (int i = 0; i < vars.length; i++) {
             preResult.add(new Literal(result.getVariable().getLabel() + (result.getNegation() ? "i" : "") + "_sv" + i));
+        }
 
         for (int i = 0; i < vars.length; i++) {
             Literal res = preResult.get(i);
@@ -99,8 +104,9 @@ public abstract class TwoHotNumberProvider implements NumberProvider<TwoHotNumbe
         }
         CnfClause resTrue = new CnfClause();
         resTrue.add(result);
-        for (int i = 0; i < vars.length; i++)
+        for (int i = 0; i < vars.length; i++) {
             resTrue.add(not(preResult.get(i)));
+        }
         conditions.add(resTrue);
 
         return conditions;
@@ -112,8 +118,7 @@ public abstract class TwoHotNumberProvider implements NumberProvider<TwoHotNumbe
         List<FreeVariable> params = new ArrayList<FreeVariable>();
         CnfLiteral[]literals = new CnfLiteral[vars.length];
 
-        for (int i = 0; i < vars.length; i++)
-        {
+        for (int i = 0; i < vars.length; i++) {
             FreeVariable var = new FV("param" + i);
             params.add(var);
             literals[i] = new CnfLiteral(var);

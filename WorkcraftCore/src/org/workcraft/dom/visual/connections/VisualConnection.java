@@ -258,12 +258,15 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 
     public void setVisualConnectionDependencies(VisualNode first,    VisualNode second,
             ConnectionGraphic graphic, MathConnection refConnection) {
-        if (first == null)
+        if (first == null) {
             throw new NullPointerException("first");
-        if (second == null)
+        }
+        if (second == null) {
             throw new NullPointerException("second");
-        if (graphic == null)
+        }
+        if (graphic == null) {
             throw new NullPointerException("graphic");
+        }
 
         this.first = first;
         this.second = second;
@@ -328,10 +331,12 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
     }
 
     public void setLineWidth(double lineWidth) {
-        if (lineWidth < 0.01)
+        if (lineWidth < 0.01) {
             lineWidth = 0.01;
-        if (lineWidth > 0.5)
+        }
+        if (lineWidth > 0.5) {
             lineWidth = 0.5;
+        }
         this.lineWidth = lineWidth;
 
         invalidate();

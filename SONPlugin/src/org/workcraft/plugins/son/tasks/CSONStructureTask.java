@@ -62,15 +62,17 @@ public class CSONStructureTask extends AbstractStructuralVerification {
         relationErrors.addAll(task1);
         relationErrors.addAll(task2);
 
-        if (relationErrors.isEmpty() && relationErrors.isEmpty())
+        if (relationErrors.isEmpty() && relationErrors.isEmpty()) {
             infoMsg("Valid channel place relation.");
-        else {
+        } else {
             errNumber = errNumber + relationErrors.size();
-            for (Node cPlace : task1)
+            for (Node cPlace : task1) {
                 errMsg("ERROR : Invalid channel place relation (input/output size != 1).", cPlace);
+            }
 
-            for (Node cPlace : task2)
+            for (Node cPlace : task2) {
                 errMsg("ERROR : Invalid communication types (inconsistent input and output connection types).", cPlace);
+            }
         }
 
         infoMsg("Component relation tasks complete.");
@@ -79,9 +81,9 @@ public class CSONStructureTask extends AbstractStructuralVerification {
         infoMsg("Running cycle detection task...");
         cycleErrors.addAll(getCSONCycleAlg().cycleTask(components));
 
-        if (cycleErrors.isEmpty())
+        if (cycleErrors.isEmpty()) {
             infoMsg("Communication-SON is cycle free");
-        else {
+        } else {
             errNumber++;
             errMsg("ERROR : Communication-SON involves global cycle paths = " + cycleErrors.size() + ".");
             int i = 1;
@@ -99,8 +101,9 @@ public class CSONStructureTask extends AbstractStructuralVerification {
         ArrayList<ChannelPlace> result = new ArrayList<ChannelPlace>();
 
         for (ChannelPlace cPlace : cPlaces) {
-            if (net.getPostset(cPlace).size() != 1 || net.getPreset(cPlace).size() != 1)
+            if (net.getPostset(cPlace).size() != 1 || net.getPreset(cPlace).size() != 1) {
                 result.add(cPlace);
+            }
         }
         return result;
     }
@@ -109,8 +112,9 @@ public class CSONStructureTask extends AbstractStructuralVerification {
         ArrayList<ChannelPlace> result = new ArrayList<ChannelPlace>();
 
         for (ChannelPlace cPlace : cPlaces) {
-            if (net.getSONConnectionTypes(cPlace).size() > 1)
+            if (net.getSONConnectionTypes(cPlace).size() > 1) {
                 result.add(cPlace);
+            }
         }
         return result;
     }

@@ -94,8 +94,9 @@ public class DotGSerialiser implements ModelSerialiser {
                 if (n instanceof STGPlace) {
                     if (((STGPlace) n).isImplicit()) {
                         Collection<Node> postset = model.getPostset(n);
-                        if (postset.size() > 1)
+                        if (postset.size() > 1) {
                             throw new FormatException("Implicit place cannot have more than one node in postset");
+                        }
                         out.write(" " + NamespaceHelper.hierarchicalToFlatName(model.getNodeReference(postset.iterator().next())));
                     } else {
                         out.write(" " + NamespaceHelper.hierarchicalToFlatName(model.getNodeReference(n)));

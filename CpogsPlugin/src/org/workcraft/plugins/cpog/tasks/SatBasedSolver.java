@@ -186,8 +186,9 @@ public class SatBasedSolver {
         char[][] matrix = new char[m][task.size()];
 
         String[] instance = new String[m];
-        for (String s : task.keySet())
+        for (String s : task.keySet()) {
             for (int i = 0; i < m; i++) matrix[i][task.get(s)] = s.charAt(i);
+        }
 
         for (int i = 0; i < m; i++) instance[i] = new String(matrix[i]);
 

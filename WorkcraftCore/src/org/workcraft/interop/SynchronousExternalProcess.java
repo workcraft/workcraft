@@ -74,8 +74,9 @@ public class SynchronousExternalProcess {
         process.closeInput();
 
         while (System.currentTimeMillis() < endTime) {
-            if (finished)
+            if (finished) {
                 return true;
+            }
             try {
                 Thread.sleep(50);
             } catch (InterruptedException e) {

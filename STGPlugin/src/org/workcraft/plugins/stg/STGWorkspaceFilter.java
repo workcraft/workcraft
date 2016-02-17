@@ -12,10 +12,12 @@ public class STGWorkspaceFilter implements Func<Path<String>, Boolean> {
         final Framework framework = Framework.getInstance();
         WorkspaceEntry entry = framework.getWorkspace().getOpenFile(arg);
 
-        if (entry != null && entry.getModelEntry() != null && entry.getModelEntry().getMathModel() instanceof STGModel)
+        if (entry != null && entry.getModelEntry() != null && entry.getModelEntry().getMathModel() instanceof STGModel) {
             return true;
-        if (arg.getNode().endsWith(".g"))
+        }
+        if (arg.getNode().endsWith(".g")) {
             return true;
+        }
         return false;
     }
 }

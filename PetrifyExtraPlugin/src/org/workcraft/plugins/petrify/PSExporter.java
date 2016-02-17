@@ -46,8 +46,9 @@ public class PSExporter implements Exporter {
     public void export(Model model, OutputStream out) throws IOException,
     ModelValidationException, SerialisationException {
 
-        if (model == null)
+        if (model == null) {
             throw new IllegalArgumentException("Model is null");
+        }
 
         File dotG = File.createTempFile("workcraft", ".g");
 

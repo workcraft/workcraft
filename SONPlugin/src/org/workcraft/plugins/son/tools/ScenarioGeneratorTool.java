@@ -176,8 +176,9 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
                     int currentPosition = saveList.getPosition();
                     saveList.remove(currentPosition);
                     scenarioRef.clear();
-                    if (saveList.getPosition() > saveList.size() - 1)
+                    if (saveList.getPosition() > saveList.size() - 1) {
                         saveList.decPosition(1);
+                    }
                     if (!saveList.isEmpty()) {
                         scenarioRef.addAll(saveList.get(saveList.getPosition()).getNodeRefs(net));
                     }
@@ -347,16 +348,18 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
         marking.addAll(getSyncChannelPlaces(step));
         markingRef.addAll(net.getNodeRefs(marking));
         for (String str : markingRef) {
-            if (!scenarioRef.contains(str))
+            if (!scenarioRef.contains(str)) {
                 scenarioRef.add(str);
+            }
         }
     }
 
     private ArrayList<PlaceNode> getCurrentMarking() {
         ArrayList<PlaceNode> result = new ArrayList<PlaceNode>();
         for (PlaceNode c : readSONMarking().keySet()) {
-            if (c.isMarked())
+            if (c.isMarked()) {
                 result.add(c);
+            }
         }
         return result;
     }
@@ -367,10 +370,11 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
         for (TransitionNode e :step) {
             for (SONConnection con : net.getSONConnections(e)) {
                 if (con.getSemantics() == Semantics.ASYNLINE || con.getSemantics() == Semantics.SYNCLINE) {
-                    if (con.getFirst() == e)
+                    if (con.getFirst() == e) {
                         result.add((ChannelPlace) con.getSecond());
-                    else
+                    } else {
                         result.add((ChannelPlace) con.getFirst());
+                    }
                 }
             }
         }

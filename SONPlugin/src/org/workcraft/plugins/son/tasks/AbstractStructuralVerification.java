@@ -28,15 +28,17 @@ abstract class AbstractStructuralVerification implements StructuralVerification 
 
     public Collection<String> getRelationErrorsSetRefs(Collection<Node> set) {
         Collection<String> result = new ArrayList<String>();
-        for (Node node : set)
+        for (Node node : set) {
             result.add(net.getNodeReference(node));
+        }
         return result;
     }
 
     public Collection<String> getGroupErrorsSetRefs(Collection<ONGroup> set) {
         Collection<String> result = new ArrayList<String>();
-        for (ONGroup node : set)
+        for (ONGroup node : set) {
             result.add(net.getNodeReference(node));
+        }
         return result;
     }
 

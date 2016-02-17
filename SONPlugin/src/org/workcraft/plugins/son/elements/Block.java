@@ -63,9 +63,11 @@ public class Block extends PageNode implements TransitionNode, Time {
 
     @Override
     public boolean isFaulty() {
-        for (Event event : getEvents())
-            if (event.isFaulty())
+        for (Event event : getEvents()) {
+            if (event.isFaulty()) {
                 return true;
+            }
+        }
         return false;
     }
 

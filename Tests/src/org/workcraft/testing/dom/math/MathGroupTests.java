@@ -53,15 +53,17 @@ public class MathGroupTests {
         group.addObserver(new HierarchyObserver() {
             public void notify(HierarchyEvent e) {
                 if (e instanceof NodesAddedEvent) {
-                    if (e.getAffectedNodes().iterator().next() == n1)
+                    if (e.getAffectedNodes().iterator().next() == n1) {
                         receivedAddNotification1 = true;
-                    else if (e.getAffectedNodes().iterator().next() == n2)
+                    } else if (e.getAffectedNodes().iterator().next() == n2) {
                         receivedAddNotification2 = true;
+                    }
                 } else if (e instanceof NodesDeletedEvent) {
-                    if (e.getAffectedNodes().iterator().next() == n1)
+                    if (e.getAffectedNodes().iterator().next() == n1) {
                         receivedRemoveNotification1 = true;
-                    else if (e.getAffectedNodes().iterator().next() == n2)
+                    } else if (e.getAffectedNodes().iterator().next() == n2) {
                         receivedRemoveNotification2 = true;
+                    }
                 }
             }
         });

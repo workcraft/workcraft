@@ -27,10 +27,11 @@ public class DotGProvider {
 
             ModelEntry modelEntry = we.getModelEntry();
 
-            if (modelEntry.getMathModel() instanceof STGModel)
+            if (modelEntry.getMathModel() instanceof STGModel) {
                 model = (STGModel) modelEntry.getMathModel();
-            else
+            } else {
                 throw new RuntimeException("Unexpected model class " + we.getClass().getName());
+            }
             try {
                 String prefix = model.getTitle();
                 if ((prefix == null) || prefix.isEmpty()) {

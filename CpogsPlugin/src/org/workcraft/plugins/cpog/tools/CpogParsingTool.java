@@ -138,8 +138,9 @@ public class CpogParsingTool {
                 y += 1.5;
             }
 
-            if (it.hasNext())
+            if (it.hasNext()) {
                 x += 2.5;
+            }
         }
         y += 2.5;
         return x;

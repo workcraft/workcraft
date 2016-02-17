@@ -29,10 +29,12 @@ public class SvgFileFilter extends FileFilter {
 
     @Override
     public boolean accept(File f) {
-        if (f.isDirectory())
+        if (f.isDirectory()) {
             return true;
-        if (f.getName().endsWith(".svg"))
+        }
+        if (f.getName().endsWith(".svg")) {
             return true;
+        }
         return false;
     }
 

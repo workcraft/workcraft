@@ -98,21 +98,25 @@ public class SimpleFlowLayout implements LayoutManager {
                 if (m.isVisible()) {
                     Dimension d = m.getPreferredSize();
 
-                    if (applyLayout)
+                    if (applyLayout) {
                         m.setSize(d.width, d.height);
+                    }
 
-                    if (x > insets.left)
+                    if (x > insets.left) {
                         x += hgap;
+                    }
 
                     if (x + d.width >= maxwidth) {
                         x = insets.left;
                         y += vgap + rowh;
                         rowh = d.height;
-                    } else
+                    } else {
                         rowh = Math.max(rowh, d.height);
+                    }
 
-                    if (applyLayout)
+                    if (applyLayout) {
                         m.setLocation(x, y);
+                    }
 
                     x += d.width;
                 }

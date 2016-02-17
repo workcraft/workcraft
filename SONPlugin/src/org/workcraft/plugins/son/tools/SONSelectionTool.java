@@ -180,52 +180,60 @@ public class SONSelectionTool extends SelectionTool {
                 selectedNode = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
 
                 if (selectedNode instanceof VisualBlock) {
-                    if (!((VisualBlock) selectedNode).getIsCollapsed())
+                    if (!((VisualBlock) selectedNode).getIsCollapsed()) {
                         ((VisualBlock) selectedNode).setIsCollapsed(true);
-                    else
+                    } else {
                         ((VisualBlock) selectedNode).setIsCollapsed(false);
+                    }
 
                     return;
                 }
 
                 if (selectedNode instanceof VisualCondition) {
                     VisualCondition vc = (VisualCondition) selectedNode;
-                    if (vc.isMarked() == false)
+                    if (vc.isMarked() == false) {
                         vc.setIsMarked(true);
-                    else if (vc.isMarked() == true)
+                    } else if (vc.isMarked() == true) {
                         vc.setIsMarked(false);
+                    }
                 }
 
                 if (selectedNode instanceof VisualEvent) {
                     VisualEvent ve = (VisualEvent) selectedNode;
-                    if (ve.isFaulty() == false)
+                    if (ve.isFaulty() == false) {
                         ve.setFaulty(true);
-                    else if (ve.isFaulty() == true)
+                    } else if (ve.isFaulty() == true) {
                         ve.setFaulty(false);
+                    }
                 }
 
                 if (selectedNode instanceof VisualChannelPlace) {
                     VisualChannelPlace cPlace = (VisualChannelPlace) node;
                     for (Connection con : model.getConnections(cPlace)) {
 
-                        if (((VisualSONConnection) con).getSemantics() == Semantics.ASYNLINE)
+                        if (((VisualSONConnection) con).getSemantics() == Semantics.ASYNLINE) {
                             this.sync = false;
-                        if (((VisualSONConnection) con).getSemantics() == Semantics.SYNCLINE)
+                        }
+                        if (((VisualSONConnection) con).getSemantics() == Semantics.SYNCLINE) {
                             this.asyn = false;
+                        }
                     }
-                    if (sync && !asyn)
+                    if (sync && !asyn) {
                         for (Connection con : model.getConnections(cPlace)) {
                             ((VisualSONConnection) con).setSemantics(Semantics.ASYNLINE);
                         }
+                    }
 
-                    if (!sync && asyn)
+                    if (!sync && asyn) {
                         for (Connection con : model.getConnections(cPlace)) {
                             ((VisualSONConnection) con).setSemantics(Semantics.SYNCLINE);
                         }
-                    if (!sync && !asyn)
+                    }
+                    if (!sync && !asyn) {
                         for (Connection con : model.getConnections(cPlace)) {
                             ((VisualSONConnection) con).setSemantics(Semantics.SYNCLINE);
                         }
+                    }
                     asyn = true;
                     sync = true;
                 }
@@ -255,10 +263,11 @@ public class SONSelectionTool extends SelectionTool {
             Node node = selection.iterator().next();
             if (node instanceof Container && !(node instanceof VisualBlock)) {
                 model.setCurrentLevel((Container) node);
-                if (node instanceof VisualONGroup)
+                if (node instanceof VisualONGroup) {
                     setChannelPlaceToolState(editor, false);
-                else
+                } else {
                     setChannelPlaceToolState(editor, true);
+                }
                 editor.repaint();
             }
         }
@@ -271,10 +280,11 @@ public class SONSelectionTool extends SelectionTool {
         Container parent = Hierarchy.getNearestAncestor(level.getParent(), Container.class);
         if (parent != null && !(level instanceof VisualBlock)) {
             model.setCurrentLevel(parent);
-            if (parent instanceof VisualONGroup)
+            if (parent instanceof VisualONGroup) {
                 setChannelPlaceToolState(editor, false);
-            else
+            } else {
                 setChannelPlaceToolState(editor, true);
+            }
             model.addToSelection(level);
             editor.repaint();
         }

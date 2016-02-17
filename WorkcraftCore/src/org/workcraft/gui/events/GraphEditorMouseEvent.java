@@ -43,10 +43,11 @@ public class GraphEditorMouseEvent {
         this.editor = editor;
 
         event = e;
-        if (editor != null)
+        if (editor != null) {
             position = editor.getViewport().screenToUser(e.getPoint());
-        else
+        } else {
             position = new Point2D.Double(0, 0);
+        }
     }
 
     public GraphEditorMouseEvent(GraphEditor editor, MouseEvent e, Point2D startPosition, Point2D prevPosition) {

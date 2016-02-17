@@ -134,8 +134,9 @@ public class DnfGenerator {
 
             HashSet<String> lset = new HashSet<String>();
 
-            for (Literal lit: clause.getLiterals())
+            for (Literal lit: clause.getLiterals()) {
                 lset.add(lit.getVariable().getLabel() + (lit.getNegation() ? "'" : ""));
+            }
 
             testClauses.put(clause, lset);
         }
@@ -157,9 +158,11 @@ public class DnfGenerator {
             }
         }
 
-        for (DnfClause cleft: testClauses.keySet())
-            if (testClauses.get(cleft) != null)
+        for (DnfClause cleft: testClauses.keySet()) {
+            if (testClauses.get(cleft) != null) {
                 result.add(cleft);
+            }
+        }
 
         return result;
     }

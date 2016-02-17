@@ -63,24 +63,28 @@ public class DotGSerialiserTests {
     }
 
     private void print(Collection<String> badIds) {
-        for (String i : badIds)
+        for (String i : badIds) {
             System.out.print(i + " ");
+        }
         System.out.println();
     }
 
     private ArrayList<String> getSortedIds(STG stg, Set<Place> goodTokenized) {
         ArrayList<String> ids = new ArrayList<String>();
-        for (Place place : goodTokenized)
+        for (Place place : goodTokenized) {
             ids.add(stg.getNodeReference(place));
+        }
         Collections.sort(ids);
         return ids;
     }
 
     private Set<Place> getTokenizedPlaces(STG stg) {
         HashSet<Place> places = new HashSet<Place>();
-        for (Place place : stg.getPlaces())
-            if (place.getTokens() == 1)
+        for (Place place : stg.getPlaces()) {
+            if (place.getTokens() == 1) {
                 places.add(place);
+            }
+        }
         return places;
     }
 
@@ -92,15 +96,17 @@ public class DotGSerialiserTests {
 
             reimportedTokens = getTokenCount(model);
 
-            if ((reimportedTokens == 17) == good)
+            if ((reimportedTokens == 17) == good) {
                 return model;
+            }
         } while (true);
     }
 
     private int getTokenCount(STG model) {
         int result = 0;
-        for (Place place : model.getPlaces())
+        for (Place place : model.getPlaces()) {
             result += place.getTokens();
+        }
         return result;
     }
 }

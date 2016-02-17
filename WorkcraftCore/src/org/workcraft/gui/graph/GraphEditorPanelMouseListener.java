@@ -128,8 +128,9 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
         } else {
             GraphEditorTool tool = toolProvider.getTool();
             if (tool != null) {
-                if (tool.isDragging())
+                if (tool.isDragging()) {
                     tool.finishDrag(adaptEvent(e));
+                }
                 tool.mouseReleased(adaptEvent(e));
             }
             startPosition = null;

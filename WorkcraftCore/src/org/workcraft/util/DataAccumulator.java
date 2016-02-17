@@ -36,16 +36,20 @@ public class DataAccumulator extends OutputStream {
 
         while (true) {
             int available = is.available();
-            if (available == 0)
+            if (available == 0) {
                 available = 1024;
+            }
             byte[] chunk = new byte[available];
             int read = is.read(chunk, 0, available);
-            if (read == -1)
+            if (read == -1) {
                 break;
-            if (read == 0)
+            }
+            if (read == 0) {
                 continue;
-            if (read != available)
+            }
+            if (read != available) {
                 chunk = Arrays.copyOfRange(chunk, 0, read);
+            }
             accum.write(chunk);
         }
 
@@ -62,15 +66,18 @@ public class DataAccumulator extends OutputStream {
 
     public byte[] getData() {
         int len = 0;
-        for (byte[] dataChunk : dataChunks)
+        for (byte[] dataChunk : dataChunks) {
             len += dataChunk.length;
+        }
 
         byte[] result = new byte[len];
 
         int cur = 0;
-        for (byte[] dataChunk : dataChunks)
-            for (int i = 0; i < dataChunk.length; i++)
+        for (byte[] dataChunk : dataChunks) {
+            for (int i = 0; i < dataChunk.length; i++) {
                 result[cur++] = dataChunk[i];
+            }
+        }
 
         return result;
     }

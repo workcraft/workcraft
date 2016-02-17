@@ -29,51 +29,66 @@ public class CleverBooleanWorker implements BooleanWorker {
 
     @Override
     public BooleanFormula and(BooleanFormula x, BooleanFormula y) {
-        if (FormulaToString.toString(x).equals(FormulaToString.toString(y)))
+        if (FormulaToString.toString(x).equals(FormulaToString.toString(y))) {
             return x;
-        if (x == ZERO || y == ZERO)
+        }
+        if (x == ZERO || y == ZERO) {
             return ZERO;
-        if (x == ONE)
+        }
+        if (x == ONE) {
             return y;
-        if (y == ONE)
+        }
+        if (y == ONE) {
             return x;
+        }
         return new And(x, y);
     }
 
     @Override
     public BooleanFormula iff(BooleanFormula x, BooleanFormula y) {
-        if (FormulaToString.toString(x).equals(FormulaToString.toString(y)))
+        if (FormulaToString.toString(x).equals(FormulaToString.toString(y))) {
             return ONE;
-        if (x == ONE)
+        }
+        if (x == ONE) {
             return y;
-        if (x == ZERO)
+        }
+        if (x == ZERO) {
             return not(y);
-        if (y == ONE)
+        }
+        if (y == ONE) {
             return x;
-        if (y == ZERO)
+        }
+        if (y == ZERO) {
             return not(x);
+        }
         return new Iff(x, y);
     }
 
     @Override
     public BooleanFormula imply(BooleanFormula x, BooleanFormula y) {
-        if (FormulaToString.toString(x).equals(FormulaToString.toString(y)))
+        if (FormulaToString.toString(x).equals(FormulaToString.toString(y))) {
             return ONE;
-        if (x == ZERO || y == ONE)
+        }
+        if (x == ZERO || y == ONE) {
             return ONE;
-        if (x == ONE)
+        }
+        if (x == ONE) {
             return y;
-        if (y == ZERO)
+        }
+        if (y == ZERO) {
             return not(x);
+        }
         return new Imply(x, y);
     }
 
     @Override
     public BooleanFormula not(BooleanFormula x) {
-        if (x == ONE)
+        if (x == ONE) {
             return ZERO;
-        if (x == ZERO)
+        }
+        if (x == ZERO) {
             return ONE;
+        }
         return new Not(x);
     }
 
@@ -84,33 +99,44 @@ public class CleverBooleanWorker implements BooleanWorker {
 
     @Override
     public BooleanFormula or(BooleanFormula x, BooleanFormula y) {
-        if (FormulaToString.toString(x).equals(FormulaToString.toString(y)))
+        if (FormulaToString.toString(x).equals(FormulaToString.toString(y))) {
             return x;
-        if (checkStrings(FormulaToString.toString(x), FormulaToString.toString(y), " + "))
+        }
+        if (checkStrings(FormulaToString.toString(x), FormulaToString.toString(y), " + ")) {
             return x;
-        if (checkStrings(FormulaToString.toString(x), invertString(FormulaToString.toString(y)), " + "))
+        }
+        if (checkStrings(FormulaToString.toString(x), invertString(FormulaToString.toString(y)), " + ")) {
             return ONE;
-        if (x == ONE || y == ONE)
+        }
+        if (x == ONE || y == ONE) {
             return ONE;
-        if (x == ZERO)
+        }
+        if (x == ZERO) {
             return y;
-        if (y == ZERO)
+        }
+        if (y == ZERO) {
             return x;
+        }
         return new Or(x, y);
     }
 
     @Override
     public BooleanFormula xor(BooleanFormula x, BooleanFormula y) {
-        if (FormulaToString.toString(x).equals(FormulaToString.toString(y)))
+        if (FormulaToString.toString(x).equals(FormulaToString.toString(y))) {
             return ZERO;
-        if (x == ONE)
+        }
+        if (x == ONE) {
             return not(y);
-        if (x == ZERO)
+        }
+        if (x == ZERO) {
             return y;
-        if (y == ONE)
+        }
+        if (y == ONE) {
             return not(x);
-        if (y == ZERO)
+        }
+        if (y == ZERO) {
             return x;
+        }
         return new Xor(x, y);
     }
 

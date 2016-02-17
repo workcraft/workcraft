@@ -70,10 +70,11 @@ public class SVGExporter implements Exporter {
     }
 
     public int getCompatibility(Model model) {
-        if (model instanceof VisualModel)
+        if (model instanceof VisualModel) {
             return Exporter.GENERAL_COMPATIBILITY;
-        else
+        } else {
             return Exporter.NOT_COMPATIBLE;
+        }
     }
 
     @Override

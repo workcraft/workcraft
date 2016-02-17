@@ -99,8 +99,9 @@ public class HistoryView extends JInternalFrame implements HistoryListener {
 
     public void setProvider(HistoryProvider provider) {
         // detach from previous provider
-        if (this.provider != null)
+        if (this.provider != null) {
             this.provider.removeHistoryListener(this);
+        }
 
         // populate list of existing events
         List<HistoryEvent> events = provider.getHistory();

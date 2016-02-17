@@ -38,16 +38,18 @@ public class SONCycleAlg extends BSONCycleAlg {
                 int upper = 0;
                 int lower = 0;
                 for (Node n : cycle) {
-                    if (n instanceof ChannelPlace)
+                    if (n instanceof ChannelPlace) {
                         continue;
-                    else if (bsonAlg.isUpperNode(n))
+                    } else if (bsonAlg.isUpperNode(n)) {
                         upper++;
-                    else
+                    } else {
                         lower++;
+                    }
                 }
                 //all cycle nodes are in the same level
-                if (upper == 0 || lower == 0)
+                if (upper == 0 || lower == 0) {
                     delList.add(cycle);
+                }
             }
         }
         cycles.removeAll(delList);

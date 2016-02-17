@@ -39,33 +39,34 @@ public class Format {
     public static final UUID VERILOG = UUID.fromString("fdd4414e-fd02-4702-b143-09b24430fdd1");
 
     public static String getDescription(UUID format) {
-        if (format.equals(STG))
+        if (format.equals(STG)) {
             return ".g (Signal Transition Graph)";
-        else if (format.equals(SG))
+        } else if (format.equals(SG)) {
             return ".sg (State Graph)";
-        else if (format.equals(SVG))
+        } else if (format.equals(SVG)) {
             return ".svg (Scalable Vector Graphics)";
-        else if (format.equals(PS))
+        } else if (format.equals(PS)) {
             return ".ps (PostScript)";
-        else if (format.equals(EPS))
+        } else if (format.equals(EPS)) {
             return ".eps (Encapsulated PostScript)";
-        else if (format.equals(PDF))
+        } else if (format.equals(PDF)) {
             return ".pdf (Portable Document Format)";
-        else if (format.equals(PNG))
+        } else if (format.equals(PNG)) {
             return ".png (Portable Network Graphics)";
-        else if (format.equals(EMF))
+        } else if (format.equals(EMF)) {
             return ".emf (Enhanced Mediafile)";
-        else if (format.equals(workcraftXML))
+        } else if (format.equals(workcraftXML)) {
             return ".xml (Workcraft math model)";
-        else if (format.equals(defaultVisualXML))
+        } else if (format.equals(defaultVisualXML)) {
             return ".xml (Workcraft visual model)";
-        else if (format.equals(DOT))
+        } else if (format.equals(DOT)) {
             return ".dot (GraphViz dot)";
-        else if (format.equals(EQN))
+        } else if (format.equals(EQN)) {
             return ".eqn (Signal equations)";
-        else if (format.equals(VERILOG))
+        } else if (format.equals(VERILOG)) {
             return ".v (Verilog netlist)";
-        else
+        } else {
             return "Unknown format";
+        }
     }
 }

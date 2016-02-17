@@ -259,8 +259,9 @@ public class ScencoSolver {
 
         try {
             for (int i = 0; i < outputLines.length; i++) {
-                if (settings.isVerboseMode())
+                if (settings.isVerboseMode()) {
                     System.out.println(outputLines[i]);
+                }
 
                 // Read Optimal Encoding
                 if (outputLines[i].contains("MIN: ")) {
@@ -279,8 +280,9 @@ public class ScencoSolver {
                     v = 0;
                     a = 0;
                     while (outputLines[i].contains(".end_formulae") == false) {
-                        if (settings.isVerboseMode())
+                        if (settings.isVerboseMode()) {
                             System.out.println(outputLines[i]);
+                        }
                         StringTokenizer st2 = new StringTokenizer(outputLines[i], ",");
                         String el = (String) st2.nextElement();
                         if (el.equals("V")) { //formula of a vertex
@@ -320,15 +322,16 @@ public class ScencoSolver {
 
             char[][] matrix = new char[m][task.size()];
             String[] instance = new String[m];
-            for (String s : task.keySet())
+            for (String s : task.keySet()) {
                 for (int i = 0; i < m; i++) matrix[i][task.get(s)] = s.charAt(i);
+            }
 
             for (int i = 0; i < m; i++) instance[i] = new String(matrix[i]);
 
             int freeVariables;
-            if (settings.getGenMode() != GenerationMode.SCENCO)
+            if (settings.getGenMode() != GenerationMode.SCENCO) {
                 freeVariables = optEnc[0].length();
-            else {
+            } else {
                 freeVariables = settings.getBits();
             }
             settings.getCircuitSize();

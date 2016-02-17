@@ -46,23 +46,27 @@ public class DefaultNodeSerialiser {
 
     private void autoSerialiseProperties(Element element, Object object, Class<?> currentLevel) throws IntrospectionException, InstantiationException, IllegalAccessException, IllegalArgumentException, SerialisationException, InvocationTargetException {
         // type explicitly requested to be excluded from auto serialisation
-        if (currentLevel.getAnnotation(NoAutoSerialisation.class) != null)
+        if (currentLevel.getAnnotation(NoAutoSerialisation.class) != null) {
             return;
+        }
 
         BeanInfo info = getBeanInfo(currentLevel);
 
         for (PropertyDescriptor desc : info.getPropertyDescriptors()) {
-            if (desc.getPropertyType() == null)
+            if (desc.getPropertyType() == null) {
                 continue;
+            }
 
-            if (desc.getWriteMethod() == null || desc.getReadMethod() == null)
+            if (desc.getWriteMethod() == null || desc.getReadMethod() == null) {
                 continue;
+            }
 
             // property explicitly requested to be excluded from auto serialisation
             if (
                     desc.getReadMethod().getAnnotation(NoAutoSerialisation.class) != null ||
-                    desc.getWriteMethod().getAnnotation(NoAutoSerialisation.class) != null)
+                    desc.getWriteMethod().getAnnotation(NoAutoSerialisation.class) != null) {
                 continue;
+            }
 
             // the property is writable and is not of array type, try to get a serialiser
             XMLSerialiser serialiser = fac.getSerialiserFor(desc.getPropertyType());
@@ -71,10 +75,12 @@ public class DefaultNodeSerialiser {
                 // no serialiser, try to use the special case enum serialiser
                 if (desc.getPropertyType().isEnum()) {
                     serialiser = fac.getSerialiserFor(Enum.class);
-                    if (serialiser == null)
+                    if (serialiser == null) {
                         continue;
-                } else
+                    }
+                } else {
                     continue;
+                }
             }
 
             Element propertyElement = element.getOwnerDocument().createElement("property");
@@ -101,10 +107,11 @@ public class DefaultNodeSerialiser {
         XMLSerialiser serialiser = fac.getSerialiserFor(currentLevel);
 
         if (serialiser != null) {
-            if (serialiser instanceof BasicXMLSerialiser)
+            if (serialiser instanceof BasicXMLSerialiser) {
                 ((BasicXMLSerialiser) serialiser).serialise(curLevelElement, object);
-            else if (serialiser instanceof CustomXMLSerialiser)
+            } else if (serialiser instanceof CustomXMLSerialiser) {
                 ((CustomXMLSerialiser) serialiser).serialise(curLevelElement, object, internalReferences, externalReferences, this.serialiser);
+            }
         } else {
             if (object.getClass().equals(currentLevel) && (object instanceof Dependent)) {
                 Collection<MathNode> refs = ((Dependent) object).getMathReferences();
@@ -114,11 +121,13 @@ public class DefaultNodeSerialiser {
             }
         }
 
-        if (curLevelElement.getAttributes().getLength() > 0 || curLevelElement.getChildNodes().getLength() > 0)
+        if (curLevelElement.getAttributes().getLength() > 0 || curLevelElement.getChildNodes().getLength() > 0) {
             parentElement.appendChild(curLevelElement);
+        }
 
-        if (currentLevel.getSuperclass() != Object.class)
+        if (currentLevel.getSuperclass() != Object.class) {
             doSerialisation(parentElement, object, internalReferences, externalReferences, currentLevel.getSuperclass());
+        }
     }
 
     public void serialise(Element parentElement, Object object,

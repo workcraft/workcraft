@@ -230,11 +230,12 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
     @Override
     public void notify(SelectionChangedEvent event) {
         boolean controlsVisible = false;
-        for (Node n : event.getSelection())
+        for (Node n : event.getSelection()) {
             if ((n == cp1) || (n == cp2) || (n == parent)) {
                 controlsVisible = true;
                 break;
             }
+        }
         cp1.setHidden(!controlsVisible);
         cp2.setHidden(!controlsVisible);
     }

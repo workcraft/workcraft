@@ -373,8 +373,9 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
         for (int i = 0; i < getSegmentCount(); i++) {
             Line2D segment = getSegment(i);
             double dist = segment.ptSegDist(pt);
-            if (dist < min)
+            if (dist < min) {
                 min = dist;
+            }
         }
         return min;
     }
@@ -386,18 +387,22 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
 
     @Override
     public void notify(HierarchyEvent e) {
-        if (e instanceof NodesDeletingEvent)
-            for (Node n : e.getAffectedNodes())
+        if (e instanceof NodesDeletingEvent) {
+            for (Node n : e.getAffectedNodes()) {
                 if (n instanceof ControlPoint) {
                     ControlPoint cp = (ControlPoint) n;
                     cp.removeObserver(this);
                 }
-        if (e instanceof NodesAddedEvent)
-            for (Node n : e.getAffectedNodes())
+            }
+        }
+        if (e instanceof NodesAddedEvent) {
+            for (Node n : e.getAffectedNodes()) {
                 if (n instanceof ControlPoint) {
                     ControlPoint cp = (ControlPoint) n;
                     cp.addObserver(this);
                 }
+            }
+        }
 
         controlPointsChanged();
     }

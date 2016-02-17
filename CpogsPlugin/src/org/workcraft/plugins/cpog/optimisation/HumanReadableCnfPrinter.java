@@ -28,8 +28,9 @@ public class HumanReadableCnfPrinter implements CnfPrinter {
         for (CnfClause clause : cnf.getClauses()) {
             for (Literal literal : clause.getLiterals()) {
                 result.append(literal.getVariable().getLabel());
-                if (literal.getNegation())
+                if (literal.getNegation()) {
                     result.append("'");
+                }
                 result.append(" ");
             }
             result.append("\n");

@@ -32,24 +32,31 @@ public class PrettifyBooleanWorker implements BooleanWorker {
     }
 
     public BooleanFormula not(BooleanFormula x) {
-        if (x == ZERO)
+        if (x == ZERO) {
             return ONE;
-        if (x == ONE)
+        }
+        if (x == ONE) {
             return ZERO;
+        }
         return worker.not(x);
     }
 
     public BooleanFormula iff(BooleanFormula x, BooleanFormula y) {
-        if (x == y)
+        if (x == y) {
             return ONE;
-        if (x == ZERO)
+        }
+        if (x == ZERO) {
             return not(y);
-        if (x == ONE)
+        }
+        if (x == ONE) {
             return y;
-        if (y == ZERO)
+        }
+        if (y == ZERO) {
             return not(x);
-        if (y == ONE)
+        }
+        if (y == ONE) {
             return x;
+        }
         return worker.iff(x, y);
     }
 
@@ -58,14 +65,18 @@ public class PrettifyBooleanWorker implements BooleanWorker {
     }
 
     public BooleanFormula and(BooleanFormula x, BooleanFormula y) {
-        if (x == y)
+        if (x == y) {
             return x;
-        if (x == ZERO || y == ZERO)
+        }
+        if (x == ZERO || y == ZERO) {
             return ZERO;
-        if (x == ONE)
+        }
+        if (x == ONE) {
             return y;
-        if (y == ONE)
+        }
+        if (y == ONE) {
             return x;
+        }
         return worker.and(x, y);
     }
 

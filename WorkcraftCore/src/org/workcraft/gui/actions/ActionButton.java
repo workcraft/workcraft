@@ -53,9 +53,11 @@ public class ActionButton extends JButton implements Actor {
     }
 
     private void fireActionPerformed() {
-        if (action != null)
-            for (ScriptedActionListener l : listeners)
+        if (action != null) {
+            for (ScriptedActionListener l : listeners) {
                 l.actionPerformed(action);
+            }
+        }
     }
 
     public void addScriptedActionListener(ScriptedActionListener listener) {

@@ -23,8 +23,9 @@ public class NodesRef extends ArrayList<String> {
     }
 
     public boolean containsNode(Node n, SON net) {
-        if (this.contains(net.getNodeReference(n)))
+        if (this.contains(net.getNodeReference(n))) {
             return true;
+        }
         return false;
     }
 
@@ -60,8 +61,9 @@ public class NodesRef extends ArrayList<String> {
                         add(fir);
                     }
                 }
-            } else
+            } else {
                 add(s.trim());
+            }
             first = false;
         }
     }

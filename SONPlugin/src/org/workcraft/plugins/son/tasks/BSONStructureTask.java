@@ -42,9 +42,9 @@ public class BSONStructureTask extends AbstractStructuralVerification {
         this.net = net;
 
         bsonAlg = new BSONAlg(net);
-        if (allMarkings == null)
+        if (allMarkings == null) {
             allPhases = bsonAlg.getAllPhases(getReachableMarking());
-        else {
+        } else {
             allPhases = bsonAlg.getAllPhases(allMarkings);
         }
         bsonCycleAlg = new BSONCycleAlg(net, allPhases);
@@ -77,11 +77,12 @@ public class BSONStructureTask extends AbstractStructuralVerification {
         infoMsg("Running model structure and component relation tasks...");
         infoMsg("Running Upper-level ON structure task...");
         groupErrors.addAll(groupTask1(groups));
-        if (groupErrors.isEmpty())
+        if (groupErrors.isEmpty()) {
             infoMsg("Valid upper-level ON structure.");
-        else {
-            for (ONGroup group : groupErrors)
+        } else {
+            for (ONGroup group : groupErrors) {
                 errMsg("ERROR: Invalid Upper-level ON structure (not line-like/has both input and output behavioural relations).", group);
+            }
         }
         infoMsg("Upper-level ON structure task complete.");
 
@@ -89,9 +90,9 @@ public class BSONStructureTask extends AbstractStructuralVerification {
         infoMsg("Running a/synchronous relation task...");
         Collection<ChannelPlace> task2 = groupTask2(groups);
         relationErrors.addAll(task2);
-        if (relationErrors.isEmpty())
+        if (relationErrors.isEmpty()) {
             infoMsg("Valid a/synchronous relation.");
-        else {
+        } else {
             for (ChannelPlace cPlace : task2) {
                 errMsg("ERROR: Invalid BSON structure "
                         + "(A/Synchronous communication between upper and lower level ONs).", cPlace);
@@ -113,8 +114,9 @@ public class BSONStructureTask extends AbstractStructuralVerification {
             for (String str : phaseCutTask) {
                 infoMsg(str);
             }
-        } else
+        } else {
             infoMsg("Valid phase structure.");
+        }
 
         infoMsg("Phase checking tasks complete.");
 
@@ -122,9 +124,9 @@ public class BSONStructureTask extends AbstractStructuralVerification {
         infoMsg("Running cycle detection task...");
         cycleErrors.addAll(getBSONCycleAlg().cycleTask(components));
 
-        if (cycleErrors.isEmpty())
+        if (cycleErrors.isEmpty()) {
             infoMsg("Behavioral-SON is cycle free.");
-        else {
+        } else {
             errNumber++;
             errMsg("ERROR : Model involves BSCON cycle paths = " + cycleErrors.size() + ".");
             int i = 1;
@@ -151,18 +153,22 @@ public class BSONStructureTask extends AbstractStructuralVerification {
                 boolean isOutput = false;
 
                 for (Node node : group.getComponents()) {
-                    if (net.getInputSONConnectionTypes(node).contains(Semantics.BHVLINE))
+                    if (net.getInputSONConnectionTypes(node).contains(Semantics.BHVLINE)) {
                         isInput = true;
-                    if (net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE))
+                    }
+                    if (net.getOutputSONConnectionTypes(node).contains(Semantics.BHVLINE)) {
                         isOutput = true;
+                    }
                 }
 
-                if (isInput && isOutput)
+                if (isInput && isOutput) {
                     result.add(group);
+                }
             } else {
                 for (Node node : group.getComponents()) {
-                    if (net.getInputSONConnectionTypes(node).contains(Semantics.BHVLINE))
+                    if (net.getInputSONConnectionTypes(node).contains(Semantics.BHVLINE)) {
                         result.add(group);
+                    }
                 }
             }
         }
@@ -183,13 +189,15 @@ public class BSONStructureTask extends AbstractStructuralVerification {
 
             for (Node node : connectedNodes) {
                 for (ONGroup group : upperGroups) {
-                    if (group.getComponents().contains(node))
+                    if (group.getComponents().contains(node)) {
                         inUpperGroup++;
+                    }
                 }
             }
 
-            if (inUpperGroup < connectedNodes.size() && inUpperGroup != 0)
+            if (inUpperGroup < connectedNodes.size() && inUpperGroup != 0) {
                 result.add(cPlace);
+            }
         }
 
         return result;
@@ -215,8 +223,9 @@ public class BSONStructureTask extends AbstractStructuralVerification {
 
         for (Condition c : upperGroup.getConditions()) {
             String ref = net.getNodeReference(c);
-            if (!getBSONAlg().isUpperCondition(c))
+            if (!getBSONAlg().isUpperCondition(c)) {
                 result.put(c, "ERROR: Upper level condition does not has phase: "  + ref);
+            }
         }
         return result;
     }
@@ -232,21 +241,23 @@ public class BSONStructureTask extends AbstractStructuralVerification {
             if (getRelationAlg().isInitial(c)) {
                 Collection<Condition> minSet = getBSONAlg().getMinimalPhase(phases);
 
-                for (Condition min : minSet)
+                for (Condition min : minSet) {
                     if (!getRelationAlg().isInitial(min)) {
                         result.put(c, "ERROR: The minimal phase of " + ref + " does not reach initial state.");
                         break;
                     }
+                }
             }
             //the maximal phases of every final state of upper group must also be the final state of lower group
             if (getRelationAlg().isFinal(c)) {
                 Collection<Condition> maxSet = getBSONAlg().getMaximalPhase(getAllPhases().get(c));
 
-                for (Condition max : maxSet)
+                for (Condition max : maxSet) {
                     if (!getRelationAlg().isFinal(max)) {
                         result.put(c, "ERROR: The maximal phase of " + ref + " does not reach final state.");
                         break;
                     }
+                }
             }
         }
         return result;
@@ -260,8 +271,9 @@ public class BSONStructureTask extends AbstractStructuralVerification {
             Condition pre = null;
             Collection<Phase> phases = getAllPhases().get(c);
 
-            if (!getRelationAlg().getPrePNCondition(c).isEmpty())
+            if (!getRelationAlg().getPrePNCondition(c).isEmpty()) {
                 pre = getRelationAlg().getPrePNCondition(c).iterator().next();
+            }
 
             if (pre != null) {
                 Collection<Phase> prePhases = getAllPhases().get(pre);
@@ -272,8 +284,9 @@ public class BSONStructureTask extends AbstractStructuralVerification {
                     boolean match = false;
                     Collection<Condition> min = getBSONAlg().getMinimalPhase(phase);
                     System.out.println("min+" + net.toString(min));
-                    if (preMax.containsAll(min))
+                    if (preMax.containsAll(min)) {
                         match = true;
+                    }
 
                     if (!match) {
                         match = true;
@@ -289,8 +302,9 @@ public class BSONStructureTask extends AbstractStructuralVerification {
                                 break;
                             }
                         }
-                        if (!containFinal)
+                        if (!containFinal) {
                             match = false;
+                        }
                     }
 
                     if (!match) {

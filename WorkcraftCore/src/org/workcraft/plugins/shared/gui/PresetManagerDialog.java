@@ -67,8 +67,9 @@ public class PresetManagerDialog<T> extends JDialog {
                             "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                         presetManager.delete(p);
                         listDataModel.removeElement(o);
-                        if (listDataModel.getSize() == 0)
+                        if (listDataModel.getSize() == 0) {
                             setVisible(false);
+                        }
                     }
                 }
             }
@@ -93,9 +94,11 @@ public class PresetManagerDialog<T> extends JDialog {
 
         listDataModel = new DefaultListModel();
 
-        for (Preset<T> p : presetManager.list())
-            if (!p.isBuiltIn())
+        for (Preset<T> p : presetManager.list()) {
+            if (!p.isBuiltIn()) {
                 listDataModel.addElement(p);
+            }
+        }
 
         listScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         list = new JList(listDataModel);

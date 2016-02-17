@@ -209,8 +209,9 @@ public class ScencoConstrainedSearchDialog extends JDialog {
                 }
                 for (int i = 0; i < m; i++) {
                     String data = "";
-                    for (int j = 0; j < Integer.parseInt(bitsText.getText()); j++)
+                    for (int j = 0; j < Integer.parseInt(bitsText.getText()); j++) {
                         data = data + ScencoDialogSupport.dontCareBit;
+                    }
                     encodingTable.getModel().setValueAt(data, i, 1);
                 }
             }

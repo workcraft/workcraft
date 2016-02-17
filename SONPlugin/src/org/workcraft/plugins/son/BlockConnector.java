@@ -26,8 +26,9 @@ public class BlockConnector {
      */
     public static void blockBoundingConnector(VisualSON visualNet) {
         for (VisualBlock block : visualNet.getVisualBlocks()) {
-            if (block.getIsCollapsed())
+            if (block.getIsCollapsed()) {
                 blockBoundingConnector(block, visualNet);
+            }
         }
     }
 
@@ -109,8 +110,9 @@ public class BlockConnector {
     public static void blockInternalConnector(VisualSON visualNet) {
 
         for (VisualBlock block : visualNet.getVisualBlocks()) {
-            if (block.getIsCollapsed())
+            if (block.getIsCollapsed()) {
                 blockInternalConnector(block, visualNet);
+            }
         }
         for (VisualPlaceNode place : visualNet.getVisualPlaceNode()) {
             place.setInterface("");
@@ -148,10 +150,12 @@ public class BlockConnector {
                 //interface compatiability checking
                 ArrayList<VisualSONConnection> connections = new ArrayList<VisualSONConnection>();
                 for (VisualSONConnection con : visualNet.getVisualSONConnections()) {
-                    if (con.getFirst() == p && (con.getSecond() == block))
+                    if (con.getFirst() == p && (con.getSecond() == block)) {
                         connections.add(con);
-                    if (con.getSecond() == p && (con.getFirst() == block))
+                    }
+                    if (con.getSecond() == p && (con.getFirst() == block)) {
                         connections.add(con);
+                    }
                 }
 
                 for (VisualSONConnection con :connections) {
@@ -246,7 +250,8 @@ public class BlockConnector {
 
         //remove math connection
         Container mathParent = (Container) mathCon.getParent();
-        if (mathParent != null)
+        if (mathParent != null) {
             mathParent.remove(mathCon);
+        }
     }
 }

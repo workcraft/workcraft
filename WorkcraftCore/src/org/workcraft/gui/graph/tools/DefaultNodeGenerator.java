@@ -51,8 +51,9 @@ public class DefaultNodeGenerator extends AbstractNodeGenerator {
         }
 
         iconPath = Annotations.getIconPath(vcls);
-        if (iconPath != null)
+        if (iconPath != null) {
             icon = GUI.createIconFromImage(iconPath);
+        }
     }
 
     @Override

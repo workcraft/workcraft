@@ -21,24 +21,27 @@ public class CachedTreeSource<Node> implements TreeSource<Node> {
             public void added(Path<Node> path) {
                 cache.update(path.getNode(), source);
 
-                for (TreeListener<Node> listener : listeners)
+                for (TreeListener<Node> listener : listeners) {
                     listener.added(path);
+                }
             }
 
             @Override
             public void changed(Path<Node> path) {
                 cache.update(path.getNode(), source);
 
-                for (TreeListener<Node> listener : listeners)
+                for (TreeListener<Node> listener : listeners) {
                     listener.changed(path);
+                }
             }
 
             @Override
             public void removed(Path<Node> path) {
                 cache.clear(path.getNode(), source);
 
-                for (TreeListener<Node> listener : listeners)
+                for (TreeListener<Node> listener : listeners) {
                     listener.removed(path);
+                }
 
             }
 
@@ -46,8 +49,9 @@ public class CachedTreeSource<Node> implements TreeSource<Node> {
             public void restructured(Path<Node> path) {
                 cache.update(path.getNode(), source);
 
-                for (TreeListener<Node> listener : listeners)
+                for (TreeListener<Node> listener : listeners) {
                     listener.restructured(path);
+                }
             }
         });
     }

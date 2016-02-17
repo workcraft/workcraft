@@ -35,78 +35,88 @@ public class Annotations {
 
     public static String getDisplayName(Class<?> cls) {
         DisplayName dna =  cls.getAnnotation(DisplayName.class);
-        if (dna == null)
+        if (dna == null) {
             return cls.getSimpleName();
+        }
         return dna.value();
     }
 
     public static String getSVGIconPath(Class<?> cls) {
         SVGIcon icon =  cls.getAnnotation(SVGIcon.class);
-        if (icon == null)
+        if (icon == null) {
             return null;
+        }
         return icon.value();
     }
 
     public static String getIconPath(Class<?> cls) {
         Icon icon =  cls.getAnnotation(Icon.class);
-        if (icon == null)
+        if (icon == null) {
             return null;
+        }
         return icon.value();
     }
 
     public static Class<?>[] getDefaultCreateButtons(Class<? extends VisualModel> cls) {
         DefaultCreateButtons dcba = cls.getAnnotation(DefaultCreateButtons.class);
-        if (dcba == null)
+        if (dcba == null) {
             return new Class<?>[0];
+        }
         return dcba.value();
     }
 
     public static Class<?>[] getNoDefaultCreateButtons(Class<? extends VisualModel> cls) {
         NoDefaultCreateButtons ndcba = cls.getAnnotation(NoDefaultCreateButtons.class);
-        if (ndcba == null)
+        if (ndcba == null) {
             return new Class<?>[0];
+        }
         return ndcba.value();
     }
 
     public static int getHotKeyCode(Class<?> cls) {
         Hotkey hkd = cls.getAnnotation(Hotkey.class);
-        if (hkd == null)
+        if (hkd == null) {
             return -1;
-        else
+        } else {
             return hkd.value();
+        }
     }
 
     public static Class<?> getVisualClass(Class<?> cls) {
         VisualClass vcat = cls.getAnnotation(VisualClass.class);
         // The component/connection does not define a visual representation
-        if (vcat == null)
+        if (vcat == null) {
             return null;
-        else
+        } else {
             return vcat.value();
+        }
     }
 
     public static Class<? extends CustomToolsProvider> getCustomToolsProvider(Class<?> cls) {
         CustomTools ctb = cls.getAnnotation(CustomTools.class);
-        if (ctb == null)
+        if (ctb == null) {
             return null;
-        else
+        } else {
             return ctb.value();
+        }
     }
 
     public static Class<? extends GraphEditorMouseListener>[] getMouseListeners(Class<?> cls) {
         MouseListeners ml = cls.getAnnotation(MouseListeners.class);
-        if (ml == null)
+        if (ml == null) {
             return null;
-        else
+        } else {
             return ml.value();
+        }
     }
 
     @SuppressWarnings("unchecked")
     public static Class<? extends GraphEditorTool>[] getCustomTools(Class<?> cls) {
         CustomToolButtons ctb = cls.getAnnotation(CustomToolButtons.class);
-        if (ctb == null)
+        if (ctb == null) {
             return (Class<? extends GraphEditorTool>[]) new Class<?>[0];
-        else
+        } else {
             return ctb.value();
+        }
     }
 }

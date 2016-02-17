@@ -53,12 +53,14 @@ public class ConsistencyAlg extends TimeAlg {
         }
 
         //Equation 3
-        if (!(tsl <= tfl))
+        if (!(tsl <= tfl)) {
             result.add("Node inconsistency: minStart"
                      + node(node) + value(tsl.toString()) + " > minEnd" + node(node) + value(tfl.toString()) + ".");
-        if (!(tsu <= tfu))
+        }
+        if (!(tsu <= tfu)) {
             result.add("Node inconsistency: maxStart"
                      + node(node) + value(tsu.toString()) + " > maxEnd" + node(node) + value(tfu.toString()) + ".");
+        }
         //Equation 6
         Interval i = null;
         try {
@@ -67,10 +69,11 @@ public class ConsistencyAlg extends TimeAlg {
             result.add(e.getMessage());
             return result;
         }
-        if (!i.isOverlapping(end))
+        if (!i.isOverlapping(end)) {
             result.add("Node inconsistency: start"
                      + node(node) + " + duration" + node(node) + " = " + value(i.toString())
                      + " is not consistent with end" + node(node) + value(end.toString()) + ".");
+        }
 
         //Equation 7
         Interval i2 = null;
@@ -81,10 +84,11 @@ public class ConsistencyAlg extends TimeAlg {
             return result;
         }
 
-        if (!i2.isOverlapping(start))
+        if (!i2.isOverlapping(start)) {
             result.add("Node inconsistency: end"
                      + node(node) + " - duration" + node(node) + " = " + value(i2.toString())
                      + " is not consistent with start" + node(node) + value(start.toString()) + ".");
+        }
 
         //Equation 8
         int lowBound3;
@@ -98,10 +102,11 @@ public class ConsistencyAlg extends TimeAlg {
         }
         Interval i3 = new Interval(lowBound3, upBound3);
 
-        if (!i3.isOverlapping(dur))
+        if (!i3.isOverlapping(dur)) {
             result.add("Node inconsistency: end"
                      + node(node) + " - start" + node(node) + " = " + value(i3.toString())
                      + " is not consistent with duration" + node(node) + value(dur.toString()) + ".");
+        }
 
         return result;
     }
@@ -244,9 +249,10 @@ public class ConsistencyAlg extends TimeAlg {
         } else {
             cp.setStartTime(input.getEndTime());
             cp.setEndTime(output.getStartTime());
-            if (!nodeConsistency(cp, cp.getStartTime(), cp.getEndTime(), cp.getDuration(), g).isEmpty())
+            if (!nodeConsistency(cp, cp.getStartTime(), cp.getEndTime(), cp.getDuration(), g).isEmpty()) {
                 result.add("Async inconsistency: " + node(cp)
                          + "is not node consistency");
+            }
         }
         return result;
     }
@@ -301,9 +307,10 @@ public class ConsistencyAlg extends TimeAlg {
                             + node(c) + " or " + node(initialLow) + " is node inconsistency.");
                     return result;
                 }
-                if (!initialLow.getStartTime().equals(c.getStartTime()))
+                if (!initialLow.getStartTime().equals(c.getStartTime())) {
                     result.add("Behavioural inconsistency: start" + node(initialLow)
                              + " != " + "start" + node(c) + ".");
+                }
             }
         }
         return result;
@@ -322,9 +329,10 @@ public class ConsistencyAlg extends TimeAlg {
                             + node(c) + " or " + node(finalLow) + " is node inconsistency.");
                     return result;
                 }
-                if (finalLow.getStartTime().equals(c.getStartTime()))
+                if (finalLow.getStartTime().equals(c.getStartTime())) {
                     result.add("Behavioural inconsistency: end" + node(finalLow)
                              + " != " + "end" + node(c) + ".");
+                }
             }
         }
         return result;
@@ -406,8 +414,9 @@ public class ConsistencyAlg extends TimeAlg {
             boolean hasSpecifiedInput = false;
             //initial state
             if (inputConnections.isEmpty()) {
-                if (c.getStartTime().isSpecified())
+                if (c.getStartTime().isSpecified()) {
                     hasSpecifiedInput = true;
+                }
             } else {
                 for (SONConnection con : inputConnections) {
                     if (con.getTime().isSpecified()) {
@@ -445,8 +454,9 @@ public class ConsistencyAlg extends TimeAlg {
             boolean hasSpecifiedOutput = false;
             //final state
             if (outputConnections.isEmpty()) {
-                if (c.getEndTime().isSpecified())
+                if (c.getEndTime().isSpecified()) {
                     hasSpecifiedOutput = true;
+                }
             } else {
                 for (SONConnection con : outputConnections) {
                     if (con.getTime().isSpecified()) {
@@ -464,10 +474,11 @@ public class ConsistencyAlg extends TimeAlg {
 
     public String hasSpecifiedCP(Node node, boolean isSync, ScenarioRef s) {
         ChannelPlace cp = null;
-        if (node instanceof ChannelPlace)
+        if (node instanceof ChannelPlace) {
             cp = (ChannelPlace) node;
-        else
+        } else {
             return "";
+        }
 
         //get input and output events
         TransitionNode input = null;
@@ -495,18 +506,18 @@ public class ConsistencyAlg extends TimeAlg {
             if (!hasSpecifiedStart(input, s)
                     && !hasSpecifiedEnd(input, s)
                     && !hasSpecifiedStart(output, s)
-                    && !hasSpecifiedEnd(output, s))
+                    && !hasSpecifiedEnd(output, s)) {
                 return "connected events";
-            else if (!hasSpecifiedStart(input, s)
+            } else if (!hasSpecifiedStart(input, s)
                     || !hasSpecifiedEnd(input, s)
                     || !hasSpecifiedStart(output, s)
                     || !hasSpecifiedEnd(output, s)) {
                 return "partial";
             }
         } else {
-            if (!hasSpecifiedEnd(input, s) && !hasSpecifiedStart(output, s))
+            if (!hasSpecifiedEnd(input, s) && !hasSpecifiedStart(output, s)) {
                 return "connected events";
-            else if (!hasSpecifiedEnd(input, s) || !hasSpecifiedStart(output, s)) {
+            } else if (!hasSpecifiedEnd(input, s) || !hasSpecifiedStart(output, s)) {
                 return "partial";
             }
         }
@@ -524,18 +535,21 @@ public class ConsistencyAlg extends TimeAlg {
             if (concurResult.isEmpty()) {
                 if (net.getInputSONConnections(t).size() > 0) {
                     SONConnection con = net.getInputSONConnections(t).iterator().next();
-                    if (!t.getStartTime().isSpecified())
+                    if (!t.getStartTime().isSpecified()) {
                         t.setStartTime(con.getTime());
-                } else
+                    }
+                } else {
                     throw new InvalidStructureException("Empty event input/output: " + net.getNodeReference(t));
+                }
 
                 if (net.getOutputSONConnections(t).size() > 0) {
                     SONConnection con = net.getOutputSONConnections(t).iterator().next();
                     if (!t.getEndTime().isSpecified()) {
                         t.setEndTime(con.getTime());
                     }
-                } else
+                } else {
                     throw new InvalidStructureException("Empty event input/output: " + net.getNodeReference(t));
+                }
 
                 result.addAll(nodeConsistency(t, t.getStartTime(), t.getEndTime(), t.getDuration(), g));
 
@@ -551,19 +565,23 @@ public class ConsistencyAlg extends TimeAlg {
             } else {
                 if (c.isInitial() && !c.isFinal()) {
                     SONConnection con = net.getOutputPNConnections(c).iterator().next();
-                    if (!c.getEndTime().isSpecified())
+                    if (!c.getEndTime().isSpecified()) {
                         c.setEndTime(con.getTime());
+                    }
                 } else if (!c.isInitial() && c.isFinal()) {
                     SONConnection con = net.getInputPNConnections(c).iterator().next();
-                    if (!c.getStartTime().isSpecified())
+                    if (!c.getStartTime().isSpecified()) {
                         c.setStartTime(con.getTime());
+                    }
                 } else if (!c.isInitial() && !c.isFinal()) {
                     SONConnection con = net.getInputPNConnections(c).iterator().next();
                     SONConnection con2 = net.getOutputPNConnections(c).iterator().next();
-                    if (!c.getStartTime().isSpecified())
+                    if (!c.getStartTime().isSpecified()) {
                         c.setStartTime(con.getTime());
-                    if (!c.getEndTime().isSpecified())
+                    }
+                    if (!c.getEndTime().isSpecified()) {
                         c.setEndTime(con2.getTime());
+                    }
                 }
                 result.addAll(nodeConsistency(c, c.getStartTime(), c.getEndTime(), c.getDuration(), g));
             }

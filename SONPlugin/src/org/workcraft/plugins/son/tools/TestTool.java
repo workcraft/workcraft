@@ -88,8 +88,9 @@ public class TestTool extends AbstractTool implements Tool {
                 Collection<Marking> markings = alg.getReachableMarkings(group);
                 for (Marking marking : markings) {
                     System.out.println();
-                    for (Node node : marking)
+                    for (Node node : marking) {
                         System.out.print(net.getNodeReference(node) + ", ");
+                    }
                 }
             } catch (UnboundedException e) {
                 System.out.println(e.getMessage());
@@ -184,8 +185,9 @@ public class TestTool extends AbstractTool implements Tool {
 
         for (Path path : cycleAlg.syncCycleTask(nodes)) {
             for (Node node : path) {
-                if (node instanceof ChannelPlace)
+                if (node instanceof ChannelPlace) {
                     result.add((ChannelPlace) node);
+                }
             }
         }
         return result;
@@ -225,8 +227,9 @@ public class TestTool extends AbstractTool implements Tool {
             if (!before.isEmpty()) {
                 Collection<String> subResult = new ArrayList<String>();
                 System.out.println("before(" + net.getComponentLabel(e) + "): ");
-                for (TransitionNode[] t : before)
+                for (TransitionNode[] t : before) {
                     subResult.add("(" + net.getComponentLabel(t[0]) + " " + net.getComponentLabel(t[1]) + ")");
+                }
                 System.out.println(subResult);
             }
         }
@@ -237,8 +240,9 @@ public class TestTool extends AbstractTool implements Tool {
     public void drawInScreenSpace(final GraphEditor editor, Graphics2D g) {
         System.out.println("editor1111111");
         int a = 0;
-        if (a == 0)
+        if (a == 0) {
             GUI.drawEditorMessage(editor, g, Color.BLACK, "afdasfasd");
+        }
     }
 
     private void relation(SON net, VisualSON vnet) {

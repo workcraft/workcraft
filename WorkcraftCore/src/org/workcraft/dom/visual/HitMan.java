@@ -284,15 +284,18 @@ public class HitMan {
                 Math.abs(p1.getY() - p2.getY()));
 
         for (Touchable n : Hierarchy.getChildrenOfType(container, Touchable.class)) {
-            if (n instanceof Hidable && ((Hidable) n).isHidden())
+            if (n instanceof Hidable && ((Hidable) n).isHidden()) {
                 continue;
+            }
 
             if (p1.getX() <= p2.getX()) {
-                if (TouchableHelper.insideRectangle(n, rect))
+                if (TouchableHelper.insideRectangle(n, rect)) {
                     hit.add((Node) n);
+                }
             } else {
-                if (TouchableHelper.touchesRectangle(n, rect))
+                if (TouchableHelper.touchesRectangle(n, rect)) {
                     hit.add((Node) n);
+                }
             }
         }
         return hit;

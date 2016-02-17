@@ -12,8 +12,9 @@ public class DefaultTaskManager implements TaskManager {
         @Override
         public <T> ProgressMonitorArray<T> taskStarting(String description) {
             ProgressMonitorArray<T> l = new ProgressMonitorArray<T>();
-            for (TaskMonitor obs : this)
+            for (TaskMonitor obs : this) {
                 l.add(obs.taskStarting(description));
+            }
             return l;
         }
 
@@ -36,8 +37,9 @@ public class DefaultTaskManager implements TaskManager {
 
     protected <T> Result<? extends T> rawExecute(Task<T> task, String description, ProgressMonitor<? super T> observer) {
         ProgressMonitorArray<T> progressMon = taskObserverList.taskStarting(description);
-        if (observer != null)
+        if (observer != null) {
             progressMon.add(observer);
+        }
         Result<? extends T> result = task.run(progressMon);
         progressMon.finished(result, description);
         return result;

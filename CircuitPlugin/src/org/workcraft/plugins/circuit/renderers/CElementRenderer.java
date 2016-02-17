@@ -183,12 +183,15 @@ public class CElementRenderer extends GateRenderer {
                     maxX = 0;
                     if (isGlobalNegation) gX = GateRenderer.bubbleSize;
 
-                    for (Pair<String, Boolean> p1: setVars)
+                    for (Pair<String, Boolean> p1: setVars) {
                         if (p1.getSecond() ^ (gX != 0)) maxX = GateRenderer.bubbleSize;
-                    for (Pair<String, Boolean> p2: resetVars)
+                    }
+                    for (Pair<String, Boolean> p2: resetVars) {
                         if (p2.getSecond() ^ (gX != 0)) maxX = GateRenderer.bubbleSize;
-                    for (Pair<String, Boolean> p3: bothVars)
+                    }
+                    for (Pair<String, Boolean> p3: bothVars) {
                         if (p3.getSecond() ^ (gX != 0)) maxX = GateRenderer.bubbleSize;
+                    }
 
                     if (svs > 0) plusPosition = new Point2D.Double(maxX / 2 - gX / 2, -bvs * 0.5 / 2 - 0.25);
                     if (rvs > 0) minusPosition = new Point2D.Double(maxX / 2 - gX / 2, +bvs * 0.5 / 2 + 0.25);
@@ -305,22 +308,25 @@ public class CElementRenderer extends GateRenderer {
 
             @Override
             public Point2D getLabelPosition() {
-                if (labelPosition != null)
+                if (labelPosition != null) {
                     return (Point2D) labelPosition.clone();
+                }
                 return null;
             }
 
             @Override
             public Point2D getMinusPosition() {
-                if (minusPosition != null)
+                if (minusPosition != null) {
                     return (Point2D) minusPosition.clone();
+                }
                 return null;
             }
 
             @Override
             public Point2D getPlusPosition() {
-                if (plusPosition != null)
+                if (plusPosition != null) {
                     return (Point2D) plusPosition.clone();
+                }
                 return null;
             }
 

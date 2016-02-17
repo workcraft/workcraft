@@ -51,8 +51,9 @@ public class EstimationAlg extends TimeAlg {
         this.scenario = s;
         this.g = g;
 
-        if (scenario == null && !hasConflict())
+        if (scenario == null && !hasConflict()) {
             scenario = getUnalterSON();
+        }
 
         if (g == Granularity.YEAR_YEAR) {
             granularity = new YearYear();
@@ -68,8 +69,9 @@ public class EstimationAlg extends TimeAlg {
         for (Node n : scenario.getNodes(net)) {
             if (n instanceof PlaceNode || n instanceof Block) {
                 Time node = (Time) n;
-                if (!node.getDuration().isSpecified())
+                if (!node.getDuration().isSpecified()) {
                     node.setDuration(defaultDuration);
+                }
             }
         }
     }
@@ -89,8 +91,9 @@ public class EstimationAlg extends TimeAlg {
         ConsistencyAlg alg = new ConsistencyAlg(net);
         Time node = null;
 
-        if (scenario == null)
+        if (scenario == null) {
             throw new AlternativeStructureException("select a scenario for " + net.getNodeReference(n) + " first.");
+        }
 
         boolean specifiedDur = alg.hasSpecifiedDur(n, false, scenario);
         boolean specifiedStart = alg.hasSpecifiedStart(n, scenario);
@@ -99,9 +102,9 @@ public class EstimationAlg extends TimeAlg {
         Collection<SONConnection> iCons = net.getInputScenarioPNConnections(n, scenario);
         Collection<SONConnection> oCons = net.getOutputScenarioPNConnections(n, scenario);
 
-        if (n instanceof Time)
+        if (n instanceof Time) {
             node = (Time) n;
-        else return;
+        } else return;
 
         //set default duration
         if (!specifiedDur) {
@@ -221,16 +224,18 @@ public class EstimationAlg extends TimeAlg {
             }
 
             //unspec values for all connections
-            if (start == null)
+            if (start == null) {
                 try {
                     start = getEstimatedStartTime(node);
                     //System.out.println("start" + start!=null?start.toString():"null");
                 } catch (TimeEstimationException e) { }
-            if (end == null)
+            }
+            if (end == null) {
                 try {
                     end = getEstimatedEndTime(node);
                     //System.out.println("end" + end!=null?end.toString():"null");
                 } catch (TimeEstimationException e) { }
+            }
 
             if (start == null && end != null) {
                 start = granularity.subtractTD(end, node.getDuration());
@@ -317,10 +322,11 @@ public class EstimationAlg extends TimeAlg {
     private boolean hasConflict() {
         RelationAlgorithm alg = new RelationAlgorithm(net);
         for (Condition c : net.getConditions()) {
-            if (alg.hasPostConflictEvents(c))
+            if (alg.hasPostConflictEvents(c)) {
                 return true;
-            else if (alg.hasPreConflictEvents(c))
+            } else if (alg.hasPreConflictEvents(c)) {
                 return true;
+            }
         }
         return false;
     }
@@ -328,8 +334,9 @@ public class EstimationAlg extends TimeAlg {
     private Collection<SONConnection> getSpecifiedConnections(Collection<SONConnection> cons) {
         Collection<SONConnection> result = new ArrayList<SONConnection>();
         for (SONConnection con : cons) {
-            if (con.getTime().isSpecified())
+            if (con.getTime().isSpecified()) {
                 result.add(con);
+            }
         }
         return result;
     }
@@ -353,8 +360,9 @@ public class EstimationAlg extends TimeAlg {
                 //c is not final state
             } else if (!cons.isEmpty() && !cons2.isEmpty()) {
                 SONConnection con = null;
-                if (cons2.size() == 1)
+                if (cons2.size() == 1) {
                     con = cons2.iterator().next();
+                }
                 if (con == null) throw new RuntimeException("output connection != 1" + net.getNodeReference(n));
                 return con.getTime();
             }
@@ -381,8 +389,9 @@ public class EstimationAlg extends TimeAlg {
                 return c.getStartTime();
             } else {
                 SONConnection con = null;
-                if (cons.size() == 1)
+                if (cons.size() == 1) {
                     con = cons.iterator().next();
+                }
                 if (con == null) throw new RuntimeException(
                         "input connection != 1" + net.getNodeReference(n));
                 //set estimated start time
@@ -428,8 +437,9 @@ public class EstimationAlg extends TimeAlg {
                 //c is not final state
             } else if (!cons.isEmpty() && !cons2.isEmpty()) {
                 SONConnection con = null;
-                if (cons2.size() == 1)
+                if (cons2.size() == 1) {
                     con = cons2.iterator().next();
+                }
                 if (con == null) throw new RuntimeException("output connection != 1" + net.getNodeReference(n));
                 //set estimated value
                 if (!con.getTime().isSpecified()) {
@@ -449,9 +459,11 @@ public class EstimationAlg extends TimeAlg {
             Collection<SONConnection> cons2 = net.getOutputScenarioPNConnections(t, scenario);
 
             Collection<SONConnection> specifiedCons = new ArrayList<SONConnection>();
-            for (SONConnection con : cons2)
-                if (con.getTime().isSpecified())
+            for (SONConnection con : cons2) {
+                if (con.getTime().isSpecified()) {
                     specifiedCons.add(con);
+                }
+            }
 
             //some or all of the connections have specified values
             if (!specifiedCons.isEmpty()) {
@@ -499,8 +511,9 @@ public class EstimationAlg extends TimeAlg {
                 }
             } else {
                 SONConnection con = null;
-                if (cons.size() == 1)
+                if (cons.size() == 1) {
                     con = cons.iterator().next();
+                }
                 if (con == null) throw new RuntimeException(
                         "input connection != 1" + net.getNodeReference(n));
                 //set estimated start time
@@ -521,9 +534,11 @@ public class EstimationAlg extends TimeAlg {
             Collection<SONConnection> cons2 = net.getInputScenarioPNConnections(t, scenario);
 
             Collection<SONConnection> specifiedCons = new ArrayList<SONConnection>();
-            for (SONConnection con : cons2)
-                if (con.getTime().isSpecified())
+            for (SONConnection con : cons2) {
+                if (con.getTime().isSpecified()) {
                     specifiedCons.add(con);
+                }
+            }
 
             //some or all of the connections have specified values
             if (!specifiedCons.isEmpty()) {
@@ -573,23 +588,26 @@ public class EstimationAlg extends TimeAlg {
         LinkedList<Time> visited = new LinkedList<Time>();
         visited.add((Time) n);
 
-        if (scenario != null)
+        if (scenario != null) {
             backwardDFS(visited, scenario.getNodes(net));
+        }
 
         Collection<Interval> possibleTimes = new ArrayList<Interval>();
         for (Interval[] interval : resultTimeAndDuration) {
             possibleTimes.add(granularity.plusTD(interval[0], interval[1]));
         }
-        if (!possibleTimes.isEmpty())
+        if (!possibleTimes.isEmpty()) {
             result = Interval.getOverlapping(possibleTimes);
+        }
 
         if (result != null) {
             clearSets();
             if (!result.isSpecified()) {
                 throw new TimeEstimationException(
                         "cannot find causally time value (backward).");
-            } else
+            } else {
                 return result;
+            }
         } else {
             clearSets();
             throw new TimeEstimationException("intervals" +
@@ -603,8 +621,9 @@ public class EstimationAlg extends TimeAlg {
         LinkedList<Time> visited = new LinkedList<Time>();
         visited.add((Time) n);
 
-        if (scenario != null)
+        if (scenario != null) {
             forwardDFS(visited, scenario.getNodes(net));
+        }
 
         Collection<Interval> possibleTimes = new ArrayList<Interval>();
 
@@ -612,16 +631,18 @@ public class EstimationAlg extends TimeAlg {
             possibleTimes.add(granularity.subtractTD(interval[0], interval[1]));
         }
 
-        if (!possibleTimes.isEmpty())
+        if (!possibleTimes.isEmpty()) {
             result = Interval.getOverlapping(possibleTimes);
+        }
 
         if (result != null) {
             clearSets();
             if (!result.isSpecified()) {
                 throw new TimeEstimationException(
                         "cannot find causally time value (forward).");
-            } else
+            } else {
                 return result;
+            }
         } else {
             clearSets();
             throw new TimeEstimationException(
@@ -671,8 +692,9 @@ public class EstimationAlg extends TimeAlg {
             SONConnection con = net.getSONConnection(visited.getLast(), node);
             if (visited.contains(node) || visited.getLast().getEndTime().isSpecified()) {
                 continue;
-            } else if (con != null && con.getTime().isSpecified())
+            } else if (con != null && con.getTime().isSpecified()) {
                 continue;
+            }
             visited.addLast(node);
             forwardDFS(visited, nodes);
             visited.removeLast();
@@ -734,9 +756,9 @@ public class EstimationAlg extends TimeAlg {
         Time first = visited.getFirst();
         for (Time time : visited) {
             if (time != first) {
-                if (time.getDuration().isSpecified())
+                if (time.getDuration().isSpecified()) {
                     result = result.add(time.getDuration());
-                else {
+                } else {
                     result = result.add(defaultDuration);
                 }
             }
@@ -749,24 +771,28 @@ public class EstimationAlg extends TimeAlg {
         LinkedList<Time> result = new LinkedList<Time>();
 
         for (TransitionNode[] pre : before) {
-            if (pre[1] == n)
+            if (pre[1] == n) {
                 preSet.add(pre[0]);
+            }
         }
 
         for (Node node : getPrePNSet(n)) {
-            if (node instanceof Time)
+            if (node instanceof Time) {
                 preSet.add((Time) node);
+            }
         }
 
         if (n instanceof TransitionNode) {
             for (SONConnection con : net.getSONConnections(n)) {
                 if (con.getSemantics() == Semantics.SYNCLINE) {
-                    if (con.getFirst() == n)
+                    if (con.getFirst() == n) {
                         preSet.add((Time) con.getSecond());
-                    else
+                    } else {
                         preSet.add((Time) con.getFirst());
-                } else if (con.getSemantics() == Semantics.ASYNLINE && con.getSecond() == n)
+                    }
+                } else if (con.getSemantics() == Semantics.ASYNLINE && con.getSecond() == n) {
                     preSet.add((Time) con.getFirst());
+                }
             }
         } else if (n instanceof ChannelPlace) {
             Node input = net.getPreset(n).iterator().next();
@@ -779,8 +805,9 @@ public class EstimationAlg extends TimeAlg {
         }
 
         for (Time node : preSet) {
-            if (nodes.contains(node))
+            if (nodes.contains(node)) {
                 result.add(node);
+            }
         }
 
         return result;
@@ -791,24 +818,28 @@ public class EstimationAlg extends TimeAlg {
         LinkedList<Time> result = new LinkedList<Time>();
 
         for (TransitionNode[] post : before) {
-            if (post[0] == n)
+            if (post[0] == n) {
                 postSet.add(post[1]);
+            }
         }
 
         for (Node node :getPostPNSet(n)) {
-            if (node instanceof Time)
+            if (node instanceof Time) {
                 postSet.add((Time) node);
+            }
         }
 
         if (n instanceof TransitionNode) {
             for (SONConnection con : net.getSONConnections(n)) {
                 if (con.getSemantics() == Semantics.SYNCLINE) {
-                    if (con.getFirst() == n)
+                    if (con.getFirst() == n) {
                         postSet.add((Time) con.getSecond());
-                    else
+                    } else {
                         postSet.add((Time) con.getFirst());
-                } else if (con.getSemantics() == Semantics.ASYNLINE && con.getFirst() == n)
+                    }
+                } else if (con.getSemantics() == Semantics.ASYNLINE && con.getFirst() == n) {
                     postSet.add((Time) con.getSecond());
+                }
             }
 
         } else if (n instanceof ChannelPlace) {
@@ -822,8 +853,9 @@ public class EstimationAlg extends TimeAlg {
         }
 
         for (Time node : postSet) {
-            if (nodes.contains(node))
+            if (nodes.contains(node)) {
                 result.add(node);
+            }
         }
 
         return result;

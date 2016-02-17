@@ -44,11 +44,13 @@ public class SelectionEventPropagator extends HierarchySupervisor implements Sta
     @Override
     public void handleEvent(HierarchyEvent e) {
         if (e instanceof NodesAddedEvent || e instanceof NodesReparentedEvent) {
-            for (Node n : e.getAffectedNodes())
+            for (Node n : e.getAffectedNodes()) {
                 nodeAdded(n);
+            }
         } else if (e instanceof NodesDeletedEvent) {
-            for (Node n : e.getAffectedNodes())
+            for (Node n : e.getAffectedNodes()) {
                 nodeRemoved(n);
+            }
         }
     }
 
@@ -59,8 +61,9 @@ public class SelectionEventPropagator extends HierarchySupervisor implements Sta
             selectionObservers.remove(so);
         }
 
-        for (Node n : node.getChildren())
+        for (Node n : node.getChildren()) {
             nodeRemoved(n);
+        }
     }
 
     private void nodeAdded(Node node) {
@@ -70,16 +73,18 @@ public class SelectionEventPropagator extends HierarchySupervisor implements Sta
             selectionObservers.add(so);
         }
 
-        for (Node n : node.getChildren())
+        for (Node n : node.getChildren()) {
             nodeAdded(n);
+        }
     }
 
     @Override
     public void notify(StateEvent e) {
         if (e instanceof SelectionChangedEvent) {
             //System.out.println("Propagating event");
-            for (SelectionObserver so : selectionObservers)
+            for (SelectionObserver so : selectionObservers) {
                 so.notify((SelectionChangedEvent) e);
+            }
         }
     }
 }

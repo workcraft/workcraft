@@ -185,8 +185,9 @@ public class ParallelSimDialog  extends JDialog {
                             item.setFillColor(Color.WHITE);
                         }
 
-                        for (int i = 0; i < list.getModel().getSize(); i++)
+                        for (int i = 0; i < list.getModel().getSize(); i++) {
                             list.repaint(list.getCellBounds(i, i));
+                        }
                     }
                 } catch (ArrayIndexOutOfBoundsException e) { }
             }
@@ -258,10 +259,12 @@ public class ParallelSimDialog  extends JDialog {
         dataVal[0][1] = this.clickedEvent.getLabel();
 
         if (!minFire.isEmpty()) {
-            for (int i = 1; i < minFire.size() + 1; i++)
+            for (int i = 1; i < minFire.size() + 1; i++) {
                 dataVal[i][0] = net.getNodeReference(minFire.get(i - 1));
-            for (int i = 1; i < minFire.size() + 1; i++)
+            }
+            for (int i = 1; i < minFire.size() + 1; i++) {
                 dataVal[i][1] = minFire.get(i - 1).getLabel();
+            }
         }
 
         return dataVal;
@@ -309,8 +312,9 @@ public class ParallelSimDialog  extends JDialog {
 
             @Override
             public void windowLostFocus(WindowEvent e) {
-                if (run == 0)
+                if (run == 0) {
                     setVisible(true);
+                }
             }
         });
 
@@ -318,8 +322,9 @@ public class ParallelSimDialog  extends JDialog {
 
     private void setColor(List<TransitionNode> preEvents, TransitionNode event) {
         event.setFillColor(selectedColor);
-        for (TransitionNode e : preEvents)
+        for (TransitionNode e : preEvents) {
             e.setFillColor(selectedColor);
+        }
     }
 
     public SON getSONModel() {

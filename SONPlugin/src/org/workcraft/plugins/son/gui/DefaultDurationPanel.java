@@ -59,10 +59,11 @@ public class DefaultDurationPanel extends JPanel {
             @Override
             public void focusLost(FocusEvent e) {
                 autoComplete(min);
-                if (!isValid(getDefaultDuration()))
+                if (!isValid(getDefaultDuration())) {
                     validDuration = false;
-                else
+                } else {
                     validDuration = true;
+                }
             }
 
             @Override
@@ -95,10 +96,11 @@ public class DefaultDurationPanel extends JPanel {
             public void focusLost(FocusEvent e) {
 
                 autoComplete(max);
-                if (!isValid(getDefaultDuration()))
+                if (!isValid(getDefaultDuration())) {
                     validDuration = false;
-                else
+                } else {
                     validDuration = true;
+                }
             }
 
             @Override

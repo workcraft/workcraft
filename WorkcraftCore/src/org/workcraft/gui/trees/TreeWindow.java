@@ -111,8 +111,9 @@ public class TreeWindow<Node> extends JPanel {
                         List<TreePath> expanded = new ArrayList<TreePath>();
                         for (int i = 0; i < tree.getRowCount(); i++) {
                             final TreePath treePath = tree.getPathForRow(i);
-                            if (tree.isExpanded(i))
+                            if (tree.isExpanded(i)) {
                                 expanded.add(treePath);
+                            }
                         }
 
                         if (!externalExpanded) {
@@ -126,8 +127,9 @@ public class TreeWindow<Node> extends JPanel {
 
                         super.restructured(path);
 
-                        for (TreePath p : expanded)
+                        for (TreePath p : expanded) {
                             tree.expandPath(p);
+                        }
                     }
                 };
             }
@@ -136,7 +138,7 @@ public class TreeWindow<Node> extends JPanel {
         final TreeModelWrapper<Node> modelWrapper = new TreeModelWrapper<Node>(sourceWithRestructuredTrapped);
         tree.setModel(modelWrapper);
 
-        if (popupProvider != null)
+        if (popupProvider != null) {
             tree.addMouseListener(new MouseAdapter() {
                 public void mousePressed(java.awt.event.MouseEvent e) {
                     maybeShowPopup(e);
@@ -154,13 +156,15 @@ public class TreeWindow<Node> extends JPanel {
                         if (y < rowBounds.getMinY() || y > rowBounds.getMaxY()) {
                             tree.setSelectionPath(null);
                             popupProvider.getPopup(source.getRoot()).show(tree, x, y);
-                        } else
+                        } else {
                             popupProvider.getPopup(selected()).show(tree, x, y);
+                        }
                     }
                 }
 
             }
             );
+        }
 
         tree.addMouseListener(new MouseAdapter() {
             @SuppressWarnings("unchecked")
@@ -177,10 +181,11 @@ public class TreeWindow<Node> extends JPanel {
 
                         if (checkBox.getBounds().contains(x - rowBounds.x, y - rowBounds.y)) {
                             Node node = (Node) tree.getPathForRow(row).getLastPathComponent();
-                            if (checkedNodes.contains(node))
+                            if (checkedNodes.contains(node)) {
                                 checkedNodes.remove(node);
-                            else
+                            } else {
                                 checkedNodes.add(node);
+                            }
                         }
 
                         tree.repaint(rowBounds);
@@ -212,10 +217,11 @@ public class TreeWindow<Node> extends JPanel {
                 }
                 Component res = super.getTreeCellRendererComponent(tree, name, sel, expanded, leaf, row, hasFocus);
 
-                if (tricky)
+                if (tricky) {
                     res.setFont(res.getFont().deriveFont(Font.ITALIC));
-                else
+                } else {
                     res.setFont(res.getFont().deriveFont(Font.PLAIN));
+                }
 
                 final Icon icon = decorator.getIcon(node);
                 //if (icon != null)
@@ -230,8 +236,9 @@ public class TreeWindow<Node> extends JPanel {
                     if (source.isLeaf(node)) {
                         cellRenderer.add(checkBox, "0 0");
                         cellRenderer.add(res, "1 0");
-                    } else
+                    } else {
                         return res;
+                    }
 
                     break;
                 case ALL:

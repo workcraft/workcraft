@@ -503,10 +503,11 @@ public class MainWindow extends JFrame {
 
     public void closeDockableWindow(int id) throws OperationCancelledException {
         DockableWindow dockableWindow = idToDockableWindowMap.get(id);
-        if (dockableWindow != null)
+        if (dockableWindow != null) {
             closeDockableWindow(dockableWindow);
-        else
+        } else {
             System.err.println("closeDockableWindow: window with ID=" + id + " was not found.");
+        }
     }
 
     public void closeDockableWindow(DockableWindow dockableWindow) throws OperationCancelledException {
@@ -581,19 +582,21 @@ public class MainWindow extends JFrame {
     /** For use from Javascript **/
     public void toggleDockableWindow(int id) {
         DockableWindow window = idToDockableWindowMap.get(id);
-        if (window != null)
+        if (window != null) {
             toggleDockableWindow(window);
-        else
+        } else {
             System.err.println("displayDockableWindow: window with ID=" + id + " was not found.");
+        }
     }
 
     /** For use from Javascript **/
     public void displayDockableWindow(int id) {
         DockableWindow window = idToDockableWindowMap.get(id);
-        if (window != null)
+        if (window != null) {
             displayDockableWindow(window);
-        else
+        } else {
             System.err.println("displayDockableWindow: window with ID=" + id + " was not found.");
+        }
     }
 
     public void displayDockableWindow(DockableWindow window) {

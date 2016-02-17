@@ -197,10 +197,12 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
     }
 
     public MathConnection connect(Node first, Node second) throws InvalidConnectionException {
-        if (first instanceof Place && second instanceof Place)
+        if (first instanceof Place && second instanceof Place) {
             throw new InvalidConnectionException("Connections between places are not valid");
-        if (first instanceof Transition && second instanceof Transition)
+        }
+        if (first instanceof Transition && second instanceof Transition) {
             throw new InvalidConnectionException("Connections between transitions are not valid");
+        }
 
         MathConnection con = new MathConnection((MathNode) first, (MathNode) second);
         Hierarchy.getNearestContainer(first, second).add(con);

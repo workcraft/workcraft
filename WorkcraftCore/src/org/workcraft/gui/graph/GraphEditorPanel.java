@@ -237,26 +237,28 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         Timer updateEditorPanelTimer = new Timer(CommonVisualSettings.getRedrawInterval(), new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                if (updateEditorPanelRequested)
+                if (updateEditorPanelRequested) {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
                             updateEditor();
                         }
                     });
+                }
             }
         });
 
         Timer updatePropertyTimer = new Timer(CommonVisualSettings.getRedrawInterval(), new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
-                if (updatePropertyViewRequested)
+                if (updatePropertyViewRequested) {
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
                             updatePropertyView();
                         }
                     });
+                }
             }
         });
 

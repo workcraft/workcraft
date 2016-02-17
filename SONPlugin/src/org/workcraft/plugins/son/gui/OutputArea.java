@@ -67,8 +67,9 @@ public class OutputArea extends JFrame {
         chooser.setFileSelectionMode(JFileChooser.FILES_ONLY);
 
         int r = chooser.showSaveDialog(this);
-        if (r == JFileChooser.CANCEL_OPTION)
+        if (r == JFileChooser.CANCEL_OPTION) {
             return;
+        }
         File myfile = chooser.getSelectedFile();
 
         if (myfile != null && r == JFileChooser.APPROVE_OPTION) {
@@ -86,8 +87,9 @@ public class OutputArea extends JFrame {
 
         if (myfile.exists()) {
             r = JOptionPane.showConfirmDialog(this, "A file with same name already exists. Do you want to overwrite it?");
-            if (r != 0)
+            if (r != 0) {
                 return;
+            }
         }
         try {
             FileWriter fw = new FileWriter(myfile);

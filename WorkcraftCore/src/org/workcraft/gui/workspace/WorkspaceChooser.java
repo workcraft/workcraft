@@ -82,11 +82,13 @@ public class WorkspaceChooser extends JPanel {
 
     private void expand(Path<String> node) {
         if (filteredSource.isLeaf(node)) {
-            if (filter.eval(node))
+            if (filter.eval(node)) {
                 tree.makeVisible(filteredSource.getPath(node));
+            }
         } else {
-            for (Path<String> n : filteredSource.getChildren(node))
+            for (Path<String> n : filteredSource.getChildren(node)) {
                 expand(n);
+            }
         }
     }
 

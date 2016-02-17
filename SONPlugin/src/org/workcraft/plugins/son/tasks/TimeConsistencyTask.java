@@ -102,8 +102,9 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
 
         } else if (settings.getTabIndex() == 1) {
             infoMsg("Initialising selected scenario...");
-            if (settings.getSeletedScenario() != null)
+            if (settings.getSeletedScenario() != null) {
                 checkList = settings.getSeletedScenario().getNodes(net);
+            }
             infoMsg("Nodes = " + checkList.size() + "\n");
 
         } else if (settings.getTabIndex() == 2) {
@@ -345,8 +346,9 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
         try {
             if (!t.getStartTime().isSpecified()) {
                 estimationAlg.setEstimatedStartTime((Node) t);
-                if (relationAlg.isInitial(t))
+                if (relationAlg.isInitial(t)) {
                     estimatedIniNodes.add(t);
+                }
             }
         } catch (TimeOutOfBoundsException e1) {
             result.add(e1.getMessage());
@@ -358,8 +360,9 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
         try {
             if (!t.getEndTime().isSpecified()) {
                 estimationAlg.setEstimatedEndTime((Node) t);
-                if (relationAlg.isFinal(t))
+                if (relationAlg.isFinal(t)) {
                     estimatedFinalNodes.add(t);
+                }
             }
         } catch (TimeOutOfBoundsException e) {
             result.add(e.getMessage());
@@ -413,8 +416,9 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
 
         for (Path path : cycleAlg.syncCycleTask(nodes)) {
             for (Node node : path) {
-                if (node instanceof ChannelPlace)
+                if (node instanceof ChannelPlace) {
                     result.add((ChannelPlace) node);
+                }
             }
         }
         return result;

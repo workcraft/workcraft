@@ -63,12 +63,15 @@ public class PcompDialog extends JDialog {
     }
 
     public ConversionMode getMode() {
-        if (leaveOutputs.isSelected())
+        if (leaveOutputs.isSelected()) {
             return ConversionMode.OUTPUT;
-        if (internalize.isSelected())
+        }
+        if (internalize.isSelected()) {
             return ConversionMode.INTERNAL;
-        if (dummify.isSelected())
+        }
+        if (dummify.isSelected()) {
             return ConversionMode.DUMMY;
+        }
         throw new NotSupportedException("No button is selected. Cannot proceed.");
     }
 

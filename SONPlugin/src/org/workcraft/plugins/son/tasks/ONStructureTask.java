@@ -85,9 +85,9 @@ public class ONStructureTask extends AbstractStructuralVerification {
             //initial state result
             task1 = iniStateTask(groupComponents);
 
-            if (task1.isEmpty())
+            if (task1.isEmpty()) {
                 infoMsg("Valid occurrence net input.");
-            else {
+            } else {
                 errNumber = errNumber + task1.size();
                 for (Node node : task1) {
                     relationErrors.add(node);
@@ -97,9 +97,9 @@ public class ONStructureTask extends AbstractStructuralVerification {
 
             //final state result
             task2 = finalStateTask(groupComponents);
-            if (task2.isEmpty())
+            if (task2.isEmpty()) {
                 infoMsg("Valid occurrence net output.");
-            else {
+            } else {
                 errNumber = errNumber + task2.size();
                 for (Node node : task2) {
                     relationErrors.add(node);
@@ -123,9 +123,9 @@ public class ONStructureTask extends AbstractStructuralVerification {
 
             cycleErrors.addAll(cycleResult);
 
-            if (cycleResult.isEmpty())
+            if (cycleResult.isEmpty()) {
                 infoMsg("Occurrence net is cycle free");
-            else {
+            } else {
                 errNumber++;
                 errMsg("ERROR : Occurrence net involves cycle paths = " + cycleResult.size() + ".");
                 int i = 1;
@@ -140,19 +140,25 @@ public class ONStructureTask extends AbstractStructuralVerification {
 
     private Collection<Node> iniStateTask(Collection<Node> groupNodes) {
         ArrayList<Node> result = new ArrayList<Node>();
-        for (Node node : groupNodes)
-            if (node instanceof TransitionNode)
-                if (getRelationAlg().isInitial(node))
+        for (Node node : groupNodes) {
+            if (node instanceof TransitionNode) {
+                if (getRelationAlg().isInitial(node)) {
                     result.add(node);
+                }
+            }
+        }
         return result;
     }
 
     private Collection<Node> finalStateTask(Collection<Node> groupNodes) {
         ArrayList<Node> result = new ArrayList<Node>();
-        for (Node node : groupNodes)
-            if (node instanceof TransitionNode)
-                if (getRelationAlg().isFinal(node))
+        for (Node node : groupNodes) {
+            if (node instanceof TransitionNode) {
+                if (getRelationAlg().isFinal(node)) {
                     result.add(node);
+                }
+            }
+        }
         return result;
     }
 
@@ -166,8 +172,9 @@ public class ONStructureTask extends AbstractStructuralVerification {
             return e.getNode();
         }
 
-        if (markings != null)
+        if (markings != null) {
             reachableMarkings.put(group, markings);
+        }
         return null;
     }
 

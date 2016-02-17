@@ -44,8 +44,9 @@ public class TSONStructureTask extends AbstractStructuralVerification {
 
         Collection<Block> blocks = new ArrayList<Block>();
 
-        for (ONGroup cGroup : groups)
+        for (ONGroup cGroup : groups) {
             blocks.addAll(cGroup.getBlocks());
+        }
 
         infoMsg("Selected Groups : " +  net.toString(groups));
         infoMsg("Collapsed Blocks : " + net.toString(blocks));
@@ -71,10 +72,12 @@ public class TSONStructureTask extends AbstractStructuralVerification {
                     relationErrors.addAll(result3);
                     relationErrors.add(block);
                     errNumber = errNumber + result3.size();
-                    for (Node node : result3)
+                    for (Node node : result3) {
                         errMsg("ERROR : Invalid causally relation, the input does not causally precede all block outputs.", node);
-                } else
+                    }
+                } else {
                     infoMsg("Valid causal relation between block inputs and outputs.");
+                }
             } else {
                 warningNumber++;
                 infoMsg("Warning : Block contians cycle path, cannot run causal relation task.", block);
@@ -92,8 +95,9 @@ public class TSONStructureTask extends AbstractStructuralVerification {
     private Collection<Node> causallyPrecedeTask(Block block) {
         Collection<Node> result = new ArrayList<Node>();
         for (Node input : getTSONAlg().getBlockPNInputs(block)) {
-            if (!getTSONAlg().isCausallyPrecede(input, getTSONAlg().getBlockPNOutputs(block)))
+            if (!getTSONAlg().isCausallyPrecede(input, getTSONAlg().getBlockPNOutputs(block))) {
                 result.add(input);
+            }
         }
         return result;
     }

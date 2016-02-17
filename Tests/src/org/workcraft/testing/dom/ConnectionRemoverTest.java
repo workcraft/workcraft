@@ -55,10 +55,11 @@ public class ConnectionRemoverTest {
 
         for (Node n : vstg.getRoot().getChildren()) {
             Dependent dn = (Dependent) n;
-            if (!dn.getMathReferences().contains(t1))
+            if (!dn.getMathReferences().contains(t1)) {
                 toDelete.add(n);
-            else
+            } else {
                 toDeleteThen.add(n);
+            }
         }
 
         vstg.select(toDelete);

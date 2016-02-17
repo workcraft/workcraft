@@ -52,9 +52,11 @@ public class ActionCheckBoxMenuItem extends JCheckBoxMenuItem implements Actor {
     }
 
     private void fireActionPerformed() {
-        if (scriptedAction != null)
-            for (ScriptedActionListener l : listeners)
+        if (scriptedAction != null) {
+            for (ScriptedActionListener l : listeners) {
                 l.actionPerformed(scriptedAction);
+            }
+        }
     }
 
     public void addScriptedActionListener(ScriptedActionListener listener) {

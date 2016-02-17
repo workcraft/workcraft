@@ -69,8 +69,9 @@ public class CSONCycleAlg extends ONCycleAlg {
     public Collection<Path> syncEventCycleTask(Collection<? extends Node> nodes) {
         HashSet<Node> fliter = new HashSet<Node>();
         for (Node node : nodes) {
-            if ((node instanceof ChannelPlace) || (node instanceof TransitionNode))
+            if ((node instanceof ChannelPlace) || (node instanceof TransitionNode)) {
                 fliter.add(node);
+            }
         }
         return syncEventCycleFliter(super.cycleTask(fliter));
     }
@@ -80,8 +81,9 @@ public class CSONCycleAlg extends ONCycleAlg {
         for (Path path : paths) {
             Path sub = new Path();
             for (Node node : path) {
-                if (node instanceof TransitionNode)
+                if (node instanceof TransitionNode) {
                     sub.add(node);
+                }
             }
             result.add(sub);
         }
@@ -94,8 +96,9 @@ public class CSONCycleAlg extends ONCycleAlg {
     public Collection<Path> syncCycleTask(Collection<? extends Node> nodes) {
         HashSet<Node> fliter = new HashSet<Node>();
         for (Node node : nodes) {
-            if ((node instanceof ChannelPlace) || (node instanceof TransitionNode))
+            if ((node instanceof ChannelPlace) || (node instanceof TransitionNode)) {
                 fliter.add(node);
+            }
         }
         return super.cycleTask(fliter);
     }
@@ -115,11 +118,13 @@ public class CSONCycleAlg extends ONCycleAlg {
     protected Collection<Path> cycleFliter(Collection<Path> paths) {
         List<Path> delList = new ArrayList<Path>();
         for (Path path : paths) {
-            if (!net.getSONConnectionTypes(path).contains(Semantics.PNLINE))
+            if (!net.getSONConnectionTypes(path).contains(Semantics.PNLINE)) {
                 delList.add(path);
+            }
             if (!net.getSONConnectionTypes(path).contains(Semantics.SYNCLINE)
-                    && !net.getSONConnectionTypes(path).contains(Semantics.ASYNLINE))
+                    && !net.getSONConnectionTypes(path).contains(Semantics.ASYNLINE)) {
                 delList.add(path);
+            }
         }
         paths.removeAll(delList);
 

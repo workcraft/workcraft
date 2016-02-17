@@ -226,9 +226,9 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
     @Override
     public ProgressMonitor<Object> taskStarting(final String description) {
         TaskControlGenerator tcg = new TaskControlGenerator(content, description);
-        if (SwingUtilities.isEventDispatchThread())
+        if (SwingUtilities.isEventDispatchThread()) {
             tcg.run();
-        else
+        } else {
             try {
                 SwingUtilities.invokeAndWait(tcg);
             } catch (InterruptedException e) {
@@ -236,6 +236,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
             } catch (InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
+        }
         return new TaskControlMonitor(this, tcg.getTaskCotnrol());
     }
 }

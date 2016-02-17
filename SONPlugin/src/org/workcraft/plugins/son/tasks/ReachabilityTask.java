@@ -57,18 +57,20 @@ public class ReachabilityTask implements Task<VerificationResult> {
         causalPredecessorRefs = new HashSet<String>();
 
         for (PlaceNode node : net.getPlaceNodes()) {
-            if (node.isMarked())
+            if (node.isMarked()) {
                 markingRefs.add(net.getNodeReference(node));
+            }
         }
     }
 
     private boolean hasConflict() {
         RelationAlgorithm alg = new RelationAlgorithm(net);
         for (Condition c : net.getConditions()) {
-            if (alg.hasPostConflictEvents(c))
+            if (alg.hasPostConflictEvents(c)) {
                 return true;
-            else if (alg.hasPreConflictEvents(c))
+            } else if (alg.hasPreConflictEvents(c)) {
                 return true;
+            }
         }
         return false;
     }
@@ -98,8 +100,9 @@ public class ReachabilityTask implements Task<VerificationResult> {
                 Map<PlaceNode, Boolean> finalStates = simulation();
                 for (String ref : markingRefs) {
                     Node node = net.getNodeByReference(ref);
-                    if (finalStates.get(node) == false)
+                    if (finalStates.get(node) == false) {
                         throw new RuntimeException("Reachability task error, doesn't reach selected marking" + ref);
+                    }
                 }
                 return new Result<VerificationResult>(Outcome.FINISHED);
             }
@@ -125,16 +128,18 @@ public class ReachabilityTask implements Task<VerificationResult> {
     private boolean reachabilityTask() {
         //Collection<Node> initial = new HashSet<Node>();
         Collection<Node> sync = new HashSet<Node>();
-        for (Path path : getSyncCycles())
+        for (Path path : getSyncCycles()) {
             sync.addAll(path);
+        }
 
         //if marking contains a synchronous channel place, it's unreachable.
         for (String ref : markingRefs) {
             Node node = net.getNodeByReference(ref);
-            if (node instanceof ChannelPlace)
+            if (node instanceof ChannelPlace) {
                 if (sync.contains(node)) {
                     return false;
                 }
+            }
         }
 //        SimulationAlg simuAlg = new SimulationAlg(net);
 //        Map<PlaceNode, Boolean> initialMarking = simuAlg.getInitialMarking();
@@ -169,11 +174,13 @@ public class ReachabilityTask implements Task<VerificationResult> {
         //2. all of corresponding abstract conditions are not consumed by causalPredecessors
         for (String ref : markingRefs) {
             Node node = net.getNodeByReference(ref);
-            if (consume.contains(node))
+            if (consume.contains(node)) {
                 return false;
+            }
             Collection<Condition> upper = bsonAlg.getUpperConditions(node);
-            if (!upper.isEmpty() && consume.containsAll(upper))
+            if (!upper.isEmpty() && consume.containsAll(upper)) {
                 return false;
+            }
         }
 
         return true;

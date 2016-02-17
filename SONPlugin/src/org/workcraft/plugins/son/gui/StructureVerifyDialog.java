@@ -96,8 +96,9 @@ public class StructureVerifyDialog extends JDialog {
         }
 
         public void setItemColor(Color color) {
-            if (obj instanceof Node)
+            if (obj instanceof Node) {
                 net.setForegroundColor((Node) obj, color);
+            }
         }
     }
 
@@ -154,10 +155,11 @@ public class StructureVerifyDialog extends JDialog {
         for (ONGroup group : net.getGroups()) {
             group.setForegroundColor(Color.ORANGE);
             selectedGroups.add(group);
-            if (group.getLabel().isEmpty())
+            if (group.getLabel().isEmpty()) {
                 listModel.addElement(new ListItem("Group: " + net.getNodeReference(group), group));
-            else
+            } else {
                 listModel.addElement(new ListItem("Group: " + net.getNodeReference(group) + " (" + group.getLabel() + ")", group));
+            }
         }
 
         groupList = new JList(listModel);
@@ -216,8 +218,9 @@ public class StructureVerifyDialog extends JDialog {
                 for (int i = 0; i < getList().getModel().getSize(); i++) {
                     ((ListItem) getList().getModel().getElementAt(i)).setSelected(true);
                     Object obj = ((ListItem) getList().getModel().getElementAt(i)).getListItem();
-                    if (obj instanceof ONGroup)
+                    if (obj instanceof ONGroup) {
                         selectedGroups.add((ONGroup) obj);
+                    }
                     ((ListItem) getList().getModel().getElementAt(i)).setItemColor(Color.ORANGE);
                 }
                 getList().repaint();

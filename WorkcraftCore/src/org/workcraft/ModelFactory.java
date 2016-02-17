@@ -60,18 +60,20 @@ public class ModelFactory {
         VisualClass vcat = model.getClass().getAnnotation(VisualClass.class);
 
         // The component/connection does not define a visual representation
-        if (vcat == null)
+        if (vcat == null) {
             return null;
+        }
 
         try {
             Class<?> visualClass = vcat.value();
             Constructor<?> ctor = new ConstructorParametersMatcher().match(visualClass, model.getClass());
             Object visual = ctor.newInstance(model);
 
-            if (!VisualModel.class.isAssignableFrom(visual.getClass()))
+            if (!VisualModel.class.isAssignableFrom(visual.getClass())) {
                 throw new VisualModelInstantiationException("visual class " + visual.getClass().getName() +
                         ", created for object of class " + model.getClass().getName() + ", is not inherited from "
                         + VisualModel.class.getName());
+            }
 
             return (VisualModel) visual;
 

@@ -150,8 +150,9 @@ public class SONMainTask implements Task<VerificationResult> {
             totalWarningNum = totalWarningNum + tsonSTask.getWarningNumber();
         }
 
-        if (settings.getOuputBefore())
+        if (settings.getOuputBefore()) {
             outputBefore(net);
+        }
 
         int err = getTotalErrNum();
         int warning = getTotalWarningNum();
@@ -190,8 +191,9 @@ public class SONMainTask implements Task<VerificationResult> {
                 logger.info("before(" + net.getNodeReference(e) + "): ");
                 Collection<String> relations = new ArrayList<String>();
 
-                for (TransitionNode[] e2 : before.get(e))
+                for (TransitionNode[] e2 : before.get(e)) {
                     relations.add("(" + net.getNodeReference(e2[0]) + ", " + net.getNodeReference(e2[1]) + ")");
+                }
 
                 logger.info(relations);
             }
@@ -208,9 +210,11 @@ public class SONMainTask implements Task<VerificationResult> {
                 net.setFillColor(net.getNodeByReference(node), SONSettings.getRelationErrColor());
             }
 
-            for (ArrayList<String> list : cycleErrors)
-                for (String node : list)
+            for (ArrayList<String> list : cycleErrors) {
+                for (String node : list) {
                     net.setForegroundColor(net.getNodeByReference(node), SONSettings.getCyclePathColor());
+                }
+            }
         }
     }
 

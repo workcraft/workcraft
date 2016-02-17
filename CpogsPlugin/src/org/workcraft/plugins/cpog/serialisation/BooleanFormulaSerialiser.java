@@ -63,8 +63,9 @@ public abstract class BooleanFormulaSerialiser implements CustomXMLSerialiser {
                 // old style naming, if number is used as an ID for a contact
                 if (Identifier.isNumber(ref)) {
                     append("var_" + ref);
-                } else
+                } else {
                     append(flat);
+                }
 
                 return null;
             }

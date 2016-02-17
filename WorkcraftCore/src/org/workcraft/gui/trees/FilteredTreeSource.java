@@ -22,8 +22,9 @@ public class FilteredTreeSource<T> implements TreeSource<T> {
         this.filter = filter;
         acceptableCache.clear();
 
-        for (TreeListener<T> l : listeners)
+        for (TreeListener<T> l : listeners) {
             l.restructured(Path.root(getRoot()));
+        }
     }
 
     @Override
@@ -32,18 +33,21 @@ public class FilteredTreeSource<T> implements TreeSource<T> {
     }
 
     private boolean isAcceptable(T node, int depth) {
-        if (acceptableCache.containsKey(node))
+        if (acceptableCache.containsKey(node)) {
             return acceptableCache.get(node);
+        }
 
         boolean result;
 
-        if (isLeaf(node))
+        if (isLeaf(node)) {
             result = filter.eval(node);
-        else
-            if (depth == 0)
+        } else {
+            if (depth == 0) {
                 result = true;
-            else
+            } else {
                 result = hasAcceptableChildren(node, depth);
+            }
+        }
 
         acceptableCache.put(node, result);
 
@@ -51,9 +55,11 @@ public class FilteredTreeSource<T> implements TreeSource<T> {
     }
 
     private boolean hasAcceptableChildren(T node, int depth) {
-        for (T t : source.getChildren(node))
-            if (isAcceptable(t, depth - 1))
+        for (T t : source.getChildren(node)) {
+            if (isAcceptable(t, depth - 1)) {
                 return true;
+            }
+        }
         return false;
     }
 
@@ -61,9 +67,11 @@ public class FilteredTreeSource<T> implements TreeSource<T> {
     public List<T> getChildren(T node) {
 
         LinkedList<T> result = new LinkedList<T>();
-        for (T t : source.getChildren(node))
-            if (isAcceptable(t, 10))
+        for (T t : source.getChildren(node)) {
+            if (isAcceptable(t, 10)) {
                 result.add(t);
+            }
+        }
 
         return result;
     }

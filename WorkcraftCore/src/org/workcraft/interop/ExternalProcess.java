@@ -43,7 +43,7 @@ public class ExternalProcess {
 
         @Override
         public void run() {
-            while (true)
+            while (true) {
                 try {
                     buffer.rewind();
                     int result = channel.read(buffer);
@@ -62,6 +62,7 @@ public class ExternalProcess {
                     //                        just be ignored, so removed printing. mech.
                     return;
                 }
+            }
         }
     }
 

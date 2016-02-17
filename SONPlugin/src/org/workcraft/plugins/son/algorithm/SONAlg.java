@@ -27,21 +27,22 @@ public class SONAlg extends RelationAlgorithm {
         Collection<PlaceNode> result = new ArrayList<PlaceNode>();
 
         for (ONGroup group : net.getGroups()) {
-            if (upperGroups.contains(group))
+            if (upperGroups.contains(group)) {
                 for (Condition c : getONInitial(group)) {
                     result.add(c);
                 }
-            //an initial state of a lower group is the initial state of SON
-            //if all of its upper conditions are the initial states.
-            else if (lowerGroups.contains(group)) {
+            } else if (lowerGroups.contains(group)) {
+                //an initial state of a lower group is the initial state of SON
+                //if all of its upper conditions are the initial states.
                 for (Condition c : getONInitial(group)) {
                     boolean isInitial = true;
                     Collection<Condition> set = bsonAlg.getUpperConditions(c);
                     for (Condition c2 : set) {
                         if (!isInitial(c2)) {
                             ONGroup group2 = net.getGroup(c2);
-                            if (!set.containsAll(getONInitial(group2)))
+                            if (!set.containsAll(getONInitial(group2))) {
                                 isInitial = false;
+                            }
                         }
                     }
                     if (isInitial) result.add(c);
@@ -60,20 +61,20 @@ public class SONAlg extends RelationAlgorithm {
         Collection<PlaceNode> result = new ArrayList<PlaceNode>();
 
         for (ONGroup group : net.getGroups()) {
-            if (upperGroups.contains(group))
+            if (upperGroups.contains(group)) {
                 for (Condition c : getONFinal(group)) {
                     result.add(c);
                 }
-
-            else if (lowerGroups.contains(group)) {
+            } else if (lowerGroups.contains(group)) {
                 for (Condition c : getONFinal(group)) {
                     boolean isFinal = true;
                     Collection<Condition> set = bsonAlg.getUpperConditions(c);
                     for (Condition c2 : set) {
                         if (!isInitial(c2)) {
                             ONGroup group2 = net.getGroup(c2);
-                            if (!set.containsAll(getONFinal(group2)))
+                            if (!set.containsAll(getONFinal(group2))) {
                                 isFinal = false;
+                            }
                         }
                     }
                     if (isFinal) result.add(c);

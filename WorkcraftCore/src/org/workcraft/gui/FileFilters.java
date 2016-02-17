@@ -32,10 +32,12 @@ public class FileFilters {
     private static class DocumentFilesFilter extends FileFilter {
         @Override
         public boolean accept(File f) {
-            if (f.isDirectory())
+            if (f.isDirectory()) {
                 return true;
-            if (f.getName().endsWith(DOCUMENT_EXTENSION))
+            }
+            if (f.getName().endsWith(DOCUMENT_EXTENSION)) {
                 return true;
+            }
             return false;
         }
 
@@ -49,10 +51,12 @@ public class FileFilters {
 
         @Override
         public boolean accept(File f) {
-            if (f.isDirectory())
+            if (f.isDirectory()) {
                 return true;
-            if (f.getName().endsWith(WORKSPACE_EXTENSION))
+            }
+            if (f.getName().endsWith(WORKSPACE_EXTENSION)) {
                 return true;
+            }
             return false;
         }
 
@@ -79,10 +83,12 @@ public class FileFilters {
         }
 
         public boolean accept(File f) {
-            if (f.isDirectory())
+            if (f.isDirectory()) {
                 return true;
-            if (f.getName().endsWith(extension))
+            }
+            if (f.getName().endsWith(extension)) {
                 return true;
+            }
             return false;
         }
 

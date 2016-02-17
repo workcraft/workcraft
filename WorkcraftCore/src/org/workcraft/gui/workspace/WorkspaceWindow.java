@@ -146,21 +146,26 @@ public class WorkspaceWindow extends JPanel {
 
     public void shutdown() {
         final Framework framework = Framework.getInstance();
-        if (lastSavePath != null)
+        if (lastSavePath != null) {
             framework.setConfigVar("gui.workspace.lastSavePath", lastSavePath);
-        if (lastOpenPath != null)
+        }
+        if (lastOpenPath != null) {
             framework.setConfigVar("gui.workspace.lastOpenPath", lastOpenPath);
+        }
     }
 
     protected int getInsertPoint(DefaultMutableTreeNode node, String caption) {
-        if (node.getChildCount() == 0)
+        if (node.getChildCount() == 0) {
             return 0;
+        }
 
         int i;
 
-        for (i = 0; i < node.getChildCount(); i++)
-            if (node.getChildAt(i).toString().compareToIgnoreCase(caption) > 0)
+        for (i = 0; i < node.getChildCount(); i++) {
+            if (node.getChildAt(i).toString().compareToIgnoreCase(caption) > 0) {
                 return i;
+            }
+        }
 
         return i;
     }
@@ -234,10 +239,11 @@ public class WorkspaceWindow extends JPanel {
 
     public void saveWorkspace() throws OperationCancelledException {
         final Framework framework = Framework.getInstance();
-        if (!framework.getWorkspace().isTemporary())
+        if (!framework.getWorkspace().isTemporary()) {
             framework.getWorkspace().save();
-        else
+        } else {
             saveWorkspaceAs();
+        }
     }
 
     public void saveWorkspaceAs() throws OperationCancelledException {
@@ -318,8 +324,9 @@ public class WorkspaceWindow extends JPanel {
         fc.setDialogType(JFileChooser.OPEN_DIALOG);
         fc.setFileFilter(FileFilters.WORKSPACE_FILES);
 
-        if (lastOpenPath != null)
+        if (lastOpenPath != null) {
             fc.setCurrentDirectory(new File(lastOpenPath));
+        }
 
         fc.setMultiSelectionEnabled(false);
         fc.setDialogTitle("Open workspace");

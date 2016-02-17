@@ -247,18 +247,20 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
         addAllButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (getTabIndex() == 0)
+                if (getTabIndex() == 0) {
                     selectedGroups.clear();
-                else if (getTabIndex() == 2)
+                } else if (getTabIndex() == 2) {
                     selectedNodes.clear();
+                }
 
                 for (int i = 0; i < getList().getModel().getSize(); i++) {
                     ((ListItem) getList().getModel().getElementAt(i)).setSelected(true);
                     Object obj = ((ListItem) getList().getModel().getElementAt(i)).getListItem();
-                    if (obj instanceof ONGroup)
+                    if (obj instanceof ONGroup) {
                         selectedGroups.add((ONGroup) obj);
-                    else if (obj instanceof Time)
+                    } else if (obj instanceof Time) {
                         selectedNodes.add((Time) obj);
+                    }
                     ((ListItem) getList().getModel().getElementAt(i)).setItemColor(Color.ORANGE);
                 }
                 getList().repaint();
@@ -273,10 +275,11 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
                     ((ListItem) getList().getModel().getElementAt(i)).setItemColor(Color.BLACK);
                 }
                 getList().repaint();
-                if (getTabIndex() == 0)
+                if (getTabIndex() == 0) {
                     selectedGroups.clear();
-                else if (getTabIndex() == 2)
+                } else if (getTabIndex() == 2) {
                     selectedNodes.clear();
+                }
             }
         });
     }
@@ -453,9 +456,9 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
     public JList<ListItem> getList() {
         if (getTabIndex() == 0) {
             return groupList;
-        } else if (getTabIndex() == 2)
+        } else if (getTabIndex() == 2) {
             return nodeList;
-        else {
+        } else {
             return null;
         }
     }

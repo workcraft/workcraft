@@ -206,8 +206,9 @@ public final class Framework {
                     OperationCancelDialog<T> cancelDialog = new OperationCancelDialog<T>(mainWindow, description);
 
                     ProgressMonitorArray<T> observers = new ProgressMonitorArray<T>();
-                    if (observer != null)
+                    if (observer != null) {
                         observers.add(observer);
+                    }
                     observers.add(cancelDialog);
 
                     this.queue(task, description, observers);
@@ -287,18 +288,20 @@ public final class Framework {
     public boolean getConfigVarAsBool(String key, boolean defaultValue) {
         String s = config.get(key);
 
-        if (s == null)
+        if (s == null) {
             return defaultValue;
-        else
+        } else {
             return Boolean.parseBoolean(s);
+        }
     }
 
     public String[] getModelNames() {
         LinkedList<Class<?>> list = modelManager.getModelList();
         String[] a = new String[list.size()];
         int i = 0;
-        for (Class<?> cls : list)
+        for (Class<?> cls : list) {
             a[i++] = cls.getName();
+        }
         return a;
     }
 
@@ -334,8 +337,9 @@ public final class Framework {
                 Object scriptable = Context.javaToJS(object, scope);
                 ScriptableObject.putProperty(scope, name, scriptable);
 
-                if (readOnly)
+                if (readOnly) {
                     scope.setAttributes(name, ScriptableObject.READONLY);
+                }
 
                 return scriptable;
             }
@@ -399,8 +403,9 @@ public final class Framework {
             Object value = ex.getValue();
             if (value instanceof NativeJavaObject) {
                 Object wrapped = ((NativeJavaObject) value).unwrap();
-                if (wrapped instanceof Throwable)
+                if (wrapped instanceof Throwable) {
                     throw new JavascriptPassThroughException((Throwable) wrapped, ex.getScriptStackTrace());
+                }
             }
             throw ex;
         }

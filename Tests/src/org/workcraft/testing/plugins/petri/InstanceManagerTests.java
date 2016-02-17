@@ -29,8 +29,9 @@ public class InstanceManagerTests {
         return new InstanceManager() {
             @Override public String getLabel(Node node) {
                 final String label = expectedRequests.get(node);
-                if (label == null)
+                if (label == null) {
                     throw new RuntimeException("unexpected request: " + node);
+                }
                 return label;
             }
         };

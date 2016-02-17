@@ -53,34 +53,40 @@ class DefaultNodeDeserialiser {
             Object instance, Class<?> currentLevel,
             ReferenceResolver externalReferenceResolver)
             throws DeserialisationException {
-        if (currentLevel.getAnnotation(NoAutoSerialisation.class) != null)
+        if (currentLevel.getAnnotation(NoAutoSerialisation.class) != null) {
             return;
+        }
 
         try {
             List<Element> propertyElements = XmlUtil.getChildElements("property", currentLevelElement);
             HashMap<String, Element> nameMap = new HashMap<String, Element>();
 
-            for (Element e : propertyElements)
+            for (Element e : propertyElements) {
                 nameMap.put(e.getAttribute("name"), e);
+            }
 
             BeanInfo info = getBeanInfo(currentLevel);
 
             for (PropertyDescriptor desc : info.getPropertyDescriptors()) {
-                if (!nameMap.containsKey(desc.getName()))
+                if (!nameMap.containsKey(desc.getName())) {
                     continue;
+                }
 
-                if (desc.getPropertyType() == null)
+                if (desc.getPropertyType() == null) {
                     continue;
+                }
 
-                if (desc.getWriteMethod() == null || desc.getReadMethod() == null)
+                if (desc.getWriteMethod() == null || desc.getReadMethod() == null) {
                     continue;
+                }
 
                 // property explicitly requested to be excluded from auto serialisation
                 if (
                         desc.getReadMethod().getAnnotation(NoAutoSerialisation.class) != null ||
                         desc.getWriteMethod().getAnnotation(NoAutoSerialisation.class) != null
-                )
+                ) {
                     continue;
+                }
 
                 // the property is writable and is not of array type, try to get a deserialiser
                 XMLDeserialiser deserialiser = fac.getDeserialiserFor(desc.getPropertyType().getName());
@@ -89,10 +95,12 @@ class DefaultNodeDeserialiser {
                     // no deserialiser, try to use the special case enum deserialiser
                     if (desc.getPropertyType().isEnum()) {
                         deserialiser = fac.getDeserialiserFor(Enum.class.getName());
-                        if (deserialiser == null)
+                        if (deserialiser == null) {
                             continue;
-                    } else
+                        }
+                    } else {
                         continue;
+                    }
                 }
 
                 Element element = nameMap.get(desc.getName());
@@ -116,8 +124,9 @@ class DefaultNodeDeserialiser {
     public Object initInstance(Element element, ReferenceResolver externalReferenceResolver, Object ... constructorParameters) throws DeserialisationException {
         String className = element.getAttribute("class");
 
-        if (className == null || className.isEmpty())
+        if (className == null || className.isEmpty()) {
             throw new DeserialisationException("Class name attribute is not set\n" + element.toString());
+        }
 
         //System.out.println("Initialising " + className);
 
@@ -147,8 +156,9 @@ class DefaultNodeDeserialiser {
 
                 if (constructorParameters.length != 0) {
                     Class<?>[] parameterTypes = new Class<?>[constructorParameters.length];
-                    for (int i = 0; i < constructorParameters.length; i++)
+                    for (int i = 0; i < constructorParameters.length; i++) {
                         parameterTypes[i] = constructorParameters[i].getClass();
+                    }
                     Constructor<?> ctor = new ConstructorParametersMatcher().match(Class.forName(className), parameterTypes);
                     instance = ctor.newInstance(constructorParameters);
                 } else {

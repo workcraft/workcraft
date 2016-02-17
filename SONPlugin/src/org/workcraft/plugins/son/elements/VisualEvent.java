@@ -56,10 +56,11 @@ public class VisualEvent extends VisualTransition implements VisualTransitionNod
 
             Font labelFont = new Font(Font.SANS_SERIF, Font.PLAIN, 1).deriveFont(0.5f);
 
-            if (isFaulty())
+            if (isFaulty()) {
                 glyphVector = labelFont.createGlyphVector(g.getFontRenderContext(), "1");
-            else
+            } else {
                 glyphVector = labelFont.createGlyphVector(g.getFontRenderContext(), "0");
+            }
 
             labelBB = glyphVector.getVisualBounds();
             Point2D bitPosition = new Point2D.Double(labelBB.getCenterX(), labelBB.getCenterY());

@@ -55,8 +55,9 @@ public class PresetManagerPanel<T> extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 Preset<T> p = (Preset<T>) presetCombo.getSelectedItem();
 
-                if (p == null)
+                if (p == null) {
                     return;
+                }
 
                 if (p.isBuiltIn()) {
                     updatePresetButton.setEnabled(false);
@@ -76,11 +77,12 @@ public class PresetManagerPanel<T> extends JPanel {
             @Override
             public void actionPerformed(ActionEvent e) {
                 boolean haveCustomPresets = false;
-                for (Preset<T> p : presetManager.list())
+                for (Preset<T> p : presetManager.list()) {
                     if (!p.isBuiltIn()) {
                         haveCustomPresets = true;
                         break;
                     }
+                }
                 if (haveCustomPresets) {
                     managePresets();
                 } else {

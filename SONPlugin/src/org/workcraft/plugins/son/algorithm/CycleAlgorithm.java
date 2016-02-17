@@ -28,9 +28,11 @@ public class CycleAlgorithm {
         stack = new Stack<Integer>();
         sccComp = new ArrayList<List<Integer>>();
 
-        for (int v = 0; v < mV; v++)
-            if (!visited[v])
+        for (int v = 0; v < mV; v++) {
+            if (!visited[v]) {
                 dfs(v);
+            }
+        }
         return sccComp;
 
     }
@@ -43,11 +45,13 @@ public class CycleAlgorithm {
         int min = low[v];
 
         for (int w : graph[v]) {
-            if (!visited[w])
+            if (!visited[w]) {
                 dfs(w);
+            }
 
-            if (low[w] < min)
+            if (low[w] < min) {
                 min = low[w];
+            }
         }
         if (min < low[v]) {
             low[v] = min;

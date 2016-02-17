@@ -56,18 +56,22 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf> {
         Literal[][] encodings = new Literal[scenarios.length][];
         for (int i = 0; i < scenarios.length; i++) {
             encodings[i] = new Literal[nonDerivedVariables];
-            if (i == 0)
-                for (int j = 0; j < nonDerivedVariables; j++)
+            if (i == 0) {
+                for (int j = 0; j < nonDerivedVariables; j++) {
                     encodings[i][j] = Literal.ZERO;
-            else
-                for (int j = 0; j < nonDerivedVariables; j++)
+                }
+            } else {
+                for (int j = 0; j < nonDerivedVariables; j++) {
                     encodings[i][j] = literal(new FreeVariable("x" + j + "_s" + i));
+                }
+            }
         }
 
         //... and all possible functions.
         TwoHotRange[] derivedFunctions = new TwoHotRange[derivedVariables];
-        for (int i = 0; i < derivedVariables; i++)
+        for (int i = 0; i < derivedVariables; i++) {
             derivedFunctions[i] = generateBinaryFunction(nonDerivedVariables/*+i*/ * 2, i);
+        }
 
         orderFunctions(derivedFunctions);
 
@@ -108,13 +112,13 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf> {
             for (int j = 0; j < scenarios.length; j++) {
                 boolean inverse;
                 char ch = scenarios[j].charAt(i);
-                if (ch == '-')
+                if (ch == '-') {
                     continue;
-                else if (ch == '1')
+                } else if (ch == '1') {
                     inverse = false;
-                else if (ch == '0')
+                } else if (ch == '0') {
                     inverse = true;
-                else throw new RuntimeException("unknown symbol: " + parseBoolean(ch));
+                } else throw new RuntimeException("unknown symbol: " + parseBoolean(ch));
 
                 List<CnfClause> value = select(functionSpace[j], varId, inverse);
 
@@ -153,8 +157,9 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf> {
         BooleanFormula[][] enc = new BooleanFormula[encodings.length][];
         for (int i = 0; i < enc.length; i++) {
             enc[i] = new BooleanFormula[encodings[i].length];
-            for (int j = 0; j < enc[i].length; j++)
+            for (int j = 0; j < enc[i].length; j++) {
                 enc[i][j] = encodings[i][j];
+            }
         }
 
         return new CpogOptimisationTask<Cnf>(functionVars, enc, new Cnf(tableConditions));
@@ -174,8 +179,9 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf> {
             int bits = derivedFunctions[i].size();
             for (int j = i + 1; j < derivedFunctions.length; j++) {
                 int bitsj = derivedFunctions[j].size();
-                if (bits != bitsj)
+                if (bits != bitsj) {
                     throw new RuntimeException("Functions have different widths: " + bits + " and " + bitsj);
+                }
                 List<Literal> si = derivedFunctions[i].getThermometer();
                 List<Literal> xj = derivedFunctions[j];
                 for (int k = 0; k < bits; k++) {
@@ -186,13 +192,15 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf> {
     }
 
     private Literal parseBoolean(char ch) {
-        if (ch == '0')
+        if (ch == '0') {
             return Literal.ZERO;
-        else
-            if (ch == '1')
+        } else {
+            if (ch == '1') {
                 return Literal.ONE;
-            else
+            } else {
                 throw new RuntimeException("o_O");
+            }
+        }
     }
 
     @SuppressWarnings("unused")
