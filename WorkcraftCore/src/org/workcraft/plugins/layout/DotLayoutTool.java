@@ -194,7 +194,7 @@ public class DotLayoutTool extends AbstractLayoutTool {
             File original = new File(directory, "original.dot");
             File layout = new File(directory, "layout.dot");
 
-            saveGraph((VisualModel) model, original);
+            saveGraph(model, original);
 
             List<String> args = new ArrayList<String>();
             String toolName = ToolUtils.getAbsoluteCommandPath(DotLayoutSettings.getCommand());
@@ -216,7 +216,7 @@ public class DotLayoutTool extends AbstractLayoutTool {
             }
             if (res.getReturnValue().getReturnCode() == 0) {
                 String in = FileUtils.readAllText(layout);
-                applyLayout(in, (VisualModel) model);
+                applyLayout(in, model);
             } else {
                 throw new LayoutException("External process (dot) failed (code " +
                     res.getReturnValue().getReturnCode() + ")\n\n" +

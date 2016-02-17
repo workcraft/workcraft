@@ -28,7 +28,7 @@ public class ColorUtils {
         float nl = 116.0f * l - 16.0f;
         float a = 500.0f * (f(value[0]) - l);
         float b = 200.0f * (l - f(value[2]));
-        return new float[] {(float) nl, (float) a, (float) b};
+        return new float[] {nl, a, b};
     }
 
     public static float[] convertFromLabToXyz(float[] value) {
@@ -36,7 +36,7 @@ public class ColorUtils {
         float x = fInv(i + value[1] / 500.0f);
         float y = fInv(i);
         float z = fInv(i - value[2] / 200.0f);
-        return new float[] {(float) x, (float) y, (float) z};
+        return new float[] {x, y, z};
     }
 
     private static float f(float x) {

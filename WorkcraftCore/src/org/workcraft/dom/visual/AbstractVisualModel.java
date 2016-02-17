@@ -116,7 +116,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
                 if (node instanceof MathConnection) continue;
                 if (node instanceof MathNode) {
                     MathNode mathNode = (MathNode) node;
-                    VisualComponent visualComponent = (VisualComponent) NodeFactory.createVisualComponent(mathNode);
+                    VisualComponent visualComponent = NodeFactory.createVisualComponent(mathNode);
                     if (visualComponent != null) {
                         visualContainer.add(visualComponent);
                         createdNodes.put(mathNode, visualComponent);
@@ -448,7 +448,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
     private Container getCurrentMathLevel() {
         Container currentMathLevel;
-        VisualComponent visualContainer = (VisualComponent) Hierarchy.getNearestAncestor(getCurrentLevel(), VisualComponent.class);
+        VisualComponent visualContainer = Hierarchy.getNearestAncestor(getCurrentLevel(), VisualComponent.class);
         if (visualContainer == null) {
             currentMathLevel = getMathModel().getRoot();
         } else {

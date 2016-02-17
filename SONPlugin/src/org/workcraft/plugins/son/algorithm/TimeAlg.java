@@ -19,10 +19,10 @@ public class TimeAlg extends RelationAlgorithm {
     public void setProperties() {
         for (Condition c : net.getConditions()) {
             if (net.getInputPNConnections(c).isEmpty()) {
-                ((Condition) c).setInitial(true);
+                c.setInitial(true);
             }
             if (net.getOutputPNConnections(c).isEmpty()) {
-                ((Condition) c).setFinal(true);
+                c.setFinal(true);
             }
         }
     }

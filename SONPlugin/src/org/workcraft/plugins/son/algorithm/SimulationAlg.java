@@ -120,7 +120,7 @@ public class SimulationAlg extends RelationAlgorithm {
                     for (TransitionNode e3 : getPreAsynEvents(e)) {
                         if (u.contains(e3)) {
                             u.remove(e3);
-                            stack.push((TransitionNode) e3);
+                            stack.push(e3);
                         }
                     }
                 }
@@ -160,7 +160,7 @@ public class SimulationAlg extends RelationAlgorithm {
                     for (TransitionNode e3 : getPostAsynEvents(e)) {
                         if (u.contains(e3)) {
                             u.remove(e3);
-                            stack.push((TransitionNode) e3);
+                            stack.push(e3);
                         }
                     }
                 }

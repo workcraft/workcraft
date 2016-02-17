@@ -149,7 +149,7 @@ public class NamespaceHelper {
         if (visualContainer instanceof VisualComponent) {
             vis = (VisualComponent) visualContainer;
         } else {
-            vis = (VisualComponent) Hierarchy.getNearestAncestor(visualContainer, VisualComponent.class);
+            vis = Hierarchy.getNearestAncestor(visualContainer, VisualComponent.class);
         }
 
         // Get appropriate math container, it will be the target container for the math model.

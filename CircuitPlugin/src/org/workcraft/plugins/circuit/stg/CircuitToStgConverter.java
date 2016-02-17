@@ -144,10 +144,10 @@ public class CircuitToStgConverter {
     private Container getContainer(VisualContact contact) {
         String nodeReference = circuit.getMathModel().getNodeReference(contact.getReferencedComponent());
         String parentReference = NamespaceHelper.getParentReference(nodeReference);
-        Container container = (Container) refToPageMap.get(parentReference);
+        Container container = refToPageMap.get(parentReference);
         while (container == null) {
             parentReference = NamespaceHelper.getParentReference(parentReference);
-            container = (Container) refToPageMap.get(parentReference);
+            container = refToPageMap.get(parentReference);
         }
         return container;
     }

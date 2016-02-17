@@ -65,7 +65,7 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode {
                 g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
                 g.fill(bb);
                 g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-                g.setStroke(new BasicStroke((float) strokeWidth));
+                g.setStroke(new BasicStroke(strokeWidth));
                 g.draw(bb);
 
                 double s = 2.3 * size / 3;
@@ -126,7 +126,7 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode {
     }
 
     protected void drawDurationInLocalSpace(DrawRequest r) {
-        if (SONSettings.getTimeVisibility() && ((Block) getReferencedComponent()).getDuration().isSpecified()) {
+        if (SONSettings.getTimeVisibility() && getReferencedComponent().getDuration().isSpecified()) {
             cahceDurationRenderedText(r);
             Graphics2D g = r.getGraphics();
             Decoration d = r.getDecoration();
@@ -145,7 +145,7 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode {
     public Rectangle2D getBoundingBoxInLocalSpace() {
         Rectangle2D bb = super.getBoundingBoxInLocalSpace();
 
-        if (SONSettings.getTimeVisibility() && ((Block) getReferencedComponent()).getDuration().isSpecified()) {
+        if (SONSettings.getTimeVisibility() && getReferencedComponent().getDuration().isSpecified()) {
             bb = BoundingBoxHelper.union(bb, durationRenderedText.getBoundingBox());
         }
         return bb;
@@ -164,43 +164,43 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode {
     }
 
     public String getStartTime() {
-        return ((Block) getReferencedComponent()).getStartTime().toString();
+        return getReferencedComponent().getStartTime().toString();
     }
 
     public void setStartTime(String time) {
         Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
-        ((Block) getReferencedComponent()).setStartTime(input);
+        getReferencedComponent().setStartTime(input);
     }
 
     public String getEndTime() {
-        return ((Block) getReferencedComponent()).getEndTime().toString();
+        return getReferencedComponent().getEndTime().toString();
     }
 
     public void setEndTime(String time) {
         Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
-        ((Block) getReferencedComponent()).setEndTime(input);
+        getReferencedComponent().setEndTime(input);
     }
 
     public String getDuration() {
-        return ((Block) getReferencedComponent()).getDuration().toString();
+        return getReferencedComponent().getDuration().toString();
     }
 
     public void setDuration(String time) {
         Interval input = new Interval(Interval.getMin(time), Interval.getMax(time));
-        ((Block) getReferencedComponent()).setDuration(input);
+        getReferencedComponent().setDuration(input);
     }
 
     public Color getDurationColor() {
-        return ((Block) getReferencedComponent()).getDurationColor();
+        return getReferencedComponent().getDurationColor();
     }
 
     public void setDurationColor(Color value) {
-        ((Block) getReferencedComponent()).setDurationColor(value);
+        getReferencedComponent().setDurationColor(value);
     }
 
     @Override
     public boolean isFaulty() {
-        return ((Block) getReferencedComponent()).isFaulty();
+        return getReferencedComponent().isFaulty();
     }
 
     @Override

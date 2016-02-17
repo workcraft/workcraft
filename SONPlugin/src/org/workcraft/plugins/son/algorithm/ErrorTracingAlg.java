@@ -107,7 +107,7 @@ public class ErrorTracingAlg extends SimulationAlg {
                 //set err number for lower condition
                 if (!isLower) {
                     for (Condition min : bsonAlg.getMinimalPhase(getActivatedPhases(phases.get(post)))) {
-                        ((Condition) min).setErrors(((Condition) min).getErrors() + ((Condition) post).getErrors());
+                        min.setErrors(min.getErrors() + ((Condition) post).getErrors());
                     }
                 }
             }
@@ -121,7 +121,7 @@ public class ErrorTracingAlg extends SimulationAlg {
         int err = 0;
 
         for (TransitionNode e : sync) {
-            if (((TransitionNode) e).isFaulty()) {
+            if (e.isFaulty()) {
                 err++;
             }
             for (Node pre : net.getPreset(e)) {
@@ -145,7 +145,7 @@ public class ErrorTracingAlg extends SimulationAlg {
                     //set err number for upper conditions
                     if (!isLower) {
                         for (Condition min : bsonAlg.getMinimalPhase(getActivatedPhases(phases.get(post)))) {
-                            ((Condition) min).setErrors(((Condition) min).getErrors() + ((Condition) post).getErrors());
+                            min.setErrors(min.getErrors() + ((Condition) post).getErrors());
                         }
                     }
                 }
@@ -230,7 +230,7 @@ public class ErrorTracingAlg extends SimulationAlg {
                 //set err number for lower condition
                 if (!isLower) {
                     for (Condition min : bsonAlg.getMinimalPhase(getActivatedPhases(phases.get(post)))) {
-                        ((Condition) min).setErrors(((Condition) min).getErrors() - ((Condition) post).getErrors());
+                        min.setErrors(min.getErrors() - ((Condition) post).getErrors());
                     }
                 }
                 ((Condition) post).setErrors(((Condition) post).getErrors() - err);
@@ -245,7 +245,7 @@ public class ErrorTracingAlg extends SimulationAlg {
         int err = 0;
 
         for (TransitionNode e : sync) {
-            if (((TransitionNode) e).isFaulty()) {
+            if (e.isFaulty()) {
                 err++;
             }
             for (Node pre : net.getPreset(e)) {
@@ -269,7 +269,7 @@ public class ErrorTracingAlg extends SimulationAlg {
                     //set err number for upper conditions
                     if (!isLower) {
                         for (Condition min : bsonAlg.getMinimalPhase(getActivatedPhases(phases.get(post)))) {
-                            ((Condition) min).setErrors(((Condition) min).getErrors() - ((Condition) post).getErrors());
+                            min.setErrors(min.getErrors() - ((Condition) post).getErrors());
                         }
                     }
                     ((Condition) post).setErrors(((Condition) post).getErrors() - err);

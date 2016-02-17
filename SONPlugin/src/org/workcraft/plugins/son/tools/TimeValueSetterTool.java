@@ -277,7 +277,7 @@ public class TimeValueSetterTool extends AbstractTool {
 
     private void setTimeLabelValue(Node node, JTextField field, boolean isMin) {
         VisualSONConnection vcon = (VisualSONConnection) node;
-        SONConnection con = (SONConnection) vcon.getReferencedSONConnection();
+        SONConnection con = vcon.getReferencedSONConnection();
 
         Interval value = con.getTime();
         if (isMin) {
@@ -439,7 +439,7 @@ public class TimeValueSetterTool extends AbstractTool {
             }
         } else if (node instanceof VisualBlock) {
             VisualBlock vb = (VisualBlock) node;
-            Block b = (Block) vb.getReferencedComponent();
+            Block b = vb.getReferencedComponent();
             value = b.getDuration();
 
             if (isMin) {
@@ -495,7 +495,7 @@ public class TimeValueSetterTool extends AbstractTool {
         Interval value;
         if (node instanceof VisualSONConnection) {
             VisualSONConnection vcon = (VisualSONConnection) node;
-            SONConnection con = (SONConnection) vcon.getReferencedSONConnection();
+            SONConnection con = vcon.getReferencedSONConnection();
 
             if (con.getSemantics() == Semantics.PNLINE || con.getSemantics() == Semantics.ASYNLINE) {
                 value = con.getTime();
@@ -524,7 +524,7 @@ public class TimeValueSetterTool extends AbstractTool {
             timePropertyPanel.add(createTimeInputPanel(durationLabel, value, node));
         } else if (node instanceof VisualBlock) {
             VisualBlock vb = (VisualBlock) node;
-            Block b = (Block) vb.getReferencedComponent();
+            Block b = vb.getReferencedComponent();
 
             value = b.getDuration();
             timePropertyPanel.add(createTimeInputPanel(durationLabel, value, node));
