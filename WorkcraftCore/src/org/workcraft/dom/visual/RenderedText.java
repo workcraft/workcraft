@@ -79,7 +79,7 @@ public class RenderedText {
             }
             double x = boundingBox.getX() - lineBoundingBox.getX() + xMargin * (1.0 - positioning.xSign);
             y += lineBoundingBox.getHeight();
-            g.drawGlyphVector(glyphVector, (float) x, (float) y);
+            g.drawGlyphVector(glyphVector, (float) x, y);
             y += spacing;
         }
     }

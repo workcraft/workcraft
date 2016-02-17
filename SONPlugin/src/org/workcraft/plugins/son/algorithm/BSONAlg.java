@@ -572,7 +572,7 @@ public class BSONAlg extends RelationAlgorithm {
                         if (e1 instanceof TransitionNode) {
                             TransitionNode[] subResult = new TransitionNode[2];
                             subResult[0] = (TransitionNode) e1;
-                            subResult[1] = (TransitionNode) e;
+                            subResult[1] = e;
                             result.add(subResult);
                         }
                     }
@@ -599,7 +599,7 @@ public class BSONAlg extends RelationAlgorithm {
                     for (Node e1 : post) {
                         if (e1 instanceof TransitionNode) {
                             TransitionNode[] subResult = new TransitionNode[2];
-                            subResult[0] = (TransitionNode) e;
+                            subResult[0] = e;
                             subResult[1] = (TransitionNode) e1;
                             result.add(subResult);
                         }

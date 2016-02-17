@@ -228,7 +228,7 @@ public class VisualCircuit extends AbstractVisualModel {
             if (mConnection == null) {
                 MathNode mComponent1 = vComponent1.getReferencedComponent();
                 MathNode mComponent2 = vComponent2.getReferencedComponent();
-                mConnection = (MathConnection) circuit.connect(mComponent1, mComponent2);
+                mConnection = circuit.connect(mComponent1, mComponent2);
             }
             vConnection = new VisualCircuitConnection(mConnection, vComponent1, vComponent2);
             vConnection.setArrowLength(0.0);

@@ -17,7 +17,7 @@ public class ColorDeserialiser implements BasicXMLDeserialiser {
         if (s == null || s.charAt(0) != '#') {
             s = "#000000";
         }
-        int rgb = (int) Integer.parseInt(s.substring(1), 16);
+        int rgb = Integer.parseInt(s.substring(1), 16);
         return new Color(rgb, false);
 
     }

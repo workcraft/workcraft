@@ -173,7 +173,7 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
         String name = null;
         MathModel mathModel = r.getModel().getMathModel();
         if (getMaster() instanceof VisualComponent) {
-            MathNode mathNode = ((VisualComponent) master).getReferencedComponent();
+            MathNode mathNode = master.getReferencedComponent();
             name = mathModel.getNodeReference(mathNode);
         }
 

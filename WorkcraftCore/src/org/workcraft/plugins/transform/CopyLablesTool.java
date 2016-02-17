@@ -53,7 +53,7 @@ public class CopyLablesTool extends TransformationTool {
     public void run(WorkspaceEntry we) {
         VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
         if (visualModel != null) {
-            MathModel mathModel = (MathModel) visualModel.getMathModel();
+            MathModel mathModel = visualModel.getMathModel();
             Collection<VisualComponent> components = Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualComponent.class);
             if (!visualModel.getSelection().isEmpty()) {
                 components.retainAll(visualModel.getSelection());

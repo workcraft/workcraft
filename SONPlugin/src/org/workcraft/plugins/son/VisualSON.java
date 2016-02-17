@@ -330,7 +330,7 @@ public class VisualSON extends AbstractVisualModel {
             currentLevel.add(group);
             currentLevel.reparent(selected, group);
 
-            VisualComponent visualContainer = (VisualComponent) Hierarchy.getNearestAncestor(currentLevel, VisualComponent.class);
+            VisualComponent visualContainer = Hierarchy.getNearestAncestor(currentLevel, VisualComponent.class);
 
             Container currentMathLevel;
             if (visualContainer == null) {
@@ -396,7 +396,7 @@ public class VisualSON extends AbstractVisualModel {
             getCurrentLevel().add(block);
             getCurrentLevel().reparent(selected, block);
 
-            VisualComponent visualContainer = (VisualComponent) Hierarchy.getNearestAncestor(getCurrentLevel(), VisualComponent.class);
+            VisualComponent visualContainer = Hierarchy.getNearestAncestor(getCurrentLevel(), VisualComponent.class);
 
             Container currentMathLevel;
             if (visualContainer == null) {

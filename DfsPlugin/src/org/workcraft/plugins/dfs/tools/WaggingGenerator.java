@@ -84,7 +84,7 @@ public class WaggingGenerator {
         for (VisualComponent component: selectedComponents) {
             bb = BoundingBoxHelper.union(bb, component.getBoundingBox());
         }
-        double step = (double) Math.ceil(bb.getHeight());
+        double step = Math.ceil(bb.getHeight());
         for (int i = 0; i < count; ++i) {
             HashMap<VisualComponent, VisualComponent> mapComponentToReplica = new HashMap<VisualComponent, VisualComponent>();
             WaggingData waggingData = new WaggingData();
