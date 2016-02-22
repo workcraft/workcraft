@@ -14,13 +14,3 @@ dist/
 !/WorkcraftRunner/.classpath
 !/WorkcraftRunner/.project
 bin/
-
-*.log
-*.dot
-*.stackdump
-generated
-*.orig
-*.moved
-*.BASE
-*.OTHER
-*.THIS
