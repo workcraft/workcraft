@@ -1,5 +1,4 @@
 include "WorkcraftCore"
-include "Tests"
 
 // Include all the plugins
 include rootDir.listFiles().findAll {

@@ -20,4 +20,7 @@ dependencies {
     compile 'net.sf.jedit-syntax:jedit-syntax:2.2.2'
     compile 'info.clearthought:table-layout:4.3.0'
     compile 'org.java.net.substance:substance:5.3'
+
+    testCompile project(':PetriNetPlugin')
+    testCompile project(':STGPlugin')
 }
