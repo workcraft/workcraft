@@ -168,8 +168,18 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
                     VisualCircuit visualCircuit = (VisualCircuit) visualModel;
                     String title = we.getModelEntry().getModel().getTitle();
                     visualCircuit.setTitle(title);
-                    visualCircuit.setEnvironmentFile(we.getFile());
-
+                    if (!we.getFile().exists()) {
+                        JOptionPane.showMessageDialog(null,
+                                "Error: unsaved STG cannot be set as the circuit environment.",
+                                "MPSat synthesis", JOptionPane.ERROR_MESSAGE);
+                    } else {
+                        visualCircuit.setEnvironmentFile(we.getFile());
+                        if (we.isChanged()) {
+                            JOptionPane.showMessageDialog(null,
+                                    "Warning: the STG with unsaved changes is set as the circuit environment.",
+                                    "MPSat synthesis", JOptionPane.WARNING_MESSAGE);
+                        }
+                    }
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {

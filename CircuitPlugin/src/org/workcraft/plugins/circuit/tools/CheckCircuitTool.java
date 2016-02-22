@@ -1,11 +1,14 @@
 package org.workcraft.plugins.circuit.tools;
 
+import java.io.File;
+
 import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
 import org.workcraft.VerificationTool;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.circuit.Circuit;
+import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.tasks.CheckCircuitTask;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -33,9 +36,16 @@ public class CheckCircuitTool extends VerificationTool {
 
         Circuit circuit = (Circuit) we.getModelEntry().getMathModel();
         if (circuit.getFunctionComponents().isEmpty()) {
-            JOptionPane.showMessageDialog(mainWindow, "The circuit must have components.",
-                    "Circuit verification error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(mainWindow, "Error: the circuit must have components.",
+                    "Circuit verification", JOptionPane.ERROR_MESSAGE);
             return;
+        }
+
+        VisualCircuit visualCircuit = (VisualCircuit) we.getModelEntry().getVisualModel();
+        File envFile = visualCircuit.getEnvironmentFile();
+        if ((envFile == null) || !envFile.exists()) {
+            JOptionPane.showMessageDialog(mainWindow, "Warning: the circuit will be verified without environment STG.",
+                    "Circuit verification", JOptionPane.WARNING_MESSAGE);
         }
 
         final CheckCircuitTask task = new CheckCircuitTask(we, checkConformation(), checkDeadlock(), checkHazard());
