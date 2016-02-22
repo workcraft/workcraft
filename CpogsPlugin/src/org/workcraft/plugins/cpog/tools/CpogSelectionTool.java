@@ -326,10 +326,10 @@ public class CpogSelectionTool extends SelectionTool {
         text = text.replace("\n", "");
         text = parsingTool.replaceReferences(text);
 
-        if (text.contains(" = ")) {
-            name = text.substring(0, text.indexOf(" = "));
+        if (text.contains("=")) {
+            name = text.substring(0, text.indexOf("="));
             name = name.trim();
-            text = text.substring(text.indexOf(" = ") + 1);
+            text = text.substring(text.indexOf("=") + 1);
             text = text.trim();
         }
 
