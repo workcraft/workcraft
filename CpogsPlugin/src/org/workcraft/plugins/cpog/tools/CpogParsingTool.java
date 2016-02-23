@@ -320,15 +320,15 @@ public class CpogParsingTool {
         }
 
         for (String ex : expression) {
-            if (ex.contains(" = ")) {
+            if (ex.contains("=")) {
                 total = total + ex;
             } else if (ex.equals("\n")) {
-                while (total.endsWith(" ") || total.endsWith(" + ")) {
+                while (total.endsWith(" ") || total.endsWith("+")) {
                     total = total.substring(0, total.length() - 1);
                 }
                 total = total + ex;
-            } else if (((ex.contains(" ")) || (ex.equals(" + "))) || (!(total.contains(" " + ex + " ")) && !(total.startsWith(ex + " ")) && !(total.endsWith(" " + ex)))) {
-                if (!(ex.equals("+") && total.endsWith(" + "))) {
+            } else if (((ex.contains(" ")) || (ex.equals("+"))) || (!(total.contains(" " + ex + " ")) && !(total.startsWith(ex + " ")) && !(total.endsWith(" " + ex)))) {
+                if (!(ex.equals("+") && total.endsWith("+"))) {
                     if ((total.endsWith("\n")) || (total.equals(""))) {
                         total = total + ex;
                     } else {
@@ -445,7 +445,7 @@ public class CpogParsingTool {
                     insert = insert + ((VisualVertex) a.getSecond()).getLabel() + " + ";
                 }
 
-                while ((insert.endsWith(" ")) || (insert.endsWith(" + "))) {
+                while ((insert.endsWith(" ")) || (insert.endsWith("+"))) {
                     insert = insert.substring(0, insert.length() - 1);
                 }
 

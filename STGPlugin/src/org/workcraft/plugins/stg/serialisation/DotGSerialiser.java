@@ -175,7 +175,7 @@ public class DotGSerialiser implements ModelSerialiser {
             if (tokens == 1) {
                 markingEntries.add(reference);
             } else if (tokens > 1) {
-                markingEntries.add(reference + " = " + tokens);
+                markingEntries.add(reference + "=" + tokens);
             }
         }
         Collections.sort(markingEntries);

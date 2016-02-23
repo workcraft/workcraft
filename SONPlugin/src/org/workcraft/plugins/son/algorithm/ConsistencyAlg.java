@@ -71,7 +71,7 @@ public class ConsistencyAlg extends TimeAlg {
         }
         if (!i.isOverlapping(end)) {
             result.add("Node inconsistency: start"
-                     + node(node) + " + duration" + node(node) + " = " + value(i.toString())
+                     + node(node) + " + duration" + node(node) + "=" + value(i.toString())
                      + " is not consistent with end" + node(node) + value(end.toString()) + ".");
         }
 
@@ -86,7 +86,7 @@ public class ConsistencyAlg extends TimeAlg {
 
         if (!i2.isOverlapping(start)) {
             result.add("Node inconsistency: end"
-                     + node(node) + " - duration" + node(node) + " = " + value(i2.toString())
+                     + node(node) + " - duration" + node(node) + "=" + value(i2.toString())
                      + " is not consistent with start" + node(node) + value(start.toString()) + ".");
         }
 
@@ -104,7 +104,7 @@ public class ConsistencyAlg extends TimeAlg {
 
         if (!i3.isOverlapping(dur)) {
             result.add("Node inconsistency: end"
-                     + node(node) + " - start" + node(node) + " = " + value(i3.toString())
+                     + node(node) + " - start" + node(node) + "=" + value(i3.toString())
                      + " is not consistent with duration" + node(node) + value(dur.toString()) + ".");
         }
 
