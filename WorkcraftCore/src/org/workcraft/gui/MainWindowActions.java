@@ -102,7 +102,7 @@ public class MainWindowActions {
         public void run() {
             final Framework f = Framework.getInstance();
             try {
-                f.getPluginManager().reconfigure();
+                f.getPluginManager().reconfigure(true);
             } catch (PluginInstantiationException e) {
                 e.printStackTrace();
             }

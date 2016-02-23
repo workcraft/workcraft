@@ -126,7 +126,7 @@ public class PluginManager implements PluginProvider {
 
     public void loadManifest(File file) throws IOException, FormatException, PluginInstantiationException {
         if (!tryLoadManifest(file)) {
-            reconfigure();
+            reconfigure(true);
         } else {
             initModules();
         }
@@ -189,7 +189,7 @@ public class PluginManager implements PluginProvider {
         }
     }
 
-    public void reconfigure() throws PluginInstantiationException {
+    public void reconfigure(boolean save) throws PluginInstantiationException {
         LogUtils.logMessageLine("Reconfiguring plugins...");
         plugins.clear();
 
@@ -211,10 +211,12 @@ public class PluginManager implements PluginProvider {
             processLegacyPlugin(cls, info);
         }
 
-        try {
-            saveManifest(pluginInfos);
-        } catch (IOException e) {
-            System.err.println(e.getMessage());
+        if (save) {
+            try {
+                saveManifest(pluginInfos);
+            } catch (IOException e) {
+                System.err.println(e.getMessage());
+            }
         }
 
         initModules();
