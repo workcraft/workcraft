@@ -33,17 +33,14 @@ public class CommonDebugSettings implements Settings {
     private static final String prefix = "CommonDebugSettings";
 
     private static final String keyCopyModelOnChange = prefix + ".copyModelOnChange";
-    private static final String keyKeepTemporaryFiles = prefix + ".keepTemporaryFiles";
     private static final String keyVerboseImport = prefix + ".verboseImport";
     private static final String keyParserTracing = prefix + ".parserTracing";
 
     private static final boolean defaultCopyModelOnChange = false;
-    private static final Boolean defaultKeepTemporaryFiles = true;
     private static final Boolean defaultVerboseImport = false;
     private static final Boolean defaultParserTracing = false;
 
     private static boolean copyModelOnChange = defaultCopyModelOnChange;
-    private static Boolean keepTemporaryFiles = defaultKeepTemporaryFiles;
     private static Boolean verboseImport = defaultVerboseImport;
     private static Boolean parserTracing = defaultParserTracing;
 
@@ -55,16 +52,6 @@ public class CommonDebugSettings implements Settings {
             }
             protected Boolean getter(CommonDebugSettings object) {
                 return getCopyModelOnChange();
-            }
-        });
-
-        properties.add(new PropertyDeclaration<CommonDebugSettings, Boolean>(
-                this, "Keep temporary files till application close", Boolean.class, true, false, false) {
-            protected void setter(CommonDebugSettings object, Boolean value) {
-                setKeepTemporaryFiles(value);
-            }
-            protected Boolean getter(CommonDebugSettings object) {
-                return getKeepTemporaryFiles();
             }
         });
 
@@ -97,7 +84,6 @@ public class CommonDebugSettings implements Settings {
     @Override
     public void load(Config config) {
         setCopyModelOnChange(config.getBoolean(keyCopyModelOnChange, defaultCopyModelOnChange));
-        setKeepTemporaryFiles(config.getBoolean(keyKeepTemporaryFiles, defaultKeepTemporaryFiles));
         setVerboseImport(config.getBoolean(keyVerboseImport, defaultVerboseImport));
         setParserTracing(config.getBoolean(keyParserTracing, defaultParserTracing));
     }
@@ -105,7 +91,6 @@ public class CommonDebugSettings implements Settings {
     @Override
     public void save(Config config) {
         config.setBoolean(keyCopyModelOnChange, getCopyModelOnChange());
-        config.setBoolean(keyKeepTemporaryFiles, getKeepTemporaryFiles());
         config.setBoolean(keyVerboseImport, getVerboseImport());
         config.setBoolean(keyParserTracing, getParserTracing());
     }
@@ -126,14 +111,6 @@ public class CommonDebugSettings implements Settings {
 
     public static void setCopyModelOnChange(Boolean value) {
         copyModelOnChange = value;
-    }
-
-    public static Boolean getKeepTemporaryFiles() {
-        return keepTemporaryFiles;
-    }
-
-    public static void setKeepTemporaryFiles(Boolean value) {
-        keepTemporaryFiles = value;
     }
 
     public static Boolean getVerboseImport() {

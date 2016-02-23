@@ -5,7 +5,6 @@ import java.io.File;
 import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
-import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -43,7 +42,7 @@ public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
 
             //Removing temporary files
             File dir = solver.getDirectory();
-            FileUtils.deleteFile(dir, CommonDebugSettings.getKeepTemporaryFiles());
+            FileUtils.deleteOnExitRecursively(dir);
 
             //Display the error
             JOptionPane.showMessageDialog(framework.getMainWindow(), errorMessage, "SCENCO error", JOptionPane.ERROR_MESSAGE);

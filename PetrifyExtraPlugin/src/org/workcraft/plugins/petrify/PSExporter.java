@@ -50,7 +50,7 @@ public class PSExporter implements Exporter {
             throw new IllegalArgumentException("Model is null");
         }
 
-        File dotG = File.createTempFile("workcraft", ".g");
+        File dotG = FileUtils.createTempFile("workcraft-", ".g");
 
         final Framework framework = Framework.getInstance();
         final Result<? extends Object> result = framework.getTaskManager().execute(Export.createExportTask(model, dotG, Format.STG, framework.getPluginManager()), "Exporting to .g");
@@ -67,7 +67,7 @@ public class PSExporter implements Exporter {
             }
         }
 
-        File ps = File.createTempFile("workcraft", ".ps");
+        File ps = FileUtils.createTempFile("workcraft-", ".ps");
 
         DrawAstgTask task = new DrawAstgTask(dotG.getAbsolutePath(), ps.getAbsolutePath(), new ArrayList<String>());
 

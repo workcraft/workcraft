@@ -8,7 +8,6 @@ import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.punf.PunfUtilitySettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
-import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
@@ -34,12 +33,9 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
     @Override
     public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
         Framework framework = Framework.getInstance();
-        File directory = null;
+        String prefix = FileUtils.getTempPrefix(we.getTitle());
+        File directory = FileUtils.createTempDirectory(prefix);
         try {
-            String title = we.getTitle();
-            String prefix = "workcraft-" + title + "-"; // Prefix must be at least 3 symbols long.
-            directory = FileUtils.createTempDirectory(prefix);
-
             PetriNetModel model = WorkspaceUtils.getAs(we, PetriNetModel.class);
             Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
             if (exporter == null) {
@@ -97,8 +93,7 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
         } catch (Throwable e) {
             return new Result<MpsatChainResult>(e);
         } finally {
-            // Clean up
-            FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
+            FileUtils.deleteOnExitRecursively(directory);
         }
     }
 

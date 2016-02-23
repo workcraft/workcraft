@@ -26,7 +26,6 @@ import org.workcraft.plugins.cpog.optimisation.OneHotNumberProvider;
 import org.workcraft.plugins.cpog.optimisation.Optimiser;
 import org.workcraft.plugins.cpog.optimisation.jj.ParseException;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
-import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.ToolUtils;
@@ -118,7 +117,7 @@ public class SatBasedSolver {
 
         int res;
         if ((res = cpogBuilder.writeCpogIntoFile(m, scenarios, scenarioFile, encodingFile, settings)) != 0) {
-            FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
+            FileUtils.deleteOnExitRecursively(directory);
             if (res != -1) {
                 JOptionPane.showMessageDialog(null,
                         "Error on writing scenario file.",
@@ -146,7 +145,7 @@ public class SatBasedSolver {
                 gateLibFlag = "-lib";
                 f = new File(abcFolder + gatesLibrary);
                 if (!f.exists() || f.isDirectory()) {
-                    FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
+                    FileUtils.deleteOnExitRecursively(directory);
                     JOptionPane.showMessageDialog(null,
                             "It is needed to compute area of circuit properly",
                             "Gate library not present",
@@ -215,7 +214,7 @@ public class SatBasedSolver {
             if (callScenco) {
                 if (pr > 0) {
                     we.cancelMemento();
-                    FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
+                    FileUtils.deleteOnExitRecursively(directory);
                     JOptionPane.showMessageDialog(null, "Exhaustive search option is not able to solve the CPOG with conditions, try other options.",
                             "Encoding result", JOptionPane.ERROR_MESSAGE);
                     return;
@@ -229,7 +228,7 @@ public class SatBasedSolver {
                         we.cancelMemento();
                         JOptionPane.showMessageDialog(null, "SCENCO is not able to solve the CPOG, try other options.",
                                 "Encoding result", JOptionPane.ERROR_MESSAGE);
-                        FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
+                        FileUtils.deleteOnExitRecursively(directory);
                         return;
                     }
                     System.out.println("INFORMATION: Scenco cannot solve the CPOG.");
@@ -238,13 +237,13 @@ public class SatBasedSolver {
             }
         } catch (Exception e) {
             we.cancelMemento();
-            FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
+            FileUtils.deleteOnExitRecursively(directory);
             JOptionPane.showMessageDialog(null, e.getMessage(), "Encoding result", JOptionPane.ERROR_MESSAGE);
         }
 
         // IF SOLUTION IS NULL AN ERROR OCCURRED
         if (solution == null) {
-            FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
+            FileUtils.deleteOnExitRecursively(directory);
             we.cancelMemento();
             return;
         }
@@ -306,7 +305,7 @@ public class SatBasedSolver {
                         false, optEnc, optFormulaeVertices, truthTableVertices,
                         optVertices, optSources, optDests, optFormulaeArcs,
                         truthTableArcs, arcNames, this) != 0) {
-                    FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
+                    FileUtils.deleteOnExitRecursively(directory);
                     we.cancelMemento();
                     return;
                 }
@@ -338,7 +337,7 @@ public class SatBasedSolver {
 
             we.saveMemento();
         } finally {
-            FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
+            FileUtils.deleteOnExitRecursively(directory);
         }
     }
 

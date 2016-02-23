@@ -13,7 +13,6 @@ import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
-import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
@@ -51,12 +50,15 @@ public class CircuitStgUtils {
         File directory = FileUtils.createTempDirectory(prefix);
         try {
             File devStgFile = exportDevStg(devStg, directory);
+            devStgFile.deleteOnExit();
             // Make sure that input signals of the device STG are also inputs in the environment STG
             Set<String> inputSignalNames = devStg.getSignalNames(Type.INPUT, null);
             Set<String> outputSignalNames = devStg.getSignalNames(Type.OUTPUT, null);
             File envStgFile = exportEnvStg(envWorkFile, inputSignalNames, outputSignalNames, directory);
+            envStgFile.deleteOnExit();
             // Generating .g for the whole system (circuit and environment)
             File sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + StgUtils.ASTG_FILE_EXT);
+            sysStgFile.deleteOnExit();
             Result<? extends ExternalProcessResult> pcompResult = composeDevWithEnv(devStgFile, envStgFile, directory, null);
 
             switch (pcompResult.getOutcome()) {
@@ -72,8 +74,6 @@ public class CircuitStgUtils {
             systemStg = importStg(sysStgFile);
         } catch (Throwable e) {
             System.err.println(e.getMessage());
-        } finally {
-            FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
         }
         return systemStg;
     }

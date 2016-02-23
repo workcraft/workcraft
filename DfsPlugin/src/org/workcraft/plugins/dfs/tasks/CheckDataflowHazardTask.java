@@ -15,7 +15,6 @@ import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.punf.PunfUtilitySettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
-import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.serialisation.Format;
@@ -43,11 +42,9 @@ public class CheckDataflowHazardTask extends MpsatChainTask {
     @Override
     public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
         final Framework framework = Framework.getInstance();
-        File directory = null;
+        String prefix = FileUtils.getTempPrefix(we.getTitle());
+        File directory = FileUtils.createTempDirectory(prefix);
         try {
-            String prefix = FileUtils.getTempPrefix(we.getTitle());
-            directory = FileUtils.createTempDirectory(prefix);
-
             StgGenerator generator = new StgGenerator((VisualDfs) we.getModelEntry().getVisualModel());
             STGModel model = (STGModel) generator.getStgModel().getMathModel();
             Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
@@ -112,7 +109,7 @@ public class CheckDataflowHazardTask extends MpsatChainTask {
         } catch (Throwable e) {
             return new Result<MpsatChainResult>(e);
         } finally {
-            FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
+            FileUtils.deleteOnExitRecursively(directory);
         }
     }
 

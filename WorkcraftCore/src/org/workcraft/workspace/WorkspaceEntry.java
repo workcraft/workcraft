@@ -138,6 +138,14 @@ public class WorkspaceEntry implements ObservableState {
         return res;
     }
 
+    public String getFileName() {
+        String fileName = getTitle();
+        if ((fileName == null) || fileName.isEmpty()) {
+            fileName = "Untitled";
+        }
+        return fileName.replace('\\', '_').replace('/', '_').replace(':', '_').replace('"', '_').replace('<', '_').replace('>', '_').replace('|', '_');
+    }
+
     @Override
     public String toString() {
         String res = getTitle();
@@ -294,8 +302,8 @@ public class WorkspaceEntry implements ObservableState {
             setModelEntry(result);
             setChanged(true);
         } catch (DeserialisationException e) {
-            JOptionPane.showMessageDialog(framework.getMainWindow(), e.getMessage(),
-                    "Model insertion failed", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(framework.getMainWindow(), e.getMessage(), "Model insertion failed",
+                    JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -348,7 +356,8 @@ public class WorkspaceEntry implements ObservableState {
                 final Framework framework = Framework.getInstance();
                 framework.clipboard = framework.save(modelEntry);
                 if (CommonDebugSettings.getCopyModelOnChange()) {
-                    // copy the memento clipboard into the system-wide clipboard as a string
+                    // copy the memento clipboard into the system-wide clipboard
+                    // as a string
                     Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
                     clipboard.setContents(new StringSelection(getClipboardAsString()), null);
                 }
@@ -376,8 +385,8 @@ public class WorkspaceEntry implements ObservableState {
                 VisualModel model = result.getVisualModel();
                 VisualModelTransformer.translateSelection(model, 1.0, 1.0);
             } catch (DeserialisationException e) {
-                JOptionPane.showMessageDialog(framework.getMainWindow(), e.getMessage(),
-                        "Clipboard paste failed", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(framework.getMainWindow(), e.getMessage(), "Clipboard paste failed",
+                        JOptionPane.ERROR_MESSAGE);
             }
         }
     }

@@ -40,7 +40,7 @@ import java.util.Scanner;
 public class FileUtils {
     public static final String TEMP_DIRECTORY_PREFIX = "workcraft-";
 
-    public static void copyFile(File in, File out)  throws IOException {
+    public static void copyFile(File in, File out) throws IOException {
         out.getParentFile().mkdirs();
         FileOutputStream outStream = new FileOutputStream(out);
         try {
@@ -66,7 +66,7 @@ public class FileUtils {
         fos.close();
     }
 
-    public static void copyFileToStream(File in, OutputStream out)  throws IOException {
+    public static void copyFileToStream(File in, OutputStream out) throws IOException {
         FileInputStream is = new FileInputStream(in);
         FileChannel inChannel = is.getChannel();
         WritableByteChannel outChannel = Channels.newChannel(out);
@@ -82,29 +82,71 @@ public class FileUtils {
     }
 
     public static String getTempPrefix(String title) {
-        String s = TEMP_DIRECTORY_PREFIX;
+        String prefix = TEMP_DIRECTORY_PREFIX;
         if ((title != null) && !title.isEmpty()) {
-            s = TEMP_DIRECTORY_PREFIX + title + "-";
+            prefix = TEMP_DIRECTORY_PREFIX + title + "-";
         }
-        // Prefix must be at least 3 symbols long (prepend short prefix with underscores).
-        while (s.length() < 3) {
-            s = "_" + s;
+        return getGoodTempPrefix(prefix);
+    }
+
+    public static String getGoodTempPrefix(String prefix) {
+        if (prefix == null) {
+            prefix = "";
         }
         // Prefix must be without spaces (replace spaces with underscores).
-        return s.replaceAll("\\s", "_");
+        prefix = prefix.replaceAll("\\s", "_");
+        // Prefix must be at least 3 symbols long (prepend short prefix with
+        // underscores).
+        while (prefix.length() < 3) {
+            prefix = "_" + prefix;
+        }
+        return prefix;
+    }
+
+    public static File createTempFile(String prefix, String suffix) {
+        return createTempFile(prefix, suffix, null);
+    }
+
+    public static File createTempFile(String prefix, String suffix, File directory) {
+        File tempFile = null;
+        prefix = getGoodTempPrefix(prefix);
+        String errorMessage = "Cannot create a temporary file with prefix '" + prefix + "'";
+        if (suffix == null) {
+            suffix = "";
+        } else {
+            errorMessage += " and suffix '" + suffix + "'.";
+        }
+
+        if (directory == null) {
+            try {
+                tempFile = File.createTempFile(prefix, suffix);
+            } catch (IOException e) {
+                throw new RuntimeException(errorMessage + ".");
+            }
+        } else {
+            try {
+                tempFile = File.createTempFile(prefix, suffix, directory);
+            } catch (IOException e) {
+                throw new RuntimeException(errorMessage + " under '" + directory.getAbsolutePath() + "' path.");
+            }
+        }
+        tempFile.deleteOnExit();
+        return tempFile;
     }
 
     public static File createTempDirectory(String prefix) {
-        File tempDir;
+        File tempDir = null;
+        String errorMessage = "Cannot create a temporary directory with prefix '" + prefix + "'.";
         try {
-            tempDir = File.createTempFile(prefix, "");
+            tempDir = File.createTempFile(getGoodTempPrefix(prefix), "");
         } catch (IOException e) {
-            throw new RuntimeException("can't create a temp file");
+            throw new RuntimeException(errorMessage);
         }
         tempDir.delete();
         if (!tempDir.mkdir()) {
-            throw new RuntimeException("can't create a temp directory");
+            throw new RuntimeException(errorMessage);
         }
+        tempDir.deleteOnExit();
         return tempDir;
     }
 
@@ -142,8 +184,8 @@ public class FileUtils {
     }
 
     /**
-     * Reads all text from the stream using the default charset.
-     * Does not close the stream.
+     * Reads all text from the stream using the default charset. Does not close
+     * the stream.
      */
     public static String readAllText(InputStream stream) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
@@ -211,21 +253,15 @@ public class FileUtils {
         return result;
     }
 
-    public static void deleteFile(File file, boolean postponeTillExit) {
+    public static void deleteOnExitRecursively(File file) {
         if (file != null) {
             // Note that deleteOnExit() for a directory needs to be called BEFORE the deletion of its content.
-            if (postponeTillExit) {
-                file.deleteOnExit();
-            }
+            file.deleteOnExit();
             File[] files = file.listFiles();
             if (files != null) {
-                for (File f: files) {
-                    deleteFile(f, postponeTillExit);
+                for (File f : files) {
+                    deleteOnExitRecursively(f);
                 }
-            }
-            // Note that delete() for a directory should be called AFTER the deletion of its content.
-            if (!postponeTillExit) {
-                file.delete();
             }
         }
     }

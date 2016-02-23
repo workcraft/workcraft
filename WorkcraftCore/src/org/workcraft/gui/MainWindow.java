@@ -1090,23 +1090,15 @@ public class MainWindow extends JFrame {
         }
     }
 
-    private static String removeSpecialFileNameCharacters(String fileName) {
-        return fileName.replace('\\', '_').replace('/', '_').replace(':', '_').replace('"', '_').replace('<', '_')
-                .replace('>', '_').replace('|', '_');
-    }
-
     private String getFileNameForCurrentWork() {
         String fileName = TITLE_PLACEHOLDER;
         if (editorInFocus != null) {
             WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
             if (we != null) {
-                fileName = we.getTitle();
+                fileName = we.getFileName();
             }
         }
-        if ((fileName == null) || fileName.isEmpty()) {
-            fileName = "Untitled";
-        }
-        return removeSpecialFileNameCharacters(fileName);
+        return fileName;
     }
 
     public void saveAs(WorkspaceEntry we) throws OperationCancelledException {

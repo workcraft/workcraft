@@ -172,22 +172,16 @@ public class TreeWindow<Node> extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 final int x = e.getX();
                 final int y = e.getY();
-
                 int row = tree.getClosestRowForLocation(x, y);
-
                 if (row != -1) {
                     final Rectangle rowBounds = tree.getRowBounds(row);
                     if (rowBounds.contains(x, y)) {
-
-                        if (checkBox.getBounds().contains(x - rowBounds.x, y - rowBounds.y)) {
-                            Node node = (Node) tree.getPathForRow(row).getLastPathComponent();
-                            if (checkedNodes.contains(node)) {
-                                checkedNodes.remove(node);
-                            } else {
-                                checkedNodes.add(node);
-                            }
+                        Node node = (Node) tree.getPathForRow(row).getLastPathComponent();
+                        if (checkedNodes.contains(node)) {
+                            checkedNodes.remove(node);
+                        } else {
+                            checkedNodes.add(node);
                         }
-
                         tree.repaint(rowBounds);
                     }
                 }
