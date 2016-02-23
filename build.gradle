@@ -27,6 +27,14 @@ subprojects {
                 srcDir 'res'
             }
         }
+        test {
+            java {
+                srcDir 'test'
+            }
+            resources {
+                srcDir 'test'
+            }
+        }
     }
 
     compileJava {
@@ -44,6 +52,8 @@ subprojects {
     dependencies {
         compile fileTree(dir: '../ThirdParty', include: ['*.jar'])
         compile fileTree(dir: '../ThirdParty/batik', include: ['*.jar'])
+
+        testCompile 'junit:junit:4.5'
     }
 
     apply plugin: 'checkstyle'
@@ -52,5 +62,5 @@ subprojects {
         toolVersion = "6.15"
         configFile file("${project.rootDir}/config/checkstyle/checkstyle.xml")
     }
-    checkstyleMain.source = 'src'
+    checkstyleMain.exclude '**/jj/**'
 }
