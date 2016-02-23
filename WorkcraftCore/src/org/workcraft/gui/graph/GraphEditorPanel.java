@@ -278,7 +278,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     }
 
     private void reshape() {
-        view.setShape(15, 15, getWidth() - 15, getHeight() - 15);
+        view.setShape(0, 0, getWidth(), getHeight());
         ruler.setShape(0, 0, getWidth(), getHeight());
     }
 
