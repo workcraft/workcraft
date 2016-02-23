@@ -19,7 +19,7 @@
 *
 */
 
-package org.workcraft.testing.serialisation.xml;
+package org.workcraft.testing.plugins.stg.serialisation.xml;
 
 import java.io.IOException;
 
@@ -35,7 +35,7 @@ import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.serialisation.XMLModelDeserialiser;
 import org.workcraft.plugins.serialisation.XMLModelSerialiser;
 import org.workcraft.plugins.stg.STG;
-import org.workcraft.testing.serialisation.SerialisationTestingUtils;
+import org.workcraft.testing.plugins.stg.serialisation.SerialisationTestingUtils;
 import org.workcraft.util.DataAccumulator;
 
 public class MathModelSerialisation {

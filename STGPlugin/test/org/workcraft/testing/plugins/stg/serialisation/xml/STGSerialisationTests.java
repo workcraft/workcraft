@@ -19,36 +19,32 @@
  *
  */
 
-package org.workcraft.testing.serialisation.xml;
+package org.workcraft.testing.plugins.stg.serialisation.xml;
 
 import org.junit.Test;
 import org.workcraft.PluginProvider;
 import org.workcraft.plugins.layout.RandomLayoutTool;
 import org.workcraft.plugins.serialisation.XMLModelDeserialiser;
 import org.workcraft.plugins.serialisation.XMLModelSerialiser;
-import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.serialisation.DeserialisationResult;
 import org.workcraft.serialisation.ReferenceProducer;
-import org.workcraft.testing.serialisation.SerialisationTestingUtils;
+import org.workcraft.testing.plugins.stg.serialisation.SerialisationTestingUtils;
 import org.workcraft.util.DataAccumulator;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class VisualModelSerialisation {
+public class STGSerialisationTests {
 
     @Test
-    public void simpleSaveLoad() throws Exception {
+    public void simpleVisualSaveLoadWithImplicitArcs() throws Exception {
 
-        STG stg = XMLSerialisationTestingUtils.createTestSTG1();
-        VisualSTG visualstg = new VisualSTG(stg);
+        VisualSTG stg = XMLSerialisationTestingUtils.createTestSTG3();
 
         RandomLayoutTool layout = new RandomLayoutTool();
         WorkspaceEntry we = new WorkspaceEntry(null);
-
-        we.setModelEntry(new ModelEntry(new StgDescriptor(), visualstg));
-
+        we.setModelEntry(new ModelEntry(new StgDescriptor(), stg));
         layout.run(we);
 
         // serialise
@@ -57,10 +53,10 @@ public class VisualModelSerialisation {
         XMLModelSerialiser serialiser = new XMLModelSerialiser(mockPluginManager);
 
         DataAccumulator mathData = new DataAccumulator();
-        ReferenceProducer mathModelReferences = serialiser.serialise(stg, mathData, null);
+        ReferenceProducer mathModelReferences = serialiser.serialise(stg.getMathModel(), mathData, null);
 
         DataAccumulator visualData = new DataAccumulator();
-        serialiser.serialise(visualstg, visualData, mathModelReferences);
+        serialiser.serialise(stg, visualData, mathModelReferences);
 
         System.out.println(new String(mathData.getData()));
         System.out.println("---------------");
@@ -72,6 +68,6 @@ public class VisualModelSerialisation {
         DeserialisationResult mathResult = deserialiser.deserialise(mathData.getInputStream(), null, null);
         DeserialisationResult visualResult = deserialiser.deserialise(visualData.getInputStream(), mathResult.references, mathResult.model);
 
-        SerialisationTestingUtils.compareNodes(visualstg.getRoot(), visualResult.model.getRoot());
+        SerialisationTestingUtils.compareNodes(stg.getRoot(), visualResult.model.getRoot());
     }
 }

@@ -1,4 +1,4 @@
-package org.workcraft.testing.plugins.petri;
+package org.workcraft.testing.plugins.stg.dom;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;

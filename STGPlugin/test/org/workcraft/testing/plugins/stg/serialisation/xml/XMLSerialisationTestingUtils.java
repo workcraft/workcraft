@@ -19,7 +19,7 @@
 *
 */
 
-package org.workcraft.testing.serialisation.xml;
+package org.workcraft.testing.plugins.stg.serialisation.xml;
 
 import java.util.ArrayList;
 import java.util.Collection;

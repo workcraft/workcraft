@@ -19,7 +19,7 @@
 *
 */
 
-package org.workcraft.testing.serialisation;
+package org.workcraft.testing.plugins.stg.serialisation;
 
 import java.io.File;
 import java.io.IOException;
