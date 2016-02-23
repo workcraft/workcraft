@@ -1,14 +1,5 @@
 dependencies {
     compile project(':WorkcraftCore')
 
-    testCompile project(':STGPlugin')
-    testCompile project(':CircuitPlugin')
-    testCompile project(':DfsPlugin')
-    testCompile project(':FsmPlugin')
-    testCompile project(':FstPlugin')
-    testCompile project(':MpsatSynthesisPlugin')
-    testCompile project(':PetrifyPlugin')
-    testCompile project(':PolicyNetPlugin')
-    testCompile project(':SONPlugin')
-    testCompile project(':XmasPlugin')
+    testCompile project(':WorkcraftCore')
 }

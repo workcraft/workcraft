@@ -19,7 +19,7 @@
 *
 */
 
-package org.workcraft.testing.plugins.petri;
+package org.workcraft.testing.plugins.petri.dom;
 
 import java.util.HashMap;
 

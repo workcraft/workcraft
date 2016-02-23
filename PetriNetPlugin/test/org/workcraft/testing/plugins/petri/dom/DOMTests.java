@@ -19,7 +19,7 @@
 *
 */
 
-package org.workcraft.testing.dom;
+package org.workcraft.testing.plugins.petri.dom;
 
 import org.junit.Test;
 import org.workcraft.dom.Connection;

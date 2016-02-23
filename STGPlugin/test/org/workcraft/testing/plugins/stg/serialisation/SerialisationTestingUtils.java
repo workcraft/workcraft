@@ -19,7 +19,7 @@
 *
 */
 
-package org.workcraft.testing.serialisation;
+package org.workcraft.testing.plugins.stg.serialisation;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;

@@ -19,7 +19,7 @@
 *
 */
 
-package org.workcraft.testing.dom;
+package org.workcraft.testing.plugins.stg.dom;
 
 import java.util.LinkedList;
 
