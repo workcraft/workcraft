@@ -55,6 +55,7 @@ public class CommonEditorSettings implements Settings {
 
     private static final String keyBackgroundColor = prefix + ".backgroundColor";
     private static final String keyShowGrid = prefix + ".showGrid";
+    private static final String keyLightGrid = prefix + ".lightGrid";
     private static final String keyShowRulers = prefix + ".showRulers";
     private static final String keyRecentCount = prefix + ".recentCount";
     private static final String keyIconSize = prefix + ".iconSize";
@@ -66,6 +67,7 @@ public class CommonEditorSettings implements Settings {
 
     private static final Color defaultBackgroundColor = Color.WHITE;
     private static final boolean defaultShowGrid = true;
+    private static final boolean defaultLightGrid = true;
     private static final boolean defaultShowRulers = true;
     private static final int defaultIconSize = 24;
     private static final int defaultRecentCount = 10;
@@ -77,6 +79,7 @@ public class CommonEditorSettings implements Settings {
 
     private static Color backgroundColor = defaultBackgroundColor;
     private static boolean showGrid = defaultShowGrid;
+    private static boolean lightGrid = defaultLightGrid;
     private static boolean showRulers = defaultShowRulers;
     private static int iconSize = defaultIconSize;
     private static int recentCount = defaultRecentCount;
@@ -104,6 +107,16 @@ public class CommonEditorSettings implements Settings {
             }
             protected Boolean getter(CommonEditorSettings object) {
                 return getShowGrid();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
+                this, "Use light grid", Boolean.class, true, false, false) {
+            protected void setter(CommonEditorSettings object, Boolean value) {
+                setLightGrid(value);
+            }
+            protected Boolean getter(CommonEditorSettings object) {
+                return getLightGrid();
             }
         });
 
@@ -223,6 +236,7 @@ public class CommonEditorSettings implements Settings {
     public void load(Config config) {
         setBackgroundColor(config.getColor(keyBackgroundColor, defaultBackgroundColor));
         setShowGrid(config.getBoolean(keyShowGrid, defaultShowGrid));
+        setLightGrid(config.getBoolean(keyLightGrid, defaultLightGrid));
         setShowRulers(config.getBoolean(keyShowRulers, defaultShowRulers));
         setIconSize(config.getInt(keyIconSize, defaultIconSize));
         setRecentCount(config.getInt(keyRecentCount, defaultRecentCount));
@@ -237,6 +251,7 @@ public class CommonEditorSettings implements Settings {
     public void save(Config config) {
         config.setColor(keyBackgroundColor, getBackgroundColor());
         config.setBoolean(keyShowGrid, getShowGrid());
+        config.setBoolean(keyLightGrid, getLightGrid());
         config.setBoolean(keyShowRulers, getShowRulers());
         config.setInt(keyIconSize, getIconSize());
         config.setInt(keyRecentCount, getRecentCount());
@@ -271,6 +286,14 @@ public class CommonEditorSettings implements Settings {
 
     public static Boolean getShowGrid() {
         return showGrid;
+    }
+
+    public static void setLightGrid(Boolean value) {
+        lightGrid = value;
+    }
+
+    public static Boolean getLightGrid() {
+        return lightGrid;
     }
 
     public static void setShowRulers(Boolean value) {
