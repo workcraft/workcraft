@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.VisualModel;
@@ -74,8 +75,24 @@ public class SynthesisResultHandler extends DummyProgressMonitor<SynthesisResult
                         VisualCircuit visualCircuit = (VisualCircuit) visualModel;
                         String title = we.getModelEntry().getModel().getTitle();
                         visualCircuit.setTitle(title);
-                        visualCircuit.setEnvironmentFile(we.getFile());
-                        framework.getMainWindow().getCurrentEditor().updatePropertyView();
+                        if (!we.getFile().exists()) {
+                            JOptionPane.showMessageDialog(null,
+                                    "Error: unsaved STG cannot be set as the circuit environment.",
+                                    "Petrify synthesis", JOptionPane.ERROR_MESSAGE);
+                        } else {
+                            visualCircuit.setEnvironmentFile(we.getFile());
+                            if (we.isChanged()) {
+                                JOptionPane.showMessageDialog(null,
+                                        "Warning: the STG with unsaved changes is set as the circuit environment.",
+                                        "Petrify synthesis", JOptionPane.WARNING_MESSAGE);
+                            }
+                        }
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                framework.getMainWindow().getCurrentEditor().updatePropertyView();
+                            }
+                        });
                     }
                 } catch (DeserialisationException e) {
                     throw new RuntimeException(e);

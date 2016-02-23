@@ -73,6 +73,19 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
         if (userCancelled) {
             return Result.cancelled();
         }
+
+        // FIXME: An attempt to synchronise the output streams with the process completion.
+//        try {
+//            process.closeInput();
+//        } catch (IOException e) {
+//        }
+//
+//        try {
+//            Thread.sleep(delayOnFinish);
+//        } catch(InterruptedException ex) {
+//            Thread.currentThread().interrupt();
+//        }
+
         ExternalProcessResult result = new ExternalProcessResult(
                 returnCode, stdoutAccum.getData(), stderrAccum.getData(),
                 Collections.<String, byte[]>emptyMap());
@@ -125,6 +138,11 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
 
     @Override
     public void processFinished(int returnCode) {
+        try {
+            stdoutAccum.flush();
+            stderrAccum.flush();
+        } catch (IOException e) {
+        }
         this.returnCode = returnCode;
         this.finished = true;
     }
