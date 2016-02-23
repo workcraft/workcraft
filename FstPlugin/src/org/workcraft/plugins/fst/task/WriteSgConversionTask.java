@@ -17,7 +17,6 @@ import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.interop.DotGImporter;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petrify.tasks.WriteSgTask;
-import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
@@ -72,7 +71,6 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
     @Override
     public Result<? extends WriteSgConversionResult> run(ProgressMonitor<? super WriteSgConversionResult> monitor) {
         final Framework framework = Framework.getInstance();
-        File pnFile = null;
         try {
             // Common variables
             monitor.progressUpdate(0.05);
@@ -86,7 +84,8 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
             monitor.progressUpdate(0.10);
 
             // Generating .g file for Petri Net
-            pnFile = File.createTempFile("stg_", ".g");
+            File pnFile = FileUtils.createTempFile("stg-", ".g");
+            pnFile.deleteOnExit();
             ExportTask pnExportTask = new ExportTask(pnExporter, pn, pnFile.getAbsolutePath());
             Result<? extends Object> pnExportResult = framework.getTaskManager().execute(
                     pnExportTask, "Exporting .g", subtaskMonitor);
@@ -144,8 +143,6 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
 
         } catch (Throwable e) {
             return new Result<WriteSgConversionResult>(e);
-        } finally {
-            FileUtils.deleteFile(pnFile, CommonDebugSettings.getKeepTemporaryFiles());
         }
     }
 

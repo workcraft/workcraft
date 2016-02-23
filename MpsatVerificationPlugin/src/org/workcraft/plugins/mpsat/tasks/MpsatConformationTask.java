@@ -19,7 +19,6 @@ import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.punf.PunfUtilitySettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
-import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition.Type;
@@ -52,14 +51,9 @@ public class MpsatConformationTask extends MpsatChainTask {
     @Override
     public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
         Framework framework = Framework.getInstance();
-        File directory = null;
+        String prefix = FileUtils.getTempPrefix(we.getTitle());
+        File directory = FileUtils.createTempDirectory(prefix);
         try {
-            // Common variables
-            monitor.progressUpdate(0.10);
-            String title = we.getTitle();
-            String prefix = "workcraft-" + title + "-"; // Prefix must be at least 3 symbols long.
-            directory = FileUtils.createTempDirectory(prefix);
-
             STG devStg = (STG) we.getModelEntry().getVisualModel().getMathModel();
             Exporter devStgExporter = Export.chooseBestExporter(framework.getPluginManager(), devStg, Format.STG);
             if (devStgExporter == null) {
@@ -182,7 +176,7 @@ public class MpsatConformationTask extends MpsatChainTask {
         } catch (Throwable e) {
             return new Result<MpsatChainResult>(e);
         } finally {
-            FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
+            FileUtils.deleteOnExitRecursively(directory);
         }
     }
 

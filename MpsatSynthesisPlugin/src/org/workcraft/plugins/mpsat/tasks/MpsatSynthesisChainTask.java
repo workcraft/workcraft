@@ -7,7 +7,6 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat.MpsatSynthesisSettings;
 import org.workcraft.plugins.punf.PunfUtilitySettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
-import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.serialisation.Format;
@@ -34,12 +33,9 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> 
     @Override
     public Result<? extends MpsatSynthesisChainResult> run(ProgressMonitor<? super MpsatSynthesisChainResult> monitor) {
         Framework framework = Framework.getInstance();
-        File directory = null;
+        String prefix = FileUtils.getTempPrefix(we.getTitle());
+        File directory = FileUtils.createTempDirectory(prefix);
         try {
-            String title = we.getTitle();
-            String prefix = "workcraft-" + title + "-"; // Prefix must be at least 3 symbols long.
-            directory = FileUtils.createTempDirectory(prefix);
-
             STG model = WorkspaceUtils.getAs(we, STG.class);
             Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
             if (exporter == null) {
@@ -98,8 +94,7 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> 
         } catch (Throwable e) {
             return new Result<MpsatSynthesisChainResult>(e);
         } finally {
-            // Clean up
-            FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
+            FileUtils.deleteOnExitRecursively(directory);
         }
     }
 

@@ -48,7 +48,6 @@ import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.layout.jj.DotParser;
 import org.workcraft.plugins.layout.jj.ParseException;
-import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.serialisation.Format;
@@ -192,7 +191,9 @@ public class DotLayoutTool extends AbstractLayoutTool {
         File directory = FileUtils.createTempDirectory(prefix);
         try {
             File original = new File(directory, "original.dot");
+            original.deleteOnExit();
             File layout = new File(directory, "layout.dot");
+            layout.deleteOnExit();
 
             saveGraph(model, original);
 
@@ -223,14 +224,8 @@ public class DotLayoutTool extends AbstractLayoutTool {
                     new String(res.getReturnValue().getOutput()) + "\n\n" +
                     new String(res.getReturnValue().getErrors()));
             }
-        } catch (IOException e) {
+        } catch (IOException | ModelValidationException | SerialisationException e) {
             throw new RuntimeException(e);
-        } catch (ModelValidationException e) {
-            throw new RuntimeException(e);
-        } catch (SerialisationException e) {
-            throw new RuntimeException(e);
-        } finally {
-            FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
         }
     }
 

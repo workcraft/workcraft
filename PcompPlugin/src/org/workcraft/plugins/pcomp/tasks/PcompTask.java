@@ -70,19 +70,9 @@ public class PcompTask implements Task<ExternalProcessResult> {
         }
 
         // List of places output file
-        File listFile = null;
-        try {
-            if (directory == null) {
-                listFile = File.createTempFile("places_", ".list");
-                listFile.deleteOnExit();
-            } else {
-                listFile = new File(directory, "places.list");
-            }
-        } catch (IOException e) {
-            return Result.exception(e);
-        }
+        File listFile = new File(directory, "places.list");
+        listFile.deleteOnExit();
         command.add("-l" + listFile.getAbsolutePath());
-
         // Input files
         for (File inputFile: inputFiles) {
             command.add(inputFile.getAbsolutePath());

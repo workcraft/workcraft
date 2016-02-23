@@ -22,7 +22,6 @@ import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.punf.PunfUtilitySettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
-import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition.Type;
@@ -65,16 +64,14 @@ public class CheckCircuitTask extends MpsatChainTask {
     @Override
     public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
         Framework framework = Framework.getInstance();
-        File directory = null;
+        String prefix = FileUtils.getTempPrefix(we.getTitle());
+        File directory = FileUtils.createTempDirectory(prefix);
         try {
             // Common variables
             monitor.progressUpdate(0.05);
             VisualCircuit visualCircuit = (VisualCircuit) we.getModelEntry().getVisualModel();
             File envFile = visualCircuit.getEnvironmentFile();
             boolean hasEnvironment = (envFile != null) && envFile.exists();
-
-            String prefix = FileUtils.getTempPrefix(we.getTitle());
-            directory = FileUtils.createTempDirectory(prefix);
 
             CircuitToStgConverter generator = new CircuitToStgConverter(visualCircuit);
             STG devStg = (STG) generator.getStg().getMathModel();
@@ -311,7 +308,7 @@ public class CheckCircuitTask extends MpsatChainTask {
         } catch (Throwable e) {
             return new Result<MpsatChainResult>(e);
         } finally {
-            FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
+            FileUtils.deleteOnExitRecursively(directory);
         }
     }
 

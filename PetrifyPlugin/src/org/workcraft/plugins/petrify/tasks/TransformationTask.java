@@ -16,7 +16,6 @@ import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petrify.PetrifyUtilitySettings;
-import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.plugins.stg.STGModel;
@@ -119,7 +118,7 @@ public class TransformationTask implements Task<TransformationResult>, ExternalP
         } catch (Throwable e) {
             throw new RuntimeException(e);
         } finally {
-            FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
+            FileUtils.deleteOnExitRecursively(directory);
         }
     }
 

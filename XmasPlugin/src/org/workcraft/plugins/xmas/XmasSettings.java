@@ -177,7 +177,7 @@ public class XmasSettings implements Settings {
                     System.err.println("Failed to create temporary VXM executable: " + e.getMessage());
                 }
             }
-            FileUtils.deleteFile(vxmTempDirectory, true);
+            FileUtils.deleteOnExitRecursively(vxmTempDirectory);
             // Visit all files to put them in the deletion queue on application close
             getTempVxmCommandFile();
             getTempVxmVsettingsFile();
@@ -205,73 +205,73 @@ public class XmasSettings implements Settings {
 
     public static File getTempVxmVsettingsFile() {
         File result = new File(getTempVxmDirectory(), VSETTINGS_FILE_NAME);
-        FileUtils.deleteFile(result, true);
+        result.deleteOnExit();
         return result;
     }
 
     public static File getTempVxmCpnFile() {
         File result = new File(getTempVxmDirectory(), CPN_FILE_NAME);
-        FileUtils.deleteFile(result, true);
+        result.deleteOnExit();
         return result;
     }
 
     public static File getTempVxmInFile() {
         File result = new File(getTempVxmDirectory(), IN_FILE_NAME);
-        FileUtils.deleteFile(result, true);
+        result.deleteOnExit();
         return result;
     }
 
     public static File getTempVxmPncFile() {
         File result = new File(getTempVxmDirectory(), PNC_FILE_NAME);
-        FileUtils.deleteFile(result, true);
+        result.deleteOnExit();
         return result;
     }
 
     public static File getTempVxmJsonFile() {
         File result = new File(getTempVxmDirectory(), JSON_FILE_NAME);
-        FileUtils.deleteFile(result, true);
+        result.deleteOnExit();
         return result;
     }
 
     public static File getTempVxmSolnFile() {
         File result = new File(getTempVxmDirectory(), SOLN_FILE_NAME);
-        FileUtils.deleteFile(result, true);
+        result.deleteOnExit();
         return result;
     }
 
     public static File getTempVxmQslFile() {
         File result = new File(getTempVxmDirectory(), QSL_FILE_NAME);
-        FileUtils.deleteFile(result, true);
+        result.deleteOnExit();
         return result;
     }
 
     public static File getTempVxmEquFile() {
         File result = new File(getTempVxmDirectory(), EQU_FILE_NAME);
-        FileUtils.deleteFile(result, true);
+        result.deleteOnExit();
         return result;
     }
 
     public static File getTempVxmQueFile() {
         File result = new File(getTempVxmDirectory(), QUE_FILE_NAME);
-        FileUtils.deleteFile(result, true);
+        result.deleteOnExit();
         return result;
     }
 
     public static File getTempVxmLocFile() {
         File result = new File(getTempVxmDirectory(), LOC_FILE_NAME);
-        FileUtils.deleteFile(result, true);
+        result.deleteOnExit();
         return result;
     }
 
     public static File getTempVxmSyncFile() {
         File result = new File(getTempVxmDirectory(), SYNC_FILE_NAME);
-        FileUtils.deleteFile(result, true);
+        result.deleteOnExit();
         return result;
     }
 
     public static File getTempVxmQlistFile() {
         File result = new File(getTempVxmDirectory(), QLIST_FILE_NAME);
-        FileUtils.deleteFile(result, true);
+        result.deleteOnExit();
         return result;
     }
 

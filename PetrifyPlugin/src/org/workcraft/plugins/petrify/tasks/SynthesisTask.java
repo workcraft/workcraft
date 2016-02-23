@@ -12,7 +12,6 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.petrify.PetrifyUtilitySettings;
-import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.plugins.stg.STGModel;
@@ -130,7 +129,7 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
-            FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
+            FileUtils.deleteOnExitRecursively(directory);
         }
     }
 

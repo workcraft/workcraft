@@ -19,7 +19,6 @@ import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.CpogEncoding;
 import org.workcraft.plugins.cpog.optimisation.jj.ParseException;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
-import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.ToolUtils;
@@ -124,7 +123,7 @@ public class ScencoSolver {
         File resultDirectory = new File(directory, "result");
         resultDirectory.mkdir();
         if ((cpogBuilder.writeCpogIntoFile(m, scenarios, scenarioFile, encodingFile, settings)) != 0) {
-            FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
+            FileUtils.deleteOnExitRecursively(directory);
             args.add("ERROR");
             args.add("Error on writing scenario file.");
             args.add("Workcraft error");
@@ -136,7 +135,7 @@ public class ScencoSolver {
         if (settings.isAbcFlag()) {
             File f = new File(abcFolder);
             if (!f.exists() || !f.isDirectory()) {
-                FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
+                FileUtils.deleteOnExitRecursively(directory);
                 args.add("ERROR");
                 args.add(MSG_ABC_NOT_PRESENT);
                 args.add(ACCESS_SCENCO_ERROR);
@@ -146,7 +145,7 @@ public class ScencoSolver {
                 gateLibFlag = "-lib";
                 f = new File(abcFolder + gatesLibrary);
                 if (!f.exists() || f.isDirectory()) {
-                    FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
+                    FileUtils.deleteOnExitRecursively(directory);
                     args.add("ERROR");
                     args.add(MSG_GATE_LIB_NOT_PRESENT);
                     args.add(ACCESS_SCENCO_ERROR);
@@ -210,7 +209,7 @@ public class ScencoSolver {
             numSol = "1";
             break;
         default:
-            FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
+            FileUtils.deleteOnExitRecursively(directory);
             args.add("ERROR");
             args.add(MSG_SELECTION_MODE_UNDEFINED);
             args.add(ACCESS_SCENCO_ERROR);
@@ -410,7 +409,7 @@ public class ScencoSolver {
             we.saveMemento();
         } finally {
             // clean up temporary files
-            FileUtils.deleteFile(directory, CommonDebugSettings.getKeepTemporaryFiles());
+            FileUtils.deleteOnExitRecursively(directory);
         }
     }
 

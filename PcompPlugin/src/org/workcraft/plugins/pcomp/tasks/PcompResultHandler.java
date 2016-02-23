@@ -19,9 +19,11 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class PcompResultHandler extends DummyProgressMonitor<ExternalProcessResult> {
     private final boolean showInEditor;
+    private final File directory;
 
-    public PcompResultHandler(boolean showInEditor) {
+    public PcompResultHandler(boolean showInEditor, File directory) {
         this.showInEditor = showInEditor;
+        this.directory = directory;
     }
 
     @Override
@@ -44,7 +46,8 @@ public class PcompResultHandler extends DummyProgressMonitor<ExternalProcessResu
                         JOptionPane.showMessageDialog(mainWindow, message, "Parallel composition failed", JOptionPane.ERROR_MESSAGE);
                     } else if (result.getOutcome() == Outcome.FINISHED) {
                         try {
-                            File pcompResult = File.createTempFile("pcompresult", ".g");
+                            File pcompResult = FileUtils.createTempFile("result-", ".g", directory);
+                            pcompResult.deleteOnExit();
                             FileUtils.writeAllText(pcompResult, new String(result.getReturnValue().getOutput()));
 
                             if (showInEditor) {
@@ -53,19 +56,14 @@ public class PcompResultHandler extends DummyProgressMonitor<ExternalProcessResu
                             } else {
                                 framework.getWorkspace().add(pcompResult.getName(), pcompResult, true);
                             }
-                        } catch (IOException e) {
-                            JOptionPane.showMessageDialog(mainWindow, e.getMessage(), "Parallel composition failed", JOptionPane.ERROR_MESSAGE);
-                            e.printStackTrace();
-                        } catch (DeserialisationException e) {
+                        } catch (IOException | DeserialisationException e) {
                             JOptionPane.showMessageDialog(mainWindow, e.getMessage(), "Parallel composition failed", JOptionPane.ERROR_MESSAGE);
                             e.printStackTrace();
                         }
                     }
                 }
             });
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
+        } catch (InterruptedException | InvocationTargetException e) {
             e.printStackTrace();
         }
     }
