@@ -12,7 +12,6 @@ jar {
 }
 
 dependencies {
-    compile 'org.codehaus.jackson:jackson-core-asl:1.8.10'
     compile 'org.codehaus.jackson:jackson-mapper-asl:1.8.10'
     compile 'log4j:log4j:1.2.8'
     compile 'org.mozilla:rhino:1.7.7.1'
