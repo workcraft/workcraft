@@ -151,7 +151,7 @@ public class CpogSelectionTool extends SelectionTool {
                     coordinate = getLowestVertex(visualCpog);
                     coordinate.setLocation(coordinate.getX(), coordinate.getY() + 2);
                     for (String s : expressions) {
-                        if (!s.contains(" = ")) {
+                        if (!s.contains("=")) {
                             exp = exp + " " + s;
                         } else {
                             if (exp.compareTo("") != 0) {
@@ -228,7 +228,7 @@ public class CpogSelectionTool extends SelectionTool {
                     coordinate = getLowestVertex(visualCpog);
                     coordinate.setLocation(coordinate.getX(), coordinate.getY() + 2);
                     for (String s : expressions) {
-                        if (!s.contains(" = ")) {
+                        if (!s.contains("=")) {
                             exp = exp + " " + s;
                         } else {
                             if (exp.compareTo("") != 0) {
