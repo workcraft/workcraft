@@ -1,5 +1,4 @@
-![Workcraft logo](logo.png)
-
+# ![Workcraft logo](logo.png)
 [![Build Status](https://travis-ci.org/tuura/workcraft.svg?branch=master)](https://travis-ci.org/tuura/workcraft)
 
 Workcraft is a cross-platform toolset to capture, simulate, synthesize
