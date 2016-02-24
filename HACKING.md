@@ -1,7 +1,5 @@
-# Hacking
-
-This doc contains information relevant to people contributing to
-Workcraft. Read the [README](README.md) first if you haven't.
+This doc contains information relevant to people contributing to Workcraft.
+Read the [README](README.md) first if you have not done it yet.
 
 ### Testing
 
@@ -9,7 +7,7 @@ Testing includes a collection of JUnit tests and checkstyle to enforce a sane
 code style throughout the Java codebase (see below). The tests should be run 
 before proposing your changes for the merge into the master repo as follows:
 
- $ ./gradlew check
+    $ ./gradlew check
 
 ### Code style
 
