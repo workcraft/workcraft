@@ -1,10 +1,7 @@
 package org.workcraft.plugins.pcomp.tasks;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.workcraft.plugins.pcomp.PcompUtilitySettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
@@ -13,7 +10,6 @@ import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
-import org.workcraft.util.FileUtils;
 import org.workcraft.util.ToolUtils;
 
 public class PcompTask implements Task<ExternalProcessResult> {
@@ -25,13 +21,18 @@ public class PcompTask implements Task<ExternalProcessResult> {
     }
 
     private final File[] inputFiles;
+    private final File outputFile;
+    private final File placesFile;
     private final ConversionMode conversionMode;
     private final boolean useSharedOutputs;
     private final boolean useImprovedComposition;
     private final File directory;
 
-    public PcompTask(File[] inputFiles, ConversionMode conversionMode, boolean useSharedOutputs, boolean useImprovedComposition, File directory) {
+    public PcompTask(File[] inputFiles, File outputFile, File placesFile,
+            ConversionMode conversionMode, boolean useSharedOutputs, boolean useImprovedComposition, File directory) {
         this.inputFiles = inputFiles;
+        this.outputFile = outputFile;
+        this.placesFile = placesFile;
         this.conversionMode = conversionMode;
         this.useSharedOutputs = useSharedOutputs;
         this.useImprovedComposition = useImprovedComposition;
@@ -69,11 +70,17 @@ public class PcompTask implements Task<ExternalProcessResult> {
             }
         }
 
+        // Composed STG output file
+        if (outputFile != null) {
+            command.add("-f" + outputFile.getAbsolutePath());
+        }
+
         // List of places output file
-        File listFile = new File(directory, "places.list");
-        listFile.deleteOnExit();
-        command.add("-l" + listFile.getAbsolutePath());
-        // Input files
+        if (placesFile != null) {
+            command.add("-l" + placesFile.getAbsolutePath());
+        }
+
+        // STG input files
         for (File inputFile: inputFiles) {
             command.add(inputFile.getAbsolutePath());
         }
@@ -84,17 +91,8 @@ public class PcompTask implements Task<ExternalProcessResult> {
             return res;
         }
 
-        Map<String, byte[]> outputFiles = new HashMap<String, byte[]>();
-        try {
-            if (listFile.exists()) {
-                outputFiles.put("places.list", FileUtils.readAllBytes(listFile));
-            }
-        } catch (IOException e) {
-            return new Result<ExternalProcessResult>(e);
-        }
-
         ExternalProcessResult retVal = res.getReturnValue();
-        ExternalProcessResult result = new ExternalProcessResult(retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), outputFiles);
+        ExternalProcessResult result = new ExternalProcessResult(retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors());
         if (retVal.getReturnCode() < 2) {
             return Result.finished(result);
         } else {

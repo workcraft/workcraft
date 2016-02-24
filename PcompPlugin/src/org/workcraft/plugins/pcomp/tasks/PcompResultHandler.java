@@ -1,7 +1,6 @@
 package org.workcraft.plugins.pcomp.tasks;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JOptionPane;
@@ -14,16 +13,16 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.FileUtils;
+import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class PcompResultHandler extends DummyProgressMonitor<ExternalProcessResult> {
     private final boolean showInEditor;
-    private final File directory;
+    private final File outputFile;
 
-    public PcompResultHandler(boolean showInEditor, File directory) {
+    public PcompResultHandler(boolean showInEditor, File outputFile) {
         this.showInEditor = showInEditor;
-        this.directory = directory;
+        this.outputFile = outputFile;
     }
 
     @Override
@@ -34,6 +33,7 @@ public class PcompResultHandler extends DummyProgressMonitor<ExternalProcessResu
                 public void run() {
 
                     final Framework framework = Framework.getInstance();
+                    Workspace workspace = framework.getWorkspace();
                     MainWindow mainWindow = framework.getMainWindow();
                     if (result.getOutcome() == Outcome.FAILED) {
                         String message;
@@ -46,17 +46,13 @@ public class PcompResultHandler extends DummyProgressMonitor<ExternalProcessResu
                         JOptionPane.showMessageDialog(mainWindow, message, "Parallel composition failed", JOptionPane.ERROR_MESSAGE);
                     } else if (result.getOutcome() == Outcome.FINISHED) {
                         try {
-                            File pcompResult = FileUtils.createTempFile("result-", ".g", directory);
-                            pcompResult.deleteOnExit();
-                            FileUtils.writeAllText(pcompResult, new String(result.getReturnValue().getOutput()));
-
                             if (showInEditor) {
-                                WorkspaceEntry we = framework.getWorkspace().open(pcompResult, false);
+                                WorkspaceEntry we = workspace.open(outputFile, false);
                                 mainWindow.createEditorWindow(we);
                             } else {
-                                framework.getWorkspace().add(pcompResult.getName(), pcompResult, true);
+                                workspace.add(outputFile.getName(), outputFile, true);
                             }
-                        } catch (IOException | DeserialisationException e) {
+                        } catch (DeserialisationException e) {
                             JOptionPane.showMessageDialog(mainWindow, e.getMessage(), "Parallel composition failed", JOptionPane.ERROR_MESSAGE);
                             e.printStackTrace();
                         }
