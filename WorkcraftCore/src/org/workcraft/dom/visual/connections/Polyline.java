@@ -106,13 +106,13 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
         g.draw(connectionPath);
 
         if (connectionInfo.hasArrow()) {
-            DrawHelper.drawArrowHead(g, curveInfo.headPosition,    curveInfo.headOrientation,
+            DrawHelper.drawArrowHead(g, curveInfo.headPosition, curveInfo.headOrientation,
                     connectionInfo.getArrowLength(), connectionInfo.getArrowWidth(), color);
         }
 
         if (connectionInfo.hasBubble()) {
             DrawHelper.drawBubbleHead(g, curveInfo.headPosition, curveInfo.headOrientation,
-                    connectionInfo.getBubbleSize(),    color, connectionInfo.getStroke());
+                    connectionInfo.getBubbleSize(), color, connectionInfo.getStroke());
         }
     }
 

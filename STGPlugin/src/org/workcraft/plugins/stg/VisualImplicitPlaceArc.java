@@ -121,7 +121,7 @@ public class VisualImplicitPlaceArc extends VisualConnection {
     public void draw(DrawRequest r) {
         super.draw(r);
         int tokens = implicitPlace.getTokens();
-        Point2D p = getPointOnConnection(0.5);
+        Point2D p = getMiddleSegmentCenterPoint();
         Graphics2D g = r.getGraphics();
         g.translate(p.getX(), p.getY());
         VisualPlace.drawTokens(r, tokens, singleTokenSize, multipleTokenSeparation, tokenSpaceSize, 0, tokenColor);
