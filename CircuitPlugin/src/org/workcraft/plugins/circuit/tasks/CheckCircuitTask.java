@@ -99,6 +99,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 
             // Generating system .g for deadlock and hazard checks (only if needed)
             File sysStgFile = null;
+            File placesFile = null;
             Result<? extends ExternalProcessResult>  pcompResult = null;
             if (checkDeadlock || checkHazard) {
                 if (envStg == null) {
@@ -115,7 +116,9 @@ public class CheckCircuitTask extends MpsatChainTask {
                     }
 
                     // Generating .g for the whole system (circuit and environment)
-                    pcompResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envStgFile, directory, monitor);
+                    sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + StgUtils.ASTG_FILE_EXT);
+                    placesFile = new File(directory, StgUtils.PLACES_FILE_NAME + StgUtils.LIST_FILE_EXT);
+                    pcompResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envStgFile, sysStgFile, placesFile, directory, monitor);
                     if (pcompResult.getOutcome() != Outcome.FINISHED) {
                         if (pcompResult.getOutcome() == Outcome.CANCELLED) {
                             return new Result<MpsatChainResult>(Outcome.CANCELLED);
@@ -123,25 +126,26 @@ public class CheckCircuitTask extends MpsatChainTask {
                         return new Result<MpsatChainResult>(Outcome.FAILED,
                                 new MpsatChainResult(devExportResult, pcompResult, null, null, toolchainPreparationSettings));
                     }
-                    sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + StgUtils.ASTG_FILE_EXT);
-                    FileUtils.writeAllText(sysStgFile, new String(pcompResult.getReturnValue().getOutput()));
                 }
             }
             monitor.progressUpdate(0.20);
 
             // Generating system .g for conformation check (only if needed) -- should be without environment internal signals
             File sysModStgFile = null;
+            File placesModFile = null;
             Result<? extends ExternalProcessResult>  pcompModResult = null;
             if (checkConformation) {
                 if (envStg == null) {
                     sysModStgFile = devStgFile;
                 } else if (envStg.getSignalNames(Type.INTERNAL, null).isEmpty() && (sysStgFile != null)) {
                     sysModStgFile = sysStgFile;
+                    placesModFile = placesFile;
                     pcompModResult = pcompResult;
                 } else {
+                    String fileSuffix = (sysStgFile == null) ? "" : StgUtils.MODIFIED_FILE_SUFFIX;
                     // Convert internal signals to dummies
                     CircuitStgUtils.convertInternalSignalsToDummies(envStg);
-                    File envModStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.MODIFIED_FILE_SUFFIX + StgUtils.ASTG_FILE_EXT);
+                    File envModStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + fileSuffix + StgUtils.ASTG_FILE_EXT);
                     Result<? extends Object> envModExportResult = CircuitStgUtils.exportStg(envStg, envModStgFile, directory, monitor);
                     if (envModExportResult.getOutcome() != Outcome.FINISHED) {
                         if (envModExportResult.getOutcome() == Outcome.CANCELLED) {
@@ -152,7 +156,11 @@ public class CheckCircuitTask extends MpsatChainTask {
                     }
 
                     // Generating .g for the whole system (circuit and environment) without internal signals
-                    pcompModResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envModStgFile, directory, monitor);
+                    sysModStgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + fileSuffix + StgUtils.ASTG_FILE_EXT);
+                    sysModStgFile.deleteOnExit();
+                    placesModFile = new File(directory, StgUtils.PLACES_FILE_NAME + fileSuffix + StgUtils.LIST_FILE_EXT);
+                    placesModFile.deleteOnExit();
+                    pcompModResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envModStgFile, sysModStgFile, placesModFile, directory, monitor);
                     if (pcompModResult.getOutcome() != Outcome.FINISHED) {
                         if (pcompModResult.getOutcome() == Outcome.CANCELLED) {
                             return new Result<MpsatChainResult>(Outcome.CANCELLED);
@@ -160,8 +168,6 @@ public class CheckCircuitTask extends MpsatChainTask {
                         return new Result<MpsatChainResult>(Outcome.FAILED,
                                 new MpsatChainResult(devExportResult, pcompModResult, null, null, toolchainPreparationSettings));
                     }
-                    sysModStgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + StgUtils.MODIFIED_FILE_SUFFIX + StgUtils.ASTG_FILE_EXT);
-                    FileUtils.writeAllText(sysModStgFile, new String(pcompModResult.getReturnValue().getOutput()));
                 }
             }
             monitor.progressUpdate(0.30);
@@ -190,7 +196,8 @@ public class CheckCircuitTask extends MpsatChainTask {
             Result<? extends ExternalProcessResult> punfModResult = punfResult;
             if (hasEnvironment && checkConformation) {
                 if ((sysStgFile != sysModStgFile) || (unfoldingModFile == null)) {
-                    unfoldingModFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + StgUtils.MODIFIED_FILE_SUFFIX + PunfUtilitySettings.getUnfoldingExtension(true));
+                    String fileSuffix = (sysStgFile == null) ? "" : StgUtils.MODIFIED_FILE_SUFFIX;
+                    unfoldingModFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + fileSuffix + PunfUtilitySettings.getUnfoldingExtension(true));
                     punfModTask = new PunfTask(sysModStgFile.getAbsolutePath(), unfoldingModFile.getAbsolutePath());
                     SubtaskMonitor<Object> punfModMonitor = new SubtaskMonitor<Object>(monitor);
                     punfModResult = framework.getTaskManager().execute(punfModTask, "Unfolding .g", punfModMonitor);
@@ -266,7 +273,8 @@ public class CheckCircuitTask extends MpsatChainTask {
             // Check for interface conformation (only if requested and if the environment is specified)
             if (hasEnvironment && checkConformation) {
                 Set<String> devOutputNames = devStg.getSignalFlatNames(Type.OUTPUT);
-                Set<String> devPlaceNames = parsePlaceNames(pcompModResult.getReturnValue().getOutputFile("places.list"), 0);
+                byte[] placesList = FileUtils.readAllBytes(placesModFile);
+                Set<String> devPlaceNames = parsePlaceNames(placesList, 0);
                 String reachConformation = MpsatSettings.genReachConformation(devOutputNames, devPlaceNames);
                 if (MpsatUtilitySettings.getDebugReach()) {
                     System.out.println("\nReach expression for the interface conformation property:");

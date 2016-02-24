@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.workspace.Path;
+import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.STGModel;
@@ -30,7 +31,7 @@ public class MpsatCscResolutionResultHandler implements Runnable {
     }
 
     public STGModel getResolvedStg() {
-        final byte[] output = result.getReturnValue().getOutputFile("mpsat.g");
+        final byte[] output = result.getReturnValue().getOutputFile(MpsatTask.FILE_MPSAT_G);
         if (output == null) {
             return null;
         }

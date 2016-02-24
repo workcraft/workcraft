@@ -48,16 +48,20 @@ public class PcompTool implements Tool {
         if (dialog.run()) {
             String tmpPrefix = FileUtils.getTempPrefix("pcomp");
             File tmpDirectory = FileUtils.createTempDirectory(tmpPrefix);
-            ArrayList<File> inputs = new ArrayList<File>();
+            ArrayList<File> inputFiles = new ArrayList<File>();
             for (Path<String> path : dialog.getSourcePaths()) {
                 Workspace workspace = framework.getWorkspace();
                 File stgFile = exportStg(workspace.getOpenFile(path), tmpDirectory);
-                inputs.add(stgFile);
+                inputFiles.add(stgFile);
             }
-            PcompTask pcompTask = new PcompTask(inputs.toArray(new File[0]), dialog.getMode(),
-                    dialog.isSharedOutputsChecked(), dialog.isImprovedPcompChecked(), tmpDirectory);
 
-            PcompResultHandler pcompResult = new PcompResultHandler(dialog.showInEditor(), tmpDirectory);
+            File outputFile = new File(tmpDirectory, "result.g");
+            outputFile.deleteOnExit();
+
+            PcompTask pcompTask = new PcompTask(inputFiles.toArray(new File[0]), outputFile, null,
+                    dialog.getMode(), dialog.isSharedOutputsChecked(), dialog.isImprovedPcompChecked(), tmpDirectory);
+
+            PcompResultHandler pcompResult = new PcompResultHandler(dialog.showInEditor(), outputFile);
             framework.getTaskManager().queue(pcompTask, "Running parallel composition [PComp]", pcompResult);
         }
     }

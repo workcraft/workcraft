@@ -100,8 +100,12 @@ public class MpsatConformationTask extends MpsatChainTask {
             monitor.progressUpdate(0.40);
 
             // Generating .g for the whole system (model and environment)
+            File placesFile = new File(directory, "places.list");
             File stgFile = new File(directory, "system.g");
-            PcompTask pcompTask = new PcompTask(new File[]{devStgFile, envStgFile}, ConversionMode.OUTPUT, true, false, directory);
+            stgFile.deleteOnExit();
+            PcompTask pcompTask = new PcompTask(new File[]{devStgFile, envStgFile}, stgFile, placesFile,
+                    ConversionMode.OUTPUT, true, false, directory);
+
             pcompResult = framework.getTaskManager().execute(
                     pcompTask, "Running parallel composition [PComp]", subtaskMonitor);
 
@@ -112,7 +116,6 @@ public class MpsatConformationTask extends MpsatChainTask {
                 return new Result<MpsatChainResult>(Outcome.FAILED,
                         new MpsatChainResult(devExportResult, pcompResult, null, null, toolchainPreparationSettings));
             }
-            FileUtils.writeAllText(stgFile, new String(pcompResult.getReturnValue().getOutput()));
             WorkspaceEntry stgWorkspaceEntry = framework.getWorkspace().open(stgFile, true);
             STG stg = (STG) stgWorkspaceEntry.getModelEntry().getMathModel();
             framework.getWorkspace().close(stgWorkspaceEntry);
@@ -135,7 +138,8 @@ public class MpsatConformationTask extends MpsatChainTask {
 
             // Check for interface conformation
             Set<String> devOutputNames = devStg.getSignalFlatNames(Type.OUTPUT);
-            Set<String> devPlaceNames = parsePlaceNames(pcompResult.getReturnValue().getOutputFile("places.list"), 0);
+            byte[] palcesList = FileUtils.readAllBytes(placesFile);
+            Set<String> devPlaceNames = parsePlaceNames(palcesList, 0);
             String reachConformation = MpsatSettings.genReachConformation(devOutputNames, devPlaceNames);
             if (MpsatUtilitySettings.getDebugReach()) {
                 System.out.println("\nReach expression for the interface conformation property:");

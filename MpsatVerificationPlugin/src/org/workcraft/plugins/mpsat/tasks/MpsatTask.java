@@ -22,6 +22,8 @@ import org.workcraft.util.FileUtils;
 import org.workcraft.util.ToolUtils;
 
 public class MpsatTask implements Task<ExternalProcessResult> {
+    public static final String FILE_MPSAT_G = "mpsat.g";
+
     private final String[] args;
     private final String inputFileName;
     private final File directory;
@@ -81,9 +83,9 @@ public class MpsatTask implements Task<ExternalProcessResult> {
 
         Map<String, byte[]> outputFiles = new HashMap<String, byte[]>();
         try {
-            File g = new File(directory, "mpsat.g");
-            if (g.exists()) {
-                outputFiles.put("mpsat.g", FileUtils.readAllBytes(g));
+            File outFile = new File(directory, FILE_MPSAT_G);
+            if (outFile.exists()) {
+                outputFiles.put(FILE_MPSAT_G, FileUtils.readAllBytes(outFile));
             }
         } catch (IOException e) {
             return new Result<ExternalProcessResult>(e);

@@ -59,11 +59,11 @@ public class CircuitStgUtils {
             // Generating .g for the whole system (circuit and environment)
             File sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + StgUtils.ASTG_FILE_EXT);
             sysStgFile.deleteOnExit();
-            Result<? extends ExternalProcessResult> pcompResult = composeDevWithEnv(devStgFile, envStgFile, directory, null);
+            Result<? extends ExternalProcessResult> pcompResult = composeDevWithEnv(devStgFile, envStgFile, sysStgFile,
+                    null, directory, null);
 
             switch (pcompResult.getOutcome()) {
             case FINISHED:
-                FileUtils.writeAllText(sysStgFile, new String(pcompResult.getReturnValue().getOutput()));
                 break;
             case CANCELLED:
                 sysStgFile = null;
@@ -132,11 +132,11 @@ public class CircuitStgUtils {
         return framework.getTaskManager().execute(exportTask, description, subtaskMonitor);
     }
 
-    public static Result<? extends ExternalProcessResult> composeDevWithEnv(File devStgFile, File envStgFile, File directory,
-            ProgressMonitor<? super MpsatChainResult> monitor) {
+    public static Result<? extends ExternalProcessResult> composeDevWithEnv(File devStgFile, File envStgFile, File sysStgFile,
+            File placesFile, File directory, ProgressMonitor<? super MpsatChainResult> monitor) {
         Framework framework = Framework.getInstance();
         File[] inputFiles = new File[]{devStgFile, envStgFile};
-        PcompTask pcompTask = new PcompTask(inputFiles, ConversionMode.OUTPUT, true, false, directory);
+        PcompTask pcompTask = new PcompTask(inputFiles, sysStgFile, placesFile, ConversionMode.OUTPUT, true, false, directory);
         String description = "Running parallel composition [PComp]";
         SubtaskMonitor<Object> subtaskMonitor = null;
         if (monitor != null) {
