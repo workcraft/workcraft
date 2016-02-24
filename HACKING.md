@@ -1,3 +1,5 @@
+# Contributing to Workcraft
+
 This doc contains information relevant to people contributing to Workcraft.
 Read the [README](README.md) first if you have not done it yet.
 
