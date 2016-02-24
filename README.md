@@ -5,7 +5,8 @@
 Workcraft is a cross-platform toolset to capture, simulate, synthesize
 and verify graph models. It supports a wide range of popular graph
 formalisms and provides a plugin-based framework to model and analyze
-new model types.
+new model types. For more information about Workcraft look at 
+[workcraft.org](http://workcraft.org/).
 
 ### Building
 
@@ -22,64 +23,22 @@ is set properly, the following may help in Debian-like systems:
 
     $ sudo ln -s /usr/lib/jvm/your-jdk /usr/lib/jvm/default-java
 
-### Running the tests
-
-    $ ./gradlew check
-
-On top of running the JUnit tests, this command will also run
-[checkstyle](https://github.com/checkstyle/checkstyle) in order to
-enforce a sane code style throughout the Java codebase.
-
-### Building in Eclipse
-
-[Eclipse IDE](https://www.eclipse.org/) is a convenient environment for
-developing and debugging Workcraft. When setting Eclipse from Gradle
-scripts it is important to separate its *Workspace* directory from the
-*Project* directory (otherwise Gradle integration may fail).
-
-* As an example, create `workcraft-workspace` directory and clone the
-  Workcraft repo into it:
-
-```
-$ mkdir workcraft-workspace
-$ cd workcraft-workspace
-$ git clone https://github.com/tuura/workcraft workcraft-master
-```
-
-* Install [Buildship Gradle Integration](https://marketplace.eclipse.org/content/buildship-gradle-integration)
-  plugin in Eclipse via the *Help->Instal New Software...* menu.
-
-* In Eclipse select the `workcraft-workspace` directory as the current
-  *Workspace*.
-
-* Import the project from Gradle config via the *File->Import...->Gradle*
-  menu. Select `workcraft-workspace/workcraft-master` as the *Project*
-  directory. Follow the import accepting the default settings.
-
-* Import `WorkcraftRunner` project via the *File->Import...* as a
-  *General->Existing Projects into Workspace* item.
-
-* Create a *Java Application* runner with the following configuration:
-
-  * Name: Workcraft
-  * Project: WorkcraftRunner
-  * Main class: org.workcraft.Console
-
 ### Running
 
-Use a startup script to set up the path to Java JVM and the classpath for Workcraft
-plugins:
+The startup scripts will only work as part of a dist folder. You can run
+Workcraft directly after building the project via Gradle as follows:
 
-  * `workcraft.bat` - BAT file for Windows.
-  * `workcraft` - Bash script for Linux and unix-like systems.
+    java -cp "$(ls -1 */build/libs/*.jar | tr '\n' ':')" org.workcraft.Console
 
-### Help and Tutorials
+### Miscellanious
 
 Help and tutorial pages are available in the
 [workcraft-doc](https://github.com/tuura/workcraft-doc) repo.
 
-For more information about Workcraft look at
-[workcraft.org](http://workcraft.org/).
+Templates for building Windows and Linux distributions of Workcraft are 
+available in the [workcraft-doc](https://github.com/tuura/workcraft-dist-template) 
+repo. This includes the binaries of backend tools, gate libraries and
+other platform-specific content.
 
-If you would like to contribute or hack on Workcraft, have a look at the
-[HACKING](HACKING.md) document.
+If you would like to contribute to Workcraft development, then read 
+through the [HACKING](HACKING.md) document.
