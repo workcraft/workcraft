@@ -2,7 +2,7 @@
 
 plugin_dirs="*Plugin/"
 core_dir="WorkcraftCore"
-core_files="LICENSE README.md workcraft workcraft.bat"
+core_files="LICENSE"
 
 platform=""
 bname="$(basename $0)"
@@ -78,12 +78,10 @@ done
 
 case $platform in
     windows)
-        rm -f $dist_path/workcraft
         cd $dist_dir
         7z a -r ${dist_name}.zip $dist_name >/dev/null
         ;;
     linux)
-        rm -f $dist_path/workcraft.bat
         cd $dist_dir
         tar -czf ${dist_name}.tar.gz $dist_name
         ;;
