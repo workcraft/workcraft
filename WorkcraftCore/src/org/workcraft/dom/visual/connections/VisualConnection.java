@@ -429,7 +429,19 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 
     @NoAutoSerialisation
     public Point2D getSplitPoint() {
-        return (splitPoint == null) ? getPointOnConnection(0.5) : splitPoint;
+        return (splitPoint == null) ? getMiddleSegmentCenterPoint() : splitPoint;
+    }
+
+    public Point2D getMiddleSegmentCenterPoint() {
+        double k = 0.5;
+        ConnectionGraphic graphic = getGraphic();
+        boolean isSingleSegmentPolyline = (graphic instanceof Polyline)
+                && (((Polyline) graphic).getSegmentCount() == 1);
+        if ((graphic instanceof Bezier) || isSingleSegmentPolyline) {
+            PartialCurveInfo curveInfo = graphic.getCurveInfo();
+            k = 0.5 * (curveInfo.tStart + curveInfo.tEnd);
+        }
+        return getPointOnConnection(k);
     }
 
     public Point2D getPointOnConnection(double t) {
