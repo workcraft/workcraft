@@ -94,6 +94,11 @@ public class VisualPlace extends VisualComponent {
     }
 
     @Override
+    public boolean getNameVisibility() {
+        return super.getNameVisibility() || !getReplicas().isEmpty();
+    }
+
+    @Override
     public void draw(DrawRequest r)    {
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
