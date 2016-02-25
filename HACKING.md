@@ -23,7 +23,7 @@ To give a quick overview of it, here is a code snippet showing the
 basics:
 
 ```java
-Class Foo {
+class Foo {
 
     public static final int CONSTANT = 1;
 
