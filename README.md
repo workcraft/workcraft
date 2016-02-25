@@ -10,7 +10,7 @@ new model types. For more information about Workcraft look at
 ### Building
 
 Workcraft is built via [Gradle](https://gradle.org/). These instructions
-use `gradlew`, a wrapper that will download version `2.10` for you. If
+use `gradlew`, a wrapper that will download version `2.11` for you. If
 you want to run your own gradle, you can.
 
 Use the `assemble` task to build the core and all the plugins:
