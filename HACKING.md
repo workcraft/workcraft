@@ -48,7 +48,7 @@ developing and debugging Workcraft.
 #### Integration of Gradle build system
 
 When setting Eclipse from Gradle scripts it is important to separate its
-*Workspace* directory from the *Project* directory (otherwise Gradle
+`Workspace` directory from the `Project` directory (otherwise Gradle
 integration may fail).
 
 * As an example, create `workspace` directory and clone the Workcraft
@@ -61,18 +61,18 @@ $ git clone git@github.com:tuura/workcraft.git
 ```
 
 * Install [Buildship Gradle Integration](https://marketplace.eclipse.org/content/buildship-gradle-integration)
-  plugin in Eclipse via the *Help->Instal New Software...* menu.
+  plugin in Eclipse via the `Help->Instal New Software...` menu.
 
-* In Eclipse select the `workspace` directory as the current *Workspace*.
+* In Eclipse select the `workspace` directory as the current `Workspace`.
 
-* Import the project from Gradle config via the *File->Import...->Gradle*
-  menu. Select `workspace/workcraft` as the *Project* directory. 
+* Import the project from Gradle config via the `File->Import...->Gradle`
+  menu. Select `workspace/workcraft` as the `Project` directory. 
   Follow the import accepting the default settings.
 
-* Import `WorkcraftRunner` project via the *File->Import...* as a
-  *General->Existing Projects into Workspace* item.
+* Import `WorkcraftRunner` project via the `File->Import...` as a
+  `General->Existing Projects into Workspace` item.
 
-* Create a *Java Application* runner with the following configuration:
+* Create a `Java Application` runner with the following configuration:
 
   * Name: Workcraft
   * Project: WorkcraftRunner
@@ -84,12 +84,12 @@ The default code style of eclipse uses tabs for indentation. This
 contradicts to the checkstyle that requires 4 spaces for each level of 
 indentation. Therefore Eclipse settings need to be modified as follows:
 
-* Select *Windows->Preferences* menu. 
+* Select `Windows->Preferences` menu. 
 
-* Go to the *Java->Code Style->Formatter* section.
+* Go to the `Java->Code Style->Formatter` section.
 
-* Edit the indentation policy of *Eclipse [built-in]* profile by
-  changing its tab policy to *Spaces only*.
+* Edit the indentation policy of `Eclipse [built-in]` profile by
+  changing its tab policy to `Spaces only`.
 
 * Save the modified profile under a new name and select it as the active
   profile.
@@ -104,11 +104,11 @@ indentation. Therefore Eclipse settings need to be modified as follows:
   $ ln -s workcraft/dist-template/linux/tools
 ```
 
-* Choose *Run->Run Configurations...* menu and edit the Workcraft runner
-  under *Java Application* section (the one created in the previous
+* Choose `Run->Run Configurations...` menu and edit the Workcraft runner
+  under `Java Application` section (the one created in the previous
   section).
 
-* On the *Arguments* tab modify the *Working directory* so it points to
+* On the `Arguments` tab modify the `Working directory` so it points to
   `${workspace_loc}`.
 
 Now workspace will be the current directory for Workcraft when started
@@ -118,5 +118,5 @@ locate the backend tools.
 Note: Workcraft requires Java 1.7 or newer for a successful build. You
 may have several versions of Java installed with Java 1.7 being active
 system-wide. However, Eclipse may have a different version of Java set
-as its default. Check this under *Windows->Preferences->Java->Compiler*
+as its default. Check this under `Windows->Preferences->Java->Compiler`
 section.
