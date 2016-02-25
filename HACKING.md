@@ -5,8 +5,8 @@ Read the [README](README.md) first if you have not done it yet.
 
 ### Testing
 
-Testing includes a collection of JUnit tests and checkstyle to enforce a sane 
-code style throughout the Java codebase (see below). The tests should be run 
+Testing includes a collection of JUnit tests and checkstyle to enforce a sane
+code style throughout the Java codebase (see below). The tests should be run
 before proposing your changes for the merge into the master repo as follows:
 
     $ ./gradlew check
@@ -43,7 +43,7 @@ class Foo {
 ### Eclipse integration
 
 [Eclipse IDE](https://www.eclipse.org/) is a convenient environment for
-developing and debugging Workcraft. 
+developing and debugging Workcraft.
 
 #### Integration of Gradle build system
 
@@ -66,7 +66,7 @@ $ git clone git@github.com:tuura/workcraft.git
 * In Eclipse select the `workspace` directory as the current `Workspace`.
 
 * Import the project from Gradle config via the `File->Import...->Gradle`
-  menu. Select `workspace/workcraft` as the `Project` directory. 
+  menu. Select `workspace/workcraft` as the `Project` directory.
   Follow the import accepting the default settings.
 
 * Import `WorkcraftRunner` project via the `File->Import...` as a
@@ -80,11 +80,11 @@ $ git clone git@github.com:tuura/workcraft.git
 
 #### Code style adjustments
 
-The default code style of eclipse uses tabs for indentation. This 
-contradicts to the checkstyle that requires 4 spaces for each level of 
+The default code style of eclipse uses tabs for indentation. This
+contradicts to the checkstyle that requires 4 spaces for each level of
 indentation. Therefore Eclipse settings need to be modified as follows:
 
-* Select `Windows->Preferences` menu. 
+* Select `Windows->Preferences` menu.
 
 * Go to the `Java->Code Style->Formatter` section.
 
