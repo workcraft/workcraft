@@ -4,7 +4,7 @@
 Workcraft is a cross-platform toolset to capture, simulate, synthesize
 and verify graph models. It supports a wide range of popular graph
 formalisms and provides a plugin-based framework to model and analyze
-new model types. For more information about Workcraft look at 
+new model types. For more information about Workcraft look at
 [workcraft.org](http://workcraft.org/).
 
 ### Building
@@ -34,10 +34,10 @@ Workcraft directly after building the project via Gradle as follows:
 Help and tutorial pages are available in the
 [workcraft-doc](https://github.com/tuura/workcraft-doc) repo.
 
-Templates for building Windows and Linux distributions of Workcraft are 
-available in the [workcraft-doc](https://github.com/tuura/workcraft-dist-template) 
+Templates for building Windows and Linux distributions of Workcraft are
+available in the [workcraft-doc](https://github.com/tuura/workcraft-dist-template)
 repo. This includes the binaries of backend tools, gate libraries and
 other platform-specific content.
 
-If you would like to contribute to Workcraft development, then read 
+If you would like to contribute to Workcraft development, then read
 through the [HACKING](HACKING.md) document.
