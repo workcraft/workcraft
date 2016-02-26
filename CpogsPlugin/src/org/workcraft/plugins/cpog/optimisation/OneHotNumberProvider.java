@@ -8,14 +8,14 @@ import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import static org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations.*;
 
 public class OneHotNumberProvider implements NumberProvider<OneHotIntBooleanFormula> {
-    private final List<BooleanFormula> rho = new ArrayList<BooleanFormula>();
+    private final List<BooleanFormula> rho = new ArrayList<>();
 
     public OneHotNumberProvider() {
     }
 
     @Override
     public OneHotIntBooleanFormula generate(String varPrefix, int range) {
-        List<BooleanVariable> vars = new ArrayList<BooleanVariable>();
+        List<BooleanVariable> vars = new ArrayList<>();
         for (int i = 0; i < range; i++) {
             vars.add(new FreeVariable(varPrefix + "sel" + i));
         }
@@ -34,7 +34,7 @@ public class OneHotNumberProvider implements NumberProvider<OneHotIntBooleanForm
     @Override
     public BooleanFormula select(BooleanFormula[] booleanFormulas,
             OneHotIntBooleanFormula number) {
-        List<BooleanFormula> conditions = new ArrayList<BooleanFormula>();
+        List<BooleanFormula> conditions = new ArrayList<>();
 
         if (number.getRange() != booleanFormulas.length) {
             throw new RuntimeException("Lengths do not match");

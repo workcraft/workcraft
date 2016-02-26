@@ -33,7 +33,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class STGGen implements Tool {
 
-    private List<JRadioButton> rlist = new ArrayList<JRadioButton>();
+    private List<JRadioButton> rlist = new ArrayList<>();
 
     private class RadioListener implements ActionListener {
         @Override
@@ -78,7 +78,7 @@ public class STGGen implements Tool {
         System.out.println("Generating Circuit");
 
         VisualXmas vnet = (VisualXmas) we.getModelEntry().getVisualModel();
-        List<SyncComponent> scomps = new ArrayList<SyncComponent>();
+        List<SyncComponent> scomps = new ArrayList<>();
         for (Node node : vnet.getNodes()) {
             if (node instanceof VisualSyncComponent) {
                 cntSyncNodes++;
@@ -92,7 +92,7 @@ public class STGGen implements Tool {
         JPanel panelmain = new JPanel();
         mainFrame.getContentPane().add(panelmain, BorderLayout.PAGE_START);
         panelmain.setLayout(new BoxLayout(panelmain, BoxLayout.PAGE_AXIS));
-        List<JPanel> panellist = new ArrayList<JPanel>();
+        List<JPanel> panellist = new ArrayList<>();
         JRadioButton jr;
         for (int no = 0; no < cntSyncNodes; no = no + 1) {
             //if (loaded == 0) slist1.add(new String("1"));

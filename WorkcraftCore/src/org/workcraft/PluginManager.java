@@ -196,7 +196,7 @@ public class PluginManager implements PluginProvider {
         String[] classPathLocations = System.getProperty("java.class.path").split(System.getProperty("path.separator"));
 
         List<Class<?>> classes = new ArrayList<Class<?>>();
-        ArrayList<LegacyPluginInfo> pluginInfos = new ArrayList<LegacyPluginInfo>();
+        ArrayList<LegacyPluginInfo> pluginInfos = new ArrayList<>();
 
         for (String s: classPathLocations) {
             LogUtils.logMessageLine("  Processing class path entry: " + s);
@@ -279,7 +279,7 @@ public class PluginManager implements PluginProvider {
         if (!interf.isInterface()) {
             throw new RuntimeException("'interf' argument must be an interface");
         }
-        final PluginInfo<T> pluginInfo = new PluginInstanceHolder<T>(initialiser);
+        final PluginInfo<T> pluginInfo = new PluginInstanceHolder<>(initialiser);
         plugins.put(interf, pluginInfo);
     }
 

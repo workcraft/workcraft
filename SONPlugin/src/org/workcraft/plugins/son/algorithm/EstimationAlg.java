@@ -32,7 +32,7 @@ public class EstimationAlg extends TimeAlg {
 
     protected SON net;
     //interval[0] is first found specified time interval, interval[1] is the accumulated durations
-    private Collection<Interval[]> resultTimeAndDuration = new ArrayList<Interval[]>();
+    private Collection<Interval[]> resultTimeAndDuration = new ArrayList<>();
 
     //default duration provided by user
     protected final Interval defaultDuration;
@@ -41,8 +41,8 @@ public class EstimationAlg extends TimeAlg {
     private Before before;
     protected Granularity g;
     protected Color color = Color.ORANGE;
-    private Collection<Path> fwdPaths = new ArrayList<Path>();
-    private Collection<Path> bwdPaths = new ArrayList<Path>();
+    private Collection<Path> fwdPaths = new ArrayList<>();
+    private Collection<Path> bwdPaths = new ArrayList<>();
 
     public EstimationAlg(SON net, Interval d, Granularity g, ScenarioRef s) {
         super(net);
@@ -332,7 +332,7 @@ public class EstimationAlg extends TimeAlg {
     }
 
     private Collection<SONConnection> getSpecifiedConnections(Collection<SONConnection> cons) {
-        Collection<SONConnection> result = new ArrayList<SONConnection>();
+        Collection<SONConnection> result = new ArrayList<>();
         for (SONConnection con : cons) {
             if (con.getTime().isSpecified()) {
                 result.add(con);
@@ -458,7 +458,7 @@ public class EstimationAlg extends TimeAlg {
             TransitionNode t = (TransitionNode) n;
             Collection<SONConnection> cons2 = net.getOutputScenarioPNConnections(t, scenario);
 
-            Collection<SONConnection> specifiedCons = new ArrayList<SONConnection>();
+            Collection<SONConnection> specifiedCons = new ArrayList<>();
             for (SONConnection con : cons2) {
                 if (con.getTime().isSpecified()) {
                     specifiedCons.add(con);
@@ -533,7 +533,7 @@ public class EstimationAlg extends TimeAlg {
             TransitionNode t = (TransitionNode) n;
             Collection<SONConnection> cons2 = net.getInputScenarioPNConnections(t, scenario);
 
-            Collection<SONConnection> specifiedCons = new ArrayList<SONConnection>();
+            Collection<SONConnection> specifiedCons = new ArrayList<>();
             for (SONConnection con : cons2) {
                 if (con.getTime().isSpecified()) {
                     specifiedCons.add(con);
@@ -585,14 +585,14 @@ public class EstimationAlg extends TimeAlg {
     protected Interval getEstimatedStartTime(Node n) throws TimeEstimationException, TimeOutOfBoundsException {
         Interval result = new Interval();
 
-        LinkedList<Time> visited = new LinkedList<Time>();
+        LinkedList<Time> visited = new LinkedList<>();
         visited.add((Time) n);
 
         if (scenario != null) {
             backwardDFS(visited, scenario.getNodes(net));
         }
 
-        Collection<Interval> possibleTimes = new ArrayList<Interval>();
+        Collection<Interval> possibleTimes = new ArrayList<>();
         for (Interval[] interval : resultTimeAndDuration) {
             possibleTimes.add(granularity.plusTD(interval[0], interval[1]));
         }
@@ -618,14 +618,14 @@ public class EstimationAlg extends TimeAlg {
     protected Interval getEstimatedEndTime(Node n) throws TimeEstimationException, TimeOutOfBoundsException {
         Interval result = new Interval();
 
-        LinkedList<Time> visited = new LinkedList<Time>();
+        LinkedList<Time> visited = new LinkedList<>();
         visited.add((Time) n);
 
         if (scenario != null) {
             forwardDFS(visited, scenario.getNodes(net));
         }
 
-        Collection<Interval> possibleTimes = new ArrayList<Interval>();
+        Collection<Interval> possibleTimes = new ArrayList<>();
 
         for (Interval[] interval : resultTimeAndDuration) {
             possibleTimes.add(granularity.subtractTD(interval[0], interval[1]));
@@ -767,8 +767,8 @@ public class EstimationAlg extends TimeAlg {
     }
 
     protected LinkedList<Time> getCausalPreset(Time n, Collection<Node> nodes) {
-        LinkedList<Time> preSet = new LinkedList<Time>();
-        LinkedList<Time> result = new LinkedList<Time>();
+        LinkedList<Time> preSet = new LinkedList<>();
+        LinkedList<Time> result = new LinkedList<>();
 
         for (TransitionNode[] pre : before) {
             if (pre[1] == n) {
@@ -814,8 +814,8 @@ public class EstimationAlg extends TimeAlg {
     }
 
     protected LinkedList<Time> getCausalPostset(Time n, Collection<Node> nodes) {
-        LinkedList<Time> postSet = new LinkedList<Time>();
-        LinkedList<Time> result = new LinkedList<Time>();
+        LinkedList<Time> postSet = new LinkedList<>();
+        LinkedList<Time> result = new LinkedList<>();
 
         for (TransitionNode[] post : before) {
             if (post[0] == n) {
@@ -862,7 +862,7 @@ public class EstimationAlg extends TimeAlg {
     }
 
     public String intervals(Collection<Interval[]> intervals) {
-        ArrayList<String> strs = new ArrayList<String>();
+        ArrayList<String> strs = new ArrayList<>();
         for (Interval[] interval : intervals) {
             strs.add(interval[0].toString());
         }

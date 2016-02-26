@@ -46,7 +46,7 @@ import org.workcraft.serialisation.ReferenceProducer;
 public class DotGSerialiser implements ModelSerialiser {
 
     class ReferenceResolver implements ReferenceProducer {
-        HashMap<Object, String> refMap = new HashMap<Object, String>();
+        HashMap<Object, String> refMap = new HashMap<>();
 
         @Override
         public String getReference(Object obj) {
@@ -116,7 +116,7 @@ public class DotGSerialiser implements ModelSerialiser {
     }
 
     private void writeSignalHeader(PrintWriter out, Fst fst, Type type) {
-        HashSet<String> names = new HashSet<String>();
+        HashSet<String> names = new HashSet<>();
         for (Signal signal: fst.getSignals(type)) {
             String name = getSrialisedNodeName(fst, signal);
             names.add(name);
@@ -144,7 +144,7 @@ public class DotGSerialiser implements ModelSerialiser {
     }
 
     private void writeSymbolHeader(PrintWriter out, Fsm fsm) {
-        HashSet<String> names = new HashSet<String>();
+        HashSet<String> names = new HashSet<>();
         for (Event event: fsm.getEvents()) {
             String name = getSrialisedEventName(fsm, event);
             names.add(name);

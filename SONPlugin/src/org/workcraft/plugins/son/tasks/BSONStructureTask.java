@@ -25,14 +25,14 @@ public class BSONStructureTask extends AbstractStructuralVerification {
 
     private SON net;
 
-    private Collection<Node> relationErrors = new ArrayList<Node>();
-    private Collection<Path> cycleErrors = new ArrayList<Path>();
-    private Collection<ONGroup> groupErrors = new HashSet<ONGroup>();
+    private Collection<Node> relationErrors = new ArrayList<>();
+    private Collection<Path> cycleErrors = new ArrayList<>();
+    private Collection<ONGroup> groupErrors = new HashSet<>();
 
     private BSONAlg bsonAlg;
     private BSONCycleAlg bsonCycleAlg;
     private Map<Condition, Collection<Phase>> allPhases;
-    private ArrayList<String> phaseCutTask = new ArrayList<String>();
+    private ArrayList<String> phaseCutTask = new ArrayList<>();
 
     private int errNumber = 0;
     private int warningNumber = 0;
@@ -56,7 +56,7 @@ public class BSONStructureTask extends AbstractStructuralVerification {
 
         //group info
         infoMsg("Initialising selected groups and components...");
-        ArrayList<Node> components = new ArrayList<Node>();
+        ArrayList<Node> components = new ArrayList<>();
 
         for (ONGroup group : groups) {
             components.addAll(group.getComponents());
@@ -69,7 +69,7 @@ public class BSONStructureTask extends AbstractStructuralVerification {
             return;
         }
 
-        ArrayList<ChannelPlace> relatedCPlaces = new ArrayList<ChannelPlace>();
+        ArrayList<ChannelPlace> relatedCPlaces = new ArrayList<>();
         relatedCPlaces.addAll(getRelationAlg().getRelatedChannelPlace(groups));
         components.addAll(relatedCPlaces);
 
@@ -144,7 +144,7 @@ public class BSONStructureTask extends AbstractStructuralVerification {
     }
 
     private Collection<ONGroup> groupTask1(Collection<ONGroup> groups) {
-        Collection<ONGroup> result = new HashSet<ONGroup>();
+        Collection<ONGroup> result = new HashSet<>();
 
         for (ONGroup group : groups) {
             if (getBSONAlg().isLineLikeGroup(group)) {
@@ -177,13 +177,13 @@ public class BSONStructureTask extends AbstractStructuralVerification {
 
     //correctness of A/SYN communication between upper and lower level ONs
     private Collection<ChannelPlace> groupTask2(Collection<ONGroup> groups) {
-        Collection<ChannelPlace> result = new HashSet<ChannelPlace>();
+        Collection<ChannelPlace> result = new HashSet<>();
         Collection<ONGroup> upperGroups = getBSONAlg().getUpperGroups(groups);
 
         for (ChannelPlace cPlace : getRelationAlg().getRelatedChannelPlace(groups)) {
             int inUpperGroup = 0;
 
-            Collection<Node> connectedNodes = new HashSet<Node>();
+            Collection<Node> connectedNodes = new HashSet<>();
             connectedNodes.addAll(net.getPostset(cPlace));
             connectedNodes.addAll(net.getPreset(cPlace));
 
@@ -204,7 +204,7 @@ public class BSONStructureTask extends AbstractStructuralVerification {
     }
 
     private Map<Condition, String> phaseMainTask(Collection<ONGroup> upperGroups) {
-        Map<Condition, String> result = new HashMap<Condition, String>();
+        Map<Condition, String> result = new HashMap<>();
 
         for (ONGroup uGroup : upperGroups) {
             result.putAll(phaseTask1(uGroup));
@@ -219,7 +219,7 @@ public class BSONStructureTask extends AbstractStructuralVerification {
 
     //check for upper level condition
     private Map<Condition, String> phaseTask1(ONGroup upperGroup) {
-        Map<Condition, String> result = new HashMap<Condition, String>();
+        Map<Condition, String> result = new HashMap<>();
 
         for (Condition c : upperGroup.getConditions()) {
             String ref = net.getNodeReference(c);
@@ -232,7 +232,7 @@ public class BSONStructureTask extends AbstractStructuralVerification {
 
     //check for upper level initial/final state
     private Map<Condition, String> phaseTask2(ONGroup upperGroup) {
-        Map<Condition, String> result = new HashMap<Condition, String>();
+        Map<Condition, String> result = new HashMap<>();
 
         for (Condition c : upperGroup.getConditions()) {
             Collection<Phase> phases = getAllPhases().get(c);
@@ -265,7 +265,7 @@ public class BSONStructureTask extends AbstractStructuralVerification {
 
     //check for joint
     private Map<Condition, String> phaseTask3(ONGroup upperGroup) {
-        Map<Condition, String> result = new HashMap<Condition, String>();
+        Map<Condition, String> result = new HashMap<>();
 
         for (Condition c : upperGroup.getConditions()) {
             Condition pre = null;
@@ -319,7 +319,7 @@ public class BSONStructureTask extends AbstractStructuralVerification {
     }
 
     public Map<ONGroup, List<Marking>> getReachableMarking() {
-        Map<ONGroup, List<Marking>> result = new HashMap<ONGroup, List<Marking>>();
+        Map<ONGroup, List<Marking>> result = new HashMap<>();
 
         ASONAlg alg = new ASONAlg(net);
         Collection<ONGroup> lowerGroups = bsonAlg.getLowerGroups(net.getGroups());

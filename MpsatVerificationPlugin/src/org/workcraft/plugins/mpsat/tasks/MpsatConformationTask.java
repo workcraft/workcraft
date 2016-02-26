@@ -59,7 +59,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             if (devStgExporter == null) {
                 throw new RuntimeException("Exporter not available: model class " + devStg.getClass().getName() + " to format STG.");
             }
-            SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<Object>(monitor);
+            SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
 
             // Generating .g for the model
             File devStgFile =  new File(directory, "dev.g");
@@ -185,7 +185,7 @@ public class MpsatConformationTask extends MpsatChainTask {
     }
 
     private HashSet<String> parsePlaceNames(byte[] bufferedInput, int lineIndex) {
-        HashSet<String> result = new HashSet<String>();
+        HashSet<String> result = new HashSet<>();
         InputStream is = new ByteArrayInputStream(bufferedInput);
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
         try {

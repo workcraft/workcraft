@@ -41,12 +41,12 @@ import org.workcraft.gui.tabs.DockableTab;
 
 public class DockableWindow extends AbstractDockable {
     private DockableWindowContentPanel panel;
-    private LinkedList<Component> dragSources = new LinkedList<Component>();
+    private LinkedList<Component> dragSources = new LinkedList<>();
     private MainWindow mainWindow;
     private boolean inTab = false;
     private boolean closed = false;
 
-    private ArrayList<DockableWindowTabListener> tabListeners = new ArrayList<DockableWindowTabListener>();
+    private ArrayList<DockableWindowTabListener> tabListeners = new ArrayList<>();
 
     private ChangeListener tabChangeListener = new ChangeListener() {
         @Override

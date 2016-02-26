@@ -9,8 +9,8 @@ import java.util.HashSet;
 
 public class GraphReference {
     private String label, normalForm;
-    private HashMap<String, VisualVertex> vertMap = new HashMap<String, VisualVertex>();
-    private HashSet<VisualPage> refPages = new HashSet<VisualPage>();
+    private HashMap<String, VisualVertex> vertMap = new HashMap<>();
+    private HashSet<VisualPage> refPages = new HashSet<>();
     private Point2D.Double pageCentre = null;
 
     public GraphReference(String label, String normalForm, HashMap<String, VisualVertex> vertMap) {

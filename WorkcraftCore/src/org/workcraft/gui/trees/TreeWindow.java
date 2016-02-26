@@ -56,7 +56,7 @@ public class TreeWindow<Node> extends JPanel {
 
     private JTree tree;
     private final TreePopupProvider<Node> popupProvider;
-    private Set<Node> checkedNodes = new HashSet<Node>();
+    private Set<Node> checkedNodes = new HashSet<>();
     private CheckBoxMode checkBoxMode = CheckBoxMode.NONE;
 
     private JCheckBox checkBox;
@@ -108,7 +108,7 @@ public class TreeWindow<Node> extends JPanel {
                 return new TreeListenerAdapter<Node>(chain) {
                     @Override
                     public void restructured(Path<Node> path) {
-                        List<TreePath> expanded = new ArrayList<TreePath>();
+                        List<TreePath> expanded = new ArrayList<>();
                         for (int i = 0; i < tree.getRowCount(); i++) {
                             final TreePath treePath = tree.getPathForRow(i);
                             if (tree.isExpanded(i)) {
@@ -135,7 +135,7 @@ public class TreeWindow<Node> extends JPanel {
             }
         };
 
-        final TreeModelWrapper<Node> modelWrapper = new TreeModelWrapper<Node>(sourceWithRestructuredTrapped);
+        final TreeModelWrapper<Node> modelWrapper = new TreeModelWrapper<>(sourceWithRestructuredTrapped);
         tree.setModel(modelWrapper);
 
         if (popupProvider != null) {

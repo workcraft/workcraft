@@ -6,7 +6,7 @@ import java.util.Set;
 public class SetUtils {
 
     public static <T> Set<T> intersection(Set<T> set1, Set<T> set2) {
-        Set<T> result = new HashSet<T>();
+        Set<T> result = new HashSet<>();
         if ((set1 != null) && (set2 != null)) {
             for (T o : set1) {
                 if (set2.contains(o)) {
@@ -18,7 +18,7 @@ public class SetUtils {
     }
 
     public static <T> Set<T> union(Set<T> set1, Set<T> set2) {
-        Set<T> result = new HashSet<T>();
+        Set<T> result = new HashSet<>();
         if (set1 != null) {
             result.addAll(set1);
         }
@@ -29,8 +29,8 @@ public class SetUtils {
     }
 
     public static <T> Set<T> symmetricDifference(Set<T> set1, Set<T> set2) {
-        Set<T> result = new HashSet<T>();
-        Set<T> tmp = new HashSet<T>();
+        Set<T> result = new HashSet<>();
+        Set<T> tmp = new HashSet<>();
         if (set1 != null) {
             result.addAll(set1);
             tmp.addAll(set1);

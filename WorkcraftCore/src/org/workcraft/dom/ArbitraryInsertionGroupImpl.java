@@ -28,7 +28,7 @@ import java.util.List;
 import org.workcraft.observation.ObservableHierarchy;
 
 public class ArbitraryInsertionGroupImpl extends AbstractGroup implements ObservableHierarchy, Container {
-    LinkedList<Node> children = new LinkedList<Node>();
+    LinkedList<Node> children = new LinkedList<>();
 
     public ArbitraryInsertionGroupImpl(Container groupRef) {
         super(groupRef);

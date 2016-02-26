@@ -241,8 +241,8 @@ public class VisualSON extends AbstractVisualModel {
     }
 
     private Collection<Node> getGroupableSelection() {
-        Collection<Node> result = new HashSet<Node>();
-        Collection<Node> selection = new HashSet<Node>();
+        Collection<Node> result = new HashSet<>();
+        Collection<Node> selection = new HashSet<>();
         boolean validate = false;
 
         final Framework framework = Framework.getInstance();
@@ -340,7 +340,7 @@ public class VisualSON extends AbstractVisualModel {
             }
             currentMathLevel.add(mathGroup);
 
-            ArrayList<Node> connectionsToGroup = new ArrayList<Node>();
+            ArrayList<Node> connectionsToGroup = new ArrayList<>();
             for (VisualConnection connection : Hierarchy.getChildrenOfType(currentLevel, VisualConnection.class)) {
                 if (Hierarchy.isDescendant(connection.getFirst(), group) &&
                         Hierarchy.isDescendant(connection.getSecond(), group)) {
@@ -350,7 +350,7 @@ public class VisualSON extends AbstractVisualModel {
             currentLevel.reparent(connectionsToGroup, group);
 
             // Reparenting for the math model nodes
-            ArrayList<Node> selectedMath = new ArrayList<Node>();
+            ArrayList<Node> selectedMath = new ArrayList<>();
             for (Node node : selected) {
                 if (node instanceof VisualComponent) {
                     selectedMath.add(((VisualComponent) node).getReferencedComponent());
@@ -406,7 +406,7 @@ public class VisualSON extends AbstractVisualModel {
             }
             currentMathLevel.add(mathBlock);
 
-            ArrayList<Node> connectionsToGroup = new ArrayList<Node>();
+            ArrayList<Node> connectionsToGroup = new ArrayList<>();
 
             for (VisualConnection connection : Hierarchy.getChildrenOfType(getCurrentLevel(), VisualConnection.class)) {
                 if (Hierarchy.isDescendant(connection.getFirst(), block) &&
@@ -417,7 +417,7 @@ public class VisualSON extends AbstractVisualModel {
             getCurrentLevel().reparent(connectionsToGroup, block);
 
             // Reparenting for the math model nodes
-            ArrayList<Node> selectedMath = new ArrayList<Node>();
+            ArrayList<Node> selectedMath = new ArrayList<>();
             for (Node node : selected) {
                 if (node instanceof VisualComponent) {
                     selectedMath.add(((VisualComponent) node).getReferencedComponent());
@@ -451,7 +451,7 @@ public class VisualSON extends AbstractVisualModel {
     }
 
     private Collection<Node> getBlockSelection() {
-        Collection<Node> result = new HashSet<Node>();
+        Collection<Node> result = new HashSet<>();
         RelationAlgorithm relationAlg = new RelationAlgorithm(net);
 
         final Framework framework = Framework.getInstance();
@@ -571,7 +571,7 @@ public class VisualSON extends AbstractVisualModel {
 
     public Collection<VisualSONConnection> getVisualConnections(VisualComponent node) {
         //input value
-        ArrayList<VisualSONConnection> result = new ArrayList<VisualSONConnection>();
+        ArrayList<VisualSONConnection> result = new ArrayList<>();
         for (VisualSONConnection con : this.getVisualSONConnections()) {
             if (con.getFirst() == node) {
                 result.add(con);
@@ -584,7 +584,7 @@ public class VisualSON extends AbstractVisualModel {
     }
 
     public Collection<VisualSONConnection> getVisualConnections(VisualComponent first, VisualComponent second) {
-        ArrayList<VisualSONConnection> result = new ArrayList<VisualSONConnection>();
+        ArrayList<VisualSONConnection> result = new ArrayList<>();
         for (VisualSONConnection con : this.getVisualSONConnections()) {
             if (con.getFirst() == first && con.getSecond() == second) {
                 result.add(con);

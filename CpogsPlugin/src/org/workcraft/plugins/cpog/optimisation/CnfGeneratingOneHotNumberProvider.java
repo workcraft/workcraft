@@ -12,18 +12,18 @@ import org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations;
 import org.workcraft.plugins.cpog.optimisation.expressions.One;
 
 class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBooleanFormula> {
-    private final List<CnfClause> rho = new ArrayList<CnfClause>();
+    private final List<CnfClause> rho = new ArrayList<>();
 
     CnfGeneratingOneHotNumberProvider() {
     }
 
     public OneHotIntBooleanFormula generate(String varPrefix, int range) {
-        List<BooleanVariable> vars = new ArrayList<BooleanVariable>();
+        List<BooleanVariable> vars = new ArrayList<>();
         for (int i = 0; i < range; i++) {
             vars.add(new FreeVariable(varPrefix + "sel" + i));
         }
 
-        List<Literal> literals = new ArrayList<Literal>();
+        List<Literal> literals = new ArrayList<>();
 
         boolean useSorting = true;
 
@@ -36,7 +36,7 @@ class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBoole
 
             rho.add(or(vars));
         } else {
-            List<Literal> sorted = new ArrayList<Literal>();
+            List<Literal> sorted = new ArrayList<>();
             for (int i = 0; i < range; i++) {
                 literals.add(new Literal(vars.get(i)));
                 sorted.add(new Literal(varPrefix + "sorted" + i));
@@ -55,7 +55,7 @@ class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBoole
     }
 
     public static List<CnfClause> select(Literal[] vars, OneHotIntBooleanFormula number, boolean inverse) {
-        List<CnfClause> conditions = new ArrayList<CnfClause>();
+        List<CnfClause> conditions = new ArrayList<>();
 
         if (number.getRange() != vars.length) {
             throw new RuntimeException("Lengths do not match");
@@ -69,7 +69,7 @@ class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBoole
     }
 
     public static List<CnfClause> select(Literal result, Literal[] vars, OneHotIntBooleanFormula code) {
-        List<CnfClause> conditions = new ArrayList<CnfClause>();
+        List<CnfClause> conditions = new ArrayList<>();
 
         if (code.getRange() != vars.length) {
             throw new RuntimeException("Lengths do not match");
@@ -95,7 +95,7 @@ class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBoole
 
     @Override
     public BooleanFormula select(BooleanFormula[] vars, OneHotIntBooleanFormula number) {
-        List<BooleanVariable> params = new ArrayList<BooleanVariable>();
+        List<BooleanVariable> params = new ArrayList<>();
         Literal[]literals = new Literal[vars.length];
 
         for (int i = 0; i < vars.length; i++) {

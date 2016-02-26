@@ -33,7 +33,7 @@ public class DeadlockCheckerTool extends VerificationTool {
             JOptionPane.showMessageDialog(null,    "The model is deadlock-free.",
                     "Verification result", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            HashSet<State> finalDeadlockStates = new HashSet<State>();
+            HashSet<State> finalDeadlockStates = new HashSet<>();
             for (State state: deadlockStates) {
                 if (state.isFinal()) {
                     finalDeadlockStates.add(state);
@@ -55,11 +55,11 @@ public class DeadlockCheckerTool extends VerificationTool {
     }
 
     private HashSet<State> checkDeadlock(final Fsm fsm) {
-        HashSet<State> deadlockStates = new HashSet<State>();
+        HashSet<State> deadlockStates = new HashSet<>();
         HashMap<State, HashSet<Event>> stateEvents = FsmUtils.calcStateOutgoingEventsMap(fsm);
 
-        HashSet<State> visited = new HashSet<State>();
-        Queue<State> queue = new LinkedList<State>();
+        HashSet<State> visited = new HashSet<>();
+        Queue<State> queue = new LinkedList<>();
 
         State initialState = fsm.getInitialState();
         if (initialState != null) {

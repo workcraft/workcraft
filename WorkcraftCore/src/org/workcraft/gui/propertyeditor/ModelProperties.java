@@ -12,7 +12,7 @@ import org.workcraft.util.Pair;
 
 public class ModelProperties implements Properties {
 
-    private final LinkedList<PropertyDescriptor> propertyDescriptors = new LinkedList<PropertyDescriptor>();
+    private final LinkedList<PropertyDescriptor> propertyDescriptors = new LinkedList<>();
 
     public ModelProperties() {
     }
@@ -57,7 +57,7 @@ public class ModelProperties implements Properties {
 
     public void addSorted(final Collection<PropertyDescriptor> descriptors) {
         if (descriptors != null) {
-            LinkedList<PropertyDescriptor> sortedDescriptors = new LinkedList<PropertyDescriptor>(descriptors);
+            LinkedList<PropertyDescriptor> sortedDescriptors = new LinkedList<>(descriptors);
             Collections.sort(sortedDescriptors, new Comparator<PropertyDescriptor>() {
                 @Override
                 public int compare(PropertyDescriptor o1, PropertyDescriptor o2) {

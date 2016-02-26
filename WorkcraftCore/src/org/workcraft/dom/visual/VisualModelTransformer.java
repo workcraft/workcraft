@@ -122,7 +122,7 @@ public class VisualModelTransformer {
     }
 
     public static HashMap<VisualTransformableNode, Point2D> getRootSpacePositions(Collection<Node> nodes) {
-        HashMap<VisualTransformableNode, Point2D> componentToPositionMap = new HashMap<VisualTransformableNode, Point2D>();
+        HashMap<VisualTransformableNode, Point2D> componentToPositionMap = new HashMap<>();
         for (Node node: nodes) {
             if (node instanceof VisualTransformableNode) {
                 VisualTransformableNode component = (VisualTransformableNode) node;

@@ -42,17 +42,17 @@ public class WaggingGenerator {
     private final int count;
 
     class WaggingData {
-        HashSet<VisualComponent> dataComponents = new HashSet<VisualComponent>();
-        HashSet<VisualPushRegister> pushRegisters = new HashSet<VisualPushRegister>();
-        HashSet<VisualControlRegister> pushControls = new HashSet<VisualControlRegister>();
-        HashSet<VisualPopRegister> popRegisters = new HashSet<VisualPopRegister>();
-        HashSet<VisualControlRegister> popControls = new HashSet<VisualControlRegister>();
+        HashSet<VisualComponent> dataComponents = new HashSet<>();
+        HashSet<VisualPushRegister> pushRegisters = new HashSet<>();
+        HashSet<VisualControlRegister> pushControls = new HashSet<>();
+        HashSet<VisualPopRegister> popRegisters = new HashSet<>();
+        HashSet<VisualControlRegister> popControls = new HashSet<>();
     }
 
-    private final HashSet<VisualComponent> selectedComponents = new HashSet<VisualComponent>();
-    private final HashSet<VisualConnection> selectedConnections = new HashSet<VisualConnection>();
-    private HashMap<VisualComponent, VisualComponent> replicaToOriginalMap = new HashMap<VisualComponent, VisualComponent>();
-    private ArrayList<WaggingData> wagging = new ArrayList<WaggingData>();
+    private final HashSet<VisualComponent> selectedComponents = new HashSet<>();
+    private final HashSet<VisualConnection> selectedConnections = new HashSet<>();
+    private HashMap<VisualComponent, VisualComponent> replicaToOriginalMap = new HashMap<>();
+    private ArrayList<WaggingData> wagging = new ArrayList<>();
 
     public WaggingGenerator(VisualDfs dfs, int count) {
         this.dfs = dfs;
@@ -86,7 +86,7 @@ public class WaggingGenerator {
         }
         double step = Math.ceil(bb.getHeight());
         for (int i = 0; i < count; ++i) {
-            HashMap<VisualComponent, VisualComponent> mapComponentToReplica = new HashMap<VisualComponent, VisualComponent>();
+            HashMap<VisualComponent, VisualComponent> mapComponentToReplica = new HashMap<>();
             WaggingData waggingData = new WaggingData();
             for (VisualComponent component: selectedComponents) {
                 VisualComponent replicaComponenet = replicateComponent(component);
@@ -270,7 +270,7 @@ public class WaggingGenerator {
     private void createGroups() {
         dfs.deleteSelection();
         // data components
-        ArrayList<Node> dataNodes = new ArrayList<Node>();
+        ArrayList<Node> dataNodes = new ArrayList<>();
         for (WaggingData waggingData: wagging) {
             dataNodes.addAll(waggingData.dataComponents);
             dataNodes.addAll(waggingData.pushRegisters);
@@ -279,14 +279,14 @@ public class WaggingGenerator {
         dfs.select(dataNodes);
         dfs.groupSelection();
         // push control
-        ArrayList<Node> pushNodes = new ArrayList<Node>();
+        ArrayList<Node> pushNodes = new ArrayList<>();
         for (WaggingData waggingData: wagging) {
             pushNodes.addAll(waggingData.pushControls);
         }
         dfs.select(pushNodes);
         dfs.groupSelection();
         // pop control
-        ArrayList<Node> popNodes = new ArrayList<Node>();
+        ArrayList<Node> popNodes = new ArrayList<>();
         for (WaggingData waggingData: wagging) {
             popNodes.addAll(waggingData.popControls);
         }
@@ -311,7 +311,7 @@ public class WaggingGenerator {
     }
 
     private Container getCommonContainer() {
-        ArrayList<Node> nodes = new ArrayList<Node>();
+        ArrayList<Node> nodes = new ArrayList<>();
         for (WaggingData waggingData: wagging) {
             nodes.addAll(waggingData.dataComponents);
             nodes.addAll(waggingData.pushRegisters);

@@ -60,7 +60,7 @@ public class LegacyPluginInfo implements Initialiser<Object> {
             displayName = name.value();
         }
 
-        HashSet<String> interfaces = new HashSet<String>();
+        HashSet<String> interfaces = new HashSet<>();
         addInterfaces(cls, interfaces);
         interfaceNames = interfaces.toArray(new String[0]);
     }

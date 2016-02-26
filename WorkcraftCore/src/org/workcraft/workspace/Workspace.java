@@ -50,8 +50,8 @@ import org.xml.sax.SAXException;
 
 public class Workspace {
     public static final String EXTERNAL_PATH = "!External";
-    private LinkedTwoWayMap<Path<String>, WorkspaceEntry> openFiles = new LinkedTwoWayMap<Path<String>, WorkspaceEntry>();
-    private List<WorkspaceListener> workspaceListeners = new ArrayList<WorkspaceListener>();
+    private LinkedTwoWayMap<Path<String>, WorkspaceEntry> openFiles = new LinkedTwoWayMap<>();
+    private List<WorkspaceListener> workspaceListeners = new ArrayList<>();
 
     private boolean temporary;
 
@@ -169,7 +169,7 @@ public class Workspace {
         ancestor = ancestor.getAbsoluteFile();
         descendant = descendant.getAbsoluteFile();
 
-        List<String> strs = new ArrayList<String>();
+        List<String> strs = new ArrayList<>();
         while (descendant != null) {
             if (descendant.equals(ancestor)) {
                 Path<String> result = Path.empty();

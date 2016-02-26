@@ -11,7 +11,7 @@ import org.workcraft.util.Hierarchy;
 public class SelectionHelper {
 
     static public Collection<Node> getOrderedCurrentLevelSelection(VisualModel model) {
-        HashSet<Node> result = new HashSet<Node>();
+        HashSet<Node> result = new HashSet<>();
         Collection<Node> selection = model.getSelection();
         Container currentLevel = model.getCurrentLevel();
         for (Node node : currentLevel.getChildren()) {
@@ -23,7 +23,7 @@ public class SelectionHelper {
     }
 
     static public Collection<Node> getRecursivelyIncludedNodes(Collection<Node> nodes) {
-        HashSet<Node> result = new HashSet<Node>();
+        HashSet<Node> result = new HashSet<>();
         for (Node node : nodes) {
             if (node instanceof VisualNode) {
                 result.add(node);
@@ -38,7 +38,7 @@ public class SelectionHelper {
     }
 
     static public Collection<Node> getGroupableCurrentLevelSelection(VisualModel model) {
-        HashSet<Node> result = new HashSet<Node>();
+        HashSet<Node> result = new HashSet<>();
         Collection<Node> currentLevelSelection = getOrderedCurrentLevelSelection(model);
         for (Node node : currentLevelSelection) {
             if (model.isGroupable(node) && !(node instanceof VisualConnection)) {
@@ -52,7 +52,7 @@ public class SelectionHelper {
     }
 
     static public Collection<VisualConnection> getIncludedConnections(Collection<Node> nodes, Collection<VisualConnection> connections) {
-        Collection<VisualConnection> result = new HashSet<VisualConnection>();
+        Collection<VisualConnection> result = new HashSet<>();
         Collection<Node> recursiveNodes = getRecursivelyIncludedNodes(nodes);
         for (VisualConnection connection : connections) {
             VisualNode first = connection.getFirst();

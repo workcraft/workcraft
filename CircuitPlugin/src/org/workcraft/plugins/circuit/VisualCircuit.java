@@ -180,7 +180,7 @@ public class VisualCircuit extends AbstractVisualModel {
         validateConnection(first, second);
         if (first instanceof VisualConnection) {
             VisualConnection connection = (VisualConnection) first;
-            List<Point2D> locations = new LinkedList<Point2D>();
+            List<Point2D> locations = new LinkedList<>();
             int splitIndex = -1;
             Point2D splitPoint = connection.getSplitPoint();
             if (connection.getGraphic() instanceof Polyline) {

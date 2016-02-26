@@ -70,7 +70,7 @@ import org.workcraft.util.Pair;
 public abstract class AbstractVisualModel extends AbstractModel implements VisualModel {
     private MathModel mathModel;
     private Container currentLevel;
-    private Set<Node> selection = new HashSet<Node>();
+    private Set<Node> selection = new HashSet<>();
     private ObservableStateImpl observableState = new ObservableStateImpl();
 
     private VisualNode templateNode = null;
@@ -249,7 +249,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     }
 
     private Collection<Node> saveSelection() {
-        Set<Node> prevSelection = new HashSet<Node>();
+        Set<Node> prevSelection = new HashSet<>();
         prevSelection.addAll(selection);
         return prevSelection;
     }
@@ -506,17 +506,17 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
     @Override
     public void ungroupSelection() {
-        ArrayList<Node> toSelect = new ArrayList<Node>();
+        ArrayList<Node> toSelect = new ArrayList<>();
         for (Node node : SelectionHelper.getOrderedCurrentLevelSelection(this)) {
             if (node instanceof VisualGroup) {
                 VisualGroup group = (VisualGroup) node;
-                ArrayList<Node> nodesToReparent = new ArrayList<Node>(group.getChildren());
+                ArrayList<Node> nodesToReparent = new ArrayList<>(group.getChildren());
                 toSelect.addAll(nodesToReparent);
                 this.reparent(getCurrentLevel(), this, group, nodesToReparent);
                 getCurrentLevel().remove(group);
             } else if (node instanceof VisualPage) {
                 VisualPage page = (VisualPage) node;
-                ArrayList<Node> nodesToReparent = new ArrayList<Node>(page.getChildren());
+                ArrayList<Node> nodesToReparent = new ArrayList<>(page.getChildren());
                 toSelect.addAll(nodesToReparent);
                 this.reparent(getCurrentLevel(), this, page, nodesToReparent);
                 getMathModel().remove(page.getReferencedComponent());
@@ -555,7 +555,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     }
 
     private void deleteSelection(final Func<Node, Boolean> filter) {
-        HashMap<Container, LinkedList<Node>> batches = new HashMap<Container, LinkedList<Node>>();
+        HashMap<Container, LinkedList<Node>> batches = new HashMap<>();
         for (Node node : selection) {
             LinkedList<Node> batch = null;
             if (node.getParent() instanceof Container) {
@@ -612,7 +612,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     }
 
     public Collection<Node> getMathChildren(Collection<Node> nodes) {
-        Collection<Node> ret = new HashSet<Node>();
+        Collection<Node> ret = new HashSet<>();
         for (Node node: nodes) {
             if ((node instanceof Dependent) && !(node instanceof Replica)) {
                 ret.addAll(((Dependent) node).getMathReferences());

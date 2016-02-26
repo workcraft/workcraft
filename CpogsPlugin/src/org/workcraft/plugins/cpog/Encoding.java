@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class Encoding {
-    private Map<Variable, VariableState> states = new HashMap<Variable, VariableState>();
+    private Map<Variable, VariableState> states = new HashMap<>();
 
     public Map<Variable, VariableState> getStates() {
         return Collections.unmodifiableMap(states);
@@ -20,14 +20,14 @@ public class Encoding {
     @Override
     public String toString() {
         String result = "";
-        Set<Variable> sortedVariables = new TreeSet<Variable>(states.keySet());
+        Set<Variable> sortedVariables = new TreeSet<>(states.keySet());
         for (Variable var : sortedVariables) result += getState(var).toString();
         return result;
     }
 
     public void updateEncoding(String s) {
         int k = 0;
-        Set<Variable> sortedVariables = new TreeSet<Variable>(states.keySet());
+        Set<Variable> sortedVariables = new TreeSet<>(states.keySet());
         for (Variable var : sortedVariables) states.put(var, VariableState.fromChar(s.charAt(k++)));
     }
 

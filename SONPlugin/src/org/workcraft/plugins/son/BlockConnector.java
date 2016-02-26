@@ -148,7 +148,7 @@ public class BlockConnector {
             if (!interfaceValue.isEmpty()) {
                 String[] infos = interfaceValue.trim().split(";");
                 //interface compatiability checking
-                ArrayList<VisualSONConnection> connections = new ArrayList<VisualSONConnection>();
+                ArrayList<VisualSONConnection> connections = new ArrayList<>();
                 for (VisualSONConnection con : visualNet.getVisualSONConnections()) {
                     if (con.getFirst() == p && (con.getSecond() == block)) {
                         connections.add(con);

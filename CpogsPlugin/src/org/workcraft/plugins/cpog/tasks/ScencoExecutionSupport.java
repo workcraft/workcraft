@@ -173,7 +173,7 @@ public class ScencoExecutionSupport {
             HashMap<String, Integer> events, ArrayList<Point2D> positions,
             ArrayList<Integer> count) {
 
-        ArrayList<String> args = new ArrayList<String>();
+        ArrayList<String> args = new ArrayList<>();
 
         for (int k = 0; k < m; k++) {
             for (int i = 0; i < n; i++) {
@@ -272,7 +272,7 @@ public class ScencoExecutionSupport {
             PrintStream output = new PrintStream(scenarioFile);
 
             for (int k = 0; k < m; k++) {
-                Map<String, Integer> nodes = new HashMap<String, Integer>();
+                Map<String, Integer> nodes = new HashMap<>();
                 // Print arcs
                 output.println(".scenario CPOG_" + k);
                 for (VisualConnection c : scenarios.get(k).getConnections()) {

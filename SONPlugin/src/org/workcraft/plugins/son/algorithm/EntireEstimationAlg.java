@@ -71,7 +71,7 @@ public class EntireEstimationAlg extends EstimationAlg {
 
         superIni.setEndTime(end);
 
-        LinkedList<Time> visited = new LinkedList<Time>();
+        LinkedList<Time> visited = new LinkedList<>();
         visited.add(superIni);
 
         //assign specified value from connections to nodes

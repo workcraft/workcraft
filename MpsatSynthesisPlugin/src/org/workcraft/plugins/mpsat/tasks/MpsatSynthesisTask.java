@@ -108,7 +108,7 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
             return res;
         }
 
-        Map<String, byte[]> outputFiles = new HashMap<String, byte[]>();
+        Map<String, byte[]> outputFiles = new HashMap<>();
         try {
             File g = new File(directory, outputFileName);
             if (g.exists()) {

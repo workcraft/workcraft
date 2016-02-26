@@ -77,9 +77,9 @@ public class Cycle implements Comparable<Cycle> {
     }
 
     public Set<VisualPushRegister> getPushPreset(Node node) {
-        HashSet<VisualPushRegister> result = new HashSet<VisualPushRegister>();
-        HashSet<Node> visited = new HashSet<Node>();
-        Queue<Node> queue = new LinkedList<Node>();
+        HashSet<VisualPushRegister> result = new HashSet<>();
+        HashSet<Node> visited = new HashSet<>();
+        Queue<Node> queue = new LinkedList<>();
         queue.add(node);
         while (!queue.isEmpty()) {
             Node cur = queue.remove();
@@ -98,7 +98,7 @@ public class Cycle implements Comparable<Cycle> {
     }
 
     public double getEffectiveDelay(VisualDelayComponent component) {
-        HashSet<VisualControlRegister> controls = new HashSet<VisualControlRegister>();
+        HashSet<VisualControlRegister> controls = new HashSet<>();
         for (VisualPushRegister push: getPushPreset(component)) {
             controls.addAll(dfs.getPreset(push, VisualControlRegister.class));
         }

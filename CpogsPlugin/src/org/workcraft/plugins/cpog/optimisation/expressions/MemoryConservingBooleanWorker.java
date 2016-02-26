@@ -80,10 +80,10 @@ class Inverter implements BooleanVisitor<BooleanFormula> {
 }
 
 public class MemoryConservingBooleanWorker implements ReducedBooleanWorker {
-    Map<BooleanFormula, Integer> codes = new HashMap<BooleanFormula, Integer>();
-    Map<IntPair, BooleanFormula> ands = new HashMap<IntPair, BooleanFormula>();
-    Map<IntPair, BooleanFormula> iffs = new HashMap<IntPair, BooleanFormula>();
-    Map<Integer, BooleanFormula> nots = new HashMap<Integer, BooleanFormula>();
+    Map<BooleanFormula, Integer> codes = new HashMap<>();
+    Map<IntPair, BooleanFormula> ands = new HashMap<>();
+    Map<IntPair, BooleanFormula> iffs = new HashMap<>();
+    Map<Integer, BooleanFormula> nots = new HashMap<>();
     int nextCode = 0;
 
     Integer getCode(BooleanFormula f) {

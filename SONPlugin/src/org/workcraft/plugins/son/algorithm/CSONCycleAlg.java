@@ -30,7 +30,7 @@ public class CSONCycleAlg extends ONCycleAlg {
     protected List<Integer>[] createGraph(List<Node> nodes) {
         List<Integer>[] result = new List[nodes.size()];
 
-        LinkedHashMap<Node, Integer> nodeIndex = new LinkedHashMap<Node, Integer>();
+        LinkedHashMap<Node, Integer> nodeIndex = new LinkedHashMap<>();
         for (int i = 0; i < nodes.size(); i++) {
             nodeIndex.put(nodes.get(i), i);
         }
@@ -67,7 +67,7 @@ public class CSONCycleAlg extends ONCycleAlg {
      * get synchronous event cycle (without channel places) for a set of nodes.
      */
     public Collection<Path> syncEventCycleTask(Collection<? extends Node> nodes) {
-        HashSet<Node> fliter = new HashSet<Node>();
+        HashSet<Node> fliter = new HashSet<>();
         for (Node node : nodes) {
             if ((node instanceof ChannelPlace) || (node instanceof TransitionNode)) {
                 fliter.add(node);
@@ -77,7 +77,7 @@ public class CSONCycleAlg extends ONCycleAlg {
     }
 
     private Collection<Path> syncEventCycleFliter(Collection<Path> paths) {
-        List<Path> result = new ArrayList<Path>();
+        List<Path> result = new ArrayList<>();
         for (Path path : paths) {
             Path sub = new Path();
             for (Node node : path) {
@@ -94,7 +94,7 @@ public class CSONCycleAlg extends ONCycleAlg {
      * get synchronous event cycle (with channel places) for a set nodes.
      */
     public Collection<Path> syncCycleTask(Collection<? extends Node> nodes) {
-        HashSet<Node> fliter = new HashSet<Node>();
+        HashSet<Node> fliter = new HashSet<>();
         for (Node node : nodes) {
             if ((node instanceof ChannelPlace) || (node instanceof TransitionNode)) {
                 fliter.add(node);
@@ -116,7 +116,7 @@ public class CSONCycleAlg extends ONCycleAlg {
      */
     @Override
     protected Collection<Path> cycleFliter(Collection<Path> paths) {
-        List<Path> delList = new ArrayList<Path>();
+        List<Path> delList = new ArrayList<>();
         for (Path path : paths) {
             if (!net.getSONConnectionTypes(path).contains(Semantics.PNLINE)) {
                 delList.add(path);

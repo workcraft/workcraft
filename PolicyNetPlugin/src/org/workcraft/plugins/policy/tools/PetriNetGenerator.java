@@ -45,7 +45,7 @@ public class PetriNetGenerator {
     }
 
     private Map<VisualPlace, VisualPlace> convertPlaces() {
-        Map<VisualPlace, VisualPlace> result = new HashMap<VisualPlace, VisualPlace>();
+        Map<VisualPlace, VisualPlace> result = new HashMap<>();
         for (VisualPlace place : Hierarchy.getDescendantsOfType(policyNet.getRoot(), VisualPlace.class)) {
             String name = policyNet.getPolicyNet().getNodeReference(place.getReferencedPlace());
             VisualPlace newPlace = petriNet.createPlace(name, null);
@@ -57,7 +57,7 @@ public class PetriNetGenerator {
     }
 
     private Map<VisualBundledTransition, VisualTransition> convertTransitions() {
-        Map<VisualBundledTransition, VisualTransition> result = new HashMap<VisualBundledTransition, VisualTransition>();
+        Map<VisualBundledTransition, VisualTransition> result = new HashMap<>();
         for (VisualBundledTransition transition : Hierarchy.getDescendantsOfType(policyNet.getRoot(), VisualBundledTransition.class)) {
             Collection<Bundle> bundles = policyNet.getPolicyNet().getBundlesOfTransition(transition.getReferencedTransition());
             if (bundles.size() == 0) {
@@ -72,7 +72,7 @@ public class PetriNetGenerator {
     }
 
     private Map<VisualBundle, VisualTransition> convertBundles() {
-        Map<VisualBundle, VisualTransition> result = new HashMap<VisualBundle, VisualTransition>();
+        Map<VisualBundle, VisualTransition> result = new HashMap<>();
         for (VisualBundle bundle : policyNet.getVisualBundles()) {
             if (!bundle.getReferencedBundle().isEmpty()) {
                 double x = 0;
@@ -98,9 +98,9 @@ public class PetriNetGenerator {
     }
 
     private Map<VisualLocality, VisualGroup> convertLocalities() {
-        Map<VisualLocality, VisualGroup> result = new HashMap<VisualLocality, VisualGroup>();
+        Map<VisualLocality, VisualGroup> result = new HashMap<>();
         for (VisualLocality locality : Hierarchy.getDescendantsOfType(policyNet.getRoot(), VisualLocality.class)) {
-            HashSet<Node> nodes = new HashSet<Node>();
+            HashSet<Node> nodes = new HashSet<>();
             for (Node node: locality.getChildren()) {
                 if (node instanceof VisualBundledTransition) {
                     VisualTransition t = transitionMap.get(node);
@@ -190,7 +190,7 @@ public class PetriNetGenerator {
     }
 
     public Collection<VisualTransition> getRelatedTransitions(VisualBundledTransition node) {
-        HashSet<VisualTransition> result = new HashSet<VisualTransition>();
+        HashSet<VisualTransition> result = new HashSet<>();
         VisualTransition t = transitionMap.get(node);
         if (t != null) {
             result.add(t);

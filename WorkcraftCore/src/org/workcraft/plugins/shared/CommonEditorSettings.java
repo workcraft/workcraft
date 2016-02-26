@@ -50,7 +50,7 @@ public class CommonEditorSettings implements Settings {
         }
     }
 
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
+    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CommonEditorSettings";
 
     private static final String keyBackgroundColor = prefix + ".backgroundColor";

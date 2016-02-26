@@ -66,7 +66,7 @@ public class VisualBundle extends VisualNode implements Drawable, Dependent {
 
     @Override
     public Collection<MathNode> getMathReferences() {
-        ArrayList<MathNode> result = new ArrayList<MathNode>();
+        ArrayList<MathNode> result = new ArrayList<>();
         result.add(getReferencedBundle());
         return result;
     }
@@ -84,7 +84,7 @@ public class VisualBundle extends VisualNode implements Drawable, Dependent {
         float w = (float) strokeWidth / 4.0f;
 
         if (spanningTree == null) {
-            HashSet<Point2D> points = new HashSet<Point2D>();
+            HashSet<Point2D> points = new HashSet<>();
             Collection<VisualBundledTransition> transitions = ((VisualPolicyNet) r.getModel()).getTransitionsOfBundle(this);
             for (VisualBundledTransition t: transitions) {
                 Point2D point = TransformHelper.getTransformToRoot(t).transform(t.getCenter(), null);
@@ -106,8 +106,8 @@ public class VisualBundle extends VisualNode implements Drawable, Dependent {
     }
 
     private Collection<Line2D> buildSpanningTree(Collection<Point2D> points) {
-        HashSet<Line2D> result = new HashSet<Line2D>();
-        HashMap<Pair<Point2D, Point2D>, Double> weights = new HashMap<Pair<Point2D, Point2D>, Double>();
+        HashSet<Line2D> result = new HashSet<>();
+        HashMap<Pair<Point2D, Point2D>, Double> weights = new HashMap<>();
         for (Point2D p1: points) {
             for (Point2D p2: points) {
                 if (p1 != p2) {
@@ -116,7 +116,7 @@ public class VisualBundle extends VisualNode implements Drawable, Dependent {
                 }
             }
         }
-        HashSet<Point2D> connectedPoints = new HashSet<Point2D>();
+        HashSet<Point2D> connectedPoints = new HashSet<>();
         while (!points.isEmpty()) {
             Point2D bestPoint = null;
             if (connectedPoints.isEmpty()) {

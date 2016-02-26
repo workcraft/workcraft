@@ -123,9 +123,9 @@ public class Main {
         ConsoleBooleanSolver solver = new ConsoleBooleanSolver();
 
         CnfGeneratingOptimiser cnfGenerator = new CnfGeneratingOptimiser();
-        //Optimiser<ThermometerBooleanFormula> optimiser = new Optimiser<ThermometerBooleanFormula>(new ThermometerNumberProvider());
-        //Optimiser<BinaryIntBooleanFormula> optimiser = new Optimiser<BinaryIntBooleanFormula>(new BinaryNumberProvider());
-        Optimiser<OneHotIntBooleanFormula> oneHot = new Optimiser<OneHotIntBooleanFormula>(new OneHotNumberProvider());
+        //Optimiser<ThermometerBooleanFormula> optimiser = new Optimiser<>(new ThermometerNumberProvider());
+        //Optimiser<BinaryIntBooleanFormula> optimiser = new Optimiser<>(new BinaryNumberProvider());
+        Optimiser<OneHotIntBooleanFormula> oneHot = new Optimiser<>(new OneHotNumberProvider());
 
         LegacyCpogSolver solverCnf = new LegacyDefaultCpogSolver<BooleanFormula>(oneHot, new CleverCnfGenerator());
         LegacyCpogSolver solverCnfLimboole = new LegacyDefaultCpogSolver<BooleanFormula>(cnfGenerator, new LimBooleCnfGenerator());

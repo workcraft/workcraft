@@ -24,7 +24,7 @@ public class SONAlg extends RelationAlgorithm {
 
     //get SON initial marking
     public Collection<PlaceNode> getSONInitial() {
-        Collection<PlaceNode> result = new ArrayList<PlaceNode>();
+        Collection<PlaceNode> result = new ArrayList<>();
 
         for (ONGroup group : net.getGroups()) {
             if (upperGroups.contains(group)) {
@@ -58,7 +58,7 @@ public class SONAlg extends RelationAlgorithm {
 
     //get SON final marking
     public Collection<PlaceNode> getSONFinal() {
-        Collection<PlaceNode> result = new ArrayList<PlaceNode>();
+        Collection<PlaceNode> result = new ArrayList<>();
 
         for (ONGroup group : net.getGroups()) {
             if (upperGroups.contains(group)) {

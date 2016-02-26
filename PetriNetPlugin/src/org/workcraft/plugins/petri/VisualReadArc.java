@@ -61,7 +61,7 @@ public class VisualReadArc extends VisualConnection implements Undirected {
 
     @Override
     public Set<MathNode> getMathReferences() {
-        Set<MathNode> ret = new HashSet<MathNode>();
+        Set<MathNode> ret = new HashSet<>();
         ret.add(mathConsumingArc);
         ret.add(mathProducingArc);
         return ret;

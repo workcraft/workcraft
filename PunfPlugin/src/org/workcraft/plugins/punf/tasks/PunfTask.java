@@ -22,7 +22,7 @@ public class PunfTask implements Task<ExternalProcessResult> {
 
     @Override
     public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
-        ArrayList<String> command = new ArrayList<String>();
+        ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
         String toolName = ToolUtils.getAbsoluteCommandPath(PunfUtilitySettings.getCommand());

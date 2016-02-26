@@ -216,7 +216,7 @@ public class FormulaToString implements BooleanVisitor<String> {
     }
 
     public static class VariablePrinter extends DelegatingPrinter {
-        Map<String, BooleanVariable> varMap = new HashMap<String, BooleanVariable>();
+        Map<String, BooleanVariable> varMap = new HashMap<>();
         @Override
         public Void visit(BooleanVariable var) {
             String label = var.getLabel();

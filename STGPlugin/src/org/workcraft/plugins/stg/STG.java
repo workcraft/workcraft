@@ -167,7 +167,7 @@ public class STG extends AbstractMathModel implements STGModel {
         if (container == null) {
             container = getRoot();
         }
-        Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<>();
         for (SignalTransition st : Hierarchy.getChildrenOfType(container, SignalTransition.class)) {
             result.add(st.getSignalName());
         }
@@ -178,7 +178,7 @@ public class STG extends AbstractMathModel implements STGModel {
         if (container == null) {
             container = getRoot();
         }
-        Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<>();
         for (SignalTransition st : getSignalTransitions(type, container)) {
             result.add(st.getSignalName());
         }
@@ -212,7 +212,7 @@ public class STG extends AbstractMathModel implements STGModel {
     }
 
     public Set<String> getSignalFlatNames(Type type) {
-        Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<>();
         for (SignalTransition st : getSignalTransitions(type)) {
             String ref = getSignalReference(st);
             String flatName = NamespaceHelper.hierarchicalToFlatName(ref);
@@ -223,7 +223,7 @@ public class STG extends AbstractMathModel implements STGModel {
 
     @Override
     public Set<String> getSignalReferences(Type type) {
-        Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<>();
         for (SignalTransition st : getSignalTransitions(type)) {
             result.add(getSignalReference(st));
         }
@@ -232,7 +232,7 @@ public class STG extends AbstractMathModel implements STGModel {
 
     @Override
     public Set<String> getDummyReferences() {
-        Set<String> result = new HashSet<String>();
+        Set<String> result = new HashSet<>();
         for (Transition t : getDummyTransitions()) {
             result.add(referenceManager.getNamePair(t).getFirst());
         }

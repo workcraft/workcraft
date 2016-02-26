@@ -154,7 +154,7 @@ public class HitMan {
     }
 
     private static <T> Iterable<T> reverse(Iterable<T> original) {
-        final ArrayList<T> list = new ArrayList<T>();
+        final ArrayList<T> list = new ArrayList<>();
         for (T node : original) {
             list.add(node);
         }
@@ -275,7 +275,7 @@ public class HitMan {
             toLocal.transform(p2, p2);
         }
 
-        LinkedList<Node> hit = new LinkedList<Node>();
+        LinkedList<Node> hit = new LinkedList<>();
 
         Rectangle2D rect = new Rectangle2D.Double(
                 Math.min(p1.getX(), p2.getX()),

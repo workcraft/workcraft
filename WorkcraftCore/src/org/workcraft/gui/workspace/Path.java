@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 class EmptyPath<Node> extends Path<Node> {
-    static EmptyPath<?> instance = new EmptyPath<Object>();
+    static EmptyPath<?> instance = new EmptyPath<>();
     @SuppressWarnings("unchecked")
     public static <Node> EmptyPath<Node> instance() {
         return (EmptyPath<Node>) instance;
@@ -102,14 +102,14 @@ public abstract class Path<Node> {
     public abstract Path<Node> getParent();
 
     public static <Node> List<Node> getPath(Path<Node> path) {
-        ArrayList<Node> list = new ArrayList<Node>();
+        ArrayList<Node> list = new ArrayList<>();
         Path<Node> p = path;
         while ((p != null) && !p.isEmpty()) {
             list.add(p.getNode());
             p = p.getParent();
         }
         int n = list.size();
-        List<Node> result = new ArrayList<Node>();
+        List<Node> result = new ArrayList<>();
         for (int i = 0; i < n; i++) {
             result.add(list.get(n - 1 - i));
         }

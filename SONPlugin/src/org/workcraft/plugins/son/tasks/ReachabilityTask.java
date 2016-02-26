@@ -126,8 +126,8 @@ public class ReachabilityTask implements Task<VerificationResult> {
     }
 
     private boolean reachabilityTask() {
-        //Collection<Node> initial = new HashSet<Node>();
-        Collection<Node> sync = new HashSet<Node>();
+        //Collection<Node> initial = new HashSet<>();
+        Collection<Node> sync = new HashSet<>();
         for (Path path : getSyncCycles()) {
             sync.addAll(path);
         }
@@ -157,7 +157,7 @@ public class ReachabilityTask implements Task<VerificationResult> {
             causalPredecessors.addAll(reachAlg.getCausalPredecessors(node));
         }
 
-        Collection<Node> consume = new HashSet<Node>();
+        Collection<Node> consume = new HashSet<>();
 
         //get all place nodes which are the input (consumed) of causal predecessors
         for (Node t : causalPredecessors) {
@@ -187,7 +187,7 @@ public class ReachabilityTask implements Task<VerificationResult> {
     }
 
     private Collection<Path> getSyncCycles() {
-        HashSet<Node> nodes = new HashSet<Node>();
+        HashSet<Node> nodes = new HashSet<>();
         nodes.addAll(net.getTransitionNodes());
         nodes.addAll(net.getChannelPlaces());
         CSONCycleAlg cycleAlg = new CSONCycleAlg(net);

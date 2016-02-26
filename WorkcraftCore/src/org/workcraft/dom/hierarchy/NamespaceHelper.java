@@ -84,7 +84,7 @@ public class NamespaceHelper {
         // legacy reference support
         if (Identifier.isNumber(reference)) return "";
 
-        LinkedList<String> path = new LinkedList<String>();
+        LinkedList<String> path = new LinkedList<>();
         splitReference(reference, path);
 
         String ret = "";
@@ -162,7 +162,7 @@ public class NamespaceHelper {
     }
 
     private static void copyPageStructure(VisualModel srcModel, Container srcContainer,    VisualModel dstModel, Container dstContainer) {
-        HashMap<Container, Container> toProcess = new HashMap<Container, Container>();
+        HashMap<Container, Container> toProcess = new HashMap<>();
         for (Node srcNode: srcContainer.getChildren()) {
             if (srcNode instanceof VisualPage) {
                 VisualPage srcPage = (VisualPage) srcNode;
@@ -196,7 +196,7 @@ public class NamespaceHelper {
     }
 
     public  static HashMap<String, Container> getRefToPageMapping(VisualModel model) {
-        HashMap<String, Container> result = new HashMap<String, Container>();
+        HashMap<String, Container> result = new HashMap<>();
         Container root = model.getRoot();
         result.put("", root);
         for (VisualPage page: Hierarchy.getDescendantsOfType(root, VisualPage.class)) {

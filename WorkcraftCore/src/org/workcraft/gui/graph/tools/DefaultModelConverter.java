@@ -141,7 +141,7 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
     @Override
     public VisualGroup convertGroup(VisualGroup srcGroup) {
         VisualGroup dstGroup = null;
-        HashSet<Node> dstSelection = new HashSet<Node>();
+        HashSet<Node> dstSelection = new HashSet<>();
         for (Node srcNode: srcGroup.getChildren()) {
             Node dstNode = null;
             if (srcNode instanceof VisualNode) {

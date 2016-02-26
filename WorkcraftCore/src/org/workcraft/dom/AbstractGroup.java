@@ -138,7 +138,7 @@ public abstract class AbstractGroup implements Container, ObservableHierarchy {
 
     @Override
     public void remove(Collection<Node> nodes) {
-        LinkedList<Node> nodesToRemove = new LinkedList<Node>(nodes);
+        LinkedList<Node> nodesToRemove = new LinkedList<>(nodes);
         observableHierarchyImpl.sendNotification(new NodesDeletingEvent(groupRef, nodesToRemove));
         for (Node node : nodesToRemove) {
             removeInternal(node, false);

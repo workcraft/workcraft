@@ -95,7 +95,7 @@ public class TransitionBundler {
     }
 
     private Set<Transition> getConflict(Transition t, Collection<Transition> enabled) {
-        Set<Transition> result = new HashSet<Transition>();
+        Set<Transition> result = new HashSet<>();
         Set<Node> tPreset = model.getPreset(t);
         for (Transition c: enabled) {
             Set<Node> cPreset = model.getPreset(c);
@@ -109,7 +109,7 @@ public class TransitionBundler {
     }
 
     private Collection<Step> resolveConflicts(Step enabled) {
-        HashSet<Step> result = new HashSet<Step>();
+        HashSet<Step> result = new HashSet<>();
         if (enabled.size() > 0) {
             for (Transition t: enabled) {
                 Set<Transition> conflict = getConflict(t, enabled);
@@ -160,8 +160,8 @@ public class TransitionBundler {
             }
         }
 
-        HashMap<Step, Marking> step2marking = new HashMap<Step, Marking>();
-        HashSet<Step> steps = new HashSet<Step>();
+        HashMap<Step, Marking> step2marking = new HashMap<>();
+        HashSet<Step> steps = new HashSet<>();
         Queue<Step> slice = null;
         Queue<Step> queue = null;
         do {
@@ -208,7 +208,7 @@ public class TransitionBundler {
 
         // Bundle maximal non-singleton steps
         for (Step step: steps) {
-            HashSet<VisualBundledTransition> bundle = new HashSet<VisualBundledTransition>();
+            HashSet<VisualBundledTransition> bundle = new HashSet<>();
             for (Transition t: step) {
                 VisualBundledTransition vbt = t2vbt.get(t);
                 bundle.add(vbt);

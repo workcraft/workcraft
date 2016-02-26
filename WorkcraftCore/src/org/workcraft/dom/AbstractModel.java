@@ -79,7 +79,7 @@ public abstract class AbstractModel implements Model {
 
     @Override
     public void remove(Collection<Node> nodes) {
-        LinkedList<Node> toRemove = new LinkedList<Node>(nodes);
+        LinkedList<Node> toRemove = new LinkedList<>(nodes);
         for (Node node : toRemove) {
             // some nodes may be removed as a result of removing other nodes in the list,
             // e.g. hanging connections so need to check
@@ -161,7 +161,7 @@ public abstract class AbstractModel implements Model {
 
     @Override
     public <R> Set<R> getPreset(Node node, Class<R> type) {
-        Set<R> result = new HashSet<R>();
+        Set<R> result = new HashSet<>();
         for (Node pred: getPreset(node)) {
             try {
                 result.add(type.cast(pred));
@@ -173,7 +173,7 @@ public abstract class AbstractModel implements Model {
 
     @Override
     public <R> Set<R> getPostset(Node node, Class<R> type) {
-        Set<R> result = new HashSet<R>();
+        Set<R> result = new HashSet<>();
         for (Node pred: getPostset(node)) {
             try {
                 result.add(type.cast(pred));

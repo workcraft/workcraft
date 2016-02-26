@@ -68,11 +68,11 @@ public class PNetGen implements Tool {
         }
     }
 
-    static List<Info> lst = new ArrayList<Info>();
-    static List<Ids> lst2 = new ArrayList<Ids>();
-    static List<Info> slsti = new ArrayList<Info>();
-    static List<Info> slsto = new ArrayList<Info>();
-    static List<Info> slsto2 = new ArrayList<Info>();
+    static List<Info> lst = new ArrayList<>();
+    static List<Ids> lst2 = new ArrayList<>();
+    static List<Info> slsti = new ArrayList<>();
+    static List<Info> slsto = new ArrayList<>();
+    static List<Info> slsto2 = new ArrayList<>();
 
     public void initlist() {
         lst.clear();

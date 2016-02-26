@@ -31,7 +31,7 @@ public class CnfSorter {
             throw new RuntimeException("sizes do not match");
         }
 
-        List<Literal> s = new ArrayList<Literal>();
+        List<Literal> s = new ArrayList<>();
         for (Literal var : x) {
             s.add(new Literal(var.getVariable().getLabel() + "_th"));
         }
@@ -57,7 +57,7 @@ public class CnfSorter {
 
     public static Cnf sortRound(List<Literal> result, List<Literal> s, List<Literal> x) {
 
-        List<CnfClause> clauses = new ArrayList<CnfClause>();
+        List<CnfClause> clauses = new ArrayList<>();
 
         Cnf thermoCnf = makeThermometer(s, x);
         clauses.addAll(thermoCnf.getClauses());

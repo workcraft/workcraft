@@ -147,7 +147,7 @@ public class CreateWorkDialog extends JDialog {
 
         final Framework framework = Framework.getInstance();
         final Collection<PluginInfo<? extends ModelDescriptor>> modelDescriptors = framework.getPluginManager().getPlugins(ModelDescriptor.class);
-        ArrayList<ListElement> elements = new ArrayList<ListElement>();
+        ArrayList<ListElement> elements = new ArrayList<>();
 
         for (PluginInfo<? extends ModelDescriptor> plugin : modelDescriptors) {
             elements.add(new ListElement(plugin.newInstance()));

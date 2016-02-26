@@ -177,8 +177,8 @@ public class TestTool extends AbstractTool implements Tool {
     }*/
 
     protected Collection<ChannelPlace> getSyncCPs(SON net) {
-        Collection<ChannelPlace> result = new HashSet<ChannelPlace>();
-        HashSet<Node> nodes = new HashSet<Node>();
+        Collection<ChannelPlace> result = new HashSet<>();
+        HashSet<Node> nodes = new HashSet<>();
         nodes.addAll(net.getTransitionNodes());
         nodes.addAll(net.getChannelPlaces());
         CSONCycleAlg cycleAlg = new CSONCycleAlg(net);
@@ -214,10 +214,10 @@ public class TestTool extends AbstractTool implements Tool {
 
         BSONAlg bsonAlg = new BSONAlg(net);
         System.out.println("\nOutput before(e):");
-        Collection<TransitionNode[]> before = new ArrayList<TransitionNode[]>();
+        Collection<TransitionNode[]> before = new ArrayList<>();
 
         Collection<ONGroup> groups = bsonAlg.getUpperGroups(net.getGroups());
-        Collection<TransitionNode> set = new HashSet<TransitionNode>();
+        Collection<TransitionNode> set = new HashSet<>();
         for (ONGroup group : groups) {
             set.addAll(group.getTransitionNodes());
         }
@@ -225,7 +225,7 @@ public class TestTool extends AbstractTool implements Tool {
         for (TransitionNode e : set) {
             //before =  bsonAlg.before(e);
             if (!before.isEmpty()) {
-                Collection<String> subResult = new ArrayList<String>();
+                Collection<String> subResult = new ArrayList<>();
                 System.out.println("before(" + net.getComponentLabel(e) + "): ");
                 for (TransitionNode[] t : before) {
                     subResult.add("(" + net.getComponentLabel(t[0]) + " " + net.getComponentLabel(t[1]) + ")");
@@ -268,7 +268,7 @@ public class TestTool extends AbstractTool implements Tool {
 
     private void syncCycleTest(SON net) {
         CSONCycleAlg csonPath = new CSONCycleAlg(net);
-        HashSet<Node> nodes = new HashSet<Node>();
+        HashSet<Node> nodes = new HashSet<>();
         nodes.addAll(net.getChannelPlaces());
         nodes.addAll(net.getTransitionNodes());
 

@@ -42,7 +42,7 @@ public class FstToStgConverter {
     }
 
     private Map<String, String> cacheLabels() {
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
         for (Entry<VisualSignalEvent, VisualNamedTransition> entry: eventToTransitionMap.entrySet()) {
             VisualSignalEvent signalEvent = entry.getKey();
             VisualNamedTransition transition = entry.getValue();
@@ -58,7 +58,7 @@ public class FstToStgConverter {
     }
 
     private Map<VisualState, VisualPlace> convertStates() {
-        Map<VisualState, VisualPlace> result = new HashMap<VisualState, VisualPlace>();
+        Map<VisualState, VisualPlace> result = new HashMap<>();
         for (VisualState state: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualState.class)) {
             String name = srcModel.getMathModel().getNodeReference(state.getReferencedState());
             VisualPlace place = dstModel.createPlace(name, null);
@@ -91,7 +91,7 @@ public class FstToStgConverter {
     }
 
     private Map<VisualSignalEvent, VisualNamedTransition> convertEvents() {
-        Map<VisualSignalEvent, VisualNamedTransition> result = new HashMap<VisualSignalEvent, VisualNamedTransition>();
+        Map<VisualSignalEvent, VisualNamedTransition> result = new HashMap<>();
         for (VisualSignalEvent signalEvent : Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualSignalEvent.class)) {
             VisualNamedTransition transition = null;
             Signal signal = signalEvent.getReferencedSignalEvent().getSignal();

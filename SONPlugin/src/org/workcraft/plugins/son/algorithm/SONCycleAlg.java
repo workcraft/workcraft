@@ -31,7 +31,7 @@ public class SONCycleAlg extends BSONCycleAlg {
 
     @Override
     protected Collection<Path> cycleFliter(Collection<Path> cycles) {
-        List<Path> delList = new ArrayList<Path>();
+        List<Path> delList = new ArrayList<>();
         for (Path cycle : cycles) {
             //no causal relation involved
             if (!net.getSONConnectionTypes(cycle).contains(Semantics.PNLINE)) {

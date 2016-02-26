@@ -40,7 +40,7 @@ public class FsmToPnConverter {
     }
 
     private Map<String, String> cacheLabels() {
-        Map<String, String> result = new HashMap<String, String>();
+        Map<String, String> result = new HashMap<>();
         for (Entry<VisualEvent, VisualTransition> entry: eventToTransitionMap.entrySet()) {
             VisualEvent event = entry.getKey();
             VisualTransition transition = entry.getValue();
@@ -53,7 +53,7 @@ public class FsmToPnConverter {
     }
 
     private Map<VisualState, VisualPlace> convertStates() {
-        Map<VisualState, VisualPlace> result = new HashMap<VisualState, VisualPlace>();
+        Map<VisualState, VisualPlace> result = new HashMap<>();
         for (VisualState state: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualState.class)) {
             String name = srcModel.getMathModel().getNodeReference(state.getReferencedState());
             VisualPlace place = dstModel.createPlace(name, null);
@@ -67,7 +67,7 @@ public class FsmToPnConverter {
     }
 
     private Map<VisualEvent, VisualTransition> convertEvents() {
-        Map<VisualEvent, VisualTransition> result = new HashMap<VisualEvent, VisualTransition>();
+        Map<VisualEvent, VisualTransition> result = new HashMap<>();
         HierarchicalUniqueNameReferenceManager refManager = (HierarchicalUniqueNameReferenceManager) dstModel.getPetriNet().getReferenceManager();
         NameManager nameManagerer = refManager.getNameManager(null);
         for (VisualEvent event : Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualEvent.class)) {

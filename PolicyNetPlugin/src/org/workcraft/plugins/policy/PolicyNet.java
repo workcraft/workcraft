@@ -108,7 +108,7 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
     }
 
     public Collection<Bundle> getBundlesOfTransition(BundledTransition t) {
-        Collection<Bundle> result = new HashSet<Bundle>();
+        Collection<Bundle> result = new HashSet<>();
         for (Bundle b: getBundles()) {
             if (b.contains(t)) {
                 result.add(b);
@@ -122,7 +122,7 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
         parent.add(locality);
         parent.reparent(nodes, locality);
 
-        ArrayList<Node> connectionsToLocality = new ArrayList<Node>();
+        ArrayList<Node> connectionsToLocality = new ArrayList<>();
         for (Connection connection : Hierarchy.getChildrenOfType(parent, Connection.class)) {
             if (Hierarchy.isDescendant(connection.getFirst(), locality)    && Hierarchy.isDescendant(connection.getSecond(), locality)) {
                 connectionsToLocality.add(connection);
@@ -136,7 +136,7 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
     }
 
     private void splitBundlesByLocalities(ArrayList<Node> nodes) {
-        HashMap<Bundle, HashSet<BundledTransition>> subBundles = new HashMap<Bundle, HashSet<BundledTransition>>();
+        HashMap<Bundle, HashSet<BundledTransition>> subBundles = new HashMap<>();
         for (Node node: nodes) {
             if (node instanceof BundledTransition) {
                 BundledTransition t = (BundledTransition) node;

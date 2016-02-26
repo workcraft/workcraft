@@ -39,9 +39,9 @@ import org.workcraft.util.TwoWayMap;
 
 class XMLDeserialiserState implements References {
     private final ReferenceResolver externalReferences;
-    private GeneralTwoWayMap<String, Object> internalReferenceMap = new TwoWayMap<String, Object>();
-    public HashMap<Object, Element> instanceElements = new HashMap<Object, Element>();
-    private ListMap<Container, Node> children = new ListMap<Container, Node>();
+    private GeneralTwoWayMap<String, Object> internalReferenceMap = new TwoWayMap<>();
+    public HashMap<Object, Element> instanceElements = new HashMap<>();
+    private ListMap<Container, Node> children = new ListMap<>();
 
     XMLDeserialiserState(ReferenceResolver externalReferences) {
         this.externalReferences = externalReferences;

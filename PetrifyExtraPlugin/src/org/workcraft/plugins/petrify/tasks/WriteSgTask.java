@@ -37,7 +37,7 @@ public class WriteSgTask implements Task<ExternalProcessResult>, ExternalProcess
     @Override
     public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
         this.monitor = monitor;
-        ArrayList<String> command = new ArrayList<String>();
+        ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
         String toolName = ToolUtils.getAbsoluteCommandPath(PetrifyExtraUtilitySettings.getWriteSgCommand());

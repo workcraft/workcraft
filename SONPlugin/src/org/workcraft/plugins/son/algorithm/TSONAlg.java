@@ -24,7 +24,7 @@ public class TSONAlg extends RelationAlgorithm {
      * get all inputs of a given block without concerning connection types
      */
     public Collection<Node> getBlockInputs(Block block) {
-        Collection<Node> result = new HashSet<Node>();
+        Collection<Node> result = new HashSet<>();
         Collection<Node> components = block.getComponents();
 
         for (Node node : components) {
@@ -47,7 +47,7 @@ public class TSONAlg extends RelationAlgorithm {
      * get all outputs of a given block without concerning connection types
      */
     public Collection<Node> getBlockOutputs(Block block) {
-        Collection<Node> result = new HashSet<Node>();
+        Collection<Node> result = new HashSet<>();
         Collection<Node> components = block.getComponents();
 
         for (Node node: components) {
@@ -70,7 +70,7 @@ public class TSONAlg extends RelationAlgorithm {
      * get petri net-based inputs of a given block
      */
     public Collection<Node> getBlockPNInputs(Block block) {
-        Collection<Node> result = new HashSet<Node>();
+        Collection<Node> result = new HashSet<>();
         Collection<Node> components = block.getComponents();
 
         for (Node node : components) {
@@ -93,7 +93,7 @@ public class TSONAlg extends RelationAlgorithm {
      * get petri net-based outputs of a given block
      */
     public Collection<Node> getBlockPNOutputs(Block block) {
-        Collection<Node> result = new HashSet<Node>();
+        Collection<Node> result = new HashSet<>();
         Collection<Node> components = block.getComponents();
 
         for (Node node : components) {
@@ -116,7 +116,7 @@ public class TSONAlg extends RelationAlgorithm {
      * get cson-based inputs of a given block
      */
     public Collection<Node> getBlockASynInputs(Block block) {
-        Collection<Node> result = new HashSet<Node>();
+        Collection<Node> result = new HashSet<>();
         Collection<Node> components = block.getComponents();
 
         for (Node node : components) {
@@ -135,7 +135,7 @@ public class TSONAlg extends RelationAlgorithm {
      * get cson-based outputs of a given block
      */
     public Collection<Node> getBlockASynOutputs(Block block) {
-        Collection<Node> result = new HashSet<Node>();
+        Collection<Node> result = new HashSet<>();
         Collection<Node> components = block.getComponents();
 
         for (Node node : components) {

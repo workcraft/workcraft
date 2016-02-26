@@ -45,7 +45,7 @@ public class ReversibilityCheckerTool extends VerificationTool {
         HashSet<State> forwardStates = getForwardReachableStates(fsm, initialState);
         HashSet<State> backwardStates = getBackwardReachableStates(fsm, initialState);
 
-        HashSet<State> ireversibleStates = new HashSet<State>(forwardStates);
+        HashSet<State> ireversibleStates = new HashSet<>(forwardStates);
         ireversibleStates.removeAll(backwardStates);
         return ireversibleStates;
     }
@@ -53,8 +53,8 @@ public class ReversibilityCheckerTool extends VerificationTool {
     private HashSet<State> getForwardReachableStates(final Fsm fsm, State initialState) {
         HashMap<State, HashSet<Event>> stateSuccEvents = FsmUtils.calcStateOutgoingEventsMap(fsm);
 
-        HashSet<State> visitedStates = new HashSet<State>();
-        Queue<State> queueStates = new LinkedList<State>();
+        HashSet<State> visitedStates = new HashSet<>();
+        Queue<State> queueStates = new LinkedList<>();
 
         if (initialState != null) {
             queueStates.add(initialState);
@@ -77,8 +77,8 @@ public class ReversibilityCheckerTool extends VerificationTool {
     private HashSet<State> getBackwardReachableStates(final Fsm fsm, State initialState) {
         HashMap<State, HashSet<Event>> statePrevEvents = FsmUtils.calcStateIncommingEventsMap(fsm);
 
-        HashSet<State> visitedStates = new HashSet<State>();
-        Queue<State> queueStates = new LinkedList<State>();
+        HashSet<State> visitedStates = new HashSet<>();
+        Queue<State> queueStates = new LinkedList<>();
 
         if (initialState != null) {
             queueStates.add(initialState);

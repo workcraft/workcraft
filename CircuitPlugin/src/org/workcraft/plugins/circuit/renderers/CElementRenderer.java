@@ -103,9 +103,9 @@ public class CElementRenderer extends GateRenderer {
         @Override
         public LinkedList<Pair<String, Boolean>> visit(BooleanVariable variable) {
             isFirstNode = false;
-            LinkedList<Pair<String, Boolean>> ret = new LinkedList<Pair<String, Boolean>>();
+            LinkedList<Pair<String, Boolean>> ret = new LinkedList<>();
 
-            Pair<String, Boolean> vv = new Pair<String, Boolean>(variable.getLabel(), doNegate ? !isNegated : isNegated);
+            Pair<String, Boolean> vv = new Pair<>(variable.getLabel(), doNegate ? !isNegated : isNegated);
 
             ret.add(vv);
             return ret;
@@ -134,7 +134,7 @@ public class CElementRenderer extends GateRenderer {
         doNegate = true;
         isNegated = false;
         final LinkedList<Pair<String, Boolean>> resetVars = reset.accept(defaultVisitor);
-        final LinkedList<Pair<String, Boolean>> bothVars = new LinkedList<Pair<String, Boolean>>();
+        final LinkedList<Pair<String, Boolean>> bothVars = new LinkedList<>();
         for (Pair<String, Boolean> p: setVars) {
             int resetIndex = resetVars.indexOf(p);
             if (resetIndex != -1) {
@@ -205,7 +205,7 @@ public class CElementRenderer extends GateRenderer {
             @Override
             public Map<String, Point2D> contactPositions() {
                 if (cachedPositions == null) {
-                    Map<String, Point2D> positions = new HashMap<String, Point2D>();
+                    Map<String, Point2D> positions = new HashMap<>();
 
                     double x = boundingBox().getMaxX() - (bothVars.size() * 0.5) * GateRenderer.ANDGateAspectRatio;
                     double y = boundingBox().getMinY();

@@ -23,7 +23,7 @@ public class ONGroup extends PageNode {
     private Color color = SONSettings.getGroupForegroundColor();
 
     public Collection<Node> getComponents() {
-        ArrayList<Node> result = new ArrayList<Node>();
+        ArrayList<Node> result = new ArrayList<>();
 
         for (Node node : Hierarchy.getDescendantsOfType(this, MathNode.class)) {
             if (node instanceof Condition || node instanceof Event) {
@@ -112,7 +112,7 @@ public class ONGroup extends PageNode {
     }
 
     public Collection<Block> getCollapsedBlocks() {
-        Collection<Block> result = new ArrayList<Block>();
+        Collection<Block> result = new ArrayList<>();
         for (Block block : getBlocks()) {
             if (block.getIsCollapsed()) {
                 result.add(block);
@@ -122,7 +122,7 @@ public class ONGroup extends PageNode {
     }
 
     public Collection<Block> getUncollapsedBlocks() {
-        Collection<Block> result = new ArrayList<Block>();
+        Collection<Block> result = new ArrayList<>();
         for (Block block : getBlocks()) {
             if (!block.getIsCollapsed()) {
                 result.add(block);

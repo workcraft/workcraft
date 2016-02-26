@@ -14,7 +14,7 @@ public class ToolsProvider implements CustomToolsProvider {
 
     @Override
     public Iterable<GraphEditorTool> getTools() {
-        ArrayList<GraphEditorTool> result = new ArrayList<GraphEditorTool>();
+        ArrayList<GraphEditorTool> result = new ArrayList<>();
 
         result.add(new SelectionTool());
         result.add(new CommentGeneratorTool());

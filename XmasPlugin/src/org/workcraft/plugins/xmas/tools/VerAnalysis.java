@@ -67,7 +67,7 @@ public class VerAnalysis extends AbstractTool implements Tool {
     static String display = "";
     static String highlight = "";
     static String soln = "";
-    static List<Qslist> qslist = new ArrayList<Qslist>();
+    static List<Qslist> qslist = new ArrayList<>();
 
     @Override
     public String getDisplayName() {
@@ -83,7 +83,7 @@ public class VerAnalysis extends AbstractTool implements Tool {
         mainFrame.setVisible(false);
     }
 
-    public List<JRadioButton> rlist = new ArrayList<JRadioButton>();
+    public List<JRadioButton> rlist = new ArrayList<>();
 
     private static List<String> processArg(String file, int index) {
         String typ = null;
@@ -379,7 +379,7 @@ public class VerAnalysis extends AbstractTool implements Tool {
     GraphEditorPanel editor1;
     Graphics2D g;
 
-    static List<JCheckBox> jcbn = new ArrayList<JCheckBox>();
+    static List<JCheckBox> jcbn = new ArrayList<>();
     JCheckBox jcb, jcblast;
 
     void createPanel(List<JPanel> panellist, String file) {
@@ -456,7 +456,7 @@ public class VerAnalysis extends AbstractTool implements Tool {
         JPanel panelmain = new JPanel();
         mainFrame.getContentPane().add(panelmain, BorderLayout.PAGE_START);
         panelmain.setLayout(new BoxLayout(panelmain, BoxLayout.PAGE_AXIS));
-        List<JPanel> panellist = new ArrayList<JPanel>();
+        List<JPanel> panellist = new ArrayList<>();
 
         JPanel panela = new JPanel();
         panela.setLayout(new FlowLayout(FlowLayout.LEFT));

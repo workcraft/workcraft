@@ -12,7 +12,7 @@ public class NodesRef extends ArrayList<String> {
     private static final long serialVersionUID = 1L;
 
     public Collection<Node> getNodes(SON net) {
-        Collection<Node> result = new HashSet<Node>();
+        Collection<Node> result = new HashSet<>();
 
         for (String ref : this) {
             Node node = net.getNodeByReference(ref);

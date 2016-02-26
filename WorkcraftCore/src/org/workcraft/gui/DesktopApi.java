@@ -111,7 +111,7 @@ public class DesktopApi {
     }
 
     private static String[] prepareCommand(String command, String args, String file) {
-        List<String> parts = new ArrayList<String>();
+        List<String> parts = new ArrayList<>();
         parts.add(command);
         if (args != null) {
             for (String s : args.split("\\s")) {

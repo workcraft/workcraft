@@ -43,7 +43,7 @@ public class MpsatCombinedChainTask implements Task<MpsatCombinedChainResult> {
             if (exporter == null) {
                 throw new RuntimeException("Exporter not available: model class " + model.getClass().getName() + " to format STG.");
             }
-            SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<Object>(monitor);
+            SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
 
             // Generate .g for the model
             File netFile = new File(directory, "net" + exporter.getExtenstion());

@@ -88,7 +88,7 @@ public class ScencoSolver {
     }
 
     public ArrayList<String> getScencoArguments() {
-        ArrayList<String> args = new ArrayList<String>();
+        ArrayList<String> args = new ArrayList<>();
         ArrayList<String> check;
 
         cpog = (VisualCPOG) (we.getModelEntry().getVisualModel());
@@ -314,8 +314,8 @@ public class ScencoSolver {
             cpogBuilder.printController(m, resultDirectoryPath, optEnc);
 
             // group similar constraints
-            HashMap<String, BooleanFormula> formulaeName = new HashMap<String, BooleanFormula>();
-            HashMap<String, Integer> task = new HashMap<String, Integer>();
+            HashMap<String, BooleanFormula> formulaeName = new HashMap<>();
+            HashMap<String, Integer> task = new HashMap<>();
 
             cpogBuilder.groupConstraints(n, m, constraints, task);
 

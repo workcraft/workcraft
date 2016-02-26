@@ -203,9 +203,9 @@ public final class Framework {
         taskManager = new DefaultTaskManager() {
             public <T> Result<? extends T> execute(Task<T> task, String description, ProgressMonitor<? super T> observer) {
                 if (SwingUtilities.isEventDispatchThread()) {
-                    OperationCancelDialog<T> cancelDialog = new OperationCancelDialog<T>(mainWindow, description);
+                    OperationCancelDialog<T> cancelDialog = new OperationCancelDialog<>(mainWindow, description);
 
-                    ProgressMonitorArray<T> observers = new ProgressMonitorArray<T>();
+                    ProgressMonitorArray<T> observers = new ProgressMonitorArray<>();
                     if (observer != null) {
                         observers.add(observer);
                     }
@@ -616,7 +616,7 @@ public final class Framework {
             }
             // selection
             Element selectionElement = XmlUtil.getChildElement("selection", stateElement);
-            Set<Node> nodes = new HashSet<Node>();
+            Set<Node> nodes = new HashSet<>();
             for (Element nodeElement: XmlUtil.getChildElements("node", selectionElement)) {
                 Object node = references.getObject(nodeElement.getAttribute("ref"));
                 if (node instanceof Node) {
@@ -688,7 +688,7 @@ public final class Framework {
             throw new DeserialisationException("Incompatible models cannot be merged");
         }
 
-        Collection<Node> children = new HashSet<Node>(vmodel2.getRoot().getChildren());
+        Collection<Node> children = new HashSet<>(vmodel2.getRoot().getChildren());
 
         vmodel1.selectNone();
         vmodel1.reparent(vmodel1.getCurrentLevel(), vmodel2, vmodel2.getRoot(), null);

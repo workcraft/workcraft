@@ -42,7 +42,7 @@ public class PGMinerTask implements Task<ExternalProcessResult> {
 
             //Call PGMiner
             ExternalProcessTask task = new ExternalProcessTask(command, new File("."));
-            SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
+            SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
 
             Result<? extends ExternalProcessResult> result = task.run(mon);
 
@@ -50,7 +50,7 @@ public class PGMinerTask implements Task<ExternalProcessResult> {
 
                 return result;
             }
-            Map<String, byte[]> outputFiles = new HashMap<String, byte[]>();
+            Map<String, byte[]> outputFiles = new HashMap<>();
             try {
                 File outputFile = getOutputFile(inputFile);
                 if (outputFile.exists()) {

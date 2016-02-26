@@ -357,14 +357,14 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     }
 
     private Set<Point2D> calcConnectionSnaps(VisualConnection vc) {
-        Set<Point2D> result = new HashSet<Point2D>();
+        Set<Point2D> result = new HashSet<>();
         result.add(vc.getSecondCenter());
         result.add(vc.getFirstCenter());
         return result;
     }
 
     private Set<Point2D> getComponentSnaps(VisualComponent component) {
-        Set<Point2D> result = new HashSet<Point2D>();
+        Set<Point2D> result = new HashSet<>();
         AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(component);
         Point2D pos = TransformHelper.transform(component, localToRootTransform).getCenter();
         result.add(pos);
@@ -389,7 +389,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     }
 
     private Set<Point2D> getControlPointSnaps(ControlPoint cp) {
-        Set<Point2D> result = new HashSet<Point2D>();
+        Set<Point2D> result = new HashSet<>();
         Node graphics = cp.getParent();
         if (graphics instanceof Polyline) {
             Polyline polyline = (Polyline) cp.getParent();
@@ -407,7 +407,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
     @Override
     public Set<Point2D> getSnaps(VisualNode node) {
-        Set<Point2D> result = new HashSet<Point2D>();
+        Set<Point2D> result = new HashSet<>();
         if (node instanceof VisualComponent) {
             VisualComponent component = (VisualComponent) node;
             result.addAll(getComponentSnaps(component));
@@ -449,7 +449,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         return new Properties() {
             @Override
             public Collection<PropertyDescriptor> getDescriptors() {
-                ArrayList<PropertyDescriptor> list = new ArrayList<PropertyDescriptor>();
+                ArrayList<PropertyDescriptor> list = new ArrayList<>();
                 for (final PropertyDescriptor d : mix.getDescriptors()) {
                     list.add(new PropertyDescriptor() {
                         @Override

@@ -56,7 +56,7 @@ public class DirectionPropertyDescriptor implements PropertyDescriptor {
 
     @Override
     public Map<Direction, String> getChoice() {
-        Map<Direction, String> result = new LinkedHashMap<Direction, String>();
+        Map<Direction, String> result = new LinkedHashMap<>();
         for (Direction item : Direction.values()) {
             result.put(item, item.toString());
         }

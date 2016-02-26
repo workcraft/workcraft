@@ -37,7 +37,7 @@ public class BSONCycleAlg extends ONCycleAlg {
     protected List<Integer>[] createGraph(List<Node> nodes) {
         List<Integer>[] result = new List[nodes.size()];
 
-        LinkedHashMap<Node, Integer> nodeIndex = new LinkedHashMap<Node, Integer>();
+        LinkedHashMap<Node, Integer> nodeIndex = new LinkedHashMap<>();
         for (int i = 0; i < nodes.size(); i++) {
             nodeIndex.put(nodes.get(i), i);
         }
@@ -71,7 +71,7 @@ public class BSONCycleAlg extends ONCycleAlg {
 
         //get upper-level transition nodes.
         Collection<ONGroup> upperGroups = bsonAlg.getUpperGroups(net.getGroups());
-        Collection<TransitionNode> upperT = new ArrayList<TransitionNode>();
+        Collection<TransitionNode> upperT = new ArrayList<>();
         for (ONGroup group : upperGroups) {
             upperT.addAll(group.getTransitionNodes());
         }
@@ -102,7 +102,7 @@ public class BSONCycleAlg extends ONCycleAlg {
 
     @Override
     protected Collection<Path> cycleFliter(Collection<Path> paths) {
-        List<Path> delList = new ArrayList<Path>();
+        List<Path> delList = new ArrayList<>();
 
         for (Path cycle : paths) {
             int upper = 0;

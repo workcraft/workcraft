@@ -137,7 +137,7 @@ public class ScenarioTable extends JTable {
     public void updateColor() {
         net.clearMarking();
         setColors(net.getNodes(), greyoutColor);
-        Collection<Node> nodes = new ArrayList<Node>();
+        Collection<Node> nodes = new ArrayList<>();
         nodes.addAll(getScenarioRef().getNodes(net));
         nodes.addAll(getScenarioRef().getConnections(net));
         setColors(nodes, Color.BLACK);
@@ -146,7 +146,7 @@ public class ScenarioTable extends JTable {
     public void updateColor(Node exclude) {
         net.clearMarking();
         setColors(net.getNodes(), exclude, greyoutColor);
-        Collection<Node> nodes = new ArrayList<Node>();
+        Collection<Node> nodes = new ArrayList<>();
         nodes.addAll(getScenarioRef().getNodes(net));
         nodes.addAll(getScenarioRef().getConnections(net));
         setColors(nodes, exclude, Color.BLACK);
@@ -155,7 +155,7 @@ public class ScenarioTable extends JTable {
     public void runtimeUpdateColor() {
         net.clearMarking();
         setColors(net.getNodes(), greyoutColor);
-        Collection<Node> nodes = new ArrayList<Node>();
+        Collection<Node> nodes = new ArrayList<>();
         nodes.addAll(getScenarioRef().getNodes(net));
         nodes.addAll(getScenarioRef().getRuntimeConnections(net));
         setColors(nodes, Color.BLACK);
@@ -184,7 +184,7 @@ public class ScenarioTable extends JTable {
     }
 
     public ArrayList<String> getScenarioNodeRef() {
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
         for (String str : scenarioRef.getNodeRefs(net)) {
             result.add(str);
         }

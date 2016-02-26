@@ -29,7 +29,7 @@ import java.util.Map;
 public class SimpleCnfTaskProvider implements RawCnfGenerator<Cnf> {
     @Override
     public CnfTask getCnf(Cnf cnf) {
-        Map<String, BooleanVariable> vars = new HashMap<String, BooleanVariable>();
+        Map<String, BooleanVariable> vars = new HashMap<>();
 
         for (CnfClause clause : cnf.getClauses()) {
             for (Literal literal : clause.getLiterals()) {

@@ -36,7 +36,7 @@ public class BufferRenderer extends GateRenderer {
 
                     @Override
                     public Map<String, Point2D> contactPositions() {
-                        Map<String, Point2D> result = new HashMap<String, Point2D>();
+                        Map<String, Point2D> result = new HashMap<>();
                         result.put(var.getLabel(), new Point2D.Double(-0.5, 0));
                         return result;
                     }
@@ -89,7 +89,7 @@ public class BufferRenderer extends GateRenderer {
                     @Override
                     public Map<String, Point2D> contactPositions() {
 
-                        Map<String, Point2D> positions = new HashMap<String, Point2D>();
+                        Map<String, Point2D> positions = new HashMap<>();
 
                         for (String v : result.contactPositions().keySet()) {
                             Point2D p = result.contactPositions().get(v);
@@ -111,7 +111,7 @@ public class BufferRenderer extends GateRenderer {
             @Override
             public ComponentRenderingResult visitAnd(List<NaryBooleanFormula> args) {
 
-                final List<ComponentRenderingResult> results = new LinkedList<ComponentRenderingResult>();
+                final List<ComponentRenderingResult> results = new LinkedList<>();
 
                 for (NaryBooleanFormula formula : args) {
                     results.add(formula.accept(this));
@@ -142,7 +142,7 @@ public class BufferRenderer extends GateRenderer {
                     @Override
                     public Map<String, Point2D> contactPositions() {
                         if (cachedPositions == null) {
-                            Map<String, Point2D> positions = new HashMap<String, Point2D>();
+                            Map<String, Point2D> positions = new HashMap<>();
 
                             double x = boundingBox().getMaxX() - boundingBox().getHeight() * ANDGateAspectRatio;
                             double y = boundingBox().getMinY();
@@ -203,7 +203,7 @@ public class BufferRenderer extends GateRenderer {
             @Override
             public ComponentRenderingResult visitOr(List<NaryBooleanFormula> args) {
 
-                final List<ComponentRenderingResult> results = new LinkedList<ComponentRenderingResult>();
+                final List<ComponentRenderingResult> results = new LinkedList<>();
 
                 for (NaryBooleanFormula formula : args) {
                     results.add(formula.accept(this));
@@ -232,7 +232,7 @@ public class BufferRenderer extends GateRenderer {
                     public Map<String, Point2D> contactPositions() {
 
                         if (cachedPositions == null) {
-                            Map<String, Point2D> positions = new HashMap<String, Point2D>();
+                            Map<String, Point2D> positions = new HashMap<>();
 
                             double h = boundingBox().getHeight();
                             double x = boundingBox().getMaxX() - h;
@@ -309,7 +309,7 @@ public class BufferRenderer extends GateRenderer {
             @Override
             public ComponentRenderingResult visitXor(List<NaryBooleanFormula> args) {
 
-                final List<ComponentRenderingResult> results = new LinkedList<ComponentRenderingResult>();
+                final List<ComponentRenderingResult> results = new LinkedList<>();
 
                 for (NaryBooleanFormula formula : args) {
                     results.add(formula.accept(this));
@@ -338,7 +338,7 @@ public class BufferRenderer extends GateRenderer {
                     @Override
                     public Map<String, Point2D> contactPositions() {
                         if (cachedPositions == null) {
-                            Map<String, Point2D> positions = new HashMap<String, Point2D>();
+                            Map<String, Point2D> positions = new HashMap<>();
 
                             double h = boundingBox().getHeight();
                             double x = boundingBox().getMaxX() - h - XORGateAspectRatio + 1;

@@ -113,7 +113,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
     private JButton copyStateButton, pasteStateButton, mergeTraceButton, saveInitStateButton;
 
     // cache of "excited" containers (the ones containing the excited simulation elements)
-    protected HashMap<Container, Boolean> excitedContainers = new HashMap<Container, Boolean>();
+    protected HashMap<Container, Boolean> excitedContainers = new HashMap<>();
 
     final static double DEFAULT_SIMULATION_DELAY = 0.3;
     final static double EDGE_SPEED_MULTIPLIER = 10;
@@ -573,7 +573,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
     }
 
     private boolean randomStep(final GraphEditor editor) {
-        ArrayList<Transition> enabledTransitions = new ArrayList<Transition>();
+        ArrayList<Transition> enabledTransitions = new ArrayList<>();
         for (Transition transition: net.getTransitions()) {
             if (net.isEnabled(transition)) {
                 enabledTransitions.add(transition);
@@ -781,7 +781,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
     }
 
     protected Map<Place, Integer> readMarking() {
-        HashMap<Place, Integer> result = new HashMap<Place, Integer>();
+        HashMap<Place, Integer> result = new HashMap<>();
         for (Place p : net.getPlaces()) {
             result.put(p, p.getTokens());
         }

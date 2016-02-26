@@ -30,7 +30,7 @@ public class Block extends PageNode implements TransitionNode, Time {
     private Color durationColor = Color.BLACK;
 
     public Collection<Node> getComponents() {
-        ArrayList<Node> result = new ArrayList<Node>();
+        ArrayList<Node> result = new ArrayList<>();
         result.addAll(getConditions());
         result.addAll(getEvents());
         return result;

@@ -33,7 +33,7 @@ import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.util.XmlUtil;
 
 public class XMLSerialisationManager implements SerialiserFactory, NodeSerialiser {
-    private HashMap<String, XMLSerialiser> serialisers = new HashMap<String, XMLSerialiser>();
+    private HashMap<String, XMLSerialiser> serialisers = new HashMap<>();
     private DefaultNodeSerialiser nodeSerialiser = new DefaultNodeSerialiser(this, this);
     private XMLSerialiserState state = null;
 

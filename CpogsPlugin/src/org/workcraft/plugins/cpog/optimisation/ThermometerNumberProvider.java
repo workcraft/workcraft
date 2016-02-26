@@ -6,14 +6,14 @@ import java.util.List;
 import static org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations.*;
 
 class ThermometerNumberProvider implements NumberProvider<ThermometerBooleanFormula> {
-    private final List<BooleanFormula> rho = new ArrayList<BooleanFormula>();
+    private final List<BooleanFormula> rho = new ArrayList<>();
 
     ThermometerNumberProvider() {
     }
 
     @Override
     public ThermometerBooleanFormula generate(String varPrefix, int range) {
-        List<BooleanVariable> vars = new ArrayList<BooleanVariable>();
+        List<BooleanVariable> vars = new ArrayList<>();
         for (int i = 0; i < range - 1; i++) {
             vars.add(new FreeVariable(varPrefix + "sel" + i));
         }
@@ -28,7 +28,7 @@ class ThermometerNumberProvider implements NumberProvider<ThermometerBooleanForm
     @Override
     public BooleanFormula select(BooleanFormula[] vars,
             ThermometerBooleanFormula number) {
-        List<BooleanFormula> conditions = new ArrayList<BooleanFormula>();
+        List<BooleanFormula> conditions = new ArrayList<>();
 
         List<BooleanVariable> digits = number.getVars();
         int n = digits.size();
@@ -54,7 +54,7 @@ class ThermometerNumberProvider implements NumberProvider<ThermometerBooleanForm
     }
 
     public BooleanFormula lessOrEquals(ThermometerBooleanFormula a, ThermometerBooleanFormula b) {
-        List<BooleanFormula> conditions = new ArrayList<BooleanFormula>();
+        List<BooleanFormula> conditions = new ArrayList<>();
         List<BooleanVariable> aVars = a.getVars();
         List<BooleanVariable> bVars = b.getVars();
         for (int i = 0; i < aVars.size(); i++) {

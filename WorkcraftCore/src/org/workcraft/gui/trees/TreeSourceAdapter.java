@@ -6,7 +6,7 @@ import org.workcraft.gui.workspace.Path;
 
 public class TreeSourceAdapter<Node> implements TreeSource<Node> {
 
-    TreeListenerArray<Node> ls = new TreeListenerArray<Node>();
+    TreeListenerArray<Node> ls = new TreeListenerArray<>();
     private final TreeSource<Node> source;
 
     public TreeSourceAdapter(TreeSource<Node> source) {

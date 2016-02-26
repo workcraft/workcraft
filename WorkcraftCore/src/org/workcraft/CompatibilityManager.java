@@ -25,8 +25,8 @@ public class CompatibilityManager {
 
     private final CompatibilityMap metaCompatibilityMap = new CompatibilityMap();
     private final CompatibilityMap modelCompatibilityMap = new CompatibilityMap();
-    private final HashMap<String, CompatibilityMap> globalReplacementMap = new HashMap<String, CompatibilityMap>();
-    private final HashMap<String, HashMap<String, CompatibilityMap>> contextualReplacementMap = new HashMap<String, HashMap<String, CompatibilityMap>>();
+    private final HashMap<String, CompatibilityMap> globalReplacementMap = new HashMap<>();
+    private final HashMap<String, HashMap<String, CompatibilityMap>> contextualReplacementMap = new HashMap<>();
 
     public void registerMetaReplacement(String oldMetaData, String metaData) {
         metaCompatibilityMap.put(oldMetaData, metaData);

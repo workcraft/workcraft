@@ -32,7 +32,7 @@ import org.workcraft.plugins.mpsat.MpsatSettings.SolutionMode;
 
 public class MpsatUtilitySettings implements Settings {
 
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
+    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "Tools.mpsatVerification";
 
     private static final String keyCommand = prefix + ".command";

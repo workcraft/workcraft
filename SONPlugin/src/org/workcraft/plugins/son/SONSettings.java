@@ -11,7 +11,7 @@ import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
 public class SONSettings implements Settings {
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
+    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "SONSettings";
 
     private static final String keyRelationErrColor = prefix + ".relationErrColor";

@@ -67,7 +67,7 @@ public class NaryFormulaBuilder {
                     NaryBooleanFormula x,
                     NaryBooleanFormula y,
                     NaryBooleanFormulaVisitor<List<NaryBooleanFormula>> extractor) {
-                ArrayList<NaryBooleanFormula> result = new ArrayList<NaryBooleanFormula>();
+                ArrayList<NaryBooleanFormula> result = new ArrayList<>();
                 result.addAll(x.accept(extractor));
                 result.addAll(y.accept(extractor));
                 return result;

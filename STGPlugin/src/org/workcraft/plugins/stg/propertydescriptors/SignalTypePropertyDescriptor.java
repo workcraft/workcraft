@@ -37,7 +37,7 @@ public class SignalTypePropertyDescriptor implements PropertyDescriptor  {
 
     @Override
     public Map<Object, String> getChoice() {
-        LinkedHashMap<Object, String> result = new LinkedHashMap<Object, String>();
+        LinkedHashMap<Object, String> result = new LinkedHashMap<>();
         for (Type type: Type.values()) {
             result.put(type, type.toString());
         }

@@ -45,7 +45,7 @@ public class Hierarchy {
     }
 
     public static  Collection<Node> fillterNodes(Collection<Node> nodes, UnaryFunctor<Node, Boolean> filter) {
-        LinkedList<Node> result = new LinkedList<Node>();
+        LinkedList<Node> result = new LinkedList<>();
         for (Node node : nodes) {
             if (filter.fn(node)) {
                 result.add(node);
@@ -55,7 +55,7 @@ public class Hierarchy {
     }
 
     public static <T extends Node> Collection<T> filterNodesByType(Collection<Node> nodes, final Class<T> type) {
-        LinkedList<T> result = new LinkedList<T>();
+        LinkedList<T> result = new LinkedList<>();
         for (Node node : nodes) {
             if (type.isInstance(node)) {
                 result.add(type.cast(node));
@@ -87,7 +87,7 @@ public class Hierarchy {
     }
 
     public static Node getCommonParent(Node... nodes) {
-        ArrayList<Node[]> paths = new ArrayList<Node[]>(nodes.length);
+        ArrayList<Node[]> paths = new ArrayList<>(nodes.length);
         int minPathLength = Integer.MAX_VALUE;
         for (Node node : nodes) {
             final Node[] path = getPath(node);
@@ -183,7 +183,7 @@ public class Hierarchy {
     }
 
     public static <T> Collection<T> getDescendantsOfType(Node node, Class<T> type) {
-        ArrayList<T> result = new ArrayList<T>();
+        ArrayList<T> result = new ArrayList<>();
         for (Node n : node.getChildren()) {
             result.addAll(getDescendantsOfType(n, type));
         }
@@ -192,7 +192,7 @@ public class Hierarchy {
     }
 
     public static <T> Collection<T> getDescendantsOfType(Node node, Class<T> type, Func<T, Boolean> filter) {
-        ArrayList<T> result = new ArrayList<T>();
+        ArrayList<T> result = new ArrayList<>();
         for (Node n : node.getChildren()) {
             result.addAll(getDescendantsOfType(n, type, filter));
         }
@@ -201,7 +201,7 @@ public class Hierarchy {
     }
 
     public static Collection<Node> getDescendants(Node node) {
-        ArrayList<Node> result = new ArrayList<Node>();
+        ArrayList<Node> result = new ArrayList<>();
         for (Node n : node.getChildren()) {
             result.addAll(getDescendants(n));
         }

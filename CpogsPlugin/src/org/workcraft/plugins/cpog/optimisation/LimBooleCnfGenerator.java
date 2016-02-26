@@ -32,7 +32,7 @@ public class LimBooleCnfGenerator implements RawCnfGenerator<BooleanFormula> {
     private static final String limboolePath = "C:\\Cygwin\\bin\\limboole.exe";
 
     class VariableCollector extends RecursiveBooleanVisitor<Object> {
-        private final Map<String, BooleanVariable> vars = new HashMap<String, BooleanVariable>();
+        private final Map<String, BooleanVariable> vars = new HashMap<>();
         @Override
         public Object visit(BooleanVariable variable) {
             vars.put(variable.getLabel(), variable);

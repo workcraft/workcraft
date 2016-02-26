@@ -83,7 +83,7 @@ public class WorkspaceTree implements TreeSource<Path<String>> {
         workspace.addListener(wrap(listener));
     }
 
-    Map<TreeListener<Path<String>>, WorkspaceListener> wrappers = new HashMap<TreeListener<Path<String>>, WorkspaceListener>();
+    Map<TreeListener<Path<String>>, WorkspaceListener> wrappers = new HashMap<>();
 
     private WorkspaceListener wrap(TreeListener<Path<String>> listener) {
         WorkspaceListener res = wrappers.get(listener);
@@ -97,7 +97,7 @@ public class WorkspaceTree implements TreeSource<Path<String>> {
     @Override
     public List<Path<String>> getChildren(Path<String> node) {
         MountTree mount = workspace.getMountTree(node);
-        Map<String, Path<String>> res = new TreeMap<String, Path<String>>();
+        Map<String, Path<String>> res = new TreeMap<>();
         String[] list = mount.mountTo.list();
         if (list != null) {
             for (String name : list) {
@@ -109,7 +109,7 @@ public class WorkspaceTree implements TreeSource<Path<String>> {
                 res.put(name, mount.subDirs.get(name).path);
             }
         }
-        List<Path<String>> result = new ArrayList<Path<String>>(res.values());
+        List<Path<String>> result = new ArrayList<>(res.values());
         return result;
     }
 
@@ -136,7 +136,7 @@ public class WorkspaceTree implements TreeSource<Path<String>> {
     @Override
     public Path<Path<String>> getPath(Path<String> node) {
         Path<Path<String>> result = Path.empty();
-        Deque<Path<String>> qq = new ArrayDeque<Path<String>>();
+        Deque<Path<String>> qq = new ArrayDeque<>();
         while (true) {
             qq.push(node);
             if (node.isEmpty()) {

@@ -118,8 +118,8 @@ public class SyncTool implements Tool {
         }
     }
 
-    public List<String> slist = new ArrayList<String>();
-    static List<Sync> synclist = new ArrayList<Sync>();
+    public List<String> slist = new ArrayList<>();
+    static List<Sync> synclist = new ArrayList<>();
 
     private static int checksynclist(String str) {
         for (Sync s : synclist) {
@@ -305,9 +305,9 @@ public class SyncTool implements Tool {
 
     int loaded = 0;
     VisualXmas vnet1;
-    public List<Integer> grnums = new ArrayList<Integer>();
-    public List<Integer> grnums1 = new ArrayList<Integer>();
-    public List<Integer> grnums2 = new ArrayList<Integer>();
+    public List<Integer> grnums = new ArrayList<>();
+    public List<Integer> grnums1 = new ArrayList<>();
+    public List<Integer> grnums2 = new ArrayList<>();
     public List<String> slist1;
     public List<String> slist2;
 
@@ -408,9 +408,9 @@ public class SyncTool implements Tool {
         try {
             writer = new PrintWriter(jsonFile);
             int cntNodes = 0;
-            List<VisualGroup> groups = new ArrayList<VisualGroup>();
-            List<VisualComponent> vcomps = new ArrayList<VisualComponent>();
-            List<VisualSyncComponent> vscomps = new ArrayList<VisualSyncComponent>();
+            List<VisualGroup> groups = new ArrayList<>();
+            List<VisualComponent> vcomps = new ArrayList<>();
+            List<VisualSyncComponent> vscomps = new ArrayList<>();
 
             for (Node node : vnet.getNodes()) {
                 cntNodes++;
@@ -723,7 +723,7 @@ public class SyncTool implements Tool {
         panelmain.setLayout(new BoxLayout(panelmain, BoxLayout.PAGE_AXIS));
 
         System.out.println("loaded = " + loaded);
-        List<JPanel> panellist = new ArrayList<JPanel>();
+        List<JPanel> panellist = new ArrayList<>();
         for (int no = 0; no < cntSyncnodes; no = no + 1) {
             if (loaded == 0) slist1.add(new String("1"));
             if (loaded == 0) slist2.add(new String("1"));

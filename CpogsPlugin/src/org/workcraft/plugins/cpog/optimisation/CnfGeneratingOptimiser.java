@@ -29,7 +29,7 @@ import org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations;
 import static org.workcraft.plugins.cpog.optimisation.CnfOperations.*;
 
 public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf> {
-    private List<CnfClause> rho = new ArrayList<CnfClause>();
+    private List<CnfClause> rho = new ArrayList<>();
 
     TwoHotRange generateBinaryFunction(int variablesCount, int funcId) {
         TwoHotRangeProvider prov = new TwoHotRangeProvider();
@@ -86,7 +86,7 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf> {
             }
             for (int j = 0; j < derivedVariables; j++) {
                 int jj = j + nonDerivedVariables;
-                List<Literal> availableFormulas = new ArrayList<Literal>();
+                List<Literal> availableFormulas = new ArrayList<>();
 
                 for (int k = 0; k < /*j+*/nonDerivedVariables; k++) {
                     availableFormulas.add(functionSpace[i][k * 2]);
@@ -102,7 +102,7 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf> {
 
         int functionCount = scenarios[0].length();
 
-        List<CnfClause> tableConditions = new ArrayList<CnfClause>();
+        List<CnfClause> tableConditions = new ArrayList<>();
 
         OneHotIntBooleanFormula[] cpogSelections = new OneHotIntBooleanFormula[functionCount];
         //Try to match CPOG functions with generated functions.
@@ -139,7 +139,7 @@ public class CnfGeneratingOptimiser implements CpogSATProblemGenerator<Cnf> {
         }
         for (int j = 0; j < derivedVariables; j++) {
             int jj = j + nonDerivedVariables;
-            List<BooleanFormula> availableFormulas = new ArrayList<BooleanFormula>();
+            List<BooleanFormula> availableFormulas = new ArrayList<>();
 
             for (int k = 0; k < /*j+*/nonDerivedVariables; k++) {
                 availableFormulas.add(funcs[k * 2]);

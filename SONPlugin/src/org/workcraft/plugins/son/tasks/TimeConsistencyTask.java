@@ -52,9 +52,9 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
     private Collection<ChannelPlace> syncCPs;
     private Map<Condition, Collection<Phase>> phases;
 
-    private Collection<Time> estimatedIniNodes = new ArrayList<Time>();
-    private Collection<Time> estimatedFinalNodes = new ArrayList<Time>();
-    private Collection<Time> estimatedDurNodes = new ArrayList<Time>();
+    private Collection<Time> estimatedIniNodes = new ArrayList<>();
+    private Collection<Time> estimatedFinalNodes = new ArrayList<>();
+    private Collection<Time> estimatedDurNodes = new ArrayList<>();
 
     private Color causalColor = new Color(225, 90, 70);
     private Color inconsistencyColor = new Color(250, 210, 80);
@@ -71,14 +71,14 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
     public Result<? extends VerificationResult> run(
             ProgressMonitor<? super VerificationResult> monitor) {
 
-        Collection<Node> checkList = new ArrayList<Node>();
+        Collection<Node> checkList = new ArrayList<>();
 
-        Collection<Node> unspecifyNodes = new ArrayList<Node>();
-        Collection<Node> unspecifyPartialNodes = new ArrayList<Node>();
+        Collection<Node> unspecifyNodes = new ArrayList<>();
+        Collection<Node> unspecifyPartialNodes = new ArrayList<>();
 
-        Collection<Node> outOfBoundNodes = new ArrayList<Node>();
-        Collection<Node> inconsistencyNodes = new ArrayList<Node>();
-        Collection<Node> causalInconsistencyNodes = new ArrayList<Node>();
+        Collection<Node> outOfBoundNodes = new ArrayList<>();
+        Collection<Node> inconsistencyNodes = new ArrayList<>();
+        Collection<Node> causalInconsistencyNodes = new ArrayList<>();
 
         infoMsg("-------------------------Time Consistency Checking Result-------------------------");
         if (settings.getTabIndex() == 0) {
@@ -94,7 +94,7 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
 
             infoMsg("Selected Groups : " +  net.toString(groups));
 
-            ArrayList<ChannelPlace> relatedCPlaces = new ArrayList<ChannelPlace>();
+            ArrayList<ChannelPlace> relatedCPlaces = new ArrayList<>();
             relatedCPlaces.addAll(relationAlg.getRelatedChannelPlace(groups));
             checkList.addAll(relatedCPlaces);
 
@@ -288,7 +288,7 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
     }
 
     private Map<Node, ArrayList<String>> timeConsistencyTask(Collection<Node> nodes, ScenarioRef s, boolean isEstimated) {
-        Map<Node, ArrayList<String>> result = new HashMap<Node, ArrayList<String>>();
+        Map<Node, ArrayList<String>> result = new HashMap<>();
 
         Granularity g = settings.getGranularity();
 
@@ -336,7 +336,7 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
     }
 
     protected ArrayList<String> timeEstimationTask(Time t) {
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
 
         //set default duration
         if (!t.getDuration().isSpecified()) {
@@ -408,8 +408,8 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
     }
 
     private Collection<ChannelPlace> getSyncCPs() {
-        Collection<ChannelPlace> result = new HashSet<ChannelPlace>();
-        HashSet<Node> nodes = new HashSet<Node>();
+        Collection<ChannelPlace> result = new HashSet<>();
+        HashSet<Node> nodes = new HashSet<>();
         nodes.addAll(net.getTransitionNodes());
         nodes.addAll(net.getChannelPlaces());
         CSONCycleAlg cycleAlg = new CSONCycleAlg(net);
@@ -425,7 +425,7 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
     }
 
     private Collection<Condition> getLowerConditions() {
-        Collection<Condition> result = new ArrayList<Condition>();
+        Collection<Condition> result = new ArrayList<>();
         Collection<ONGroup> lowerGroups = bsonAlg.getLowerGroups(net.getGroups());
 
         for (ONGroup group : lowerGroups) {
