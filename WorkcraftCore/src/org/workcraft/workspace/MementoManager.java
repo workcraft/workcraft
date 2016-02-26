@@ -3,8 +3,8 @@ package org.workcraft.workspace;
 import java.util.Stack;
 
 public class MementoManager {
-    private final Stack<Memento> undoStack = new Stack<Memento>();
-    private final Stack<Memento> redoStack = new Stack<Memento>();
+    private final Stack<Memento> undoStack = new Stack<>();
+    private final Stack<Memento> redoStack = new Stack<>();
 
     public void pushUndo(Memento memento) {
         this.undoStack.push(memento);

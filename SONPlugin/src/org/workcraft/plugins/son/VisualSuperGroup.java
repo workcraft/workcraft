@@ -135,7 +135,7 @@ public class VisualSuperGroup extends VisualGroup {
     }
 
     public Collection<Node> getVisualNodes() {
-        Collection<Node> result = new HashSet<Node>();
+        Collection<Node> result = new HashSet<>();
 
         result.addAll(getVisualComponents());
         result.addAll(getVisualSONConnections());

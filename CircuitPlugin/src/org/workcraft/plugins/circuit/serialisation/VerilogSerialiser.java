@@ -60,7 +60,7 @@ public class VerilogSerialiser implements ModelSerialiser {
     private static final String KEYWORD_ENDMODULE = "endmodule";
 
     class ReferenceResolver implements ReferenceProducer {
-        HashMap<Object, String> refMap = new HashMap<Object, String>();
+        HashMap<Object, String> refMap = new HashMap<>();
 
         @Override
         public String getReference(Object obj) {

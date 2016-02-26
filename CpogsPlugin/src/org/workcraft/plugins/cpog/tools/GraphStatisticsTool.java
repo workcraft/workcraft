@@ -38,7 +38,7 @@ public class GraphStatisticsTool implements Tool {
     public void run(WorkspaceEntry we) {
         final VisualCPOG cpog = (VisualCPOG) we.getModelEntry().getVisualModel();
 
-        ArrayList<Container> scenarios = new ArrayList<Container>();
+        ArrayList<Container> scenarios = new ArrayList<>();
         for (Node cur: cpog.getSelection()) {
             if (cur instanceof VisualScenario) {
                 scenarios.add((VisualScenario) cur);
@@ -66,7 +66,7 @@ public class GraphStatisticsTool implements Tool {
     }
 
     private void printStatistics(VisualCPOG cpog, Collection<Container> scenarios) {
-        HashSet<String> conditions = new HashSet<String>();
+        HashSet<String> conditions = new HashSet<>();
         int allVertices = 0, simpleVertices = 0;
         int allArcs = 0, simpleArcs = 0;
         int allVariables = 0;

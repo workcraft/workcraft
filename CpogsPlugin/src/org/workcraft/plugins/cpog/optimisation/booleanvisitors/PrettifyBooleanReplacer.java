@@ -13,7 +13,7 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 public class PrettifyBooleanReplacer extends BooleanReplacer {
 
-    private static final HashMap<BooleanVariable, BooleanFormula> MAP = new HashMap<BooleanVariable, BooleanFormula>();
+    private static final HashMap<BooleanVariable, BooleanFormula> MAP = new HashMap<>();
     private static final BooleanWorker WORKER = new PrettifyBooleanWorker(new MemoryConservingBooleanWorker());
 
     public PrettifyBooleanReplacer() {

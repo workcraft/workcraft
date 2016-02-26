@@ -341,7 +341,7 @@ public class WorkspaceEntry implements ObservableState {
             try {
                 // copy selected nodes inside a group as if it was the root
                 while (model.getCurrentLevel() != model.getRoot()) {
-                    Collection<Node> nodes = new HashSet<Node>(model.getSelection());
+                    Collection<Node> nodes = new HashSet<>(model.getSelection());
                     Container level = model.getCurrentLevel();
                     Container parent = Hierarchy.getNearestAncestor(level.getParent(), Container.class);
                     if (parent != null) {

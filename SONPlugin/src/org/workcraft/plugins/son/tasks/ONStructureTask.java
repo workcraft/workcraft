@@ -21,9 +21,9 @@ public class ONStructureTask extends AbstractStructuralVerification {
 
     private SON net;
 
-    private Collection<Node> relationErrors = new HashSet<Node>();
-    private Collection<Path> cycleErrors = new HashSet<Path>();
-    private Collection<ONGroup> groupErrors = new HashSet<ONGroup>();
+    private Collection<Node> relationErrors = new HashSet<>();
+    private Collection<Path> cycleErrors = new HashSet<>();
+    private Collection<ONGroup> groupErrors = new HashSet<>();
 
     private ONCycleAlg onCycleAlg;
     private ASONAlg asonAlg;
@@ -46,7 +46,7 @@ public class ONStructureTask extends AbstractStructuralVerification {
 
         infoMsg("-------------------------Occurrence Net Structure Verification-------------------------");
 
-        ArrayList<Node> components = new ArrayList<Node>();
+        ArrayList<Node> components = new ArrayList<>();
 
         for (ONGroup group : groups) {
             components.addAll(group.getComponents());
@@ -139,7 +139,7 @@ public class ONStructureTask extends AbstractStructuralVerification {
     }
 
     private Collection<Node> iniStateTask(Collection<Node> groupNodes) {
-        ArrayList<Node> result = new ArrayList<Node>();
+        ArrayList<Node> result = new ArrayList<>();
         for (Node node : groupNodes) {
             if (node instanceof TransitionNode) {
                 if (getRelationAlg().isInitial(node)) {
@@ -151,7 +151,7 @@ public class ONStructureTask extends AbstractStructuralVerification {
     }
 
     private Collection<Node> finalStateTask(Collection<Node> groupNodes) {
-        ArrayList<Node> result = new ArrayList<Node>();
+        ArrayList<Node> result = new ArrayList<>();
         for (Node node : groupNodes) {
             if (node instanceof TransitionNode) {
                 if (getRelationAlg().isFinal(node)) {

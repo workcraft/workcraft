@@ -30,7 +30,7 @@ public class ONCycleAlg {
     @SuppressWarnings("unchecked")
     protected List<Integer>[] createGraph(List<Node> nodes) {
         List<Integer>[] result = new List[nodes.size()];
-        LinkedHashMap<Node, Integer> nodeIndex = new LinkedHashMap<Node, Integer>();
+        LinkedHashMap<Node, Integer> nodeIndex = new LinkedHashMap<>();
         for (int i = 0; i < nodes.size(); i++) {
             nodeIndex.put(nodes.get(i), i);
         }
@@ -57,9 +57,9 @@ public class ONCycleAlg {
      * then convert to cycle path
      */
     public Collection<Path> cycleTask(Collection<? extends Node> nodes) {
-        List<Path> result = new ArrayList<Path>();
+        List<Path> result = new ArrayList<>();
 
-        List<Node> list = new ArrayList<Node>();
+        List<Node> list = new ArrayList<>();
         list.addAll(nodes);
 
         CycleAlgorithm cycleAlg = new CycleAlgorithm();

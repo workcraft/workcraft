@@ -105,7 +105,7 @@ public class ExternalProcess {
     private ReadableByteChannel errorStream = null;
     private WritableByteChannel outputStream = null;
 
-    private LinkedList<ExternalProcessListener> listeners = new LinkedList<ExternalProcessListener>();
+    private LinkedList<ExternalProcessListener> listeners = new LinkedList<>();
 
     public ExternalProcess(String[] command, String workingDirectoryPath) {
         processBuilder = new ProcessBuilder(command);

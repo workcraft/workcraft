@@ -121,7 +121,7 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 
     @Override
     public CpogOptimisationTask<BooleanFormula> getFormula(String[] scenarios, BooleanVariable[] variables, int derivedVariables) {
-        Map<Character, BooleanVariable> forcedVariables = new HashMap<Character, BooleanVariable>();
+        Map<Character, BooleanVariable> forcedVariables = new HashMap<>();
 
         BooleanFormula[][] parsedMatrix = new BooleanFormula[scenarios.length][];
 
@@ -218,7 +218,7 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
 
         BooleanFormula[] cpogFunctions = new BooleanFormula[functionCount];
 
-        List<BooleanFormula> tableConditions = new ArrayList<BooleanFormula>();
+        List<BooleanFormula> tableConditions = new ArrayList<>();
         //Try to match CPOG functions with generated functions.
         for (int i = 0; i < functionCount; i++) {
             BooleanNumber varId = generateInt("cpog_f" + i + "_", allVariables.size());
@@ -273,8 +273,8 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
      * @return
      */
     private List<BooleanFormula> generateFunctions(List<BooleanFormula> parameters, int functionCount) {
-        List<BooleanFormula> allVariables = new ArrayList<BooleanFormula>(parameters);
-        List<BooleanFormula> lastLevel = new ArrayList<BooleanFormula>(parameters);
+        List<BooleanFormula> allVariables = new ArrayList<>(parameters);
+        List<BooleanFormula> lastLevel = new ArrayList<>(parameters);
 
         if (levels != null) {
             if (levels.length == 1 && levels[0] == -1) {
@@ -295,7 +295,7 @@ public class Optimiser<BooleanNumber> implements CpogSATProblemGenerator<Boolean
             } else {
                 int cc = 0;
                 for (int level = 0; level < levels.length; level++) {
-                    List<BooleanFormula> currentLevel = new ArrayList<BooleanFormula>();
+                    List<BooleanFormula> currentLevel = new ArrayList<>();
                     if (levels[level] == 0) {
                         throw new RuntimeException("wtf?");
                     }

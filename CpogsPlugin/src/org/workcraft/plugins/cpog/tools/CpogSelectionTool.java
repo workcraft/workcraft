@@ -93,7 +93,7 @@ public class CpogSelectionTool extends SelectionTool {
     boolean transitivesActive = true;
 
     private JTextArea expressionText;
-    HashMap<String, CpogFormula> graphMap = new HashMap<String, CpogFormula>();
+    HashMap<String, CpogFormula> graphMap = new HashMap<>();
     final HashMap<String, Variable> variableMap = new HashMap<>();
     private HashMap<String, GraphReference> referenceMap = new HashMap<>();
     private Checkbox insertTransitives;
@@ -130,7 +130,7 @@ public class CpogSelectionTool extends SelectionTool {
             @Override
             public void actionPerformed(ActionEvent e) {
                 int prevLineEnd = 0;
-                ArrayList<String> expressions = new ArrayList<String>();
+                ArrayList<String> expressions = new ArrayList<>();
                 editor.getWorkspaceEntry().captureMemento();
                 try {
                     for (int i = 0; i < expressionText.getLineCount(); i++) {
@@ -190,7 +190,7 @@ public class CpogSelectionTool extends SelectionTool {
                         "Text Files", "txt");
                 chooser.setFileFilter(filter);
                 if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-                    ArrayList<String> expressions = new ArrayList<String>();
+                    ArrayList<String> expressions = new ArrayList<>();
 
                     textFile = chooser.getSelectedFile();
                     try {
@@ -321,8 +321,8 @@ public class CpogSelectionTool extends SelectionTool {
 
         visualCpog.setCurrentLevel(visualCpog.getRoot());
 
-        final LinkedHashMap<String, VisualVertex> vertexMap = new LinkedHashMap<String, VisualVertex>();
-        final HashSet<ArcCondition> arcConditionList = new HashSet<ArcCondition>();
+        final LinkedHashMap<String, VisualVertex> vertexMap = new LinkedHashMap<>();
+        final HashSet<ArcCondition> arcConditionList = new HashSet<>();
         text = text.replace("\n", "");
         text = parsingTool.replaceReferences(text);
 
@@ -335,7 +335,7 @@ public class CpogSelectionTool extends SelectionTool {
 
         CpogFormula f = null;
         GraphFunc<String, CpogFormula> pgf = null;
-        final HashMap<String, VisualVertex> localVertices = new HashMap<String, VisualVertex>();
+        final HashMap<String, VisualVertex> localVertices = new HashMap<>();
         try {
             f = CpogExpressionParser.parse(text,
                     pgf = new GraphFunc<String, CpogFormula>() {
@@ -633,7 +633,7 @@ public class CpogSelectionTool extends SelectionTool {
 
     public void bfsLayout(VisualCPOG visualCpog, LinkedHashSet<Node> roots) {
         Iterator<Node> root = roots.iterator();
-        ConcurrentLinkedQueue<Node> q = new ConcurrentLinkedQueue<Node>();
+        ConcurrentLinkedQueue<Node> q = new ConcurrentLinkedQueue<>();
         double originalX = 0, originalY = 0;
         while (root.hasNext()) {
             q.add(root.next());
@@ -713,7 +713,7 @@ public class CpogSelectionTool extends SelectionTool {
     }
 
     public LinkedHashSet<Node> getRootNodes(VisualCPOG visualCpog, Collection<VisualVertex> vertexMap) {
-        LinkedHashSet<Node> roots = new LinkedHashSet<Node>();
+        LinkedHashSet<Node> roots = new LinkedHashSet<>();
         Set<Connection> arcs;
         Iterator<Connection> it;
         Connection connection;
@@ -740,7 +740,7 @@ public class CpogSelectionTool extends SelectionTool {
     public void addUsedReferences(VisualCPOG visualCpog, GraphEditor editor, ArrayList<String> usedReferences, HashMap<String, VisualVertex> localVertices, ArrayList<Node> prevSelection) {
         for (String k : usedReferences) {
             visualCpog.selectNone();
-            ArrayList<VisualVertex> pageVerts = new ArrayList<VisualVertex>();
+            ArrayList<VisualVertex> pageVerts = new ArrayList<>();
             if (referenceMap.containsKey(k)) {
                 GraphReference g = referenceMap.get(k);
                 HashMap<String, VisualVertex> vMap = g.getVertMap();
@@ -920,7 +920,7 @@ public class CpogSelectionTool extends SelectionTool {
     }
 
     public ArrayList<VisualPage> getRefPages(VisualCPOG visualCpog, String refKey, VisualVertex v) {
-        ArrayList<VisualPage> result = new ArrayList<VisualPage>();
+        ArrayList<VisualPage> result = new ArrayList<>();
 
         for (VisualPage p : refPages) {
             if (p.getLabel().compareTo(refKey) == 0) {
@@ -974,7 +974,7 @@ public class CpogSelectionTool extends SelectionTool {
 
     public void insertEventLog(VisualCPOG visualCpog, int i, String[] events, double yPos) {
 
-        final LinkedHashMap<String, VisualVertex> vertexMap = new LinkedHashMap<String, VisualVertex>();
+        final LinkedHashMap<String, VisualVertex> vertexMap = new LinkedHashMap<>();
         VisualVertex vertex1, vertex2;
 
         for (int c = 0; c < events.length - 1; c++) {

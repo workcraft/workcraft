@@ -35,9 +35,9 @@ import org.workcraft.observation.NodesDeletedEvent;
 import org.workcraft.observation.NodesReparentingEvent;
 
 public class NodeContextTracker extends HierarchySupervisor implements NodeContext {
-    private HashMap<Node, LinkedHashSet<Node>> presets = new HashMap<Node, LinkedHashSet<Node>>();
-    private HashMap<Node, LinkedHashSet<Node>> postsets = new HashMap<Node, LinkedHashSet<Node>>();
-    private HashMap<Node, LinkedHashSet<Connection>> connections = new HashMap<Node, LinkedHashSet<Connection>>();
+    private HashMap<Node, LinkedHashSet<Node>> presets = new HashMap<>();
+    private HashMap<Node, LinkedHashSet<Node>> postsets = new HashMap<>();
+    private HashMap<Node, LinkedHashSet<Connection>> connections = new HashMap<>();
 
     private void initHashes(Node n) {
         LinkedHashSet<Node> set = presets.get(n);

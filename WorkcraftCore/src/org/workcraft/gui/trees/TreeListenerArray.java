@@ -6,7 +6,7 @@ import java.util.List;
 import org.workcraft.gui.workspace.Path;
 
 public class TreeListenerArray<Node> implements TreeListener<Node> {
-    List<TreeListener<Node>> list = new ArrayList<TreeListener<Node>>();
+    List<TreeListener<Node>> list = new ArrayList<>();
 
     @Override
     public void added(Path<Node> path) {

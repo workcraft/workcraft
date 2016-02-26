@@ -16,9 +16,9 @@ public class TSONStructureTask extends AbstractStructuralVerification {
 
     private SON net;
 
-    private Collection<Node> relationErrors = new HashSet<Node>();
-    private Collection<ONGroup> groupErrors = new HashSet<ONGroup>();
-    private Collection<Path> cycleErrors = new ArrayList<Path>();
+    private Collection<Node> relationErrors = new HashSet<>();
+    private Collection<ONGroup> groupErrors = new HashSet<>();
+    private Collection<Path> cycleErrors = new ArrayList<>();
 
     private TSONAlg tsonAlg;
     private ONCycleAlg onCycleAlg;
@@ -42,7 +42,7 @@ public class TSONStructureTask extends AbstractStructuralVerification {
         //group info
         infoMsg("Initialising selected groups and components...");
 
-        Collection<Block> blocks = new ArrayList<Block>();
+        Collection<Block> blocks = new ArrayList<>();
 
         for (ONGroup cGroup : groups) {
             blocks.addAll(cGroup.getBlocks());
@@ -93,7 +93,7 @@ public class TSONStructureTask extends AbstractStructuralVerification {
     //Check all inputs of a block causally precede all outputs of an un-collapsed block
     //Warning: run cycle check before
     private Collection<Node> causallyPrecedeTask(Block block) {
-        Collection<Node> result = new ArrayList<Node>();
+        Collection<Node> result = new ArrayList<>();
         for (Node input : getTSONAlg().getBlockPNInputs(block)) {
             if (!getTSONAlg().isCausallyPrecede(input, getTSONAlg().getBlockPNOutputs(block))) {
                 result.add(input);

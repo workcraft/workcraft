@@ -74,7 +74,7 @@ public class WorkspaceChooserDialog extends JDialog {
     }
 
     public List<WorkspaceEntry> choose() {
-        LinkedList<WorkspaceEntry> result = new LinkedList<WorkspaceEntry>();
+        LinkedList<WorkspaceEntry> result = new LinkedList<>();
 
         setVisible(true);
 

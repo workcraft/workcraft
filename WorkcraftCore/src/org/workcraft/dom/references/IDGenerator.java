@@ -36,7 +36,7 @@ public class IDGenerator {
                 }
             };
 
-    TreeSet<Pair<Integer, Integer>> takenRanges = new TreeSet<Pair<Integer, Integer>>(comparator);
+    TreeSet<Pair<Integer, Integer>> takenRanges = new TreeSet<>(comparator);
 
     public void reserveID(int id) {
         final Pair<Integer, Integer> point = emptyRange(id);

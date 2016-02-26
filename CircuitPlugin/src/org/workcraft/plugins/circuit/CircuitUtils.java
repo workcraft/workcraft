@@ -92,7 +92,7 @@ public class CircuitUtils {
     }
 
     public static Collection<Contact> findDriven(Circuit circuit, MathNode curNode, boolean transparentZeroDelayComponents) {
-        Set<Contact> result = new HashSet<Contact>();
+        Set<Contact> result = new HashSet<>();
         HashSet<Node> visited = new HashSet<>();
         Queue<Node> queue = new LinkedList<>();
         if (curNode instanceof MathConnection) {

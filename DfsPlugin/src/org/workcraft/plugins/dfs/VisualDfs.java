@@ -162,9 +162,9 @@ public class VisualDfs extends AbstractVisualModel {
     }
 
     public <R> Set<R> getRPostset(Node node, Class<R> rType) {
-        Set<R> result = new HashSet<R>();
-        Set<Node> visited = new HashSet<Node>();
-        Queue<Node> queue = new LinkedList<Node>();
+        Set<R> result = new HashSet<>();
+        Set<Node> visited = new HashSet<>();
+        Queue<Node> queue = new LinkedList<>();
         queue.add(node);
         while (!queue.isEmpty()) {
             Node cur = queue.remove();
@@ -185,9 +185,9 @@ public class VisualDfs extends AbstractVisualModel {
     }
 
     public <R> Set<R> getRPreset(Node node, Class<R> rType) {
-        Set<R> result = new HashSet<R>();
-        Set<Node> visited = new HashSet<Node>();
-        Queue<Node> queue = new LinkedList<Node>();
+        Set<R> result = new HashSet<>();
+        Set<Node> visited = new HashSet<>();
+        Queue<Node> queue = new LinkedList<>();
         queue.add(node);
         while (!queue.isEmpty()) {
             Node cur = queue.remove();

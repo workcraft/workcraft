@@ -25,7 +25,7 @@ public class ArcCondition {
 
     public ArrayList<String> getVertexList() {
         String f = CpogFormulaToString.toString(formula);
-        ArrayList<String> list = new ArrayList<String>();
+        ArrayList<String> list = new ArrayList<>();
         int index = 0;
 
         f = f.replace(" ", "");

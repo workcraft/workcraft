@@ -77,7 +77,7 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
                     Literal[][] side2 = getBiClause(and.getY());
                     for (int i = 0; i < side1.length; i++) {
                         for (int j = 0; j < side2.length; j++) {
-                            List<Literal> list = new ArrayList<Literal>();
+                            List<Literal> list = new ArrayList<>();
                             for (int k = 0; k < side1[i].length; k++) {
                                 list.add(not(side1[i][k]));
                             }
@@ -220,7 +220,7 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
     class FormulaCounter extends RecursiveBooleanVisitor<Object> {
         int count = 0;
 
-        Map<BooleanFormula, Integer> met = new HashMap<BooleanFormula, Integer>();
+        Map<BooleanFormula, Integer> met = new HashMap<>();
 
         /*@Override
         protected Object visitDefault(BooleanFormula node) {
@@ -269,7 +269,7 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
         return result;
     }
 
-    Map<BooleanFormula, Literal> cache = new HashMap<BooleanFormula, Literal>();
+    Map<BooleanFormula, Literal> cache = new HashMap<>();
     //int varCount = 0;
 
     Literal newVar(BooleanFormula node) {

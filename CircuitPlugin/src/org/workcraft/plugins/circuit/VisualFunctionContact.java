@@ -310,7 +310,7 @@ public class VisualFunctionContact extends VisualContact implements StateObserve
     }
 
     private Collection<VisualFunctionContact> getAllContacts() {
-        HashSet<VisualFunctionContact> result = new HashSet<VisualFunctionContact>();
+        HashSet<VisualFunctionContact> result = new HashSet<>();
         Node root = Hierarchy.getRoot(this);
         if (root != null) {
             result.addAll(Hierarchy.getDescendantsOfType(root, VisualFunctionContact.class));

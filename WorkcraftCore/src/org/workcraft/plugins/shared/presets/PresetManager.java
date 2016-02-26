@@ -15,7 +15,7 @@ import org.workcraft.util.XmlUtil;
 import org.xml.sax.SAXException;
 
 public class PresetManager<T> {
-    private ArrayList<Preset<T>> presets = new ArrayList<Preset<T>>();
+    private ArrayList<Preset<T>> presets = new ArrayList<>();
     private File presetFile;
     private final SettingsSerialiser<T> serialiser;
 
@@ -77,7 +77,7 @@ public class PresetManager<T> {
     }
 
     public Preset<T> save(T settings, String description) {
-        Preset<T> preset = new Preset<T>(description, settings, false);
+        Preset<T> preset = new Preset<>(description, settings, false);
         presets.add(preset);
         savePresets();
         return preset;

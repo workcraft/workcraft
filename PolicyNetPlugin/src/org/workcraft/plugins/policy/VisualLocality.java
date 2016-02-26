@@ -62,7 +62,7 @@ public class VisualLocality extends VisualGroup {
     }
 
     private Collection<Node> filterRefNodesByLocality(Collection<Node> nodes, Locality locality) {
-        Collection<Node> result = new ArrayList<Node>();
+        Collection<Node> result = new ArrayList<>();
         for (Node node: nodes) {
             Node refNode = null;
             if (node instanceof VisualComponent) {

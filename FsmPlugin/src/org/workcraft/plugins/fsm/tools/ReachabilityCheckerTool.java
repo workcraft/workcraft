@@ -42,8 +42,8 @@ public class ReachabilityCheckerTool extends VerificationTool {
     private HashSet<State> checkReachability(final Fsm fsm) {
         HashMap<State, HashSet<Event>> stateEvents = FsmUtils.calcStateOutgoingEventsMap(fsm);
 
-        HashSet<State> visited = new HashSet<State>();
-        Queue<State> queue = new LinkedList<State>();
+        HashSet<State> visited = new HashSet<>();
+        Queue<State> queue = new LinkedList<>();
 
         State initialState = fsm.getInitialState();
         if (initialState != null) {
@@ -62,7 +62,7 @@ public class ReachabilityCheckerTool extends VerificationTool {
             }
         }
 
-        HashSet<State> unreachableStates = new HashSet<State>(fsm.getStates());
+        HashSet<State> unreachableStates = new HashSet<>(fsm.getStates());
         unreachableStates.removeAll(visited);
         return unreachableStates;
     }

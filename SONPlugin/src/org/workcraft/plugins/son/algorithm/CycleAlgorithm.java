@@ -58,7 +58,7 @@ public class CycleAlgorithm {
             return;
         }
 
-        List<Integer> component = new ArrayList<Integer>();
+        List<Integer> component = new ArrayList<>();
         int w;
         do {
             w = stack.pop();

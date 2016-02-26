@@ -62,7 +62,7 @@ public class MainMenu extends JMenuBar {
     final private JMenu mnExport = new JMenu("Export");
     final private JMenu mnRecent = new JMenu("Open recent");
     final private JMenu mnWindows = new JMenu("Windows");
-    final private HashMap<Integer, ActionCheckBoxMenuItem> windowItems = new HashMap<Integer, ActionCheckBoxMenuItem>();
+    final private HashMap<Integer, ActionCheckBoxMenuItem> windowItems = new HashMap<>();
     final private LinkedList<JMenu> mnToolsList = new LinkedList<>();
     final private JMenu mnHelp = new JMenu("Help");
 

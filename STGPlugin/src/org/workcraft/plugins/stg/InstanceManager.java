@@ -13,8 +13,8 @@ import org.workcraft.util.Pair;
 import org.workcraft.util.TwoWayMap;
 
 public class InstanceManager {
-    private GeneralTwoWayMap<Node, Pair<String, Integer>> instances = new TwoWayMap<Node, Pair<String, Integer>>();
-    private Map<String, IDGenerator> generators = new HashMap<String, IDGenerator>();
+    private GeneralTwoWayMap<Node, Pair<String, Integer>> instances = new TwoWayMap<>();
+    private Map<String, IDGenerator> generators = new HashMap<>();
 
     private IDGenerator getGenerator(String label)    {
         IDGenerator result = generators.get(label);

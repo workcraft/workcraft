@@ -172,7 +172,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         Point2D pos = getComponentPosition(l);
         double x = pos.getX();
         double y = pos.getY();
-        Collection<Node> nodes = new LinkedList<Node>();
+        Collection<Node> nodes = new LinkedList<>();
         SignalTransition.Type type = SignalTransition.Type.INTERNAL;
         ColorGenerator tokenColorGenerator = createColorGenerator(getDfsModel().getPreset(l).size() == 0);
 
@@ -200,7 +200,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         setPosition(c1, x + 2.0, y - 1.0);
         nodes.add(c1);
 
-        Set<Node> preset = new HashSet<Node>();
+        Set<Node> preset = new HashSet<>();
         preset.addAll(getDfsModel().getPreset(l, VisualLogic.class));
         preset.addAll(getDfsModel().getPreset(l, VisualRegister.class));
         preset.addAll(getDfsModel().getPreset(l, VisualControlRegister.class));
@@ -209,8 +209,8 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         if (preset.size() == 0) {
             preset.add(l);
         }
-        Map<Node, VisualSignalTransition> cRs = new HashMap<Node, VisualSignalTransition>();
-        Map<Node, VisualSignalTransition> cFs = new HashMap<Node, VisualSignalTransition>();
+        Map<Node, VisualSignalTransition> cRs = new HashMap<>();
+        Map<Node, VisualSignalTransition> cFs = new HashMap<>();
         VisualSignalTransition cR = null;
         VisualSignalTransition cF = null;
         double dy = 0.0;
@@ -283,7 +283,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         Point2D pos = getComponentPosition(r);
         double x = pos.getX();
         double y = pos.getY();
-        Collection<Node> nodes = new LinkedList<Node>();
+        Collection<Node> nodes = new LinkedList<>();
         SignalTransition.Type type = SignalTransition.Type.INTERNAL;
         if (getDfsModel().getPreset(r).size() == 0) {
             type = SignalTransition.Type.INPUT;
@@ -410,7 +410,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         Point2D pos = getComponentPosition(l);
         double x = pos.getX();
         double y = pos.getY();
-        Collection<Node> nodes = new LinkedList<Node>();
+        Collection<Node> nodes = new LinkedList<>();
         SignalTransition.Type type = SignalTransition.Type.INTERNAL;
         ColorGenerator presetTokenColorGenerator = createColorGenerator(getDfsModel().getPreset(l).size() == 0);
         ColorGenerator postsetTokenColorGenerator = createColorGenerator(getDfsModel().getPostset(l).size() == 0);
@@ -439,14 +439,14 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         setPosition(fwC1, x + 2.0, y - 4.0);
         nodes.add(fwC1);
 
-        Set<Node> preset = new HashSet<Node>();
+        Set<Node> preset = new HashSet<>();
         preset.addAll(getDfsModel().getPreset(l, VisualCounterflowLogic.class));
         preset.addAll(getDfsModel().getPreset(l, VisualCounterflowRegister.class));
         if (preset.size() == 0) {
             preset.add(l);
         }
-        Map<Node, VisualSignalTransition> fwCRs = new HashMap<Node, VisualSignalTransition>();
-        Map<Node, VisualSignalTransition> fwCFs = new HashMap<Node, VisualSignalTransition>();
+        Map<Node, VisualSignalTransition> fwCRs = new HashMap<>();
+        Map<Node, VisualSignalTransition> fwCFs = new HashMap<>();
         VisualSignalTransition fwCR = null;
         VisualSignalTransition fwCF = null;
         double dy = 0.0;
@@ -493,14 +493,14 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         setPosition(bwC1, x + 2.0, y + 2.0);
         nodes.add(bwC1);
 
-        Set<Node> postset = new HashSet<Node>();
+        Set<Node> postset = new HashSet<>();
         postset.addAll(getDfsModel().getPostset(l, VisualCounterflowLogic.class));
         postset.addAll(getDfsModel().getPostset(l, VisualCounterflowRegister.class));
         if (postset.size() == 0) {
             postset.add(l);
         }
-        Map<Node, VisualSignalTransition> bwCRs = new HashMap<Node, VisualSignalTransition>();
-        Map<Node, VisualSignalTransition> bwCFs = new HashMap<Node, VisualSignalTransition>();
+        Map<Node, VisualSignalTransition> bwCRs = new HashMap<>();
+        Map<Node, VisualSignalTransition> bwCFs = new HashMap<>();
         VisualSignalTransition bwCR = null;
         VisualSignalTransition bwCF = null;
         dy = 0.0;
@@ -570,7 +570,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         Point2D pos = getComponentPosition(r);
         double x = pos.getX();
         double y = pos.getY();
-        Collection<Node> nodes = new LinkedList<Node>();
+        Collection<Node> nodes = new LinkedList<>();
         SignalTransition.Type type = SignalTransition.Type.INTERNAL;
         if (getDfsModel().getPreset(r).size() == 0 || getDfsModel().getPostset(r).size() == 0) {
             type = SignalTransition.Type.INPUT;
@@ -709,7 +709,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
             createReadArc(nstg.orM0, rstg.orMFbw, false);
         }
 
-        Set<VisualCounterflowRegister> rSet = new HashSet<VisualCounterflowRegister>();
+        Set<VisualCounterflowRegister> rSet = new HashSet<>();
         rSet.add(r);
         rSet.addAll(getDfsModel().getRPreset(r, VisualCounterflowRegister.class));
         rSet.addAll(getDfsModel().getRPostset(r, VisualCounterflowRegister.class));
@@ -737,7 +737,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
 
     private BinaryRegisterStg generateBinaryRegisterSTG(VisualBinaryRegister r,
             boolean andSync, boolean orSync) throws InvalidConnectionException {
-        Collection<Node> nodes = new LinkedList<Node>();
+        Collection<Node> nodes = new LinkedList<>();
         String name = getDfsModel().getName(r);
         Point2D pos = getComponentPosition(r);
         double x = pos.getX();
@@ -795,13 +795,13 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         setPosition(tM1, x + 4.0, y - 4.0);
         nodes.add(tM1);
 
-        Set<Node> preset = new HashSet<Node>();
+        Set<Node> preset = new HashSet<>();
         preset.addAll(getDfsModel().getRPreset(r, VisualControlRegister.class));
         if (preset.size() == 0) {
             preset.add(r);
         }
 
-        Map<Node, VisualSignalTransition> tMRs = new HashMap<Node, VisualSignalTransition>();
+        Map<Node, VisualSignalTransition> tMRs = new HashMap<>();
         VisualSignalTransition tMR = null;
         double dy = 0.0;
         for (Node n: preset) {
@@ -848,7 +848,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         setPosition(fM1, x + 4.0, y + 2.0);
         nodes.add(fM1);
 
-        Map<Node, VisualSignalTransition> fMRs = new HashMap<Node, VisualSignalTransition>();
+        Map<Node, VisualSignalTransition> fMRs = new HashMap<>();
         VisualSignalTransition fMR = null;
         dy = 0.0;
         for (Node n: preset) {

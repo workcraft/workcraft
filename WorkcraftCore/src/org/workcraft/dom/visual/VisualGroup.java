@@ -171,7 +171,7 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
     }
 
     public List<Node> unGroup() {
-        ArrayList<Node> nodesToReparent = new ArrayList<Node>(groupImpl.getChildren());
+        ArrayList<Node> nodesToReparent = new ArrayList<>(groupImpl.getChildren());
         Container newParent = Hierarchy.getNearestAncestor(getParent(), Container.class);
         groupImpl.reparent(nodesToReparent, newParent);
         double tx = localToParentTransform.getTranslateX();

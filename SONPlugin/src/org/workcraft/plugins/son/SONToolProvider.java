@@ -20,7 +20,7 @@ public class SONToolProvider implements CustomToolsProvider {
 
     @Override
     public Iterable<GraphEditorTool> getTools() {
-        ArrayList<GraphEditorTool> result = new ArrayList<GraphEditorTool>();
+        ArrayList<GraphEditorTool> result = new ArrayList<>();
         GraphEditorTool channelPlaceTool = new NodeGeneratorTool(new DefaultNodeGenerator(ChannelPlace.class));
         result.add(new SONSelectionTool(channelPlaceTool));
         result.add(new CommentGeneratorTool());

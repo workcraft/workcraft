@@ -25,7 +25,7 @@ public class XmasToolsProvider implements CustomToolsProvider {
 
     @Override
     public Iterable<GraphEditorTool> getTools() {
-        ArrayList<GraphEditorTool> result = new ArrayList<GraphEditorTool>();
+        ArrayList<GraphEditorTool> result = new ArrayList<>();
 
         result.add(new SyncSelectionTool());
         result.add(new CommentGeneratorTool());

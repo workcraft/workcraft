@@ -118,7 +118,7 @@ public class CpogFormulaToString implements CpogVisitor<String> {
     }
 
     public static class VariablePrinter extends DelegatingPrinter {
-        Map<String, CpogFormulaVariable> varMap = new HashMap<String, CpogFormulaVariable>();
+        Map<String, CpogFormulaVariable> varMap = new HashMap<>();
         @Override
         public Void visit(CpogFormulaVariable var) {
             String label = var.getLabel();

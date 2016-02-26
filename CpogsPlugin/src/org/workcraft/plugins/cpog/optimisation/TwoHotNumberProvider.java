@@ -31,7 +31,7 @@ import java.util.Map;
 public abstract class TwoHotNumberProvider implements NumberProvider<TwoHotNumber> {
     TwoHotRangeProvider rangeProvider = new TwoHotRangeProvider();
 
-    Map<Integer, TwoHotRange> halfTaken = new HashMap<Integer, TwoHotRange>();
+    Map<Integer, TwoHotRange> halfTaken = new HashMap<>();
 
     private Cnf constraints = new Cnf();
 
@@ -72,7 +72,7 @@ public abstract class TwoHotNumberProvider implements NumberProvider<TwoHotNumbe
     }
 
     private List<Literal> createLiterals(String name, int range) {
-        List<Literal> literals = new ArrayList<Literal>();
+        List<Literal> literals = new ArrayList<>();
 
         for (int i = 0; i < range; i++) {
             literals.add(new Literal(name + i));
@@ -81,13 +81,13 @@ public abstract class TwoHotNumberProvider implements NumberProvider<TwoHotNumbe
     }
 
     public static List<CnfClause> selectAnd(Literal result, Literal[] vars, TwoHotRange code) {
-        List<CnfClause> conditions = new ArrayList<CnfClause>();
+        List<CnfClause> conditions = new ArrayList<>();
 
         if (code.size() != vars.length) {
             throw new RuntimeException("Lengths do not match: code=" + code.size() + ", vars=" + vars.length);
         }
 
-        List<Literal> preResult = new ArrayList<Literal>();
+        List<Literal> preResult = new ArrayList<>();
         for (int i = 0; i < vars.length; i++) {
             preResult.add(new Literal(result.getVariable().getLabel() + (result.getNegation() ? "i" : "") + "_sv" + i));
         }
@@ -115,7 +115,7 @@ public abstract class TwoHotNumberProvider implements NumberProvider<TwoHotNumbe
     public static BooleanFormula selectAnd(BooleanFormula[] vars, TwoHotRange number) {
         throw new RuntimeException("incorrect");
         /*
-        List<FreeVariable> params = new ArrayList<FreeVariable>();
+        List<FreeVariable> params = new ArrayList<>();
         CnfLiteral[]literals = new CnfLiteral[vars.length];
 
         for (int i = 0; i < vars.length; i++) {

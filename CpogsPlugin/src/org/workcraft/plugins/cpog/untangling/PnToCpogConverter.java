@@ -128,7 +128,7 @@ public class PnToCpogConverter {
             // debug printing: number of the partial order
             // System.out.println("Partial Order " + (i + 1) + ":");
 
-            LinkedHashMap<String, VisualVertex> nodes = new LinkedHashMap<String, VisualVertex>();
+            LinkedHashMap<String, VisualVertex> nodes = new LinkedHashMap<>();
             Container container = visualCpog.getCurrentLevel();
             visualCpog.selectNone();
 

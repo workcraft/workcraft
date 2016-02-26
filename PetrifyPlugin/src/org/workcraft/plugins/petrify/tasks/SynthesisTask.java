@@ -105,7 +105,7 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
         boolean printStdout = PetrifyUtilitySettings.getPrintStdout();
         boolean printStderr = PetrifyUtilitySettings.getPrintStderr();
         ExternalProcessTask task = new ExternalProcessTask(command, null, printStdout, printStderr);
-        SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
+        SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessResult> res = task.run(mon);
         try {
             if (res.getOutcome() == Outcome.CANCELLED) {

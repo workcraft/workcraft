@@ -57,7 +57,7 @@ public class TypePropertyDescriptor implements PropertyDescriptor  {
 
     @Override
     public Map<Type, String> getChoice() {
-        Map<Type, String> result = new LinkedHashMap<Type, String>();
+        Map<Type, String> result = new LinkedHashMap<>();
         for (Type item : Type.values()) {
             result.put(item, item.toString());
         }

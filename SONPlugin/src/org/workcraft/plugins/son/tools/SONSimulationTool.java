@@ -109,7 +109,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
     protected JButton copyStateButton, pasteStateButton, mergeTraceButton;
     protected JToggleButton autoSimuButton;
 
-    protected HashMap<Container, Boolean> excitedContainers = new HashMap<Container, Boolean>();
+    protected HashMap<Container, Boolean> excitedContainers = new HashMap<>();
 
     final static double DEFAULT_SIMULATION_DELAY = 0.3;
     final static double EDGE_SPEED_MULTIPLIER = 10;
@@ -391,7 +391,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
     }
 
     protected Collection<Path> getSyncEventCycles() {
-        HashSet<Node> nodes = new HashSet<Node>();
+        HashSet<Node> nodes = new HashSet<>();
         nodes.addAll(net.getTransitionNodes());
         nodes.addAll(net.getChannelPlaces());
         CSONCycleAlg cycleAlg = new CSONCycleAlg(net);
@@ -484,7 +484,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
     }
 
     protected Map<PlaceNode, Boolean> readSONMarking() {
-        HashMap<PlaceNode, Boolean> result = new HashMap<PlaceNode, Boolean>();
+        HashMap<PlaceNode, Boolean> result = new HashMap<>();
         for (PlaceNode c : net.getPlaceNodes()) {
             result.put(c, c.isMarked());
         }
@@ -654,7 +654,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
     private void setErrNum(Step step, boolean isRev) {
         if (SONSettings.isErrorTracing()) {
-            Collection<TransitionNode> upperEvents = new ArrayList<TransitionNode>();
+            Collection<TransitionNode> upperEvents = new ArrayList<>();
 
             //get high level events
             for (TransitionNode node : step) {
@@ -720,7 +720,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         result.addAll(step);
 
         for (PlaceNode c : readSONMarking().keySet()) {
-            Collection<TransitionNode> conflict = new ArrayList<TransitionNode>();
+            Collection<TransitionNode> conflict = new ArrayList<>();
             if (c.isMarked()) {
                 if (!isRev) {
                     conflict.addAll(relationAlg.getPostConflictEvents(c));
@@ -740,7 +740,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
     }
 
     public Map<PlaceNode, Boolean> reachabilitySimulator(final GraphEditor editor, Collection<String> causalPredecessorRefs, Collection<String> markingRefs) {
-        Collection<TransitionNode> causalPredecessors = new ArrayList<TransitionNode>();
+        Collection<TransitionNode> causalPredecessors = new ArrayList<>();
         for (String ref : causalPredecessorRefs) {
             Node node = net.getNodeByReference(ref);
             if (node instanceof TransitionNode) {

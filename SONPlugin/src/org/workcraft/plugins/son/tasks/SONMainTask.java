@@ -29,9 +29,9 @@ public class SONMainTask implements Task<VerificationResult> {
     private int totalErrNum = 0;
     private int totalWarningNum = 0;
 
-    private Collection<String> groupErrors = new HashSet<String>();
-    private Collection<String> relationErrors = new HashSet<String>();
-    private Collection<ArrayList<String>> cycleErrors = new ArrayList<ArrayList<String>>();
+    private Collection<String> groupErrors = new HashSet<>();
+    private Collection<String> relationErrors = new HashSet<>();
+    private Collection<ArrayList<String>> cycleErrors = new ArrayList<>();
 
     public SONMainTask(StructureVerifySettings settings, WorkspaceEntry we) {
         this.settings = settings;
@@ -189,7 +189,7 @@ public class SONMainTask implements Task<VerificationResult> {
 
             for (TransitionNode e : before.keySet()) {
                 logger.info("before(" + net.getNodeReference(e) + "): ");
-                Collection<String> relations = new ArrayList<String>();
+                Collection<String> relations = new ArrayList<>();
 
                 for (TransitionNode[] e2 : before.get(e)) {
                     relations.add("(" + net.getNodeReference(e2[0]) + ", " + net.getNodeReference(e2[1]) + ")");

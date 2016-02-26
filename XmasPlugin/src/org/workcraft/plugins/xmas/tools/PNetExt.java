@@ -65,10 +65,10 @@ public class PNetExt {
         }
     }
 
-    static List<Source> sourcelist = new ArrayList<Source>();
-    static List<Switch> switchlist = new ArrayList<Switch>();
-    static List<Merge> mergelist = new ArrayList<Merge>();
-    static List<Fun> funlist = new ArrayList<Fun>();
+    static List<Source> sourcelist = new ArrayList<>();
+    static List<Switch> switchlist = new ArrayList<>();
+    static List<Merge> mergelist = new ArrayList<>();
+    static List<Fun> funlist = new ArrayList<>();
 
     private static void initlist() {
         funlist.clear();

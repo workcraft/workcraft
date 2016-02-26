@@ -28,7 +28,7 @@ public class ErrorTracingAlg extends SimulationAlg {
     public void setErrNum(Collection<TransitionNode> fireList, Collection<Path> sync, Map<Condition, Collection<Phase>> phases, boolean isLower) {
 
         while (!fireList.isEmpty()) {
-            Collection<TransitionNode> removeList = new ArrayList<TransitionNode>();
+            Collection<TransitionNode> removeList = new ArrayList<>();
 
             for (TransitionNode e : fireList) {
                 if (!net.getSONConnectionTypes(e).contains(Semantics.SYNCLINE)) {
@@ -44,8 +44,8 @@ public class ErrorTracingAlg extends SimulationAlg {
                 boolean b = false;
                 for (Path cycle : sync) {
                     if (cycle.contains(e)) {
-                        Collection<TransitionNode> fireList2 = new ArrayList<TransitionNode>();
-                        Collection<TransitionNode> eventCycle = new ArrayList<TransitionNode>();
+                        Collection<TransitionNode> fireList2 = new ArrayList<>();
+                        Collection<TransitionNode> eventCycle = new ArrayList<>();
 
                         fireList2.addAll(fireList);
                         fireList2.removeAll(cycle);
@@ -165,7 +165,7 @@ public class ErrorTracingAlg extends SimulationAlg {
     public void setRevErrNum(Collection<TransitionNode> fireList, Collection<Path> sync, Map<Condition, Collection<Phase>> phases,  boolean isLower) {
 
         while (!fireList.isEmpty()) {
-            Collection<TransitionNode> removeList = new ArrayList<TransitionNode>();
+            Collection<TransitionNode> removeList = new ArrayList<>();
 
             for (TransitionNode e : fireList) {
                 if (!net.getSONConnectionTypes(e).contains(Semantics.SYNCLINE)) {
@@ -181,8 +181,8 @@ public class ErrorTracingAlg extends SimulationAlg {
                 boolean b = false;
                 for (Path cycle : sync) {
                     if (cycle.contains(e)) {
-                        Collection<TransitionNode> fireList2 = new ArrayList<TransitionNode>();
-                        Collection<TransitionNode> eventCycle = new ArrayList<TransitionNode>();
+                        Collection<TransitionNode> fireList2 = new ArrayList<>();
+                        Collection<TransitionNode> eventCycle = new ArrayList<>();
 
                         fireList2.addAll(fireList);
                         fireList2.removeAll(cycle);

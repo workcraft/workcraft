@@ -27,7 +27,7 @@ public class BSONAlg extends RelationAlgorithm {
 
     private SON net;
     private static Marking dfsResult = new Marking();
-    private Map<Condition, String> phaseCutErr = new HashMap<Condition, String>();
+    private Map<Condition, String> phaseCutErr = new HashMap<>();
 
     public BSONAlg(SON net) {
         super(net);
@@ -38,7 +38,7 @@ public class BSONAlg extends RelationAlgorithm {
      * get all related behavoural connections for a given set of groups.
      */
     public Collection<SONConnection> getRelatedBhvLine(Collection<ONGroup> groups) {
-        HashSet<SONConnection> result = new HashSet<SONConnection>();
+        HashSet<SONConnection> result = new HashSet<>();
 
         for (SONConnection con : net.getSONConnections()) {
             if (con.getSemantics() == Semantics.BHVLINE) {
@@ -77,7 +77,7 @@ public class BSONAlg extends RelationAlgorithm {
      */
     public Collection<Phase> getPhases(Condition c, Map<ONGroup, List<Marking>> allMarkings) {
 
-        Collection<Phase> result = new ArrayList<Phase>();
+        Collection<Phase> result = new ArrayList<>();
 
         for (ONGroup group : getLowerGroups(net.getGroups())) {
             //find all nodes pointing to c
@@ -98,11 +98,11 @@ public class BSONAlg extends RelationAlgorithm {
                     result.add(phase);
                 } else {
                     List<Marking> markings = allMarkings.get(group);
-                    Collection<Marking> minMarkings = new ArrayList<Marking>();
-                    Collection<Marking> maxMarkings = new ArrayList<Marking>();
+                    Collection<Marking> minMarkings = new ArrayList<>();
+                    Collection<Marking> maxMarkings = new ArrayList<>();
 
-                    Collection<Node> minSet = new ArrayList<Node>();
-                    Collection<Node> maxSet = new ArrayList<Node>();
+                    Collection<Node> minSet = new ArrayList<>();
+                    Collection<Node> maxSet = new ArrayList<>();
 
                     for (Marking m : markings) {
                         if (min.containsAll(m)) {
@@ -150,7 +150,7 @@ public class BSONAlg extends RelationAlgorithm {
 
     private Marking getPathBounding(Collection<Condition> nodes, Node upper, boolean getMin) {
         dfsResult.clear();
-        LinkedList<Node> visited = new LinkedList<Node>();
+        LinkedList<Node> visited = new LinkedList<>();
         for (Condition s : nodes) {
             visited.add(s);
             dfs(visited, upper, getMin);
@@ -180,7 +180,7 @@ public class BSONAlg extends RelationAlgorithm {
     }
 
     public Map<ONGroup, List<Marking>> getReachableMarking() {
-        Map<ONGroup, List<Marking>> result = new HashMap<ONGroup, List<Marking>>();
+        Map<ONGroup, List<Marking>> result = new HashMap<>();
 
         ASONAlg alg = new ASONAlg(net);
         Collection<ONGroup> lowerGroups = getLowerGroups(net.getGroups());
@@ -210,10 +210,10 @@ public class BSONAlg extends RelationAlgorithm {
      * @throws UnboundedException
      */
     public Map<Condition, Collection<Phase>> getAllPhases() {
-        Map<Condition, Collection<Phase>> result = new HashMap<Condition, Collection<Phase>>();
+        Map<Condition, Collection<Phase>> result = new HashMap<>();
 
         //if reachable markings are not provided, get markings.
-        Map<ONGroup, List<Marking>> allMarkings = new HashMap<ONGroup, List<Marking>>();
+        Map<ONGroup, List<Marking>> allMarkings = new HashMap<>();
 
         allMarkings.putAll(getReachableMarking());
 
@@ -228,7 +228,7 @@ public class BSONAlg extends RelationAlgorithm {
     }
 
     public Map<Condition, Collection<Phase>> getAllPhases(Map<ONGroup, List<Marking>> allMarkings) {
-        Map<Condition, Collection<Phase>> result = new HashMap<Condition, Collection<Phase>>();
+        Map<Condition, Collection<Phase>> result = new HashMap<>();
 
         if (allMarkings == null) {
             return getAllPhases();
@@ -259,9 +259,9 @@ public class BSONAlg extends RelationAlgorithm {
 //    }
 
     private Collection<Condition> forwardSearch(Node node) {
-        Collection<Condition> result = new HashSet<Condition>();
-        Stack<Node> stack = new Stack<Node>();
-        Collection<Node> visit = new HashSet<Node>();
+        Collection<Condition> result = new HashSet<>();
+        Stack<Node> stack = new Stack<>();
+        Collection<Node> visit = new HashSet<>();
 
         stack.push(node);
 
@@ -286,9 +286,9 @@ public class BSONAlg extends RelationAlgorithm {
     }
 
     private Collection<Condition> backWardSearch(Node node) {
-        Collection<Condition> result = new HashSet<Condition>();
-        Stack<Node> stack = new Stack<Node>();
-        Collection<Node> visit = new HashSet<Node>();
+        Collection<Condition> result = new HashSet<>();
+        Stack<Node> stack = new Stack<>();
+        Collection<Node> visit = new HashSet<>();
 
         stack.push(node);
 
@@ -316,7 +316,7 @@ public class BSONAlg extends RelationAlgorithm {
      * get the set of corresponding upper-level conditions for a given node
      */
     public Collection<Condition> getUpperConditions(Node node) {
-        Collection<Condition> result = new HashSet<Condition>();
+        Collection<Condition> result = new HashSet<>();
 
         if (isUpperNode(node)) {
             if (node instanceof Condition) {
@@ -338,7 +338,7 @@ public class BSONAlg extends RelationAlgorithm {
     }
 
     public Collection<Condition> getUpperConditions(Collection<? extends Node> nodes) {
-        Collection<Condition> result = new HashSet<Condition>();
+        Collection<Condition> result = new HashSet<>();
 
         for (Node node : nodes) {
             result.addAll(getUpperConditions(node));
@@ -391,7 +391,7 @@ public class BSONAlg extends RelationAlgorithm {
      * get all lower-level groups for a given upper-level group
      */
     public Collection<ONGroup> getLowerGroups(ONGroup upperGroup) {
-        Collection<ONGroup> result = new HashSet<ONGroup>();
+        Collection<ONGroup> result = new HashSet<>();
 
         for (Condition c : upperGroup.getConditions()) {
             result.addAll(getLowerGroups(c));
@@ -405,7 +405,7 @@ public class BSONAlg extends RelationAlgorithm {
      *
      */
     public Collection<ONGroup> getLowerGroups(Condition upperCondition) {
-        Collection<ONGroup> result = new HashSet<ONGroup>();
+        Collection<ONGroup> result = new HashSet<>();
 
         for (Node pre : getPreBhvSet(upperCondition)) {
             result.add(net.getGroup(pre));
@@ -418,7 +418,7 @@ public class BSONAlg extends RelationAlgorithm {
      * get lower-level groups for a given group set.
      */
     public Collection<ONGroup> getLowerGroups(Collection<ONGroup> groups) {
-        Collection<ONGroup> result = new HashSet<ONGroup>();
+        Collection<ONGroup> result = new HashSet<>();
         for (ONGroup group : groups) {
             boolean isInput = false;
             boolean isOutput = false;
@@ -442,7 +442,7 @@ public class BSONAlg extends RelationAlgorithm {
      * get upper-level groups for a given group set.
      */
     public Collection<ONGroup> getUpperGroups(Collection<ONGroup> groups) {
-        Collection<ONGroup> result = new HashSet<ONGroup>();
+        Collection<ONGroup> result = new HashSet<>();
         for (ONGroup group : groups) {
             boolean isInput = false;
             boolean isOutput = false;
@@ -467,7 +467,7 @@ public class BSONAlg extends RelationAlgorithm {
      * get minimal phase for a given phase
      */
     public ArrayList<Condition> getMinimalPhase(Phase phase) {
-        ArrayList<Condition> result = new ArrayList<Condition>();
+        ArrayList<Condition> result = new ArrayList<>();
         for (Condition c : phase) {
             boolean isMinimal = true;
             for (Condition pre : this.getPrePNCondition(c)) {
@@ -487,7 +487,7 @@ public class BSONAlg extends RelationAlgorithm {
      * get minimal phase collection for a set of phase
      */
     public ArrayList<Condition> getMinimalPhase(Collection<Phase> phases) {
-        ArrayList<Condition> result = new ArrayList<Condition>();
+        ArrayList<Condition> result = new ArrayList<>();
         for (Phase phase : phases) {
             result.addAll(getMinimalPhase(phase));
         }
@@ -498,7 +498,7 @@ public class BSONAlg extends RelationAlgorithm {
      * get maximal phase for a given phase
      */
     public ArrayList<Condition> getMaximalPhase(Phase phase) {
-        ArrayList<Condition> result = new ArrayList<Condition>();
+        ArrayList<Condition> result = new ArrayList<>();
         for (Condition c : phase) {
             boolean isMaximal = true;
             for (Condition pre : this.getPostPNCondition(c)) {
@@ -518,7 +518,7 @@ public class BSONAlg extends RelationAlgorithm {
      * get maximal phase collection for a set of phase
      */
     public ArrayList<Condition> getMaximalPhase(Collection<Phase> phases) {
-        ArrayList<Condition> result = new ArrayList<Condition>();
+        ArrayList<Condition> result = new ArrayList<>();
         for (Phase phase : phases) {
             result.addAll(getMaximalPhase(phase));
         }
@@ -611,7 +611,7 @@ public class BSONAlg extends RelationAlgorithm {
     }
 
     public Map<TransitionNode, Before> getBeforeMap() {
-        Map<TransitionNode, Before> result = new HashMap<TransitionNode, Before>();
+        Map<TransitionNode, Before> result = new HashMap<>();
 
         Map<Condition, Collection<Phase>> phases = getAllPhases();
         Collection<ONGroup> upperGroups = getUpperGroups(net.getGroups());

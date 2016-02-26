@@ -47,7 +47,7 @@ public class SyncGen implements Tool {
     int cntSyncNodes = 0;
     JFrame mainFrame = null;
 
-    public List<JRadioButton> rlist = new ArrayList<JRadioButton>();
+    public List<JRadioButton> rlist = new ArrayList<>();
 
     private class RadioListener implements ActionListener {
 
@@ -175,7 +175,7 @@ public class SyncGen implements Tool {
         System.out.println("");
         //System.out.println("Generating circuit");
 
-        List<SyncComponent> scomps = new ArrayList<SyncComponent>();
+        List<SyncComponent> scomps = new ArrayList<>();
         for (Node node : vnet.getNodes()) {
             if (node instanceof VisualSyncComponent) {
                 cntSyncNodes++;
@@ -188,7 +188,7 @@ public class SyncGen implements Tool {
         JPanel panelmain = new JPanel();
         mainFrame.getContentPane().add(panelmain, BorderLayout.PAGE_START);
         panelmain.setLayout(new BoxLayout(panelmain, BoxLayout.PAGE_AXIS));
-        List<JPanel> panellist = new ArrayList<JPanel>();
+        List<JPanel> panellist = new ArrayList<>();
         JRadioButton jr;
         for (int no = 0; no < cntSyncNodes; no = no + 1) {
             //if (loaded == 0) slist1.add(new String("1"));

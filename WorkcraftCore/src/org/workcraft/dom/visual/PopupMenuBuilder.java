@@ -32,7 +32,7 @@ public class PopupMenuBuilder {
         void addItems(JPopupMenu menu, ScriptedActionListener actionListener);
     }
 
-    LinkedList<PopupMenuSegment> segments = new LinkedList<PopupMenuSegment>();
+    LinkedList<PopupMenuSegment> segments = new LinkedList<>();
 
     public void addSegment(PopupMenuSegment segment) {
         segments.add(segment);

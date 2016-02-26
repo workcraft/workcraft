@@ -16,7 +16,7 @@ public class PetriNetToolProvider implements CustomToolsProvider {
 
     @Override
     public Iterable<GraphEditorTool> getTools() {
-        ArrayList<GraphEditorTool> result = new ArrayList<GraphEditorTool>();
+        ArrayList<GraphEditorTool> result = new ArrayList<>();
 
         result.add(new PetriNetSelectionTool());
         result.add(new CommentGeneratorTool());

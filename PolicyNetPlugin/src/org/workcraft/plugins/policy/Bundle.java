@@ -14,7 +14,7 @@ public class Bundle extends MathNode  {
     public static final String PROPERTY_BUNDLED = "bundled";
     public static final String PROPERTY_UNBUNDLED = "unbundled";
 
-    private final Set<BundledTransition> transitions = new HashSet<BundledTransition>();
+    private final Set<BundledTransition> transitions = new HashSet<>();
 
     public void add(BundledTransition transition) {
         if (transition != null) {

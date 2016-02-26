@@ -133,7 +133,7 @@ public class CircuitComponent extends MathGroup implements Container, Observable
     }
 
     public Collection<Contact> getInputs() {
-        ArrayList<Contact> result = new ArrayList<Contact>();
+        ArrayList<Contact> result = new ArrayList<>();
         for (Contact contact: getContacts()) {
             if (contact.isInput()) {
                 result.add(contact);
@@ -143,7 +143,7 @@ public class CircuitComponent extends MathGroup implements Container, Observable
     }
 
     public Collection<Contact> getOutputs() {
-        ArrayList<Contact> result = new ArrayList<Contact>();
+        ArrayList<Contact> result = new ArrayList<>();
         for (Contact contact: getContacts()) {
             if (contact.isOutput()) {
                 result.add(contact);

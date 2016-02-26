@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class MiniSatCnfPrinter implements CnfPrinter {
-    Map<BooleanVariable, Integer> numbers = new HashMap<BooleanVariable, Integer>();
+    Map<BooleanVariable, Integer> numbers = new HashMap<>();
     int varCount = 0;
     private Cnf cnf;
 

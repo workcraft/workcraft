@@ -35,7 +35,7 @@ public final class MethodParametersMatcher<T extends MethodParametersMatcher.Met
     private ArrayList<T> methods;
 
     public static <T extends MethodParametersMatcher.MethodInfo> T match(Collection<T> methods, Class<?>... parameters) throws NoSuchMethodException {
-        MethodParametersMatcher<T> matcher = new MethodParametersMatcher<T>();
+        MethodParametersMatcher<T> matcher = new MethodParametersMatcher<>();
         return matcher.instanceMatch(methods, parameters);
     }
 

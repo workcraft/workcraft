@@ -27,7 +27,7 @@ public class CpogSettings implements Settings {
         }
     }
 
-    private static final LinkedList<PropertyDescriptor> properties  = new LinkedList<PropertyDescriptor>();
+    private static final LinkedList<PropertyDescriptor> properties  = new LinkedList<>();
     private static final String prefix = "CpogSettings";
 
     private static final String keySatSolver = prefix + ".satSolver";

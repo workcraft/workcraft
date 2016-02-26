@@ -33,7 +33,7 @@ public class ConsistencyAlg extends TimeAlg {
     }
 
     public ArrayList<String> nodeConsistency(Node node, Interval start, Interval end, Interval dur, Granularity g) {
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
 
         if (!start.isSpecified() || !end.isSpecified() || !dur.isSpecified()) {
             result.add("Fail to run node consistency checking: node has unspecified value.");
@@ -112,7 +112,7 @@ public class ConsistencyAlg extends TimeAlg {
     }
 
     private ArrayList<String> concurConsistency(TransitionNode t) {
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
         Collection<SONConnection> inputConnections =  net.getInputPNConnections(t);
         Collection<SONConnection> outputConnections = net.getOutputPNConnections(t);
 
@@ -145,7 +145,7 @@ public class ConsistencyAlg extends TimeAlg {
     }
 
     private ArrayList<String> alterConsistency(Condition c, ScenarioRef s, Granularity g) {
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
 
         Collection<SONConnection> inputConnections;
         Collection<SONConnection> outputConnections;
@@ -202,7 +202,7 @@ public class ConsistencyAlg extends TimeAlg {
     }
 
     public ArrayList<String> csonConsistency(ChannelPlace cp, Collection<ChannelPlace> sync, Granularity g) throws InvalidStructureException {
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
         //check all transitionNodes first
         TransitionNode input = null;
         if (net.getInputSONConnections(cp).size() == 1) {
@@ -258,7 +258,7 @@ public class ConsistencyAlg extends TimeAlg {
     }
 
     public ArrayList<String> bsonConsistency(TransitionNode t, Map<Condition, Collection<Phase>> phases, ScenarioRef s) {
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
         BSONAlg bsonAlg = new BSONAlg(net);
         Before before = bsonAlg.before(t, phases);
 
@@ -295,7 +295,7 @@ public class ConsistencyAlg extends TimeAlg {
     }
 
     public ArrayList<String> bsonConsistency2(Condition initialLow, ScenarioRef s) {
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
         for (SONConnection con : net.getSONConnections()) {
             if (s != null && !s.getConnections(net).contains(con)) {
                 continue;
@@ -317,7 +317,7 @@ public class ConsistencyAlg extends TimeAlg {
     }
 
     public ArrayList<String> bsonConsistency3(Condition finalLow, ScenarioRef s) {
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
         for (SONConnection con : net.getSONConnections()) {
             if (s != null && !s.getConnections(net).contains(con)) {
                 continue;
@@ -339,7 +339,7 @@ public class ConsistencyAlg extends TimeAlg {
     }
 
     public ArrayList<String> granularityHourMinsTask(Node node) {
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
         if (node instanceof Time) {
             Time t = (Time) node;
             Integer value = null;
@@ -525,7 +525,7 @@ public class ConsistencyAlg extends TimeAlg {
     }
 
     public ArrayList<String> onConsistency(Node node, ScenarioRef s, Granularity g) throws InvalidStructureException {
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
 
         //ON time consistency checking.
         if (node instanceof TransitionNode) {

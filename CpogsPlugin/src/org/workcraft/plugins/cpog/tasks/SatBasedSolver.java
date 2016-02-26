@@ -84,9 +84,9 @@ public class SatBasedSolver {
 
         resetVars();
 
-        HashMap<String, Integer> events = new HashMap<String, Integer>();
-        ArrayList<Point2D> positions = new ArrayList<Point2D>();
-        ArrayList<Integer> count = new ArrayList<Integer>();
+        HashMap<String, Integer> events = new HashMap<>();
+        ArrayList<Point2D> positions = new ArrayList<>();
+        ArrayList<Integer> count = new ArrayList<>();
 
         // Scenario contains single graphs compose CPOG
         int m = scenarios.size();
@@ -178,8 +178,8 @@ public class SatBasedSolver {
         numSol = "1";
 
         // group similar constraints
-        HashMap<String, BooleanFormula> formulaeName = new HashMap<String, BooleanFormula>();
-        HashMap<String, Integer> task = new HashMap<String, Integer>();
+        HashMap<String, BooleanFormula> formulaeName = new HashMap<>();
+        HashMap<String, Integer> task = new HashMap<>();
         cpogBuilder.groupConstraints(n, m, constraints, task);
 
         char[][] matrix = new char[m][task.size()];
@@ -194,8 +194,8 @@ public class SatBasedSolver {
         int freeVariables = settings.getBits();
         int derivedVariables = settings.getCircuitSize();
 
-        Optimiser<OneHotIntBooleanFormula> oneHot = new Optimiser<OneHotIntBooleanFormula>(new OneHotNumberProvider());
-        DefaultCpogSolver<BooleanFormula> solverCnf = new DefaultCpogSolver<BooleanFormula>(oneHot, new CleverCnfGenerator());
+        Optimiser<OneHotIntBooleanFormula> oneHot = new Optimiser<>(new OneHotNumberProvider());
+        DefaultCpogSolver<BooleanFormula> solverCnf = new DefaultCpogSolver<>(oneHot, new CleverCnfGenerator());
 
         // GET PREDICATES FROM WORKCRAFT ENVIRONMENT
         VisualVariable[] predicatives = new VisualVariable[n];
@@ -277,7 +277,7 @@ public class SatBasedSolver {
                 customPath = encodingFile.getAbsolutePath();
 
                 // setting all the arguments for calling Scenco for synthesys
-                ArrayList<String> parameters = new ArrayList<String>();
+                ArrayList<String> parameters = new ArrayList<>();
                 if (!scencoCommand.isEmpty()) parameters.add(scencoCommand);
                 if (!scenarioFile.getAbsolutePath().isEmpty()) parameters.add(scenarioFile.getAbsolutePath());
                 parameters.add("-m");

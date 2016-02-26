@@ -78,7 +78,7 @@ public class SelectionTool extends PetriNetSelectionTool {
     }
 
     protected Collection<VisualBundledTransition> getSelectedTransitions(final GraphEditor editor) {
-        Set<VisualBundledTransition> transitions = new HashSet<VisualBundledTransition>();
+        Set<VisualBundledTransition> transitions = new HashSet<>();
         VisualPolicyNet visualModel = (VisualPolicyNet) editor.getModel();
         for (Node node : visualModel.getSelection()) {
             if (node instanceof VisualBundledTransition) {

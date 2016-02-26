@@ -179,7 +179,7 @@ public class CheckCircuitTask extends MpsatChainTask {
             if (checkDeadlock || checkHazard) {
                 unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + PunfUtilitySettings.getUnfoldingExtension(true));
                 punfTask = new PunfTask(sysStgFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
-                SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<Object>(monitor);
+                SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<>(monitor);
                 punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", punfMonitor);
 
                 if (punfResult.getOutcome() != Outcome.FINISHED) {
@@ -199,7 +199,7 @@ public class CheckCircuitTask extends MpsatChainTask {
                     String fileSuffix = (sysStgFile == null) ? "" : StgUtils.MODIFIED_FILE_SUFFIX;
                     unfoldingModFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + fileSuffix + PunfUtilitySettings.getUnfoldingExtension(true));
                     punfModTask = new PunfTask(sysModStgFile.getAbsolutePath(), unfoldingModFile.getAbsolutePath());
-                    SubtaskMonitor<Object> punfModMonitor = new SubtaskMonitor<Object>(monitor);
+                    SubtaskMonitor<Object> punfModMonitor = new SubtaskMonitor<>(monitor);
                     punfModResult = framework.getTaskManager().execute(punfModTask, "Unfolding .g", punfModMonitor);
 
                     if (punfModResult.getOutcome() != Outcome.FINISHED) {
@@ -218,7 +218,7 @@ public class CheckCircuitTask extends MpsatChainTask {
             if (checkDeadlock) {
                 MpsatTask mpsatDeadlockTask = new MpsatTask(deadlockSettings.getMpsatArguments(directory),
                         unfoldingFile.getAbsolutePath(), directory, true);
-                SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<Object>(monitor);
+                SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
                 Result<? extends ExternalProcessResult> mpsatDeadlockResult = framework.getTaskManager().execute(
                         mpsatDeadlockTask, "Running deadlock check [MPSat]", mpsatMonitor);
 
@@ -248,7 +248,7 @@ public class CheckCircuitTask extends MpsatChainTask {
                     System.out.println("\nReach expression for the hazard property:");
                     System.out.println(hazardSettings.getReach());
                 }
-                SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<Object>(monitor);
+                SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
                 Result<? extends ExternalProcessResult>  mpsatHazardResult = framework.getTaskManager().execute(
                         mpsatHazardTask, "Running hazard check [MPSat]", mpsatMonitor);
 
@@ -286,7 +286,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 
                 MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
                         unfoldingModFile.getAbsolutePath(), directory, true);
-                SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<Object>(monitor);
+                SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
                 Result<? extends ExternalProcessResult>  mpsatConformationResult = framework.getTaskManager().execute(
                         mpsatConformationTask, "Running conformation check [MPSat]", mpsatMonitor);
 
@@ -321,7 +321,7 @@ public class CheckCircuitTask extends MpsatChainTask {
     }
 
     private HashSet<String> parsePlaceNames(byte[] bufferedInput, int lineIndex) {
-        HashSet<String> result = new HashSet<String>();
+        HashSet<String> result = new HashSet<>();
         InputStream is = new ByteArrayInputStream(bufferedInput);
         BufferedReader br = new BufferedReader(new InputStreamReader(is));
         try {

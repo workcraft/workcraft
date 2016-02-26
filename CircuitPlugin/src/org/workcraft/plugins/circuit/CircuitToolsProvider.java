@@ -15,7 +15,7 @@ public class CircuitToolsProvider implements CustomToolsProvider {
 
     @Override
     public Iterable<GraphEditorTool> getTools() {
-        ArrayList<GraphEditorTool> result = new ArrayList<GraphEditorTool>();
+        ArrayList<GraphEditorTool> result = new ArrayList<>();
 
         result.add(new CircuitSelectionTool());
         result.add(new CommentGeneratorTool());

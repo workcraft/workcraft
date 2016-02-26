@@ -40,7 +40,7 @@ public class ConstructorParametersMatcher {
 
     @SuppressWarnings("unchecked") // java sucks
     public <T> Constructor<? extends T> match(Class<? extends T> c, Class<?>... parameters) throws NoSuchMethodException {
-        ArrayList<ConstructorInfo<T>> constructors = new ArrayList<ConstructorInfo<T>>();
+        ArrayList<ConstructorInfo<T>> constructors = new ArrayList<>();
         for (Constructor<?> constructor : c.getConstructors()) {
             constructors.add(new ConstructorInfo<T>((Constructor<? extends T>) constructor));
         }

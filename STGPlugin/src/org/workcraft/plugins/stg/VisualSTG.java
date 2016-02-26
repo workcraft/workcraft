@@ -289,7 +289,7 @@ public class VisualSTG extends AbstractVisualModel {
 
             VisualConnection con1 = null;
             VisualConnection con2 = null;
-            Collection<Connection> connections = new ArrayList<Connection>(getConnections(place));
+            Collection<Connection> connections = new ArrayList<>(getConnections(place));
             for (Connection con: connections) {
                 if (con.getFirst() == place) {
                     con2 = (VisualConnection) con;

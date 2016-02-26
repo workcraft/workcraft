@@ -185,7 +185,7 @@ public class StgSimulationTool extends PetriNetSimulationTool {
 
     public void updateSignalState() {
         initialiseSignalState();
-        ArrayList<String> combinedTrace = new ArrayList<String>();
+        ArrayList<String> combinedTrace = new ArrayList<>();
         if (!mainTrace.isEmpty()) {
             combinedTrace.addAll(mainTrace.subList(0, mainTrace.getPosition()));
         }

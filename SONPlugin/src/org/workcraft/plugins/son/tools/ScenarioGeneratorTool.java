@@ -304,7 +304,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
     @Override
     protected void autoSimulator(final GraphEditor editor) {
         autoSimulationTask(editor);
-        Collection<Node> nodes = new ArrayList<Node>();
+        Collection<Node> nodes = new ArrayList<>();
         nodes.addAll(scenarioRef.getNodes(net));
         nodes.addAll(scenarioRef.getRuntimeConnections(net));
         setColors(nodes, Color.BLACK);
@@ -332,7 +332,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
 
     @Override
     public void executeEvents(final GraphEditor editor, Step step) {
-        ArrayList<PlaceNode> oldMarking = new ArrayList<PlaceNode>();
+        ArrayList<PlaceNode> oldMarking = new ArrayList<>();
         oldMarking.addAll(getCurrentMarking());
         scenarioTable.setIsCellColor(false);
         super.executeEvents(editor, step);
@@ -343,7 +343,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
         scenarioRef.addAll(stepRef);
         //add marking references
         MarkingRef markingRef = new MarkingRef();
-        ArrayList<PlaceNode> marking = new ArrayList<PlaceNode>();
+        ArrayList<PlaceNode> marking = new ArrayList<>();
         marking.addAll(getCurrentMarking());
         marking.addAll(getSyncChannelPlaces(step));
         markingRef.addAll(net.getNodeRefs(marking));
@@ -355,7 +355,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
     }
 
     private ArrayList<PlaceNode> getCurrentMarking() {
-        ArrayList<PlaceNode> result = new ArrayList<PlaceNode>();
+        ArrayList<PlaceNode> result = new ArrayList<>();
         for (PlaceNode c : readSONMarking().keySet()) {
             if (c.isMarked()) {
                 result.add(c);
@@ -366,7 +366,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
 
     //get channel places in a synchronous step.
     private Collection<ChannelPlace> getSyncChannelPlaces(Step step) {
-        HashSet<ChannelPlace> result = new HashSet<ChannelPlace>();
+        HashSet<ChannelPlace> result = new HashSet<>();
         for (TransitionNode e :step) {
             for (SONConnection con : net.getSONConnections(e)) {
                 if (con.getSemantics() == Semantics.ASYNLINE || con.getSemantics() == Semantics.SYNCLINE) {

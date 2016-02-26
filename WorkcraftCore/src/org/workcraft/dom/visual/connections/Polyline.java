@@ -257,7 +257,7 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
     }
 
     public void resetControlPoints() {
-        ArrayList<Node> children = new ArrayList<Node>(groupImpl.getChildren());
+        ArrayList<Node> children = new ArrayList<>(groupImpl.getChildren());
         for (Node node: children) {
             groupImpl.remove(node);
         }

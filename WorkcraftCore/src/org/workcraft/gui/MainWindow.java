@@ -165,18 +165,18 @@ public class MainWindow extends JFrame {
     private SimpleContainer editorToolsWindow;
     private WorkspaceWindow workspaceWindow;
 
-    private ListMap<WorkspaceEntry, DockableWindow> editorWindows = new ListMap<WorkspaceEntry, DockableWindow>();
-    private LinkedList<DockableWindow> utilityWindows = new LinkedList<DockableWindow>();
+    private ListMap<WorkspaceEntry, DockableWindow> editorWindows = new ListMap<>();
+    private LinkedList<DockableWindow> utilityWindows = new LinkedList<>();
 
     private GraphEditorPanel editorInFocus;
     private MainMenu mainMenu;
 
     private String lastSavePath = null;
     private String lastOpenPath = null;
-    private LinkedHashSet<String> recentFiles = new LinkedHashSet<String>();
+    private LinkedHashSet<String> recentFiles = new LinkedHashSet<>();
 
     private int dockableIDCounter = 0;
-    private HashMap<Integer, DockableWindow> idToDockableWindowMap = new HashMap<Integer, DockableWindow>();
+    private HashMap<Integer, DockableWindow> idToDockableWindowMap = new HashMap<>();
 
     protected void createWindows() {
         workspaceWindow = new WorkspaceWindow();
@@ -1241,7 +1241,7 @@ public class MainWindow extends JFrame {
     }
 
     public List<GraphEditorPanel> getEditors(WorkspaceEntry we) {
-        ArrayList<GraphEditorPanel> result = new ArrayList<GraphEditorPanel>();
+        ArrayList<GraphEditorPanel> result = new ArrayList<>();
         for (DockableWindow window : editorWindows.get(we)) {
             result.add(getGraphEditorPanel(window));
         }
@@ -1271,7 +1271,7 @@ public class MainWindow extends JFrame {
     }
 
     public void closeEditorWindows() throws OperationCancelledException {
-        LinkedHashSet<DockableWindow> windowsToClose = new LinkedHashSet<DockableWindow>();
+        LinkedHashSet<DockableWindow> windowsToClose = new LinkedHashSet<>();
 
         for (WorkspaceEntry k : editorWindows.keySet()) {
             for (DockableWindow w : editorWindows.get(k)) {

@@ -31,7 +31,7 @@ import org.workcraft.gui.propertyeditor.Settings;
 
 public class PetrifyExtraUtilitySettings implements Settings {
 
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
+    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "Tools";
 
     private static final String keyDrawAstgCommand = prefix + ".draw_astg.command";

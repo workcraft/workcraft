@@ -254,7 +254,7 @@ public class CycleAnalyserTool extends AbstractTool {
     }
 
     private ArrayList<Cycle> findCycles() {
-        ArrayList<Cycle> result = new ArrayList<Cycle>();
+        ArrayList<Cycle> result = new ArrayList<>();
         // Update global min and max delay values
         Collection<VisualDelayComponent> allComponents = Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualDelayComponent.class);
         boolean first = true;
@@ -273,8 +273,8 @@ public class CycleAnalyserTool extends AbstractTool {
         VisualComponent[] tmpComponents = allComponents.toArray(new VisualComponent[size]);
         boolean[][] adjMatrix = new boolean[size][size];
         for (int i = 0; i < size; i++) {
-            HashSet<Node> preset = new HashSet<Node>(dfs.getPreset(tmpComponents[i]));
-            HashSet<Node> postset = new HashSet<Node>(dfs.getPostset(tmpComponents[i]));
+            HashSet<Node> preset = new HashSet<>(dfs.getPreset(tmpComponents[i]));
+            HashSet<Node> postset = new HashSet<>(dfs.getPostset(tmpComponents[i]));
             for (int j = i + 1; j < size; j++) {
                 adjMatrix[i][j] = postset.contains(tmpComponents[j]);
                 adjMatrix[j][i] = preset.contains(tmpComponents[j]);
@@ -286,7 +286,7 @@ public class CycleAnalyserTool extends AbstractTool {
         for (int i = 0; i < tmpCycles.size(); i++) {
             List tmpCycle = (List) tmpCycles.get(i);
             String toString = "";
-            LinkedHashSet<VisualDelayComponent> components = new LinkedHashSet<VisualDelayComponent>();
+            LinkedHashSet<VisualDelayComponent> components = new LinkedHashSet<>();
             for (int j = 0; j < tmpCycle.size(); j++) {
                 VisualDelayComponent component = (VisualDelayComponent) tmpCycle.get(j);
                 if (toString.length() > 0) {

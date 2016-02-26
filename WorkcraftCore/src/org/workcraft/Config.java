@@ -46,8 +46,8 @@ import org.xml.sax.SAXException;
 
 public class Config {
 
-    protected HashMap<String, HashMap<String, String>> groups = new HashMap<String, HashMap<String, String>>();
-    protected HashMap<String, String> rootGroup = new HashMap<String, String>();
+    protected HashMap<String, HashMap<String, String>> groups = new HashMap<>();
+    protected HashMap<String, String> rootGroup = new HashMap<>();
 
     public String get(String key) {
         String[] k  = key.split("\\.", 2);

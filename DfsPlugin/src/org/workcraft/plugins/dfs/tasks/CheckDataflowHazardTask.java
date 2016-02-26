@@ -55,7 +55,7 @@ public class CheckDataflowHazardTask extends MpsatChainTask {
 
             File netFile = new File(directory, "net" + exporter.getExtenstion());
             ExportTask exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
-            SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
+            SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
             Result<? extends Object> exportResult = framework.getTaskManager().execute(
                     exportTask, "Exporting .g", mon);
 

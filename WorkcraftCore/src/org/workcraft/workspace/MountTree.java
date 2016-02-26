@@ -52,7 +52,7 @@ public class MountTree {
         subDirs = new HashMap<String, MountTree>();
 
         if (mounts != null) {
-            Map<String, Map<Path<String>, File>> perSubDir = new HashMap<String, Map<Path<String>, File>>();
+            Map<String, Map<Path<String>, File>> perSubDir = new HashMap<>();
 
             for (Path<String> s : mounts.keySet()) {
                 File file = mounts.get(s);

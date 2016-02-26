@@ -248,7 +248,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
     @Override
     public Collection<MathNode> getMathReferences() {
-        ArrayList<MathNode> result = new ArrayList<MathNode>();
+        ArrayList<MathNode> result = new ArrayList<>();
         result.add(getReferencedComponent());
         return result;
     }

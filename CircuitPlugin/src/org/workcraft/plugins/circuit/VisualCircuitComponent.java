@@ -87,7 +87,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 
     protected DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
-    private HashMap<VisualContact, GlyphVector> contactLableGlyphs = new HashMap<VisualContact, GlyphVector>();
+    private HashMap<VisualContact, GlyphVector> contactLableGlyphs = new HashMap<>();
 
     public VisualCircuitComponent(CircuitComponent component) {
         super(component, true, true, true);
@@ -149,7 +149,7 @@ public class VisualCircuitComponent extends VisualComponent implements
     }
 
     private LinkedList<VisualContact> getOrderedContacts(final Direction dir, final boolean reverse) {
-        LinkedList<VisualContact> list = new LinkedList<VisualContact>();
+        LinkedList<VisualContact> list = new LinkedList<>();
         for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
             if (vc.getDirection() == dir) {
                 list.add(vc);
@@ -219,7 +219,7 @@ public class VisualCircuitComponent extends VisualComponent implements
         Collection<VisualConnection> result = Collections.emptyList();
         Node root = Hierarchy.getRoot(this);
         if (root != null) {
-            final HashSet<VisualContact> contactsHashSet = new HashSet<VisualContact>(contacts);
+            final HashSet<VisualContact> contactsHashSet = new HashSet<>(contacts);
             result = Hierarchy.getDescendantsOfType(root, VisualConnection.class,
                 new Func<VisualConnection, Boolean>() {
                     @Override

@@ -49,7 +49,7 @@ import org.workcraft.serialisation.ReferenceProducer;
 public class DotGSerialiser implements ModelSerialiser {
 
     class ReferenceResolver implements ReferenceProducer {
-        HashMap<Object, String> refMap = new HashMap<Object, String>();
+        HashMap<Object, String> refMap = new HashMap<>();
 
         @Override
         public String getReference(Object obj) {
@@ -59,7 +59,7 @@ public class DotGSerialiser implements ModelSerialiser {
 
     private void writeSignalsHeader(PrintWriter out, Collection<String> signalNames, String header) {
         if (!signalNames.isEmpty()) {
-            LinkedList<String> sortedNames = new LinkedList<String>(signalNames);
+            LinkedList<String> sortedNames = new LinkedList<>(signalNames);
             Collections.sort(sortedNames);
             out.print(header);
             for (String s : sortedNames) {
@@ -71,7 +71,7 @@ public class DotGSerialiser implements ModelSerialiser {
     }
 
     private Iterable<Node> sortNodes(Collection<? extends Node> nodes, final Model model) {
-        ArrayList<Node> list = new ArrayList<Node>(nodes);
+        ArrayList<Node> list = new ArrayList<>(nodes);
         Collections.sort(list, new Comparator<Node>() {
             @Override
             public int compare(Node o1, Node o2) {
@@ -155,7 +155,7 @@ public class DotGSerialiser implements ModelSerialiser {
     }
 
     private void writeMarking(Model model, Collection<Place> places, PrintWriter out) {
-        ArrayList<String> markingEntries = new ArrayList<String>();
+        ArrayList<String> markingEntries = new ArrayList<>();
         for (Place p: places) {
             final int tokens = p.getTokens();
             final String reference;
@@ -206,7 +206,7 @@ public class DotGSerialiser implements ModelSerialiser {
     }
 
     private void writePN(PetriNetModel net, PrintWriter out) {
-        LinkedList<String> transitions = new LinkedList<String>();
+        LinkedList<String> transitions = new LinkedList<>();
         for (Transition t : net.getTransitions()) {
             String flatName = NamespaceHelper.hierarchicalToFlatName(net.getNodeReference(t));
             transitions.add(flatName);

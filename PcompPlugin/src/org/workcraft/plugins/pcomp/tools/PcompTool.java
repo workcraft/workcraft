@@ -48,7 +48,7 @@ public class PcompTool implements Tool {
         if (dialog.run()) {
             String tmpPrefix = FileUtils.getTempPrefix("pcomp");
             File tmpDirectory = FileUtils.createTempDirectory(tmpPrefix);
-            ArrayList<File> inputFiles = new ArrayList<File>();
+            ArrayList<File> inputFiles = new ArrayList<>();
             for (Path<String> path : dialog.getSourcePaths()) {
                 Workspace workspace = framework.getWorkspace();
                 File stgFile = exportStg(workspace.getOpenFile(path), tmpDirectory);

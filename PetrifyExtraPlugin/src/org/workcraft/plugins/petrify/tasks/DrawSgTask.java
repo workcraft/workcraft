@@ -85,7 +85,7 @@ public class DrawSgTask implements Task<DrawSgResult> {
 
             File sgFile = new File(directory, "model.sg");
             sgFile.deleteOnExit();
-            List<String> writeSgOptions = new ArrayList<String>();
+            List<String> writeSgOptions = new ArrayList<>();
             if (binary) {
                 writeSgOptions.add("-bin");
             }
@@ -121,7 +121,7 @@ public class DrawSgTask implements Task<DrawSgResult> {
             }
             File psFile = new File(directory, "model.ps");
             psFile.deleteOnExit();
-            ArrayList<String> drawAstgOptions = new ArrayList<String>();
+            ArrayList<String> drawAstgOptions = new ArrayList<>();
             if (binary) {
                 drawAstgOptions.add("-bin");
             }

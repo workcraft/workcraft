@@ -46,7 +46,7 @@ public class Console {
     }
 
     public static void main(String[] args) {
-        LinkedList<String> arglist = new LinkedList<String>();
+        LinkedList<String> arglist = new LinkedList<>();
         for (String s: args) {
             arglist.push(s);
         }

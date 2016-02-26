@@ -159,7 +159,7 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
     }
 
     public Collection<VisualXmasContact> getContacts() {
-        ArrayList<VisualXmasContact> result = new ArrayList<VisualXmasContact>();
+        ArrayList<VisualXmasContact> result = new ArrayList<>();
         for (Node n: getChildren()) {
             if (n instanceof VisualXmasContact) {
                 result.add((VisualXmasContact) n);

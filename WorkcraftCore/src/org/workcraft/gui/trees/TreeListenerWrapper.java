@@ -68,7 +68,7 @@ class TreeListenerWrapper<Node> implements TreeListener<Node> {
 
 final class TreeModelWrapper<Node> implements TreeModel {
     private final TreeSource<Node> source;
-    Map<TreeModelListener, TreeListenerWrapper<Node>> listeners = new HashMap<TreeModelListener, TreeListenerWrapper<Node>>();
+    Map<TreeModelListener, TreeListenerWrapper<Node>> listeners = new HashMap<>();
 
     public void update(Path<Node> path) {
         for (TreeListenerWrapper<Node> l : listeners.values()) {

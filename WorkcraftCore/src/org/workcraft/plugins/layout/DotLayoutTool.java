@@ -73,7 +73,7 @@ public class DotLayoutTool extends AbstractLayoutTool {
 
     private List<Point2D> parseConnectionSpline(String pos) throws ParseException {
         try    {
-            ArrayList<Point2D> result = new ArrayList<Point2D>();
+            ArrayList<Point2D> result = new ArrayList<>();
             Point2D end = null;
             String[] split = pos.split(" ");
             for (String s : split) {
@@ -197,7 +197,7 @@ public class DotLayoutTool extends AbstractLayoutTool {
 
             saveGraph(model, original);
 
-            List<String> args = new ArrayList<String>();
+            List<String> args = new ArrayList<>();
             String toolName = ToolUtils.getAbsoluteCommandPath(DotLayoutSettings.getCommand());
             args.add(toolName);
             args.add("-Tdot");

@@ -59,7 +59,7 @@ public class DotExporter implements Exporter {
     public void export(Model model, OutputStream outStream) throws IOException,
             ModelValidationException, SerialisationException {
 
-        final List<ExportNode> dotExportNodes = new ArrayList<ExportNode>();
+        final List<ExportNode> dotExportNodes = new ArrayList<>();
         VisualModel visualModel = null;
         if (model instanceof VisualModel) {
             visualModel = (VisualModel) model;
@@ -68,7 +68,7 @@ public class DotExporter implements Exporter {
             String id = visualModel.getNodeReference(component);
             Rectangle2D bb = component.getBoundingBoxInLocalSpace();
             if ((id != null) && (bb != null)) {
-                List<String> destinations = new ArrayList<String>();
+                List<String> destinations = new ArrayList<>();
                 Set<Node> postset = visualModel.getPostset(component);
                 for (Node target : postset) {
                     String targetId = visualModel.getNodeReference(target);

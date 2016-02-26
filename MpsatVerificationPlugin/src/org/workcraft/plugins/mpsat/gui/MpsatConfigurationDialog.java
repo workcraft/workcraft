@@ -113,7 +113,7 @@ public class MpsatConfigurationDialog extends JDialog {
     }
 
     private void createPresetPanel() {
-        ArrayList<Preset<MpsatSettings>> builtInPresets = new ArrayList<Preset<MpsatSettings>>();
+        ArrayList<Preset<MpsatSettings>> builtInPresets = new ArrayList<>();
 
         builtInPresets.add(MpsatBuiltinPresets.DEADLOCK_CHECKER);
         builtInPresets.add(MpsatBuiltinPresets.DEADLOCK_CHECKER_ALL_TRACES);

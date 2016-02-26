@@ -28,7 +28,7 @@ import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
 public abstract class Nf<C> implements BooleanFormula {
 
-    private List<C> clauses = new ArrayList<C>();
+    private List<C> clauses = new ArrayList<>();
 
     public Nf() {
     }

@@ -9,8 +9,8 @@ import org.workcraft.util.Identifier;
 import org.workcraft.util.TwoWayMap;
 
 public class UniqueNameManager implements NameManager {
-    private Map<String, Integer> prefixCount = new HashMap<String, Integer>();
-    private TwoWayMap<String, Node> nodes = new TwoWayMap<String, Node>();
+    private Map<String, Integer> prefixCount = new HashMap<>();
+    private TwoWayMap<String, Node> nodes = new TwoWayMap<>();
 
     @Override
     public String getPrefix(Node node) {

@@ -11,7 +11,7 @@ public class DefaultTaskManager implements TaskManager {
 
         @Override
         public <T> ProgressMonitorArray<T> taskStarting(String description) {
-            ProgressMonitorArray<T> l = new ProgressMonitorArray<T>();
+            ProgressMonitorArray<T> l = new ProgressMonitorArray<>();
             for (TaskMonitor obs : this) {
                 l.add(obs.taskStarting(description));
             }

@@ -9,9 +9,9 @@ import org.workcraft.util.Func;
 
 public class FilteredTreeSource<T> implements TreeSource<T> {
     private final TreeSource<T> source;
-    private HashMap<T, Boolean> acceptableCache = new HashMap<T, Boolean>();
+    private HashMap<T, Boolean> acceptableCache = new HashMap<>();
     private Func<T, Boolean> filter;
-    private final LinkedList<TreeListener<T>> listeners = new LinkedList<TreeListener<T>>();
+    private final LinkedList<TreeListener<T>> listeners = new LinkedList<>();
 
     public FilteredTreeSource(TreeSource<T> sourceTree, Func<T, Boolean> filter) {
         this.source = sourceTree;
@@ -66,7 +66,7 @@ public class FilteredTreeSource<T> implements TreeSource<T> {
     @Override
     public List<T> getChildren(T node) {
 
-        LinkedList<T> result = new LinkedList<T>();
+        LinkedList<T> result = new LinkedList<>();
         for (T t : source.getChildren(node)) {
             if (isAcceptable(t, 10)) {
                 result.add(t);

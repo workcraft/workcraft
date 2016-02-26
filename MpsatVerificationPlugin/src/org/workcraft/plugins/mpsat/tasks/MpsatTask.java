@@ -81,7 +81,7 @@ public class MpsatTask implements Task<ExternalProcessResult> {
             return res;
         }
 
-        Map<String, byte[]> outputFiles = new HashMap<String, byte[]>();
+        Map<String, byte[]> outputFiles = new HashMap<>();
         try {
             File outFile = new File(directory, FILE_MPSAT_G);
             if (outFile.exists()) {

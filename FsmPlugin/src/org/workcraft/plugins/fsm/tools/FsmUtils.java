@@ -14,9 +14,9 @@ import org.workcraft.plugins.fsm.State;
 public class FsmUtils {
 
     static public HashMap<State, HashSet<Event>> calcStateOutgoingEventsMap(final Fsm fsm) {
-        HashMap<State, HashSet<Event>> stateOutgoingEvents = new HashMap<State, HashSet<Event>>();
+        HashMap<State, HashSet<Event>> stateOutgoingEvents = new HashMap<>();
         for (State state: fsm.getStates()) {
-            HashSet<Event> events = new HashSet<Event>();
+            HashSet<Event> events = new HashSet<>();
             stateOutgoingEvents.put(state, events);
         }
         for (Event event: fsm.getEvents()) {
@@ -28,9 +28,9 @@ public class FsmUtils {
     }
 
     static public HashMap<State, HashSet<Event>> calcStateIncommingEventsMap(final Fsm fsm) {
-        HashMap<State, HashSet<Event>> stateIncommingEvents = new HashMap<State, HashSet<Event>>();
+        HashMap<State, HashSet<Event>> stateIncommingEvents = new HashMap<>();
         for (State state: fsm.getStates()) {
-            HashSet<Event> events = new HashSet<Event>();
+            HashSet<Event> events = new HashSet<>();
             stateIncommingEvents.put(state, events);
         }
         for (Event event: fsm.getEvents()) {
@@ -49,7 +49,7 @@ public class FsmUtils {
     }
 
     static private ArrayList<String> getReferenceList(final Fsm fsm, Collection<Node> nodes) {
-        ArrayList<String> refs = new ArrayList<String>();
+        ArrayList<String> refs = new ArrayList<>();
         for (Node node: nodes) {
             String ref = fsm.getNodeReference(node);
             if (ref != null) {

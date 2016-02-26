@@ -52,7 +52,7 @@ import org.xml.sax.SAXException;
 
 public class XmlUtil {
     public static List<Element> getChildElements(String tagName, Element element) {
-        LinkedList<Element> result = new LinkedList<Element>();
+        LinkedList<Element> result = new LinkedList<>();
         NodeList nl = element.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
             Node n = nl.item(i);

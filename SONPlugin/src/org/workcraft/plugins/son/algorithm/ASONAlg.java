@@ -52,10 +52,10 @@ public class ASONAlg extends RelationAlgorithm {
     }
 
     public List<Marking> getReachableMarkings(ONGroup group) throws UnboundedException {
-        List<Marking> result = new ArrayList<Marking>();
-        Collection<Marking> search = new ArrayList<Marking>();
+        List<Marking> result = new ArrayList<>();
+        Collection<Marking> search = new ArrayList<>();
 
-        Map<TransitionNode, ArrayList<Marking>> visited = new HashMap<TransitionNode, ArrayList<Marking>>();
+        Map<TransitionNode, ArrayList<Marking>> visited = new HashMap<>();
 
         Marking initial = new Marking();
         for (Condition c : getONInitial(group)) {
@@ -67,7 +67,7 @@ public class ASONAlg extends RelationAlgorithm {
 
         boolean hasEnabled = true;
         while (hasEnabled) {
-            Collection<Marking> newMarkings = new ArrayList<Marking>();
+            Collection<Marking> newMarkings = new ArrayList<>();
 
             for (Marking marking : search) {
                 for (TransitionNode t : group.getTransitionNodes()) {
@@ -82,7 +82,7 @@ public class ASONAlg extends RelationAlgorithm {
                         markings.add(marking);
                         visited.put(t, markings);
                     } else {
-                        ArrayList<Marking> markings = new ArrayList<Marking>();
+                        ArrayList<Marking> markings = new ArrayList<>();
                         markings.add(marking);
                         visited.put(t, markings);
                     }

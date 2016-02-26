@@ -60,8 +60,8 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
     public JPopupMenu getPopup(final Path<String> path) {
         JPopupMenu popup = new JPopupMenu();
 
-        final HashMap<JMenuItem, FileHandler> handlers = new HashMap<JMenuItem, FileHandler>();
-        final HashMap<JMenuItem, Tool> tools = new HashMap<JMenuItem, Tool>();
+        final HashMap<JMenuItem, FileHandler> handlers = new HashMap<>();
+        final HashMap<JMenuItem, Tool> tools = new HashMap<>();
 
         final Framework framework = Framework.getInstance();
         final Workspace workspace = framework.getWorkspace();

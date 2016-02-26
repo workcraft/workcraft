@@ -126,13 +126,13 @@ public class DnfGenerator {
     private static Dnf simplifyDnf(Dnf clauses) {
         Dnf result = new Dnf();
 
-        Map<DnfClause, HashSet<String>> testClauses = new HashMap<DnfClause, HashSet<String>>();
+        Map<DnfClause, HashSet<String>> testClauses = new HashMap<>();
 
         for (DnfClause clause: clauses.getClauses()) {
 
             if (clause.getLiterals().size() == 0) return  new Dnf(new DnfClause());
 
-            HashSet<String> lset = new HashSet<String>();
+            HashSet<String> lset = new HashSet<>();
 
             for (Literal lit: clause.getLiterals()) {
                 lset.add(lit.getVariable().getLabel() + (lit.getNegation() ? "'" : ""));

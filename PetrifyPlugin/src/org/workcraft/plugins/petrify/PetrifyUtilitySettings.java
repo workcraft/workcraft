@@ -31,7 +31,7 @@ import org.workcraft.gui.propertyeditor.Settings;
 
 public class PetrifyUtilitySettings implements Settings {
 
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
+    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "Tools.petrify";
 
     private static final String keyPetrifyCkeyPmmand = prefix + ".command";

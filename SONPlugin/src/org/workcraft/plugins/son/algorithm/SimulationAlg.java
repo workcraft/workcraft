@@ -41,7 +41,7 @@ public class SimulationAlg extends RelationAlgorithm {
 
     //get SON initial marking
     public Map<PlaceNode, Boolean> getInitialMarking() {
-        HashMap<PlaceNode, Boolean> result = new HashMap<PlaceNode, Boolean>();
+        HashMap<PlaceNode, Boolean> result = new HashMap<>();
 
         Collection<PlaceNode> initialM = sonAlg.getSONInitial();
 
@@ -58,7 +58,7 @@ public class SimulationAlg extends RelationAlgorithm {
 
     //get SON final marking
     public Map<PlaceNode, Boolean> getFinalMarking() {
-        HashMap<PlaceNode, Boolean> result = new HashMap<PlaceNode, Boolean>();
+        HashMap<PlaceNode, Boolean> result = new HashMap<>();
 
         Collection<PlaceNode> finalM = sonAlg.getSONFinal();
 
@@ -91,7 +91,7 @@ public class SimulationAlg extends RelationAlgorithm {
     private Step getForwordMinFire(TransitionNode e, Collection<Path> sync, Step step) {
         Step result = new Step();
         Step u = new Step();
-        Stack<TransitionNode> stack = new Stack<TransitionNode>();
+        Stack<TransitionNode> stack = new Stack<>();
         u.addAll(step);
 
         if (e != null) {
@@ -132,7 +132,7 @@ public class SimulationAlg extends RelationAlgorithm {
     private Step getRevMinFire(TransitionNode e, Collection<Path> sync, Step step) {
         Step result = new Step();
         Step u = new Step();
-        Stack<TransitionNode> stack = new Stack<TransitionNode>();
+        Stack<TransitionNode> stack = new Stack<>();
         u.addAll(step);
 
         if (e != null) {
@@ -228,7 +228,7 @@ public class SimulationAlg extends RelationAlgorithm {
     }
 
     protected ArrayList<Phase> getActivatedPhases(Collection<Phase> phases) {
-        ArrayList<Phase> result = new ArrayList<Phase>();
+        ArrayList<Phase> result = new ArrayList<>();
         for (Phase phase : phases) {
             for (Condition c : phase) {
                 if (c.isMarked()) {
@@ -242,8 +242,8 @@ public class SimulationAlg extends RelationAlgorithm {
 
     private Step getEnabled(Collection<Path> sync, Map<Condition, Collection<Phase>> phases) {
         Step result = new Step();
-        Collection<Node> del = new HashSet<Node>();
-        Stack<TransitionNode> stack = new Stack<TransitionNode>();
+        Collection<Node> del = new HashSet<>();
+        Stack<TransitionNode> stack = new Stack<>();
 
         //ON and BSON enabled
         for (TransitionNode e : net.getTransitionNodes()) {
@@ -264,7 +264,7 @@ public class SimulationAlg extends RelationAlgorithm {
 
         //Aync enabled
         for (TransitionNode e : result) {
-            LinkedList<Node> visit = new LinkedList<Node>();
+            LinkedList<Node> visit = new LinkedList<>();
             stack.push(e);
 
             while (!stack.isEmpty()) {
@@ -359,8 +359,8 @@ public class SimulationAlg extends RelationAlgorithm {
 
     private Step getRevEnabled(Collection<Path> sync, Map<Condition, Collection<Phase>> phases) {
         Step result = new Step();
-        Collection<Node> del = new HashSet<Node>();
-        Stack<TransitionNode> stack = new Stack<TransitionNode>();
+        Collection<Node> del = new HashSet<>();
+        Stack<TransitionNode> stack = new Stack<>();
 
         //ON and BSON enabled
         for (TransitionNode e : net.getTransitionNodes()) {
@@ -381,7 +381,7 @@ public class SimulationAlg extends RelationAlgorithm {
 
         //Aync enabled
         for (TransitionNode e : result) {
-            LinkedList<Node> visit = new LinkedList<Node>();
+            LinkedList<Node> visit = new LinkedList<>();
             stack.push(e);
 
             while (!stack.isEmpty()) {

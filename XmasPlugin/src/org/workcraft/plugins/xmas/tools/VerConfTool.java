@@ -93,7 +93,7 @@ public class VerConfTool implements Tool {
         mainFrame.setVisible(false);
     }
 
-    public List<String> slist = new ArrayList<String>();
+    public List<String> slist = new ArrayList<>();
 
     private void initSettings() {
         Scanner sc = null;
@@ -174,7 +174,7 @@ public class VerConfTool implements Tool {
         panelmain.setLayout(new BoxLayout(panelmain, BoxLayout.PAGE_AXIS));
 
         System.out.println("loaded = " + loaded);
-        List<JPanel> panellist = new ArrayList<JPanel>();
+        List<JPanel> panellist = new ArrayList<>();
         cntSyncNodes = 1;
         for (int no = 0; no < cntSyncNodes; no = no + 1) {
             panellist.add(new JPanel());

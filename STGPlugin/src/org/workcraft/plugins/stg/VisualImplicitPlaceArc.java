@@ -142,7 +142,7 @@ public class VisualImplicitPlaceArc extends VisualConnection {
 
     @Override
     public Set<MathNode> getMathReferences() {
-        Set<MathNode> ret = new HashSet<MathNode>();
+        Set<MathNode> ret = new HashSet<>();
         ret.add(implicitPlace);
         ret.add(refCon1);
         ret.add(refCon2);

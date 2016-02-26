@@ -55,7 +55,7 @@ import org.workcraft.plugins.shared.CommonEditorSettings;
 public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKeyListener {
 
     class ToolTracker {
-        ArrayList<GraphEditorTool> tools = new ArrayList<GraphEditorTool>();
+        ArrayList<GraphEditorTool> tools = new ArrayList<>();
         int nextIndex = 0;
 
         public void addTool(GraphEditorTool tool) {

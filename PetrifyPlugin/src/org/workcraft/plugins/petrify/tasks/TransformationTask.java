@@ -47,7 +47,7 @@ public class TransformationTask implements Task<TransformationResult>, ExternalP
 
     @Override
     public Result<? extends TransformationResult> run(ProgressMonitor<? super TransformationResult> monitor) {
-        ArrayList<String> command = new ArrayList<String>();
+        ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
         String toolName = ToolUtils.getAbsoluteCommandPath(PetrifyUtilitySettings.getCommand());
@@ -92,7 +92,7 @@ public class TransformationTask implements Task<TransformationResult>, ExternalP
             boolean printStdout = PetrifyUtilitySettings.getPrintStdout();
             boolean printStderr = PetrifyUtilitySettings.getPrintStderr();
             ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
-            SubtaskMonitor<Object> mon = new SubtaskMonitor<Object>(monitor);
+            SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
             Result<? extends ExternalProcessResult> res = task.run(mon);
 
             if (res.getOutcome() == Outcome.CANCELLED) {

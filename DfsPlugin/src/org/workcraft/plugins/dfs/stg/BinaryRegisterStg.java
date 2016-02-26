@@ -42,20 +42,20 @@ public class BinaryRegisterStg extends NodeStg {
     }
 
     public List<VisualSignalTransition> getTrueTransitions() {
-        Set<VisualSignalTransition> tmp = new HashSet<VisualSignalTransition>(tMRs.values());
+        Set<VisualSignalTransition> tmp = new HashSet<>(tMRs.values());
         tmp.add(tMF);
         return new ArrayList<VisualSignalTransition>(tmp);
     }
 
     public List<VisualSignalTransition> getFalseTransitions() {
-        Set<VisualSignalTransition> tmp = new HashSet<VisualSignalTransition>(fMRs.values());
+        Set<VisualSignalTransition> tmp = new HashSet<>(fMRs.values());
         tmp.add(fMF);
         return new ArrayList<VisualSignalTransition>(tmp);
     }
 
     @Override
     public List<VisualSignalTransition> getAllTransitions() {
-        Set<VisualSignalTransition> tmp = new HashSet<VisualSignalTransition>();
+        Set<VisualSignalTransition> tmp = new HashSet<>();
         tmp.addAll(tMRs.values());
         tmp.add(tMF);
         tmp.addAll(fMRs.values());

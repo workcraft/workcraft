@@ -58,7 +58,7 @@ public class FormulaToGraphics {
         try {
             defaultFont = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/default.pfb")).deriveFont(0.5f);
 
-            Map<TextAttribute, Integer> attributes = new HashMap<TextAttribute, Integer>();
+            Map<TextAttribute, Integer> attributes = new HashMap<>();
             attributes.put(TextAttribute.SUPERSCRIPT, TextAttribute.SUPERSCRIPT_SUB);
             defaultSubFont = defaultFont.deriveFont(attributes);
         } catch (FontFormatException e) {
@@ -73,7 +73,7 @@ public class FormulaToGraphics {
     public static FormulaRenderingResult print(String text, Font font, FontRenderContext fontRenderContext) {
         if (text.length() < 1) text = " ";
 
-        Map<TextAttribute, Integer> attributes = new HashMap<TextAttribute, Integer>();
+        Map<TextAttribute, Integer> attributes = new HashMap<>();
         attributes.put(TextAttribute.SUPERSCRIPT, TextAttribute.SUPERSCRIPT_SUB);
         Font subfont = font.deriveFont(attributes);
 
@@ -318,7 +318,7 @@ public class FormulaToGraphics {
     }
 
     public static class VariablePrinter extends DelegatingPrinter {
-        Map<String, BooleanVariable> varMap = new HashMap<String, BooleanVariable>();
+        Map<String, BooleanVariable> varMap = new HashMap<>();
         @Override
         public FormulaRenderingResult visit(BooleanVariable var) {
             String label = var.getLabel();

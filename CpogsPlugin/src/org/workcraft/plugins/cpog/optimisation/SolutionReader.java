@@ -31,7 +31,7 @@ import java.util.Map;
 
 public class SolutionReader {
     private static Map<Integer, String> extractCnfMapping(String cnf) {
-        HashMap<Integer, String> map = new HashMap<Integer, String>();
+        HashMap<Integer, String> map = new HashMap<>();
 
         BufferedReader reader = new BufferedReader(new StringReader(cnf));
         while (true) {
@@ -86,7 +86,7 @@ public class SolutionReader {
             return null;
         }
 
-        final Map<BooleanVariable, Boolean> results = new HashMap<BooleanVariable, Boolean>();
+        final Map<BooleanVariable, Boolean> results = new HashMap<>();
         for (int i = 0; i < numbers.size(); i++) {
             int cnfIndex = numbers.get(i);
             boolean value = cnfIndex >= 0;
@@ -143,7 +143,7 @@ public class SolutionReader {
                 throw new RuntimeException("no information on satisfiability found");
             }
 
-            List<Integer> result = new ArrayList<Integer>();
+            List<Integer> result = new ArrayList<>();
             for (int i = 1; i < split.length; i++) {
                 if (split[i].length() > 0 && split[i].charAt(0) == 'v') {
                     String[] nums = split[i].split(" ");
@@ -158,7 +158,7 @@ public class SolutionReader {
     }
 
     private static List<Integer> parseIntArray(String[] nums) {
-        List<Integer> result = new ArrayList<Integer>();
+        List<Integer> result = new ArrayList<>();
 
         for (int i = 0; i < nums.length; i++) {
             result.add(Integer.parseInt(nums[i]));

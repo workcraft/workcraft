@@ -197,7 +197,7 @@ public class ConnectionTool extends AbstractTool {
         if (e.getButton() == MouseEvent.BUTTON1) {
             if (currentNode == null) {
                 if (firstNode != null) {
-                    Set<Point2D> snaps = new HashSet<Point2D>();
+                    Set<Point2D> snaps = new HashSet<>();
                     if (controlPoints.isEmpty()) {
                         AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(firstNode);
                         Point2D p = TransformHelper.transform(firstNode, localToRootTransform).getCenter();

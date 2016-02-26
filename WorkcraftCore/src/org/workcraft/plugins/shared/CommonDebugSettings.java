@@ -29,7 +29,7 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 
 public class CommonDebugSettings implements Settings {
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
+    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CommonDebugSettings";
 
     private static final String keyCopyModelOnChange = prefix + ".copyModelOnChange";

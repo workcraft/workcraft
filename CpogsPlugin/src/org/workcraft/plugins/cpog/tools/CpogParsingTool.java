@@ -198,8 +198,8 @@ public class CpogParsingTool {
     public static String getExpressionFromGraph(VisualCPOG visualCpog) {
         Collection<Node> originalSelection;
         ArrayList<VisualTransformableNode> groups = new ArrayList<>();
-        ArrayList<Node> vertices = new ArrayList<Node>();
-        ArrayList<String> expression = new ArrayList<String>();
+        ArrayList<Node> vertices = new ArrayList<>();
+        ArrayList<String> expression = new ArrayList<>();
         String total = "";
 
         groups = getScenarios(visualCpog);
@@ -216,10 +216,10 @@ public class CpogParsingTool {
 
                 VisualVertex current;
                 Set<Connection> totalConnections;
-                ArrayList<Connection> connections = new ArrayList<Connection>();
-                HashSet<VisualVertex> visitedVertices = new HashSet<VisualVertex>();
-                HashSet<Connection> visitedConnections = new HashSet<Connection>();
-                ConcurrentLinkedQueue<Node> q = new ConcurrentLinkedQueue<Node>();
+                ArrayList<Connection> connections = new ArrayList<>();
+                HashSet<VisualVertex> visitedVertices = new HashSet<>();
+                HashSet<Connection> visitedConnections = new HashSet<>();
+                ConcurrentLinkedQueue<Node> q = new ConcurrentLinkedQueue<>();
 
                 if (roots.isEmpty()) {
                     roots.addAll(vertices);
@@ -281,10 +281,10 @@ public class CpogParsingTool {
             Iterator<Node> i = roots.iterator();
             VisualVertex current;
             Set<Connection> totalConnections;
-            ArrayList<Connection> connections = new ArrayList<Connection>();
-            HashSet<VisualVertex> visitedVertices = new HashSet<VisualVertex>();
-            HashSet<Connection> visitedConnections = new HashSet<Connection>();
-            ConcurrentLinkedQueue<Node> q = new ConcurrentLinkedQueue<Node>();
+            ArrayList<Connection> connections = new ArrayList<>();
+            HashSet<VisualVertex> visitedVertices = new HashSet<>();
+            HashSet<Connection> visitedConnections = new HashSet<>();
+            ConcurrentLinkedQueue<Node> q = new ConcurrentLinkedQueue<>();
 
             while (i.hasNext()) {
 
@@ -474,7 +474,7 @@ public class CpogParsingTool {
     }
 
     public static HashSet<Node> getRoots(VisualCPOG visualCpog, ArrayList<Node> vertices) {
-        HashSet<Node> roots = new HashSet<Node>();
+        HashSet<Node> roots = new HashSet<>();
         Set<Connection> arcs;
         Iterator<Connection> it;
         Connection connection;
@@ -725,8 +725,8 @@ public class CpogParsingTool {
                     for (int c = index + 1; c < vertexList.size(); c++) {
                         second = vertexList.get(c);
 
-                        ArrayList<String> verts1 = new ArrayList<String>();
-                        ArrayList<String> verts2 = new ArrayList<String>();
+                        ArrayList<String> verts1 = new ArrayList<>();
+                        ArrayList<String> verts2 = new ArrayList<>();
                         int ind = 0;
                         if (first.contains("(")) {
                             first = first.replace("(", "");
@@ -753,7 +753,7 @@ public class CpogParsingTool {
                         for (String vert1 : verts1) {
                             for (String vert2 : verts2) {
                                 arc = (VisualArc) visualCpog.getConnection(vertexMap.get(vert1), vertexMap.get(vert2));
-                                ArrayList<VisualArc> dupArcs = new ArrayList<VisualArc>();
+                                ArrayList<VisualArc> dupArcs = new ArrayList<>();
                                 if (arc != null) {
                                     for (Connection con : visualCpog.getConnections(vertexMap.get(vert1))) {
                                         if (con.getSecond().equals(vertexMap.get(vert2))) {
@@ -809,10 +809,10 @@ public class CpogParsingTool {
         Collection<VisualVertex> vertices =  visualCpog.getVertices(visualCpog.getCurrentLevel());
         vertices.removeAll(visualCpog.getSelection());
 
-        ArrayList<Node> prevSelection = new ArrayList<Node>();
+        ArrayList<Node> prevSelection = new ArrayList<>();
         for (Node n : visualCpog.getSelection()) prevSelection.add(n);
 
-        ArrayList<VisualScenarioPage> pages = new ArrayList<VisualScenarioPage>();
+        ArrayList<VisualScenarioPage> pages = new ArrayList<>();
         visualCpog.selectAll();
         for (Node n : visualCpog.getSelection()) {
             if (n instanceof VisualScenarioPage) {
@@ -866,7 +866,7 @@ public class CpogParsingTool {
     }
 
     public static ArrayList<VisualComponent> getPageVertices(VisualPage p) {
-        ArrayList<VisualComponent> result = new ArrayList<VisualComponent>();
+        ArrayList<VisualComponent> result = new ArrayList<>();
 
         for (VisualComponent c : p.getComponents()) {
             if (c instanceof VisualPage) {
@@ -879,7 +879,7 @@ public class CpogParsingTool {
     }
 
     public static ArrayList<Node> copySelected(VisualCPOG visualCpog) {
-        ArrayList<Node> result = new ArrayList<Node>();
+        ArrayList<Node> result = new ArrayList<>();
         for (Node n : visualCpog.getSelection()) {
             result.add(n);
         }

@@ -59,7 +59,7 @@ class DefaultNodeDeserialiser {
 
         try {
             List<Element> propertyElements = XmlUtil.getChildElements("property", currentLevelElement);
-            HashMap<String, Element> nameMap = new HashMap<String, Element>();
+            HashMap<String, Element> nameMap = new HashMap<>();
 
             for (Element e : propertyElements) {
                 nameMap.put(e.getAttribute("name"), e);

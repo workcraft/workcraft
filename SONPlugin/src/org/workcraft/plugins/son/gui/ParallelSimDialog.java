@@ -58,7 +58,7 @@ public class ParallelSimDialog  extends JDialog {
 
     protected Dimension buttonSize = new Dimension(80, 25);
 
-    private HashSet<TransitionNode> selectedEvents = new HashSet<TransitionNode>();
+    private HashSet<TransitionNode> selectedEvents = new HashSet<>();
 
     private int run = 0;
     private Window owner;
@@ -142,7 +142,7 @@ public class ParallelSimDialog  extends JDialog {
                     EventItem item = (EventItem) list.getModel().getElementAt(index);
                     item.setSelected(!item.isSelected());
 
-                    ArrayList<EventItem> itemList = new ArrayList<EventItem>();
+                    ArrayList<EventItem> itemList = new ArrayList<>();
                     for (int i = 0; i < list.getModel().getSize(); i++) {
                         itemList.add((EventItem) list.getModel().getElementAt(i));
                     }

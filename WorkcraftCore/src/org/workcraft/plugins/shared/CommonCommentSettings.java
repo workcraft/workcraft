@@ -31,7 +31,7 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 
 public class CommonCommentSettings implements Settings {
-    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<PropertyDescriptor>();
+    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CommonCommentSettings";
 
     private static final String keyBaseSize  = prefix + ".baseSize";

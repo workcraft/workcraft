@@ -15,9 +15,9 @@ public class CSONStructureTask extends AbstractStructuralVerification {
 
     private SON net;
 
-    private Collection<Node> relationErrors = new ArrayList<Node>();
-    private Collection<Path> cycleErrors = new ArrayList<Path>();
-    private Collection<ONGroup> groupErrors = new HashSet<ONGroup>();
+    private Collection<Node> relationErrors = new ArrayList<>();
+    private Collection<Path> cycleErrors = new ArrayList<>();
+    private Collection<ONGroup> groupErrors = new HashSet<>();
 
     private CSONCycleAlg csonCycleAlg;
 
@@ -37,14 +37,14 @@ public class CSONStructureTask extends AbstractStructuralVerification {
 
         //group info
         infoMsg("Initialising selected groups and components...");
-        ArrayList<Node> components = new ArrayList<Node>();
+        ArrayList<Node> components = new ArrayList<>();
         for (ONGroup group : groups) {
             components.addAll(group.getComponents());
         }
 
         infoMsg("Selected Groups : " +  net.toString(groups));
 
-        ArrayList<ChannelPlace> relatedCPlaces = new ArrayList<ChannelPlace>();
+        ArrayList<ChannelPlace> relatedCPlaces = new ArrayList<>();
         relatedCPlaces.addAll(getRelationAlg().getRelatedChannelPlace(groups));
         components.addAll(relatedCPlaces);
 
@@ -98,7 +98,7 @@ public class CSONStructureTask extends AbstractStructuralVerification {
     }
 
     private Collection<ChannelPlace> cPlaceRelationTask(ArrayList<ChannelPlace> cPlaces) {
-        ArrayList<ChannelPlace> result = new ArrayList<ChannelPlace>();
+        ArrayList<ChannelPlace> result = new ArrayList<>();
 
         for (ChannelPlace cPlace : cPlaces) {
             if (net.getPostset(cPlace).size() != 1 || net.getPreset(cPlace).size() != 1) {
@@ -109,7 +109,7 @@ public class CSONStructureTask extends AbstractStructuralVerification {
     }
 
     private Collection<ChannelPlace> cPlaceConTypeTask(ArrayList<ChannelPlace> cPlaces) {
-        ArrayList<ChannelPlace> result = new ArrayList<ChannelPlace>();
+        ArrayList<ChannelPlace> result = new ArrayList<>();
 
         for (ChannelPlace cPlace : cPlaces) {
             if (net.getSONConnectionTypes(cPlace).size() > 1) {

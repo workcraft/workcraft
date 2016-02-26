@@ -63,7 +63,7 @@ public class VerTool extends AbstractTool implements Tool {
     static String display = "";
     static String highlight = "";
     static String soln = "";
-    static List<Qslist> qslist = new ArrayList<Qslist>();
+    static List<Qslist> qslist = new ArrayList<>();
 
     public void dispose() {
         mainFrame.setVisible(false);

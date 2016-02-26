@@ -33,7 +33,7 @@ public class FunctionConsistencySupervisor extends HierarchySupervisor {
     }
 
     private void handleContactRemoval(final Contact contact) {
-        final ArrayList<FunctionContact> functionContacts = new ArrayList<FunctionContact>(
+        final ArrayList<FunctionContact> functionContacts = new ArrayList<>(
                 Hierarchy.getChildrenOfType(getRoot(), FunctionContact.class));
 
         for (final FunctionContact functionContact: functionContacts) {

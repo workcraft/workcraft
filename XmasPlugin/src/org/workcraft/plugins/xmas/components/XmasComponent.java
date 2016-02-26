@@ -100,7 +100,7 @@ public class XmasComponent extends MathNode implements Container, ObservableHier
     }
 
     public Collection<XmasContact> getInputs() {
-        ArrayList<XmasContact> result = new ArrayList<XmasContact>();
+        ArrayList<XmasContact> result = new ArrayList<>();
         for (XmasContact c : getContacts()) {
             if (c.getIOType() == IOType.INPUT) {
                 result.add(c);
@@ -110,7 +110,7 @@ public class XmasComponent extends MathNode implements Container, ObservableHier
     }
 
     public Collection<XmasContact> getOutputs() {
-        ArrayList<XmasContact> result = new ArrayList<XmasContact>();
+        ArrayList<XmasContact> result = new ArrayList<>();
         for (XmasContact c : getContacts()) {
             if (c.getIOType() == IOType.OUTPUT) {
                 result.add(c);

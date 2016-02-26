@@ -14,7 +14,7 @@ import org.workcraft.plugins.son.util.Marking;
 public class PathAlgorithm {
 
     private SON net;
-    private static Collection<Path> pathResult = new ArrayList<Path>();
+    private static Collection<Path> pathResult = new ArrayList<>();
 
     public PathAlgorithm(SON net) {
         this.net = net;
@@ -74,7 +74,7 @@ public class PathAlgorithm {
     //get paths between two given nodes. (recursion)
     public Collection<Path> getPaths(Condition s,  Collection<Condition> v, Collection<Node> nodes) {
         pathResult.clear();
-        LinkedList<Node> visited = new LinkedList<Node>();
+        LinkedList<Node> visited = new LinkedList<>();
         visited.add(s);
         dfsTest(nodes, visited, v);
         return pathResult;
@@ -83,14 +83,14 @@ public class PathAlgorithm {
     //get paths between two given nodes. (recursion)
     public Collection<Path> getPaths(Node s, Node v, Collection<Node> nodes) {
         pathResult.clear();
-        LinkedList<Node> visited = new LinkedList<Node>();
+        LinkedList<Node> visited = new LinkedList<>();
         visited.add(s);
         dfs(nodes, visited, v);
         return pathResult;
     }
 
     private LinkedList<Node> getPostset(Node n, Collection<Node> nodes) {
-        LinkedList<Node> list = new LinkedList<Node>();
+        LinkedList<Node> list = new LinkedList<>();
         for (Node post : net.getPostset(n)) {
             if (nodes.contains(post)) {
                 list.add(post);
@@ -100,12 +100,12 @@ public class PathAlgorithm {
     }
     //get nodes between two given node sets. (iteration)
     public static Collection<Node> dfs2(Marking s, Marking v, SON net) {
-        Collection<Node> result = new HashSet<Node>();
+        Collection<Node> result = new HashSet<>();
         RelationAlgorithm relation = new RelationAlgorithm(net);
-        Stack<Node> stack = new Stack<Node>();
+        Stack<Node> stack = new Stack<>();
 
         for (Node s1 : s) {
-            Collection<Node> visit = new ArrayList<Node>();
+            Collection<Node> visit = new ArrayList<>();
             stack.push(s1);
             visit.add(s1);
 

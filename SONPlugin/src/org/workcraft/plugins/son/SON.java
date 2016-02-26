@@ -128,7 +128,7 @@ public class SON extends AbstractMathModel {
     }
 
     public ArrayList<String> getNodeRefs(Collection<? extends Node> nodes) {
-        ArrayList<String> result = new ArrayList<String>();
+        ArrayList<String> result = new ArrayList<>();
         for (Node node : nodes) {
             result.add(getNodeReference(node));
         }
@@ -333,7 +333,7 @@ public class SON extends AbstractMathModel {
 
     public ScenarioSaveList importScenarios(Window window) {
         ScenarioSaveList result = new ScenarioSaveList();
-        ArrayList<Scenario> removeList = new ArrayList<Scenario>();
+        ArrayList<Scenario> removeList = new ArrayList<>();
 
         for (Scenario s : getScenarios()) {
             ScenarioRef ref = new ScenarioRef();
@@ -471,7 +471,7 @@ public class SON extends AbstractMathModel {
     }
 
     public Collection<SONConnection> getInputPNConnections(Node node) {
-        Collection<SONConnection> result = new ArrayList<SONConnection>();
+        Collection<SONConnection> result = new ArrayList<>();
 
         for (SONConnection con : getInputSONConnections(node)) {
             if (con.getSemantics() == Semantics.PNLINE) {
@@ -482,7 +482,7 @@ public class SON extends AbstractMathModel {
     }
 
     public Collection<SONConnection> getOutputPNConnections(Node node) {
-        Collection<SONConnection> result = new ArrayList<SONConnection>();
+        Collection<SONConnection> result = new ArrayList<>();
 
         for (SONConnection con : getOutputSONConnections(node)) {
             if (con.getSemantics() == Semantics.PNLINE) {
@@ -493,7 +493,7 @@ public class SON extends AbstractMathModel {
     }
 
     public Collection<SONConnection> getInputScenarioPNConnections(Node node, ScenarioRef s) {
-        Collection<SONConnection> result = new ArrayList<SONConnection>();
+        Collection<SONConnection> result = new ArrayList<>();
 
         for (SONConnection con : getInputSONConnections(node)) {
             if (con.getSemantics() == Semantics.PNLINE) {
@@ -510,7 +510,7 @@ public class SON extends AbstractMathModel {
     }
 
     public Collection<SONConnection> getOutputScenarioPNConnections(Node node, ScenarioRef s) {
-        Collection<SONConnection> result = new ArrayList<SONConnection>();
+        Collection<SONConnection> result = new ArrayList<>();
 
         for (SONConnection con : getOutputSONConnections(node)) {
             if (con.getSemantics() == Semantics.PNLINE) {
@@ -532,7 +532,7 @@ public class SON extends AbstractMathModel {
     }
 
     public Collection<TransitionNode> getTransitionNodes() {
-        ArrayList<TransitionNode> result = new ArrayList<TransitionNode>();
+        ArrayList<TransitionNode> result = new ArrayList<>();
         for (TransitionNode node :  Hierarchy.getDescendantsOfType(getRoot(), TransitionNode.class)) {
             if (node instanceof Block) {
                 if (((Block) node).getIsCollapsed()) {

@@ -87,7 +87,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
     protected void createScenarioItemPanel() {
         scenarioItemPanel = new JPanel();
         ArrayList<ScenarioRef> scenarioSavelist = net.importScenarios(owner);
-        DefaultListModel<ListItem> listModel = new DefaultListModel<ListItem>();
+        DefaultListModel<ListItem> listModel = new DefaultListModel<>();
 
         for (int i = 0; i < scenarioSavelist.size(); i++) {
             listModel.addElement(new ListItem("Scenario " + (i + 1), scenarioSavelist.get(i)));
@@ -135,7 +135,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
         vNet = (VisualSON) we.getModelEntry().getVisualModel();
         selectedNodes = new ArrayList<Node>();
 
-        DefaultListModel<ListItem> listModel = new DefaultListModel<ListItem>();
+        DefaultListModel<ListItem> listModel = new DefaultListModel<>();
 
         for (Node vn : vNet.getSelection()) {
             if (vn instanceof VisualComponent) {
@@ -434,7 +434,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
     protected void updateScenarioColor() {
         net.clearMarking();
         setGrayout(net.getNodes(), greyoutColor);
-        Collection<Node> nodes = new ArrayList<Node>();
+        Collection<Node> nodes = new ArrayList<>();
         nodes.addAll(selectedScenario.getNodes(net));
         nodes.addAll(selectedScenario.getConnections(net));
         setGrayout(nodes, Color.BLACK);

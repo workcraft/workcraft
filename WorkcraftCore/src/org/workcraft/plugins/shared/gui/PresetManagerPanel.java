@@ -123,7 +123,7 @@ public class PresetManagerPanel<T> extends JPanel {
     public void managePresets() {
         Preset<T> selected = (Preset<T>) presetCombo.getSelectedItem();
 
-        PresetManagerDialog<T> dlg = new PresetManagerDialog<T>(dialogOwner, presetManager);
+        PresetManagerDialog<T> dlg = new PresetManagerDialog<>(dialogOwner, presetManager);
         dlg.setModalityType(ModalityType.APPLICATION_MODAL);
         GUI.centerAndSizeToParent(dlg, dialogOwner);
         dlg.setVisible(true);

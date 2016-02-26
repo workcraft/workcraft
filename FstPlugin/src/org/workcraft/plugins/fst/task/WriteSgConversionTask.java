@@ -80,7 +80,7 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
             if (pnExporter == null) {
                 throw new RuntimeException("Exporter not available: model class " + pn.getClass().getName() + " to format STG.");
             }
-            SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<Object>(monitor);
+            SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
             monitor.progressUpdate(0.10);
 
             // Generating .g file for Petri Net
@@ -99,7 +99,7 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
             monitor.progressUpdate(0.20);
 
             // Generate State Graph
-            List<String> writeSgOptions = new ArrayList<String>();
+            List<String> writeSgOptions = new ArrayList<>();
             if (binary) {
                 writeSgOptions.add("-bin");
             }

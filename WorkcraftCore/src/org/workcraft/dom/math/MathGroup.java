@@ -98,7 +98,7 @@ public class MathGroup extends MathNode implements NamespaceProvider, Observable
     }
 
     public ArrayList<Node> unGroup(ReferenceManager manager) {
-        ArrayList<Node> nodesToReparent = new ArrayList<Node>(groupImpl.getChildren());
+        ArrayList<Node> nodesToReparent = new ArrayList<>(groupImpl.getChildren());
         Container newParent = Hierarchy.getNearestAncestor(getParent(), Container.class);
         if (manager != null) {
             if (manager instanceof HierarchicalUniqueNameReferenceManager) {

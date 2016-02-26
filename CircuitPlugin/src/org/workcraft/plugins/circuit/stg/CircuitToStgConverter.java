@@ -263,7 +263,7 @@ public class CircuitToStgConverter {
         VisualPlace succPlace = direction == Direction.PLUS ? driverStg.one : driverStg.zero;
         Collection<VisualSignalTransition> transitions = direction == Direction.PLUS ? driverStg.riseList : driverStg.fallList;
 
-        TreeSet<DnfClause> clauses = new TreeSet<DnfClause>(
+        TreeSet<DnfClause> clauses = new TreeSet<>(
                 new Comparator<DnfClause>() {
                     @Override
                     public int compare(DnfClause arg0, DnfClause arg1) {
@@ -284,7 +284,7 @@ public class CircuitToStgConverter {
             // 1) a read-arc from a preset place is redundant (is superseded by a consuming arc);
             // 2) a read-arc from a postset place makes the transition dead.
             boolean isDeadTransition = false;
-            HashSet<VisualPlace> placesToRead = new HashSet<VisualPlace>();
+            HashSet<VisualPlace> placesToRead = new HashSet<>();
             for (Literal literal : clause.getLiterals()) {
                 BooleanVariable variable = literal.getVariable();
                 VisualContact sourceContact = circuit.getVisualComponent((Contact) variable, VisualContact.class);
@@ -415,7 +415,7 @@ public class CircuitToStgConverter {
         for (VisualContact driver: drivers) {
             SignalStg signalStg = driverToStgMap.getValue(driver);
             if (signalStg != null) {
-                HashSet<Node> deadPostset = new HashSet<Node>(stg.getPostset(signalStg.zero));
+                HashSet<Node> deadPostset = new HashSet<>(stg.getPostset(signalStg.zero));
                 deadPostset.retainAll(stg.getPostset(signalStg.one));
                 result.addAll(deadPostset);
             }
@@ -509,7 +509,7 @@ public class CircuitToStgConverter {
         for (VisualContact driver: drivers) {
             SignalStg signalStg = driverToStgMap.getValue(driver);
             if (signalStg != null) {
-                Collection<Node> nodesToGroup = new LinkedList<Node>();
+                Collection<Node> nodesToGroup = new LinkedList<>();
                 nodesToGroup.addAll(signalStg.getAllNodes());
 
                 Container currentLevel = null;

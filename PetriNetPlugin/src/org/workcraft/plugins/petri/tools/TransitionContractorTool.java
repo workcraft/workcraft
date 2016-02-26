@@ -241,8 +241,8 @@ public class TransitionContractorTool extends TransformationTool implements Node
 
     private void contractTransition(VisualModel visualModel, VisualTransition visualTransition) {
         beforeContraction(visualModel, visualTransition);
-        LinkedList<Node> predNodes = new LinkedList<Node>(visualModel.getPreset(visualTransition));
-        LinkedList<Node> succNodes = new LinkedList<Node>(visualModel.getPostset(visualTransition));
+        LinkedList<Node> predNodes = new LinkedList<>(visualModel.getPreset(visualTransition));
+        LinkedList<Node> succNodes = new LinkedList<>(visualModel.getPostset(visualTransition));
         HashMap<VisualPlace, Pair<VisualPlace, VisualPlace>> productPlaceMap = new HashMap<>();
         for (Node predNode: predNodes) {
             VisualPlace predPlace = (VisualPlace) predNode;

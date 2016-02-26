@@ -135,7 +135,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
     private boolean isTokenColorPropagator = false;
     private Point2D splitPoint = null;
 
-    private LinkedHashSet<Node> children = new LinkedHashSet<Node>();
+    private LinkedHashSet<Node> children = new LinkedHashSet<>();
     private ComponentsTransformObserver componentsTransformObserver = null;
 
     public VisualConnection() {
@@ -194,7 +194,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
             }
             @Override
             public Map<Double, String> getChoice() {
-                LinkedHashMap<Double, String> result = new LinkedHashMap<Double, String>();
+                LinkedHashMap<Double, String> result = new LinkedHashMap<>();
                 result.put(0.0, "none");
                 result.put(0.2, "short");
                 result.put(0.4, "medium");
@@ -485,7 +485,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
     }
 
     public Set<MathNode> getMathReferences() {
-        Set<MathNode> ret = new HashSet<MathNode>();
+        Set<MathNode> ret = new HashSet<>();
         ret.add(getReferencedConnection());
         return ret;
     }
