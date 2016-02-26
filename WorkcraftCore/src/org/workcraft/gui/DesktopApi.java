@@ -22,14 +22,14 @@ public class DesktopApi {
     }
 
     public static boolean open(File file) {
-        if (openSystemSpecific(file.getPath())) return true;
         if (openDesktop(file)) return true;
+        if (openSystemSpecific(file.getPath())) return true;
         return false;
     }
 
     public static boolean edit(File file) {
-        if (openSystemSpecific(file.getPath())) return true;
         if (editDesktop(file)) return true;
+        if (openSystemSpecific(file.getPath())) return true;
         return false;
     }
 
@@ -73,9 +73,9 @@ public class DesktopApi {
         OsType os = getOs();
 
         if (os.isLinux()) {
+            if (runCommand("xdg-open", "%s", what)) return true;
             if (runCommand("kde-open", "%s", what)) return true;
             if (runCommand("gnome-open", "%s", what)) return true;
-            if (runCommand("xdg-open", "%s", what)) return true;
         }
 
         if (os.isMac()) {

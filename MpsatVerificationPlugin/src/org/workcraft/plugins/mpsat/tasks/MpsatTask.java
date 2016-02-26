@@ -75,7 +75,7 @@ public class MpsatTask implements Task<ExternalProcessResult> {
 
         boolean printStdout = MpsatUtilitySettings.getPrintStdout();
         boolean printStderr = MpsatUtilitySettings.getPrintStderr();
-        ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
+        ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr, 500);
         Result<? extends ExternalProcessResult> res = task.run(monitor);
         if (res.getOutcome() == Outcome.CANCELLED) {
             return res;

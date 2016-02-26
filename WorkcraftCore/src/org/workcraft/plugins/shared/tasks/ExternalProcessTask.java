@@ -18,6 +18,7 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
     private final File workingDir;
     private boolean printStdout;
     private boolean printStderr;
+    private int delayOnFinish;
 
     private volatile boolean finished;
     private volatile int returnCode;
@@ -28,14 +29,19 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
     private DataAccumulator stderrAccum = new DataAccumulator();
 
     public ExternalProcessTask(List<String> args, File workingDir) {
-        this(args, workingDir, false, false);
+        this(args, workingDir, false, false, 0);
     }
 
     public ExternalProcessTask(List<String> args, File workingDir, boolean printStdout, boolean printStderr) {
+        this(args, workingDir, printStdout, printStderr, 0);
+    }
+
+    public ExternalProcessTask(List<String> args, File workingDir, boolean printStdout, boolean printStderr, int delayOnFinish) {
         this.args = args;
         this.workingDir = workingDir;
         this.printStdout = printStdout;
         this.printStderr = printStderr;
+        this.delayOnFinish = delayOnFinish;
     }
 
     @Override
@@ -74,17 +80,17 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
             return Result.cancelled();
         }
 
-        // FIXME: An attempt to synchronise the output streams with the process completion.
-//        try {
-//            process.closeInput();
-//        } catch (IOException e) {
-//        }
-//
-//        try {
-//            Thread.sleep(delayOnFinish);
-//        } catch(InterruptedException ex) {
-//            Thread.currentThread().interrupt();
-//        }
+        // FIXME: An attempt to synchronize the output streams with the process completion.
+        try {
+            process.closeInput();
+        } catch (IOException e) {
+        }
+
+        try {
+            Thread.sleep(delayOnFinish);
+        } catch (InterruptedException ex) {
+            Thread.currentThread().interrupt();
+        }
 
         ExternalProcessResult result = new ExternalProcessResult(
                 returnCode, stdoutAccum.getData(), stderrAccum.getData(),
