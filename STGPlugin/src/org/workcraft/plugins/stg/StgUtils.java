@@ -4,6 +4,7 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 
@@ -49,9 +50,16 @@ public class StgUtils {
         for (Node pred: stg.getPreset(oldTransition)) {
             try {
                 VisualConnection oldPredConnection = (VisualConnection) stg.getConnection(pred, oldTransition);
-                VisualConnection newPredConnection = stg.connect(pred, newTransition);
-                newPredConnection.copyStyle(oldPredConnection);
-                newPredConnection.copyShape(oldPredConnection);
+                VisualConnection newPredConnection = null;
+                if (oldPredConnection instanceof VisualReadArc) {
+                    newPredConnection = stg.connectUndirected(pred, newTransition);
+                } else {
+                    newPredConnection = stg.connect(pred, newTransition);
+                }
+                if (newPredConnection != null) {
+                    newPredConnection.copyStyle(oldPredConnection);
+                    newPredConnection.copyShape(oldPredConnection);
+                }
             } catch (InvalidConnectionException e) {
                 e.printStackTrace();
             }
@@ -60,9 +68,16 @@ public class StgUtils {
         for (Node succ: stg.getPostset(oldTransition)) {
             try {
                 VisualConnection oldSuccConnection = (VisualConnection) stg.getConnection(oldTransition, succ);
-                VisualConnection newSuccConnection = stg.connect(newTransition, succ);
-                newSuccConnection.copyStyle(oldSuccConnection);
-                newSuccConnection.copyShape(oldSuccConnection);
+                VisualConnection newSuccConnection = null;
+                if (oldSuccConnection instanceof VisualReadArc) {
+                    newSuccConnection = stg.connectUndirected(newTransition, succ);
+                } else {
+                    newSuccConnection = stg.connect(newTransition, succ);
+                }
+                if (newSuccConnection != null) {
+                    newSuccConnection.copyStyle(oldSuccConnection);
+                    newSuccConnection.copyShape(oldSuccConnection);
+                }
             } catch (InvalidConnectionException e) {
                 e.printStackTrace();
             }
