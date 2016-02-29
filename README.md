@@ -23,7 +23,7 @@ You can run Workcraft directly after building it:
 
     $ ./workcraft
 
-### Miscellanious
+### Miscellaneous
 
 Help and tutorial pages are available in the
 [workcraft-doc](https://github.com/tuura/workcraft-doc) repo.
