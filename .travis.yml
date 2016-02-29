@@ -5,6 +5,6 @@ jdk:
   - oraclejdk7
   - oraclejdk8
 
-test:
+script:
   - ./gradlew test
   - ./gradlew checkstyleMain checkstyleTest
