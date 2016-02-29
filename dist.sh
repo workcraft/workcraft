@@ -8,6 +8,7 @@ dist_dir="dist"
 allplatforms="linux windows"
 platforms="all"
 bname="$(basename $0)"
+tag="$(git describe --tags)"
 
 usage() {
     cat <<EOF
@@ -32,6 +33,9 @@ for param in $*; do
         -h | --help)
             usage
             exit 0 ;;
+        -t | --tag)
+            tag="$2"
+            shift 2 ;;
     esac
 done
 
@@ -39,7 +43,7 @@ if [ ! -e "$core_dir/build" ]; then
     err "You need to run './gradlew assemble' first"
 fi
 
-if [ "$@" == "all" ]; then
+if [ -z "$@" ] || [ "$@" == "all" ]; then
     platforms="$allplatforms"
 else
     platforms="$@"
@@ -47,7 +51,7 @@ fi
 
 for platform in $platforms; do
 
-    dist_name="workcraft-$(git describe --tags)-$platform"
+    dist_name="workcraft-${tag}-${platform}"
     dist_path="$dist_dir/$dist_name"
     template_dir="dist-template/$platform"
 
