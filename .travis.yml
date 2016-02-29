@@ -8,3 +8,6 @@ jdk:
 script:
   - ./gradlew test
   - ./gradlew checkstyleMain checkstyleTest
+
+after_success:
+- ./gradlew jacocoTestReport coveralls
