@@ -17,11 +17,6 @@ Use the `assemble` task to build the core and all the plugins:
 
     $ ./gradlew assemble
 
-If Gradle complains about a missing `JAVA_HOME` env var even though it
-is set properly, the following may help in Debian-like systems:
-
-    $ sudo ln -s /usr/lib/jvm/your-jdk /usr/lib/jvm/default-java
-
 ### Running
 
 You can run Workcraft directly after building it:

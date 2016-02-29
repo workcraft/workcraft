@@ -120,3 +120,10 @@ may have several versions of Java installed with Java 1.7 being active
 system-wide. However, Eclipse may have a different version of Java set
 as its default. Check this under `Windows->Preferences->Java->Compiler`
 section.
+
+### Common issues
+
+If Gradle complains about a missing `JAVA_HOME` env var even though it
+is set properly, the following may help in Debian-like systems:
+
+    $ sudo ln -s /usr/lib/jvm/your-jdk /usr/lib/jvm/default-java
