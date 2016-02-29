@@ -1,5 +1,5 @@
 # ![Workcraft logo](logo.png)
-[![Build Status](https://travis-ci.org/tuura/workcraft.svg?branch=master)](https://travis-ci.org/tuura/workcraft)
+[![Build Status](https://travis-ci.org/tuura/workcraft.svg?branch=master)](https://travis-ci.org/tuura/workcraft) [![Coverage Status](https://coveralls.io/repos/github/tuura/workcraft/badge.svg?branch=master)](https://coveralls.io/github/tuura/workcraft?branch=master)
 
 Workcraft is a cross-platform toolset to capture, simulate, synthesize
 and verify graph models. It supports a wide range of popular graph
