@@ -24,10 +24,9 @@ is set properly, the following may help in Debian-like systems:
 
 ### Running
 
-The startup scripts will only work as part of a dist folder. You can run
-Workcraft directly after building the project via Gradle as follows:
+You can run Workcraft directly after building it:
 
-    $ java -cp "$(ls -1 */build/libs/*.jar | tr '\n' ':')" org.workcraft.Console
+    $ ./workcraft
 
 ### Miscellanious
 

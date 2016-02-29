@@ -1,0 +1,12 @@
+#!/bin/sh
+
+err() {
+    echo "Error: $@" >&2
+    exit 1
+}
+
+if [ ! -f WorkcraftCore/build/libs/WorkcraftCore.jar ]; then
+    err "run './gradlew assemble' first"
+fi
+
+java -cp "$(ls -1 */build/libs/*.jar | tr '\n' ':')" org.workcraft.Console
