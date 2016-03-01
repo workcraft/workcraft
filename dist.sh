@@ -2,7 +2,6 @@
 
 plugin_dirs="*Plugin/"
 core_dir="WorkcraftCore"
-core_files="LICENSE"
 dist_dir="dist"
 
 allplatforms="linux windows"
@@ -80,10 +79,6 @@ for platform in $platforms; do
 
     for d in doc/*; do
         cp -r $d $dist_path/
-    done
-
-    for f in $core_files; do
-        cp $f $dist_path/
     done
 
     cd $dist_dir/$platform
