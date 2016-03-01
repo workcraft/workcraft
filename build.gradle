@@ -62,7 +62,7 @@ subprojects {
     apply plugin: 'checkstyle'
 
     checkstyle {
-        toolVersion = "6.15"
+        toolVersion = "6.16"
         configFile file("${project.rootDir}/config/checkstyle/checkstyle.xml")
     }
     checkstyleMain.exclude '**/jj/**'
