@@ -51,8 +51,9 @@ fi
 
 for platform in $platforms; do
 
+    dist_rootdir="workcraft"
     dist_name="workcraft-${tag}-${platform}"
-    dist_path="$dist_dir/$dist_name"
+    dist_path="$dist_dir/$platform/$dist_rootdir"
     template_dir="dist-template/$platform"
 
     echo $dist_name
@@ -85,14 +86,14 @@ for platform in $platforms; do
         cp $f $dist_path/
     done
 
-    cd $dist_dir
+    cd $dist_dir/$platform
     case $platform in
         windows)
-            7z a -r ${dist_name}.zip $dist_name >/dev/null
+            7z a -r ${dist_name}.zip $dist_rootdir >/dev/null
             ;;
         linux)
-            tar -czf ${dist_name}.tar.gz $dist_name
+            tar -czf ${dist_name}.tar.gz $dist_rootdir
             ;;
     esac
-    cd ..
+    cd ../..
 done
