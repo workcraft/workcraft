@@ -12,7 +12,7 @@ options {
 }
 
 PARSER_BEGIN(ExpressionParser)
-package org.workcraft.plugins.circuit.jj;
+package org.workcraft.plugins.circuit.jj.expression;
 
 import java.util.HashSet;
 import java.util.HashMap;

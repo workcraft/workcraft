@@ -12,7 +12,7 @@ options {
 }
 
 PARSER_BEGIN(GenlibParser)
-package org.workcraft.plugins.circuit.jj;
+package org.workcraft.plugins.circuit.jj.genlib;
 
 import java.util.HashSet;
 import java.util.HashMap;
