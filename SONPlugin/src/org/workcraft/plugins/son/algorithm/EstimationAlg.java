@@ -38,7 +38,7 @@ public class EstimationAlg extends TimeAlg {
     protected final Interval defaultDuration;
     protected TimeGranularity granularity = null;
     protected ScenarioRef scenario;
-    private Before before;
+    protected Before before;
     protected Granularity g;
     protected Color color = Color.ORANGE;
     private Collection<Path> fwdPaths = new ArrayList<>();
