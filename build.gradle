@@ -73,4 +73,6 @@ subprojects {
             html.enabled = true
         }
     }
+
+    apply plugin: 'eclipse'
 }

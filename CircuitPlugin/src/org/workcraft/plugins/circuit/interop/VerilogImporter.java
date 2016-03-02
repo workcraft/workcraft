@@ -60,10 +60,9 @@ import org.workcraft.plugins.circuit.genlib.Function;
 import org.workcraft.plugins.circuit.genlib.Gate;
 import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.Library;
-import org.workcraft.plugins.circuit.jj.ExpressionParser;
-import org.workcraft.plugins.circuit.jj.GenlibParser;
-import org.workcraft.plugins.circuit.jj.ParseException;
-import org.workcraft.plugins.circuit.jj.VerilogParser;
+import org.workcraft.plugins.circuit.jj.expression.ExpressionParser;
+import org.workcraft.plugins.circuit.jj.genlib.GenlibParser;
+import org.workcraft.plugins.circuit.jj.verilog.VerilogParser;
 import org.workcraft.plugins.circuit.verilog.Assign;
 import org.workcraft.plugins.circuit.verilog.Instance;
 import org.workcraft.plugins.circuit.verilog.Module;
@@ -156,7 +155,7 @@ public class VerilogImporter implements Importer {
             return circuit;
         } catch (FormatException e) {
             throw new DeserialisationException(e);
-        } catch (ParseException e) {
+        } catch (org.workcraft.plugins.circuit.jj.verilog.ParseException e) {
             throw new DeserialisationException(e);
         }
     }
@@ -378,7 +377,7 @@ public class VerilogImporter implements Importer {
         Expression expression = null;
         try {
             expression = expressionParser.parseExpression();
-        } catch (ParseException e1) {
+        } catch (org.workcraft.plugins.circuit.jj.expression.ParseException e1) {
             LogUtils.logWarningLine("Could not parse assign expression '" + formula + "'.");
         }
         return expression;
@@ -404,7 +403,7 @@ public class VerilogImporter implements Importer {
                     library = genlibParser.parseGenlib();
                     LogUtils.logInfoLine("Mapping the imported Verilog into the gate library '" + libraryFileName + "'.");
                 } catch (FileNotFoundException e) {
-                } catch (ParseException e) {
+                } catch (org.workcraft.plugins.circuit.jj.genlib.ParseException e) {
                     LogUtils.logWarningLine("Could not parse the gate library '" + libraryFileName + "'.");
                 }
             }
@@ -611,7 +610,7 @@ public class VerilogImporter implements Importer {
         }
     }
 
-    private HashMap<String, Module> getModuleMap(List<Module> modules) throws ParseException {
+    private HashMap<String, Module> getModuleMap(List<Module> modules) throws org.workcraft.plugins.circuit.jj.verilog.ParseException {
         HashMap<String, Module> result = new HashMap<>();
         for (Module module: modules) {
             if ((module == null) || (module.name == null)) continue;
