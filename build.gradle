@@ -24,6 +24,7 @@ subprojects {
         main {
             java {
                 srcDir 'src'
+                srcDir 'src-gen'
             }
             resources {
                 srcDir 'res'
@@ -46,6 +47,7 @@ subprojects {
 
     compileJavacc {
         inputDirectory = file('javacc')
+        outputDirectory = file('src-gen')
         include '**/*.jj'
         arguments = [grammar_encoding: 'UTF-8', static: 'false']
     }
