@@ -41,7 +41,7 @@ public class CheckDataflowTask extends MpsatChainTask {
 
         this.hazardSettings = new MpsatSettings("Output persistency", MpsatMode.STG_REACHABILITY, 0,
                 MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
-                MpsatSettings.reachSemimodularity, true);
+                MpsatSettings.REACH_SEMIMODULARITY, true);
     }
 
     @Override

@@ -1,25 +1,25 @@
 package org.workcraft.plugins.mpsat.tools;
 
 import org.workcraft.plugins.mpsat.MpsatSettings;
-import org.workcraft.plugins.petri.PetriNetModel;
+import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class MpsatDeadlockChecker extends AbstractMpsatChecker  {
+public class MpsatOutputPersistencyChecker extends AbstractMpsatChecker {
 
     @Override
     public String getDisplayName() {
-        return "Deadlock freeness [MPSat]";
+        return "Output persistency (without dummies) [MPSat]";
     }
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.canHas(we, PetriNetModel.class);
+        return WorkspaceUtils.canHas(we, STGModel.class);
     }
 
     @Override
     public int getPriority() {
-        return 4;
+        return 2;
     }
 
     @Override
@@ -29,7 +29,7 @@ public class MpsatDeadlockChecker extends AbstractMpsatChecker  {
 
     @Override
     public MpsatSettings getSettings() {
-        return MpsatSettings.getDeadlockSettings();
+        return MpsatSettings.getOutputPersistencySettings();
     }
 
 }

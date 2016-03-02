@@ -15,7 +15,7 @@ public class MpsatCombinedChecker extends VerificationTool {
 
     @Override
     public String getDisplayName() {
-        return "Consistency, deadlock freenes and output persistency (reuse unfolding) [MPSat]";
+        return "Consistency, deadlock freenes, input properness and output persistency (reuse unfolding) [MPSat]";
     }
 
     @Override
@@ -38,7 +38,8 @@ public class MpsatCombinedChecker extends VerificationTool {
         final ArrayList<MpsatSettings> settingsList = new ArrayList<>();
         settingsList.add(MpsatSettings.getConsistencySettings());
         settingsList.add(MpsatSettings.getDeadlockSettings());
-        settingsList.add(MpsatSettings.getPersistencySettings());
+        settingsList.add(MpsatSettings.getOutputPersistencySettings());
+        settingsList.add(MpsatSettings.getInputPropernessSettings());
 
         final MpsatCombinedChainTask mpsatTask = new MpsatCombinedChainTask(we, settingsList);
 
