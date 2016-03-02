@@ -11,13 +11,14 @@ tag="$(git describe --tags)"
 
 usage() {
     cat <<EOF
-$bname: create a distribution for Workcraft
+$bname: create a distribution for Workcraft as workcraft-tag-platform archive
 
-Usage: $bname [platforms] [-h]
+Usage: $bname [platforms] [-t TAG] [-h]
 
-  platforms:  distribution platforms to build
-                $allplatforms all (default: all)
-  -h, --help: print this help
+  platforms:     distribution platforms to build
+                 $allplatforms all (default: all)
+  -t, --tag TAG: user-defined tag (git tag is used by default)
+  -h, --help:    print this help
 EOF
 }
 
@@ -55,7 +56,7 @@ for platform in $platforms; do
     dist_path="$dist_dir/$platform/$dist_rootdir"
     template_dir="dist-template/$platform"
 
-    echo $dist_name
+    echo "Building ${dist_name}..."
 
     if [ ! -d "$template_dir" ]; then
         err "Template directory not found: $template_dir"
