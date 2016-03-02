@@ -1,9 +1,0 @@
-#Sat Jul 10 14:38:46 BST 2010
-CLEAR_CONSOLE=true
-JAVACC_OPTIONS=
-JJDOC_OPTIONS=
-JJTREE_OPTIONS=
-JJ_NATURE=true
-JTB_OPTIONS=-ia -jd -tk
-SUPPRESS_WARNINGS=true
-eclipse.preferences.version=1
