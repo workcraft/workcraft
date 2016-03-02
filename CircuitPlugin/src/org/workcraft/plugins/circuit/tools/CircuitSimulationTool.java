@@ -1,6 +1,7 @@
 package org.workcraft.plugins.circuit.tools;
 
 import java.awt.Color;
+import java.util.HashSet;
 
 import org.workcraft.Trace;
 import org.workcraft.dom.Container;
@@ -115,7 +116,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
         if (model instanceof Circuit) {
             editor.getWorkspaceEntry().saveMemento();
             Circuit circuit = (Circuit) model;
-            for (FunctionContact contact : circuit.getFunctionContacts()) {
+            for (FunctionContact contact: circuit.getFunctionContacts()) {
                 String contactName = CircuitUtils.getSignalName(circuit, contact);
                 String ref = contactName + CircuitToStgConverter.NAME_SUFFIX_1;
                 Node node = net.getNodeByReference(ref);
@@ -145,16 +146,15 @@ public class CircuitSimulationTool extends StgSimulationTool {
         }
     }
 
-    // return first enabled transition
-    public SignalTransition getContactExcitedTransition(VisualContact contact) {
-        SignalTransition result = null;
+    // Return all enabled transitions associated with the contact
+    public HashSet<SignalTransition> getContactExcitedTransitions(VisualContact contact) {
+        HashSet<SignalTransition> result = new HashSet<>();
         if ((converter != null) && contact.isDriver()) {
             SignalStg signalStg = converter.getSignalStg(contact);
             if (signalStg != null) {
-                for (VisualSignalTransition transition : signalStg.getAllTransitions()) {
+                for (VisualSignalTransition transition: signalStg.getAllTransitions()) {
                     if (net.isEnabled(transition.getReferencedTransition())) {
-                        result = transition.getReferencedTransition();
-                        break;
+                        result.add(transition.getReferencedTransition());
                     }
                 }
             }
@@ -172,10 +172,17 @@ public class CircuitSimulationTool extends StgSimulationTool {
                     }
                 });
 
-        if (node != null) {
-            SignalTransition st = getContactExcitedTransition((VisualContact) node);
-            if (st != null) {
-                executeTransition(e.getEditor(), st);
+        if (node instanceof VisualContact) {
+            HashSet<SignalTransition> transitions = getContactExcitedTransitions((VisualContact) node);
+            SignalTransition transition = null;
+            Node traceCurrentNode = getTraceCurrentNode();
+            if (transitions.contains(traceCurrentNode)) {
+                transition = (SignalTransition) traceCurrentNode;
+            } else if (!transitions.isEmpty()) {
+                transition = transitions.iterator().next();
+            }
+            if (transition != null) {
+                executeTransition(e.getEditor(), transition);
             }
         }
     }
@@ -186,8 +193,8 @@ public class CircuitSimulationTool extends StgSimulationTool {
         boolean ret = false;
         for (Node node: container.getChildren()) {
             if (node instanceof VisualContact) {
-                SignalTransition transition = getContactExcitedTransition((VisualContact) node);
-                ret = ret || (transition != null);
+                HashSet<SignalTransition> transitions = getContactExcitedTransitions((VisualContact) node);
+                ret = ret || !transitions.isEmpty();
             }
             if (node instanceof Container) {
                 ret = ret || isContainerExcited((Container) node);
@@ -220,7 +227,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
                         boolean isInverting = signalStgAndInversion.getSecond();
                         final boolean isOne = (signalStg.one.getReferencedPlace().getTokens() == 1) != isInverting;
                         final boolean isZero = (signalStg.zero.getReferencedPlace().getTokens() == 1) != isInverting;
-                        final boolean isExcited = (getContactExcitedTransition(contact) != null) && !isZeroDelay;
+                        final boolean isExcited = !getContactExcitedTransitions(contact).isEmpty() && !isZeroDelay;
                         final boolean isInTrace = signalStg.contains(traceCurrentNode) && !isZeroDelay;
                         return new Decoration() {
                                 @Override
