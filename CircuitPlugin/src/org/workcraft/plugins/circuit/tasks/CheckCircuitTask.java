@@ -46,7 +46,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 
     private final MpsatSettings hazardSettings = new MpsatSettings("Output persistency",
             MpsatMode.STG_REACHABILITY, 0, MpsatUtilitySettings.getSolutionMode(),
-            MpsatUtilitySettings.getSolutionCount(), MpsatSettings.reachSemimodularity, true);
+            MpsatUtilitySettings.getSolutionCount(), MpsatSettings.REACH_SEMIMODULARITY, true);
 
     private final WorkspaceEntry we;
     private final boolean checkConformation;

@@ -16,7 +16,7 @@ public class MpsatBuiltinPresets {
     public static final Preset<MpsatSettings> CONSISTENCY_CHECKER = new Preset<>(
             "Consistency", new MpsatSettings("Consistency",
                     MpsatMode.STG_REACHABILITY, 0, SolutionMode.MINIMUM_COST, 0,
-                    MpsatSettings.reachConsistency, true), true);
+                    MpsatSettings.REACH_CONSISTENCY, true), true);
 
     public static final Preset<MpsatSettings> NORMALCY_CHECKER = new Preset<>(
             "Normalcy", new MpsatSettings("Normalcy",
@@ -25,6 +25,6 @@ public class MpsatBuiltinPresets {
     public static final Preset<MpsatSettings> PERSISTENCY_CHECKER = new Preset<>(
             "Output persistency (without dummies)", new MpsatSettings("Output persistency",
                     MpsatMode.STG_REACHABILITY, 0, SolutionMode.MINIMUM_COST, 0,
-                    MpsatSettings.reachSemimodularity, true), true);
+                    MpsatSettings.REACH_SEMIMODULARITY, true), true);
 
 }

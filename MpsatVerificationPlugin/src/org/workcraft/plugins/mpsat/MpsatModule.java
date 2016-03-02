@@ -12,7 +12,8 @@ import org.workcraft.plugins.mpsat.tools.MpsatConsistencyChecker;
 import org.workcraft.plugins.mpsat.tools.MpsatCscChecker;
 import org.workcraft.plugins.mpsat.tools.MpsatCustomPropertyChecker;
 import org.workcraft.plugins.mpsat.tools.MpsatDeadlockChecker;
-import org.workcraft.plugins.mpsat.tools.MpsatPersistencyChecker;
+import org.workcraft.plugins.mpsat.tools.MpsatInputPropernessChecker;
+import org.workcraft.plugins.mpsat.tools.MpsatOutputPersistencyChecker;
 import org.workcraft.plugins.mpsat.tools.MpsatUscChecker;
 
 public class MpsatModule implements Module {
@@ -23,10 +24,10 @@ public class MpsatModule implements Module {
         PluginManager pm = framework.getPluginManager();
 
         pm.registerClass(Tool.class, CscResolutionTool.class);
-        pm.registerClass(Tool.class, MpsatDeadlockChecker.class);
         pm.registerClass(Tool.class, MpsatConsistencyChecker.class);
-        pm.registerClass(Tool.class, MpsatPersistencyChecker.class);
-//        pm.registerClass(Tool.class, MpsatNormalcyChecker.class);
+        pm.registerClass(Tool.class, MpsatDeadlockChecker.class);
+        pm.registerClass(Tool.class, MpsatInputPropernessChecker.class);
+        pm.registerClass(Tool.class, MpsatOutputPersistencyChecker.class);
         pm.registerClass(Tool.class, MpsatCscChecker.class);
         pm.registerClass(Tool.class, MpsatUscChecker.class);
         pm.registerClass(Tool.class, MpsatConformationChecker.class);
@@ -39,4 +40,5 @@ public class MpsatModule implements Module {
     public String getDescription() {
         return "MPSat verification support";
     }
+
 }

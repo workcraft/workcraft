@@ -45,7 +45,7 @@ public class MpsatSettings {
     private final boolean inversePredicate;
 
     // Reach expression for checking signal consistency
-    public static final String reachConsistency =
+    public static final String REACH_CONSISTENCY =
             "exists s in SIGNALS \\ DUMMY {\n" +
             "    let Es = ev s {\n" +
             "        $s & exists e in Es s.t. is_plus e { @e }\n" +
@@ -55,7 +55,7 @@ public class MpsatSettings {
             "}\n";
 
     // Reach expression for checking semimodularity (output persistency)
-    public static final String reachSemimodularity =
+    public static final String REACH_SEMIMODULARITY =
             "card DUMMY != 0 ? fail \"Output persistency can currently be checked only for STGs without dummies\" :\n" +
             "    exists t1 in tran EVENTS s.t. sig t1 in LOCAL {\n" +
             "        @t1 &\n" +
@@ -67,54 +67,74 @@ public class MpsatSettings {
             "        }\n" +
             "    }\n";
 
+    // Reach expression for checking input properness (no input signal becomes enabled or disabled by the occurrence of internal signal)
+    public static final String REACH_INPUT_PROPERNESS =
+            "card DUMMY != 0 ? fail \"Input properness can currently be checked only for STGs without dummies\" :\n" +
+            "let TR = tran EVENTS, TRI = tran INPUTS * TR {\n" +
+            "    exists t1 in tran INTERNAL * TR {\n" +
+            "        @t1 &\n" +
+            "        (\n" +
+                         // Check if some input t2 can be triggered by t1
+            "            exists t2 in post (post t1 \\ pre t1) s.t. t2 in TRI {\n" +
+            "                ~@sig t2 &\n" +
+            "                forall p in pre t2 \\ post t1 { $p }\n" +
+            "            }\n" +
+            "            |\n" +
+                         // Check if some input t2 can be disabled by t1
+            "            exists t2 in post (pre t1 \\ post t1) s.t. t2 in TRI {\n" +
+            "                @t2 &\n" +
+            "                forall t3 in (tran sig t2 \\ {t2}) * TR s.t. card (pre t3 * (pre t1 \\ post t1)) = 0 {\n" +
+            "                    exists p in pre t3 \\ post t1 { ~$p }\n" +
+            "                }\n" +
+            "            }\n" +
+            "        )\n" +
+            "    }\n" +
+            "}\n";
+
     // Reach expression for checking conformation (this is a template, the list of places needs to be updated for each circuit)
-    private static final String reachConformationDevPlaces = "// insert device place names here"; // For example: "p0", "<a-,b+>"
-/*
-            "    PDEV_NAMES={ \"GUID\", \n" +
-            "        "  + reachConformationDevPlaces + "\n" +
-            "    } \\ {\"GUID\"},\n" +
-*/
-    private static final String reachConformation =
+    private static final String REACH_CONFORMATION_DEV_PLACES = "// insert device place names here"; // For example: "p0", "<a-,b+>"
+
+    private static final String REACH_CONFORMATION =
             // LIMITATIONS (could be checked before parallel composition):
             // - The set of device STG place names is non-empty (this limitation can be easily removed).
             // - Each transition in the device STG must have some arcs, i.e. its preset or postset is non-empty.
             // - The device STG must have no dummies.
             "let\n" +
-                // PDEV_NAMES is the set of names of places in the composed STG which originated from the device STG.
-                // This set may in fact contain places from the environment STG, e.g. when PCOMP removes duplicate
-                // places from the composed STG, it substitutes them with equivalent places that remain.
-                // LIMITATION: syntax error if any of these sets is empty.
+                 // PDEV_NAMES is the set of names of places in the composed STG which originated from the device STG.
+                 // This set may in fact contain places from the environment STG, e.g. when PCOMP removes duplicate
+                 // places from the composed STG, it substitutes them with equivalent places that remain.
+                 // LIMITATION: syntax error if any of these sets is empty.
             "    PDEV_NAMES={\n" +
-            "        "  + reachConformationDevPlaces + "\n" +
+            "        "  + REACH_CONFORMATION_DEV_PLACES + "\n" +
             "    },\n" +
-                  // PDEV is the set of places with the names in PDEV_NAMES.
-                  // XML-based PUNF / MPSAT are needed here to process dead places correctly.
+                 // PDEV is the set of places with the names in PDEV_NAMES.
+                 // XML-based PUNF / MPSAT are needed here to process dead places correctly.
             "    PDEV=gather nm in PDEV_NAMES { P nm },\n" +
-                  // PDEV_EXT includes PDEV and places with the same preset and postset ignoring context as some place in PDEV
-              "    PDEV_EXT=gather p in PLACES s.t.\n" +
-              "        p in PDEV\n" +
-              "        |\n" +
-              "        let pre_p=pre p, post_p=post p, s_pre_p=pre_p \\ post_p, s_post_p=post_p \\ pre_p {\n" +
-              "            exists q in PDEV {\n" +
-              "                let pre_q=pre q, post_q=post q {\n" +
-              "                    pre_q \\ post_q=s_pre_p & post_q \\ pre_q=s_post_p\n" +
-              "                }\n" +
-              "            }\n" +
-              "        }\n" +
-              "    { p },\n" +
-                  // TDEV is the set of device transitions.
-                // XML-based PUNF / MPSAT are needed here to process dead transitions correctly.
-                // LIMITATION: each transition in the device must have some arcs, i.e. its preset or postset is non-empty.
-              "    TDEV=tran sig (pre PDEV + post PDEV)\n" +
-              "{\n" +
-                // The device STG must have no dummies.
+                 // PDEV_EXT includes PDEV and places with the same preset and postset ignoring context as some place in PDEV
+            "    PDEV_EXT=gather p in PLACES s.t.\n" +
+            "        p in PDEV\n" +
+            "        |\n" +
+            "        let pre_p=pre p, post_p=post p, s_pre_p=pre_p \\ post_p, s_post_p=post_p \\ pre_p {\n" +
+            "            exists q in PDEV {\n" +
+            "                let pre_q=pre q, post_q=post q {\n" +
+            "                    pre_q \\ post_q=s_pre_p & post_q \\ pre_q=s_post_p\n" +
+            "                }\n" +
+            "            }\n" +
+            "        }\n" +
+            "    { p },\n" +
+                 // TDEV is the set of device transitions.
+                 // XML-based PUNF / MPSAT are needed here to process dead transitions correctly.
+                 // LIMITATION: each transition in the device must have some arcs, i.e. its preset or postset is non-empty.
+            "    TDEV=tran sig (pre PDEV + post PDEV)\n" +
+            "{\n" +
+                 // The device STG must have no dummies.
             "    card (sig TDEV * DUMMY) != 0 ? fail \"Conformance can currently be checked only for device STGs without dummies\" :\n" +
             "    exists t in TDEV s.t. is_output t {\n" +
-                      // Check if t is enabled in the device STG.
-                      // LIMITATION: The device STG must have no dummies (this limitation is checked above.)
+                     // Check if t is enabled in the device STG.
+                     // LIMITATION: The device STG must have no dummies (this limitation is checked above.)
             "        forall p in pre t s.t. p in PDEV_EXT { $p }\n" +
             "        &\n" +
-                    // Check if t is enabled in the composed STG (and thus in the environment STG).
+                     // Check if t is enabled in the composed STG (and thus in the environment STG).
             "        ~@ sig t\n" +
             "    }\n" +
             "}\n";
@@ -124,7 +144,7 @@ public class MpsatSettings {
     // may disappear from unfolding), therefore the conformation property cannot be checked reliably.
     public static String genReachConformation(Set<String> devOutputNames, Set<String> devPlaceNames) {
         String devPlaceList = genNameList(devPlaceNames);
-        return reachConformation.replaceFirst(reachConformationDevPlaces, devPlaceList);
+        return REACH_CONFORMATION.replaceFirst(REACH_CONFORMATION_DEV_PLACES, devPlaceList);
     }
 
     private static String genNameList(Collection<String> names) {
@@ -228,7 +248,7 @@ public class MpsatSettings {
     public static MpsatSettings getConsistencySettings() {
         return new MpsatSettings("Consistency", MpsatMode.STG_REACHABILITY, 0,
                 MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
-                MpsatSettings.reachConsistency, true);
+                MpsatSettings.REACH_CONSISTENCY, true);
     }
 
     public static MpsatSettings getDeadlockSettings() {
@@ -237,10 +257,16 @@ public class MpsatSettings {
         return deadlockSettings;
     }
 
-    public static MpsatSettings getPersistencySettings() {
+    public static MpsatSettings getOutputPersistencySettings() {
         return new MpsatSettings("Output persistency", MpsatMode.STG_REACHABILITY, 0,
                 MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
-                MpsatSettings.reachSemimodularity, true);
+                MpsatSettings.REACH_SEMIMODULARITY, true);
+    }
+
+    public static MpsatSettings getInputPropernessSettings() {
+        return new MpsatSettings("Input properness", MpsatMode.STG_REACHABILITY, 0,
+                MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
+                MpsatSettings.REACH_INPUT_PROPERNESS, true);
     }
 
     public static MpsatSettings getCscSettings() {

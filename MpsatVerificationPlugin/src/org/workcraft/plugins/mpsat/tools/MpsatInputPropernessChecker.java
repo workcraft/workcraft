@@ -5,11 +5,11 @@ import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class MpsatPersistencyChecker extends AbstractMpsatChecker {
+public class MpsatInputPropernessChecker extends AbstractMpsatChecker {
 
     @Override
     public String getDisplayName() {
-        return "Output persistency (without dummies) [MPSat]";
+        return "Input properness (without dummies) [MPSat]";
     }
 
     @Override
@@ -19,7 +19,7 @@ public class MpsatPersistencyChecker extends AbstractMpsatChecker {
 
     @Override
     public int getPriority() {
-        return 2;
+        return 3;
     }
 
     @Override
@@ -29,7 +29,7 @@ public class MpsatPersistencyChecker extends AbstractMpsatChecker {
 
     @Override
     public MpsatSettings getSettings() {
-        return MpsatSettings.getPersistencySettings();
+        return MpsatSettings.getInputPropernessSettings();
     }
 
 }
