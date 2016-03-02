@@ -60,6 +60,13 @@ $ cd workspace
 $ git clone git@github.com:tuura/workcraft.git
 ```
 
+* Generate Java parser classes from JavaCC grammar files:
+
+```
+$ cd workcraft
+$ ./gradlew compileJavacc
+```
+
 * Install [Buildship Gradle Integration](https://marketplace.eclipse.org/content/buildship-gradle-integration)
   plugin in Eclipse via the `Help->Instal New Software...` menu.
 
