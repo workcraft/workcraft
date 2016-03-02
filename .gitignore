@@ -16,8 +16,4 @@ dist/
 bin/
 
 # Generated source files
-CircuitPlugin/src-gen/
-CpogsPlugin/src-gen/
-FstPlugin/src-gen/
-STGPlugin/src-gen/
-WorkcraftCore/src-gen/
+src-gen/
