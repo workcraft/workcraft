@@ -10,4 +10,4 @@ script:
   - ./gradlew checkstyleMain checkstyleTest
 
 after_success:
-- ./gradlew jacocoTestReport coveralls
+  - ./gradlew coveralls
