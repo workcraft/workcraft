@@ -58,8 +58,8 @@ public class ExternalProcess {
                     buffer.get(data);
                     handleData(data);
                 } catch (IOException e) {
-//                    e.printStackTrace(); -- This exception is mostly caused by the process termination and spams the user with information about exceptions that should
-                    //                        just be ignored, so removed printing. mech.
+                    // This exception is mostly caused by the process termination and spams the user with
+                    // information about exceptions that should just be ignored, so removed printing. mech.
                     return;
                 }
             }
@@ -87,10 +87,20 @@ public class ExternalProcess {
     }
 
     class WaiterThread extends Thread {
+        final private InputReaderThread inputReaderThread;
+        final private ErrorReaderThread errorReaderThread;
+
+        WaiterThread(InputReaderThread inputReaderThread, ErrorReaderThread errorReaderThread) {
+            this.inputReaderThread = inputReaderThread;
+            this.errorReaderThread = errorReaderThread;
+        }
+
         @Override
         public void run() {
             try {
                 process.waitFor();
+                inputReaderThread.join();
+                errorReaderThread.join();
                 processFinished();
             } catch (InterruptedException e) {
             }
@@ -150,9 +160,12 @@ public class ExternalProcess {
         if (outputStream == null) {
             throw new RuntimeException("No output stream!");
         }
-        new InputReaderThread().start();
-        new ErrorReaderThread().start();
-        new WaiterThread().start();
+        InputReaderThread inputReaderThread = new InputReaderThread();
+        ErrorReaderThread errorReaderThread = new ErrorReaderThread();
+        WaiterThread waiterTread = new WaiterThread(inputReaderThread, errorReaderThread);
+        inputReaderThread.start();
+        errorReaderThread.start();
+        waiterTread.start();
     }
 
     public void cancel() {
