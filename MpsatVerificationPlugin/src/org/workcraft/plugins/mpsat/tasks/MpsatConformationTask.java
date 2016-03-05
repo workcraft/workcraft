@@ -141,10 +141,6 @@ public class MpsatConformationTask extends MpsatChainTask {
             byte[] palcesList = FileUtils.readAllBytes(placesFile);
             Set<String> devPlaceNames = parsePlaceNames(palcesList, 0);
             String reachConformation = MpsatSettings.genReachConformation(devOutputNames, devPlaceNames);
-            if (MpsatUtilitySettings.getDebugReach()) {
-                System.out.println("\nReach expression for the interface conformation property:");
-                System.out.println(reachConformation);
-            }
             MpsatSettings conformationSettings = new MpsatSettings("Interface conformance",
                     MpsatMode.STG_REACHABILITY, 0, MpsatUtilitySettings.getSolutionMode(),
                     MpsatUtilitySettings.getSolutionCount(), reachConformation, true);
