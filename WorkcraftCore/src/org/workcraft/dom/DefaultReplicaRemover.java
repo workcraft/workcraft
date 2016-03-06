@@ -21,6 +21,7 @@
 
 package org.workcraft.dom;
 
+import java.util.Collection;
 import java.util.HashSet;
 
 import org.workcraft.dom.visual.Replica;
@@ -41,7 +42,8 @@ public class DefaultReplicaRemover extends HierarchySupervisor {
     @Override
     public void handleEvent(final HierarchyEvent e) {
         if (e instanceof NodesDeletedEvent) {
-            for (Node node : e.getAffectedNodes()) {
+            Collection<Node> affectedNodes = e.getAffectedNodes();
+            for (Node node : affectedNodes) {
                 // Update a master node if its replicas are being deleted (even deeper in hierarchy)
                 for (Replica replica: Hierarchy.getDescendantsOfType(node, Replica.class)) {
                     updateReplicable(replica);
@@ -49,7 +51,6 @@ public class DefaultReplicaRemover extends HierarchySupervisor {
                 if (node instanceof Replica) {
                     updateReplicable((Replica) node);
                 }
-
                 // Remove replicas if the master node is being deleted (even deeper in hierarchy)
                 for (Replicable replicable: Hierarchy.getDescendantsOfType(node, Replicable.class)) {
                     removeReplicas(replicable);
@@ -58,19 +59,23 @@ public class DefaultReplicaRemover extends HierarchySupervisor {
                     removeReplicas((Replicable) node);
                 }
             }
-        }
-        if (e instanceof NodesDeletedEvent) {
-            for (Node node : e.getAffectedNodes()) {
+            for (Node node : affectedNodes) {
                 // Remove a replica if all its connections have been removed
-                if (node instanceof Connection)     {
+                if (node instanceof Connection) {
                     Connection connection = (Connection) node;
-                    Node first = connection.getFirst();
-                    Node second = connection.getSecond();
-                    if ((first instanceof Replica) && (nct.getConnections(first).size() <= 1)) {
-                        removeReplica((Replica) first);
+                    Node replica = null;
+                    if (connection.getFirst() instanceof Replica) {
+                        replica = connection.getFirst();
                     }
-                    if ((second instanceof Replica) && (nct.getConnections(second).size() <= 1)) {
-                        removeReplica((Replica) second);
+                    if (connection.getSecond() instanceof Replica) {
+                        replica = connection.getSecond();
+                    }
+                    if (replica instanceof Replica) {
+                        HashSet<Connection> connections = new HashSet<>(nct.getConnections(replica));
+                        connections.removeAll(affectedNodes);
+                        if (connections.isEmpty()) {
+                            removeReplica((Replica) replica);
+                        }
                     }
                 }
                 if (node instanceof Replicable) {
