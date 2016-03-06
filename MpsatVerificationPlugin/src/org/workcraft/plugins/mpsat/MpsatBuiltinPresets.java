@@ -25,6 +25,6 @@ public class MpsatBuiltinPresets {
     public static final Preset<MpsatSettings> PERSISTENCY_CHECKER = new Preset<>(
             "Output persistency (without dummies)", new MpsatSettings("Output persistency",
                     MpsatMode.STG_REACHABILITY, 0, SolutionMode.MINIMUM_COST, 0,
-                    MpsatSettings.REACH_SEMIMODULARITY, true), true);
+                    MpsatSettings.REACH_OUTPUT_PERSISTENCY, true), true);
 
 }

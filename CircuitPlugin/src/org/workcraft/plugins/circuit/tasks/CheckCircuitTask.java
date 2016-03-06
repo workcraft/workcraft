@@ -46,7 +46,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 
     private final MpsatSettings hazardSettings = new MpsatSettings("Output persistency",
             MpsatMode.STG_REACHABILITY, 0, MpsatUtilitySettings.getSolutionMode(),
-            MpsatUtilitySettings.getSolutionCount(), MpsatSettings.REACH_SEMIMODULARITY, true);
+            MpsatUtilitySettings.getSolutionCount(), MpsatSettings.REACH_OUTPUT_PERSISTENCY, true);
 
     private final WorkspaceEntry we;
     private final boolean checkConformation;
@@ -244,10 +244,6 @@ public class CheckCircuitTask extends MpsatChainTask {
             if (checkHazard) {
                 MpsatTask mpsatHazardTask = new MpsatTask(hazardSettings.getMpsatArguments(directory),
                         unfoldingFile.getAbsolutePath(), directory, true);
-                if (MpsatUtilitySettings.getDebugReach()) {
-                    System.out.println("\nReach expression for the hazard property:");
-                    System.out.println(hazardSettings.getReach());
-                }
                 SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
                 Result<? extends ExternalProcessResult>  mpsatHazardResult = framework.getTaskManager().execute(
                         mpsatHazardTask, "Running hazard check [MPSat]", mpsatMonitor);
