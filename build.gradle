@@ -80,6 +80,10 @@ subprojects {
     }
     checkstyleMain.exclude '**/jj/**'
 
+    def checkstyleTasks = tasks.withType(Checkstyle)
+
+    task checkstyle(dependsOn: checkstyleTasks)
+
     cpd {
         toolVersion = cpdVersion
         minimumTokenCount = 2000
