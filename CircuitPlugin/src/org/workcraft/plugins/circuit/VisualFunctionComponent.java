@@ -389,6 +389,13 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
     }
 
     @Override
+    protected void drawNameInLocalSpace(DrawRequest r) {
+        if (!getIsZeroDelay() || CircuitSettings.getShowZeroDelayNames()) {
+            super.drawNameInLocalSpace(r);
+        }
+    }
+
+    @Override
     public void add(Node node) {
         super.add(node);
         if (node instanceof VisualContact) {
