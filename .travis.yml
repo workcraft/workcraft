@@ -7,7 +7,7 @@ jdk:
 
 script:
   - ./gradlew test
-  - ./gradlew checkstyleMain checkstyleTest
+  - if [ "$TRAVIS_JDK_VERSION" == "openjdk7" ]; then ./gradlew checkstyle; fi
 
 after_success:
-- ./gradlew jacocoTestReport coveralls
+  - if [ "$TRAVIS_JDK_VERSION" == "openjdk7" ]; then ./gradlew coveralls; fi

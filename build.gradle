@@ -9,6 +9,16 @@ buildscript {
     }
 }
 
+repositories {
+    jcenter()
+}
+
+ext {
+    checkstyleVersion = '6.16'
+    cpdVersion = '5.4.1'
+    jacocoVersion = '0.7.6.201602180812'
+}
+
 subprojects {
     repositories {
         jcenter()
@@ -18,7 +28,8 @@ subprojects {
     apply plugin: 'ca.coglinc.javacc'
     apply plugin: 'cpd'
     apply plugin: 'jacoco'
-    apply plugin: 'com.github.kt3k.coveralls'
+
+    apply plugin: 'eclipse'
 
     sourceCompatibility = 1.7
 
@@ -64,13 +75,17 @@ subprojects {
     apply plugin: 'checkstyle'
 
     checkstyle {
-        toolVersion = "6.16"
+        toolVersion = checkstyleVersion
         configFile file("${project.rootDir}/config/checkstyle/checkstyle.xml")
     }
     checkstyleMain.exclude '**/jj/**'
 
+    def checkstyleTasks = tasks.withType(Checkstyle)
+
+    task checkstyle(dependsOn: checkstyleTasks)
+
     cpd {
-        toolVersion = '5.4.1'
+        toolVersion = cpdVersion
         minimumTokenCount = 2000
     }
 
@@ -83,12 +98,61 @@ subprojects {
     }
     cpdCheck.exclude '**/jj/**'
 
-    jacocoTestReport {
-        reports {
-            xml.enabled = true // coveralls plugin depends on xml format report
-            html.enabled = true
-        }
+    jacoco {
+        toolVersion = jacocoVersion
     }
 
-    apply plugin: 'eclipse'
+    jacocoTestReport {
+        reports {
+            xml.enabled = true
+            html.enabled = false
+        }
+    }
+}
+
+apply plugin: 'jacoco'
+apply plugin: 'com.github.kt3k.coveralls'
+
+def coverallsProjects = subprojects.findAll {
+    it.name == 'WorkcraftCore' ||
+    it.name == 'PetriNetPlugin' ||
+    it.name == 'STGPlugin'
+}
+
+task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
+    dependsOn(coverallsProjects.test)
+
+    additionalSourceDirs = files(coverallsProjects.sourceSets.main.allSource.srcDirs)
+    sourceDirectories = files(coverallsProjects.sourceSets.main.allSource.srcDirs)
+    classDirectories = files(coverallsProjects.sourceSets.main.output)
+    executionData = files(coverallsProjects.jacocoTestReport.executionData)
+
+    reports {
+        html.enabled = true // human readable
+        xml.enabled = true // required by coveralls
+    }
+
+    afterEvaluate {
+        classDirectories = files(classDirectories.files.collect {
+            fileTree(dir: it, exclude: '**/jj/**')
+        })
+    }
+
+    doFirst {
+        executionData = files(executionData.findAll { it.exists() })
+    }
+}
+
+jacoco {
+    toolVersion = jacocoVersion
+}
+
+coveralls {
+    sourceDirs = coverallsProjects.sourceSets.main.allSource.srcDirs.flatten()
+    jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
+}
+
+tasks.coveralls {
+    group = 'Coverage reports'
+    dependsOn jacocoRootReport
 }
