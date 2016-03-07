@@ -15,6 +15,7 @@ public class CircuitSettings implements Settings {
     private static final String prefix = "CircuitSettings";
 
     private static final String keyShowContacts  = prefix + ".showContacts";
+    private static final String keyShowZeroDelayNames = prefix + ".showZeroDelayNames";
     private static final String keyActiveWireColor  = prefix + ".activeWireColor";
     private static final String keyInactiveWireColor  = prefix + ".inactiveWireColor";
     private static final String keyBorderWidth  = prefix + ".borderWidth";
@@ -25,6 +26,7 @@ public class CircuitSettings implements Settings {
     private static final String keyOpenSynthesisResult = prefix + ".openSynthesisResult";
 
     private static final boolean defaultShowContacts = false;
+    private static final boolean defaultShowZeroDelayNames = false;
     private static final Color defaultActiveWireColor = new Color(1.0f, 0.0f, 0.0f);
     private static final Color defaultInactiveWireColor = new Color(0.0f, 0.0f, 1.0f);
     private static final Double defaultBorderWidth = 0.06;
@@ -35,6 +37,7 @@ public class CircuitSettings implements Settings {
     private static final boolean defaultOpenSynthesisResult = true;
 
     private static boolean showContacts = defaultShowContacts;
+    private static boolean showZeroDelayNames = defaultShowZeroDelayNames;
     private static Color activeWireColor = defaultActiveWireColor;
     private static Color inactiveWireColor = defaultInactiveWireColor;
     private static Double borderWidth = defaultBorderWidth;
@@ -52,6 +55,16 @@ public class CircuitSettings implements Settings {
             }
             protected Boolean getter(CircuitSettings object) {
                 return getShowContacts();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
+                this, "Show names of zero-dealy components", Boolean.class, true, false, false) {
+            protected void setter(CircuitSettings object, Boolean value) {
+                setShowZeroDelayNames(value);
+            }
+            protected Boolean getter(CircuitSettings object) {
+                return getShowZeroDelayNames();
             }
         });
 
@@ -154,6 +167,7 @@ public class CircuitSettings implements Settings {
     @Override
     public void load(Config config) {
         setShowContacts(config.getBoolean(keyShowContacts, defaultShowContacts));
+        setShowZeroDelayNames(config.getBoolean(keyShowZeroDelayNames, defaultShowZeroDelayNames));
         setActiveWireColor(config.getColor(keyActiveWireColor, defaultActiveWireColor));
         setInactiveWireColor(config.getColor(keyInactiveWireColor, defaultInactiveWireColor));
         setBorderWidth(config.getDouble(keyBorderWidth, defaultBorderWidth));
@@ -167,6 +181,7 @@ public class CircuitSettings implements Settings {
     @Override
     public void save(Config config) {
         config.setBoolean(keyShowContacts, getShowContacts());
+        config.setBoolean(keyShowZeroDelayNames, getShowZeroDelayNames());
         config.setColor(keyActiveWireColor, getActiveWireColor());
         config.setColor(keyInactiveWireColor, getInactiveWireColor());
         config.setDouble(keyBorderWidth, getBorderWidth());
@@ -183,6 +198,14 @@ public class CircuitSettings implements Settings {
 
     public static void setShowContacts(boolean value) {
         showContacts = value;
+    }
+
+    public static boolean getShowZeroDelayNames() {
+        return showZeroDelayNames;
+    }
+
+    public static void setShowZeroDelayNames(boolean value) {
+        showZeroDelayNames = value;
     }
 
     public static Color getActiveWireColor() {
