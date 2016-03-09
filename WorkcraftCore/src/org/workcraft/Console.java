@@ -51,15 +51,26 @@ public class Console {
             arglist.push(s);
         }
 
+        for (String arg: args) {
+            if (arg.equals(Info.OPTION_VERSION)) {
+                System.out.println(Info.getVersion());
+                return;
+            }
+            if (arg.equals(Info.OPTION_HELP)) {
+                System.out.println(Info.getHelp());
+                return;
+            }
+        }
+
         boolean startGUI = true;
         String dir = null;
         for (String arg: args) {
-            if (arg.equals("-nogui")) {
+            if (arg.equals(Info.OPTION_NOGUI)) {
                 startGUI = false;
                 arglist.remove(arg);
             }
-            if (arg.startsWith("-dir:")) {
-                dir = arg.substring(5);
+            if (arg.startsWith(Info.OPTION_DIR)) {
+                dir = arg.substring(Info.OPTION_DIR.length());
                 arglist.remove(arg);
             }
         }
@@ -96,12 +107,13 @@ public class Console {
         }
 
         for (String arg: args) {
-            if (arg.startsWith("-exec:")) {
+            if (arg.startsWith(Info.OPTION_EXEC)) {
                 arglist.remove(arg);
                 framework.setArgs(arglist);
                 try {
-                    LogUtils.logMessageLine("Executing " + arg.substring(6) + "...");
-                    framework.execJavaScript(new File(arg.substring(6)));
+                    String scriptName = arg.substring(Info.OPTION_EXEC.length());
+                    LogUtils.logMessageLine("Executing " + scriptName + "...");
+                    framework.execJavaScript(new File(scriptName));
                 } catch (FileNotFoundException e) {
                     LogUtils.logErrorLine("Script specified from command line not found: " + arg);
                 } catch (org.mozilla.javascript.WrappedException e) {
