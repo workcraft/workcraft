@@ -19,4 +19,9 @@ public class PetrifySynthesisGeneralisedCelement extends PetrifySynthesis {
         return Position.TOP;
     }
 
+    @Override
+    public boolean boxSequentialComponents() {
+        return true;
+    }
+
 }

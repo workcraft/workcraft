@@ -245,6 +245,10 @@ public class VisualCircuit extends AbstractVisualModel {
         return Hierarchy.getDescendantsOfType(getRoot(), VisualFunctionContact.class);
     }
 
+    public Collection<VisualFunctionComponent> getVisualFunctionComponents() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualFunctionComponent.class);
+    }
+
     public VisualFunctionContact getOrCreateContact(Container container, String name, IOType ioType) {
         // here "parent" is a container of a visual model
         if (name != null) {
