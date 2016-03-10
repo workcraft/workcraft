@@ -349,7 +349,7 @@ public class MainMenu extends JMenuBar {
         ActionMenuItem miBugreport = new ActionMenuItem(MainWindowActions.HELP_BUGREPORT_ACTION);
         miBugreport.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-        ActionMenuItem miQuestion = new ActionMenuItem(MainWindowActions.HELP_QUESTION_ACTION);
+        ActionMenuItem miQuestion = new ActionMenuItem(MainWindowActions.HELP_EMAIL_ACTION);
         miQuestion.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
         ActionMenuItem miAbout = new ActionMenuItem(MainWindowActions.HELP_ABOUT_ACTION);
