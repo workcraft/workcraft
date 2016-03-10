@@ -23,4 +23,9 @@ public class CircuitConnectionTool extends ConnectionTool {
         return result;
     }
 
+    @Override
+    public ContinuousConnectionMode getContinuousConnectionMode() {
+        return ContinuousConnectionMode.FAN;
+    }
+
 }

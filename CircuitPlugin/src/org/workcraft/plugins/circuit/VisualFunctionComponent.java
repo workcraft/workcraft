@@ -108,22 +108,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         if (renderingResult != null) {
             return renderingResult;
         }
-        // Find a single gate output
-        VisualFunctionContact gateOutput = null;
-        for (Node node: getChildren()) {
-            if (node instanceof VisualFunctionContact) {
-                VisualFunctionContact vc = (VisualFunctionContact) node;
-                if (vc.isOutput()) {
-                    if (gateOutput == null) {
-                        gateOutput = vc;
-                    } else {
-                        // more than one output - not a gate
-                        gateOutput = null;
-                        break;
-                    }
-                }
-            }
-        }
+        VisualFunctionContact gateOutput = getGateOutput();
         // If gate output found render its visual representation according to the set and reset functions
         if (gateOutput != null) {
             switch (getRenderType()) {
@@ -148,6 +133,36 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
             }
         }
         return renderingResult;
+    }
+
+    public VisualFunctionContact getGateOutput() {
+        VisualFunctionContact gateOutput = null;
+        for (Node node: getChildren()) {
+            if (node instanceof VisualFunctionContact) {
+                VisualFunctionContact vc = (VisualFunctionContact) node;
+                if (vc.isOutput()) {
+                    if (gateOutput == null) {
+                        gateOutput = vc;
+                    } else {
+                        // more than one output - not a gate
+                        gateOutput = null;
+                        break;
+                    }
+                }
+            }
+        }
+        return gateOutput;
+    }
+
+    public boolean isSequentialGate() {
+        VisualFunctionContact gateOutput = getGateOutput();
+        BooleanFormula setFunction = null;
+        BooleanFormula resetFunction = null;
+        if (gateOutput != null) {
+            setFunction = gateOutput.getSetFunction();
+            resetFunction = gateOutput.getResetFunction();
+        }
+        return (setFunction != null) && (resetFunction != null);
     }
 
     public void invalidateRenderingResult() {

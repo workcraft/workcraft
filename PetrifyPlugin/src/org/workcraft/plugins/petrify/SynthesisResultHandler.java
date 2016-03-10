@@ -14,7 +14,9 @@ import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitDescriptor;
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
+import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.petrify.tasks.SynthesisResult;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.tasks.DummyProgressMonitor;
@@ -28,9 +30,11 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class SynthesisResultHandler extends DummyProgressMonitor<SynthesisResult> {
     private final WorkspaceEntry we;
+    private final boolean boxSequentialComponents;
 
-    public SynthesisResultHandler(WorkspaceEntry we) {
+    public SynthesisResultHandler(WorkspaceEntry we, boolean boxSequentialComponents) {
         this.we = we;
+        this.boxSequentialComponents = boxSequentialComponents;
     }
 
     @Override
@@ -73,6 +77,11 @@ public class SynthesisResultHandler extends DummyProgressMonitor<SynthesisResult
                     VisualModel visualModel = newWorkspaceEntry.getModelEntry().getVisualModel();
                     if (visualModel instanceof VisualCircuit) {
                         VisualCircuit visualCircuit = (VisualCircuit) visualModel;
+                        for (VisualFunctionComponent component: visualCircuit.getVisualFunctionComponents()) {
+                            if (boxSequentialComponents && component.isSequentialGate()) {
+                                component.setRenderType(RenderType.BOX);
+                            }
+                        }
                         String title = we.getModelEntry().getModel().getTitle();
                         visualCircuit.setTitle(title);
                         if (!we.getFile().exists()) {

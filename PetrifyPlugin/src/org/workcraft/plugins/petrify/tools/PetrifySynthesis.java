@@ -19,7 +19,12 @@ abstract public class PetrifySynthesis extends SynthesisTool {
     public void run(WorkspaceEntry we) {
         SynthesisTask task = new SynthesisTask(we, getSynthesisParameter());
         final Framework framework = Framework.getInstance();
-        framework.getTaskManager().queue(task, "Petrify logic synthesis", new SynthesisResultHandler(we));
+        SynthesisResultHandler monitor = new SynthesisResultHandler(we, boxSequentialComponents());
+        framework.getTaskManager().queue(task, "Petrify logic synthesis", monitor);
+    }
+
+    public boolean boxSequentialComponents() {
+        return false;
     }
 
     abstract public String[] getSynthesisParameter();

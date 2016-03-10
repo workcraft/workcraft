@@ -52,6 +52,9 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.util.GUI;
 
 public class ConnectionTool extends AbstractTool {
+
+    public enum ContinuousConnectionMode { FAN, FOLD }
+
     static protected final Color incompleteConnectionColor = Color.GREEN;
     static protected final Color validConnectionColor = Color.BLUE;
     static protected final Color invalidConnectionColor = Color.RED;
@@ -235,8 +238,14 @@ public class ConnectionTool extends AbstractTool {
         editor.repaint();
     }
 
+    public ContinuousConnectionMode getContinuousConnectionMode() {
+        return ContinuousConnectionMode.FOLD;
+    }
+
     public void startConnection(GraphEditorMouseEvent e) {
-        firstNode = currentNode;
+        if ((firstNode == null) || (getContinuousConnectionMode() == ContinuousConnectionMode.FOLD)) {
+            firstNode = currentNode;
+        }
         AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(firstNode);
         if (firstNode instanceof VisualConnection) {
             VisualConnection connection = (VisualConnection) firstNode;

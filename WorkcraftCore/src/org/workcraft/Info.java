@@ -13,12 +13,24 @@ public class Info {
     private static final int majorVersion = 3;
     private static final int minorVersion = 0;
     private static final int revisionVersion = 9;
-    private static final String statusVersion = null; // "alpha", "beta", "rc1", null (for release)
+    private static final String statusVersion = "rc3"; // "alpha", "beta", "rc1", null (for release)
 
     private static final int startYear = 2006;
     private static final int currentYear = Calendar.getInstance().get(Calendar.YEAR);
     private static final String organisation = "Newcastle University";
     private static final String homepage = "http://workcraft.org/";
+
+    public static final String OPTION_DIR = "-dir:";
+    public static final String OPTION_EXEC = "-exec:";
+    public static final String OPTION_NOGUI = "-nogui";
+    public static final String OPTION_VERSION = "-version";
+    public static final String OPTION_HELP = "-help";
+    private static final String help = "Usage:  java --classpath <CORE_AND_PLUGINS> org.workcraft.Console [OPTIONS]\n" +
+            "    " + OPTION_DIR + "<PATH>\t - pass working directory\n" +
+            "    " + OPTION_EXEC + "<SCRIPT> - JavaScript to execute on startup\n" +
+            "    " + OPTION_NOGUI + "\t - run in console mode\n" +
+            "    " + OPTION_VERSION + "\t - report the version information and exit\n" +
+            "    " + OPTION_HELP + "\t - display this help message and exit\n";
 
     static public String getVersion() {
         String version = majorVersion + "." + minorVersion + "." + revisionVersion;
@@ -52,6 +64,10 @@ public class Info {
 
     public static String getHomepage() {
         return homepage;
+    }
+
+    public static String getHelp() {
+        return help;
     }
 
 }

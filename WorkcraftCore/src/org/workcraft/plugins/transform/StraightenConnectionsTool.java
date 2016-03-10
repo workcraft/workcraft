@@ -22,16 +22,23 @@
 package org.workcraft.plugins.transform;
 
 import java.util.Collection;
+import java.util.HashSet;
 
+import org.workcraft.NodeTransformer;
 import org.workcraft.TransformationTool;
+import org.workcraft.dom.Model;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.connections.Bezier;
+import org.workcraft.dom.visual.connections.ConnectionGraphic;
+import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class StraightenConnectionsTool extends TransformationTool {
+public class StraightenConnectionsTool extends TransformationTool implements NodeTransformer {
 
     @Override
     public String getDisplayName() {
@@ -44,6 +51,22 @@ public class StraightenConnectionsTool extends TransformationTool {
     }
 
     @Override
+    public boolean isApplicableTo(Node node) {
+        boolean result = false;
+        if (node instanceof VisualConnection) {
+            VisualConnection connection = (VisualConnection) node;
+            ConnectionGraphic graphic = connection.getGraphic();
+            if (graphic instanceof Bezier) {
+                result = true;
+            } else if (graphic instanceof Polyline) {
+                Polyline polyline = (Polyline) graphic;
+                result = polyline.getControlPointCount() > 0;
+            }
+        }
+        return result;
+    }
+
+    @Override
     public Position getPosition() {
         return Position.BOTTOM;
     }
@@ -53,16 +76,29 @@ public class StraightenConnectionsTool extends TransformationTool {
         VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
         if (visualModel != null) {
             Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualConnection.class);
-            if (!visualModel.getSelection().isEmpty()) {
-                connections.retainAll(visualModel.getSelection());
+            Collection<Node> selection = visualModel.getSelection();
+            if (!selection.isEmpty()) {
+                HashSet<Node> selectedConnections = new HashSet<>(selection);
+                selectedConnections.retainAll(connections);
+                if (!selectedConnections.isEmpty()) {
+                    connections.retainAll(selection);
+                }
             }
             if (!connections.isEmpty()) {
                 we.saveMemento();
                 for (VisualConnection connection: connections) {
-                    connection.setConnectionType(ConnectionType.BEZIER);
-                    connection.setConnectionType(ConnectionType.POLYLINE);
+                    transform(visualModel, connection);
                 }
             }
+        }
+    }
+
+    @Override
+    public void transform(Model model, Node node) {
+        if (node instanceof VisualConnection) {
+            VisualConnection connection = (VisualConnection) node;
+            connection.setConnectionType(ConnectionType.BEZIER);
+            connection.setConnectionType(ConnectionType.POLYLINE);
         }
     }
 

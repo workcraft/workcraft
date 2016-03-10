@@ -17,7 +17,9 @@ import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitDescriptor;
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
+import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.mpsat.tasks.MpsatSynthesisChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatSynthesisChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatSynthesisTask;
@@ -60,14 +62,16 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
         ExternalProcessResult mpsatReturnValue = returnValue.getMpsatResult().getReturnValue();
         switch (mpsatMode) {
         case COMPLEX_GATE_IMPLEMENTATION:
-            handleSynthesisResult(mpsatReturnValue, false);
+            handleSynthesisResult(mpsatReturnValue, false, RenderType.GATE);
             break;
         case GENERALISED_CELEMENT_IMPLEMENTATION:
+            handleSynthesisResult(mpsatReturnValue, true, RenderType.BOX);
+            break;
         case STANDARD_CELEMENT_IMPLEMENTATION:
-            handleSynthesisResult(mpsatReturnValue, true);
+            handleSynthesisResult(mpsatReturnValue, true, RenderType.GATE);
             break;
         case TECH_MAPPING:
-            handleSynthesisResult(mpsatReturnValue, false);
+            handleSynthesisResult(mpsatReturnValue, false, RenderType.GATE);
             break;
         default:
             SwingUtilities.invokeLater(new Runnable() {
@@ -130,7 +134,7 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
         });
     }
 
-    private void handleSynthesisResult(ExternalProcessResult mpsatResult, boolean sequentialAssign) {
+    private void handleSynthesisResult(ExternalProcessResult mpsatResult, boolean sequentialAssign, RenderType renderType) {
         final String log = new String(mpsatResult.getOutput());
         if ((log != null) && !log.isEmpty()) {
             System.out.println(log);
@@ -166,6 +170,9 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
                 VisualModel visualModel = newWorkspaceEntry.getModelEntry().getVisualModel();
                 if (visualModel instanceof VisualCircuit) {
                     VisualCircuit visualCircuit = (VisualCircuit) visualModel;
+                    for (VisualFunctionComponent component: visualCircuit.getVisualFunctionComponents()) {
+                        component.setRenderType(renderType);
+                    }
                     String title = we.getModelEntry().getModel().getTitle();
                     visualCircuit.setTitle(title);
                     if (!we.getFile().exists()) {

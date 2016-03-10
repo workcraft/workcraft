@@ -444,7 +444,7 @@ public class MainWindowActions {
         public void run() {
             URI uri;
             try {
-                uri = new URI("https://bugs.launchpad.net/workcraft/+filebug");
+                uri = new URI("https://github.com/tuura/workcraft/issues/new");
                 DesktopApi.browse(uri);
             } catch (URISyntaxException e) {
                 System.out.println(e);
@@ -452,16 +452,16 @@ public class MainWindowActions {
         }
 
         public String getText() {
-            return "Report a bug";
+            return "Report a bug at GitHub";
         }
     };
 
-    public static final Action HELP_QUESTION_ACTION = new Action() {
+    public static final Action HELP_EMAIL_ACTION = new Action() {
         @Override
         public void run() {
             URI uri;
             try {
-                uri = new URI("https://answers.launchpad.net/workcraft/+addquestion");
+                uri = new URI("mailto", "support@workcraft.org", null);
                 DesktopApi.browse(uri);
             } catch (URISyntaxException e) {
                 System.out.println(e);
@@ -469,7 +469,7 @@ public class MainWindowActions {
         }
 
         public String getText() {
-            return "Ask a question";
+            return "Contact developers by e-mail";
         }
     };
 
