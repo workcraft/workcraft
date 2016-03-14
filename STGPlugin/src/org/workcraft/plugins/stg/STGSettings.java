@@ -25,6 +25,8 @@ import java.awt.Color;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import org.workcraft.Config;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
@@ -40,6 +42,8 @@ public class STGSettings implements Settings {
     private static final String keyDummyColor = prefix + ".dummyColor";
     private static final String keyShowToggle = prefix + ".showToggle";
     private static final String keyDensityMapLevelLimit = prefix + ".densityMapLevelLimit";
+    private static final String keyLowLevelSuffix = prefix + ".lowLevelSuffix";
+    private static final String keyHighLevelSuffix = prefix + ".highLevelSuffix";
 
     private static final Color defaultInputColor = Color.RED.darker();
     private static final Color defaultOutputColor = Color.BLUE.darker();
@@ -47,6 +51,8 @@ public class STGSettings implements Settings {
     private static final Color defaultDummyColor = Color.BLACK.darker();
     private static final boolean defaultShowToggle = false;
     private static final Integer defaultDensityMapLevelLimit = 5;
+    private static final String defaultLowLevelSuffix = "_LOW";
+    private static final String defaultHighLevelSuffix = "_HIGH";
 
     private static Color inputColor = defaultInputColor;
     private static Color outputColor = defaultOutputColor;
@@ -54,6 +60,8 @@ public class STGSettings implements Settings {
     private static Color dummyColor = defaultDummyColor;
     private static boolean showToggle = defaultShowToggle;
     private static Integer densityMapLevelLimit = defaultDensityMapLevelLimit;
+    private static String lowLevelSuffix = defaultLowLevelSuffix;
+    private static String highLevelSuffix = defaultHighLevelSuffix;
 
     public STGSettings() {
         properties.add(new PropertyDeclaration<STGSettings, Color>(
@@ -115,6 +123,65 @@ public class STGSettings implements Settings {
                 return getDensityMapLevelLimit();
             }
         });
+
+        properties.add(new PropertyDeclaration<STGSettings, String>(
+                this, "Signal low level suffix", String.class, true, false, false) {
+            protected void setter(STGSettings object, String value) {
+                if (value.length() < 2) {
+                    signalLevelWarning();
+                }
+                if (checkSignalLevelSuffix(value)) {
+                    signalLevelError();
+                } else {
+                    setLowLevelSuffix(value);
+                }
+            }
+            protected String getter(STGSettings object) {
+                return getLowLevelSuffix();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<STGSettings, String>(
+                this, "Signal high level suffix", String.class, true, false, false) {
+            protected void setter(STGSettings object, String value) {
+                if (value.length() < 2) {
+                    signalLevelWarning();
+                }
+                if (checkSignalLevelSuffix(value)) {
+                    signalLevelError();
+                } else {
+                    setHighLevelSuffix(value);
+                }
+            }
+            protected String getter(STGSettings object) {
+                return getHighLevelSuffix();
+            }
+        });
+    }
+
+    private boolean checkSignalLevelSuffix(String value) {
+        boolean badValue = false;
+        for (int i = 0; i < value.length(); ++i) {
+            char c = value.charAt(i);
+            if (!Character.isDigit(c) && !Character.isLetter(c) && (c != '_')) {
+                badValue = true;
+                break;
+            }
+        }
+        return badValue;
+    }
+
+    private void signalLevelError() {
+        JOptionPane.showMessageDialog(null,
+                "Signal level suffix must only consist of letters, numbers and underscores.",
+                "STG settings", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void signalLevelWarning() {
+        JOptionPane.showMessageDialog(null,
+                "Short signal level suffix increases the risk of name clashing.\n"
+                        + "Consider making it at least two characters long.",
+                        "STG settings", JOptionPane.WARNING_MESSAGE);
     }
 
     @Override
@@ -130,6 +197,8 @@ public class STGSettings implements Settings {
         setDummyColor(config.getColor(keyDummyColor, defaultDummyColor));
         setShowToggle(config.getBoolean(keyShowToggle, defaultShowToggle));
         setDensityMapLevelLimit(config.getInt(keyDensityMapLevelLimit, defaultDensityMapLevelLimit));
+        setLowLevelSuffix(config.getString(keyLowLevelSuffix, defaultLowLevelSuffix));
+        setHighLevelSuffix(config.getString(keyHighLevelSuffix, defaultHighLevelSuffix));
     }
 
     @Override
@@ -140,6 +209,8 @@ public class STGSettings implements Settings {
         config.setColor(keyDummyColor, getDummyColor());
         config.setBoolean(keyShowToggle, getShowToggle());
         config.setInt(keyDensityMapLevelLimit, getDensityMapLevelLimit());
+        config.set(keyLowLevelSuffix, getLowLevelSuffix());
+        config.set(keyHighLevelSuffix, getHighLevelSuffix());
     }
 
     @Override
@@ -198,6 +269,26 @@ public class STGSettings implements Settings {
 
     public static void setDensityMapLevelLimit(Integer value) {
         densityMapLevelLimit = value;
+    }
+
+    public static String getLowLevelSuffix() {
+        return lowLevelSuffix;
+    }
+
+    public static void setLowLevelSuffix(String value) {
+        if (value.length() > 0) {
+            lowLevelSuffix = value;
+        }
+    }
+
+    public static String getHighLevelSuffix() {
+        return highLevelSuffix;
+    }
+
+    public static void setHighLevelSuffix(String value) {
+        if (value.length() > 0) {
+            highLevelSuffix = value;
+        }
     }
 
 }

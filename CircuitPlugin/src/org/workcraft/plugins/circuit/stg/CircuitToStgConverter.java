@@ -51,8 +51,6 @@ import org.workcraft.util.Pair;
 import org.workcraft.util.TwoWayMap;
 
 public class CircuitToStgConverter {
-    public static final String NAME_SUFFIX_0 = "_0";
-    public static final String NAME_SUFFIX_1 = "_1";
     public static final String LABEL_SUFFIX_0 = " = 0";
     public static final String LABEL_SUFFIX_1 = " = 1";
 
@@ -215,14 +213,16 @@ public class CircuitToStgConverter {
             Container container = getContainer(signal);
             String signalName = CircuitUtils.getSignalName(circuit, signal);
 
-            VisualPlace zeroPlace = stg.createPlace(signalName + NAME_SUFFIX_0, container);
+            String zeroName = SignalStg.getLowName(signalName);
+            VisualPlace zeroPlace = stg.createPlace(zeroName, container);
             zeroPlace.setNamePositioning(Positioning.TOP);
             zeroPlace.setLabelPositioning(Positioning.BOTTOM);
             if (!signal.getReferencedContact().getInitToOne()) {
                 zeroPlace.getReferencedPlace().setTokens(1);
             }
 
-            VisualPlace onePlace = stg.createPlace(signalName + NAME_SUFFIX_1, container);
+            String oneName = SignalStg.getHighName(signalName);
+            VisualPlace onePlace = stg.createPlace(oneName, container);
             onePlace.setNamePositioning(Positioning.BOTTOM);
             onePlace.setLabelPositioning(Positioning.TOP);
             if (signal.getReferencedContact().getInitToOne()) {
@@ -338,8 +338,8 @@ public class CircuitToStgConverter {
 
             VisualPlace zeroPlace = null;
             VisualPlace onePlace = null;
-            String zeroName = signalName + NAME_SUFFIX_0;
-            String oneName = signalName + NAME_SUFFIX_1;
+            String zeroName = SignalStg.getLowName(signalName);
+            String oneName = SignalStg.getHighName(signalName);
             for (VisualPlace place: stg.getVisualPlaces()) {
                 if (zeroName.equals(stg.getMathName(place))) {
                     zeroPlace = place;

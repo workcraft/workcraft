@@ -62,7 +62,6 @@ public class CommonEditorSettings implements Settings {
     private static final String keyTitleStyle = prefix + ".titleStyle";
     private static final String keyShowAbsolutePaths = prefix + ".showAbsolutePaths";
     private static final String keyOpenNonvisual = prefix + ".openNonvisual";
-    private static final String keyHierarchySeparator = prefix + ".hierarchySeparator";
     private static final String keyFlatNameSeparator = prefix + ".flatNameSeparator";
 
     private static final Color defaultBackgroundColor = Color.WHITE;
@@ -74,7 +73,6 @@ public class CommonEditorSettings implements Settings {
     private static final TitleStyle defaultTitleStyle = TitleStyle.SHORT;
     private static final boolean defaultShowAbsolutePaths = false;
     private static final boolean defaultOpenNonvisual = true;
-    private static String defaultHierarchySeparator = "/";
     private static String defaultFlatNameSeparator = "__";
 
     private static Color backgroundColor = defaultBackgroundColor;
@@ -86,7 +84,6 @@ public class CommonEditorSettings implements Settings {
     private static TitleStyle titleStyle = defaultTitleStyle;
     private static boolean showAbsolutePaths = defaultShowAbsolutePaths;
     private static boolean openNonvisual = defaultOpenNonvisual;
-    private static String hierarchySeparator = defaultHierarchySeparator;
     private static String flatNameSeparator = defaultFlatNameSeparator;
 
     public CommonEditorSettings() {
@@ -181,21 +178,6 @@ public class CommonEditorSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<CommonEditorSettings, String>(
-                this, "Hierarchy separator", String.class, true, false, false) {
-            protected void setter(CommonEditorSettings object, String value) {
-                if (!value.equals("/") && !value.equals(".") && !value.equals("\\")) {
-                    JOptionPane.showMessageDialog(null,
-                            "Suggested hierarchy separators are: / \\ .",
-                            "Common editor settings", JOptionPane.WARNING_MESSAGE);
-                }
-                setHierarchySeparator(value);
-            }
-            protected String getter(CommonEditorSettings object) {
-                return getHierarchySeparator();
-            }
-        });
-
-        properties.add(new PropertyDeclaration<CommonEditorSettings, String>(
                 this, "Flat name separator", String.class, true, false, false) {
             protected void setter(CommonEditorSettings object, String value) {
                 if (value.length() < 2) {
@@ -243,7 +225,6 @@ public class CommonEditorSettings implements Settings {
         setTitleStyle(config.getEnum(keyTitleStyle, TitleStyle.class, defaultTitleStyle));
         setShowAbsolutePaths(config.getBoolean(keyShowAbsolutePaths, defaultShowAbsolutePaths));
         setOpenNonvisual(config.getBoolean(keyOpenNonvisual, defaultOpenNonvisual));
-        setHierarchySeparator(config.getString(keyHierarchySeparator, defaultHierarchySeparator));
         setFlatNameSeparator(config.getString(keyFlatNameSeparator, defaultFlatNameSeparator));
     }
 
@@ -258,7 +239,6 @@ public class CommonEditorSettings implements Settings {
         config.setEnum(keyTitleStyle, TitleStyle.class, getTitleStyle());
         config.setBoolean(keyShowAbsolutePaths, getShowAbsolutePaths());
         config.setBoolean(keyOpenNonvisual, getOpenNonvisual());
-        config.set(keyHierarchySeparator, getHierarchySeparator());
         config.set(keyFlatNameSeparator, getFlatNameSeparator());
     }
 
@@ -354,16 +334,6 @@ public class CommonEditorSettings implements Settings {
 
     public static void setOpenNonvisual(Boolean value) {
         openNonvisual = value;
-    }
-
-    public static String getHierarchySeparator() {
-        return hierarchySeparator;
-    }
-
-    public static void setHierarchySeparator(String value) {
-        if (value.length() > 0) {
-            hierarchySeparator = value;
-        }
     }
 
     public static String getFlatNameSeparator() {

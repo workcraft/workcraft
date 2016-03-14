@@ -20,10 +20,11 @@ import org.workcraft.util.Identifier;
 
 public class NamespaceHelper {
     // TODO: make it work with the embedded ' characters
-    private static Pattern hPattern = Pattern.compile("(/)?(((\\'([^\\']+)\\')|([_A-Za-z][_A-Za-z0-9]*))([\\+\\-\\~])?(/[0-9]+)?)(.*)");
+    private static final Pattern HIERARCHY_PATTERN = Pattern.compile("(/)?(((\\'([^\\']+)\\')|([_A-Za-z][_A-Za-z0-9]*))([\\+\\-\\~])?(/[0-9]+)?)(.*)");
+    private static final String HIERARCHY_SEPARATOR = "/";
 
     public static String getHierarchySeparator() {
-        return CommonEditorSettings.getHierarchySeparator();
+        return HIERARCHY_SEPARATOR;
     }
 
     public static String getFlatNameSeparator() {
@@ -71,7 +72,7 @@ public class NamespaceHelper {
     public static void splitReference(String reference, LinkedList<String> path) {
         if (reference.isEmpty()) return;
 
-        Matcher matcher = hPattern.matcher(reference);
+        Matcher matcher = HIERARCHY_PATTERN.matcher(reference);
         if (matcher.find()) {
             String str = matcher.group(2);
             str = str.replace("'", "");
@@ -109,7 +110,7 @@ public class NamespaceHelper {
         // legacy reference support
         if (Identifier.isNumber(reference)) return reference;
 
-        Matcher matcher = hPattern.matcher(reference);
+        Matcher matcher = HIERARCHY_PATTERN.matcher(reference);
         if (matcher.find()) {
             String head = matcher.group(2);
             head = head.replace("'", "");
@@ -122,7 +123,7 @@ public class NamespaceHelper {
         // legacy reference support
         if (Identifier.isNumber(reference)) return "";
 
-        Matcher matcher = hPattern.matcher(reference);
+        Matcher matcher = HIERARCHY_PATTERN.matcher(reference);
         if (matcher.find()) {
             String tail = matcher.group(9);
             return tail;

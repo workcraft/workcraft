@@ -29,9 +29,6 @@ abstract public class StgGenerator {
 
     public enum SignalLayoutType { LEFT_TO_RIGHT, RIGHT_TO_LEFT, LEFT_TO_RIGHT_INVERTED, RIGHT_TO_LEFT_INVERTED }
 
-    public static final String _NAME0         = "_0";
-    public static final String _NAME1        = "_1";
-
     private final VisualModel src;
     private final VisualSTG stg;
 
@@ -192,13 +189,13 @@ abstract public class StgGenerator {
     }
 
     public SignalStg generateBasicSignalStg(String signalName, double x, double y, SignalTransition.Type type) throws InvalidConnectionException {
-        VisualPlace zero = stg.createPlace(signalName + _NAME0, null);
+        VisualPlace zero = stg.createPlace(SignalStg.getLowName(signalName), null);
         zero.getReferencedPlace().setTokens(1);
         zero.setNamePositioning(Positioning.BOTTOM);
         zero.setLabelPositioning(Positioning.TOP);
         setPosition(zero, x + 0.0, y + 2.0);
 
-        VisualPlace one = stg.createPlace(signalName + _NAME1, null);
+        VisualPlace one = stg.createPlace(SignalStg.getHighName(signalName), null);
         one.getReferencedPlace().setTokens(0);
         one.setNamePositioning(Positioning.TOP);
         one.setLabelPositioning(Positioning.BOTTOM);
@@ -229,13 +226,13 @@ abstract public class StgGenerator {
             ySign = -1;
         }
 
-        VisualPlace zero = stg.createPlace(signalName + _NAME0, null);
+        VisualPlace zero = stg.createPlace(SignalStg.getLowName(signalName), null);
         zero.getReferencedPlace().setTokens(1);
         zero.setNamePositioning((ySign < 0) ? Positioning.BOTTOM : Positioning.TOP);
         zero.setLabelPositioning((ySign < 0) ? Positioning.TOP : Positioning.BOTTOM);
         setPosition(zero, x + xSign * 4.0, y + ySign * 2.0);
 
-        VisualPlace one = stg.createPlace(signalName + _NAME1, null);
+        VisualPlace one = stg.createPlace(SignalStg.getHighName(signalName), null);
         one.getReferencedPlace().setTokens(0);
         one.setNamePositioning((ySign < 0) ? Positioning.TOP : Positioning.BOTTOM);
         one.setLabelPositioning((ySign < 0) ? Positioning.BOTTOM : Positioning.TOP);
