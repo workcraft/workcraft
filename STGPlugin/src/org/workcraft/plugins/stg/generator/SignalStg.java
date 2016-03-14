@@ -10,6 +10,10 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 
 public class SignalStg extends NodeStg {
+
+    private static final String _NAME0 = "_0";
+    private static final String _NAME1 = "_1";
+
     public final VisualPlace zero;
     public final VisualPlace one;
     public final ArrayList<VisualSignalTransition> fallList = new ArrayList<>();
@@ -47,6 +51,14 @@ public class SignalStg extends NodeStg {
     @Override
     public Collection<VisualPlace> getAllPlaces() {
         return Arrays.asList(zero, one);
+    }
+
+    public static String getLowName(String signalName) {
+        return signalName + _NAME0;
+    }
+
+    public static String getHighName(String signalName) {
+        return signalName + _NAME1;
     }
 
 }
