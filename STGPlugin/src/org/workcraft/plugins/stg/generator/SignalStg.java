@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 
 import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.plugins.stg.STGSettings;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 
 public class SignalStg extends NodeStg {
@@ -54,11 +55,11 @@ public class SignalStg extends NodeStg {
     }
 
     public static String getLowName(String signalName) {
-        return signalName + _NAME0;
+        return signalName + STGSettings.getLowLevelSuffix();
     }
 
     public static String getHighName(String signalName) {
-        return signalName + _NAME1;
+        return signalName + STGSettings.getHighLevelSuffix();
     }
 
 }
