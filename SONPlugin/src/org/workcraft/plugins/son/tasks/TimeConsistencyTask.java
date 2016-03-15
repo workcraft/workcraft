@@ -19,10 +19,12 @@ import org.workcraft.plugins.son.algorithm.EstimationAlg;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
 import org.workcraft.plugins.son.algorithm.ConsistencyAlg;
+import org.workcraft.plugins.son.algorithm.EnhancedEstimationAlg;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Time;
 import org.workcraft.plugins.son.elements.TransitionNode;
+import org.workcraft.plugins.son.exception.AlternativeStructureException;
 import org.workcraft.plugins.son.exception.InvalidStructureException;
 import org.workcraft.plugins.son.exception.TimeEstimationException;
 import org.workcraft.plugins.son.exception.TimeEstimationValueException;
@@ -43,8 +45,8 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
     private Logger logger = Logger.getLogger(this.getClass().getName());
 
     private ConsistencyAlg consistencyAlg;
-    EstimationAlg estimationAlg;
-    RelationAlgorithm relationAlg;
+    private EnhancedEstimationAlg estimationAlg;
+    private RelationAlgorithm relationAlg;
     private BSONAlg bsonAlg;
     private TimeConsistencySettings settings;
     private Collection<Condition> lowerConditions;
@@ -338,38 +340,29 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
     protected ArrayList<String> timeEstimationTask(Time t) {
         ArrayList<String> result = new ArrayList<>();
 
-        //set default duration
-        if (!t.getDuration().isSpecified()) {
-            t.setDuration(settings.getDefaultDuration());
-            estimatedDurNodes.add(t);
-        }
-        try {
-            if (!t.getStartTime().isSpecified()) {
-                estimationAlg.setEstimatedStartTime((Node) t);
-                if (relationAlg.isInitial(t)) {
-                    estimatedIniNodes.add(t);
-                }
-            }
-        } catch (TimeOutOfBoundsException e1) {
-            result.add(e1.getMessage());
-        } catch (TimeEstimationException e1) {
-            result.add(e1.getMessage());
-        } catch (TimeEstimationValueException e1) {
-            result.add(e1.getMessage());
-        }
+//        //set default duration
+//        try {
+//            if (!t.getStartTime().isSpecified()) {
+//                estimationAlg.setEstimatedStartTime((Node) t);
+//                if (relationAlg.isInitial(t)) {
+//                    estimatedIniNodes.add(t);
+//                }
+//            }
+//        } catch (TimeOutOfBoundsException e1) {
+//            result.add(e1.getMessage());
+//        } catch (TimeEstimationException e1) {
+//            result.add(e1.getMessage());
+//        } catch (TimeEstimationValueException e1) {
+//            result.add(e1.getMessage());
+//        }
         try {
             if (!t.getEndTime().isSpecified()) {
-                estimationAlg.setEstimatedEndTime((Node) t);
-                if (relationAlg.isFinal(t)) {
-                    estimatedFinalNodes.add(t);
-                }
+                estimationAlg.estimateFinish(t);
             }
         } catch (TimeOutOfBoundsException e) {
             result.add(e.getMessage());
-        } catch (TimeEstimationException e) {
-            result.add(e.getMessage());
-        } catch (TimeEstimationValueException e) {
-            result.add(e.getMessage());
+        } catch (AlternativeStructureException e1) {
+            errMsg(e1.getMessage());
         }
 
         return result;
@@ -380,7 +373,7 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
         consistencyAlg.removeProperties();
         consistencyAlg.setProperties();
 
-        estimationAlg = new EstimationAlg(net, settings.getDefaultDuration(), settings.getGranularity(), settings.getSeletedScenario());
+        estimationAlg = new EnhancedEstimationAlg(net, settings.getDefaultDuration(), settings.getGranularity(), settings.getSeletedScenario());
 
         syncCPs = getSyncCPs();
 

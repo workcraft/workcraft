@@ -25,8 +25,10 @@ import org.workcraft.dom.Node;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.TimeEstimatorSettings;
+import org.workcraft.plugins.son.algorithm.EnhancedEstimationAlg;
 import org.workcraft.plugins.son.algorithm.EntireEstimationAlg;
 import org.workcraft.plugins.son.algorithm.EstimationAlg;
+import org.workcraft.plugins.son.elements.Time;
 import org.workcraft.plugins.son.exception.AlternativeStructureException;
 import org.workcraft.plugins.son.exception.TimeEstimationException;
 import org.workcraft.plugins.son.exception.TimeInconsistencyException;
@@ -219,7 +221,7 @@ public class TimeEstimatorDialog extends JDialog {
                 setParameters();
                 if (defaultDurationPanel.isValidDuration()) {
                     run = 1;
-                    EstimationAlg alg = new EstimationAlg(net, getDefaultDuration(), granularity, getScenarioRef());
+                    EnhancedEstimationAlg alg = new EnhancedEstimationAlg(net, getDefaultDuration(), granularity, getScenarioRef());
                     setVisible(false);
 
                     if (entireEst.isSelected()) {
@@ -241,19 +243,15 @@ public class TimeEstimatorDialog extends JDialog {
                                     "", JOptionPane.ERROR_MESSAGE);
                         }
                     } else {
-                        if (setDuration.isSelected()) {
-                            alg.setDefaultDuration();
-                        }
+//                        if (setDuration.isSelected()) {
+//                            alg.setDefaultDuration();
+//                        }
 
                         try {
-                            alg.twoDirEstimation(selection, intermediate.isSelected());
+                           alg.estimateFinish((Time)selection);
                         } catch (AlternativeStructureException e1) {
                             errMsg(e1.getMessage());
-                        } catch (TimeEstimationException e1) {
-                            errMsg(e1.getMessage());
                         } catch (TimeOutOfBoundsException e1) {
-                            errMsg(e1.getMessage());
-                        } catch (TimeInconsistencyException e1) {
                             errMsg(e1.getMessage());
                         }
                     }
