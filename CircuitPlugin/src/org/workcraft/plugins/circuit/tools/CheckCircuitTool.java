@@ -44,8 +44,14 @@ public class CheckCircuitTool extends VerificationTool {
         VisualCircuit visualCircuit = (VisualCircuit) we.getModelEntry().getVisualModel();
         File envFile = visualCircuit.getEnvironmentFile();
         if ((envFile == null) || !envFile.exists()) {
-            JOptionPane.showMessageDialog(mainWindow, "Warning: the circuit will be verified without environment STG.",
-                    "Circuit verification", JOptionPane.WARNING_MESSAGE);
+            if (checkConformation()) {
+                JOptionPane.showMessageDialog(mainWindow, "Error: the circuit conformation cannot be checked without environment STG.",
+                        "Circuit verification", JOptionPane.ERROR_MESSAGE);
+                return;
+            } else {
+                JOptionPane.showMessageDialog(mainWindow, "Warning: the circuit will be verified without environment STG.",
+                        "Circuit verification", JOptionPane.WARNING_MESSAGE);
+            }
         }
 
         final CheckCircuitTask task = new CheckCircuitTask(we, checkConformation(), checkDeadlock(), checkHazard());
