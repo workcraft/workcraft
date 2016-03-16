@@ -221,7 +221,7 @@ public class TimeEstimatorDialog extends JDialog {
                 setParameters();
                 if (defaultDurationPanel.isValidDuration()) {
                     run = 1;
-                    EnhancedEstimationAlg alg = new EnhancedEstimationAlg(net, getDefaultDuration(), granularity, getScenarioRef());
+                    EnhancedEstimationAlg alg = new EnhancedEstimationAlg(net, getDefaultDuration(), granularity, getScenarioRef(), intermediate.isSelected());
                     setVisible(false);
 
                     if (entireEst.isSelected()) {
@@ -252,6 +252,8 @@ public class TimeEstimatorDialog extends JDialog {
                         } catch (AlternativeStructureException e1) {
                             errMsg(e1.getMessage());
                         } catch (TimeOutOfBoundsException e1) {
+                            errMsg(e1.getMessage());
+                        } catch (TimeEstimationException e1) {
                             errMsg(e1.getMessage());
                         }
                     }

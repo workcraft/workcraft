@@ -11,8 +11,10 @@ import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
+import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.Time;
 import org.workcraft.plugins.son.exception.AlternativeStructureException;
+import org.workcraft.plugins.son.exception.TimeEstimationException;
 import org.workcraft.plugins.son.exception.TimeOutOfBoundsException;
 import org.workcraft.plugins.son.gui.TimeConsistencyDialog.Granularity;
 import org.workcraft.plugins.son.util.Interval;
@@ -22,13 +24,15 @@ import org.workcraft.plugins.son.util.ScenarioRef;
 public class EnhancedEstimationAlg extends EstimationAlg{
 
 	protected Map<Time, Boolean[]> modify;
+	protected boolean interm;
 	
-	public EnhancedEstimationAlg(SON net, Interval d, Granularity g, ScenarioRef s) {
+	public EnhancedEstimationAlg(SON net, Interval d, Granularity g, ScenarioRef s, boolean interm) {
 		super(net, d, g, s);		
 		modify = new HashMap<Time, Boolean[]>();
+		this.interm = interm;
 	}
 	
-	public void estimateFinish(Time n) throws TimeOutOfBoundsException, AlternativeStructureException{
+	public void estimateFinish(Time n) throws TimeOutOfBoundsException, AlternativeStructureException, TimeEstimationException{
 		//nearest right nodes of n with specified finish time intervals
 		Set<Time> rBoundary = new HashSet<Time>();
 		// nodes on paths from n to RBoundary nodes
@@ -42,6 +46,11 @@ public class EnhancedEstimationAlg extends EstimationAlg{
 		}else{
 			 throw new AlternativeStructureException("A scenario is required for the estimation");
 		}
+		
+		if(!n.getEndTime().isSpecified())
+            throw new TimeEstimationException(
+                    "cannot find causally time value (forward).");
+		finalize(n);
 	}
 	
 	protected void init(){
@@ -58,6 +67,41 @@ public class EnhancedEstimationAlg extends EstimationAlg{
                         ((Time) second).setStartTime(con.getTime());
                     }
                 }
+            }
+        }
+	}
+	
+	protected void finalize(Node n){
+        SONAlg sonAlg = new SONAlg(net);
+        Collection<PlaceNode> initial = sonAlg.getSONInitial();
+        Collection<PlaceNode> finalM = sonAlg.getSONFinal();
+        
+        //assign estimated time value from nodes to connections
+        if(interm){
+	        for (SONConnection con : net.getSONConnections()) {
+	            if (con.getSemantics() == Semantics.PNLINE) {
+	                Node first = con.getFirst();
+	                if (first instanceof Time) {
+	                    con.setTime(((Time) first).getEndTime());
+	                    con.setTimeLabelColor(color);
+	                }
+	            }
+	        }
+        }else{
+        	Collection<SONConnection> cons = net.getOutputPNConnections(n);
+        	for(SONConnection con : cons){
+        		 con.setTime(((Time)n).getEndTime());
+        		 con.setTimeLabelColor(color);
+        	}
+        }
+        
+        for (Time time : net.getTimeNodes()) {
+            Interval defTime = new Interval();
+            if (!initial.contains(time)) {
+                time.setStartTime(defTime);
+            }
+            if (!finalM.contains(time)) {
+                time.setEndTime(defTime);
             }
         }
 	}
@@ -88,7 +132,7 @@ public class EnhancedEstimationAlg extends EstimationAlg{
 		}
 	}
 	
-	private void backwardBFSTimes(Time n, Set<Time> boundary, Set<Time> neighbourhood) throws TimeOutOfBoundsException{
+	private void backwardBFSTimes(Time n, Set<Time> boundary, Set<Time> neighbourhood) throws TimeOutOfBoundsException, TimeEstimationException{
 		Collection<Node> nodes = scenario.getNodes(net);
 		Map<Time, Integer> visit = new HashMap<Time, Integer>();
 		Set<Time> working = boundary;
@@ -119,7 +163,13 @@ public class EnhancedEstimationAlg extends EstimationAlg{
 							addModify(t, 3);
 						}else{
 							if(!nd.getEndTime().equals(end)){
-								nd.setEndTime(Interval.getOverlapping(end, nd.getEndTime())); 
+								Interval overlap = Interval.getOverlapping(end, nd.getEndTime());
+								if(overlap == null)
+						            throw new TimeEstimationException(net.getNodeReference(nd)+".finish (" + nd.getEndTime().toString()+
+						                    ") is inconsistent with calculated interval " + end.toString()+" (forward).");
+								else{
+									nd.setEndTime(Interval.getOverlapping(end, nd.getEndTime())); 
+								}
 								addModify(t, 3);
 							}
 						}

@@ -363,6 +363,8 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
             result.add(e.getMessage());
         } catch (AlternativeStructureException e1) {
             errMsg(e1.getMessage());
+        } catch (TimeEstimationException e1) {
+            errMsg(e1.getMessage());
         }
 
         return result;
@@ -373,7 +375,7 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
         consistencyAlg.removeProperties();
         consistencyAlg.setProperties();
 
-        estimationAlg = new EnhancedEstimationAlg(net, settings.getDefaultDuration(), settings.getGranularity(), settings.getSeletedScenario());
+        estimationAlg = new EnhancedEstimationAlg(net, settings.getDefaultDuration(), settings.getGranularity(), settings.getSeletedScenario(), false);
 
         syncCPs = getSyncCPs();
 
