@@ -73,6 +73,10 @@ public class CircuitSimulationTool extends StgSimulationTool {
             circuitTrace = new Trace();
             for (String ref: trace) {
                 Transition t = getBestTransitionToFire(ref);
+                if (t == null) {
+                    String flatRef = NamespaceHelper.hierarchicalToFlatName(ref);
+                    t = getBestTransitionToFire(flatRef);
+                }
                 if (t != null) {
                     String circuitRef = net.getNodeReference(t);
                     circuitTrace.add(circuitRef);
