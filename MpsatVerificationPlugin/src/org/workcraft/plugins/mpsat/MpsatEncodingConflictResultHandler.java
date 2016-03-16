@@ -38,7 +38,7 @@ final class MpsatEncodingConflictResultHandler implements Runnable {
         MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue());
         List<Solution> solutions = mdp.getSolutions();
         if (!Solution.hasTraces(solutions)) {
-            JOptionPane.showMessageDialog(null, "No encodning conflicts.", "Verification results", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(null, "No encoding conflicts.", "Verification results", JOptionPane.INFORMATION_MESSAGE);
         } else {
             GraphEditorPanel currentEditor = getCurrentEditor(we);
             final ToolboxPanel toolbox = currentEditor.getToolBox();

@@ -304,7 +304,7 @@ public class MpsatSettings {
     }
 
     public static MpsatSettings getCscSettings() {
-        return new MpsatSettings("Complete ctate coding", MpsatMode.CSC_CONFLICT_DETECTION, 0,
+        return new MpsatSettings("Complete state coding", MpsatMode.CSC_CONFLICT_DETECTION, 0,
                 SolutionMode.ALL, -1 /* unlimited */, null, true);
     }
 
