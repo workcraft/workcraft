@@ -59,17 +59,14 @@ public class TransferableDocument implements Transferable {
             if (flavor == DataFlavor.stringFlavor) {
                 try {
                     TransformerFactory tFactory = TransformerFactory.newInstance();
-                    tFactory.setAttribute("indent-number", new Integer(2));
-
                     Transformer transformer = tFactory.newTransformer();
-
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-
-                    DOMSource source = new DOMSource(doc);
-                    StreamResult result = new StreamResult(baos);
-
                     transformer.setOutputProperty(OutputKeys.ENCODING, "utf-8");
                     transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+                    transformer.setOutputProperty("{http://xml.apache.org/xalan}indent-amount", "2");
+
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    DOMSource source = new DOMSource(doc);
+                    StreamResult result = new StreamResult(baos);
                     transformer.transform(source, result);
 
                     return baos.toString("utf-8");
