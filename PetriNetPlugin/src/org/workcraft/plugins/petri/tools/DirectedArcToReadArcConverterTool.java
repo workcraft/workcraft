@@ -33,6 +33,11 @@ public class DirectedArcToReadArcConverterTool extends TransformationTool implem
     }
 
     @Override
+    public boolean isEnabled(WorkspaceEntry we, Node node) {
+        return true;
+    }
+
+    @Override
     public Position getPosition() {
         return Position.TOP;
     }

@@ -59,6 +59,11 @@ public class TransitionContractorTool extends TransformationTool implements Node
     }
 
     @Override
+    public boolean isEnabled(WorkspaceEntry we, Node node) {
+        return true;
+    }
+
+    @Override
     public Position getPosition() {
         return null;
     }

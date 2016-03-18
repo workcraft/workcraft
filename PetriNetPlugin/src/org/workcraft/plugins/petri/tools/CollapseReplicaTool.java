@@ -31,6 +31,11 @@ public class CollapseReplicaTool extends TransformationTool implements NodeTrans
     }
 
     @Override
+    public boolean isEnabled(WorkspaceEntry we, Node node) {
+        return true;
+    }
+
+    @Override
     public Position getPosition() {
         return Position.MIDDLE;
     }

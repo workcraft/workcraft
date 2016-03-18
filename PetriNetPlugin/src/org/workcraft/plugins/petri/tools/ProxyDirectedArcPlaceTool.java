@@ -27,6 +27,7 @@ public class ProxyDirectedArcPlaceTool extends TransformationTool implements Nod
 
     @Override
     public boolean isApplicableTo(Node node) {
+        boolean result = false;
         if (node instanceof VisualConnection) {
             VisualConnection connection = (VisualConnection) node;
             Node place = null;
@@ -35,9 +36,14 @@ public class ProxyDirectedArcPlaceTool extends TransformationTool implements Nod
             } else if (PetriNetUtils.isVisualProducingArc(connection)) {
                 place = connection.getSecond();
             }
-            return place instanceof VisualPlace;
+            result = place instanceof VisualPlace;
         }
-        return false;
+        return result;
+    }
+
+    @Override
+    public boolean isEnabled(WorkspaceEntry we, Node node) {
+        return true;
     }
 
     @Override

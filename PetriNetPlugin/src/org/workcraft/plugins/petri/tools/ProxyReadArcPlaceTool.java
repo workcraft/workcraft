@@ -36,6 +36,11 @@ public class ProxyReadArcPlaceTool extends TransformationTool implements NodeTra
     }
 
     @Override
+    public boolean isEnabled(WorkspaceEntry we, Node node) {
+        return true;
+    }
+
+    @Override
     public Position getPosition() {
         return Position.MIDDLE;
     }

@@ -42,10 +42,12 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.Dependent;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Drawable;
+import org.workcraft.dom.visual.MixUtils;
 import org.workcraft.dom.visual.Shapable;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.NodesAddedEvent;
@@ -578,6 +580,42 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
             setBubbleSize(srcConnection.getBubbleSize());
             setScaleMode(srcConnection.getScaleMode());
         }
+    }
+
+    @Override
+    public void mixStyle(Stylable... srcs) {
+        super.mixStyle(srcs);
+        boolean dstHasBubble = false;
+        boolean dstHasArrow = false;
+        LinkedList<ConnectionType> connectionTypes = new LinkedList<>();
+        LinkedList<Color> colors = new LinkedList<>();
+        LinkedList<Double> lineWidths = new LinkedList<>();
+        LinkedList<Double> arrowLengths = new LinkedList<>();
+        LinkedList<Double> arrowWidths = new LinkedList<>();
+        LinkedList<Double> bubbleSizes = new LinkedList<>();
+        LinkedList<ScaleMode> scaleModes = new LinkedList<>();
+        for (Stylable src: srcs) {
+            if (src instanceof VisualConnection) {
+                VisualConnection srcConnection = (VisualConnection) src;
+                dstHasArrow |= srcConnection.hasArrow();
+                dstHasBubble |= srcConnection.hasBubble();
+                connectionTypes.add(srcConnection.getConnectionType());
+                colors.add(srcConnection.getColor());
+                lineWidths.add(srcConnection.getLineWidth());
+                arrowLengths.add(srcConnection.getArrowLength());
+                arrowWidths.add(srcConnection.getArrowWidth());
+                bubbleSizes.add(srcConnection.getBubbleSize());
+                scaleModes.add(srcConnection.getScaleMode());
+            }
+        }
+        setArrow(dstHasArrow);
+        setBubble(dstHasBubble);
+        setConnectionType(MixUtils.vote(connectionTypes, ConnectionType.class, ConnectionType.POLYLINE));
+        setColor(Coloriser.mix(colors));
+        setLineWidth(MixUtils.average(lineWidths));
+        setArrowLength(MixUtils.average(arrowLengths));
+        setArrowWidth(MixUtils.average(arrowWidths));
+        setScaleMode(MixUtils.vote(scaleModes, ScaleMode.class, ScaleMode.ADAPTIVE));
     }
 
     @Override

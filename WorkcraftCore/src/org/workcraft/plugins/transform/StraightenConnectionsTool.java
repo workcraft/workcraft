@@ -52,6 +52,11 @@ public class StraightenConnectionsTool extends TransformationTool implements Nod
 
     @Override
     public boolean isApplicableTo(Node node) {
+        return node instanceof VisualConnection;
+    }
+
+    @Override
+    public boolean isEnabled(WorkspaceEntry we, Node node) {
         boolean result = false;
         if (node instanceof VisualConnection) {
             VisualConnection connection = (VisualConnection) node;

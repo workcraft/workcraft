@@ -33,6 +33,11 @@ public class DummyToSignalTransitionConverterTool extends TransformationTool imp
     }
 
     @Override
+    public boolean isEnabled(WorkspaceEntry we, Node node) {
+        return true;
+    }
+
+    @Override
     public int getPriority() {
         return 1;
     }

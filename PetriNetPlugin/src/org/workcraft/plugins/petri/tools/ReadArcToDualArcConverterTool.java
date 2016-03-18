@@ -34,6 +34,11 @@ public class ReadArcToDualArcConverterTool extends TransformationTool implements
     }
 
     @Override
+    public boolean isEnabled(WorkspaceEntry we, Node node) {
+        return true;
+    }
+
+    @Override
     public Position getPosition() {
         return Position.TOP;
     }
