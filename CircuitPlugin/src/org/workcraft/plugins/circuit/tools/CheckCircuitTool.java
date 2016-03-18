@@ -15,6 +15,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class CheckCircuitTool extends VerificationTool {
 
+    private static final String TITLE_VERIFICATION = "Circuit verification";
+
     public String getDisplayName() {
         return "Conformation, deadlock and hazard (reuse unfolding) [MPSat]";
     }
@@ -37,30 +39,49 @@ public class CheckCircuitTool extends VerificationTool {
         Circuit circuit = (Circuit) we.getModelEntry().getMathModel();
         if (circuit.getFunctionComponents().isEmpty()) {
             JOptionPane.showMessageDialog(mainWindow, "Error: the circuit must have components.",
-                    "Circuit verification", JOptionPane.ERROR_MESSAGE);
+                    TITLE_VERIFICATION, JOptionPane.ERROR_MESSAGE);
             return;
         }
+
+        boolean checkConformation = checkConformation();
+        boolean checkDeadlock = checkDeadlock();
+        boolean checkHazard = checkHazard();
 
         VisualCircuit visualCircuit = (VisualCircuit) we.getModelEntry().getVisualModel();
         File envFile = visualCircuit.getEnvironmentFile();
         if ((envFile == null) || !envFile.exists()) {
-            if (checkConformation()) {
-                JOptionPane.showMessageDialog(mainWindow, "Error: the circuit conformation cannot be checked without environment STG.",
-                        "Circuit verification", JOptionPane.ERROR_MESSAGE);
-                return;
+            if (checkConformation) {
+                if (checkDeadlock || checkHazard) {
+                    int answer = JOptionPane.showConfirmDialog(mainWindow,
+                            "The circuit conformation cannot be checked without environment STG.\n\n"
+                            + "Proceed with verification of the other properties?",
+                            TITLE_VERIFICATION, JOptionPane.YES_NO_OPTION);
+
+                    boolean proceed = answer == JOptionPane.YES_OPTION;
+                    checkDeadlock &= proceed;
+                    checkHazard &= proceed;
+                } else {
+                    JOptionPane.showMessageDialog(mainWindow,
+                            "Error: the circuit conformation cannot be checked without environment STG.",
+                            TITLE_VERIFICATION, JOptionPane.ERROR_MESSAGE);
+                }
+                checkConformation = false;
             } else {
-                JOptionPane.showMessageDialog(mainWindow, "Warning: the circuit will be verified without environment STG.",
-                        "Circuit verification", JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(mainWindow,
+                        "Warning: the circuit will be verified without environment STG.",
+                        TITLE_VERIFICATION, JOptionPane.WARNING_MESSAGE);
             }
         }
 
-        final CheckCircuitTask task = new CheckCircuitTask(we, checkConformation(), checkDeadlock(), checkHazard());
-        String description = "MPSat tool chain";
-        String title = we.getTitle();
-        if (!title.isEmpty()) {
-            description += "(" + title + ")";
+        if (checkConformation || checkDeadlock || checkHazard) {
+            final CheckCircuitTask task = new CheckCircuitTask(we, checkConformation, checkDeadlock, checkHazard);
+            String description = "MPSat tool chain";
+            String title = we.getTitle();
+            if (!title.isEmpty()) {
+                description += "(" + title + ")";
+            }
+            framework.getTaskManager().queue(task, description, new MpsatChainResultHandler(task));
         }
-        framework.getTaskManager().queue(task, description, new MpsatChainResultHandler(task));
     }
 
     public boolean checkConformation() {
