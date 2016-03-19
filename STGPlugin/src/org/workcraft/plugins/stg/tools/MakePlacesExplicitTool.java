@@ -29,6 +29,11 @@ public class MakePlacesExplicitTool extends TransformationTool implements NodeTr
     }
 
     @Override
+    public boolean isEnabled(WorkspaceEntry we, Node node) {
+        return true;
+    }
+
+    @Override
     public Position getPosition() {
         return null;
     }

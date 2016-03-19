@@ -369,10 +369,15 @@ public class SelectionTool extends AbstractTool {
         JPopupMenu popup = null;
         WorkspaceEntry we = editor.getWorkspaceEntry();
         List<Tool> applicableTools = new ArrayList<>();
+        HashSet<Tool> enabledTools = new HashSet<>();
         for (Tool tool: Tools.getApplicableTools(we)) {
             if (tool instanceof NodeTransformer) {
-                if (((NodeTransformer) tool).isApplicableTo(node)) {
+                NodeTransformer nodeTransformer = (NodeTransformer) tool;
+                if (nodeTransformer.isApplicableTo(node)) {
                     applicableTools.add(tool);
+                    if (nodeTransformer.isEnabled(we, node)) {
+                        enabledTools.add(tool);
+                    }
                 }
             }
         }
@@ -384,6 +389,7 @@ public class SelectionTool extends AbstractTool {
                 ToolAction toolAction = new ToolAction(tool);
                 ActionMenuItem miTool = new ActionMenuItem(toolAction);
                 miTool.addScriptedActionListener(mainWindow.getDefaultActionListener());
+                miTool.setEnabled(enabledTools.contains(tool));
                 popup.add(miTool);
             }
         }

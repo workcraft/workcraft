@@ -31,7 +31,6 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 
@@ -457,30 +456,9 @@ public abstract class VisualComponent extends VisualTransformableNode implements
         setFillColor(Coloriser.mix(fillColors));
         setNameColor(Coloriser.mix(nameColors));
         setLabelColor(Coloriser.mix(labelColors));
-        setNamePositioning(votePositioning(namePositioning));
-        setLabelPositioning(votePositioning(labelPositioning));
+        setNamePositioning(MixUtils.vote(namePositioning, Positioning.class, Positioning.CENTER));
+        setLabelPositioning(MixUtils.vote(labelPositioning, Positioning.class, Positioning.CENTER));
         //setLabel(label);
-    }
-
-    private Positioning votePositioning(LinkedList<Positioning> positionings) {
-        HashMap<Positioning, Integer> positioningCount = new HashMap<>();
-        for (Positioning positioning: positionings) {
-            int count = 0;
-            if (positioningCount.containsKey(positioning)) {
-                count = positioningCount.get(positioning);
-            }
-            positioningCount.put(positioning, count + 1);
-        }
-        int maxCount = 0;
-        Positioning result = Positioning.CENTER;
-        for (Positioning positioning: positioningCount.keySet()) {
-            int count = positioningCount.get(positioning);
-            if (count > maxCount) {
-                maxCount = count;
-                result = positioning;
-            }
-        }
-        return result;
     }
 
     @Override
