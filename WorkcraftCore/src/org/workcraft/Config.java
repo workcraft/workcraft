@@ -275,9 +275,9 @@ public class Config {
 
         try {
             TransformerFactory tFactory = TransformerFactory.newInstance();
-            tFactory.setAttribute("indent-number", new Integer(2));
             Transformer transformer = tFactory.newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xalan}indent-amount", "2");
 
             File parentDir = file.getParentFile();
             if ((parentDir != null) && !parentDir.exists()) {

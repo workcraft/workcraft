@@ -83,9 +83,9 @@ public class XmlUtil {
     public static void writeDocument(Document doc, OutputStream os) throws IOException {
         try {
             TransformerFactory tFactory = TransformerFactory.newInstance();
-            tFactory.setAttribute("indent-number", new Integer(2));
             Transformer transformer = tFactory.newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty("{http://xml.apache.org/xalan}indent-amount", "2");
 
             DOMSource source = new DOMSource(doc);
             StreamResult result = new StreamResult(new OutputStreamWriter(os));
