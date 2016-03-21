@@ -277,7 +277,6 @@ public class VisualCircuit extends AbstractVisualModel {
         if (container instanceof VisualFunctionComponent) {
             VisualFunctionComponent component = (VisualFunctionComponent) container;
             component.addContact(this, vc);
-            component.setContactsDefaultPosition();
         } else {
             Container mathContainer = NamespaceHelper.getMathContainer(this, getRoot());
             mathContainer.add(vc.getReferencedComponent());
@@ -286,6 +285,7 @@ public class VisualCircuit extends AbstractVisualModel {
         if (name != null) {
             circuit.setName(vc.getReferencedComponent(), name);
         }
+        vc.setPosition(new Point2D.Double(0.0, 0.0));
         return vc;
     }
 

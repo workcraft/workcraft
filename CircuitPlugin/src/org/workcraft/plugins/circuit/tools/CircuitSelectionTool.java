@@ -36,25 +36,23 @@ public class CircuitSelectionTool extends SelectionTool {
                 popup = new JPopupMenu();
                 popup.setFocusable(false);
             }
-            JMenuItem addOutputMenuItem = new JMenuItem("Add output (EAST)");
+            JMenuItem addOutputMenuItem = new JMenuItem("Add output pin");
             addOutputMenuItem.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     editor.getWorkspaceEntry().saveMemento();
-                    VisualCircuit vcircuit = (VisualCircuit) editor.getModel();
-                    vcircuit.getOrCreateContact(component, null, IOType.OUTPUT);
-                    component.setContactsDefaultPosition();
+                    VisualCircuit circuit = (VisualCircuit) editor.getModel();
+                    circuit.getOrCreateContact(component, null, IOType.OUTPUT);
                 }
             });
             popup.add(addOutputMenuItem);
-            JMenuItem addInputMenuItem = new JMenuItem("Add input (WEST)");
+            JMenuItem addInputMenuItem = new JMenuItem("Add input pin");
             addInputMenuItem.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     editor.getWorkspaceEntry().saveMemento();
-                    VisualCircuit vcircuit = (VisualCircuit) editor.getModel();
-                    vcircuit.getOrCreateContact(component, null, IOType.INPUT);
-                    component.setContactsDefaultPosition();
+                    VisualCircuit circuit = (VisualCircuit) editor.getModel();
+                    circuit.getOrCreateContact(component, null, IOType.INPUT);
                 }
             });
             popup.add(addInputMenuItem);
