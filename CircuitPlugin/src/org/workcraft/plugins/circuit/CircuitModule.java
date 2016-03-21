@@ -17,6 +17,7 @@ import org.workcraft.plugins.circuit.serialisation.FunctionDeserialiser;
 import org.workcraft.plugins.circuit.serialisation.FunctionSerialiser;
 import org.workcraft.plugins.circuit.tools.CheckCircuitTool;
 import org.workcraft.plugins.circuit.tools.CircuitLayoutTool;
+import org.workcraft.plugins.circuit.tools.ComponentContractionTool;
 import org.workcraft.plugins.circuit.tools.JointContractionTool;
 import org.workcraft.plugins.circuit.tools.StgGeneratorTool;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
@@ -136,6 +137,13 @@ public class CircuitModule implements Module {
             @Override
             public Tool create() {
                 return new JointContractionTool();
+            }
+        });
+
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new ComponentContractionTool();
             }
         });
 

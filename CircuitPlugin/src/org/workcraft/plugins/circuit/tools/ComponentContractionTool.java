@@ -22,10 +22,9 @@
 package org.workcraft.plugins.circuit.tools;
 
 import java.awt.geom.Point2D;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.Set;
 
 import org.workcraft.NodeTransformer;
 import org.workcraft.TransformationTool;
@@ -37,19 +36,19 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.circuit.VisualCircuitComponent;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualContact;
-import org.workcraft.plugins.circuit.VisualJoint;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class JointContractionTool extends TransformationTool implements NodeTransformer {
+public class ComponentContractionTool extends TransformationTool implements NodeTransformer {
 
     @Override
     public String getDisplayName() {
-        return "Contract joint (selected or all)";
+        return "Contract selected single-input component";
     }
 
     @Override
@@ -59,17 +58,15 @@ public class JointContractionTool extends TransformationTool implements NodeTran
 
     @Override
     public boolean isApplicableTo(Node node) {
-        return node instanceof VisualJoint;
+        return node instanceof VisualCircuitComponent;
     }
 
     @Override
     public boolean isEnabled(WorkspaceEntry we, Node node) {
         boolean result = false;
-        if (node instanceof VisualJoint) {
-            VisualModel visualModel = we.getModelEntry().getVisualModel();
-            if (visualModel != null) {
-                result = (visualModel.getPreset(node).size() < 2) && (visualModel.getPostset(node).size() < 2);
-            }
+        if (node instanceof VisualCircuitComponent) {
+            VisualCircuitComponent component = (VisualCircuitComponent) node;
+            result = component.getReferencedCircuitComponent().isSingleInputSingleOutput();
         }
         return result;
     }
@@ -83,19 +80,13 @@ public class JointContractionTool extends TransformationTool implements NodeTran
     public void run(WorkspaceEntry we) {
         final VisualModel visualModel = we.getModelEntry().getVisualModel();
         if (visualModel != null) {
-            Collection<VisualJoint> joints = Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualJoint.class);
+            Collection<VisualCircuitComponent> components = Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualCircuitComponent.class);
             Collection<Node> selection = visualModel.getSelection();
-            if (!selection.isEmpty()) {
-                HashSet<Node> selectedConnections = new HashSet<>(selection);
-                selectedConnections.retainAll(joints);
-                if (!selectedConnections.isEmpty()) {
-                    joints.retainAll(selection);
-                }
-            }
-            if (!joints.isEmpty()) {
+            components.retainAll(selection);
+            if (!components.isEmpty()) {
                 we.saveMemento();
-                for (VisualJoint joint: joints) {
-                    transform(visualModel, joint);
+                for (VisualCircuitComponent component: components) {
+                    transform(visualModel, component);
                 }
             }
         }
@@ -103,39 +94,34 @@ public class JointContractionTool extends TransformationTool implements NodeTran
 
     @Override
     public void transform(Model model, Node node) {
-        if ((model instanceof VisualCircuit) && (node instanceof VisualJoint)) {
+        if ((model instanceof VisualCircuit) && (node instanceof VisualCircuitComponent)) {
             VisualCircuit circuit = (VisualCircuit) model;
-            VisualJoint joint = (VisualJoint) node;
-            Set<Connection> connections = model.getConnections(node);
-            VisualCircuitConnection predConnection = null;
-            VisualCircuitConnection succConnection = null;
-            boolean isRemovableJoint = true;
-            for (Connection connection: connections) {
-                if (!(connection instanceof VisualCircuitConnection)) continue;
-                if (connection.getFirst() == node) {
-                    if (succConnection == null) {
-                        succConnection = (VisualCircuitConnection) connection;
-                    } else {
-                        isRemovableJoint = false;
-                    }
+            VisualCircuitComponent component = (VisualCircuitComponent) node;
+            Collection<VisualContact> inputContacts = component.getVisualInputs();
+            if (inputContacts.size() < 2) {
+                VisualContact inputContact = component.getFirstVisualInput();
+                for (VisualContact outputContact: component.getVisualOutputs()) {
+                    connectContacts(circuit, inputContact, outputContact);
                 }
-                if (connection.getSecond() == node) {
-                    if (predConnection == null) {
-                        predConnection = (VisualCircuitConnection) connection;
-                    } else {
-                        isRemovableJoint = false;
-                    }
-                }
+                circuit.remove(component);
+            } else {
+                LogUtils.logWarningLine("Cannot contract a component with more than 1 input.");
             }
-            if (isRemovableJoint) {
-                LinkedList<Point2D> locations = ConnectionHelper.getMergedControlPoints(joint, predConnection, succConnection);
-                circuit.remove(joint);
-                Node fromNode = predConnection instanceof VisualCircuitConnection ? predConnection.getFirst() : null;
-                Node toNode = succConnection instanceof VisualCircuitConnection ? succConnection.getSecond() : null;
-                if ((fromNode instanceof VisualContact) && (toNode instanceof VisualContact)) {
+        }
+    }
+
+    private void connectContacts(VisualCircuit circuit, VisualContact inputContact, VisualContact outputContact) {
+        if ((inputContact != null) && (outputContact != null)) {
+            for (Connection inputConnection: circuit.getConnections(inputContact)) {
+                Node fromNode = inputConnection.getFirst();
+                for (Connection outputConnection: new ArrayList<>(circuit.getConnections(outputContact))) {
+                    Node toNode = outputConnection.getSecond();
+                    LinkedList<Point2D> locations = ConnectionHelper.getMergedControlPoints((VisualContact) outputContact,
+                            (VisualConnection) inputConnection, (VisualConnection) outputConnection);
+                    circuit.remove(outputConnection);
                     try {
                         VisualConnection newConnection = (VisualCircuitConnection) circuit.connect(fromNode, toNode);
-                        newConnection.mixStyle(predConnection, succConnection);
+                        newConnection.mixStyle((VisualConnection) inputConnection, (VisualConnection) outputConnection);
                         ConnectionHelper.addControlPoints(newConnection, locations);
                     } catch (InvalidConnectionException e) {
                         LogUtils.logWarningLine(e.getMessage());

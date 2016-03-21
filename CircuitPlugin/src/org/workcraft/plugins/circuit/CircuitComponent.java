@@ -174,4 +174,8 @@ public class CircuitComponent extends MathGroup implements Container, Observable
         return result;
     }
 
+    public boolean isSingleInputSingleOutput() {
+        return (getContacts().size() == 2) && (getFirstInput() != null) && (getFirstOutput() != null);
+    }
+
 }

@@ -32,6 +32,7 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -758,6 +759,52 @@ public class VisualCircuitComponent extends VisualComponent implements
     public void setLabel(String label) {
         getReferencedCircuitComponent().setModule(label);
         super.setLabel(label);
+    }
+
+    public Collection<VisualContact> getVisualContacts() {
+        return Hierarchy.filterNodesByType(getChildren(), VisualContact.class);
+    }
+
+    public Collection<VisualContact> getVisualInputs() {
+        ArrayList<VisualContact> result = new ArrayList<>();
+        for (VisualContact contact: getVisualContacts()) {
+            if (contact.isInput()) {
+                result.add(contact);
+            }
+        }
+        return result;
+    }
+
+    public Collection<VisualContact> getVisualOutputs() {
+        ArrayList<VisualContact> result = new ArrayList<>();
+        for (VisualContact contact: getVisualContacts()) {
+            if (contact.isOutput()) {
+                result.add(contact);
+            }
+        }
+        return result;
+    }
+
+    public VisualContact getFirstVisualInput() {
+        VisualContact result = null;
+        for (VisualContact contact: getVisualContacts()) {
+            if (contact.isInput()) {
+                result = contact;
+                break;
+            }
+        }
+        return result;
+    }
+
+    public VisualContact getFirstVisualOutput() {
+        VisualContact result = null;
+        for (VisualContact contact: getVisualContacts()) {
+            if (contact.isOutput()) {
+                result = contact;
+                break;
+            }
+        }
+        return result;
     }
 
 }

@@ -494,9 +494,4 @@ public class CircuitUtils {
         return result;
     }
 
-    public static boolean isInvertingPath(Contact driverContact, Contact contact) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
 }
