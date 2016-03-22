@@ -44,11 +44,11 @@ import org.workcraft.util.LogUtils;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class JointContractionTool extends TransformationTool implements NodeTransformer {
+public class JointSplitTool extends TransformationTool implements NodeTransformer {
 
     @Override
     public String getDisplayName() {
-        return "Contract joint (selected or all)";
+        return "Split joint (selected or all)";
     }
 
     @Override
@@ -67,7 +67,7 @@ public class JointContractionTool extends TransformationTool implements NodeTran
         if (node instanceof VisualJoint) {
             VisualModel visualModel = we.getModelEntry().getVisualModel();
             if (visualModel != null) {
-                result = (visualModel.getPreset(node).size() < 2) && (visualModel.getPostset(node).size() < 2);
+                result = (visualModel.getPreset(node).size() == 1) && (visualModel.getPostset(node).size() > 1);
             }
         }
         return result;
@@ -105,40 +105,36 @@ public class JointContractionTool extends TransformationTool implements NodeTran
         if ((model instanceof VisualCircuit) && (node instanceof VisualJoint)) {
             VisualCircuit circuit = (VisualCircuit) model;
             VisualJoint joint = (VisualJoint) node;
-            Set<Connection> connections = model.getConnections(node);
+            Set<Connection> connections = new HashSet<>(model.getConnections(node));
             VisualCircuitConnection predConnection = null;
-            VisualCircuitConnection succConnection = null;
-            boolean isRemovableJoint = true;
             for (Connection connection: connections) {
                 if (!(connection instanceof VisualCircuitConnection)) continue;
-                if (connection.getFirst() == node) {
-                    if (succConnection == null) {
-                        succConnection = (VisualCircuitConnection) connection;
-                    } else {
-                        isRemovableJoint = false;
-                    }
-                }
                 if (connection.getSecond() == node) {
-                    if (predConnection == null) {
-                        predConnection = (VisualCircuitConnection) connection;
-                    } else {
-                        isRemovableJoint = false;
+                    predConnection = (VisualCircuitConnection) connection;
+                }
+            }
+            if (predConnection != null) {
+                for (Connection connection: connections) {
+                    if (!(connection instanceof VisualCircuitConnection)) continue;
+                    if (connection.getFirst() == node) {
+                        VisualCircuitConnection succConnection = (VisualCircuitConnection) connection;
+
+                        LinkedList<Point2D> locations = ConnectionHelper.getMergedControlPoints(joint, predConnection, succConnection);
+                        circuit.remove(succConnection);
+
+                        Node fromNode = predConnection instanceof VisualCircuitConnection ? predConnection.getFirst() : null;
+                        Node toNode = succConnection instanceof VisualCircuitConnection ? succConnection.getSecond() : null;
+                        try {
+                            VisualConnection newConnection = (VisualCircuitConnection) circuit.connect(fromNode, toNode);
+                            newConnection.mixStyle(predConnection, succConnection);
+                            ConnectionHelper.addControlPoints(newConnection, locations);
+                        } catch (InvalidConnectionException e) {
+                            LogUtils.logWarningLine(e.getMessage());
+                        }
                     }
                 }
             }
-            if (isRemovableJoint) {
-                LinkedList<Point2D> locations = ConnectionHelper.getMergedControlPoints(joint, predConnection, succConnection);
-                circuit.remove(joint);
-                Node fromNode = predConnection instanceof VisualCircuitConnection ? predConnection.getFirst() : null;
-                Node toNode = succConnection instanceof VisualCircuitConnection ? succConnection.getSecond() : null;
-                try {
-                    VisualConnection newConnection = (VisualCircuitConnection) circuit.connect(fromNode, toNode);
-                    newConnection.mixStyle(predConnection, succConnection);
-                    ConnectionHelper.addControlPoints(newConnection, locations);
-                } catch (InvalidConnectionException e) {
-                    LogUtils.logWarningLine(e.getMessage());
-                }
-            }
+            circuit.remove(joint);
         }
     }
 
