@@ -20,6 +20,11 @@ public class SignalMirrorTool extends TransformationTool implements NodeTransfor
     }
 
     @Override
+    public String getPopupName() {
+        return "Mirror signal";
+    }
+
+    @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return we.getModelEntry().getMathModel() instanceof STG;
     }

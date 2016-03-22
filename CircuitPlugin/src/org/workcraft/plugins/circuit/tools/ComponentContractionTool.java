@@ -52,6 +52,11 @@ public class ComponentContractionTool extends TransformationTool implements Node
     }
 
     @Override
+    public String getPopupName() {
+        return "Contract component";
+    }
+
+    @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.canHas(we, VisualCircuit.class);
     }

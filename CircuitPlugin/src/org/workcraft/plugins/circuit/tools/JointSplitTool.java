@@ -52,6 +52,11 @@ public class JointSplitTool extends TransformationTool implements NodeTransforme
     }
 
     @Override
+    public String getPopupName() {
+        return "Split joint";
+    }
+
+    @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.canHas(we, VisualCircuit.class);
     }

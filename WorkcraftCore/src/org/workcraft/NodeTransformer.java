@@ -26,6 +26,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public interface NodeTransformer {
+    String getPopupName();
     boolean isApplicableTo(Node node);
     boolean isEnabled(WorkspaceEntry we, Node node);
     void transform(Model model, Node node);

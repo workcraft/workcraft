@@ -48,7 +48,12 @@ public class JointContractionTool extends TransformationTool implements NodeTran
 
     @Override
     public String getDisplayName() {
-        return "Contract joint (selected or all)";
+        return "Contract joints (selected or all)";
+    }
+
+    @Override
+    public String getPopupName() {
+        return "Contract joint";
     }
 
     @Override

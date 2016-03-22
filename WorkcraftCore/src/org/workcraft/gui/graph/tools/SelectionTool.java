@@ -76,7 +76,7 @@ import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.actions.ActionMenuItem;
-import org.workcraft.gui.actions.ToolAction;
+import org.workcraft.gui.actions.PopupToolAction;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.layouts.WrapLayout;
@@ -86,6 +86,7 @@ import org.workcraft.util.Tools;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class SelectionTool extends AbstractTool {
+
     private enum DrugState { NONE, MOVE, SELECT };
     private enum SelectionMode { NONE, ADD, REMOVE, REPLACE };
 
@@ -386,7 +387,7 @@ public class SelectionTool extends AbstractTool {
             popup.setFocusable(false);
             MainWindow mainWindow = editor.getMainWindow();
             for (Tool tool: applicableTools) {
-                ToolAction toolAction = new ToolAction(tool);
+                PopupToolAction toolAction = new PopupToolAction(tool);
                 ActionMenuItem miTool = new ActionMenuItem(toolAction);
                 miTool.addScriptedActionListener(mainWindow.getDefaultActionListener());
                 miTool.setEnabled(enabledTools.contains(tool));

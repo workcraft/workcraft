@@ -23,6 +23,11 @@ public class DummyToSignalTransitionConverterTool extends TransformationTool imp
     }
 
     @Override
+    public String getPopupName() {
+        return "Convert to signal transition";
+    }
+
+    @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return we.getModelEntry().getMathModel() instanceof STG;
     }

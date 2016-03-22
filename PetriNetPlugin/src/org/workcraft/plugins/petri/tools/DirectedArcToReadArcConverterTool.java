@@ -23,6 +23,11 @@ public class DirectedArcToReadArcConverterTool extends TransformationTool implem
     }
 
     @Override
+    public String getPopupName() {
+        return "Convert to read-arc";
+    }
+
+    @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return we.getModelEntry().getMathModel() instanceof PetriNetModel;
     }

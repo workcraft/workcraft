@@ -35,7 +35,7 @@ import org.workcraft.dom.visual.VisualReplica;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 
-@DisplayName("Replica place")
+@DisplayName("Proxy place")
 @SVGIcon("images/icons/svg/terminal.svg")
 public class VisualReplicaPlace extends VisualReplica {
 
