@@ -46,6 +46,11 @@ public class StraightenConnectionsTool extends TransformationTool implements Nod
     }
 
     @Override
+    public String getPopupName() {
+        return "Straighten connection";
+    }
+
+    @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.canHas(we, VisualModel.class);
     }

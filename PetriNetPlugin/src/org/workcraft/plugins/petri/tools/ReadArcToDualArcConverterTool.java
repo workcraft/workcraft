@@ -24,6 +24,11 @@ public class ReadArcToDualArcConverterTool extends TransformationTool implements
     }
 
     @Override
+    public String getPopupName() {
+        return "Convert dual producing/consuming arc";
+    }
+
+    @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return we.getModelEntry().getMathModel() instanceof PetriNetModel;
     }

@@ -50,7 +50,12 @@ public class ComponentInsertionTool extends TransformationTool implements NodeTr
 
     @Override
     public String getDisplayName() {
-        return "Insert component into selected wires";
+        return "Insert components into selected wires";
+    }
+
+    @Override
+    public String getPopupName() {
+        return "Insert component";
     }
 
     @Override

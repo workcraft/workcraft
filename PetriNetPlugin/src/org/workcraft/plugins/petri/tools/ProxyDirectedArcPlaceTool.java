@@ -21,6 +21,11 @@ public class ProxyDirectedArcPlaceTool extends TransformationTool implements Nod
     }
 
     @Override
+    public String getPopupName() {
+        return "Create proxy place";
+    }
+
+    @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return we.getModelEntry().getMathModel() instanceof PetriNetModel;
     }

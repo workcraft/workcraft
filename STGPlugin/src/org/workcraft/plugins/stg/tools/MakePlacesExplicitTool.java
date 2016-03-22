@@ -19,6 +19,11 @@ public class MakePlacesExplicitTool extends TransformationTool implements NodeTr
     }
 
     @Override
+    public String getPopupName() {
+        return "Make place explicit";
+    }
+
+    @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return we.getModelEntry().getMathModel() instanceof STG;
     }

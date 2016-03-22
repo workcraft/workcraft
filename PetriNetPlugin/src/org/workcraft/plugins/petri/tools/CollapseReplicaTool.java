@@ -21,6 +21,11 @@ public class CollapseReplicaTool extends TransformationTool implements NodeTrans
     }
 
     @Override
+    public String getPopupName() {
+        return "Collapse proxy place";
+    }
+
+    @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return we.getModelEntry().getMathModel() instanceof PetriNetModel;
     }

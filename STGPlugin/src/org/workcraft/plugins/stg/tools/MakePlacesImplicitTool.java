@@ -19,6 +19,11 @@ public class MakePlacesImplicitTool extends TransformationTool implements NodeTr
     }
 
     @Override
+    public String getPopupName() {
+        return "Make place implicit";
+    }
+
+    @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return we.getModelEntry().getMathModel() instanceof STG;
     }

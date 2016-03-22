@@ -49,6 +49,11 @@ public class TransitionContractorTool extends TransformationTool implements Node
     }
 
     @Override
+    public String getPopupName() {
+        return "Contract transition";
+    }
+
+    @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return we.getModelEntry().getMathModel() instanceof PetriNet;
     }
