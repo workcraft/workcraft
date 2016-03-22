@@ -38,7 +38,6 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
-import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualJoint;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
@@ -132,14 +131,12 @@ public class JointContractionTool extends TransformationTool implements NodeTran
                 circuit.remove(joint);
                 Node fromNode = predConnection instanceof VisualCircuitConnection ? predConnection.getFirst() : null;
                 Node toNode = succConnection instanceof VisualCircuitConnection ? succConnection.getSecond() : null;
-                if ((fromNode instanceof VisualContact) && (toNode instanceof VisualContact)) {
-                    try {
-                        VisualConnection newConnection = (VisualCircuitConnection) circuit.connect(fromNode, toNode);
-                        newConnection.mixStyle(predConnection, succConnection);
-                        ConnectionHelper.addControlPoints(newConnection, locations);
-                    } catch (InvalidConnectionException e) {
-                        LogUtils.logWarningLine(e.getMessage());
-                    }
+                try {
+                    VisualConnection newConnection = (VisualCircuitConnection) circuit.connect(fromNode, toNode);
+                    newConnection.mixStyle(predConnection, succConnection);
+                    ConnectionHelper.addControlPoints(newConnection, locations);
+                } catch (InvalidConnectionException e) {
+                    LogUtils.logWarningLine(e.getMessage());
                 }
             }
         }
