@@ -63,8 +63,7 @@ public class ShowSg implements Tool {
             @Override
             public void finished(Result<? extends DrawSgResult> result, String description) {
                 if (result.getOutcome() == Outcome.FINISHED) {
-                    DesktopApi.open(result.getReturnValue().getPsFile());
-                    //SystemOpen.open(result.getReturnValue().getPsFile());
+                    DesktopApi.open(result.getReturnValue().getFile());
                 } else  if (result.getOutcome() != Outcome.CANCELLED) {
                     String errorMessage = "Petrify tool chain execution failed :-(";
                     Throwable cause = result.getCause();

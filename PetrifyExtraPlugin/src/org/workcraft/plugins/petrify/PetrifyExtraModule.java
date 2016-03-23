@@ -15,7 +15,7 @@ public class PetrifyExtraModule implements Module {
     public void init() {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
-        pm.registerClass(Exporter.class, PSExporter.class);
+        pm.registerClass(Exporter.class, AstgExporter.class);
         pm.registerClass(Settings.class, PetrifyExtraUtilitySettings.class);
 
         pm.registerClass(Tool.class, new Initialiser<Tool>() {

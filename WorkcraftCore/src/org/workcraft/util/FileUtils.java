@@ -86,10 +86,10 @@ public class FileUtils {
         if ((title != null) && !title.isEmpty()) {
             prefix = TEMP_DIRECTORY_PREFIX + title + "-";
         }
-        return getGoodTempPrefix(prefix);
+        return getCorrectTempPrefix(prefix);
     }
 
-    public static String getGoodTempPrefix(String prefix) {
+    private static String getCorrectTempPrefix(String prefix) {
         if (prefix == null) {
             prefix = "";
         }
@@ -109,7 +109,7 @@ public class FileUtils {
 
     public static File createTempFile(String prefix, String suffix, File directory) {
         File tempFile = null;
-        prefix = getGoodTempPrefix(prefix);
+        prefix = getCorrectTempPrefix(prefix);
         String errorMessage = "Cannot create a temporary file with prefix '" + prefix + "'";
         if (suffix == null) {
             suffix = "";
@@ -138,7 +138,7 @@ public class FileUtils {
         File tempDir = null;
         String errorMessage = "Cannot create a temporary directory with prefix '" + prefix + "'.";
         try {
-            tempDir = File.createTempFile(getGoodTempPrefix(prefix), "");
+            tempDir = File.createTempFile(getCorrectTempPrefix(prefix), "");
         } catch (IOException e) {
             throw new RuntimeException(errorMessage);
         }
