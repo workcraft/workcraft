@@ -11,6 +11,7 @@ import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.Model;
+import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.serialisation.Format;
@@ -25,6 +26,10 @@ import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class DrawSgTask implements Task<DrawSgResult> {
+
+    private static final String STG_FILE_NAME = "model.g";
+    private static final String SG_FILE_NAME = "model.sg";
+    private static final String RESULT_FILE_NAME = DesktopApi.getOs().isWindows() ? "model.ps" : "model.pdf";
 
     private final class HugeSgRunnable implements Runnable {
         private final String stateCountMsg;
@@ -66,7 +71,7 @@ public class DrawSgTask implements Task<DrawSgResult> {
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         try {
-            File stgFile = new File(directory, "model.g");
+            File stgFile = new File(directory, STG_FILE_NAME);
             stgFile.deleteOnExit();
             Model model = WorkspaceUtils.getAs(we, PetriNetModel.class);
             ExportTask exportTask = Export.createExportTask(model, stgFile, Format.STG, framework.getPluginManager());
@@ -83,7 +88,7 @@ public class DrawSgTask implements Task<DrawSgResult> {
                 return Result.cancelled();
             }
 
-            File sgFile = new File(directory, "model.sg");
+            File sgFile = new File(directory, SG_FILE_NAME);
             sgFile.deleteOnExit();
             List<String> writeSgOptions = new ArrayList<>();
             if (binary) {
@@ -119,13 +124,13 @@ public class DrawSgTask implements Task<DrawSgResult> {
                     }
                 }
             }
-            File psFile = new File(directory, "model.ps");
-            psFile.deleteOnExit();
+            File resultFile = new File(directory, RESULT_FILE_NAME);
+            resultFile.deleteOnExit();
             ArrayList<String> drawAstgOptions = new ArrayList<>();
             if (binary) {
                 drawAstgOptions.add("-bin");
             }
-            DrawAstgTask drawAstgTask = new DrawAstgTask(sgFile.getAbsolutePath(), psFile.getAbsolutePath(), drawAstgOptions);
+            DrawAstgTask drawAstgTask = new DrawAstgTask(sgFile.getAbsolutePath(), resultFile.getAbsolutePath(), drawAstgOptions);
             final Result<? extends ExternalProcessResult> drawAstgResult = framework.getTaskManager().execute(drawAstgTask, "Running draw_astg");
 
             if (drawAstgResult.getOutcome() != Outcome.FINISHED) {
@@ -139,7 +144,7 @@ public class DrawSgTask implements Task<DrawSgResult> {
                 }
                 return Result.cancelled();
             }
-            return Result.finished(new DrawSgResult(psFile, "No errors"));
+            return Result.finished(new DrawSgResult(resultFile, "No errors"));
         } catch (Throwable e) {
             return Result.exception(e);
         }
