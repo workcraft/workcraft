@@ -3,16 +3,16 @@ package org.workcraft.plugins.petrify.tasks;
 import java.io.File;
 
 public class DrawSgResult {
-    private File psFile = null;
+    private File file = null;
     private String errorMessages = null;
 
-    public DrawSgResult(File psFile, String errorMessages) {
-        this.psFile = psFile;
+    public DrawSgResult(File file, String errorMessages) {
+        this.file = file;
         this.errorMessages = errorMessages;
     }
 
-    public File getPsFile() {
-        return psFile;
+    public File getFile() {
+        return file;
     }
 
     public String getErrorMessages() {

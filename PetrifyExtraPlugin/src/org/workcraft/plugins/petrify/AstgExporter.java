@@ -28,9 +28,11 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import org.workcraft.Framework;
+import org.workcraft.PluginManager;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.gui.DesktopApi;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.petrify.tasks.DrawAstgTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
@@ -39,9 +41,16 @@ import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.Export;
+import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
 
-public class PSExporter implements Exporter {
+public class AstgExporter implements Exporter {
+
+    private static final UUID FORMAT = DesktopApi.getOs().isWindows() ? Format.PS : Format.PDF;
+    private static final String EXTENSION = DesktopApi.getOs().isWindows() ? ".ps" : ".pdf";
+    private static final String DESCRIPTION = EXTENSION + " (Petrify draw_astg)";
+    private static final String RESULT_FILE_NAME = "model" + EXTENSION;
+    private static final String STG_FILE_NAME = "model.g";
 
     public void export(Model model, OutputStream out) throws IOException,
     ModelValidationException, SerialisationException {
@@ -50,10 +59,14 @@ public class PSExporter implements Exporter {
             throw new IllegalArgumentException("Model is null");
         }
 
-        File dotG = FileUtils.createTempFile("workcraft-", ".g");
+        String prefix = FileUtils.getTempPrefix(null);
+        File directory = FileUtils.createTempDirectory(prefix);
+        File stgFile = new File(directory, STG_FILE_NAME);
 
         final Framework framework = Framework.getInstance();
-        final Result<? extends Object> result = framework.getTaskManager().execute(Export.createExportTask(model, dotG, Format.STG, framework.getPluginManager()), "Exporting to .g");
+        PluginManager pluginManager = framework.getPluginManager();
+        ExportTask exportTask = Export.createExportTask(model, stgFile, Format.STG, pluginManager);
+        final Result<? extends Object> result = framework.getTaskManager().execute(exportTask, "Exporting to .g");
 
         if (result.getOutcome() != Outcome.FINISHED) {
             if (result.getOutcome() == Outcome.CANCELLED) {
@@ -67,9 +80,9 @@ public class PSExporter implements Exporter {
             }
         }
 
-        File ps = FileUtils.createTempFile("workcraft-", ".ps");
+        File resultFile = new File(directory, RESULT_FILE_NAME);
 
-        DrawAstgTask task = new DrawAstgTask(dotG.getAbsolutePath(), ps.getAbsolutePath(), new ArrayList<String>());
+        DrawAstgTask task = new DrawAstgTask(stgFile.getAbsolutePath(), resultFile.getAbsolutePath(), new ArrayList<String>());
 
         final Result<? extends ExternalProcessResult> drawAstgResult = framework.getTaskManager().execute(task, "Executing draw_astg");
 
@@ -85,17 +98,15 @@ public class PSExporter implements Exporter {
                 }
             }
         }
-        FileUtils.copyFileToStream(ps, out);
-        dotG.delete();
-        ps.delete();
+        FileUtils.copyFileToStream(resultFile, out);
     }
 
     public String getDescription() {
-        return ".ps (Petrify draw_astg)";
+        return DESCRIPTION;
     }
 
     public String getExtenstion() {
-        return ".ps";
+        return EXTENSION;
     }
 
     public int getCompatibility(Model model) {
@@ -108,7 +119,7 @@ public class PSExporter implements Exporter {
 
     @Override
     public UUID getTargetFormat() {
-        return Format.PS;
+        return FORMAT;
     }
 
 }
