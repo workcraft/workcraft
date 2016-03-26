@@ -21,13 +21,11 @@
 
 package org.workcraft.plugins.circuit;
 
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 
 import org.workcraft.Framework;
 import org.workcraft.annotations.CustomTools;
@@ -41,12 +39,9 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.ConnectionHelper;
-import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualPage;
-import org.workcraft.dom.visual.connections.ControlPoint;
-import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
@@ -180,18 +175,9 @@ public class VisualCircuit extends AbstractVisualModel {
         validateConnection(first, second);
         if (first instanceof VisualConnection) {
             VisualConnection connection = (VisualConnection) first;
-            List<Point2D> locations = new LinkedList<>();
-            int splitIndex = -1;
             Point2D splitPoint = connection.getSplitPoint();
-            if (connection.getGraphic() instanceof Polyline) {
-                AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(connection);
-                Polyline polyline = (Polyline) connection.getGraphic();
-                for (ControlPoint cp:  polyline.getControlPoints()) {
-                    Point2D location = localToRootTransform.transform(cp.getPosition(), null);
-                    locations.add(location);
-                }
-                splitIndex = polyline.getNearestSegment(splitPoint, null);
-            }
+            LinkedList<Point2D> prefixLocationsInRootSpace = ConnectionHelper.getPrefixControlPoints(connection, splitPoint);
+            LinkedList<Point2D> suffixLocationsInRootSpace = ConnectionHelper.getSuffixControlPoints(connection, splitPoint);
 
             Container vContainer = (Container) connection.getParent();
             Container mParent = (Container) (connection.getReferencedConnection().getParent());
@@ -202,14 +188,14 @@ public class VisualCircuit extends AbstractVisualModel {
             vJoint.setPosition(splitPoint);
             remove(connection);
 
-            VisualConnection vc1 = connect(connection.getFirst(), vJoint);
-            VisualConnection vc2 = connect(vJoint, connection.getSecond());
-            if (!locations.isEmpty()) {
-                ConnectionHelper.addControlPoints(vc1, locations.subList(0, splitIndex));
-                ConnectionHelper.addControlPoints(vc2, locations.subList(splitIndex, locations.size()));
-            }
-            vc1.copyStyle(connection);
-            vc2.copyStyle(connection);
+            VisualConnection predConnection = connect(connection.getFirst(), vJoint);
+            predConnection.copyStyle(connection);
+            ConnectionHelper.addControlPoints(predConnection, prefixLocationsInRootSpace);
+
+            VisualConnection succConnection = connect(vJoint, connection.getSecond());
+            ConnectionHelper.addControlPoints(succConnection, suffixLocationsInRootSpace);
+            succConnection.copyStyle(connection);
+
             first = vJoint;
         }
 
