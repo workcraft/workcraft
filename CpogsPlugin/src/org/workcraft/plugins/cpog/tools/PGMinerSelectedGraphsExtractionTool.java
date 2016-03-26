@@ -98,7 +98,7 @@ public class PGMinerSelectedGraphsExtractionTool implements Tool {
             PGMinerTask task = new PGMinerTask(inputFile, false);
 
             final Framework framework = Framework.getInstance();
-            PGMinerResultHandler result = new PGMinerResultHandler((VisualCPOG) we.getModelEntry().getVisualModel(), we, true);
+            PGMinerResultHandler result = new PGMinerResultHandler((VisualCPOG) we.getModelEntry().getVisualModel(), we, true, task.getOutputFile(inputFile));
             framework.getTaskManager().queue(task, "PGMiner", result);
         } catch (ArrayIndexOutOfBoundsException e) {
 

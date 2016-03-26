@@ -31,11 +31,13 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
     private VisualCPOG visualCpog;
     private WorkspaceEntry we;
     private boolean createNewWindow;
+    private File outputFile;
 
-    public PGMinerResultHandler(VisualCPOG visualCpog, WorkspaceEntry we, boolean createNewWindow) {
+    public PGMinerResultHandler(VisualCPOG visualCpog, WorkspaceEntry we, boolean createNewWindow, File outputFile) {
         this.visualCpog = visualCpog;
         this.we = we;
         this.createNewWindow = createNewWindow;
+        this.outputFile = outputFile;
     }
 
     public void finished(final Result<? extends ExternalProcessResult> result, String description) {
@@ -71,15 +73,16 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
                                 e.printStackTrace();
                             }
                         }
+
                         we.captureMemento();
-                        byte[] output = result.getReturnValue().getOutputFile("output.cpog");
-                        String text = new String(output);
-                        String[] line = text.split("\r\n");
-                        tool.getLowestVertex(visualCpog);
-                        for (int i = 0; i < line.length; i++) {
-                            tool.insertExpression(line[i], visualCpog, false, false, false, true);
+
+
+                        if (tool.insertCpogFromFile(outputFile)) {
+                            we.saveMemento();
+                        } else {
+                            we.cancelMemento();
                         }
-                        we.saveMemento();
+
                     }
                 }
             });
