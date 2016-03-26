@@ -19,6 +19,7 @@ import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.NameManager;
+import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.Replica;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -34,6 +35,7 @@ import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.LogUtils;
 import org.workcraft.util.Pair;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -253,6 +255,7 @@ public class TransitionContractorTool extends TransformationTool implements Node
         beforeContraction(visualModel, visualTransition);
         LinkedList<Node> predNodes = new LinkedList<>(visualModel.getPreset(visualTransition));
         LinkedList<Node> succNodes = new LinkedList<>(visualModel.getPostset(visualTransition));
+        boolean isTrivial = (predNodes.size() == 1) && (succNodes.size() == 1);
         HashMap<VisualPlace, Pair<VisualPlace, VisualPlace>> productPlaceMap = new HashMap<>();
         for (Node predNode: predNodes) {
             VisualPlace predPlace = (VisualPlace) predNode;
@@ -260,12 +263,32 @@ public class TransitionContractorTool extends TransformationTool implements Node
                 VisualPlace succPlace = (VisualPlace) succNode;
                 VisualPlace productPlace = createProductPlace(visualModel, predPlace, succPlace);
                 initialiseProductPlace(visualModel, predPlace, succPlace, productPlace);
-
                 HashSet<Connection> connections = new HashSet<>();
                 connections.addAll(visualModel.getConnections(predPlace));
                 connections.addAll(visualModel.getConnections(succPlace));
-                connectProductPlace(visualModel, connections, productPlace);
+                HashMap<Connection, Connection> productConnectionMap = connectProductPlace(visualModel, connections, productPlace);
                 productPlaceMap.put(productPlace, new Pair<>(predPlace, succPlace));
+                if (isTrivial) {
+                    productPlace.copyPosition(visualTransition);
+                    Connection predConnection = visualModel.getConnection(predPlace, visualTransition);
+                    LinkedList<Point2D> predLocations = ConnectionHelper.getMergedControlPoints(predPlace, null, (VisualConnection) predConnection);
+                    Connection succConnection = visualModel.getConnection(visualTransition, succPlace);
+                    LinkedList<Point2D> succLocations = ConnectionHelper.getMergedControlPoints(succPlace, (VisualConnection) succConnection, null);
+                    if (visualModel.getPostset(succPlace).size() < 2) {
+                        for (Connection newConnection: productConnectionMap.keySet()) {
+                            if (newConnection.getFirst() == productPlace) {
+                                ConnectionHelper.prependControlPoints((VisualConnection) newConnection, succLocations);
+                            }
+                        }
+                    }
+                    if (visualModel.getPreset(predPlace).size() < 2) {
+                        for (Connection newConnection: productConnectionMap.keySet()) {
+                            if (newConnection.getSecond() == productPlace) {
+                                ConnectionHelper.addControlPoints((VisualConnection) newConnection, predLocations);
+                            }
+                        }
+                    }
+                }
             }
         }
         visualModel.remove(visualTransition);
@@ -334,7 +357,7 @@ public class TransitionContractorTool extends TransformationTool implements Node
                     }
                 }
             } catch (InvalidConnectionException e) {
-                //e.printStackTrace();
+                LogUtils.logWarningLine(e.getMessage());;
             }
             if ((newConnection != null) && (originalConnection instanceof VisualConnection)) {
                 productConnectionMap.put(newConnection, originalConnection);
