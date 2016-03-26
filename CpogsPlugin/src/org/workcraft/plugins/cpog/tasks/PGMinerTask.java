@@ -76,6 +76,7 @@ public class PGMinerTask implements Task<ExternalProcessResult> {
 
     public File getOutputFile(File inputFile) {
 
+
         String filePath = inputFile.getAbsolutePath();
 
         int index = filePath.lastIndexOf('/');
@@ -87,5 +88,6 @@ public class PGMinerTask implements Task<ExternalProcessResult> {
 
         return outputFile;
     }
+
 
 }
