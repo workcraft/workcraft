@@ -175,77 +175,31 @@ public class CpogSelectionTool extends SelectionTool {
         });
         buttonPanel.add(btnInsert);
 
-        final JButton btnTextInsert = new JButton("Text File");
-        btnTextInsert.addActionListener(new ActionListener() {
+        final JButton btnFileInsert = new JButton("Text File");
+        btnFileInsert.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
                 editor.getWorkspaceEntry().captureMemento();
                 JFileChooser chooser = new JFileChooser();
                 File textFile;
-                Scanner fileIn = null;
-                String equation;
-
                 FileNameExtensionFilter filter = new FileNameExtensionFilter(
                         "Text Files", "txt");
                 chooser.setFileFilter(filter);
                 if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-                    ArrayList<String> expressions = new ArrayList<>();
 
                     textFile = chooser.getSelectedFile();
-                    try {
-                        fileIn = new Scanner(textFile);
-                    } catch (FileNotFoundException e1) {
-                        // TODO Auto-generated catch block
-                        JOptionPane.showMessageDialog(null, e1.getMessage(),
-                                "File not found error", JOptionPane.ERROR_MESSAGE);
-                    }
-                    WorkspaceEntry we = editor.getWorkspaceEntry();
-                    VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
-                    coordinate = getLowestVertex(visualCpog);
-                    coordinate.setLocation(coordinate.getX(), coordinate.getY() + 2);
-                    String expression = "";
-                    int lineCount = 0;
-                    int prevLineEnd = 0;
-                    while (fileIn.hasNextLine()) {
-                        expression = expression + fileIn.nextLine() + "\n";
-                        lineCount++;
+
+                    if (insertCpogFromFile(textFile)) {
+                        editor.getWorkspaceEntry().saveMemento();
+                    } else {
+                        editor.getWorkspaceEntry().cancelMemento();
                     }
 
-                    for (int i = 0; i < lineCount; i++) {
-                        String exp = expression.substring(prevLineEnd, expression.indexOf("\n") + 1);
-
-                        exp = exp.replace("\n", "");
-                        exp = exp.replace("\t", " ");
-
-                        if (exp.compareTo("") != 0) {
-                            expressions.add(exp);
-                        }
-
-                        expression = expression.substring(expression.indexOf("\n") + 1);
-                    }
-                    String exp = "";
-                    coordinate = getLowestVertex(visualCpog);
-                    coordinate.setLocation(coordinate.getX(), coordinate.getY() + 2);
-                    for (String s : expressions) {
-                        if (!s.contains("=")) {
-                            exp = exp + " " + s;
-                        } else {
-                            if (exp.compareTo("") != 0) {
-                                insertExpression(exp, visualCpog, false, false, true, false);
-                                exp = "";
-                            }
-                            exp = s;
-                        }
-                    }
-                    if (exp.compareTo("") != 0) {
-                        insertExpression(exp, visualCpog, false, false, true, false);
-                    }
-                    editor.getWorkspaceEntry().saveMemento();
                 }
             }
         });
-        buttonPanel.add(btnTextInsert);
+        buttonPanel.add(btnFileInsert);
 
         final JButton btnGetGraphExpression = new JButton("Get expression");
         btnGetGraphExpression.addActionListener(new ActionListener() {
@@ -1150,6 +1104,57 @@ public class CpogSelectionTool extends SelectionTool {
         }
 
         new RenderTypeChangedHandler().attach(visualCpog.getRoot());
+
+    }
+
+    public boolean insertCpogFromFile(File f) {
+        Scanner fileIn;
+        String[] expressions;
+        try {
+            fileIn = new Scanner(f);
+        } catch (FileNotFoundException e1) {
+            // TODO Auto-generated catch block
+            JOptionPane.showMessageDialog(null, e1.getMessage(),
+                    "File not found error", JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        WorkspaceEntry we = editor.getWorkspaceEntry();
+        VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
+
+        coordinate = getLowestVertex(visualCpog);
+        coordinate.setLocation(coordinate.getX(), coordinate.getY() + 2);
+
+        String expression = "";
+
+        while (fileIn.hasNextLine()) {
+            expression = expression + fileIn.nextLine() + "\n";
+        }
+        fileIn.close();
+
+        expressions = expression.split("\n");
+
+        String exp = "";
+        coordinate = getLowestVertex(visualCpog);
+        coordinate.setLocation(coordinate.getX(), coordinate.getY() + 2);
+
+        for (String s : expressions) {
+            if (!s.contains("=")) {
+                exp = exp + " " + s;
+            } else {
+                if (exp.compareTo("") != 0) {
+                    insertExpression(exp, visualCpog, false, false, true, false);
+                    exp = "";
+                }
+                exp = s;
+            }
+        }
+        if (exp.compareTo("") != 0) {
+            insertExpression(exp, visualCpog, false, false, true, false);
+        }
+
+        return true;
+
 
     }
 }
