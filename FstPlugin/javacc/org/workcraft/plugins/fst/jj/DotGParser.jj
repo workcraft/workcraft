@@ -28,17 +28,17 @@ import org.workcraft.exceptions.FormatException;
 
 public class DotGParser
 {
-    private HashMap < String, Type > signals;
-    private HashSet < String > dummies;
+    private HashMap<String, Type> signals;
+    private HashSet<String> dummies;
     private Fst fst;
 
     private void init() {
-        signals = new HashMap < String, Type > ();
-        dummies = new HashSet < String > ();
+        signals = new HashMap<String, Type>();
+        dummies = new HashSet<String>();
         fst = new Fst();
     }
 
-    private void addSignals(List < String > list, Type type) {
+    private void addSignals(List<String> list, Type type) {
         for (String name : list) {
             if (signals.containsKey(name)) {
                 Type oldType = signals.get(name);
@@ -55,40 +55,40 @@ public class DotGParser
 
 PARSER_END(DotGParser)
 
-< * >
+<*>
 SKIP :
 {
     " "
 |   "\t"
 }
 
-< IGNORE_LINE >
+<IGNORE_LINE>
 TOKEN :
 {
-    < REST : (~[ "\r", "\n", "#" ])* > : DEFAULT
+    <REST: (~["\r", "\n", "#"])*> : DEFAULT
 }
 
-< IGNORE_ALL >
+<IGNORE_ALL>
 TOKEN :
 {
-    < ANY : ~[ ] >
+    <ANY: ~[]>
 }
 
 TOKEN :
 {
-    < COMMENT: "#" (~["\r", "\n"])* >
-|   < LINEBREAK : ((< COMMENT >)? [ "\r", "\n" ])+ >
-|   < INPUT_HEADER : ".inputs" >
-|   < OUTPUT_HEADER : ".outputs" >
-|   < INTERNAL_HEADER : ".internal" >
-|   < DUMMY_HEADER : ".dummy" >
-|   < STATE_GRAPH : ".state graph" >
-|   < MARKING : ".marking" >
-|   < END : ".end" > : IGNORE_ALL
-|   < UNSUPPORTED_HEADER : "." < NAME >> : IGNORE_LINE
-|   < NAME : [ "A"-"Z", "a"-"z", "_" ] ([ "_", "A"-"Z", "a"-"z", "0"-"9" ])* >
-|   < DIRECTION : [ "+", "-", "~" ] >
-|   < INTEGER : ([ "0"-"9" ])+ >
+    <COMMENT : "#" (~["\r", "\n"])*>
+|   <LINEBREAK : ((<COMMENT>)? ["\r", "\n"])+>
+|   <INPUT_HEADER : ".inputs">
+|   <OUTPUT_HEADER : ".outputs">
+|   <INTERNAL_HEADER : ".internal">
+|   <DUMMY_HEADER : ".dummy">
+|   <STATE_GRAPH : ".state graph">
+|   <MARKING : ".marking">
+|   <END : ".end"> : IGNORE_ALL
+|   <UNSUPPORTED_HEADER : "." <NAME>> : IGNORE_LINE
+|   <NAME : ["A"-"Z", "a"-"z", "_"] (["_", "A"-"Z", "a"-"z", "0"-"9"])*>
+|   <DIRECTION : ["+", "-", "~"]>
+|   <INTEGER : (["0"-"9"])+>
 |   "{"
 |   "}"
 |   "<"
@@ -105,13 +105,13 @@ Fst parse() :
         init();
     }
     (
-        header() < LINEBREAK >
+        header() <LINEBREAK>
     )*
     graph()
     (
-        footer() < LINEBREAK >
+        footer() <LINEBREAK>
     )*
-    < END > (< ANY >)* < EOF >
+    <END> (<ANY>)* <EOF>
     {
         return fst;
     }
@@ -119,39 +119,39 @@ Fst parse() :
 
 void header() :
 {
-    List < String > list;
+    List<String> list;
 }
 {
-    (< LINEBREAK >)*
+    (<LINEBREAK>)*
     (
-        < INPUT_HEADER > list = stringList()
+        <INPUT_HEADER> list = stringList()
         {
             addSignals(list, Type.INPUT);
         }
-    |   < OUTPUT_HEADER > list = stringList()
+    |   <OUTPUT_HEADER> list = stringList()
         {
             addSignals(list, Type.OUTPUT);
         }
-    |   < INTERNAL_HEADER > list = stringList()
+    |   <INTERNAL_HEADER> list = stringList()
         {
             addSignals(list, Type.INTERNAL);
         }
-    |   < DUMMY_HEADER > list = stringList()
+    |   <DUMMY_HEADER> list = stringList()
         {
             addSignals(list, Type.DUMMY);
         }
-    |   < UNSUPPORTED_HEADER > < REST >
+    |   <UNSUPPORTED_HEADER> <REST>
     )
 }
 
-List < String > stringList() :
+List<String> stringList() :
 {
     Token t;
-    List < String > list = new LinkedList < String > ();
+    List<String> list = new LinkedList<String>();
 }
 {
     (
-        t = < NAME >
+        t = <NAME>
         {
             list.add(t.image);
         }
@@ -164,8 +164,8 @@ List < String > stringList() :
 void footer() :
 {}
 {
-    < MARKING > marking()
-|   < UNSUPPORTED_HEADER > < REST >
+    <MARKING> marking()
+|   <UNSUPPORTED_HEADER> <REST>
 }
 
 void marking() :
@@ -174,7 +174,7 @@ void marking() :
     State state;
 }
 {
-    "{" t = < NAME > "}"
+    "{" t = <NAME> "}"
     {
         state = fst.getOrCreateState(t.image);
     }
@@ -186,9 +186,9 @@ void marking() :
 void graph() :
 {}
 {
-    < STATE_GRAPH > < LINEBREAK >
+    <STATE_GRAPH> <LINEBREAK>
     (
-        graphLine() < LINEBREAK >
+        graphLine() <LINEBREAK>
     )*
 }
 
@@ -203,28 +203,28 @@ void graphLine() :
 }
 {
     (
-        t = < NAME >
+        t = <NAME>
         {
             fromState = fst.getOrCreateState(t.image);
         }
     )
     (
         (
-            t = < NAME >
+            t = <NAME>
             {
                 Type type = signals.get(t.image);
                 signal = fst.getOrCreateSignal(t.image, type);
                 direction = Direction.TOGGLE;
             }
             (
-                t = <  DIRECTION >
+                t = <DIRECTION>
                 {
                     direction = Direction.fromString(t.image);
                 }
             )?
         )
         (
-            t = < NAME >
+            t = <NAME>
             {
                 toState = fst.getOrCreateState(t.image);
             }
