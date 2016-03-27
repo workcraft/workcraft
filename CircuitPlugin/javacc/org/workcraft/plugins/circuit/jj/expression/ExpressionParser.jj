@@ -52,7 +52,7 @@ TOKEN :
 {
     <CONST0 : "0">
 |   <CONST1 : "1">
-|   <NAME : [ "A"-"Z", "a"-"z", "_" ] ([ "_", "A"-"Z", "a"-"z", "0"-"9" ])* >
+|   <NAME : [ "A"-"Z", "a"-"z", "_" ] ([ "_", "A"-"Z", "a"-"z", "0"-"9" ])*>
 }
 
 Expression parseExpression():

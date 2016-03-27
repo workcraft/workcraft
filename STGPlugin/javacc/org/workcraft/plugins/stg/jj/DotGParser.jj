@@ -136,41 +136,41 @@ public class DotGParser {
 }
 PARSER_END(DotGParser)
 
-< * >
+<*>
 SKIP :
 {
    " "
 |  "\t"
 }
 
-< IGNORE_LINE >
+<IGNORE_LINE>
 TOKEN :
 {
-    < REST : (~[ "\r", "\n", "#" ])* > : DEFAULT
+    <REST : (~["\r", "\n", "#"])*> : DEFAULT
 }
 
-< IGNORE_ALL >
+<IGNORE_ALL>
 TOKEN :
 {
-    < ANY : ~[ ] >
+    <ANY : ~[]>
 }
 
 TOKEN :
 {
-    < COMMENT: "#" (~["\r", "\n"])* >
-|   < LINEBREAK : ((< COMMENT >)? [ "\r", "\n" ])+ >
-|   < INPUT_HEADER : ".inputs" >
-|   < OUTPUT_HEADER : ".outputs" >
-|   < INTERNAL_HEADER : ".internal" >
-|   < DUMMY_HEADER : ".dummy" >
-|   < GRAPH : ".graph" >
-|   < MARKING : ".marking" >
-|   < CAPACITY : ".capacity" >
-|   < END : ".end" > : IGNORE_ALL
-|   < UNSUPPORTED_HEADER : "." < NAME >> : IGNORE_LINE
-|   < NAME : [ "A"-"Z", "a"-"z", "_" ] ([ "_", "A"-"Z", "a"-"z", "0"-"9" ])* >
-|   < DIRECTION : [ "+", "-", "~" ] >
-|   < INTEGER : ([ "0"-"9" ])+ >
+    <COMMENT : "#" (~["\r", "\n"])*>
+|   <LINEBREAK : ((<COMMENT>)? ["\r", "\n"])+>
+|   <INPUT_HEADER : ".inputs">
+|   <OUTPUT_HEADER : ".outputs">
+|   <INTERNAL_HEADER : ".internal">
+|   <DUMMY_HEADER : ".dummy">
+|   <GRAPH : ".graph">
+|   <MARKING : ".marking">
+|   <CAPACITY : ".capacity">
+|   <END : ".end"> : IGNORE_ALL
+|   <UNSUPPORTED_HEADER : "." <NAME>> : IGNORE_LINE
+|   <NAME : ["A"-"Z", "a"-"z", "_"] (["_", "A"-"Z", "a"-"z", "0"-"9"])*>
+|   <DIRECTION : ["+", "-", "~"]>
+|   <INTEGER : (["0"-"9"])+>
 |   "{"
 |   "}"
 |   "<"
@@ -187,14 +187,14 @@ STG parse() :
         init();
     }
     (
-        header() < LINEBREAK >
+        header() <LINEBREAK>
     )*
     graph()
     (
-        footer() < LINEBREAK >
+        footer() <LINEBREAK>
     )*
-    < END > (< ANY >)*
-    < EOF >
+    <END> (<ANY>)*
+    <EOF>
     {
         return stg;
     }
@@ -202,39 +202,39 @@ STG parse() :
 
 void header() :
 {
-    List < String > list;
+    List<String> list;
 }
 {
-    (< LINEBREAK >)*
+    (<LINEBREAK>)*
     (
-        < INPUT_HEADER > list = stringList()
+        <INPUT_HEADER> list = stringList()
         {
             addSignals(list, Type.INPUT);
         }
-    |   < OUTPUT_HEADER > list = stringList()
+    |   <OUTPUT_HEADER> list = stringList()
         {
             addSignals(list, Type.OUTPUT);
         }
-    |   < INTERNAL_HEADER > list = stringList()
+    |   <INTERNAL_HEADER> list = stringList()
         {
             addSignals(list, Type.INTERNAL);
         }
-    |   < DUMMY_HEADER > list = stringList()
+    |   <DUMMY_HEADER> list = stringList()
         {
             addDummies(list);
         }
-    |   < UNSUPPORTED_HEADER > < REST >
+    |   <UNSUPPORTED_HEADER> <REST>
     )
 }
 
-List < String > stringList() :
+List<String> stringList() :
 {
     Token t;
-    List < String > list = new LinkedList < String > ();
+    List<String> list = new LinkedList<String>();
 }
 {
     (
-        t = < NAME >
+        t = <NAME>
         {
             list.add(t.image);
         }
@@ -247,9 +247,9 @@ List < String > stringList() :
 void footer() :
 {}
 {
-    < MARKING > marking()
-|   < CAPACITY > capacity()
-|   < UNSUPPORTED_HEADER > < REST >
+    <MARKING> marking()
+|   <CAPACITY> capacity()
+|   <UNSUPPORTED_HEADER> <REST>
 }
 
 void capacity() :
@@ -293,7 +293,7 @@ int assignment() :
     Token t;
 }
 {
-    "=" t = < INTEGER >
+    "=" t = <INTEGER>
     {
         return Integer.parseInt(t.image);
     }
@@ -341,7 +341,7 @@ STGPlace explicitPlaceReference() :
     Integer tokens = null;
 }
 {
-    (t = < NAME >
+    (t = <NAME>
     {
         name = t.image;
     }
@@ -354,13 +354,13 @@ STGPlace explicitPlaceReference() :
 void graph() :
 {}
 {
-    < GRAPH > < LINEBREAK >
+    <GRAPH> <LINEBREAK>
     (
-        graphLine() < LINEBREAK >
+        graphLine() <LINEBREAK>
     )*
 }
 
-Triple < String, Direction, Integer > signalTransition() :
+Triple<String, Direction, Integer> signalTransition() :
 {
     Token t;
     String name;
@@ -368,16 +368,16 @@ Triple < String, Direction, Integer > signalTransition() :
     Integer instance = null;
 }
 {
-    t = < NAME >
+    t = <NAME>
     {
         name = t.image;
     }
-    t = < DIRECTION >
+    t = <DIRECTION>
     {
         direction = Direction.fromString(t.image);
     }
     (
-        ("/" t = < INTEGER >)
+        ("/" t = <INTEGER>)
         {
             instance = Integer.parseInt(t.image);
         }
@@ -387,19 +387,19 @@ Triple < String, Direction, Integer > signalTransition() :
     }
 }
 
-Pair < String, Integer > dummyTransition() :
+Pair<String, Integer> dummyTransition() :
 {
     Token t;
     String name;
     Integer instance = null;
 }
 {
-    t = < NAME >
+    t = <NAME>
     {
         name = t.image;
     }
     (
-        "/" t = < INTEGER >
+        "/" t = <INTEGER>
         {
             instance = Integer.parseInt(t.image);
         }
@@ -411,8 +411,8 @@ Pair < String, Integer > dummyTransition() :
 
 Node anyTransition() :
 {
-    Triple < String, Direction, Integer > r;
-    Pair < String, Integer > r2;
+    Triple<String, Direction, Integer> r;
+    Pair<String, Integer> r2;
     Node t;
 }
 {
@@ -439,18 +439,18 @@ void graphLine() :
 }
 {
     (
-        LOOKAHEAD(< NAME > (< DIRECTION > | "/"))
+        LOOKAHEAD(<NAME> (<DIRECTION> | "/"))
         from = anyTransition()
-    |   t = < NAME >
+    |   t = <NAME>
         {
             from = getOrCreate(t.image);
         }
     )
     (
         (
-            LOOKAHEAD(< NAME > (< DIRECTION > | "/"))
+            LOOKAHEAD(<NAME> (<DIRECTION> | "/"))
             to = anyTransition()
-        |   t = < NAME >
+        |   t = <NAME>
             {
                 to = getOrCreate(t.image);
             }

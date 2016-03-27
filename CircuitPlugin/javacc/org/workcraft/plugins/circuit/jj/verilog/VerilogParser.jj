@@ -38,7 +38,7 @@ SKIP:
 |   "\r"
 |   "\n"
 |   <"//" (~["\r", "\n"])*>
-|   < "`" (~["\r", "\n"])*>
+|   <"`" (~["\r", "\n"])*>
 |   "specify" : WITHIN_SPECIFY
 |   "primitive" : WITHIN_PRIMITIVE
 }
@@ -55,7 +55,7 @@ SKIP:
 |    <~[]>
 }
 
-TOKEN :
+TOKEN:
 {
     <MODULE : "module">
 |   <ENDMODULE : "endmodule">
