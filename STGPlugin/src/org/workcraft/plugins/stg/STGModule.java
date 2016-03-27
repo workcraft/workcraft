@@ -15,6 +15,7 @@ import org.workcraft.plugins.stg.interop.DotGImporter;
 import org.workcraft.plugins.stg.serialisation.DotGSerialiser;
 import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcDeserialiser;
 import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcSerialiser;
+import org.workcraft.plugins.stg.tools.DummyInserterTool;
 import org.workcraft.plugins.stg.tools.DummyToSignalTransitionConverterTool;
 import org.workcraft.plugins.stg.tools.MakePlacesExplicitTool;
 import org.workcraft.plugins.stg.tools.MakePlacesImplicitTool;
@@ -115,6 +116,13 @@ public class STGModule implements Module {
             @Override
             public Tool create() {
                 return new TransitionMergerTool();
+            }
+        });
+
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new DummyInserterTool();
             }
         });
     }
