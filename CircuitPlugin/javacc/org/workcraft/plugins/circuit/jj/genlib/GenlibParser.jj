@@ -34,7 +34,7 @@ public class GenlibParser {
 }
 PARSER_END(GenlibParser)
 
-SKIP:
+<*> SKIP :
 {
     " "
 |   "\t"
@@ -45,9 +45,10 @@ SKIP:
 
 TOKEN :
 {
-    <GATE : "GATE">
-|   <LATCH : "LATCH">
+    <GATE : "GATE"> : MODULE_NAME_EXPECTED
+|   <LATCH : "LATCH"> : MODULE_NAME_EXPECTED
 |   <PIN : "PIN">
+|   <CONSTRAINT : "CONSTRAINT">
 |   <INV : "INV">
 |   <NONINV : "NONINV">
 |   <UNKNOWN : "UNKNOWN">
@@ -58,15 +59,17 @@ TOKEN :
 |   <RISING_EDGE : "RISING_EDGE">
 |   <FALLING_EDGE : "FALLING_EDGE">
 |   <CONTROL : "CONTROL">
-|   <CONSTRAINT : "CONSTRAINT">
 |   <ASYNCH : "ASYNCH">
-|   <NAME : ["A"-"Z", "a"-"z", "_"] (["A"-"Z", "a"-"z", "_", "0"-"9"])*>
-|   <STRING : "\"" (<CHAR> | <ESCAPESEQ>)* "\"">
+|   <PIN_NAME : ["A"-"Z", "a"-"z", "_"] (["A"-"Z", "a"-"z", "_", "0"-"9"])*>
+|   <NUMERAL: (["-"])?("."(["0"-"9"])+ | (["0"-"9"])+ ("."(["0"-"9"])*)?)>
+|   <FORMULA: "=" (~[";"])* ";">
+}
+
+<MODULE_NAME_EXPECTED> TOKEN :
+{    <MODULE_SIMPLE_NAME : ["A"-"Z", "a"-"z", "_"] (["A"-"Z", "a"-"z", "_", "0"-"9"])*> : DEFAULT
+|   <MODULE_QUOTED_NAME : "\"" (<CHAR> | <ESCAPESEQ>)* "\""> : DEFAULT
 |   <#CHAR: [" ","!","#"-"[","]"-"~"]> // Printable ASCII characters excluding \ and "
 |   <#ESCAPESEQ: "\\" ["\"","\\","n"]> // 2-character sequences \\, \", and \n
-|   <ANY_NAME : "*">
-|    <NUMERAL: (["-"])?("."(["0"-"9"])+ | (["0"-"9"])+ ("."(["0"-"9"])*)?)>
-|   <FORMULA: "=" (~[";"])* ";">
 }
 
 Library parseGenlib() :
@@ -80,7 +83,7 @@ Library parseGenlib() :
     }
 }
 
-List<Gate> parseGates():
+List<Gate> parseGates() :
 {
     Gate gate;
     List<Gate> gates = new LinkedList<Gate>();
@@ -97,7 +100,7 @@ List<Gate> parseGates():
     }
 }
 
-Gate parseGate():
+Gate parseGate() :
 {
     String name;
     Function function;
@@ -105,7 +108,7 @@ Gate parseGate():
 {
     (
         <GATE>
-        name = parseName() <NUMERAL> function = parseFunction()
+        name = parseModuleName() <NUMERAL> function = parseFunction()
         (
            parsePin()
         )*
@@ -115,7 +118,7 @@ Gate parseGate():
     }
 }
 
-Gate parseLatch():
+Gate parseLatch() :
 {
     String name;
     Function function;
@@ -124,7 +127,7 @@ Gate parseLatch():
 {
     (
         <LATCH>
-        name = parseName() <NUMERAL> function = parseFunction()
+        name = parseModuleName() <NUMERAL> function = parseFunction()
         (
            parsePin()
         )*
@@ -137,17 +140,17 @@ Gate parseLatch():
     }
 }
 
-String parseName():
+String parseModuleName() :
 {
     Token nameToken;
 }
 {
     (
-        nameToken = <NAME>
+        nameToken = <MODULE_SIMPLE_NAME>
         {
             return nameToken.image;
         }
-    |   nameToken = <STRING>
+    |   nameToken = <MODULE_QUOTED_NAME>
         {
             String s = nameToken.image;
             return s.substring(1, s.length()-1);
@@ -155,49 +158,49 @@ String parseName():
     )
 }
 
-Function parseFunction():
+Function parseFunction() :
 {
     Token nameToken;
     Token formulaToken;
 }
 {
-    nameToken = <NAME> formulaToken = <FORMULA>
+    nameToken = <PIN_NAME> formulaToken = <FORMULA>
     {
         String formula = formulaToken.image.replaceAll("^=", "").replaceAll(";$", "");
         return new Function(nameToken.image, formula);
     }
 }
 
-void parsePin():
+void parsePin() :
 {
 }
 {
-    <PIN> (<NAME> | "*") [<INV>|<NONINV>|<UNKNOWN>] <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL>
+    <PIN> (<PIN_NAME> | "*") [<INV> | <NONINV> | <UNKNOWN>] <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL>
 }
 
-String parseSeq():
+String parseSeq() :
 {
     Token nextToken = null;
 }
 {
-    <SEQ> <NAME> (nextToken = <NAME> | <ANY>) (<ACTIVE_LOW> | <ACTIVE_HIGH> | <RISING_EDGE> | <FALLING_EDGE> | <ASYNCH>)
+    <SEQ> <PIN_NAME> (nextToken = <PIN_NAME> | <ANY>) (<ACTIVE_LOW> | <ACTIVE_HIGH> | <RISING_EDGE> | <FALLING_EDGE> | <ASYNCH>)
     {
         return ((nextToken == null) ? null : nextToken.image);
     }
 }
 
-void parseControl():
+void parseControl() :
 {
 }
 {
-    <CONTROL> <NAME> <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL>
+    <CONTROL> <PIN_NAME> <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL> <NUMERAL>
 }
 
 
-void parseConstraint():
+void parseConstraint() :
 {
 }
 {
-    <CONSTRAINT> <NAME> <NUMERAL> <NUMERAL>
+    <CONSTRAINT> <PIN_NAME> <NUMERAL> <NUMERAL>
 }
 
