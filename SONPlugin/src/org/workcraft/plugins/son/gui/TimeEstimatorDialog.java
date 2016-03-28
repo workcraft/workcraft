@@ -25,6 +25,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.TimeEstimatorSettings;
+import org.workcraft.plugins.son.algorithm.BFSEntireEstimationAlg;
 import org.workcraft.plugins.son.algorithm.DFSEstimationAlg;
 import org.workcraft.plugins.son.elements.Time;
 import org.workcraft.plugins.son.exception.AlternativeStructureException;
@@ -105,7 +106,7 @@ public class TimeEstimatorDialog extends JDialog {
         twoDir.setEnabled(false);
 
         entirePanel.add(entireEst);
-        entirePanel.add(narrow);
+        //entirePanel.add(narrow);
         entirePanel.add(twoDir);
 
         JPanel singlePanel = new JPanel(new BorderLayout());
@@ -221,23 +222,25 @@ public class TimeEstimatorDialog extends JDialog {
                     run = 1;
 
                     if (entireEst.isSelected()) {
-                        boolean isNarrow = narrow.isSelected() && narrow.isEnabled();
+                       // boolean isNarrow = narrow.isSelected() && narrow.isEnabled();
                         boolean isTwodir = twoDir.isSelected() && twoDir.isEnabled();
 
-//                        EntireEstimationAlg alg1 = new EntireEstimationAlg(net, getDefaultDuration(), granularity, getScenarioRef(), isNarrow, isTwodir);
-//                        try {
-//                            alg1.entireEst();
-//                        } catch (AlternativeStructureException e1) {
-//                            errMsg(e1.getMessage());
-//                        } catch (TimeInconsistencyException e1) {
-//                            JOptionPane.showMessageDialog(editor.getMainWindow(),
-//                                    e1.getMessage(),
-//                                    "", JOptionPane.ERROR_MESSAGE);
-//                        } catch (TimeEstimationException e1) {
-//                            JOptionPane.showMessageDialog(editor.getMainWindow(),
-//                                    e1.getMessage() + " pre-initial node",
-//                                    "", JOptionPane.ERROR_MESSAGE);
-//                        }
+                        BFSEntireEstimationAlg alg1 = null;
+						try {
+							alg1 = new BFSEntireEstimationAlg(net, getDefaultDuration(), granularity, getScenarioRef(), isTwodir);
+	                        setVisible(false);
+	    					alg1.initialize();
+							alg1.estimateEntire();
+							alg1.finalize();
+						} catch (AlternativeStructureException e2) {
+	                          JOptionPane.showMessageDialog(editor.getMainWindow(),
+	                          "Scenario selection error",
+	                          "", JOptionPane.ERROR_MESSAGE);
+						} catch (TimeEstimationException | TimeOutOfBoundsException e1) {
+	                          JOptionPane.showMessageDialog(editor.getMainWindow(),
+	                          e1.getMessage(),"", JOptionPane.ERROR_MESSAGE);
+						}
+                        
                     } else {
                         DFSEstimationAlg alg;
     					try {

@@ -55,7 +55,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
     protected JCheckBox inconsistencyHighLight, unspecifyHighlight, causalHighlight, causalConsistency;
 
     private Color greyoutColor = Color.LIGHT_GRAY;
-    protected ScenarioRef selectedScenario = new ScenarioRef();
+    protected ScenarioRef selectedScenario = null;
     protected ArrayList<Node> selectedNodes;
 
     public enum Granularity {

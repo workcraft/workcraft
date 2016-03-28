@@ -67,9 +67,7 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
         infoMsg("-------------------------Time Consistency Checking Result-------------------------");
         if (settings.getTabIndex() == 0) {
             infoMsg("Initialising selected scenario...");
-            if (settings.getSeletedScenario() != null) {
-                checkList = settings.getSeletedScenario().getNodes(net);
-            }
+            checkList = consistencyAlg.getScenario().getNodes(net);
             infoMsg("Nodes = " + checkList.size() + "\n");
 
         } else if (settings.getTabIndex() == 1) {
@@ -84,7 +82,7 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
         //s[1] = duration
         //s[2] = end
         infoMsg("Create time information map...");
-        timeInfoMap = createTimeInfoMap(settings.getSeletedScenario().getNodes(net));
+        timeInfoMap = createTimeInfoMap(consistencyAlg.getScenario().getNodes(net));
 
         if (settings.getGranularity() == Granularity.YEAR_YEAR) {
             infoMsg("Time granularity: T:year  D:year");
@@ -107,6 +105,10 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
         infoMsg("Remove invalid time granularity nodes from checking list...");
         checkList.removeAll(outOfBoundNodes);
 
+        //specifiedNodes: place nodes and transition nodes with specified start, 
+        //duration and end; channel place with specified start and end.
+        //unspecifiedNodes: nodes with unspecified start and end
+        //partialNodes: start or end is unspecified
         infoMsg("--------------------------------------------------");
         infoMsg("Running time information checking task...");
         for (Node node : checkList) {
@@ -292,7 +294,10 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
         try {
 			consistencyAlg = new ConsistencyAlg(net, settings.getDefaultDuration(), settings.getGranularity(), settings.getSeletedScenario());
 			estimationAlg = new DFSEstimationAlg(net, settings.getDefaultDuration(), settings.getGranularity(), settings.getSeletedScenario());
-		} catch (AlternativeStructureException e) {}
+		} catch (AlternativeStructureException e) {
+			errMsg(e.getMessage());
+			return;
+		}
         
         consistencyAlg.initialize();
       

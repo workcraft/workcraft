@@ -418,6 +418,10 @@ public class ConsistencyAlg extends TimeAlg {
         return result;
     }
     
+    public ScenarioRef getScenario(){
+    	return scenario;
+    }
+    
     private String nodeStr(Node node) {
         return "(" + net.getNodeReference(node) + ")";
     }
