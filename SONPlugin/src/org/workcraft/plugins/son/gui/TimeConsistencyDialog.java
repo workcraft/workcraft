@@ -85,6 +85,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
 
     @SuppressWarnings("unchecked")
     protected void createScenarioItemPanel() {
+    	
         scenarioItemPanel = new JPanel();
         ArrayList<ScenarioRef> scenarioSavelist = net.importScenarios(owner);
         DefaultListModel<ListItem> listModel = new DefaultListModel<>();
@@ -203,7 +204,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
         createNodeItemPanel();
 
         selectionTabbedPane = new JTabbedPane();
-        selectionTabbedPane.addTab("Group", groupItemPanel);
+        //selectionTabbedPane.addTab("Group", groupItemPanel);
         selectionTabbedPane.addTab("Scenario", scenarioItemPanel);
         selectionTabbedPane.addTab("Node", nodeItemPanel);
 
@@ -214,20 +215,21 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
                 removeAllButton.setEnabled(true);
                 int index = getTabIndex();
 
+//                if (index == 0) {
+//                    updateCausalConsistencyPanel(false);
+//                    for (int i = 0; i < groupList.getModel().getSize(); i++) {
+//                        ListItem item = (ListItem) groupList.getModel().getElementAt(i);
+//                        item.setItemColor(Color.ORANGE);
+//                    }
+//
+//                } else 
                 if (index == 0) {
-                    updateCausalConsistencyPanel(false);
-                    for (int i = 0; i < groupList.getModel().getSize(); i++) {
-                        ListItem item = (ListItem) groupList.getModel().getElementAt(i);
-                        item.setItemColor(Color.ORANGE);
-                    }
-
-                } else if (index == 1) {
                     addAllButton.setEnabled(false);
                     removeAllButton.setEnabled(false);
                     updateCausalConsistencyPanel(true);
                     updateScenarioColor();
 
-                } else if (index == 2) {
+                } else if (index == 1) {
                     updateCausalConsistencyPanel(false);
                     for (int i = 0; i < nodeList.getModel().getSize(); i++) {
                         ListItem item = nodeList.getModel().getElementAt(i);
@@ -243,6 +245,9 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
     protected void createSelectionButtonsPanel() {
 
         super.createSelectionButtonsPanel();
+        
+        addAllButton.setEnabled(false);
+        removeAllButton.setEnabled(false);
 
         addAllButton.addActionListener(new ActionListener() {
             @Override
@@ -297,7 +302,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
 
     protected void createCausalConsistencyPanel() {
         causalConsistency = new JCheckBox("Check for causal consistency");
-        causalConsistency.setSelected(true);
+        causalConsistency.setSelected(false);
         causalConsistency.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         defaultDurationPanel = new DefaultDurationPanel();
@@ -354,13 +359,13 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
         unspecifyHighlight.setFont(font);
         unspecifyHighlight.setSelected(false);
 
-        causalHighlight = new JCheckBox("Highlight causally inconsistency values");
+        causalHighlight = new JCheckBox("Highlight causally inconsistency nodes");
         causalHighlight.setFont(font);
         causalHighlight.setSelected(true);
 
         leftColumn.add(inconsistencyHighLight);
         leftColumn.add(unspecifyHighlight);
-        leftColumn.add(causalHighlight);
+        //leftColumn.add(causalHighlight);
 
         settingPanel.add(leftColumn, BorderLayout.WEST);
     }
@@ -420,7 +425,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
         content.add(leftPanel);
         content.add(rightPanel);
 
-        updateCausalConsistencyPanel(false);
+        updateCausalConsistencyPanel(true);
 
         this.add(content);
         this.setResizable(false);

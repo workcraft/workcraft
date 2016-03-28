@@ -34,7 +34,7 @@ import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.TimeEstimatorSettings;
 import org.workcraft.plugins.son.VisualSON;
-import org.workcraft.plugins.son.algorithm.ConsistencyAlg;
+import org.workcraft.plugins.son.algorithm.TimeAlg;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
@@ -64,7 +64,6 @@ public class TimeValueSetterTool extends AbstractTool {
     protected SON net;
     protected GraphEditor editor;
     protected VisualSON visualNet;
-    protected ConsistencyAlg timeAlg;
 
     private JPanel interfacePanel, timeInputPanel, timePropertyPanel, timeSetterPanel, buttonPanel;
     private GranularityPanel granularityPanel;
@@ -541,15 +540,14 @@ public class TimeValueSetterTool extends AbstractTool {
         net = (SON) visualNet.getMathModel();
         WorkspaceEntry we = editor.getWorkspaceEntry();
         we.setCanSelect(false);
-        timeAlg = new ConsistencyAlg(net);
         settings = new TimeEstimatorSettings();
 
         net.refreshAllColor();
         net.clearMarking();
 
         //set property states for initial and final states
-        timeAlg.removeProperties();
-        timeAlg.setProperties();
+        TimeAlg.removeProperties(net);
+        TimeAlg.setProperties(net);
         //save visibility state
         visibility = SONSettings.getTimeVisibility();
         //set visibility to true
@@ -562,7 +560,7 @@ public class TimeValueSetterTool extends AbstractTool {
     @Override
     public void deactivated(final GraphEditor editor) {
         if (!visibility) {
-            timeAlg.removeProperties();
+        	 TimeAlg.removeProperties(net);
         }
         SONSettings.setTimeVisibility(visibility);
         net.refreshAllColor();

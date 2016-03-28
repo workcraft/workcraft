@@ -7,6 +7,8 @@ import java.util.HashSet;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection;
+import org.workcraft.plugins.son.elements.ChannelPlace;
+import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.exception.IncompatibleScenarioException;
@@ -15,12 +17,48 @@ import org.workcraft.plugins.son.exception.IncompatibleScenarioException;
 public class ScenarioRef extends ArrayList<String> {
 
     public Collection<Node> getNodes(SON net) {
-        Collection<Node> result = new HashSet<>();
+        Collection<Node> result = new HashSet<Node>();
 
         for (String ref : this) {
             Node node = net.getNodeByReference(ref);
             if ((node instanceof PlaceNode) || (node instanceof TransitionNode)) {
                 result.add(node);
+            }
+        }
+        return result;
+    }
+    
+    public Collection<ChannelPlace> getChannelPlaces(SON net) {
+        Collection<ChannelPlace> result = new HashSet<ChannelPlace>();
+
+        for (String ref : this) {
+            Node node = net.getNodeByReference(ref);
+            if ((node instanceof ChannelPlace)) {
+                result.add((ChannelPlace)node);
+            }
+        }
+        return result;
+    }
+    
+    public Collection<TransitionNode> getTransitionNodes(SON net) {
+        Collection<TransitionNode> result = new HashSet<TransitionNode>();
+
+        for (String ref : this) {
+            Node node = net.getNodeByReference(ref);
+            if ((node instanceof TransitionNode)) {
+                result.add((TransitionNode)node);
+            }
+        }
+        return result;
+    }
+    
+    public Collection<Condition> getConditions(SON net) {
+        Collection<Condition> result = new HashSet<Condition>();
+
+        for (String ref : this) {
+            Node node = net.getNodeByReference(ref);
+            if ((node instanceof Condition)) {
+                result.add((Condition)node);
             }
         }
         return result;

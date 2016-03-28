@@ -1,17 +1,16 @@
 package org.workcraft.plugins.son.algorithm;
 
+import java.awt.Color;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SON;
-import org.workcraft.plugins.son.connections.SONConnection;
-import org.workcraft.plugins.son.connections.SONConnection.Semantics;
-import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.Time;
 import org.workcraft.plugins.son.exception.AlternativeStructureException;
 import org.workcraft.plugins.son.exception.TimeEstimationException;
@@ -21,13 +20,15 @@ import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.plugins.son.util.ScenarioRef;
 
 
-public class EnhancedEstimationAlg extends EstimationAlg{
-
+public class BFSEstimationAlg extends DFSEstimationAlg  {
+ 
 	protected Map<Time, Boolean[]> modify;
 	protected boolean interm;
 	
-	public EnhancedEstimationAlg(SON net, Interval d, Granularity g, ScenarioRef s, boolean interm) {
-		super(net, d, g, s);		
+    protected Color color = Color.ORANGE;
+	
+	public BFSEstimationAlg(SON net, Interval d, Granularity g, ScenarioRef s, boolean interm) throws AlternativeStructureException {		
+		super(net, d, g, s);
 		modify = new HashMap<Time, Boolean[]>();
 		this.interm = interm;
 	}
@@ -38,7 +39,7 @@ public class EnhancedEstimationAlg extends EstimationAlg{
 		// nodes on paths from n to RBoundary nodes
 		Set<Time> rNeighbourhood = new HashSet<Time>();
 		rNeighbourhood.add(n);
-		init();
+		initialize();
 		
 		if(scenario != null ){
 			findRightBoundary(n, rBoundary, rNeighbourhood);
@@ -50,62 +51,9 @@ public class EnhancedEstimationAlg extends EstimationAlg{
 		if(!n.getEndTime().isSpecified())
             throw new TimeEstimationException(
                     "cannot find causally time value (forward).");
-		finalize(n);
+		//finalize(n, );
 	}
-	
-	protected void init(){
-        //assign specified value from connections to nodes
-        for (SONConnection con : net.getSONConnections()) {
-            if (con.getSemantics() == Semantics.PNLINE) {
-                if (con.getTime().isSpecified()) {
-                    Node first = con.getFirst();
-                    if (first instanceof Time) {
-                        ((Time) first).setEndTime(con.getTime());
-                    }
-                    Node second = con.getSecond();
-                    if (second instanceof Time) {
-                        ((Time) second).setStartTime(con.getTime());
-                    }
-                }
-            }
-        }
-	}
-	
-	protected void finalize(Node n){
-        SONAlg sonAlg = new SONAlg(net);
-        Collection<PlaceNode> initial = sonAlg.getSONInitial();
-        Collection<PlaceNode> finalM = sonAlg.getSONFinal();
-        
-        //assign estimated time value from nodes to connections
-        if(interm){
-	        for (SONConnection con : net.getSONConnections()) {
-	            if (con.getSemantics() == Semantics.PNLINE) {
-	                Node first = con.getFirst();
-	                if (first instanceof Time) {
-	                    con.setTime(((Time) first).getEndTime());
-	                    con.setTimeLabelColor(color);
-	                }
-	            }
-	        }
-        }else{
-        	Collection<SONConnection> cons = net.getOutputPNConnections(n);
-        	for(SONConnection con : cons){
-        		 con.setTime(((Time)n).getEndTime());
-        		 con.setTimeLabelColor(color);
-        	}
-        }
-        
-        for (Time time : net.getTimeNodes()) {
-            Interval defTime = new Interval();
-            if (!initial.contains(time)) {
-                time.setStartTime(defTime);
-            }
-            if (!finalM.contains(time)) {
-                time.setEndTime(defTime);
-            }
-        }
-	}
-	
+
 	private void findRightBoundary (Time n, Set<Time> boundary, Set<Time> neighbourhood){
 		Collection<Node> nodes = scenario.getNodes(net);
 		// nodes used for forward boundary searching
@@ -135,12 +83,15 @@ public class EnhancedEstimationAlg extends EstimationAlg{
 	private void backwardBFSTimes(Time n, Set<Time> boundary, Set<Time> neighbourhood) throws TimeOutOfBoundsException, TimeEstimationException{
 		Collection<Node> nodes = scenario.getNodes(net);
 		Map<Time, Integer> visit = new HashMap<Time, Integer>();
+		List<Time> visit2 = new ArrayList<Time>();
 		Set<Time> working = boundary;
 		
 		while((working.size()!=1) || (!working.contains(n))){
 			//System.out.println("working"+net.toString(working));
 			Set<Time> nextWorking = new HashSet<Time>();
 			for (Time t : working){
+				visit2.add(t);
+				
 				if(!t.getDuration().isSpecified()){
 					t.setDuration(defaultDuration);
 					addModify(t, 2);
@@ -187,6 +138,8 @@ public class EnhancedEstimationAlg extends EstimationAlg{
 				}else{
 					//visit.put(nd, 0);
 				}
+				if(visit2.contains(nd))
+					remove.add(nd);
 			}
 			nextWorking.removeAll(remove);
 			//System.out.println("next working "+net.toString(nextWorking));

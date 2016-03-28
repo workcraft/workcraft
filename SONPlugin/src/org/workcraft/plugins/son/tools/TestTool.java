@@ -18,7 +18,7 @@ import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.algorithm.ASONAlg;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
-import org.workcraft.plugins.son.algorithm.EstimationAlg;
+import org.workcraft.plugins.son.algorithm.DFSEstimationAlg;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.PathAlgorithm;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
@@ -99,7 +99,7 @@ public class TestTool extends AbstractTool implements Tool {
     }
 
     private void esitmationTest(SON net) {
-        EstimationAlg timeAlg = new EstimationAlg(net, new Interval(0, 0), Granularity.YEAR_YEAR, null);
+        //DFSEstimationAlg timeAlg = new DFSEstimationAlg(net, new Interval(0, 0), Granularity.YEAR_YEAR, null);
         BSONAlg bsonAlg = new BSONAlg(net);
 
 //        try {

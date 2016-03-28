@@ -25,9 +25,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.TimeEstimatorSettings;
-import org.workcraft.plugins.son.algorithm.EnhancedEstimationAlg;
-import org.workcraft.plugins.son.algorithm.EntireEstimationAlg;
-import org.workcraft.plugins.son.algorithm.EstimationAlg;
+import org.workcraft.plugins.son.algorithm.DFSEstimationAlg;
 import org.workcraft.plugins.son.elements.Time;
 import org.workcraft.plugins.son.exception.AlternativeStructureException;
 import org.workcraft.plugins.son.exception.TimeEstimationException;
@@ -122,14 +120,14 @@ public class TimeEstimatorDialog extends JDialog {
         setDuration.setSelected(false);
         setDuration.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-        singlePanel.add(intermediate);
-        singlePanel.add(setDuration);
+       // singlePanel.add(intermediate);
+        //singlePanel.add(setDuration);
 
         durationPanel = new JPanel();
         //durationPanel.setBorder(BorderFactory.createTitledBorder("Default Duration Setting"));
         durationPanel.setLayout(new BorderLayout());
         durationPanel.add(defaultDurationPanel, BorderLayout.NORTH);
-        durationPanel.add(singlePanel, BorderLayout.WEST);
+        //durationPanel.add(singlePanel, BorderLayout.WEST);
         durationPanel.add(entirePanel, BorderLayout.EAST);
 
         entireEst.addActionListener(new ActionListener() {
@@ -221,41 +219,59 @@ public class TimeEstimatorDialog extends JDialog {
                 setParameters();
                 if (defaultDurationPanel.isValidDuration()) {
                     run = 1;
-                    EnhancedEstimationAlg alg = new EnhancedEstimationAlg(net, getDefaultDuration(), granularity, getScenarioRef(), intermediate.isSelected());
-                    setVisible(false);
 
                     if (entireEst.isSelected()) {
                         boolean isNarrow = narrow.isSelected() && narrow.isEnabled();
                         boolean isTwodir = twoDir.isSelected() && twoDir.isEnabled();
 
-                        EntireEstimationAlg alg1 = new EntireEstimationAlg(net, getDefaultDuration(), granularity, getScenarioRef(), isNarrow, isTwodir);
-                        try {
-                            alg1.entireEst();
-                        } catch (AlternativeStructureException e1) {
-                            errMsg(e1.getMessage());
-                        } catch (TimeInconsistencyException e1) {
-                            JOptionPane.showMessageDialog(editor.getMainWindow(),
-                                    e1.getMessage(),
-                                    "", JOptionPane.ERROR_MESSAGE);
-                        } catch (TimeEstimationException e1) {
-                            JOptionPane.showMessageDialog(editor.getMainWindow(),
-                                    e1.getMessage() + " pre-initial node",
-                                    "", JOptionPane.ERROR_MESSAGE);
-                        }
-                    } else {
-//                        if (setDuration.isSelected()) {
-//                            alg.setDefaultDuration();
+//                        EntireEstimationAlg alg1 = new EntireEstimationAlg(net, getDefaultDuration(), granularity, getScenarioRef(), isNarrow, isTwodir);
+//                        try {
+//                            alg1.entireEst();
+//                        } catch (AlternativeStructureException e1) {
+//                            errMsg(e1.getMessage());
+//                        } catch (TimeInconsistencyException e1) {
+//                            JOptionPane.showMessageDialog(editor.getMainWindow(),
+//                                    e1.getMessage(),
+//                                    "", JOptionPane.ERROR_MESSAGE);
+//                        } catch (TimeEstimationException e1) {
+//                            JOptionPane.showMessageDialog(editor.getMainWindow(),
+//                                    e1.getMessage() + " pre-initial node",
+//                                    "", JOptionPane.ERROR_MESSAGE);
 //                        }
-
-                        try {
-                           alg.estimateFinish((Time)selection);
-                        } catch (AlternativeStructureException e1) {
-                            errMsg(e1.getMessage());
-                        } catch (TimeOutOfBoundsException e1) {
-                            errMsg(e1.getMessage());
-                        } catch (TimeEstimationException e1) {
-                            errMsg(e1.getMessage());
-                        }
+                    } else {
+                        DFSEstimationAlg alg;
+    					try {
+    						alg = new DFSEstimationAlg(net, getDefaultDuration(), granularity, getScenarioRef());
+	                        setVisible(false);
+	    					alg.initialize();
+	    					   
+	                        try {
+	                           alg.estimateEndTime((Time)selection);
+	                        } catch (TimeOutOfBoundsException e1) {
+	                            errMsg(e1.getMessage());
+	                        } catch (TimeEstimationException e1) {
+	                            errMsg(e1.getMessage());
+	                        }
+	                        try {
+	                            alg.estimateStartTime((Time)selection);
+	                         } catch (TimeOutOfBoundsException e1) {
+	                             errMsg(e1.getMessage());
+	                         } catch (TimeEstimationException e1) {
+	                             errMsg(e1.getMessage());
+	                         }
+	                        try {
+								alg.estimatDuration((Time)selection);
+							} catch (TimeInconsistencyException e1) {
+	                            errMsg(e1.getMessage());
+							} catch (TimeOutOfBoundsException e1) {
+	                            errMsg(e1.getMessage());
+	                        }
+	                        
+	                        alg.finalize(selection);
+	                        
+    					}catch (AlternativeStructureException e2) {
+	    						errMsg(e2.getMessage());
+	    					}
                     }
                 } else {
                     defaultDurationPanel.getMin().setForeground(Color.RED);

@@ -184,16 +184,4 @@ public class HourMins extends AbstractTimeGranularity {
         }
         return r;
     }
-
-    //    public static void main(String[] args) {
-    //
-    //        HourMins h = new HourMins();
-    //        try {
-    //            System.out.println(h.subtractTT(5, 2400));
-    //
-    //        } catch (TimeOutOfBoundsException e) {
-    //            // TODO Auto-generated catch block
-    //            e.printStackTrace();
-    //        }
-    //    }
 }

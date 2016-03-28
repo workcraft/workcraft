@@ -8,7 +8,6 @@ import java.util.Iterator;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
-import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
@@ -80,23 +79,10 @@ public class RelationAlgorithm {
      * check if a given node is initial state (condition)
      */
     public boolean isInitial(Node n) {
-        boolean conType = true;
 
-        if (net.getPreset(n).size() == 0) {
+        if (getPrePNSet(n).size() == 0) {
             return true;
-        } else {
-            if (n instanceof Condition) {
-                for (SONConnection con : net.getInputSONConnections(n)) {
-                    if (con.getSemantics() == Semantics.PNLINE) {
-                        conType = false;
-                    }
-                }
-                if (conType) {
-                    return true;
-                }
-            }
-        }
-
+        } 
         return false;
     }
 
@@ -104,23 +90,10 @@ public class RelationAlgorithm {
      * check if a given node is final state (condition)
      */
     public boolean isFinal(Node n) {
-        boolean conType = true;
 
-        if (net.getPostset(n).size() == 0) {
+        if (getPostPNSet(n).size() == 0) {
             return true;
-        } else {
-            if (n instanceof Condition) {
-                for (SONConnection con : net.getOutputSONConnections(n)) {
-                    if (con.getSemantics() == Semantics.PNLINE) {
-                        conType = false;
-                    }
-                }
-                if (conType) {
-                    return true;
-                }
-            }
-        }
-
+        } 
         return false;
     }
 
