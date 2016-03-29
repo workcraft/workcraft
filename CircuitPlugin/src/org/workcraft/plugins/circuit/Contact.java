@@ -30,9 +30,10 @@ import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 @VisualClass(org.workcraft.plugins.circuit.VisualContact.class)
 public class Contact extends MathNode implements BooleanVariable {
 
-    public static final String PROPERTY_INIT_TO_ONE = "Init to one";
-    public static final String PROPERTY_IO_TYPE = "I/O type";
     public static final String PROPERTY_NAME = "Name";
+    public static final String PROPERTY_IO_TYPE = "I/O type";
+    public static final String PROPERTY_INIT_TO_ONE = "Init to one";
+    public static final String PROPERTY_INITIALISED = "Initialised";
 
     public enum IOType {
         INPUT("Input"),
@@ -50,9 +51,10 @@ public class Contact extends MathNode implements BooleanVariable {
         }
     };
 
-    private boolean initToOne = false;
-    private IOType ioType = IOType.OUTPUT;
     private String name = "";
+    private IOType ioType = IOType.OUTPUT;
+    private boolean initToOne = false;
+    private boolean initialised = false;
 
     public Contact() {
     }
@@ -62,15 +64,16 @@ public class Contact extends MathNode implements BooleanVariable {
         setIOType(ioType);
     }
 
-    public boolean getInitToOne() {
-        return initToOne;
+    // FIXME: This setName method is only to enable accessing contact name via getName. Use setName of Circuit class to set all node names!
+    public void setName(String value) {
+        if (!this.name.equals(value)) {
+            this.name = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_NAME));
+        }
     }
 
-    public void setInitToOne(boolean value) {
-        if (this.initToOne != value) {
-            this.initToOne = value;
-            sendNotification(new PropertyChangedEvent(this, PROPERTY_INIT_TO_ONE));
-        }
+    public String getName() {
+        return name;
     }
 
     public void setIOType(IOType value) {
@@ -84,16 +87,26 @@ public class Contact extends MathNode implements BooleanVariable {
         return ioType;
     }
 
-    // FIXME: This setName method is only to enable accessing contact name via getName. Use setName of Circuit class to set all node names!
-    public void setName(String value) {
-        if (!this.name.equals(value)) {
-            this.name = value;
-            sendNotification(new PropertyChangedEvent(this, PROPERTY_NAME));
+    public boolean getInitToOne() {
+        return initToOne;
+    }
+
+    public void setInitToOne(boolean value) {
+        if (this.initToOne != value) {
+            this.initToOne = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_INIT_TO_ONE));
         }
     }
 
-    public String getName() {
-        return name;
+    public boolean getInitialised() {
+        return initialised;
+    }
+
+    public void setInitialised(boolean value) {
+        if (this.initialised != value) {
+            this.initialised = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_INITIALISED));
+        }
     }
 
     @Override

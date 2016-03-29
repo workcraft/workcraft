@@ -40,29 +40,15 @@ final class MpsatEncodingConflictResultHandler implements Runnable {
         if (!Solution.hasTraces(solutions)) {
             JOptionPane.showMessageDialog(null, "No encoding conflicts.", "Verification results", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            GraphEditorPanel currentEditor = getCurrentEditor(we);
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            GraphEditorPanel currentEditor = mainWindow.getEditor(we);
             final ToolboxPanel toolbox = currentEditor.getToolBox();
             final EncodingConflictAnalyserTool tool = toolbox.getToolInstance(EncodingConflictAnalyserTool.class);
             toolbox.selectTool(tool);
             ArrayList<Core> cores = new ArrayList<>(convertSolutionsToCores(solutions));
             tool.setCores(cores);
         }
-    }
-
-    private GraphEditorPanel getCurrentEditor(final WorkspaceEntry we) {
-        final Framework framework = Framework.getInstance();
-        final MainWindow mainWindow = framework.getMainWindow();
-        GraphEditorPanel currentEditor = mainWindow.getCurrentEditor();
-        if ((currentEditor == null) || (currentEditor.getWorkspaceEntry() != we)) {
-            final List<GraphEditorPanel> editors = mainWindow.getEditors(we);
-            if (editors.size() > 0) {
-                currentEditor = editors.get(0);
-                mainWindow.requestFocus(currentEditor);
-            } else {
-                currentEditor = mainWindow.createEditorWindow(we);
-            }
-        }
-        return currentEditor;
     }
 
     private LinkedHashSet<Core> convertSolutionsToCores(List<Solution> solutions) {

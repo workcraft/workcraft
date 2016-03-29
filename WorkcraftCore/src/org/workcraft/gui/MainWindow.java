@@ -1248,6 +1248,20 @@ public class MainWindow extends JFrame {
         return result;
     }
 
+    public GraphEditorPanel getEditor(final WorkspaceEntry we) {
+        GraphEditorPanel result = this.getCurrentEditor();
+        if ((result == null) || (result.getWorkspaceEntry() != we)) {
+            final List<GraphEditorPanel> editors = getEditors(we);
+            if (editors.size() > 0) {
+                result = editors.get(0);
+                this.requestFocus(result);
+            } else {
+                result = this.createEditorWindow(we);
+            }
+        }
+        return result;
+    }
+
     public GraphEditorPanel getCurrentEditor() {
         return editorInFocus;
     }

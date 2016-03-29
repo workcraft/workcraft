@@ -180,6 +180,16 @@ public class VisualContact extends VisualComponent implements StateObserver {
                 return object.getReferencedContact().getInitToOne();
             }
         });
+
+        addPropertyDeclaration(new PropertyDeclaration<VisualContact, Boolean>(
+                this, Contact.PROPERTY_INITIALISED, Boolean.class, true, true, true) {
+            protected void setter(VisualContact object, Boolean value) {
+                object.getReferencedContact().setInitialised(value);
+            }
+            protected Boolean getter(VisualContact object) {
+                return object.getReferencedContact().getInitialised();
+            }
+        });
     }
 
     private Shape getShape() {

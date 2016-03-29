@@ -28,7 +28,7 @@ public class CheckCircuitTool extends VerificationTool {
 
     @Override
     public Position getPosition() {
-        return Position.BOTTOM;
+        return Position.MIDDLE;
     }
 
     @Override
