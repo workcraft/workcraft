@@ -48,6 +48,7 @@ public class InitialisationAnalyserTool extends AbstractTool {
                 }
 
                 if (mathNode != null) {
+                    final boolean b = (initError != null) && initError.contains(mathNode);
                     if ((initHigh != null) && initHigh.contains(mathNode)) {
                         return new Decoration() {
                             @Override
@@ -56,7 +57,7 @@ public class InitialisationAnalyserTool extends AbstractTool {
                             }
                             @Override
                             public Color getBackground() {
-                                return CircuitSettings.getActiveWireColor();
+                                return b ? CircuitSettings.getInactiveWireColor() : CircuitSettings.getActiveWireColor();
                             }
                         };
                     }
@@ -68,7 +69,7 @@ public class InitialisationAnalyserTool extends AbstractTool {
                             }
                             @Override
                             public Color getBackground() {
-                                return CircuitSettings.getInactiveWireColor();
+                                return b ? CircuitSettings.getActiveWireColor() : CircuitSettings.getInactiveWireColor();
                             }
                         };
                     }

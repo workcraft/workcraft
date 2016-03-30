@@ -70,38 +70,40 @@ public class InitialisationCheckerTool extends VerificationTool {
             Connection connection = queue.remove();
             Node fromNode = connection.getFirst();
             HashSet<Node> nodeInitLevelSet = chooseNodeLevelSet(fromNode, initHighSet, initLowSet);
-            if (nodeInitLevelSet != null) {
-                if (nodeInitLevelSet.add(connection)) {
-                    Node toNode = connection.getSecond();
-                    if (nodeInitLevelSet.add(toNode)) {
-                        Node parent = toNode.getParent();
-                        if (parent instanceof FunctionComponent) {
-                            LinkedList<BooleanVariable> variables = new LinkedList<>();
-                            LinkedList<BooleanFormula> values = new LinkedList<>();
-                            LinkedList<FunctionContact> outputPins = new LinkedList<>();
-                            for (FunctionContact contact: Hierarchy.getChildrenOfType(parent, FunctionContact.class)) {
-                                HashSet<Node> contactInitLevelSet = chooseNodeLevelSet(contact, initHighSet, initLowSet);
-                                if (contactInitLevelSet != null) {
-                                    variables.add(contact);
-                                    values.add(contactInitLevelSet == initHighSet ? One.instance() : Zero.instance());
-                                }
-                                if (contact.isOutput()) {
-                                    outputPins.add(contact);
-                                }
+            if ((nodeInitLevelSet != null) && nodeInitLevelSet.add(connection)) {
+                if (initErrorSet.contains(fromNode)) {
+                    initErrorSet.add(connection);
+                }
+                Node toNode = connection.getSecond();
+                if (nodeInitLevelSet.add(toNode)) {
+                    Node parent = toNode.getParent();
+                    if (parent instanceof FunctionComponent) {
+                        LinkedList<BooleanVariable> variables = new LinkedList<>();
+                        LinkedList<BooleanFormula> values = new LinkedList<>();
+                        LinkedList<FunctionContact> outputPins = new LinkedList<>();
+                        for (FunctionContact contact: Hierarchy.getChildrenOfType(parent, FunctionContact.class)) {
+                            if (contact.isOutput()) {
+                                outputPins.add(contact);
                             }
-                            for (FunctionContact outputPin: outputPins) {
-                                Set<Node> outputInitLevelSet = chooseFunctionLevelSet(outputPin, variables, values, initHighSet, initLowSet);
-                                if (outputInitLevelSet != null) {
-                                    if (outputInitLevelSet.add(outputPin)) {
-                                        Set<Connection> connections = circuit.getConnections(outputPin);
-                                        queue.addAll(connections);
-                                    }
-                                }
+                            HashSet<Node> contactInitLevelSet = chooseNodeLevelSet(contact, initHighSet, initLowSet);
+                            if (contactInitLevelSet != null) {
+                                variables.add(contact);
+                                values.add(contactInitLevelSet == initHighSet ? One.instance() : Zero.instance());
                             }
-                        } else {
-                            Set<Connection> connections = circuit.getConnections(toNode);
-                            queue.addAll(connections);
                         }
+                        for (FunctionContact outputPin: outputPins) {
+                            Set<Node> outputInitLevelSet = chooseFunctionLevelSet(outputPin, variables, values, initHighSet, initLowSet);
+                            if ((outputInitLevelSet != null) && outputInitLevelSet.add(outputPin)) {
+                                if ((outputInitLevelSet == initHighSet) != (outputPin.getInitToOne())) {
+                                    initErrorSet.add(outputPin);
+                                }
+                                Set<Connection> connections = circuit.getConnections(outputPin);
+                                queue.addAll(connections);
+                            }
+                        }
+                    } else {
+                        Set<Connection> connections = circuit.getConnections(toNode);
+                        queue.addAll(connections);
                     }
                 }
             }
