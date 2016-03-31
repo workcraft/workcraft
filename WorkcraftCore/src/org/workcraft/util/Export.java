@@ -70,7 +70,7 @@ public class Export {
 
             boolean ok = false;
 
-            try    {
+            try {
                 if (model instanceof VisualModel) {
                     if (exporter.getCompatibility(model) == Exporter.NOT_COMPATIBLE) {
                         if (exporter.getCompatibility(((VisualModel) model).getMathModel()) == Exporter.NOT_COMPATIBLE) {

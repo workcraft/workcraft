@@ -207,7 +207,7 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
         setLayout(new SimpleFlowLayout(5, 5));
 
         Class<? extends CustomToolsProvider> customTools = Annotations.getCustomToolsProvider(model.getClass());
-        if (customTools != null)    {
+        if (customTools != null) {
             boolean selected = true;
             CustomToolsProvider provider = null;
             try {

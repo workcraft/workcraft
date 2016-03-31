@@ -208,7 +208,7 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
         for (double t = 0.01; t <= 1.0; t += 0.01) {
             Point2D samplePoint = Geometry.getPointOnCubicCurve(curve, t);
             double distance = pt.distance(samplePoint);
-            if (distance < nearestDist)    {
+            if (distance < nearestDist) {
                 nearestDist = distance;
                 nearest = samplePoint;
             }

@@ -145,7 +145,7 @@ public class Workspace {
         return current.mountTo;
     }
 
-    public File getFile(WorkspaceEntry we)    {
+    public File getFile(WorkspaceEntry we) {
         return getFile(we.getWorkspacePath());
     }
 

@@ -4,7 +4,7 @@ import org.workcraft.dom.math.MathModel;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class WorkspaceUtils {
-    public static boolean canHas(WorkspaceEntry entry, Class<?> cls)    {
+    public static boolean canHas(WorkspaceEntry entry, Class<?> cls) {
         return getAs(entry, cls) != null;
     }
     @SuppressWarnings("unchecked")

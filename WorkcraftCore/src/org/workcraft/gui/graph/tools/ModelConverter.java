@@ -12,7 +12,7 @@ import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.VisualReplica;
 import org.workcraft.dom.visual.connections.VisualConnection;
 
-public interface ModelConverter<TSrcModel extends VisualModel, TDstModel extends VisualModel>  {
+public interface ModelConverter<TSrcModel extends VisualModel, TDstModel extends VisualModel> {
 
     TSrcModel getSrcModel();
     TDstModel getDstModel();

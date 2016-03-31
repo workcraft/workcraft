@@ -141,7 +141,7 @@ public class CompatibilityManager {
         ZipEntry zei;
         BufferedReader br = new BufferedReader(new InputStreamReader(zis));
         try {
-            while ((zei = zis.getNextEntry()) != null)    {
+            while ((zei = zis.getNextEntry()) != null) {
                 ZipEntry zeo = new ZipEntry(zei.getName());
                 boolean isMetaEntry = "meta".equals(zei.getName());
                 zos.putNextEntry(zeo);

@@ -28,7 +28,7 @@ import javax.swing.JTable;
 import javax.swing.table.TableCellRenderer;
 
 @SuppressWarnings("serial")
-public class BooleanCellRenderer extends JCheckBox implements TableCellRenderer  {
+public class BooleanCellRenderer extends JCheckBox implements TableCellRenderer {
 
     public BooleanCellRenderer() {
         setFocusable(false);
