@@ -11,6 +11,7 @@ import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.jj.BooleanParser;
@@ -20,6 +21,24 @@ import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
 public class CircuitUtils {
+
+    public static VisualContact findDriver(VisualCircuit circuit, VisualJoint joint) {
+        return findDriver(circuit, joint, true);
+    }
+
+    public static VisualContact findDriver(VisualCircuit circuit, VisualJoint joint, boolean transparentZeroDelayComponents) {
+        Contact mathDriver = findDriver((Circuit) circuit.getMathModel(), joint.getReferencedComponent(), transparentZeroDelayComponents);
+        return circuit.getVisualComponent(mathDriver, VisualContact.class);
+    }
+
+    public static VisualContact findDriver(VisualCircuit circuit, VisualConnection connection) {
+        return findDriver(circuit, connection, true);
+    }
+
+    public static VisualContact findDriver(VisualCircuit circuit, VisualConnection connection, boolean transparentZeroDelayComponents) {
+        Contact mathDriver = findDriver((Circuit) circuit.getMathModel(), connection.getReferencedConnection(), transparentZeroDelayComponents);
+        return circuit.getVisualComponent(mathDriver, VisualContact.class);
+    }
 
     public static VisualContact findDriver(VisualCircuit circuit, VisualContact contact) {
         return findDriver(circuit, contact, true);

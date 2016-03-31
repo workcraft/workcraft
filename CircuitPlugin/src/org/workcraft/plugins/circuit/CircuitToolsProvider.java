@@ -10,6 +10,7 @@ import org.workcraft.plugins.circuit.tools.CircuitSelectionTool;
 import org.workcraft.plugins.circuit.tools.CircuitSimulationTool;
 import org.workcraft.plugins.circuit.tools.ContactGeneratorTool;
 import org.workcraft.plugins.circuit.tools.FunctionComponentGeneratorTool;
+import org.workcraft.plugins.circuit.tools.InitialisationAnalyserTool;
 
 public class CircuitToolsProvider implements CustomToolsProvider {
 
@@ -23,6 +24,7 @@ public class CircuitToolsProvider implements CustomToolsProvider {
         result.add(new FunctionComponentGeneratorTool());
         result.add(new ContactGeneratorTool());
         result.add(new CircuitSimulationTool());
+        result.add(new InitialisationAnalyserTool());
 
         return result;
     }

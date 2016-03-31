@@ -24,4 +24,9 @@ public class PetrifySynthesisGeneralisedCelement extends PetrifySynthesis {
         return true;
     }
 
+    @Override
+    public boolean boxCombinationalComponents() {
+        return true;
+    }
+
 }
