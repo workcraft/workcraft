@@ -54,13 +54,13 @@ public class CircuitSimulationTool extends StgSimulationTool {
     public void setTrace(Trace mainTrace, Trace branchTrace, GraphEditor editor) {
         Trace circuitMainTrace = convertStgTraceToCircuitTrace(mainTrace);
         if (circuitMainTrace != null) {
-            System.out.println("Main trace convertion:");
+            System.out.println("Main trace conversion:");
             System.out.println("  original: " + mainTrace);
             System.out.println("  circuit:  " + circuitMainTrace);
         }
         Trace circuitBranchTrace = convertStgTraceToCircuitTrace(branchTrace);
         if (circuitBranchTrace != null) {
-            System.out.println("Branch trace convertion:");
+            System.out.println("Branch trace conversion:");
             System.out.println("  original: " + branchTrace);
             System.out.println("  circuit:  " + circuitBranchTrace);
         }
