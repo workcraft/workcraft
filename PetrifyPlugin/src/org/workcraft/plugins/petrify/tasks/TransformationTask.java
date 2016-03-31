@@ -63,9 +63,10 @@ public class TransformationTask implements Task<TransformationResult>, ExternalP
         if (PetrifyUtilitySettings.getAdvancedMode()) {
             MainWindow mainWindow = Framework.getInstance().getMainWindow();
             String tmp = JOptionPane.showInputDialog(mainWindow, "Additional parameters for Petrify:", extraArgs);
-            if (tmp != null) {
-                extraArgs = tmp;
+            if (tmp == null) {
+                return Result.cancelled();
             }
+            extraArgs = tmp;
         }
         for (String arg : extraArgs.split("\\s")) {
             if (!arg.isEmpty()) {

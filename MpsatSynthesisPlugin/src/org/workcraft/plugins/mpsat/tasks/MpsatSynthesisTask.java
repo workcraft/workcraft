@@ -82,9 +82,10 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
         if (MpsatSynthesisUtilitySettings.getAdvancedMode()) {
             MainWindow mainWindow = Framework.getInstance().getMainWindow();
             String tmp = JOptionPane.showInputDialog(mainWindow, "Additional parameters for MPSat:", extraArgs);
-            if (tmp != null) {
-                extraArgs = tmp;
+            if (tmp == null) {
+                return Result.cancelled();
             }
+            extraArgs = tmp;
         }
         for (String arg : extraArgs.split("\\s")) {
             if (!arg.isEmpty()) {
