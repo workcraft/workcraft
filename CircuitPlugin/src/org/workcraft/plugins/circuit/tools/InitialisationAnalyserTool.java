@@ -1,22 +1,46 @@
 package org.workcraft.plugins.circuit.tools;
 
 import java.awt.Color;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Set;
 
+import javax.swing.Icon;
+
+import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.AbstractTool;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitSettings;
+import org.workcraft.plugins.circuit.Contact;
+import org.workcraft.plugins.circuit.FunctionComponent;
+import org.workcraft.plugins.circuit.FunctionContact;
+import org.workcraft.plugins.circuit.VisualContact;
+import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
+import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanUtils;
+import org.workcraft.plugins.cpog.optimisation.expressions.One;
+import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
+import org.workcraft.util.GUI;
+import org.workcraft.util.Hierarchy;
 
 public class InitialisationAnalyserTool extends AbstractTool {
 
-    private HashSet<Node> initHigh;
-    private HashSet<Node> initLow;
-    private HashSet<Node> initError;
+    private HashSet<Node> initHighSet;
+    private HashSet<Node> initLowSet;
+    private HashSet<Node> initErrorSet;
 
     @Override
     public String getLabel() {
@@ -24,14 +48,135 @@ public class InitialisationAnalyserTool extends AbstractTool {
     }
 
     @Override
-    public boolean requiresButton() {
-        return false;
+    public int getHotKeyCode() {
+        return KeyEvent.VK_I;
     }
 
-    public void setState(HashSet<Node> initHigh, HashSet<Node> initLow, HashSet<Node> initError) {
-        this.initHigh = initHigh;
-        this.initLow = initLow;
-        this.initError = initError;
+    @Override
+    public Icon getIcon() {
+        return GUI.createIconFromSVG("images/icons/svg/tool-cycle_analysis.svg");
+    }
+
+    @Override
+    public void activated(final GraphEditor editor) {
+        updateState(editor);
+        super.activated(editor);
+    }
+
+    @Override
+    public void deactivated(final GraphEditor editor) {
+        initHighSet = null;
+        initLowSet = null;
+        initErrorSet = null;
+    }
+
+    private void updateState(final GraphEditor editor) {
+        Circuit circuit = (Circuit) editor.getModel().getMathModel();
+        initHighSet = new HashSet<>();
+        initLowSet = new HashSet<>();
+        initErrorSet = new HashSet<>();
+        Queue<Connection> queue = new LinkedList<>();
+        for (FunctionContact contact: circuit.getFunctionContacts()) {
+            if (contact.isDriver() && contact.getInitialised()) {
+                HashSet<Node> init = contact.getInitToOne() ? initHighSet : initLowSet;
+                if (init.add(contact)) {
+                    Set<Connection> connections = circuit.getConnections(contact);
+                    queue.addAll(connections);
+                }
+            }
+        }
+        while (!queue.isEmpty()) {
+            Connection connection = queue.remove();
+            Node fromNode = connection.getFirst();
+            HashSet<Node> nodeInitLevelSet = chooseNodeLevelSet(fromNode, initHighSet, initLowSet);
+            if ((nodeInitLevelSet != null) && nodeInitLevelSet.add(connection)) {
+                if (initErrorSet.contains(fromNode)) {
+                    initErrorSet.add(connection);
+                }
+                Node toNode = connection.getSecond();
+                if (nodeInitLevelSet.add(toNode)) {
+                    Node parent = toNode.getParent();
+                    if (parent instanceof FunctionComponent) {
+                        LinkedList<BooleanVariable> variables = new LinkedList<>();
+                        LinkedList<BooleanFormula> values = new LinkedList<>();
+                        LinkedList<FunctionContact> outputPins = new LinkedList<>();
+                        for (FunctionContact contact: Hierarchy.getChildrenOfType(parent, FunctionContact.class)) {
+                            if (contact.isOutput()) {
+                                outputPins.add(contact);
+                            }
+                            HashSet<Node> contactInitLevelSet = chooseNodeLevelSet(contact, initHighSet, initLowSet);
+                            if (contactInitLevelSet != null) {
+                                variables.add(contact);
+                                values.add(contactInitLevelSet == initHighSet ? One.instance() : Zero.instance());
+                            }
+                        }
+                        for (FunctionContact outputPin: outputPins) {
+                            Set<Node> outputInitLevelSet = chooseFunctionLevelSet(outputPin, variables, values, initHighSet, initLowSet);
+                            if ((outputInitLevelSet != null) && outputInitLevelSet.add(outputPin)) {
+                                if ((outputInitLevelSet == initHighSet) != (outputPin.getInitToOne())) {
+                                    initErrorSet.add(outputPin);
+                                }
+                                Set<Connection> connections = circuit.getConnections(outputPin);
+                                queue.addAll(connections);
+                            }
+                        }
+                    } else {
+                        Set<Connection> connections = circuit.getConnections(toNode);
+                        queue.addAll(connections);
+                    }
+                }
+            }
+        }
+    }
+
+    private HashSet<Node> chooseNodeLevelSet(Node node, HashSet<Node> highSet, HashSet<Node> lowSet) {
+        if (highSet.contains(node)) {
+            return highSet;
+        }
+        if (lowSet.contains(node)) {
+            return lowSet;
+        }
+        return null;
+    }
+
+    private HashSet<Node> chooseFunctionLevelSet(FunctionContact contact, LinkedList<BooleanVariable> variables,
+            LinkedList<BooleanFormula> values, HashSet<Node> highSet, HashSet<Node> lowSet) {
+        BooleanFormula setFunction = BooleanUtils.cleverReplace(contact.getSetFunction(), variables, values);
+        BooleanFormula resetFunction = BooleanUtils.cleverReplace(contact.getResetFunction(), variables, values);
+        if (isEvaluatedHigh(setFunction, resetFunction)) {
+            return highSet;
+        } else if (isEvaluatedLow(setFunction, resetFunction)) {
+            return lowSet;
+        }
+        return null;
+    }
+
+    private boolean isEvaluatedHigh(BooleanFormula setFunction, BooleanFormula resetFunction) {
+        return One.instance().equals(setFunction) && ((resetFunction == null) || Zero.instance().equals(resetFunction));
+    }
+
+    private boolean isEvaluatedLow(BooleanFormula setFunction, BooleanFormula resetFunction) {
+        return Zero.instance().equals(setFunction) && ((resetFunction == null) || One.instance().equals(resetFunction));
+    }
+
+    @Override
+    public void mouseClicked(GraphEditorMouseEvent e) {
+        boolean processed = false;
+        VisualModel model = e.getEditor().getModel();
+        if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() > 1)) {
+            VisualNode node = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
+            if (node instanceof VisualContact) {
+                e.getEditor().getWorkspaceEntry().saveMemento();
+                Contact contact = ((VisualContact) node).getReferencedContact();
+                contact.setInitialised(!contact.getInitialised());
+                updateState(e.getEditor());
+                processed = true;
+            }
+        }
+
+        if (!processed) {
+            super.mouseClicked(e);
+        }
     }
 
     @Override
@@ -48,9 +193,9 @@ public class InitialisationAnalyserTool extends AbstractTool {
                 }
 
                 if (mathNode != null) {
-                    final boolean b = (initError != null) && initError.contains(mathNode);
-                    if ((initHigh != null) && initHigh.contains(mathNode)) {
-                        return new Decoration() {
+                    final boolean b = (initErrorSet != null) && initErrorSet.contains(mathNode);
+                    if ((initHighSet != null) && initHighSet.contains(mathNode)) {
+                        return new StateDecoration() {
                             @Override
                             public Color getColorisation() {
                                 return CircuitSettings.getActiveWireColor();
@@ -61,8 +206,8 @@ public class InitialisationAnalyserTool extends AbstractTool {
                             }
                         };
                     }
-                    if ((initLow != null) && initLow.contains(mathNode)) {
-                        return new Decoration() {
+                    if ((initLowSet != null) && initLowSet.contains(mathNode)) {
+                        return new StateDecoration() {
                             @Override
                             public Color getColorisation() {
                                 return CircuitSettings.getInactiveWireColor();
@@ -75,7 +220,16 @@ public class InitialisationAnalyserTool extends AbstractTool {
                     }
                 }
 
-                return null;
+                return new StateDecoration() {
+                    @Override
+                    public Color getColorisation() {
+                        return null;
+                    }
+                    @Override
+                    public Color getBackground() {
+                        return Color.WHITE;
+                    }
+                };
             }
         };
     }

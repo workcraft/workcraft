@@ -19,7 +19,6 @@ import org.workcraft.plugins.circuit.tools.CheckCircuitTool;
 import org.workcraft.plugins.circuit.tools.CircuitLayoutTool;
 import org.workcraft.plugins.circuit.tools.ComponentContractionTool;
 import org.workcraft.plugins.circuit.tools.ComponentInsertionTool;
-import org.workcraft.plugins.circuit.tools.InitialisationCheckerTool;
 import org.workcraft.plugins.circuit.tools.JointContractionTool;
 import org.workcraft.plugins.circuit.tools.JointSplitTool;
 import org.workcraft.plugins.circuit.tools.StgGeneratorTool;
@@ -133,13 +132,6 @@ public class CircuitModule implements Module {
                         return false;
                     }
                 };
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new InitialisationCheckerTool();
             }
         });
 
