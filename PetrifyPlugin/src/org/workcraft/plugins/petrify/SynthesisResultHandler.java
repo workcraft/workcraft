@@ -31,10 +31,12 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class SynthesisResultHandler extends DummyProgressMonitor<SynthesisResult> {
     private final WorkspaceEntry we;
     private final boolean boxSequentialComponents;
+    private final boolean boxCombinationalComponents;
 
-    public SynthesisResultHandler(WorkspaceEntry we, boolean boxSequentialComponents) {
+    public SynthesisResultHandler(WorkspaceEntry we, boolean boxSequentialComponents, boolean boxCombinationalComponents) {
         this.we = we;
         this.boxSequentialComponents = boxSequentialComponents;
+        this.boxCombinationalComponents = boxCombinationalComponents;
     }
 
     @Override
@@ -77,11 +79,7 @@ public class SynthesisResultHandler extends DummyProgressMonitor<SynthesisResult
                     VisualModel visualModel = newWorkspaceEntry.getModelEntry().getVisualModel();
                     if (visualModel instanceof VisualCircuit) {
                         VisualCircuit visualCircuit = (VisualCircuit) visualModel;
-                        for (VisualFunctionComponent component: visualCircuit.getVisualFunctionComponents()) {
-                            if (boxSequentialComponents && component.isSequentialGate()) {
-                                component.setRenderType(RenderType.BOX);
-                            }
-                        }
+                        setComponentsRenderStyle(visualCircuit);
                         String title = we.getModelEntry().getModel().getTitle();
                         visualCircuit.setTitle(title);
                         if (!we.getFile().exists()) {
@@ -105,6 +103,20 @@ public class SynthesisResultHandler extends DummyProgressMonitor<SynthesisResult
                     }
                 } catch (DeserialisationException e) {
                     throw new RuntimeException(e);
+                }
+            }
+        }
+    }
+
+    private void setComponentsRenderStyle(VisualCircuit visualCircuit) {
+        for (VisualFunctionComponent component: visualCircuit.getVisualFunctionComponents()) {
+            if (component.isSequentialGate()) {
+                if (boxSequentialComponents) {
+                    component.setRenderType(RenderType.BOX);
+                }
+            } else {
+                if (boxCombinationalComponents) {
+                    component.setRenderType(RenderType.BOX);
                 }
             }
         }

@@ -645,6 +645,19 @@ public class VerilogImporter implements Importer {
                 if (component == complexComponent) continue;
                 circuit.remove(component);
             }
+            // Prefix all the pins with underscore so there is no name clash on the subsequent round of renaming
+            for (Contact contact: complexComponent.getContacts()) {
+                circuit.setName(contact, "_" + contact.getName());
+            }
+            // Compact all the pins names
+            int index = 0;
+            for (Contact contact: complexComponent.getContacts()) {
+                if (contact.isOutput()) {
+                    circuit.setName(contact, getPrimitiveGatePinName(0));
+                } else {
+                    circuit.setName(contact, getPrimitiveGatePinName(++index));
+                }
+            }
         }
     }
 
