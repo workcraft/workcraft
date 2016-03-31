@@ -258,17 +258,8 @@ public class PluginManager implements PluginProvider {
                         classes[i] = constructorArgs[i].getClass();
                     }
                     return new ConstructorParametersMatcher().match(cls, classes).newInstance(constructorArgs);
-                } catch (InstantiationException e) {
-                    throw new RuntimeException(e);
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                } catch (SecurityException e) {
-                    throw new RuntimeException(e);
-                } catch (NoSuchMethodException e) {
-                    throw new RuntimeException(e);
-                } catch (IllegalArgumentException e) {
-                    throw new RuntimeException(e);
-                } catch (InvocationTargetException e) {
+                } catch (InstantiationException | IllegalAccessException | SecurityException |
+                        NoSuchMethodException | IllegalArgumentException | InvocationTargetException e) {
                     throw new RuntimeException(e);
                 }
             }

@@ -198,13 +198,10 @@ public class Config {
         try {
             db = dbf.newDocumentBuilder();
             xmldoc = db.parse(file);
-        } catch (ParserConfigurationException e) {
+        } catch (ParserConfigurationException | SAXException e) {
             e.printStackTrace();
             return;
         } catch (IOException e) {
-            return;
-        } catch (SAXException e) {
-            e.printStackTrace();
             return;
         }
 
@@ -290,9 +287,7 @@ public class Config {
 
             transformer.transform(source, result);
             fos.close();
-        } catch (TransformerException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
+        } catch (TransformerException | IOException e) {
             e.printStackTrace();
         }
     }

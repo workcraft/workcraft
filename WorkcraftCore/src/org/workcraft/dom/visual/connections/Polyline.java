@@ -461,7 +461,7 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
     }
 
     @Override
-    public Point2D getSecondDerivativeAt(double t)     {
+    public Point2D getSecondDerivativeAt(double t) {
         Point2D left = getDerivativeAt(t - 0.05);
         Point2D right = getDerivativeAt(t + 0.05);
 

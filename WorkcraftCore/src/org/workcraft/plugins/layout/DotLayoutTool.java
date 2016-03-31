@@ -72,7 +72,7 @@ public class DotLayoutTool extends AbstractLayoutTool {
     }
 
     private List<Point2D> parseConnectionSpline(String pos) throws ParseException {
-        try    {
+        try {
             ArrayList<Point2D> result = new ArrayList<>();
             Point2D end = null;
             String[] split = pos.split(" ");

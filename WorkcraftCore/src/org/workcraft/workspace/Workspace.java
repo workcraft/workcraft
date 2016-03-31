@@ -145,7 +145,7 @@ public class Workspace {
         return current.mountTo;
     }
 
-    public File getFile(WorkspaceEntry we)    {
+    public File getFile(WorkspaceEntry we) {
         return getFile(we.getWorkspacePath());
     }
 
@@ -310,11 +310,7 @@ public class Workspace {
             }
             addMount(Path.<String>empty(), baseDir(), true);
             setTemporary(false);
-        } catch (ParserConfigurationException e) {
-            throw new DeserialisationException(e);
-        } catch (SAXException e) {
-            throw new DeserialisationException(e);
-        } catch (IOException e) {
+        } catch (ParserConfigurationException | SAXException | IOException e) {
             throw new DeserialisationException(e);
         }
         fireWorkspaceChanged();

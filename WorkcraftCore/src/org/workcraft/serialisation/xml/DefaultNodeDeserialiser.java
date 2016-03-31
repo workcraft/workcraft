@@ -108,16 +108,11 @@ class DefaultNodeDeserialiser {
 
                 desc.getWriteMethod().invoke(instance, value);
             }
-        } catch (IllegalArgumentException e) {
-            throw new DeserialisationException(e);
-        } catch (IllegalAccessException e) {
+        } catch (IllegalArgumentException | IllegalAccessException | InstantiationException |
+                IntrospectionException e) {
             throw new DeserialisationException(e);
         } catch (InvocationTargetException e) {
             throw new DeserialisationException(instance.getClass().getName() + " " + currentLevel.getName() + " " + e.getMessage(), e);
-        } catch (InstantiationException e) {
-            throw new DeserialisationException(e);
-        } catch (IntrospectionException e) {
-            throw new DeserialisationException(e);
         }
     }
 
@@ -191,17 +186,8 @@ class DefaultNodeDeserialiser {
             doInitialisation(element, instance, instance.getClass(), externalReferenceResolver);
 
             return instance;
-        } catch (InstantiationException e) {
-            throw new DeserialisationException(e);
-        } catch (IllegalAccessException e) {
-            throw new DeserialisationException(e);
-        } catch (ClassNotFoundException e) {
-            throw new DeserialisationException(e);
-        } catch (NoSuchMethodException e) {
-            throw new DeserialisationException(e);
-        } catch (IllegalArgumentException e) {
-            throw new DeserialisationException(e);
-        } catch (InvocationTargetException e) {
+        } catch (InstantiationException | IllegalAccessException | ClassNotFoundException |
+                NoSuchMethodException | IllegalArgumentException | InvocationTargetException e) {
             throw new DeserialisationException(e);
         }
     }
@@ -218,9 +204,7 @@ class DefaultNodeDeserialiser {
             if (deserialiser instanceof CustomXMLDeserialiser) {
                 ((CustomXMLDeserialiser) deserialiser).initInstance(currentLevelElement, instance, externalReferenceResolver, initialiser);
             }
-        } catch (InstantiationException e) {
-            throw new DeserialisationException(e);
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException e) {
             throw new DeserialisationException(e);
         }
 

@@ -105,16 +105,11 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
                     result = (Model) ctor.newInstance(underlyingModel, root);
                 }
             }
-        } catch (InstantiationException e) {
-            throw new DeserialisationException(e);
-        } catch (IllegalAccessException e) {
+        } catch (InstantiationException | IllegalAccessException |
+                IllegalArgumentException | InvocationTargetException e) {
             throw new DeserialisationException(e);
         } catch (NoSuchMethodException e) {
             throw new DeserialisationException("Missing appropriate constructor for model deserealisation.", e);
-        } catch (IllegalArgumentException e) {
-            throw new DeserialisationException(e);
-        } catch (InvocationTargetException e) {
-            throw new DeserialisationException(e);
         }
 
         return result;

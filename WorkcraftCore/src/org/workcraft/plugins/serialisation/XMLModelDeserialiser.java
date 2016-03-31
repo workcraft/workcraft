@@ -79,17 +79,8 @@ public class XMLModelDeserialiser implements ModelDeserialiser {
             deserialisation.deserialiseModelProperties(modelElement, model);
 
             return new DeserialisationResult(model, intRef);
-        } catch (ParserConfigurationException e) {
-            throw new DeserialisationException(e);
-        } catch (SAXException e) {
-            throw new DeserialisationException(e);
-        } catch (IOException e) {
-            throw new DeserialisationException(e);
-        } catch (SecurityException e) {
-            throw new DeserialisationException(e);
-        } catch (IllegalArgumentException e) {
-            throw new DeserialisationException(e);
-        } catch (ClassNotFoundException e) {
+        } catch (ParserConfigurationException | SAXException | IOException |
+                SecurityException | IllegalArgumentException | ClassNotFoundException e) {
             throw new DeserialisationException(e);
         }
     }
