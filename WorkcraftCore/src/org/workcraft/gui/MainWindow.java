@@ -34,7 +34,6 @@ import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -633,11 +632,7 @@ public class MainWindow extends JFrame {
             FileOutputStream os = new FileOutputStream(file);
             pers.store(os, pmodel);
             os.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (PersistenceException e) {
+        } catch (IOException | PersistenceException e) {
             e.printStackTrace();
         }
     }
@@ -664,11 +659,7 @@ public class MainWindow extends JFrame {
                 is.close();
                 DockingManager.display(outputDockable);
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (PersistenceException e) {
+        } catch (IOException | PersistenceException e) {
             e.printStackTrace();
         }
     }
@@ -679,10 +670,8 @@ public class MainWindow extends JFrame {
         PerspectiveManager.setPersistenceHandler(persister);
         try {
             DockingManager.restoreLayout(true);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        } catch (PersistenceException ex) {
-            ex.printStackTrace();
+        } catch (IOException | PersistenceException e) {
+            e.printStackTrace();
         }
     }
 

@@ -36,9 +36,7 @@ public class PresetManager<T> {
             }
 
             XmlUtil.saveDocument(doc, presetFile);
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (ParserConfigurationException | IOException e) {
             throw new RuntimeException(e);
         }
     }
@@ -54,11 +52,7 @@ public class PresetManager<T> {
                     presets.add(new Preset<T>(p, serialiser));
                 }
             }
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException(e);
-        } catch (SAXException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
+        } catch (ParserConfigurationException | SAXException | IOException e) {
             throw new RuntimeException(e);
         }
     }

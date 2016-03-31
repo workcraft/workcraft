@@ -53,17 +53,8 @@ public class NodeFactory {
             VisualConnection visual = (VisualConnection) ctor.newInstance();
             return visual;
 
-        } catch (SecurityException e) {
-            throw new NodeCreationException(e);
-        } catch (NoSuchMethodException e) {
-            throw new NodeCreationException(e);
-        } catch (IllegalArgumentException e) {
-            throw new NodeCreationException(e);
-        } catch (InstantiationException e) {
-            throw new NodeCreationException(e);
-        } catch (IllegalAccessException e) {
-            throw new NodeCreationException(e);
-        } catch (InvocationTargetException e) {
+        } catch (SecurityException | NoSuchMethodException | IllegalArgumentException |
+                InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new NodeCreationException(e);
         }
     }
@@ -73,20 +64,10 @@ public class NodeFactory {
         try {
             Constructor<?> ctor = cls.getConstructor();
             return (T) ctor.newInstance();
-        } catch (ClassCastException ex) {
-            throw new NodeCreationException(ex);
-        }    catch (SecurityException ex) {
-            throw new NodeCreationException(ex);
-        } catch (NoSuchMethodException ex) {
-            throw new NodeCreationException(ex);
-        } catch (IllegalArgumentException ex) {
-            throw new NodeCreationException(ex);
-        } catch (InstantiationException ex) {
-            throw new NodeCreationException(ex);
-        } catch (IllegalAccessException ex) {
-            throw new NodeCreationException(ex);
-        } catch (InvocationTargetException ex) {
-            throw new NodeCreationException(ex);
+        } catch (ClassCastException | SecurityException | NoSuchMethodException |
+                IllegalArgumentException | InstantiationException |
+                IllegalAccessException | InvocationTargetException e) {
+            throw new NodeCreationException(e);
         }
     }
 
@@ -133,17 +114,8 @@ public class NodeFactory {
             VisualComponent visual = (VisualComponent) ctor.newInstance(args);
             return visual;
 
-        } catch (SecurityException e) {
-            throw new NodeCreationException(e);
-        } catch (NoSuchMethodException e) {
-            throw new NodeCreationException(e);
-        } catch (IllegalArgumentException e) {
-            throw new NodeCreationException(e);
-        } catch (InstantiationException e) {
-            throw new NodeCreationException(e);
-        } catch (IllegalAccessException e) {
-            throw new NodeCreationException(e);
-        } catch (InvocationTargetException e) {
+        } catch (SecurityException | NoSuchMethodException | IllegalArgumentException |
+                InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new NodeCreationException(e);
         }
     }

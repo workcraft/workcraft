@@ -231,9 +231,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
         } else {
             try {
                 SwingUtilities.invokeAndWait(tcg);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
-            } catch (InvocationTargetException e) {
+            } catch (InterruptedException | InvocationTargetException e) {
                 throw new RuntimeException(e);
             }
         }

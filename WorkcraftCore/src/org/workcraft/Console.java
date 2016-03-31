@@ -100,9 +100,7 @@ public class Console {
             LogUtils.logWarningLine("System script file not found: " + e.getMessage());
         } catch (IOException e) {
             LogUtils.logErrorLine("Error reading system script file: " + e.getMessage());
-        } catch (WrappedException e) {
-            LogUtils.logErrorLine("Startup script failed: " + e.getMessage());
-        } catch (org.mozilla.javascript.EcmaError e) {
+        } catch (WrappedException | org.mozilla.javascript.EcmaError e) {
             LogUtils.logErrorLine("Startup script failed: " + e.getMessage());
         }
 
@@ -154,11 +152,9 @@ public class Console {
                     framework.execJavaScript(FileUtils.readAllTextFromSystemResource("scripts/shutdown.js"));
                 } catch (FileNotFoundException e) {
                     LogUtils.logErrorLine("System script file not found: " + e.getMessage());
-                } catch (IOException e)    {
+                } catch (IOException e) {
                     LogUtils.logErrorLine("IO Exception: " + e.getMessage());
-                } catch (org.mozilla.javascript.EcmaError e) {
-                    LogUtils.logErrorLine("Shutdown script failed: " + e.getMessage());
-                } catch (WrappedException e) {
+                } catch (WrappedException | org.mozilla.javascript.EcmaError e) {
                     LogUtils.logErrorLine("Shutdown script failed: " + e.getMessage());
                 }
                 System.exit(0);

@@ -38,19 +38,9 @@ public class ModelFactory {
             Constructor<?> ctor = modelClass.getConstructor();
             Model model = (Model) ctor.newInstance();
             return model;
-        } catch (IllegalArgumentException e) {
-            throw new ModelInstantiationException(e);
-        } catch (SecurityException e) {
-            throw new ModelInstantiationException(e);
-        } catch (InstantiationException e) {
-            throw new ModelInstantiationException(e);
-        } catch (IllegalAccessException e) {
-            throw new ModelInstantiationException(e);
-        } catch (InvocationTargetException e) {
-            throw new ModelInstantiationException(e);
-        } catch (NoSuchMethodException e) {
-            throw new ModelInstantiationException(e);
-        } catch (ClassNotFoundException e) {
+        } catch (IllegalArgumentException | SecurityException | InstantiationException |
+                IllegalAccessException | InvocationTargetException |
+                NoSuchMethodException | ClassNotFoundException e) {
             throw new ModelInstantiationException(e);
         }
     }
@@ -77,17 +67,8 @@ public class ModelFactory {
 
             return (VisualModel) visual;
 
-        } catch (SecurityException e) {
-            throw new VisualModelInstantiationException(e);
-        } catch (NoSuchMethodException e) {
-            throw new VisualModelInstantiationException(e);
-        } catch (IllegalArgumentException e) {
-            throw new VisualModelInstantiationException(e);
-        } catch (InstantiationException e) {
-            throw new VisualModelInstantiationException(e);
-        } catch (IllegalAccessException e) {
-            throw new VisualModelInstantiationException(e);
-        } catch (InvocationTargetException e) {
+        } catch (SecurityException | NoSuchMethodException | IllegalArgumentException |
+                InstantiationException | IllegalAccessException | InvocationTargetException e) {
             throw new VisualModelInstantiationException(e);
         }
     }

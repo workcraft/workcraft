@@ -137,17 +137,8 @@ public class DefaultNodeSerialiser {
             doSerialisation(parentElement, object, internalReferences, externalReferences, object.getClass());
 
             parentElement.setAttribute("ref", internalReferences.getReference(object));
-        } catch (IllegalArgumentException e) {
-            throw new SerialisationException(e);
-        } catch (InstantiationException e) {
-            throw new SerialisationException(e);
-        } catch (IllegalAccessException e) {
-            throw new SerialisationException(e);
-        } catch (IntrospectionException e) {
-            throw new SerialisationException(e);
-        } catch (SerialisationException e) {
-            throw new SerialisationException(e);
-        } catch (InvocationTargetException e) {
+        } catch (IllegalArgumentException | InstantiationException | IllegalAccessException |
+                IntrospectionException | SerialisationException | InvocationTargetException e) {
             throw new SerialisationException(e);
         }
     }

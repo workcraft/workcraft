@@ -654,17 +654,8 @@ public final class Framework {
                 loadVisualModelState(bi, (VisualModel) visualResult.model, visualResult.references);
             }
             return new ModelEntry(descriptor, visualResult.model);
-        } catch (IOException e) {
-            throw new DeserialisationException(e);
-        } catch (ParserConfigurationException e) {
-            throw new DeserialisationException(e);
-        } catch (SAXException e) {
-            throw new DeserialisationException(e);
-        } catch (InstantiationException e) {
-            throw new DeserialisationException(e);
-        } catch (IllegalAccessException e) {
-            throw new DeserialisationException(e);
-        } catch (ClassNotFoundException e) {
+        } catch (IOException | ParserConfigurationException | SAXException |
+                InstantiationException | IllegalAccessException | ClassNotFoundException e) {
             throw new DeserialisationException(e);
         }
     }
@@ -706,8 +697,6 @@ public final class Framework {
             FileOutputStream stream = new FileOutputStream(file);
             save(model, stream);
             stream.close();
-        } catch (FileNotFoundException e) {
-            throw new SerialisationException(e);
         } catch (IOException e) {
             throw new SerialisationException(e);
         }
@@ -785,9 +774,7 @@ public final class Framework {
             XmlUtil.writeDocument(metaDoc, zos);
             zos.closeEntry();
             zos.close();
-        } catch (ParserConfigurationException e) {
-            throw new SerialisationException(e);
-        } catch (IOException e) {
+        } catch (ParserConfigurationException | IOException e) {
             throw new SerialisationException(e);
         }
     }
@@ -805,11 +792,7 @@ public final class Framework {
     public void initPlugins() {
         try {
             pluginManager.loadManifest();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (FormatException e) {
-            e.printStackTrace();
-        } catch (PluginInstantiationException e) {
+        } catch (IOException | FormatException | PluginInstantiationException e) {
             e.printStackTrace();
         }
     }
