@@ -755,8 +755,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 
         @Override
         public String getColumnName(int column) {
-            if (column == 0) return "Trace";
-            return "Branch";
+            return (column == 0) ? "Trace" : "Branch";
         }
 
         @Override
