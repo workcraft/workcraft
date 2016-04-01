@@ -219,17 +219,7 @@ public class InitialisationAnalyserTool extends AbstractTool {
                         };
                     }
                 }
-
-                return new StateDecoration() {
-                    @Override
-                    public Color getColorisation() {
-                        return null;
-                    }
-                    @Override
-                    public Color getBackground() {
-                        return Color.WHITE;
-                    }
-                };
+                return (mathNode instanceof Contact) ? StateDecoration.Empty.INSTANCE : null;
             }
         };
     }

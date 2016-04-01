@@ -196,30 +196,47 @@ public class VisualContact extends VisualComponent implements StateObserver {
     private Shape getShape() {
         if (getParent() instanceof VisualCircuitComponent) {
             if (getReferencedContact().getInitialised()) {
-                Path2D path = new Path2D.Double();
-                path.moveTo(-size / 2, 0.0);
-                path.lineTo(0.0, size / 2);
-                path.lineTo(size / 2, 0.0);
-                path.lineTo(0.0, -size / 2);
-                path.closePath();
-                return path;
+                return getInitialisedContactShape();
             } else {
-                return new Rectangle2D.Double(
-                        -size / 2 + CircuitSettings.getWireWidth(),
-                        -size / 2 + CircuitSettings.getWireWidth(),
-                        size - CircuitSettings.getWireWidth() * 2,
-                        size - CircuitSettings.getWireWidth() * 2);
+                return getContactShape();
             }
         } else {
-            Path2D path = new Path2D.Double();
-            path.moveTo(-size / 2, -size / 2);
-            path.lineTo(0, -size / 2);
-            path.lineTo(size / 2, 0);
-            path.lineTo(0, size / 2);
-            path.lineTo(-size / 2, size / 2);
-            path.closePath();
-            return path;
+            return getPortShape();
         }
+    }
+
+    private Shape getPortShape() {
+        double d = 0.5 * (size - CircuitSettings.getWireWidth());
+        Path2D path = new Path2D.Double();
+        path.moveTo(-d, -d);
+        path.lineTo(0, -d);
+        path.lineTo(d, 0);
+        path.lineTo(0, d);
+        path.lineTo(-d, d);
+        path.closePath();
+        return path;
+    }
+
+    private Shape getContactShape() {
+        double d = 0.5 * size - CircuitSettings.getWireWidth();
+        Path2D path = new Path2D.Double();
+        path.moveTo(-d, -d);
+        path.lineTo(d, -d);
+        path.lineTo(d, d);
+        path.lineTo(-d, d);
+        path.closePath();
+        return path;
+    }
+
+    private Shape getInitialisedContactShape() {
+        double d = 0.5 * (size - CircuitSettings.getWireWidth());
+        Path2D path = new Path2D.Double();
+        path.moveTo(-d, 0);
+        path.lineTo(0, d);
+        path.lineTo(d, 0);
+        path.lineTo(0, -d);
+        path.closePath();
+        return path;
     }
 
     @Override

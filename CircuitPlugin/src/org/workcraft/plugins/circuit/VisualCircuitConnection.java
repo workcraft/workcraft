@@ -43,8 +43,7 @@ public class VisualCircuitConnection extends VisualConnection {
         g.setColor(Coloriser.colorise(getColor(), colorisation));
         g.setStroke(new BasicStroke((float) CircuitSettings.getWireWidth()));
 
-        boolean showContact = CircuitSettings.getShowContacts() || (d instanceof StateDecoration)
-                || (d.getBackground() != null);
+        boolean showContact = CircuitSettings.getShowContacts() || (d instanceof StateDecoration);
 
         if (!showContact && (getFirst().getParent() instanceof VisualCircuitComponent)) {
             double tStart = Geometry.getBorderPointParameter(getFirstShape(), getGraphic(), 0, 1);

@@ -72,6 +72,7 @@ public class Circuit extends AbstractMathModel {
         new FunctionConsistencySupervisor(this).attach(getRoot());
         new InitStateConsistencySupervisor(this).attach(getRoot());
         new ZeroDelayConsistencySupervisor(this).attach(getRoot());
+        new InitialisedConsistencySupervisor(this).attach(getRoot());
     }
 
     public MathConnection connect(Node first, Node second) throws InvalidConnectionException {
