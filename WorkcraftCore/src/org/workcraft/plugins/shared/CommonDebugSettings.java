@@ -35,14 +35,17 @@ public class CommonDebugSettings implements Settings {
     private static final String keyCopyModelOnChange = prefix + ".copyModelOnChange";
     private static final String keyVerboseImport = prefix + ".verboseImport";
     private static final String keyParserTracing = prefix + ".parserTracing";
+    private static final String keyVerboseCompatibilityManager = prefix + ".verboseCompatibilityManager";
 
     private static final boolean defaultCopyModelOnChange = false;
     private static final Boolean defaultVerboseImport = false;
     private static final Boolean defaultParserTracing = false;
+    private static final Boolean defaultVerboseCompatibilityManager = false;
 
     private static boolean copyModelOnChange = defaultCopyModelOnChange;
     private static Boolean verboseImport = defaultVerboseImport;
     private static Boolean parserTracing = defaultParserTracing;
+    private static Boolean verboseCompatibilityManager = defaultVerboseCompatibilityManager;
 
     public CommonDebugSettings() {
         properties.add(new PropertyDeclaration<CommonDebugSettings, Boolean>(
@@ -74,6 +77,16 @@ public class CommonDebugSettings implements Settings {
                 return getParserTracing();
             }
         });
+
+        properties.add(new PropertyDeclaration<CommonDebugSettings, Boolean>(
+                this, "Log compatibility manager substitutions", Boolean.class, true, false, false) {
+            protected void setter(CommonDebugSettings object, Boolean value) {
+                setVerboseCompatibilityManager(value);
+            }
+            protected Boolean getter(CommonDebugSettings object) {
+                return getVerboseCompatibilityManager();
+            }
+        });
     }
 
     @Override
@@ -86,6 +99,7 @@ public class CommonDebugSettings implements Settings {
         setCopyModelOnChange(config.getBoolean(keyCopyModelOnChange, defaultCopyModelOnChange));
         setVerboseImport(config.getBoolean(keyVerboseImport, defaultVerboseImport));
         setParserTracing(config.getBoolean(keyParserTracing, defaultParserTracing));
+        setVerboseCompatibilityManager(config.getBoolean(keyVerboseCompatibilityManager, defaultVerboseCompatibilityManager));
     }
 
     @Override
@@ -93,6 +107,7 @@ public class CommonDebugSettings implements Settings {
         config.setBoolean(keyCopyModelOnChange, getCopyModelOnChange());
         config.setBoolean(keyVerboseImport, getVerboseImport());
         config.setBoolean(keyParserTracing, getParserTracing());
+        config.setBoolean(keyVerboseCompatibilityManager, getVerboseCompatibilityManager());
     }
 
     @Override
@@ -127,6 +142,14 @@ public class CommonDebugSettings implements Settings {
 
     public static void setParserTracing(Boolean value) {
         parserTracing = value;
+    }
+
+    public static Boolean getVerboseCompatibilityManager() {
+        return verboseCompatibilityManager;
+    }
+
+    public static void setVerboseCompatibilityManager(Boolean value) {
+        verboseCompatibilityManager = value;
     }
 
 }

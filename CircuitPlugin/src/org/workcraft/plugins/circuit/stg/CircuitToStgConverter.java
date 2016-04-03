@@ -23,6 +23,7 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact;
+import org.workcraft.plugins.circuit.Contact.SignalLevel;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitComponent;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
@@ -210,6 +211,7 @@ public class CircuitToStgConverter {
         TwoWayMap<VisualContact, SignalStg> result = new TwoWayMap<>();
         for (VisualContact driver: drivers) {
             VisualContact signal = CircuitUtils.findSignal(circuit, driver, true);
+            SignalLevel signalLevel = signal.getReferencedContact().getSignalLevel();
             Container container = getContainer(signal);
             String signalName = CircuitUtils.getSignalName(circuit, signal);
 
@@ -217,7 +219,7 @@ public class CircuitToStgConverter {
             VisualPlace zeroPlace = stg.createPlace(zeroName, container);
             zeroPlace.setNamePositioning(Positioning.TOP);
             zeroPlace.setLabelPositioning(Positioning.BOTTOM);
-            if (!signal.getReferencedContact().getInitToOne()) {
+            if (signalLevel == SignalLevel.LOW) {
                 zeroPlace.getReferencedPlace().setTokens(1);
             }
 
@@ -225,7 +227,7 @@ public class CircuitToStgConverter {
             VisualPlace onePlace = stg.createPlace(oneName, container);
             onePlace.setNamePositioning(Positioning.BOTTOM);
             onePlace.setLabelPositioning(Positioning.TOP);
-            if (signal.getReferencedContact().getInitToOne()) {
+            if (signalLevel == SignalLevel.HIGH) {
                 onePlace.getReferencedPlace().setTokens(1);
             }
 

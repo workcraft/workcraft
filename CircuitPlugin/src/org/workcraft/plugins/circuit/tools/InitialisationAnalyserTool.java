@@ -38,6 +38,7 @@ import org.workcraft.gui.propertyeditor.PropertyEditorTable;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.Contact;
+import org.workcraft.plugins.circuit.Contact.SignalLevel;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.VisualContact;
@@ -143,7 +144,7 @@ public class InitialisationAnalyserTool extends AbstractTool {
         Queue<Connection> queue = new LinkedList<>();
         for (FunctionContact contact: circuit.getFunctionContacts()) {
             if (contact.isDriver() && contact.getInitialised()) {
-                HashSet<Node> init = contact.getInitToOne() ? initHighSet : initLowSet;
+                HashSet<Node> init = (contact.getSignalLevel() == SignalLevel.HIGH) ? initHighSet : initLowSet;
                 if (init.add(contact)) {
                     Set<Connection> connections = circuit.getConnections(contact);
                     queue.addAll(connections);
@@ -178,7 +179,7 @@ public class InitialisationAnalyserTool extends AbstractTool {
                         for (FunctionContact outputPin: outputPins) {
                             Set<Node> outputInitLevelSet = chooseFunctionLevelSet(outputPin, variables, values, initHighSet, initLowSet);
                             if ((outputInitLevelSet != null) && outputInitLevelSet.add(outputPin)) {
-                                if ((outputInitLevelSet == initHighSet) != (outputPin.getInitToOne())) {
+                                if ((outputInitLevelSet == initHighSet) != (outputPin.getSignalLevel() == SignalLevel.HIGH)) {
                                     initErrorSet.add(outputPin);
                                 }
                                 Set<Connection> connections = circuit.getConnections(outputPin);

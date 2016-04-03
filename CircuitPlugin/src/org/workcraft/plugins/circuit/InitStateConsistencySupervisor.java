@@ -6,6 +6,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateSupervisor;
+import org.workcraft.plugins.circuit.Contact.SignalLevel;
 
 public class InitStateConsistencySupervisor extends StateSupervisor  {
 
@@ -21,7 +22,7 @@ public class InitStateConsistencySupervisor extends StateSupervisor  {
             PropertyChangedEvent pce = (PropertyChangedEvent) e;
             Object sender = e.getSender();
             String propertyName = pce.getPropertyName();
-            if ((sender instanceof Contact) && propertyName.equals(Contact.PROPERTY_INIT_TO_ONE)) {
+            if ((sender instanceof Contact) && propertyName.equals(Contact.PROPERTY_SIGNAL_LEVEL)) {
                 Contact contact = (Contact) sender;
                 handleInitStateChange(contact);
             }
@@ -29,7 +30,7 @@ public class InitStateConsistencySupervisor extends StateSupervisor  {
     }
 
     private void handleInitStateChange(Contact contact) {
-        boolean initToOne = contact.getInitToOne();
+        boolean initToOne = contact.getSignalLevel() == SignalLevel.HIGH;
         Node parent = contact.getParent();
         boolean isZeroDelay = false;
         boolean invertDriver = false;
@@ -44,11 +45,11 @@ public class InitStateConsistencySupervisor extends StateSupervisor  {
         }
         Contact driverContact = CircuitUtils.findDriver(circuit, contact, isZeroDelay);
         if (driverContact != null) {
-            driverContact.setInitToOne(initToOne != invertDriver);
+            driverContact.setSignalLevel(initToOne != invertDriver);
         }
         Collection<Contact> drivenContacts = CircuitUtils.findDriven(circuit, contact, isZeroDelay);
         for (Contact drivenContact: drivenContacts) {
-            drivenContact.setInitToOne(initToOne != inverDriven);
+            drivenContact.setSignalLevel(initToOne != inverDriven);
         }
     }
 

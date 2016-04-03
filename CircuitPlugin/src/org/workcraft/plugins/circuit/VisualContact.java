@@ -44,6 +44,7 @@ import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.plugins.circuit.Contact.IOType;
+import org.workcraft.plugins.circuit.Contact.SignalLevel;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.circuit.tools.StateDecoration;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
@@ -172,13 +173,13 @@ public class VisualContact extends VisualComponent implements StateObserver {
             }
         });
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualContact, Boolean>(
-                this, Contact.PROPERTY_INIT_TO_ONE, Boolean.class, true, true, true) {
-            protected void setter(VisualContact object, Boolean value) {
-                object.getReferencedContact().setInitToOne(value);
+        addPropertyDeclaration(new PropertyDeclaration<VisualContact, SignalLevel>(
+                this, Contact.PROPERTY_SIGNAL_LEVEL, SignalLevel.class, true, true, true) {
+            protected void setter(VisualContact object, SignalLevel value) {
+                object.getReferencedContact().setSignalLevel(value);
             }
-            protected Boolean getter(VisualContact object) {
-                return object.getReferencedContact().getInitToOne();
+            protected SignalLevel getter(VisualContact object) {
+                return object.getReferencedContact().getSignalLevel();
             }
         });
 
@@ -464,7 +465,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
         super.copyStyle(src);
         if (src instanceof VisualContact) {
             VisualContact srcComponent = (VisualContact) src;
-            getReferencedContact().setInitToOne(srcComponent.getReferencedContact().getInitToOne());
+            getReferencedContact().setSignalLevel(srcComponent.getReferencedContact().getSignalLevel());
             // TODO: Note that IOType and Direction are currently NOT copied to allow input/output
             //       port generation with Shift key (and not to be copied from a template node).
             // getReferencedContact().setIOType(srcComponent.getReferencedContact().getIOType());
