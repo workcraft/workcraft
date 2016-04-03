@@ -14,10 +14,11 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.util.LogUtils;
 
 public class CompatibilityManager {
-    private static final Pattern modelNamePattern = Pattern.compile("<model class=\"(. + ?)\" ref=\"\">");
+    private static final Pattern modelNamePattern = Pattern.compile("<model class=\"(.+?)\" ref=\"\">");
     private static final Pattern classNamePattern = Pattern.compile("<([A-Z]\\S*).*>");
 
     @SuppressWarnings("serial")
@@ -61,7 +62,8 @@ public class CompatibilityManager {
 
     private String replace(String line, Map.Entry<String, String> replacement, String message) {
         String newline = line.replaceAll(replacement.getKey(), replacement.getValue());
-        if ((message != null) && !line.equals(newline)) {
+        if (CommonDebugSettings.getVerboseCompatibilityManager()
+                && (message != null) && !line.equals(newline)) {
             LogUtils.logInfoLine("Compatibility management: " + message);
             LogUtils.logInfoLine("  old: " + replacement.getKey());
             LogUtils.logInfoLine("  new: " + replacement.getValue());

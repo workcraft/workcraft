@@ -121,7 +121,7 @@ public class PcompDialog extends JDialog {
         outputOptions.add(dummify);
 
         sharedOutputs = new JCheckBox("Allow the STGs to share outputs");
-        improvedPcomp = new JCheckBox("Improved parallel composition");
+        improvedPcomp = new JCheckBox("No computational interference");
 
         JPanel options = new JPanel();
         options.setLayout(new BoxLayout(options, BoxLayout.Y_AXIS));

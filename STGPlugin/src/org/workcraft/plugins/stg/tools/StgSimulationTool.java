@@ -35,9 +35,9 @@ import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.util.ColorGenerator;
 
 public class StgSimulationTool extends PetriNetSimulationTool {
-    private static Color inputsColor = Color.RED.darker();
-    private static Color outputsColor = Color.BLUE.darker();
-    private static Color internalsColor = Color.GREEN.darker();
+    private static final Color COLOR_INPUT = Color.RED.darker();
+    private static final Color COLOR_OUTPUT = Color.BLUE.darker();
+    private static final Color COLOR_INTERNAL = Color.GREEN.darker();
 
     protected Map<String, SignalState> stateMap;
     protected JTable stateTable;
@@ -58,8 +58,7 @@ public class StgSimulationTool extends PetriNetSimulationTool {
 
         @Override
         public String getColumnName(int column) {
-            if (column == 0) return "Signal";
-            return "State";
+            return (column == 0) ? "Signal" : "State";
         }
 
         @Override
@@ -282,13 +281,13 @@ public class StgSimulationTool extends PetriNetSimulationTool {
         Color result = Color.BLACK;
         switch (type) {
         case INPUT:
-            result = inputsColor;
+            result = COLOR_INPUT;
             break;
         case OUTPUT:
-            result = outputsColor;
+            result = COLOR_OUTPUT;
             break;
         case INTERNAL:
-            result = internalsColor;
+            result = COLOR_INTERNAL;
             break;
         default:
             result = Color.BLACK;

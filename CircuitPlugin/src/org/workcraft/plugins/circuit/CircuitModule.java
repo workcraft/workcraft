@@ -19,7 +19,6 @@ import org.workcraft.plugins.circuit.tools.CheckCircuitTool;
 import org.workcraft.plugins.circuit.tools.CircuitLayoutTool;
 import org.workcraft.plugins.circuit.tools.ComponentContractionTool;
 import org.workcraft.plugins.circuit.tools.ComponentInsertionTool;
-import org.workcraft.plugins.circuit.tools.InitialisationCheckerTool;
 import org.workcraft.plugins.circuit.tools.JointContractionTool;
 import org.workcraft.plugins.circuit.tools.JointSplitTool;
 import org.workcraft.plugins.circuit.tools.StgGeneratorTool;
@@ -139,13 +138,6 @@ public class CircuitModule implements Module {
         pm.registerClass(Tool.class, new Initialiser<Tool>() {
             @Override
             public Tool create() {
-                return new InitialisationCheckerTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
                 return new JointContractionTool();
             }
         });
@@ -199,6 +191,15 @@ public class CircuitModule implements Module {
         cm.registerContextualReplacement(Circuit.class.getName(), "Contact",
                 "<property class=\"boolean\" name=\"initOne\" value=\"(.*?)\"/>",
                 "<property class=\"boolean\" name=\"initToOne\" value=\"$1\"/>");
+
+        cm.registerContextualReplacement(Circuit.class.getName(), "Contact",
+                "<property class=\"boolean\" name=\"initToOne\" value=\"false\"/>",
+                "<property class=\"org.workcraft.plugins.circuit.Contact\\$SignalLevel\" enum-class=\"org.workcraft.plugins.circuit.Contact\\$SignalLevel\" name=\"signalLevel\" value=\"LOW\"/>");
+
+        cm.registerContextualReplacement(Circuit.class.getName(), "Contact",
+                "<property class=\"boolean\" name=\"initToOne\" value=\"true\"/>",
+                "<property class=\"org.workcraft.plugins.circuit.Contact\\$SignalLevel\" enum-class=\"org.workcraft.plugins.circuit.Contact\\$SignalLevel\" name=\"signalLevel\" value=\"HIGH\"/>");
+
     }
 
 }

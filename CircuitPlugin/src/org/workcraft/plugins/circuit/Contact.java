@@ -32,7 +32,7 @@ public class Contact extends MathNode implements BooleanVariable {
 
     public static final String PROPERTY_NAME = "Name";
     public static final String PROPERTY_IO_TYPE = "I/O type";
-    public static final String PROPERTY_INIT_TO_ONE = "Init to one";
+    public static final String PROPERTY_SIGNAL_LEVEL = "Signal level";
     public static final String PROPERTY_INITIALISED = "Initialised";
 
     public enum IOType {
@@ -51,9 +51,25 @@ public class Contact extends MathNode implements BooleanVariable {
         }
     };
 
+    public enum SignalLevel {
+        LOW("Low"),
+        HIGH("High");
+
+        private final String name;
+
+        SignalLevel(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+    };
+
     private String name = "";
-    private IOType ioType = IOType.OUTPUT;
-    private boolean initToOne = false;
+    private IOType type = IOType.OUTPUT;
+    private SignalLevel level = SignalLevel.LOW;
     private boolean initialised = false;
 
     public Contact() {
@@ -77,24 +93,32 @@ public class Contact extends MathNode implements BooleanVariable {
     }
 
     public void setIOType(IOType value) {
-        if (this.ioType != value) {
-            this.ioType = value;
+        if (this.type != value) {
+            this.type = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_IO_TYPE));
         }
     }
 
     public IOType getIOType() {
-        return ioType;
+        return type;
     }
 
-    public boolean getInitToOne() {
-        return initToOne;
+    public SignalLevel getSignalLevel() {
+        return level;
     }
 
-    public void setInitToOne(boolean value) {
-        if (this.initToOne != value) {
-            this.initToOne = value;
-            sendNotification(new PropertyChangedEvent(this, PROPERTY_INIT_TO_ONE));
+    public void setSignalLevel(SignalLevel value) {
+        if (this.level != value) {
+            this.level = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_SIGNAL_LEVEL));
+        }
+    }
+
+    public void setSignalLevel(boolean value) {
+        if (value) {
+            setSignalLevel(SignalLevel.HIGH);
+        } else {
+            setSignalLevel(SignalLevel.LOW);
         }
     }
 

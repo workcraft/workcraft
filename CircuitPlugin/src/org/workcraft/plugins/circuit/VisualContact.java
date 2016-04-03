@@ -44,7 +44,9 @@ import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.plugins.circuit.Contact.IOType;
+import org.workcraft.plugins.circuit.Contact.SignalLevel;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
+import org.workcraft.plugins.circuit.tools.StateDecoration;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 public class VisualContact extends VisualComponent implements StateObserver {
@@ -171,13 +173,13 @@ public class VisualContact extends VisualComponent implements StateObserver {
             }
         });
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualContact, Boolean>(
-                this, Contact.PROPERTY_INIT_TO_ONE, Boolean.class, true, true, true) {
-            protected void setter(VisualContact object, Boolean value) {
-                object.getReferencedContact().setInitToOne(value);
+        addPropertyDeclaration(new PropertyDeclaration<VisualContact, SignalLevel>(
+                this, Contact.PROPERTY_SIGNAL_LEVEL, SignalLevel.class, true, true, true) {
+            protected void setter(VisualContact object, SignalLevel value) {
+                object.getReferencedContact().setSignalLevel(value);
             }
-            protected Boolean getter(VisualContact object) {
-                return object.getReferencedContact().getInitToOne();
+            protected SignalLevel getter(VisualContact object) {
+                return object.getReferencedContact().getSignalLevel();
             }
         });
 
@@ -194,21 +196,48 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
     private Shape getShape() {
         if (getParent() instanceof VisualCircuitComponent) {
-            return new Rectangle2D.Double(
-                    -size / 2 + CircuitSettings.getWireWidth(),
-                    -size / 2 + CircuitSettings.getWireWidth(),
-                    size - CircuitSettings.getWireWidth() * 2,
-                    size - CircuitSettings.getWireWidth() * 2);
+            if (getReferencedContact().getInitialised()) {
+                return getInitialisedContactShape();
+            } else {
+                return getContactShape();
+            }
         } else {
-            Path2D path = new Path2D.Double();
-            path.moveTo(-size / 2, -size / 2);
-            path.lineTo(0, -size / 2);
-            path.lineTo(size / 2, 0);
-            path.lineTo(0, size / 2);
-            path.lineTo(-size / 2, size / 2);
-            path.closePath();
-            return path;
+            return getPortShape();
         }
+    }
+
+    private Shape getPortShape() {
+        double d = 0.5 * (size - CircuitSettings.getWireWidth());
+        Path2D path = new Path2D.Double();
+        path.moveTo(-d, -d);
+        path.lineTo(0, -d);
+        path.lineTo(d, 0);
+        path.lineTo(0, d);
+        path.lineTo(-d, d);
+        path.closePath();
+        return path;
+    }
+
+    private Shape getContactShape() {
+        double d = 0.5 * size - CircuitSettings.getWireWidth();
+        Path2D path = new Path2D.Double();
+        path.moveTo(-d, -d);
+        path.lineTo(d, -d);
+        path.lineTo(d, d);
+        path.lineTo(-d, d);
+        path.closePath();
+        return path;
+    }
+
+    private Shape getInitialisedContactShape() {
+        double d = 0.5 * (size - CircuitSettings.getWireWidth());
+        Path2D path = new Path2D.Double();
+        path.moveTo(-d, 0);
+        path.lineTo(0, d);
+        path.lineTo(d, 0);
+        path.lineTo(0, -d);
+        path.closePath();
+        return path;
     }
 
     @Override
@@ -216,7 +245,6 @@ public class VisualContact extends VisualComponent implements StateObserver {
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
 
-        boolean inSimulationMode = (d.getColorisation() != null) || (d.getBackground() != null);
         Color colorisation = d.getColorisation();
         Color fillColor = d.getBackground();
         if (fillColor == null) {
@@ -230,7 +258,10 @@ public class VisualContact extends VisualComponent implements StateObserver {
         }
         g.transform(rotateTransform);
 
-        if (inSimulationMode || CircuitSettings.getShowContacts() || !(getParent() instanceof VisualCircuitComponent)) {
+        boolean showContact = CircuitSettings.getShowContacts() || (d instanceof StateDecoration)
+                || (d.getColorisation() != null) || (d.getBackground() != null);
+
+        if (showContact || isPort()) {
             Shape shape = getShape();
             g.setStroke(new BasicStroke((float) CircuitSettings.getWireWidth()));
             g.setColor(fillColor);
@@ -434,7 +465,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
         super.copyStyle(src);
         if (src instanceof VisualContact) {
             VisualContact srcComponent = (VisualContact) src;
-            getReferencedContact().setInitToOne(srcComponent.getReferencedContact().getInitToOne());
+            getReferencedContact().setSignalLevel(srcComponent.getReferencedContact().getSignalLevel());
             // TODO: Note that IOType and Direction are currently NOT copied to allow input/output
             //       port generation with Shift key (and not to be copied from a template node).
             // getReferencedContact().setIOType(srcComponent.getReferencedContact().getIOType());

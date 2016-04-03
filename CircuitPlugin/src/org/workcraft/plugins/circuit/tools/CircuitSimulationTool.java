@@ -54,13 +54,13 @@ public class CircuitSimulationTool extends StgSimulationTool {
     public void setTrace(Trace mainTrace, Trace branchTrace, GraphEditor editor) {
         Trace circuitMainTrace = convertStgTraceToCircuitTrace(mainTrace);
         if (circuitMainTrace != null) {
-            System.out.println("Main trace convertion:");
+            System.out.println("Main trace conversion:");
             System.out.println("  original: " + mainTrace);
             System.out.println("  circuit:  " + circuitMainTrace);
         }
         Trace circuitBranchTrace = convertStgTraceToCircuitTrace(branchTrace);
         if (circuitBranchTrace != null) {
-            System.out.println("Branch trace convertion:");
+            System.out.println("Branch trace conversion:");
             System.out.println("  original: " + branchTrace);
             System.out.println("  circuit:  " + circuitBranchTrace);
         }
@@ -125,8 +125,8 @@ public class CircuitSimulationTool extends StgSimulationTool {
                 String oneName = SignalStg.getHighName(contactName);
                 Node oneNode = net.getNodeByReference(oneName);
                 if ((oneNode instanceof Place) && savedState.containsKey(oneNode)) {
-                    boolean initToOne = savedState.get(oneNode) > 0;
-                    contact.setInitToOne(initToOne);
+                    boolean signalLevel = savedState.get(oneNode) > 0;
+                    contact.setSignalLevel(signalLevel);
                 }
             }
         }
@@ -235,7 +235,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
                         final boolean isZero = (signalStg.zero.getReferencedPlace().getTokens() == 1) != isInverting;
                         final boolean isExcited = !getContactExcitedTransitions(contact).isEmpty() && !isZeroDelay;
                         final boolean isInTrace = signalStg.contains(traceCurrentNode) && !isZeroDelay;
-                        return new Decoration() {
+                        return new StateDecoration() {
                                 @Override
                             public Color getColorisation() {
                                 if (isExcited) {
@@ -274,7 +274,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
                         boolean isInverting = signalStgAndInversion.getSecond();
                         final boolean isOne = (signalStg.one.getReferencedPlace().getTokens() == 1) != isInverting;
                         final boolean isZero = (signalStg.zero.getReferencedPlace().getTokens() == 1) != isInverting;
-                        return new Decoration() {
+                        return new StateDecoration() {
                             @Override
                             public Color getColorisation() {
                                 if (isOne && !isZero) {

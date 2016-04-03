@@ -6,13 +6,12 @@ import org.workcraft.dom.Node;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateSupervisor;
-import org.workcraft.plugins.circuit.Contact.SignalLevel;
 
-public class InitStateConsistencySupervisor extends StateSupervisor  {
+public class InitialisedConsistencySupervisor extends StateSupervisor  {
 
     private final Circuit circuit;
 
-    public InitStateConsistencySupervisor(Circuit circuit) {
+    public InitialisedConsistencySupervisor(Circuit circuit) {
         this.circuit = circuit;
     }
 
@@ -22,34 +21,28 @@ public class InitStateConsistencySupervisor extends StateSupervisor  {
             PropertyChangedEvent pce = (PropertyChangedEvent) e;
             Object sender = e.getSender();
             String propertyName = pce.getPropertyName();
-            if ((sender instanceof Contact) && propertyName.equals(Contact.PROPERTY_SIGNAL_LEVEL)) {
+            if ((sender instanceof Contact) && propertyName.equals(Contact.PROPERTY_INITIALISED)) {
                 Contact contact = (Contact) sender;
-                handleInitStateChange(contact);
+                handleInitialisedChange(contact);
             }
         }
     }
 
-    private void handleInitStateChange(Contact contact) {
-        boolean initToOne = contact.getSignalLevel() == SignalLevel.HIGH;
+    private void handleInitialisedChange(Contact contact) {
+        boolean initialised = contact.getInitialised();
         Node parent = contact.getParent();
         boolean isZeroDelay = false;
-        boolean invertDriver = false;
-        boolean inverDriven = false;
         if (parent instanceof FunctionComponent) {
             FunctionComponent component = (FunctionComponent) parent;
             isZeroDelay = component.getIsZeroDelay();
-            if (isZeroDelay && component.isInverter()) {
-                invertDriver = contact.isOutput();
-                inverDriven = contact.isInput();
-            }
         }
         Contact driverContact = CircuitUtils.findDriver(circuit, contact, isZeroDelay);
         if (driverContact != null) {
-            driverContact.setSignalLevel(initToOne != invertDriver);
+            driverContact.setInitialised(initialised);
         }
         Collection<Contact> drivenContacts = CircuitUtils.findDriven(circuit, contact, isZeroDelay);
         for (Contact drivenContact: drivenContacts) {
-            drivenContact.setSignalLevel(initToOne != inverDriven);
+            drivenContact.setInitialised(initialised);
         }
     }
 
