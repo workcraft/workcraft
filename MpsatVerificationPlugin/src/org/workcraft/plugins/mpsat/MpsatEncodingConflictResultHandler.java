@@ -1,6 +1,8 @@
 package org.workcraft.plugins.mpsat;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 
@@ -47,6 +49,16 @@ final class MpsatEncodingConflictResultHandler implements Runnable {
             final EncodingConflictAnalyserTool tool = toolbox.getToolInstance(EncodingConflictAnalyserTool.class);
             toolbox.selectTool(tool);
             ArrayList<Core> cores = new ArrayList<>(convertSolutionsToCores(solutions));
+            Collections.sort(cores, new Comparator<Core>() {
+                @Override
+                public int compare(Core c1, Core c2) {
+                    if (c1.size() > c2.size()) return 1;
+                    if (c1.size() < c2.size()) return -1;
+                    if (c1.toString().length() > c2.toString().length()) return 1;
+                    if (c1.toString().length() < c2.toString().length()) return -1;
+                    return 0;
+                }
+            });
             tool.setCores(cores);
         }
     }
@@ -56,18 +68,20 @@ final class MpsatEncodingConflictResultHandler implements Runnable {
         for (Solution solution: solutions) {
             Core core = new Core(solution.getMainTrace(), solution.getBranchTrace(), solution.getComment());
             boolean isDuplicateCore = cores.contains(core);
-            if (solution.getComment() == null) {
-                System.out.println("Encoding conflict:");
-            } else {
-                System.out.println("Encoding conflict for signal '" + solution.getComment() + "':");
-            }
-            System.out.println("    Configuration 1: " + solution.getMainTrace());
-            System.out.println("    Configuration 2: " + solution.getBranchTrace());
-            System.out.println("    Conflict core" + (isDuplicateCore ? " (duplicate)" : "") + ": " + core);
-            System.out.println();
             if (!isDuplicateCore) {
                 core.setColor(colorGenerator.updateColor());
                 cores.add(core);
+            }
+            if (MpsatUtilitySettings.getDebugCores()) {
+                if (solution.getComment() == null) {
+                    System.out.println("Encoding conflict:");
+                } else {
+                    System.out.println("Encoding conflict for signal '" + solution.getComment() + "':");
+                }
+                System.out.println("    Configuration 1: " + solution.getMainTrace());
+                System.out.println("    Configuration 2: " + solution.getBranchTrace());
+                System.out.println("    Conflict core" + (isDuplicateCore ? " (duplicate)" : "") + ": " + core);
+                System.out.println();
             }
         }
         return cores;
