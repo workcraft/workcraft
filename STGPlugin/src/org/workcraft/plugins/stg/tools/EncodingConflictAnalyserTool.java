@@ -285,7 +285,12 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
                 } else {
                     String signalName = core.getComment();
                     if (signalName != null) {
-                        label.setToolTipText("Conflict core for signal '" + signalName + "'");
+                        String text = "<html>"
+                                + "Conflict core for signal '" + signalName + "'"
+                                + "<br>  Configuration 1: " + core.getFirstConfiguration()
+                                + "<br>  Configuration 2: " + core.getSecondConfiguration()
+                                + "</html>";
+                        label.setToolTipText(text);
                     }
                     if (isSelected) {
                         label.setForeground(table.getSelectionForeground());

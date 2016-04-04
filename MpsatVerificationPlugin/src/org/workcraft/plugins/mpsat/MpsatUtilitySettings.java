@@ -42,6 +42,7 @@ public class MpsatUtilitySettings implements Settings {
     private static final String keyPrintStdout = prefix + ".printStdout";
     private static final String keyPrintStderr = prefix + ".printStderr";
     private static final String keyDebugReach = prefix + ".debugReach";
+    private static final String keyDebugCores = prefix + ".debugCores";
 
     private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\UnfoldingTools\\mpsat.exe" : "tools/UnfoldingTools/mpsat";
     private static final SolutionMode defaultSolutionMode = SolutionMode.MINIMUM_COST;
@@ -50,6 +51,7 @@ public class MpsatUtilitySettings implements Settings {
     private static final Boolean defaultPrintStdout = true;
     private static final Boolean defaultPrintStderr = true;
     private static final Boolean defaultDebugReach = false;
+    private static final Boolean defaultDebugCores = false;
 
     private static String command = defaultCommand;
     private static SolutionMode solutionMode = defaultSolutionMode;
@@ -58,6 +60,7 @@ public class MpsatUtilitySettings implements Settings {
     private static Boolean printStdout = defaultPrintStdout;
     private static Boolean printStderr = defaultPrintStderr;
     private static Boolean debugReach = defaultDebugReach;
+    private static Boolean debugCores = defaultDebugCores;
 
     public MpsatUtilitySettings() {
         properties.add(new PropertyDeclaration<MpsatUtilitySettings, String>(
@@ -129,6 +132,16 @@ public class MpsatUtilitySettings implements Settings {
                 return getDebugReach();
             }
         });
+
+        properties.add(new PropertyDeclaration<MpsatUtilitySettings, Boolean>(
+                this, "Output conflict cores", Boolean.class, true, false, false) {
+            protected void setter(MpsatUtilitySettings object, Boolean value) {
+                setDebugCores(value);
+            }
+            protected Boolean getter(MpsatUtilitySettings object) {
+                return getDebugCores();
+            }
+        });
     }
 
     @Override
@@ -145,6 +158,7 @@ public class MpsatUtilitySettings implements Settings {
         setPrintStdout(config.getBoolean(keyPrintStdout, defaultPrintStdout));
         setPrintStderr(config.getBoolean(keyPrintStderr, defaultPrintStderr));
         setDebugReach(config.getBoolean(keyDebugReach, defaultDebugReach));
+        setDebugCores(config.getBoolean(keyDebugCores, defaultDebugCores));
     }
 
     @Override
@@ -156,6 +170,7 @@ public class MpsatUtilitySettings implements Settings {
         config.setBoolean(keyPrintStdout, getPrintStdout());
         config.setBoolean(keyPrintStderr, getPrintStderr());
         config.setBoolean(keyDebugReach, getDebugReach());
+        config.setBoolean(keyDebugCores, getDebugCores());
     }
 
     @Override
@@ -226,6 +241,14 @@ public class MpsatUtilitySettings implements Settings {
 
     public static void setDebugReach(Boolean value) {
         debugReach = value;
+    }
+
+    public static Boolean getDebugCores() {
+        return debugCores;
+    }
+
+    public static void setDebugCores(Boolean value) {
+        debugCores = value;
     }
 
 }
