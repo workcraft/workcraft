@@ -49,23 +49,6 @@ public class ConsistencyAlg extends TimeAlg {
     	}
 	}
 	
-    private Collection<ChannelPlace> getSyncCPs() {
-        Collection<ChannelPlace> result = new HashSet<ChannelPlace>();
-        HashSet<Node> nodes = new HashSet<>();
-        nodes.addAll(net.getTransitionNodes());
-        nodes.addAll(net.getChannelPlaces());
-        CSONCycleAlg cycleAlg = new CSONCycleAlg(net);
-
-        for (Path path : cycleAlg.syncCycleTask(nodes)) {
-            for (Node node : path) {
-                if (node instanceof ChannelPlace) {
-                    result.add((ChannelPlace) node);
-                }
-            }
-        }
-        return result;
-    }
-	
     public ArrayList<String> nodeConsistency(Node n) {
         ArrayList<String> result = new ArrayList<>();
         
@@ -89,12 +72,12 @@ public class ConsistencyAlg extends TimeAlg {
         if (!(tsl <= tfl)) {
             result.add("Node inconsistency: minStart"
                      + nodeStr(node) + timeStr(tsl.toString()) 
-                     + " > minEnd" + nodeStr(node) + timeStr(tfl.toString()) + ".");
+                     + " > minFinish" + nodeStr(node) + timeStr(tfl.toString()) + ".");
         }
         if (!(tsu <= tfu)) {
             result.add("Node inconsistency: maxStart"
                      + nodeStr(node) + timeStr(tsu.toString()) 
-                     + " > maxEnd" + nodeStr(node) + timeStr(tfu.toString()) + ".");
+                     + " > maxFinish" + nodeStr(node) + timeStr(tfu.toString()) + ".");
         }
         
         //Condition 6
@@ -109,7 +92,7 @@ public class ConsistencyAlg extends TimeAlg {
             result.add("Node inconsistency: "
             		 + "start" + nodeStr(node) + 
             		 " + duration" + nodeStr(node) + "=" + timeStr(i.toString())
-                     + " is not consistent with end" 
+                     + " is not consistent with finish" 
             		 + nodeStr(node) + timeStr(end.toString()) + ".");
         }
         
@@ -123,7 +106,7 @@ public class ConsistencyAlg extends TimeAlg {
         }
 
         if (!i2.isOverlapping(start)) {
-            result.add("Node inconsistency: end"
+            result.add("Node inconsistency: finish"
                      + nodeStr(node) + " - duration" 
             		 + nodeStr(node) + "=" + timeStr(i2.toString())
                      + " is not consistent with start" 
@@ -143,7 +126,7 @@ public class ConsistencyAlg extends TimeAlg {
         Interval i3 = new Interval(lowBound3, upBound3);
 
         if (!i3.isOverlapping(dur)) {
-            result.add("Node inconsistency: end"
+            result.add("Node inconsistency: finish"
                      + nodeStr(node) + " - start" 
             		 + nodeStr(node) + "=" + timeStr(i3.toString())
                      + " is not consistent with duration" 
@@ -162,7 +145,7 @@ public class ConsistencyAlg extends TimeAlg {
         for(Node post : getPostPNSet(t)){
         	Interval start2 = ((Time)post).getStartTime();
         	if(!start2.equals(end)){
-        		result.add("Concurrently inconsistency: end"
+        		result.add("Concurrently inconsistency: finish"
                         + nodeStr(t) + timeStr(end.toString())
                         + " != start" + nodeStr(post) 
                         + timeStr(start2.toString()) + ".");
@@ -175,7 +158,7 @@ public class ConsistencyAlg extends TimeAlg {
         	if(!end2.equals(start)){
         		result.add("Concurrently inconsistency: start"
                         + nodeStr(t) + timeStr(start.toString())
-                        + " != end" + nodeStr(pre) 
+                        + " != finish" + nodeStr(pre) 
                         + timeStr(end2.toString()) + ".");
         	}
         }
@@ -257,7 +240,7 @@ public class ConsistencyAlg extends TimeAlg {
                 }
                 if (!(input.getEndTime().equals(output.getEndTime()))) {
                 	
-                	subResult.add("Sync inconsistency: end" + nodeStr(input) 
+                	subResult.add("Sync inconsistency: finish" + nodeStr(input) 
                     + nodeStr(input) + timeStr(input.getEndTime().toString())
                     + " != end" + nodeStr(output) + timeStr(output.getEndTime().toString()));
                     
@@ -326,8 +309,8 @@ public class ConsistencyAlg extends TimeAlg {
                     subNodes.add(lc);
                     subNodes.add(uc);
                     if (!lc.getStartTime().equals(uc.getStartTime())) {
-                    	subStr.add("Behavioural inconsistency: start" + nodeStr(lc)
-                                 + " != " + "start" + nodeStr(uc) + ".");
+                    	subStr.add("Behavioural inconsistency: start" + nodeStr(lc)  + timeStr(lc.getStartTime().toString())
+                                 + " != " + "start" + nodeStr(uc)  + timeStr(uc.getStartTime().toString()) + ".");
                     }
         		}
         	}
@@ -341,8 +324,8 @@ public class ConsistencyAlg extends TimeAlg {
                     subNodes.add(lc);
                     subNodes.add(uc);
                     if (!lc.getEndTime().equals(uc.getEndTime())) {
-                    	subStr.add("Behavioural inconsistency: end" + nodeStr(lc)
-                                 + " != " + "end" + nodeStr(uc) + ".");
+                    	subStr.add("Behavioural inconsistency: finish" + nodeStr(lc)  + timeStr(lc.getEndTime().toString())
+                                 + " != " + "finish" + nodeStr(uc)  + timeStr(uc.getEndTime().toString()) + ".");
                     }
         		}
         	}
@@ -382,37 +365,37 @@ public class ConsistencyAlg extends TimeAlg {
                 value = t.getStartTime().getMin();
                 HourMins.validValue(value);
             } catch (TimeOutOfBoundsException e) {
-                result.add("Time out of bound: startMin" + nodeStr(t) + timeStr(value.toString()) + ".");
+                result.add("Time out of bound: minStart" + nodeStr(t) + timeStr(value.toString()) + ".");
             }
             try {
                 value = t.getStartTime().getMax();
                 HourMins.validValue(value);
             } catch (TimeOutOfBoundsException e) {
-                result.add("Time out of bound: startMax" + nodeStr(t) + timeStr(value.toString()) + ".");
+                result.add("Time out of bound: maxStart" + nodeStr(t) + timeStr(value.toString()) + ".");
             }
             try {
                 value = t.getEndTime().getMin();
                 HourMins.validValue(value);
             } catch (TimeOutOfBoundsException e) {
-                result.add("Time out of bound: endMin" + nodeStr(t) + timeStr(value.toString()) + ".");
+                result.add("Time out of bound: minFinish" + nodeStr(t) + timeStr(value.toString()) + ".");
             }
             try {
                 value = t.getEndTime().getMax();
                 HourMins.validValue(value);
             } catch (TimeOutOfBoundsException e) {
-                result.add("Time out of bound: endMax" + nodeStr(t) + timeStr(value.toString()) + ".");
+                result.add("Time out of bound: maxFinish" + nodeStr(t) + timeStr(value.toString()) + ".");
             }
             try {
                 value = t.getDuration().getMin();
                 HourMins.validValue(value);
             } catch (TimeOutOfBoundsException e) {
-                result.add("Time out of bound: durationMin" + nodeStr(t) + timeStr(value.toString()) + ".");
+                result.add("Time out of bound: minDur" + nodeStr(t) + timeStr(value.toString()) + ".");
             }
             try {
                 value = t.getDuration().getMax();
                 HourMins.validValue(value);
             } catch (TimeOutOfBoundsException e) {
-                result.add("Time out of bound: durationMax" + nodeStr(t) + timeStr(value.toString()) + ".");
+                result.add("Time out of bound: maxDur" + nodeStr(t) + timeStr(value.toString()) + ".");
             }
         }
         return result;

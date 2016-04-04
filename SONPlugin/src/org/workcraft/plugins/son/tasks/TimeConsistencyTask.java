@@ -153,7 +153,7 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
                  if(!s[1] && n.getDuration().isSpecified())
                   	 value += "Estimated duration = "+ ((Time)node).getDuration()+" ";
                  if(!s[2] && n.getEndTime().isSpecified())
-                 	 value += "Estimated end = "+ ((Time)node).getEndTime();
+                 	 value += "Estimated finish = "+ ((Time)node).getEndTime();
              	 if(!value.equals(""))
              		infoMsg("-" + value);
              	
@@ -178,7 +178,7 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
         for(Node node : on_result.keySet()){
             infoMsg("Node:" + net.getNodeReference(node));
             Time n = (Time) node;
-            infoMsg("-start=" + (n.getStartTime()) + " end=" + (n.getEndTime()) + " duration=" + (n.getDuration()));
+            infoMsg("-start=" + (n.getStartTime()) + " finish=" + (n.getEndTime()) + " duration=" + (n.getDuration()));
             
             ArrayList<String> err = on_result.get(node);
             for(String str : err){
@@ -196,7 +196,7 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
         for(Node node : cson_result.keySet()){
             infoMsg("Node:" + net.getNodeReference(node));
             Time n = (Time) node;
-            infoMsg("-start=" + (n.getStartTime()) + " end=" + (n.getEndTime()) + " duration=" + (n.getDuration()));
+            infoMsg("-start=" + (n.getStartTime()) + " finish=" + (n.getEndTime()) + " duration=" + (n.getDuration()));
             
             ArrayList<String> err = cson_result.get(node);
             for(String str : err){

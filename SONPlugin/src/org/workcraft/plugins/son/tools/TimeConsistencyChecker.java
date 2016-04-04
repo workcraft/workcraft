@@ -45,7 +45,7 @@ public class TimeConsistencyChecker implements Tool {
         dialog.setVisible(true);
 
         if (dialog.getRun() == 1) {
-            OutputRedirect.redirect(30, 48);
+            OutputRedirect.redirect(30, 48, "Consistency Verification Result");
             TimeConsistencyTask timeTask = new TimeConsistencyTask(we, dialog.getTimeConsistencySettings());
             framework.getTaskManager().queue(timeTask, "Verification");
         }

@@ -29,6 +29,7 @@ import org.workcraft.plugins.son.algorithm.BFSEntireEstimationAlg;
 import org.workcraft.plugins.son.algorithm.DFSEstimationAlg;
 import org.workcraft.plugins.son.elements.Time;
 import org.workcraft.plugins.son.exception.AlternativeStructureException;
+import org.workcraft.plugins.son.exception.SyncCycleException;
 import org.workcraft.plugins.son.exception.TimeEstimationException;
 import org.workcraft.plugins.son.exception.TimeInconsistencyException;
 import org.workcraft.plugins.son.exception.TimeOutOfBoundsException;
@@ -224,21 +225,24 @@ public class TimeEstimatorDialog extends JDialog {
                     if (entireEst.isSelected()) {
                        // boolean isNarrow = narrow.isSelected() && narrow.isEnabled();
                         boolean isTwodir = twoDir.isSelected() && twoDir.isEnabled();
-
+                        setVisible(false);
                         BFSEntireEstimationAlg alg1 = null;
 						try {
 							alg1 = new BFSEntireEstimationAlg(net, getDefaultDuration(), granularity, getScenarioRef(), isTwodir);
-	                        setVisible(false);
 	    					alg1.initialize();
 							alg1.estimateEntire();
 							alg1.finalize();
 						} catch (AlternativeStructureException e2) {
 	                          JOptionPane.showMessageDialog(editor.getMainWindow(),
-	                          "Scenario selection error",
-	                          "", JOptionPane.ERROR_MESSAGE);
+	                           e2.getMessage(),
+	                          "Scenario selection error", JOptionPane.ERROR_MESSAGE);
 						} catch (TimeEstimationException | TimeOutOfBoundsException e1) {
 	                          JOptionPane.showMessageDialog(editor.getMainWindow(),
 	                          e1.getMessage(),"", JOptionPane.ERROR_MESSAGE);
+						}catch (SyncCycleException e1) {
+	                          JOptionPane.showMessageDialog(editor.getMainWindow(),
+	                          e1.getMessage(),
+	                          "Synchronous cycle error", JOptionPane.ERROR_MESSAGE);
 						}
                         
                     } else {

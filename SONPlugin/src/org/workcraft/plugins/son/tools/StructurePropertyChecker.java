@@ -41,7 +41,7 @@ public class StructurePropertyChecker implements Tool {
         dialog.setVisible(true);
 
         if (dialog.getRun() == 1) {
-            OutputRedirect.redirect(30, 40);
+            OutputRedirect.redirect(30, 40, "Structure Verification Result");
             BlockConnector.blockBoundingConnector(visualNet);
             SONMainTask sonTask = new SONMainTask(dialog.getSettings(), we);
             framework.getTaskManager().queue(sonTask, "Verification");

@@ -105,7 +105,7 @@ public class OutputArea extends JFrame {
         this.setVisible(false);
     }
 
-    public OutputArea(JTextArea textArea) {
+    public OutputArea(JTextArea textArea, String title) {
         this.textArea = textArea;
         textArea.setEditable(false);
         textArea.setFont(font);
@@ -124,7 +124,7 @@ public class OutputArea extends JFrame {
                 BorderLayout.CENTER);
         this.pack();
         this.setVisible(true);
-        this.setTitle("Structure Verification Result");
+        this.setTitle(title);
 
         Toolkit kit = Toolkit.getDefaultToolkit();
         Dimension screenSize = kit.getScreenSize();

@@ -70,7 +70,7 @@ public class TimeValueSetterTool extends AbstractTool {
     private JButton estimatorButton, clearButton;
 
     private int labelheight = 20;
-    private int labelwidth = 35;
+    private int labelwidth = 40;
     protected Dimension buttonSize = new Dimension(100, 25);
     private TimeEstimatorSettings settings;
 
@@ -80,7 +80,7 @@ public class TimeValueSetterTool extends AbstractTool {
     private Color selectedColor = Color.ORANGE;
     private Font font = new Font("Arial", Font.PLAIN, 12);
     private String startLabel = "Start time interval: ";
-    private String endLabel = "End time interval: ";
+    private String endLabel = "Finish time interval: ";
     private String durationLabel = "Duration interval: ";
     private String timeLabel = "Time interval: ";
 
@@ -135,6 +135,7 @@ public class TimeValueSetterTool extends AbstractTool {
             @Override
             public void actionPerformed(ActionEvent e) {
                 editor.requestFocus();
+                editor.getWorkspaceEntry().saveMemento();
                 Granularity g = granularityPanel.getSelection();
                 TimeEstimatorDialog estimator = new TimeEstimatorDialog(editor, settings, selection, g);
                 visualNet.setForegroundColor(selection, selectedColor);
@@ -149,6 +150,7 @@ public class TimeValueSetterTool extends AbstractTool {
         clearButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                editor.getWorkspaceEntry().saveMemento();
                 Interval interval = new Interval();
                 if (visualSelection != null) {
                     if (visualSelection instanceof VisualComponent) {
@@ -198,6 +200,7 @@ public class TimeValueSetterTool extends AbstractTool {
         min.addFocusListener(new FocusListener() {
             @Override
             public void focusLost(FocusEvent e) {
+                editor.getWorkspaceEntry().saveMemento();
                 setValue(node, title, min, true);
             }
 
@@ -229,6 +232,7 @@ public class TimeValueSetterTool extends AbstractTool {
         max.addFocusListener(new FocusListener() {
             @Override
             public void focusLost(FocusEvent e) {
+                editor.getWorkspaceEntry().saveMemento();
                 setValue(node, title, max, false);
             }
 
@@ -570,7 +574,6 @@ public class TimeValueSetterTool extends AbstractTool {
     @Override
     public void mousePressed(GraphEditorMouseEvent e) {
         net.refreshNodeColor();
-
         Node node = HitMan.hitTestForConnection(e.getPosition(), e.getModel().getRoot());
         if (node instanceof VisualSONConnection) {
             estimatorButton.setEnabled(false);

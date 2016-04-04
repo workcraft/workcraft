@@ -11,6 +11,7 @@ import java.util.Map;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.exception.AlternativeStructureException;
+import org.workcraft.plugins.son.exception.SyncCycleException;
 import org.workcraft.plugins.son.gui.TimeConsistencyDialog.Granularity;
 import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.plugins.son.util.ScenarioRef;
@@ -29,9 +30,11 @@ public class BFSEntireEstimationAlg extends DFSEstimationAlg{
     private Condition superIni;
     private Condition superFinal;
 
-	public BFSEntireEstimationAlg(SON net, Interval d, Granularity g, ScenarioRef s, boolean twoDir) throws AlternativeStructureException {
+	public BFSEntireEstimationAlg(SON net, Interval d, Granularity g, ScenarioRef s, boolean twoDir) throws AlternativeStructureException, SyncCycleException {
 		super(net, d, g, s);
         this.twoDir = twoDir;	
+        if(!getSyncCPs().isEmpty())
+        	throw new SyncCycleException();
 		// TODO Auto-generated constructor stub
 	}
 	
@@ -127,7 +130,7 @@ public class BFSEntireEstimationAlg extends DFSEstimationAlg{
 	    }
 	}
 	
-	private void forwardBFSsonTimes(Time n) throws TimeOutOfBoundsException{
+	private void forwardBFSsonTimes(Time n) throws TimeOutOfBoundsException, TimeEstimationException{
 		List<Time> working = new ArrayList<>();
 		Collection<Node> nodes = scenario.getNodes(net);
 		Map<Time, Integer> visit = new HashMap<Time, Integer>();
@@ -144,7 +147,14 @@ public class BFSEntireEstimationAlg extends DFSEstimationAlg{
 						visit.put(nd, visit.get(nd)+1);
 					
 					if(nd.getStartTime().isSpecified()){
-						m.setEndTime(Interval.getOverlapping(m.getEndTime(), nd.getStartTime()));
+						Interval i = Interval.getOverlapping(m.getEndTime(), nd.getStartTime());
+						if(i != null){
+							m.setEndTime(i);
+						}
+						else{
+				            throw new TimeEstimationException(net.getNodeReference(m)+".finish (" + m.getEndTime().toString()+
+				                    ") is inconsistent with " + net.getNodeReference(nd) + ".start (" + nd.getStartTime().toString()+")");
+						}
 					}
 				}
 				for(Time nd :  getCausalPostset(m, nodes)){
@@ -185,7 +195,7 @@ public class BFSEntireEstimationAlg extends DFSEstimationAlg{
 		}
 	}
 	
-	private void backwardBFSsonTimes(Time n) throws TimeOutOfBoundsException{
+	private void backwardBFSsonTimes(Time n) throws TimeOutOfBoundsException, TimeEstimationException{
 		List<Time> working = new ArrayList<>();
 		Collection<Node> nodes = scenario.getNodes(net);
 		Map<Time, Integer> visit = new HashMap<Time, Integer>();
@@ -202,7 +212,15 @@ public class BFSEntireEstimationAlg extends DFSEstimationAlg{
 						visit.put(nd, visit.get(nd)+1);
 					
 					if(nd.getEndTime().isSpecified()){
-						m.setEndTime(Interval.getOverlapping(m.getStartTime(), nd.getEndTime()));
+						Interval i = Interval.getOverlapping(m.getStartTime(), nd.getEndTime());					
+						if(i != null){
+							m.setEndTime(i);
+						}
+						else{
+				            throw new TimeEstimationException(net.getNodeReference(nd)+".finish (" + nd.getEndTime().toString()+
+				                    ") is inconsistent with " + net.getNodeReference(m) + ".start (" + m.getEndTime().toString()+")");
+						}
+						
 					}
 				}
 				for(Time nd :  getCausalPreset(m, nodes)){

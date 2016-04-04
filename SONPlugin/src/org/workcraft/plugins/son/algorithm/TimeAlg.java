@@ -1,11 +1,13 @@
 package org.workcraft.plugins.son.algorithm;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
+import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.Time;
@@ -147,5 +149,23 @@ public class TimeAlg extends RelationAlgorithm {
             ((Time) node).setStartTime(input);
             ((Time) node).setEndTime(input);
         }
+    }
+    
+	
+    protected Collection<ChannelPlace> getSyncCPs() {
+        Collection<ChannelPlace> result = new HashSet<ChannelPlace>();
+        HashSet<Node> nodes = new HashSet<>();
+        nodes.addAll(net.getTransitionNodes());
+        nodes.addAll(net.getChannelPlaces());
+        CSONCycleAlg cycleAlg = new CSONCycleAlg(net);
+
+        for (Path path : cycleAlg.syncCycleTask(nodes)) {
+            for (Node node : path) {
+                if (node instanceof ChannelPlace) {
+                    result.add((ChannelPlace) node);
+                }
+            }
+        }
+        return result;
     }
 }
