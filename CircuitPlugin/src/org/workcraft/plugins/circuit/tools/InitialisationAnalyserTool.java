@@ -233,12 +233,14 @@ public class InitialisationAnalyserTool extends AbstractTool {
         if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() > 1)) {
             VisualNode node = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
             if (node instanceof VisualContact) {
-                editor.getWorkspaceEntry().saveMemento();
                 Contact contact = ((VisualContact) node).getReferencedContact();
-                contact.setForcedInit(!contact.getForcedInit());
-                Circuit circuit = (Circuit) editor.getModel().getMathModel();
-                updateState(circuit);
-                processed = true;
+                if (contact.isDriver()) {
+                    editor.getWorkspaceEntry().saveMemento();
+                    contact.setForcedInit(!contact.getForcedInit());
+                    Circuit circuit = (Circuit) editor.getModel().getMathModel();
+                    updateState(circuit);
+                    processed = true;
+                }
             }
         }
 
@@ -261,7 +263,7 @@ public class InitialisationAnalyserTool extends AbstractTool {
                 }
 
                 if (mathNode != null) {
-                    final boolean b = (initErrorSet != null) && initErrorSet.contains(mathNode);
+                    final boolean initialisationConflict = (initErrorSet != null) && initErrorSet.contains(mathNode);
                     if ((initHighSet != null) && initHighSet.contains(mathNode)) {
                         return new StateDecoration() {
                             @Override
@@ -270,7 +272,11 @@ public class InitialisationAnalyserTool extends AbstractTool {
                             }
                             @Override
                             public Color getBackground() {
-                                return b ? CircuitSettings.getInactiveWireColor() : CircuitSettings.getActiveWireColor();
+                                return initialisationConflict ? CircuitSettings.getInactiveWireColor() : CircuitSettings.getActiveWireColor();
+                            }
+                            @Override
+                            public boolean showForcedInit() {
+                                return true;
                             }
                         };
                     }
@@ -282,7 +288,11 @@ public class InitialisationAnalyserTool extends AbstractTool {
                             }
                             @Override
                             public Color getBackground() {
-                                return b ? CircuitSettings.getActiveWireColor() : CircuitSettings.getInactiveWireColor();
+                                return initialisationConflict ? CircuitSettings.getActiveWireColor() : CircuitSettings.getInactiveWireColor();
+                            }
+                            @Override
+                            public boolean showForcedInit() {
+                                return true;
                             }
                         };
                     }

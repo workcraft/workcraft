@@ -5,6 +5,7 @@ import java.awt.Color;
 public interface Decoration {
     Color getColorisation();
     Color getBackground();
+
     class Empty implements Decoration {
 
         @Override
@@ -19,4 +20,5 @@ public interface Decoration {
 
         public static final Empty INSTANCE = new Empty();
     }
+
 }

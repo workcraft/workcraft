@@ -265,6 +265,10 @@ public class CircuitSimulationTool extends StgSimulationTool {
                                 }
                                 return null;
                             }
+                            @Override
+                            public boolean showForcedInit() {
+                                return false;
+                            }
                         };
                     }
                 } else if ((node instanceof VisualJoint) || (node instanceof VisualCircuitConnection)) {
@@ -288,6 +292,10 @@ public class CircuitSimulationTool extends StgSimulationTool {
                             @Override
                             public Color getBackground() {
                                 return null;
+                            }
+                            @Override
+                            public boolean showForcedInit() {
+                                return false;
                             }
                         };
                     }

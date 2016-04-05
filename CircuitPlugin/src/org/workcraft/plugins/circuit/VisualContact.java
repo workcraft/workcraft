@@ -203,12 +203,20 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
     private Shape getShape() {
         Contact contact = getReferencedContact();
-        if (contact != null) {
-        if (contact.isPort()) {
+        if ((contact != null) && contact.isPort()) {
             return getPortShape();
-        } else if (contact.isDriver() && contact.getForcedInit()) {
-            return getInitialisedContactShape();
         }
+        return getContactShape();
+    }
+
+    private Shape getInitShape() {
+        Contact contact = getReferencedContact();
+        if (contact != null) {
+            if (contact.isPort()) {
+                return getPortShape();
+            } else if (contact.isDriver() && contact.getForcedInit()) {
+                return getInitialisedContactShape();
+            }
         }
         return getContactShape();
     }
@@ -269,7 +277,11 @@ public class VisualContact extends VisualComponent implements StateObserver {
                 || (d.getColorisation() != null) || (d.getBackground() != null);
 
         if (showContact || isPort()) {
-            Shape shape = getShape();
+            boolean showForcedInit = false;
+            if (d instanceof StateDecoration) {
+                showForcedInit = ((StateDecoration) d).showForcedInit();
+            }
+            Shape shape = showForcedInit ? getInitShape() : getShape();
             g.setStroke(new BasicStroke((float) CircuitSettings.getWireWidth()));
             g.setColor(fillColor);
             g.fill(shape);
