@@ -46,16 +46,16 @@ import org.workcraft.util.LogUtils;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class ComponentInsertionTool extends TransformationTool implements NodeTransformer {
+public class BufferInsertionTool extends TransformationTool implements NodeTransformer {
 
     @Override
     public String getDisplayName() {
-        return "Insert components into selected wires";
+        return "Insert buffers into selected wires";
     }
 
     @Override
     public String getPopupName() {
-        return "Insert component";
+        return "Insert buffer";
     }
 
     @Override
@@ -115,6 +115,8 @@ public class ComponentInsertionTool extends TransformationTool implements NodeTr
             inputContact.setPosition(new Point2D.Double(-1.5, 0.0));
             VisualFunctionContact outputContact = circuit.getOrCreateContact(component, null, IOType.OUTPUT);
             outputContact.setPosition(new Point2D.Double(1.5, 0.0));
+            outputContact.setSetFunction(inputContact.getReferencedContact());
+
             LinkedList<Point2D> prefixControlPoints = ConnectionHelper.getPrefixControlPoints(connection, pos);
             LinkedList<Point2D> suffixControlPoints = ConnectionHelper.getSuffixControlPoints(connection, pos);
             circuit.remove(connection);
