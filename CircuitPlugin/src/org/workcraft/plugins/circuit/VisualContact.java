@@ -202,15 +202,15 @@ public class VisualContact extends VisualComponent implements StateObserver {
     }
 
     private Shape getShape() {
-        if (getParent() instanceof VisualCircuitComponent) {
-            if (getReferencedContact().getForcedInit()) {
-                return getInitialisedContactShape();
-            } else {
-                return getContactShape();
-            }
-        } else {
+        Contact contact = getReferencedContact();
+        if (contact != null) {
+        if (contact.isPort()) {
             return getPortShape();
+        } else if (contact.isDriver() && contact.getForcedInit()) {
+            return getInitialisedContactShape();
         }
+        }
+        return getContactShape();
     }
 
     private Shape getPortShape() {

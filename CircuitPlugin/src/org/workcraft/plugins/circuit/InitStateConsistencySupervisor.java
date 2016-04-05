@@ -21,14 +21,19 @@ public class InitStateConsistencySupervisor extends StateSupervisor  {
             PropertyChangedEvent pce = (PropertyChangedEvent) e;
             Object sender = e.getSender();
             String propertyName = pce.getPropertyName();
-            if ((sender instanceof Contact) && propertyName.equals(Contact.PROPERTY_INIT_TO_ONE)) {
+            if (sender instanceof Contact) {
                 Contact contact = (Contact) sender;
-                handleInitStateChange(contact);
+                if (propertyName.equals(Contact.PROPERTY_INIT_TO_ONE)) {
+                    handleInitToOneChange(contact);
+                }
+                if (propertyName.equals(Contact.PROPERTY_FORCED_INIT)) {
+                    handleForcedInitChange(contact);
+                }
             }
         }
     }
 
-    private void handleInitStateChange(Contact contact) {
+    private void handleInitToOneChange(Contact contact) {
         boolean initToOne = contact.getInitToOne();
         Node parent = contact.getParent();
         boolean isZeroDelay = false;
@@ -49,6 +54,18 @@ public class InitStateConsistencySupervisor extends StateSupervisor  {
         Collection<Contact> drivenContacts = CircuitUtils.findDriven(circuit, contact, isZeroDelay);
         for (Contact drivenContact: drivenContacts) {
             drivenContact.setInitToOne(initToOne != inverDriven);
+        }
+    }
+
+    private void handleForcedInitChange(Contact contact) {
+        boolean initialised = contact.getForcedInit();
+        Contact driverContact = CircuitUtils.findDriver(circuit, contact, false);
+        if (driverContact != null) {
+            driverContact.setForcedInit(initialised);
+        }
+        Collection<Contact> drivenContacts = CircuitUtils.findDriven(circuit, contact, false);
+        for (Contact drivenContact: drivenContacts) {
+            drivenContact.setForcedInit(initialised);
         }
     }
 
