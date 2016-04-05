@@ -200,14 +200,6 @@ public class CircuitModule implements Module {
                 "<property class=\"boolean\" name=\"initOne\" value=\"(.*?)\"/>",
                 "<property class=\"boolean\" name=\"initToOne\" value=\"$1\"/>");
 
-        cm.registerContextualReplacement(Circuit.class.getName(), "Contact",
-                "<property class=\"boolean\" name=\"initToOne\" value=\"false\"/>",
-                "<property class=\"org.workcraft.plugins.circuit.Contact\\$SignalLevel\" enum-class=\"org.workcraft.plugins.circuit.Contact\\$SignalLevel\" name=\"signalLevel\" value=\"LOW\"/>");
-
-        cm.registerContextualReplacement(Circuit.class.getName(), "Contact",
-                "<property class=\"boolean\" name=\"initToOne\" value=\"true\"/>",
-                "<property class=\"org.workcraft.plugins.circuit.Contact\\$SignalLevel\" enum-class=\"org.workcraft.plugins.circuit.Contact\\$SignalLevel\" name=\"signalLevel\" value=\"HIGH\"/>");
-
     }
 
 }

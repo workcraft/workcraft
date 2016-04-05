@@ -126,7 +126,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
                 Node oneNode = net.getNodeByReference(oneName);
                 if ((oneNode instanceof Place) && savedState.containsKey(oneNode)) {
                     boolean signalLevel = savedState.get(oneNode) > 0;
-                    contact.setSignalLevel(signalLevel);
+                    contact.setInitToOne(signalLevel);
                 }
             }
         }

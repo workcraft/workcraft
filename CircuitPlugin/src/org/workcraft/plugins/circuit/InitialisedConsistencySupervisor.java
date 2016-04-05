@@ -21,7 +21,7 @@ public class InitialisedConsistencySupervisor extends StateSupervisor  {
             PropertyChangedEvent pce = (PropertyChangedEvent) e;
             Object sender = e.getSender();
             String propertyName = pce.getPropertyName();
-            if ((sender instanceof Contact) && propertyName.equals(Contact.PROPERTY_INITIALISED)) {
+            if ((sender instanceof Contact) && propertyName.equals(Contact.PROPERTY_FORCED_INIT)) {
                 Contact contact = (Contact) sender;
                 handleInitialisedChange(contact);
             }
@@ -29,7 +29,7 @@ public class InitialisedConsistencySupervisor extends StateSupervisor  {
     }
 
     private void handleInitialisedChange(Contact contact) {
-        boolean initialised = contact.getInitialised();
+        boolean initialised = contact.getForcedInit();
         Node parent = contact.getParent();
         boolean isZeroDelay = false;
         if (parent instanceof FunctionComponent) {
@@ -38,11 +38,11 @@ public class InitialisedConsistencySupervisor extends StateSupervisor  {
         }
         Contact driverContact = CircuitUtils.findDriver(circuit, contact, isZeroDelay);
         if (driverContact != null) {
-            driverContact.setInitialised(initialised);
+            driverContact.setForcedInit(initialised);
         }
         Collection<Contact> drivenContacts = CircuitUtils.findDriven(circuit, contact, isZeroDelay);
         for (Contact drivenContact: drivenContacts) {
-            drivenContact.setInitialised(initialised);
+            drivenContact.setForcedInit(initialised);
         }
     }
 

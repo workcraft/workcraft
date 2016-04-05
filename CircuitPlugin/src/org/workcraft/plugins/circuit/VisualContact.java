@@ -44,7 +44,6 @@ import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.plugins.circuit.Contact.IOType;
-import org.workcraft.plugins.circuit.Contact.SignalLevel;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.circuit.tools.StateDecoration;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
@@ -173,30 +172,30 @@ public class VisualContact extends VisualComponent implements StateObserver {
             }
         });
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualContact, SignalLevel>(
-                this, Contact.PROPERTY_SIGNAL_LEVEL, SignalLevel.class, true, true, true) {
-            protected void setter(VisualContact object, SignalLevel value) {
-                object.getReferencedContact().setSignalLevel(value);
+        addPropertyDeclaration(new PropertyDeclaration<VisualContact, Boolean>(
+                this, Contact.PROPERTY_INIT_TO_ONE, Boolean.class, true, true, true) {
+            protected void setter(VisualContact object, Boolean value) {
+                object.getReferencedContact().setInitToOne(value);
             }
-            protected SignalLevel getter(VisualContact object) {
-                return object.getReferencedContact().getSignalLevel();
+            protected Boolean getter(VisualContact object) {
+                return object.getReferencedContact().getInitToOne();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualContact, Boolean>(
-                this, Contact.PROPERTY_INITIALISED, Boolean.class, true, true, true) {
+                this, Contact.PROPERTY_FORCED_INIT, Boolean.class, true, true, true) {
             protected void setter(VisualContact object, Boolean value) {
-                object.getReferencedContact().setInitialised(value);
+                object.getReferencedContact().setForcedInit(value);
             }
             protected Boolean getter(VisualContact object) {
-                return object.getReferencedContact().getInitialised();
+                return object.getReferencedContact().getForcedInit();
             }
         });
     }
 
     private Shape getShape() {
         if (getParent() instanceof VisualCircuitComponent) {
-            if (getReferencedContact().getInitialised()) {
+            if (getReferencedContact().getForcedInit()) {
                 return getInitialisedContactShape();
             } else {
                 return getContactShape();
@@ -465,7 +464,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
         super.copyStyle(src);
         if (src instanceof VisualContact) {
             VisualContact srcComponent = (VisualContact) src;
-            getReferencedContact().setSignalLevel(srcComponent.getReferencedContact().getSignalLevel());
+            getReferencedContact().setInitToOne(srcComponent.getReferencedContact().getInitToOne());
             // TODO: Note that IOType and Direction are currently NOT copied to allow input/output
             //       port generation with Shift key (and not to be copied from a template node).
             // getReferencedContact().setIOType(srcComponent.getReferencedContact().getIOType());
