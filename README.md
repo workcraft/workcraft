@@ -34,4 +34,4 @@ repo. This includes the binaries of backend tools, gate libraries and
 other platform-specific content.
 
 If you would like to contribute to Workcraft development, then read
-through the [HACKING](HACKING.md) document.
+through the [CONTRIBUTING](CONTRIBUTING.md) document.
