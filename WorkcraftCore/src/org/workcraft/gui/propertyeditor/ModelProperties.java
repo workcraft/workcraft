@@ -68,6 +68,19 @@ public class ModelProperties implements Properties {
         }
     }
 
+    public void addApplicable(final Collection<PropertyDescriptor> descriptors) {
+        if (descriptors != null) {
+            LinkedList<PropertyDescriptor> filteredDescriptors = new LinkedList<>();
+            for (PropertyDescriptor descriptor: descriptors) {
+                if ((descriptor instanceof Disableable) && ((Disableable) descriptor).isDisabled()) {
+                    continue;
+                }
+                filteredDescriptors.add(descriptor);
+            }
+            propertyDescriptors.addAll(filteredDescriptors);
+        }
+    }
+
     public void remove(final PropertyDescriptor descriptor) {
         if (descriptor != null) {
             propertyDescriptors.remove(descriptor);

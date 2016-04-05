@@ -459,11 +459,6 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
                         }
 
                         @Override
-                        public boolean isWritable() {
-                            return d.isWritable();
-                        }
-
-                        @Override
                         public Object getValue() throws InvocationTargetException {
                             return d.getValue();
                         }
@@ -481,6 +476,11 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
                         @Override
                         public Map<? extends Object, String> getChoice() {
                             return d.getChoice();
+                        }
+
+                        @Override
+                        public boolean isWritable() {
+                            return d.isWritable();
                         }
 
                         @Override
@@ -514,17 +514,17 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         ModelProperties properties = new ModelProperties();
         // Properties of the visual node
         Properties nodeProperties = getModel().getProperties(node);
-        properties.addAll(nodeProperties.getDescriptors());
+        properties.addApplicable(nodeProperties.getDescriptors());
         if (node instanceof Properties) {
-            properties.addAll(((Properties) node).getDescriptors());
+            properties.addApplicable(((Properties) node).getDescriptors());
         }
         // Properties of the math node
         if (node instanceof Dependent) {
             for (Node mathNode : ((Dependent) node).getMathReferences()) {
                 Properties mathNodeProperties = getModel().getMathModel().getProperties(mathNode);
-                properties.addAll(mathNodeProperties.getDescriptors());
+                properties.addApplicable(mathNodeProperties.getDescriptors());
                 if (mathNode instanceof Properties) {
-                    properties.addAll(((Properties) mathNode).getDescriptors());
+                    properties.addApplicable(((Properties) mathNode).getDescriptors());
                 }
             }
         }
@@ -535,7 +535,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         ModelProperties allProperties = new ModelProperties();
         for (Node node: nodes) {
             Properties nodeProperties = getNodeProperties(node);
-            allProperties.addAll(nodeProperties.getDescriptors());
+            allProperties.addApplicable(nodeProperties.getDescriptors());
         }
         ModelProperties combinedProperties = new ModelProperties(allProperties.getDescriptors());
         return combinedProperties;

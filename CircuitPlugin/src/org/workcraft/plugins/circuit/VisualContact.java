@@ -180,6 +180,10 @@ public class VisualContact extends VisualComponent implements StateObserver {
             protected Boolean getter(VisualContact object) {
                 return object.getReferencedContact().getInitToOne();
             }
+            public boolean isDisabled() {
+                VisualContact contact = (VisualContact) getObject();
+                return contact.isDriven();
+            }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualContact, Boolean>(
@@ -189,6 +193,10 @@ public class VisualContact extends VisualComponent implements StateObserver {
             }
             protected Boolean getter(VisualContact object) {
                 return object.getReferencedContact().getForcedInit();
+            }
+            public boolean isDisabled() {
+                VisualContact contact = (VisualContact) getObject();
+                return contact.isDriven();
             }
         });
     }
