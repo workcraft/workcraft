@@ -37,8 +37,8 @@ import org.workcraft.plugins.cpog.optimisation.expressions.Xor;
 import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 public class FormulaToString implements BooleanVisitor<String> {
-    public class Void {
-        private Void(){ }
+    public final class Void {
+        private Void() { }
     }
 
     public enum Style {

@@ -124,8 +124,10 @@ Module parseModule():
 {
     String name;
     List<Port> ports;
-    List<Assign> assigns;
-    List<Instance> instances;
+    Assign assign;
+    List<Assign> assigns = new LinkedList<Assign>();
+    Instance instance;
+    List<Instance> instances = new LinkedList<Instance>();
     List<Instance> group;
     Set<List<Instance>> groups = new HashSet<List<Instance>>();
     Map<String, Boolean> signalStates = null;
@@ -133,8 +135,16 @@ Module parseModule():
 {
     <MODULE> name = parseModuleName()
     ports = parsePorts()
-    assigns = parseAssigns()
-    instances = parseInstances()
+    (
+        (            assign = parseAssign()
+            {                assigns.add(assign);
+            }
+        |
+            instance = parseInstance()
+            {                instances.add(instance);
+            }
+        )
+    )*
     [<PETRIFY_UNMAPPED>
         (<PETRIFY_EQUATION>
             group = parseInstances()
