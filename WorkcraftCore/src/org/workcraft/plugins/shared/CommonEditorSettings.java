@@ -57,6 +57,7 @@ public class CommonEditorSettings implements Settings {
     private static final String keyShowGrid = prefix + ".showGrid";
     private static final String keyLightGrid = prefix + ".lightGrid";
     private static final String keyShowRulers = prefix + ".showRulers";
+    private static final String keyShowHints = prefix + ".showHints";
     private static final String keyRecentCount = prefix + ".recentCount";
     private static final String keyIconSize = prefix + ".iconSize";
     private static final String keyTitleStyle = prefix + ".titleStyle";
@@ -68,6 +69,7 @@ public class CommonEditorSettings implements Settings {
     private static final boolean defaultShowGrid = true;
     private static final boolean defaultLightGrid = true;
     private static final boolean defaultShowRulers = true;
+    private static final boolean defaultShowHints = true;
     private static final int defaultIconSize = 24;
     private static final int defaultRecentCount = 10;
     private static final TitleStyle defaultTitleStyle = TitleStyle.SHORT;
@@ -79,6 +81,7 @@ public class CommonEditorSettings implements Settings {
     private static boolean showGrid = defaultShowGrid;
     private static boolean lightGrid = defaultLightGrid;
     private static boolean showRulers = defaultShowRulers;
+    private static boolean showHints = defaultShowHints;
     private static int iconSize = defaultIconSize;
     private static int recentCount = defaultRecentCount;
     private static TitleStyle titleStyle = defaultTitleStyle;
@@ -124,6 +127,16 @@ public class CommonEditorSettings implements Settings {
             }
             protected Boolean getter(CommonEditorSettings object) {
                 return getShowRulers();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
+                this, "Show hints", Boolean.class, true, false, false) {
+            protected void setter(CommonEditorSettings object, Boolean value) {
+                setShowHints(value);
+            }
+            protected Boolean getter(CommonEditorSettings object) {
+                return getShowHints();
             }
         });
 
@@ -220,6 +233,7 @@ public class CommonEditorSettings implements Settings {
         setShowGrid(config.getBoolean(keyShowGrid, defaultShowGrid));
         setLightGrid(config.getBoolean(keyLightGrid, defaultLightGrid));
         setShowRulers(config.getBoolean(keyShowRulers, defaultShowRulers));
+        setShowHints(config.getBoolean(keyShowHints, defaultShowHints));
         setIconSize(config.getInt(keyIconSize, defaultIconSize));
         setRecentCount(config.getInt(keyRecentCount, defaultRecentCount));
         setTitleStyle(config.getEnum(keyTitleStyle, TitleStyle.class, defaultTitleStyle));
@@ -234,6 +248,7 @@ public class CommonEditorSettings implements Settings {
         config.setBoolean(keyShowGrid, getShowGrid());
         config.setBoolean(keyLightGrid, getLightGrid());
         config.setBoolean(keyShowRulers, getShowRulers());
+        config.setBoolean(keyShowHints, getShowHints());
         config.setInt(keyIconSize, getIconSize());
         config.setInt(keyRecentCount, getRecentCount());
         config.setEnum(keyTitleStyle, TitleStyle.class, getTitleStyle());
@@ -282,6 +297,14 @@ public class CommonEditorSettings implements Settings {
 
     public static Boolean getShowRulers() {
         return showRulers;
+    }
+
+    public static void setShowHints(Boolean value) {
+        showHints = value;
+    }
+
+    public static Boolean getShowHints() {
+        return showHints;
     }
 
     public static int getIconSize() {

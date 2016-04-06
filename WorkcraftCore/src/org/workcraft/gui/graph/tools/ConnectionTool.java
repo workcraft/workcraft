@@ -324,11 +324,11 @@ public class ConnectionTool extends AbstractTool {
     }
 
     public String getFirstHintMessage() {
-        return "Click on the first component.";
+        return "Click on a first component.";
     }
 
     public String getSecondHintMessage() {
-        return "Click on the second component or create a polyline segment. Hold Ctrl to connect continuously.";
+        return "Click on a second component or create a polyline segment. Hold Ctrl to connect continuously.";
     }
 
     @Override

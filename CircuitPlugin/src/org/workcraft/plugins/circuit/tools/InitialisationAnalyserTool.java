@@ -182,7 +182,7 @@ public class InitialisationAnalyserTool extends AbstractTool {
         boolean processed = false;
         GraphEditor editor = e.getEditor();
         VisualModel model = editor.getModel();
-        if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() > 1)) {
+        if (e.getButton() == MouseEvent.BUTTON1) {
             VisualNode node = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
             if (node instanceof VisualContact) {
                 Contact contact = ((VisualContact) node).getReferencedContact();
@@ -229,6 +229,11 @@ public class InitialisationAnalyserTool extends AbstractTool {
         };
     }
 
+    @Override
+    public String getHintMessage() {
+        return "Click on a driver contact to toggle its force initialisation state.";
+    }
+
     private Decoration getComponentDecoration(FunctionComponent component) {
         boolean initialised = true;
         boolean initialisationConflict = false;
@@ -269,7 +274,7 @@ public class InitialisationAnalyserTool extends AbstractTool {
             }
         };
     }
-    
+
     private Decoration getHighLevelDecoration(Node node) {
         final boolean initialisationConflict = (initErrorSet != null) && initErrorSet.contains(node);
         return new StateDecoration() {
