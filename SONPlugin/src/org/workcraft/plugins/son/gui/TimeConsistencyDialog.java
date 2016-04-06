@@ -59,8 +59,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
     protected ArrayList<Node> selectedNodes;
 
     public enum Granularity {
-        YEAR_YEAR,
-        HOUR_MINS;
+        YEAR_YEAR, HOUR_MINS;
     }
 
     @SuppressWarnings("rawtypes")
@@ -69,9 +68,8 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
         private static final long serialVersionUID = 1L;
 
         @Override
-        public Component getListCellRendererComponent(
-                JList list, Object value, int index,
-                boolean isSelected, boolean hasFocus) {
+        public Component getListCellRendererComponent(JList list, Object value, int index, boolean isSelected,
+                boolean hasFocus) {
 
             setSelected(isSelected);
             setFont(list.getFont());
@@ -85,7 +83,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
 
     @SuppressWarnings("unchecked")
     protected void createScenarioItemPanel() {
-    	
+
         scenarioItemPanel = new JPanel();
         ArrayList<ScenarioRef> scenarioSavelist = net.importScenarios(owner);
         DefaultListModel<ListItem> listModel = new DefaultListModel<>();
@@ -107,11 +105,14 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
                     for (int i = 0; i < list.getModel().getSize(); i++) {
                         ListItem item;
                         item = list.getModel().getElementAt(i);
-                        if (item != null)item.setSelected(false);
+                        if (item != null) {
+                            item.setSelected(false);
+                        }
                     }
                     setScenarioFromList(index);
                     updateScenarioColor();
-                } catch (ArrayIndexOutOfBoundsException e) { }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                }
             }
         });
 
@@ -171,7 +172,8 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
                     }
                     list.repaint(list.getCellBounds(index, index));
 
-                } catch (ArrayIndexOutOfBoundsException e) { }
+                } catch (ArrayIndexOutOfBoundsException e) {
+                }
             }
         });
         nodeItemPanel.add(createJScrollPane(nodeList));
@@ -204,7 +206,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
         createNodeItemPanel();
 
         selectionTabbedPane = new JTabbedPane();
-        //selectionTabbedPane.addTab("Group", groupItemPanel);
+        // selectionTabbedPane.addTab("Group", groupItemPanel);
         selectionTabbedPane.addTab("Scenario", scenarioItemPanel);
         selectionTabbedPane.addTab("Node", nodeItemPanel);
 
@@ -215,14 +217,15 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
                 removeAllButton.setEnabled(true);
                 int index = getTabIndex();
 
-//                if (index == 0) {
-//                    updateCausalConsistencyPanel(false);
-//                    for (int i = 0; i < groupList.getModel().getSize(); i++) {
-//                        ListItem item = (ListItem) groupList.getModel().getElementAt(i);
-//                        item.setItemColor(Color.ORANGE);
-//                    }
-//
-//                } else 
+                // if (index == 0) {
+                // updateCausalConsistencyPanel(false);
+                // for (int i = 0; i < groupList.getModel().getSize(); i++) {
+                // ListItem item = (ListItem)
+                // groupList.getModel().getElementAt(i);
+                // item.setItemColor(Color.ORANGE);
+                // }
+                //
+                // } else
                 if (index == 0) {
                     addAllButton.setEnabled(false);
                     removeAllButton.setEnabled(false);
@@ -245,7 +248,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
     protected void createSelectionButtonsPanel() {
 
         super.createSelectionButtonsPanel();
-        
+
         addAllButton.setEnabled(false);
         removeAllButton.setEnabled(false);
 
@@ -365,7 +368,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
 
         leftColumn.add(inconsistencyHighLight);
         leftColumn.add(unspecifyHighlight);
-        //leftColumn.add(causalHighlight);
+        // leftColumn.add(causalHighlight);
 
         settingPanel.add(leftColumn, BorderLayout.WEST);
     }
@@ -433,7 +436,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
     }
 
     public TimeConsistencyDialog(Window owner, WorkspaceEntry we) {
-        super(owner, "Time Anayalsis Setting",  ModalityType.APPLICATION_MODAL, we);
+        super(owner, "Time Anayalsis Setting", ModalityType.APPLICATION_MODAL, we);
     }
 
     protected void updateScenarioColor() {
@@ -486,7 +489,8 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
 
     public TimeConsistencySettings getTimeConsistencySettings() {
         return new TimeConsistencySettings(inconsistencyHighLight.isSelected(), unspecifyHighlight.isSelected(),
-                getSelectedGroups(), getSelectedScenario(), getSelectedNodes(), getTabIndex(), granularityPanel.getSelection(),
-                causalConsistency.isSelected(), getDefaultDuration(), causalHighlight.isSelected());
+                getSelectedGroups(), getSelectedScenario(), getSelectedNodes(), getTabIndex(),
+                granularityPanel.getSelection(), causalConsistency.isSelected(), getDefaultDuration(),
+                causalHighlight.isSelected());
     }
 }

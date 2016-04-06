@@ -88,7 +88,7 @@ public class TimeValueSetterTool extends AbstractTool {
     public void createInterfacePanel(final GraphEditor editor) {
         super.createInterfacePanel(editor);
 
-        //workcraft invoke this method before activate method
+        // workcraft invoke this method before activate method
         visualNet = (VisualSON) editor.getModel();
         net = (SON) visualNet.getMathModel();
         this.editor = editor;
@@ -285,7 +285,7 @@ public class TimeValueSetterTool extends AbstractTool {
         Interval value = con.getTime();
         if (isMin) {
             int min = Interval.getInteger(field.getText());
-            //24 hour clock granularity checking
+            // 24 hour clock granularity checking
             if (granularityPanel.getHourMinsButton().isSelected()) {
                 try {
                     HourMins.validValue(min);
@@ -330,7 +330,7 @@ public class TimeValueSetterTool extends AbstractTool {
         Interval value = c.getStartTime();
         if (isMin) {
             int min = Interval.getInteger(field.getText());
-            //24 hour clock granularity checking
+            // 24 hour clock granularity checking
             if (granularityPanel.getHourMinsButton().isSelected()) {
                 try {
                     HourMins.validValue(min);
@@ -376,7 +376,7 @@ public class TimeValueSetterTool extends AbstractTool {
         Interval value = c.getEndTime();
         if (isMin) {
             int min = Interval.getInteger(field.getText());
-            //24 hour clock granularity checking
+            // 24 hour clock granularity checking
             if (granularityPanel.getHourMinsButton().isSelected()) {
                 try {
                     HourMins.validValue(min);
@@ -549,12 +549,12 @@ public class TimeValueSetterTool extends AbstractTool {
         net.refreshAllColor();
         net.clearMarking();
 
-        //set property states for initial and final states
+        // set property states for initial and final states
         TimeAlg.removeProperties(net);
         TimeAlg.setProperties(net);
-        //save visibility state
+        // save visibility state
         visibility = SONSettings.getTimeVisibility();
-        //set visibility to true
+        // set visibility to true
         SONSettings.setTimeVisibility(true);
 
         editor.forceRedraw();
@@ -564,7 +564,7 @@ public class TimeValueSetterTool extends AbstractTool {
     @Override
     public void deactivated(final GraphEditor editor) {
         if (!visibility) {
-        	 TimeAlg.removeProperties(net);
+            TimeAlg.removeProperties(net);
         }
         SONSettings.setTimeVisibility(visibility);
         net.refreshAllColor();
@@ -601,13 +601,12 @@ public class TimeValueSetterTool extends AbstractTool {
             }
         }
 
-        Node node3 = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(),
-                new Func<Node, Boolean>() {
-                    @Override
-                    public Boolean eval(Node node) {
-                        return (node instanceof VisualPlaceNode) || (node instanceof VisualEvent);
-                    }
-                });
+        Node node3 = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(), new Func<Node, Boolean>() {
+            @Override
+            public Boolean eval(Node node) {
+                return (node instanceof VisualPlaceNode) || (node instanceof VisualEvent);
+            }
+        });
         if (node3 instanceof VisualPlaceNode || node3 instanceof VisualEvent) {
             if (!(node3 instanceof VisualChannelPlace)) {
                 estimatorButton.setEnabled(true);

@@ -54,7 +54,7 @@ public class BSONStructureTask extends AbstractStructuralVerification {
 
         infoMsg("-----------------Behavioral-SON Structure Verification-----------------");
 
-        //group info
+        // group info
         infoMsg("Initialising selected groups and components...");
         ArrayList<Node> components = new ArrayList<>();
 
@@ -62,7 +62,7 @@ public class BSONStructureTask extends AbstractStructuralVerification {
             components.addAll(group.getComponents());
         }
 
-        infoMsg("Selected Groups : " +  net.toString(groups));
+        infoMsg("Selected Groups : " + net.toString(groups));
 
         if (!net.getSONConnectionTypes(components).contains(Semantics.BHVLINE)) {
             infoMsg("Task terminated: no behavioural abstraction in selected groups.");
@@ -73,7 +73,7 @@ public class BSONStructureTask extends AbstractStructuralVerification {
         relatedCPlaces.addAll(getRelationAlg().getRelatedChannelPlace(groups));
         components.addAll(relatedCPlaces);
 
-        //Upper-level group structure task
+        // Upper-level group structure task
         infoMsg("Running model structure and component relation tasks...");
         infoMsg("Running Upper-level ON structure task...");
         groupErrors.addAll(groupTask1(groups));
@@ -81,12 +81,13 @@ public class BSONStructureTask extends AbstractStructuralVerification {
             infoMsg("Valid upper-level ON structure.");
         } else {
             for (ONGroup group : groupErrors) {
-                errMsg("ERROR: Invalid Upper-level ON structure (not line-like/has both input and output behavioural relations).", group);
+                errMsg("Invalid Upper-level ON structure (not line-like/has both input and output behavioural relations).",
+                        group);
             }
         }
         infoMsg("Upper-level ON structure task complete.");
 
-        //a/synchronous relation group task
+        // a/synchronous relation group task
         infoMsg("Running a/synchronous relation task...");
         Collection<ChannelPlace> task2 = groupTask2(groups);
         relationErrors.addAll(task2);
@@ -94,13 +95,13 @@ public class BSONStructureTask extends AbstractStructuralVerification {
             infoMsg("Valid a/synchronous relation.");
         } else {
             for (ChannelPlace cPlace : task2) {
-                errMsg("ERROR: Invalid BSON structure "
-                        + "(A/Synchronous communication between upper and lower level ONs).", cPlace);
+                errMsg("Invalid BSON structure " + "(A/Synchronous communication between upper and lower level ONs).",
+                        cPlace);
             }
         }
         infoMsg("A/synchronous relation task complete.");
 
-        //phase decomposition task
+        // phase decomposition task
         infoMsg("Running phase structure task...");
         Collection<ONGroup> upperGroups = getBSONAlg().getUpperGroups(groups);
 
@@ -120,7 +121,7 @@ public class BSONStructureTask extends AbstractStructuralVerification {
 
         infoMsg("Phase checking tasks complete.");
 
-        //BSON cycle task
+        // BSON cycle task
         infoMsg("Running cycle detection task...");
         cycleErrors.addAll(getBSONCycleAlg().cycleTask(components));
 
@@ -128,7 +129,7 @@ public class BSONStructureTask extends AbstractStructuralVerification {
             infoMsg("Behavioral-SON is cycle free.");
         } else {
             errNumber++;
-            errMsg("ERROR : Model involves BSCON cycle paths = " + cycleErrors.size() + ".");
+            errMsg("Model involves BSCON cycle paths = " + cycleErrors.size() + ".");
             int i = 1;
             for (Path cycle : cycleErrors) {
                 infoMsg("Cycle " + i + ": " + cycle.toString(net));
@@ -175,7 +176,7 @@ public class BSONStructureTask extends AbstractStructuralVerification {
         return result;
     }
 
-    //correctness of A/SYN communication between upper and lower level ONs
+    // correctness of A/SYN communication between upper and lower level ONs
     private Collection<ChannelPlace> groupTask2(Collection<ONGroup> groups) {
         Collection<ChannelPlace> result = new HashSet<>();
         Collection<ONGroup> upperGroups = getBSONAlg().getUpperGroups(groups);
@@ -217,44 +218,46 @@ public class BSONStructureTask extends AbstractStructuralVerification {
         return result;
     }
 
-    //check for upper level condition
+    // check for upper level condition
     private Map<Condition, String> phaseTask1(ONGroup upperGroup) {
         Map<Condition, String> result = new HashMap<>();
 
         for (Condition c : upperGroup.getConditions()) {
             String ref = net.getNodeReference(c);
             if (!getBSONAlg().isUpperCondition(c)) {
-                result.put(c, "ERROR: Upper level condition does not has phase: "  + ref);
+                result.put(c, "Upper level condition does not has phase: " + ref);
             }
         }
         return result;
     }
 
-    //check for upper level initial/final state
+    // check for upper level initial/final state
     private Map<Condition, String> phaseTask2(ONGroup upperGroup) {
         Map<Condition, String> result = new HashMap<>();
 
         for (Condition c : upperGroup.getConditions()) {
             Collection<Phase> phases = getAllPhases().get(c);
             String ref = net.getNodeReference(c);
-            //the minimal phases of every initial state of upper group must also be the initial state of lower group
+            // the minimal phases of every initial state of upper group must
+            // also be the initial state of lower group
             if (getRelationAlg().isInitial(c)) {
                 Collection<Condition> minSet = getBSONAlg().getMinimalPhase(phases);
 
                 for (Condition min : minSet) {
                     if (!getRelationAlg().isInitial(min)) {
-                        result.put(c, "ERROR: The minimal phase of " + ref + " does not reach initial state.");
+                        result.put(c, "The minimal phase of " + ref + " does not reach initial state.");
                         break;
                     }
                 }
             }
-            //the maximal phases of every final state of upper group must also be the final state of lower group
+            // the maximal phases of every final state of upper group must also
+            // be the final state of lower group
             if (getRelationAlg().isFinal(c)) {
                 Collection<Condition> maxSet = getBSONAlg().getMaximalPhase(getAllPhases().get(c));
 
                 for (Condition max : maxSet) {
                     if (!getRelationAlg().isFinal(max)) {
-                        result.put(c, "ERROR: The maximal phase of " + ref + " does not reach final state.");
+                        result.put(c, "The maximal phase of " + ref + " does not reach final state.");
                         break;
                     }
                 }
@@ -263,7 +266,7 @@ public class BSONStructureTask extends AbstractStructuralVerification {
         return result;
     }
 
-    //check for joint
+    // check for joint
     private Map<Condition, String> phaseTask3(ONGroup upperGroup) {
         Map<Condition, String> result = new HashMap<>();
 
@@ -310,7 +313,7 @@ public class BSONStructureTask extends AbstractStructuralVerification {
                     if (!match) {
                         String ref = net.getNodeReference(c);
                         String ref2 = net.getNodeReference(pre);
-                        result.put(c, "ERROR: Disjoint phases between " + ref + " and " + ref2);
+                        result.put(c, "Disjoint phases between " + ref + " and " + ref2);
                     }
                 }
             }
@@ -337,7 +340,9 @@ public class BSONStructureTask extends AbstractStructuralVerification {
 
     public boolean equals(Marking m, Collection<Condition> b) {
 
-        if (m.size() !=  b.size()) return false;
+        if (m.size() != b.size()) {
+            return false;
+        }
 
         for (Node node : m) {
             if (!b.contains(node)) {

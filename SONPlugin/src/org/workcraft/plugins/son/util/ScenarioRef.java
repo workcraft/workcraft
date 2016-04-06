@@ -27,38 +27,38 @@ public class ScenarioRef extends ArrayList<String> {
         }
         return result;
     }
-    
+
     public Collection<ChannelPlace> getChannelPlaces(SON net) {
         Collection<ChannelPlace> result = new HashSet<ChannelPlace>();
 
         for (String ref : this) {
             Node node = net.getNodeByReference(ref);
-            if ((node instanceof ChannelPlace)) {
-                result.add((ChannelPlace)node);
+            if (node instanceof ChannelPlace) {
+                result.add((ChannelPlace) node);
             }
         }
         return result;
     }
-    
+
     public Collection<TransitionNode> getTransitionNodes(SON net) {
         Collection<TransitionNode> result = new HashSet<TransitionNode>();
 
         for (String ref : this) {
             Node node = net.getNodeByReference(ref);
-            if ((node instanceof TransitionNode)) {
-                result.add((TransitionNode)node);
+            if (node instanceof TransitionNode) {
+                result.add((TransitionNode) node);
             }
         }
         return result;
     }
-    
+
     public Collection<Condition> getConditions(SON net) {
         Collection<Condition> result = new HashSet<Condition>();
 
         for (String ref : this) {
             Node node = net.getNodeByReference(ref);
-            if ((node instanceof Condition)) {
-                result.add((Condition)node);
+            if (node instanceof Condition) {
+                result.add((Condition) node);
             }
         }
         return result;
@@ -113,7 +113,7 @@ public class ScenarioRef extends ArrayList<String> {
     @Override
     public String toString() {
         String result = "";
-        for (String s: this) {
+        for (String s : this) {
             if (result != "") {
                 result += ", ";
             }
@@ -124,7 +124,7 @@ public class ScenarioRef extends ArrayList<String> {
 
     public void fromString(String str, SON net) throws IncompatibleScenarioException {
         clear();
-        for (String s: str.split("\\s*,\\s*")) {
+        for (String s : str.split("\\s*,\\s*")) {
             if (net.getNodeByReference(s) != null) {
                 add(s);
             } else {

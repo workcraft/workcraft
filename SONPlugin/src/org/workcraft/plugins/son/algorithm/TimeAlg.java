@@ -20,12 +20,12 @@ import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.plugins.son.util.ScenarioRef;
 
 public class TimeAlg extends RelationAlgorithm {
-	
+
     protected ScenarioRef scenario;
     protected Granularity g;
     protected TimeGranularity granularity;
-    
-    //default duration provided by user
+
+    // default duration provided by user
     protected final Interval defaultDuration;
 
     public TimeAlg(SON net, Interval d, Granularity g, ScenarioRef s) throws AlternativeStructureException {
@@ -33,48 +33,49 @@ public class TimeAlg extends RelationAlgorithm {
         this.scenario = s;
         this.g = g;
         this.defaultDuration = d;
-        
+
         if (scenario == null && !hasConflict()) {
             scenario = getNonbranchSON();
-        }           
-		
-		if(scenario == null ){
-			throw new AlternativeStructureException("Model involves more than one scenarios, generate and select a scenario first");
-		}
-        
+        }
+
+        if (scenario == null) {
+            throw new AlternativeStructureException(
+                    "Model involves more than one scenarios, generate and select a scenario first");
+        }
+
         if (g == Granularity.YEAR_YEAR) {
             granularity = new YearYear();
         } else if (g == Granularity.HOUR_MINS) {
             granularity = new HourMins();
         }
     }
-    
-    //assign specified value from connections to nodes
-    public void initialize(){
+
+    // assign specified value from connections to nodes
+    public void initialize() {
         for (SONConnection con : scenario.getConnections(net)) {
             if (con.getSemantics() == Semantics.PNLINE) {
                 if (con.getTime().isSpecified()) {
                     Node first = con.getFirst();
                     if (first instanceof Time) {
-                    	Interval end = ((Time) first).getEndTime();
+                        Interval end = ((Time) first).getEndTime();
                         ((Time) first).setEndTime(Interval.getOverlapping(end, con.getTime()));
                     }
                     Node second = con.getSecond();
                     if (second instanceof Time) {
-                    	Interval start = ((Time) second).getStartTime();
+                        Interval start = ((Time) second).getStartTime();
                         ((Time) second).setStartTime(Interval.getOverlapping(start, con.getTime()));
                     }
                 }
             }
         }
-	}
-	
-    //assign estimated time value from nodes to connections
-    public void finalize(){
+    }
+
+    // assign estimated time value from nodes to connections
+    public void finalize() {
         SONAlg sonAlg = new SONAlg(net);
         Collection<PlaceNode> initial = sonAlg.getSONInitial();
         Collection<PlaceNode> finalM = sonAlg.getSONFinal();
-       
+
         Interval defTime = new Interval();
         for (Time time : net.getTimeNodes()) {
             if (!initial.contains(time)) {
@@ -84,8 +85,8 @@ public class TimeAlg extends RelationAlgorithm {
                 time.setEndTime(defTime);
             }
         }
-	}
-      
+    }
+
     private ScenarioRef getNonbranchSON() {
         ScenarioRef scenario = new ScenarioRef();
         for (Node node : net.getComponents()) {
@@ -96,7 +97,7 @@ public class TimeAlg extends RelationAlgorithm {
         }
         return scenario;
     }
-    
+
     private boolean hasConflict() {
         RelationAlgorithm alg = new RelationAlgorithm(net);
         for (Condition c : net.getConditions()) {
@@ -150,8 +151,7 @@ public class TimeAlg extends RelationAlgorithm {
             ((Time) node).setEndTime(input);
         }
     }
-    
-	
+
     protected Collection<ChannelPlace> getSyncCPs() {
         Collection<ChannelPlace> result = new HashSet<ChannelPlace>();
         HashSet<Node> nodes = new HashSet<>();

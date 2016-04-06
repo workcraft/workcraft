@@ -82,7 +82,7 @@ public class RelationAlgorithm {
 
         if (getPrePNSet(n).size() == 0) {
             return true;
-        } 
+        }
         return false;
     }
 
@@ -93,7 +93,7 @@ public class RelationAlgorithm {
 
         if (getPostPNSet(n).size() == 0) {
             return true;
-        } 
+        }
         return false;
     }
 
@@ -129,7 +129,7 @@ public class RelationAlgorithm {
      * get all initial states of a given node set
      */
     public Collection<Condition> getONInitial(ONGroup group) {
-        ArrayList<Condition> result =  new ArrayList<Condition>();
+        ArrayList<Condition> result = new ArrayList<Condition>();
         for (Condition node : group.getConditions()) {
             if (isInitial(node)) {
                 result.add(node);
@@ -142,7 +142,7 @@ public class RelationAlgorithm {
      * get all final states of a given node set
      */
     public Collection<Condition> getONFinal(ONGroup group) {
-        ArrayList<Condition> result =  new ArrayList<Condition>();
+        ArrayList<Condition> result = new ArrayList<Condition>();
         for (Condition node : group.getConditions()) {
             if (isFinal(node)) {
                 result.add(node);
@@ -216,7 +216,8 @@ public class RelationAlgorithm {
     }
 
     /**
-     * get all asynchronous (Communication-SON) pre-events for a given event node
+     * get all asynchronous (Communication-SON) pre-events for a given event
+     * node
      */
     public Collection<TransitionNode> getPreAsynEvents(TransitionNode e) {
         Collection<TransitionNode> result = new ArrayList<>();
@@ -234,7 +235,8 @@ public class RelationAlgorithm {
     }
 
     /**
-     * get all asynchronous (Communication-SON) post-events for a given event node
+     * get all asynchronous (Communication-SON) post-events for a given event
+     * node
      */
     public Collection<TransitionNode> getPostAsynEvents(TransitionNode e) {
         Collection<TransitionNode> result = new ArrayList<>();
@@ -252,7 +254,8 @@ public class RelationAlgorithm {
     }
 
     /**
-     * get all asynchronous and synchronous (Communication-SON) pre-event for a given event or collapsed block
+     * get all asynchronous and synchronous (Communication-SON) pre-event for a
+     * given event or collapsed block
      */
     public Collection<TransitionNode> getPreASynEvents(TransitionNode e) {
         Collection<TransitionNode> result = new ArrayList<>();
@@ -282,7 +285,8 @@ public class RelationAlgorithm {
     }
 
     /**
-     * get all asynchronous and synchronous(Communication-SON) post-event for a given event or block
+     * get all asynchronous and synchronous(Communication-SON) post-event for a
+     * given event or block
      */
     public Collection<TransitionNode> getPostASynEvents(TransitionNode node) {
         Collection<TransitionNode> result = new ArrayList<>();

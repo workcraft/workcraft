@@ -88,7 +88,7 @@ public class TimeEstimatorDialog extends JDialog {
         defaultDurationPanel = new DefaultDurationPanel(settings.getDuration());
         defaultDurationPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-        JPanel    entirePanel = new JPanel(new BorderLayout());
+        JPanel entirePanel = new JPanel(new BorderLayout());
         entirePanel.setBorder(BorderFactory.createTitledBorder("Entire estimation"));
         entirePanel.setLayout(new GridLayout(3, 0));
 
@@ -107,14 +107,14 @@ public class TimeEstimatorDialog extends JDialog {
         twoDir.setEnabled(false);
 
         entirePanel.add(entireEst);
-        //entirePanel.add(narrow);
+        // entirePanel.add(narrow);
         entirePanel.add(twoDir);
 
         JPanel singlePanel = new JPanel(new BorderLayout());
         singlePanel.setBorder(BorderFactory.createTitledBorder("Single Node estimation"));
         singlePanel.setLayout(new GridLayout(2, 0));
 
-        intermediate = new  JCheckBox("Set values for intermediate nodes");
+        intermediate = new JCheckBox("Set values for intermediate nodes");
         intermediate.setSelected(false);
         intermediate.setLayout(new FlowLayout(FlowLayout.LEFT));
 
@@ -122,14 +122,15 @@ public class TimeEstimatorDialog extends JDialog {
         setDuration.setSelected(false);
         setDuration.setLayout(new FlowLayout(FlowLayout.LEFT));
 
-       // singlePanel.add(intermediate);
-        //singlePanel.add(setDuration);
+        // singlePanel.add(intermediate);
+        // singlePanel.add(setDuration);
 
         durationPanel = new JPanel();
-        //durationPanel.setBorder(BorderFactory.createTitledBorder("Default Duration Setting"));
+        // durationPanel.setBorder(BorderFactory.createTitledBorder("Default
+        // Duration Setting"));
         durationPanel.setLayout(new BorderLayout());
         durationPanel.add(defaultDurationPanel, BorderLayout.NORTH);
-        //durationPanel.add(singlePanel, BorderLayout.WEST);
+        // durationPanel.add(singlePanel, BorderLayout.WEST);
         durationPanel.add(entirePanel, BorderLayout.EAST);
 
         entireEst.addActionListener(new ActionListener() {
@@ -165,7 +166,8 @@ public class TimeEstimatorDialog extends JDialog {
                 int column = scenarioTable.getSelectedColumn();
                 int row = scenarioTable.getSelectedRow();
 
-                ScenarioSaveList saveList = scenarioTable.getSaveList();;
+                ScenarioSaveList saveList = scenarioTable.getSaveList();
+                ;
 
                 if (column == 0 && row < saveList.size()) {
                     saveList.setPosition(row);
@@ -223,62 +225,62 @@ public class TimeEstimatorDialog extends JDialog {
                     run = 1;
 
                     if (entireEst.isSelected()) {
-                       // boolean isNarrow = narrow.isSelected() && narrow.isEnabled();
+                        // boolean isNarrow = narrow.isSelected() &&
+                        // narrow.isEnabled();
                         boolean isTwodir = twoDir.isSelected() && twoDir.isEnabled();
                         setVisible(false);
                         BFSEntireEstimationAlg alg1 = null;
-						try {
-							alg1 = new BFSEntireEstimationAlg(net, getDefaultDuration(), granularity, getScenarioRef(), isTwodir);
-	    					alg1.initialize();
-							alg1.estimateEntire();
-							alg1.finalize();
-						} catch (AlternativeStructureException e2) {
-	                          JOptionPane.showMessageDialog(editor.getMainWindow(),
-	                           e2.getMessage(),
-	                          "Scenario selection error", JOptionPane.ERROR_MESSAGE);
-						} catch (TimeEstimationException | TimeOutOfBoundsException e1) {
-	                          JOptionPane.showMessageDialog(editor.getMainWindow(),
-	                          e1.getMessage(),"", JOptionPane.ERROR_MESSAGE);
-						}catch (SyncCycleException e1) {
-	                          JOptionPane.showMessageDialog(editor.getMainWindow(),
-	                          e1.getMessage(),
-	                          "Synchronous cycle error", JOptionPane.ERROR_MESSAGE);
-						}
-                        
+                        try {
+                            alg1 = new BFSEntireEstimationAlg(net, getDefaultDuration(), granularity, getScenarioRef(),
+                                    isTwodir);
+                            alg1.initialize();
+                            alg1.estimateEntire();
+                            alg1.finalize();
+                        } catch (AlternativeStructureException e2) {
+                            JOptionPane.showMessageDialog(editor.getMainWindow(), e2.getMessage(),
+                                    "Scenario selection error", JOptionPane.ERROR_MESSAGE);
+                        } catch (TimeEstimationException | TimeOutOfBoundsException e1) {
+                            JOptionPane.showMessageDialog(editor.getMainWindow(), e1.getMessage(), "",
+                                    JOptionPane.ERROR_MESSAGE);
+                        } catch (SyncCycleException e1) {
+                            JOptionPane.showMessageDialog(editor.getMainWindow(), e1.getMessage(),
+                                    "Synchronous cycle error", JOptionPane.ERROR_MESSAGE);
+                        }
+
                     } else {
                         DFSEstimationAlg alg;
-    					try {
-    						alg = new DFSEstimationAlg(net, getDefaultDuration(), granularity, getScenarioRef());
-	                        setVisible(false);
-	    					alg.initialize();
-	    					   
-	                        try {
-	                           alg.estimateEndTime((Time)selection);
-	                        } catch (TimeOutOfBoundsException e1) {
-	                            errMsg(e1.getMessage());
-	                        } catch (TimeEstimationException e1) {
-	                            errMsg(e1.getMessage());
-	                        }
-	                        try {
-	                            alg.estimateStartTime((Time)selection);
-	                         } catch (TimeOutOfBoundsException e1) {
-	                             errMsg(e1.getMessage());
-	                         } catch (TimeEstimationException e1) {
-	                             errMsg(e1.getMessage());
-	                         }
-	                        try {
-								alg.estimatDuration((Time)selection);
-							} catch (TimeInconsistencyException e1) {
-	                            errMsg(e1.getMessage());
-							} catch (TimeOutOfBoundsException e1) {
-	                            errMsg(e1.getMessage());
-	                        }
-	                        
-	                        alg.finalize(selection);
-	                        
-    					}catch (AlternativeStructureException e2) {
-	    						errMsg(e2.getMessage());
-	    					}
+                        try {
+                            alg = new DFSEstimationAlg(net, getDefaultDuration(), granularity, getScenarioRef());
+                            setVisible(false);
+                            alg.initialize();
+
+                            try {
+                                alg.estimateEndTime((Time) selection);
+                            } catch (TimeOutOfBoundsException e1) {
+                                errMsg(e1.getMessage());
+                            } catch (TimeEstimationException e1) {
+                                errMsg(e1.getMessage());
+                            }
+                            try {
+                                alg.estimateStartTime((Time) selection);
+                            } catch (TimeOutOfBoundsException e1) {
+                                errMsg(e1.getMessage());
+                            } catch (TimeEstimationException e1) {
+                                errMsg(e1.getMessage());
+                            }
+                            try {
+                                alg.estimatDuration((Time) selection);
+                            } catch (TimeInconsistencyException e1) {
+                                errMsg(e1.getMessage());
+                            } catch (TimeOutOfBoundsException e1) {
+                                errMsg(e1.getMessage());
+                            }
+
+                            alg.finalize(selection);
+
+                        } catch (AlternativeStructureException e2) {
+                            errMsg(e2.getMessage());
+                        }
                     }
                 } else {
                     defaultDurationPanel.getMin().setForeground(Color.RED);

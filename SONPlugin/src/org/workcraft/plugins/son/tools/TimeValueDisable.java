@@ -25,9 +25,9 @@ public class TimeValueDisable implements Tool {
         SON net = (SON) we.getModelEntry().getMathModel();
         SONSettings.setTimeVisibility(!SONSettings.getTimeVisibility());
         if (SONSettings.getTimeVisibility()) {
-        	TimeAlg.setProperties(net);
+            TimeAlg.setProperties(net);
         } else {
-        	TimeAlg.removeProperties(net);
+            TimeAlg.removeProperties(net);
         }
     }
 
