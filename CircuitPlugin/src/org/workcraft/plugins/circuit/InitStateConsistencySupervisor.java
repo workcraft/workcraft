@@ -6,7 +6,6 @@ import org.workcraft.dom.Node;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateSupervisor;
-import org.workcraft.plugins.circuit.Contact.SignalLevel;
 
 public class InitStateConsistencySupervisor extends StateSupervisor  {
 
@@ -22,15 +21,20 @@ public class InitStateConsistencySupervisor extends StateSupervisor  {
             PropertyChangedEvent pce = (PropertyChangedEvent) e;
             Object sender = e.getSender();
             String propertyName = pce.getPropertyName();
-            if ((sender instanceof Contact) && propertyName.equals(Contact.PROPERTY_SIGNAL_LEVEL)) {
+            if (sender instanceof Contact) {
                 Contact contact = (Contact) sender;
-                handleInitStateChange(contact);
+                if (propertyName.equals(Contact.PROPERTY_INIT_TO_ONE)) {
+                    handleInitToOneChange(contact);
+                }
+                if (propertyName.equals(Contact.PROPERTY_FORCED_INIT)) {
+                    handleForcedInitChange(contact);
+                }
             }
         }
     }
 
-    private void handleInitStateChange(Contact contact) {
-        boolean initToOne = contact.getSignalLevel() == SignalLevel.HIGH;
+    private void handleInitToOneChange(Contact contact) {
+        boolean initToOne = contact.getInitToOne();
         Node parent = contact.getParent();
         boolean isZeroDelay = false;
         boolean invertDriver = false;
@@ -45,11 +49,23 @@ public class InitStateConsistencySupervisor extends StateSupervisor  {
         }
         Contact driverContact = CircuitUtils.findDriver(circuit, contact, isZeroDelay);
         if (driverContact != null) {
-            driverContact.setSignalLevel(initToOne != invertDriver);
+            driverContact.setInitToOne(initToOne != invertDriver);
         }
         Collection<Contact> drivenContacts = CircuitUtils.findDriven(circuit, contact, isZeroDelay);
         for (Contact drivenContact: drivenContacts) {
-            drivenContact.setSignalLevel(initToOne != inverDriven);
+            drivenContact.setInitToOne(initToOne != inverDriven);
+        }
+    }
+
+    private void handleForcedInitChange(Contact contact) {
+        boolean initialised = contact.getForcedInit();
+        Contact driverContact = CircuitUtils.findDriver(circuit, contact, false);
+        if (driverContact != null) {
+            driverContact.setForcedInit(initialised);
+        }
+        Collection<Contact> drivenContacts = CircuitUtils.findDriven(circuit, contact, false);
+        for (Contact drivenContact: drivenContacts) {
+            drivenContact.setForcedInit(initialised);
         }
     }
 

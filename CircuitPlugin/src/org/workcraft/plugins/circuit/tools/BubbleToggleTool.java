@@ -30,6 +30,7 @@ import org.workcraft.TransformationTool;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
@@ -135,7 +136,8 @@ public class BubbleToggleTool extends TransformationTool implements NodeTransfor
 
     @Override
     public void transform(Model model, Node node) {
-        if (node instanceof VisualFunctionContact) {
+        if ((model instanceof VisualCircuit) && (node instanceof VisualFunctionContact)) {
+            Circuit circuit = (Circuit) ((VisualCircuit) model).getMathModel();
             FunctionContact contact = ((VisualFunctionContact) node).getReferencedFunctionContact();
             if (contact.isOutput()) {
                 BooleanFormula setFunction = contact.getSetFunction();
@@ -162,8 +164,10 @@ public class BubbleToggleTool extends TransformationTool implements NodeTransfor
             Node parent = node.getParent();
             if (parent instanceof VisualFunctionComponent) {
                 VisualFunctionComponent component = (VisualFunctionComponent) parent;
-                if (!component.getLabel().isEmpty()) {
-                    LogUtils.logWarningLine("Label '" + component.getLabel() + "' is removed from component `" + model.getNodeReference(node) + "`.");
+                String label = component.getLabel();
+                if (!label.isEmpty()) {
+                    String ref = circuit.getNodeReference(node);
+                    LogUtils.logWarningLine("Label '" + label + "' is removed from component `" + ref + "`.");
                     component.setLabel("");
                 }
                 component.invalidateRenderingResult();

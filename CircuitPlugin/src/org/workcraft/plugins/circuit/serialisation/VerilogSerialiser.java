@@ -40,7 +40,6 @@ import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact;
-import org.workcraft.plugins.circuit.Contact.SignalLevel;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.jj.substitution.ParseException;
 import org.workcraft.plugins.circuit.jj.substitution.SubstitutionParser;
@@ -240,7 +239,7 @@ public class VerilogSerialiser implements ModelSerialiser {
             String wireName = CircuitUtils.getWireName(circuit, contact);
             if ((wireName != null) && !wireName.isEmpty()) {
                 out.print(" ");
-                if (contact.getSignalLevel() == SignalLevel.LOW) {
+                if (!contact.getInitToOne()) {
                     out.print("!");
                 }
                 out.print(wireName);

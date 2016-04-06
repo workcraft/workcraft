@@ -238,6 +238,9 @@ public class VisualCircuit extends AbstractVisualModel {
     public VisualFunctionContact getOrCreateContact(Container container, String name, IOType ioType) {
         // here "parent" is a container of a visual model
         if (name != null) {
+            if (container == null) {
+                container = getRoot();
+            }
             for (Node n: container.getChildren()) {
                 if (n instanceof VisualFunctionContact) {
                     VisualFunctionContact contact = (VisualFunctionContact) n;

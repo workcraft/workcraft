@@ -25,7 +25,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-abstract public class PropertyDeclaration<O, V> implements PropertyDescriptor {
+abstract public class PropertyDeclaration<O, V> implements PropertyDescriptor, Disableable {
     private final O object;
     private String name;
     private Class<V> cls;
@@ -95,5 +95,14 @@ abstract public class PropertyDeclaration<O, V> implements PropertyDescriptor {
     @Override
     public boolean isTemplatable() {
         return templatable;
+    }
+
+    public O getObject() {
+        return object;
+    }
+
+    @Override
+    public boolean isDisabled() {
+        return false;
     }
 }

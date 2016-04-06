@@ -842,7 +842,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 
     @Override
     public String getHintMessage() {
-        return "Click on the highlighted transitions to fire them.";
+        return "Click on a highlighted transition to fire it.";
     }
 
     public String getLabel() {

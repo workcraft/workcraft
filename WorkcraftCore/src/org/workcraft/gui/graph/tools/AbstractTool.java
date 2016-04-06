@@ -30,6 +30,7 @@ import javax.swing.JPanel;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.util.GUI;
 
 public abstract class AbstractTool implements GraphEditorTool {
@@ -69,7 +70,9 @@ public abstract class AbstractTool implements GraphEditorTool {
 
     @Override
     public void drawInScreenSpace(final GraphEditor editor, Graphics2D g) {
-        GUI.drawEditorMessage(editor, g, Color.BLACK, getHintMessage());
+        if (CommonEditorSettings.getShowHints()) {
+            GUI.drawEditorMessage(editor, g, Color.BLACK, getHintMessage());
+        }
     }
 
     @Override

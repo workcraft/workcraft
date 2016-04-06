@@ -44,7 +44,6 @@ import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.plugins.circuit.Contact.IOType;
-import org.workcraft.plugins.circuit.Contact.SignalLevel;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.circuit.tools.StateDecoration;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
@@ -173,37 +172,53 @@ public class VisualContact extends VisualComponent implements StateObserver {
             }
         });
 
-        addPropertyDeclaration(new PropertyDeclaration<VisualContact, SignalLevel>(
-                this, Contact.PROPERTY_SIGNAL_LEVEL, SignalLevel.class, true, true, true) {
-            protected void setter(VisualContact object, SignalLevel value) {
-                object.getReferencedContact().setSignalLevel(value);
+        addPropertyDeclaration(new PropertyDeclaration<VisualContact, Boolean>(
+                this, Contact.PROPERTY_INIT_TO_ONE, Boolean.class, true, true, true) {
+            protected void setter(VisualContact object, Boolean value) {
+                object.getReferencedContact().setInitToOne(value);
             }
-            protected SignalLevel getter(VisualContact object) {
-                return object.getReferencedContact().getSignalLevel();
+            protected Boolean getter(VisualContact object) {
+                return object.getReferencedContact().getInitToOne();
+            }
+            public boolean isDisabled() {
+                VisualContact contact = (VisualContact) getObject();
+                return contact.isDriven();
             }
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualContact, Boolean>(
-                this, Contact.PROPERTY_INITIALISED, Boolean.class, true, true, true) {
+                this, Contact.PROPERTY_FORCED_INIT, Boolean.class, true, true, true) {
             protected void setter(VisualContact object, Boolean value) {
-                object.getReferencedContact().setInitialised(value);
+                object.getReferencedContact().setForcedInit(value);
             }
             protected Boolean getter(VisualContact object) {
-                return object.getReferencedContact().getInitialised();
+                return object.getReferencedContact().getForcedInit();
+            }
+            public boolean isDisabled() {
+                VisualContact contact = (VisualContact) getObject();
+                return contact.isDriven();
             }
         });
     }
 
     private Shape getShape() {
-        if (getParent() instanceof VisualCircuitComponent) {
-            if (getReferencedContact().getInitialised()) {
-                return getInitialisedContactShape();
-            } else {
-                return getContactShape();
-            }
-        } else {
+        Contact contact = getReferencedContact();
+        if ((contact != null) && contact.isPort()) {
             return getPortShape();
         }
+        return getContactShape();
+    }
+
+    private Shape getInitShape() {
+        Contact contact = getReferencedContact();
+        if (contact != null) {
+            if (contact.isPort()) {
+                return getPortShape();
+            } else if (contact.isDriver() && contact.getForcedInit()) {
+                return getInitialisedContactShape();
+            }
+        }
+        return getContactShape();
     }
 
     private Shape getPortShape() {
@@ -262,7 +277,11 @@ public class VisualContact extends VisualComponent implements StateObserver {
                 || (d.getColorisation() != null) || (d.getBackground() != null);
 
         if (showContact || isPort()) {
-            Shape shape = getShape();
+            boolean showForcedInit = false;
+            if (d instanceof StateDecoration) {
+                showForcedInit = ((StateDecoration) d).showForcedInit();
+            }
+            Shape shape = showForcedInit ? getInitShape() : getShape();
             g.setStroke(new BasicStroke((float) CircuitSettings.getWireWidth()));
             g.setColor(fillColor);
             g.fill(shape);
@@ -465,7 +484,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
         super.copyStyle(src);
         if (src instanceof VisualContact) {
             VisualContact srcComponent = (VisualContact) src;
-            getReferencedContact().setSignalLevel(srcComponent.getReferencedContact().getSignalLevel());
+            getReferencedContact().setInitToOne(srcComponent.getReferencedContact().getInitToOne());
             // TODO: Note that IOType and Direction are currently NOT copied to allow input/output
             //       port generation with Shift key (and not to be copied from a template node).
             // getReferencedContact().setIOType(srcComponent.getReferencedContact().getIOType());

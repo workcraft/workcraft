@@ -126,7 +126,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
                 Node oneNode = net.getNodeByReference(oneName);
                 if ((oneNode instanceof Place) && savedState.containsKey(oneNode)) {
                     boolean signalLevel = savedState.get(oneNode) > 0;
-                    contact.setSignalLevel(signalLevel);
+                    contact.setInitToOne(signalLevel);
                 }
             }
         }
@@ -214,101 +214,129 @@ public class CircuitSimulationTool extends StgSimulationTool {
     }
 
     @Override
+    public String getHintMessage() {
+        return "Click on a highlighted contact to fire it.";
+    }
+
+    @Override
     public Decorator getDecorator(final GraphEditor editor) {
         return new Decorator() {
             @Override
             public Decoration getDecoration(Node node) {
                 if (converter == null) return null;
                 if (node instanceof VisualContact) {
-                    VisualContact contact = (VisualContact) node;
-                    Pair<SignalStg, Boolean> signalStgAndInversion = converter.getSignalStgAndInvertion(contact);
-                    if (signalStgAndInversion != null) {
-                        boolean isZeroDelay = false;
-                        Node parent = contact.getParent();
-                        if (parent instanceof VisualFunctionComponent) {
-                            isZeroDelay = ((VisualFunctionComponent) parent).getIsZeroDelay();
-                        }
-                        Node traceCurrentNode = getTraceCurrentNode();
-                        SignalStg signalStg = signalStgAndInversion.getFirst();
-                        boolean isInverting = signalStgAndInversion.getSecond();
-                        final boolean isOne = (signalStg.one.getReferencedPlace().getTokens() == 1) != isInverting;
-                        final boolean isZero = (signalStg.zero.getReferencedPlace().getTokens() == 1) != isInverting;
-                        final boolean isExcited = !getContactExcitedTransitions(contact).isEmpty() && !isZeroDelay;
-                        final boolean isInTrace = signalStg.contains(traceCurrentNode) && !isZeroDelay;
-                        return new StateDecoration() {
-                                @Override
-                            public Color getColorisation() {
-                                if (isExcited) {
-                                    if (isInTrace) {
-                                        return CommonSimulationSettings.getEnabledBackgroundColor();
-                                    } else {
-                                        return CommonSimulationSettings.getEnabledForegroundColor();
-                                    }
-                                }
-                                return null;
-                            }
-                            @Override
-                            public Color getBackground() {
-                                if (isExcited) {
-                                    if (isInTrace) {
-                                        return CommonSimulationSettings.getEnabledForegroundColor();
-                                    } else {
-                                        return CommonSimulationSettings.getEnabledBackgroundColor();
-                                    }
-                                } else {
-                                    if (isOne && !isZero) {
-                                        return CircuitSettings.getActiveWireColor();
-                                    }
-                                    if (!isOne && isZero) {
-                                        return CircuitSettings.getInactiveWireColor();
-                                    }
-                                }
-                                return null;
-                            }
-                        };
-                    }
-                } else if ((node instanceof VisualJoint) || (node instanceof VisualCircuitConnection)) {
-                    Pair<SignalStg, Boolean> signalStgAndInversion = converter.getSignalStgAndInvertion((VisualNode) node);
-                    if (signalStgAndInversion != null) {
-                        SignalStg signalStg = signalStgAndInversion.getFirst();
-                        boolean isInverting = signalStgAndInversion.getSecond();
-                        final boolean isOne = (signalStg.one.getReferencedPlace().getTokens() == 1) != isInverting;
-                        final boolean isZero = (signalStg.zero.getReferencedPlace().getTokens() == 1) != isInverting;
-                        return new StateDecoration() {
-                            @Override
-                            public Color getColorisation() {
-                                if (isOne && !isZero) {
-                                    return CircuitSettings.getActiveWireColor();
-                                }
-                                if (!isOne && isZero) {
-                                    return CircuitSettings.getInactiveWireColor();
-                                }
-                                return null;
-                            }
-                            @Override
-                            public Color getBackground() {
-                                return null;
-                            }
-                        };
-                    }
+                    return getContactDecoration((VisualContact) node);
+                } else if (node instanceof VisualCircuitConnection) {
+                    return getConnectionOrJointDecoration((VisualCircuitConnection) node);
+                } else if (node instanceof VisualJoint) {
+                    return getConnectionOrJointDecoration((VisualJoint) node);
                 } else if (node instanceof VisualPage || node instanceof VisualGroup) {
-                    final boolean ret = isContainerExcited((Container) node);
-                    return new ContainerDecoration() {
-                        @Override
-                        public Color getColorisation() {
-                            return null;
-                        }
-                        @Override
-                        public Color getBackground() {
-                            return null;
-                        }
-                        @Override
-                        public boolean isContainerExcited() {
-                            return ret;
-                        }
-                    };
+                    return getContainerDecoration((Container) node);
                 }
                 return null;
+            }
+        };
+    }
+
+    private Decoration getContactDecoration(VisualContact contact) {
+        Pair<SignalStg, Boolean> signalStgAndInversion = converter.getSignalStgAndInvertion(contact);
+        if (signalStgAndInversion == null) {
+            return null;
+        }
+        boolean isZeroDelay = false;
+        Node parent = contact.getParent();
+        if (parent instanceof VisualFunctionComponent) {
+            isZeroDelay = ((VisualFunctionComponent) parent).getIsZeroDelay();
+        }
+        Node traceCurrentNode = getTraceCurrentNode();
+        SignalStg signalStg = signalStgAndInversion.getFirst();
+        boolean isInverting = signalStgAndInversion.getSecond();
+        final boolean isOne = (signalStg.one.getReferencedPlace().getTokens() == 1) != isInverting;
+        final boolean isZero = (signalStg.zero.getReferencedPlace().getTokens() == 1) != isInverting;
+        final boolean isExcited = !getContactExcitedTransitions(contact).isEmpty() && !isZeroDelay;
+        final boolean isInTrace = signalStg.contains(traceCurrentNode) && !isZeroDelay;
+        return new StateDecoration() {
+            @Override
+            public Color getColorisation() {
+                if (isExcited) {
+                    if (isInTrace) {
+                        return CommonSimulationSettings.getEnabledBackgroundColor();
+                    } else {
+                        return CommonSimulationSettings.getEnabledForegroundColor();
+                    }
+                }
+                return null;
+            }
+            @Override
+            public Color getBackground() {
+                if (isExcited) {
+                    if (isInTrace) {
+                        return CommonSimulationSettings.getEnabledForegroundColor();
+                    } else {
+                        return CommonSimulationSettings.getEnabledBackgroundColor();
+                    }
+                } else {
+                    if (isOne && !isZero) {
+                        return CircuitSettings.getActiveWireColor();
+                    }
+                    if (!isOne && isZero) {
+                        return CircuitSettings.getInactiveWireColor();
+                    }
+                }
+                return null;
+            }
+            @Override
+            public boolean showForcedInit() {
+                return false;
+            }
+        };
+    }
+
+    private Decoration getConnectionOrJointDecoration(VisualNode node) {
+        Pair<SignalStg, Boolean> signalStgAndInversion = converter.getSignalStgAndInvertion(node);
+        if (signalStgAndInversion == null) {
+            return null;
+        }
+        SignalStg signalStg = signalStgAndInversion.getFirst();
+        boolean isInverting = signalStgAndInversion.getSecond();
+        final boolean isOne = (signalStg.one.getReferencedPlace().getTokens() == 1) != isInverting;
+        final boolean isZero = (signalStg.zero.getReferencedPlace().getTokens() == 1) != isInverting;
+        return new StateDecoration() {
+            @Override
+            public Color getColorisation() {
+                if (isOne && !isZero) {
+                    return CircuitSettings.getActiveWireColor();
+                }
+                if (!isOne && isZero) {
+                    return CircuitSettings.getInactiveWireColor();
+                }
+                return null;
+            }
+            @Override
+            public Color getBackground() {
+                return null;
+            }
+            @Override
+            public boolean showForcedInit() {
+                return false;
+            }
+        };
+    }
+
+    private Decoration getContainerDecoration(Container container) {
+        final boolean ret = isContainerExcited(container);
+        return new ContainerDecoration() {
+            @Override
+            public Color getColorisation() {
+                return null;
+            }
+            @Override
+            public Color getBackground() {
+                return null;
+            }
+            @Override
+            public boolean isContainerExcited() {
+                return ret;
             }
         };
     }

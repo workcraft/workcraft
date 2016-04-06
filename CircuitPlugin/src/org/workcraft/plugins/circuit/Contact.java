@@ -32,8 +32,8 @@ public class Contact extends MathNode implements BooleanVariable {
 
     public static final String PROPERTY_NAME = "Name";
     public static final String PROPERTY_IO_TYPE = "I/O type";
-    public static final String PROPERTY_SIGNAL_LEVEL = "Signal level";
-    public static final String PROPERTY_INITIALISED = "Initialised";
+    public static final String PROPERTY_INIT_TO_ONE = "Init to one";
+    public static final String PROPERTY_FORCED_INIT = "Forced init";
 
     public enum IOType {
         INPUT("Input"),
@@ -51,26 +51,10 @@ public class Contact extends MathNode implements BooleanVariable {
         }
     };
 
-    public enum SignalLevel {
-        LOW("Low"),
-        HIGH("High");
-
-        private final String name;
-
-        SignalLevel(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public String toString() {
-            return name;
-        }
-    };
-
     private String name = "";
     private IOType type = IOType.OUTPUT;
-    private SignalLevel level = SignalLevel.LOW;
-    private boolean initialised = false;
+    private boolean initToOne = false;
+    private boolean forcedInit = false;
 
     public Contact() {
     }
@@ -103,33 +87,25 @@ public class Contact extends MathNode implements BooleanVariable {
         return type;
     }
 
-    public SignalLevel getSignalLevel() {
-        return level;
+    public boolean getInitToOne() {
+        return initToOne;
     }
 
-    public void setSignalLevel(SignalLevel value) {
-        if (this.level != value) {
-            this.level = value;
-            sendNotification(new PropertyChangedEvent(this, PROPERTY_SIGNAL_LEVEL));
+    public void setInitToOne(boolean value) {
+        if (this.initToOne != value) {
+            this.initToOne = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_INIT_TO_ONE));
         }
     }
 
-    public void setSignalLevel(boolean value) {
-        if (value) {
-            setSignalLevel(SignalLevel.HIGH);
-        } else {
-            setSignalLevel(SignalLevel.LOW);
-        }
+    public boolean getForcedInit() {
+        return forcedInit;
     }
 
-    public boolean getInitialised() {
-        return initialised;
-    }
-
-    public void setInitialised(boolean value) {
-        if (this.initialised != value) {
-            this.initialised = value;
-            sendNotification(new PropertyChangedEvent(this, PROPERTY_INITIALISED));
+    public void setForcedInit(boolean value) {
+        if (this.forcedInit != value) {
+            this.forcedInit = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_FORCED_INIT));
         }
     }
 

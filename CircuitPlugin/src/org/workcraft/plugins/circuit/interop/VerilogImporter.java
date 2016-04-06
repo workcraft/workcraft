@@ -51,7 +51,6 @@ import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.Contact.IOType;
-import org.workcraft.plugins.circuit.Contact.SignalLevel;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.expression.Expression;
@@ -590,13 +589,13 @@ public class VerilogImporter implements Importer {
         for (String signalName: wires.keySet()) {
             Wire wire = wires.get(signalName);
             if (wire.source != null) {
-                wire.source.setSignalLevel(SignalLevel.HIGH);
+                wire.source.setInitToOne(true);
             }
         }
         for (String signalName: wires.keySet()) {
             Wire wire = wires.get(signalName);
             if (wire.source != null) {
-                wire.source.setSignalLevel(SignalLevel.LOW);
+                wire.source.setInitToOne(false);
             }
         }
         // Set all signals specified as high to 1.
@@ -605,7 +604,7 @@ public class VerilogImporter implements Importer {
                 Wire wire = wires.get(signalName);
                 if ((wire.source != null) && signalStates.containsKey(signalName)) {
                     boolean signalState = signalStates.get(signalName);
-                    wire.source.setSignalLevel(signalState);
+                    wire.source.setInitToOne(signalState);
                 }
             }
         }
@@ -694,7 +693,7 @@ public class VerilogImporter implements Importer {
         component = new FunctionComponent();
         circuit.add(component);
         FunctionContact outputContact = new FunctionContact(IOType.OUTPUT);
-        outputContact.setSignalLevel(rootOutputContact.getSignalLevel());
+        outputContact.setInitToOne(rootOutputContact.getInitToOne());
         component.add(outputContact);
         circuit.setName(outputContact, PRIMITIVE_GATE_OUTPUT_NAME);
         newToOldContactMap.put(outputContact, rootOutputContact);

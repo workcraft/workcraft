@@ -1,15 +1,39 @@
 package org.workcraft.plugins.circuit;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.workcraft.dom.Node;
+import org.workcraft.gui.propertyeditor.Disableable;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import org.workcraft.plugins.cpog.optimisation.jj.ParseException;
 
 public class VisualContactFormulaProperties {
+
+    abstract private class FunctionPropertyDescriptor implements PropertyDescriptor, Disableable {
+        @Override
+        public Class<?> getType() {
+            return String.class;
+        }
+        @Override
+        public Map<Object, String> getChoice() {
+            return null;
+        }
+        @Override
+        public boolean isWritable() {
+            return true;
+        }
+        @Override
+        public boolean isCombinable() {
+            return true;
+        }
+        @Override
+        public boolean isTemplatable() {
+            return false;
+        }
+    }
+
     VisualCircuit circuit;
 
     public VisualContactFormulaProperties(VisualCircuit circuit) {
@@ -35,93 +59,45 @@ public class VisualContactFormulaProperties {
     }
 
     public PropertyDescriptor getSetProperty(final VisualFunctionContact contact) {
-        return new PropertyDescriptor() {
-
+        return new FunctionPropertyDescriptor() {
             @Override
-            public void setValue(Object value) throws InvocationTargetException {
+            public void setValue(Object value) {
                 BooleanFormula formula = parseContactFunction(contact, (String) value);
                 contact.setSetFunction(formula);
             }
-
             @Override
-            public boolean isWritable() {
-                return true;
-            }
-
-            @Override
-            public Object getValue() throws InvocationTargetException {
+            public Object getValue() {
                 return FormulaToString.toString(contact.getSetFunction());
             }
-
-            @Override
-            public Class<?> getType() {
-                return String.class;
-            }
-
             @Override
             public String getName() {
-                return "Set function";
+                return FunctionContact.PROPERTY_SET_FUNCTION;
             }
-
             @Override
-            public Map<Object, String> getChoice() {
-                return null;
-            }
-
-            @Override
-            public boolean isCombinable() {
-                return true;
-            }
-
-            @Override
-            public boolean isTemplatable() {
-                return false;
+            public boolean isDisabled() {
+                return contact.isDriven();
             }
         };
     }
 
     public PropertyDescriptor getResetProperty(final VisualFunctionContact contact) {
-        return new PropertyDescriptor() {
-
+        return new FunctionPropertyDescriptor() {
             @Override
-            public void setValue(Object value) throws InvocationTargetException {
+            public void setValue(Object value) {
                 BooleanFormula formula = parseContactFunction(contact, (String) value);
                 contact.setResetFunction(formula);
             }
-
             @Override
-            public boolean isWritable() {
-                return true;
-            }
-
-            @Override
-            public Object getValue() throws InvocationTargetException {
+            public Object getValue() {
                 return FormulaToString.toString(contact.getResetFunction());
             }
-
-            @Override
-            public Class<?> getType() {
-                return String.class;
-            }
-
             @Override
             public String getName() {
-                return "Reset function";
+                return FunctionContact.PROPERTY_RESET_FUNCTION;
             }
-
             @Override
-            public Map<Object, String> getChoice() {
-                return null;
-            }
-
-            @Override
-            public boolean isCombinable() {
-                return true;
-            }
-
-            @Override
-            public boolean isTemplatable() {
-                return false;
+            public boolean isDisabled() {
+                return contact.isDriven();
             }
         };
     }
