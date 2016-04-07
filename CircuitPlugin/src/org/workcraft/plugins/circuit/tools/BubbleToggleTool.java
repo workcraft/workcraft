@@ -141,12 +141,12 @@ public class BubbleToggleTool extends TransformationTool implements NodeTransfor
             FunctionContact contact = ((VisualFunctionContact) node).getReferencedFunctionContact();
             if (contact.isOutput()) {
                 BooleanFormula setFunction = contact.getSetFunction();
-                if (setFunction != null) {
-                    contact.setSetFunction(BooleanOperations.not(setFunction));
-                }
                 BooleanFormula resetFunction = contact.getResetFunction();
-                if (resetFunction != null) {
-                    contact.setResetFunction(BooleanOperations.not(resetFunction));
+                if (resetFunction == null) {
+                    contact.setSetFunction(BooleanOperations.not(setFunction));
+                } else {
+                    contact.setSetFunction(resetFunction);
+                    contact.setResetFunction(setFunction);
                 }
             } else {
                 for (FunctionContact dependantContact: getDependantContacts(contact)) {
