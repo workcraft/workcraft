@@ -11,11 +11,11 @@ import org.workcraft.plugins.son.gui.TextAreaAppender;
 
 public class OutputRedirect {
 
-    public static void redirect(int height, int width) {
+    public static void redirect(int height, int width, String title) {
 
         JTextArea jTextArea = new JTextArea(height, width);
 
-        JFrame win = new OutputArea(jTextArea);
+        JFrame win = new OutputArea(jTextArea, title);
 
         win.setVisible(true);
 

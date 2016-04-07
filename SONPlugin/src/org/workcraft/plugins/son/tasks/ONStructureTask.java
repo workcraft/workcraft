@@ -52,7 +52,7 @@ public class ONStructureTask extends AbstractStructuralVerification {
             components.addAll(group.getComponents());
         }
 
-        infoMsg("Selected Groups = " +  groups.size());
+        infoMsg("Selected Groups = " + groups.size());
         infoMsg("Group Components = " + components.size() + "\n");
 
         for (ONGroup group : groups) {
@@ -60,29 +60,29 @@ public class ONStructureTask extends AbstractStructuralVerification {
             Collection<Node> task1, task2;
             Collection<Path> cycleResult;
 
-            //group info
+            // group info
             infoMsg("Initialising selected groups and components...");
 
             Collection<Node> groupComponents = group.getComponents();
             infoMsg("Group name : ", group);
-            infoMsg("Conditions = " + group.getConditions().size() + ".\n"  + "Events = " + group.getEvents().size()
-                     + ".\n" + "Collapsed Blocks = " + group.getCollapsedBlocks().size() + ".");
+            infoMsg("Conditions = " + group.getConditions().size() + ".\n" + "Events = " + group.getEvents().size()
+                    + ".\n" + "Collapsed Blocks = " + group.getCollapsedBlocks().size() + ".");
 
             infoMsg("Running component relation tasks...");
 
             if (!getRelationAlg().hasInitial(groupComponents)) {
-                errMsg("ERROR : Invalid initial state (no initial state).");
+                errMsg("Invalid initial state (no initial state).");
                 errNumber++;
                 continue;
             }
 
             if (!getRelationAlg().hasFinal(groupComponents)) {
-                errMsg("ERROR : Invalid final state (no final state).");
+                errMsg("Invalid final state (no final state).");
                 errNumber++;
                 continue;
             }
 
-            //initial state result
+            // initial state result
             task1 = iniStateTask(groupComponents);
 
             if (task1.isEmpty()) {
@@ -91,11 +91,11 @@ public class ONStructureTask extends AbstractStructuralVerification {
                 errNumber = errNumber + task1.size();
                 for (Node node : task1) {
                     relationErrors.add(node);
-                    errMsg("ERROR : Invalid initial state (initial state is not a condition).", node);
+                    errMsg("Invalid initial state (initial state is not a condition).", node);
                 }
             }
 
-            //final state result
+            // final state result
             task2 = finalStateTask(groupComponents);
             if (task2.isEmpty()) {
                 infoMsg("Valid occurrence net output.");
@@ -103,12 +103,12 @@ public class ONStructureTask extends AbstractStructuralVerification {
                 errNumber = errNumber + task2.size();
                 for (Node node : task2) {
                     relationErrors.add(node);
-                    errMsg("ERROR : Invalid final state (final state is not a condition).", node);
+                    errMsg("Invalid final state (final state is not a condition).", node);
                 }
             }
 
             infoMsg("Component relation tasks complete.");
-            //safeness result
+            // safeness result
             infoMsg("Running safeness checking task...");
             Node node = safenessTask(group);
             if (node != null) {
@@ -116,7 +116,7 @@ public class ONStructureTask extends AbstractStructuralVerification {
                 errNumber++;
             }
 
-            //cycle detection result
+            // cycle detection result
             infoMsg("Running cycle detection task...");
 
             cycleResult = getONCycleAlg().cycleTask(groupComponents);
@@ -127,10 +127,10 @@ public class ONStructureTask extends AbstractStructuralVerification {
                 infoMsg("Occurrence net is cycle free");
             } else {
                 errNumber++;
-                errMsg("ERROR : Occurrence net involves cycle paths = " + cycleResult.size() + ".");
+                errMsg("Occurrence net involves cycle paths = " + cycleResult.size() + ".");
                 int i = 1;
                 for (Path cycle : cycleResult) {
-                    errMsg("Cycle " + i + ": " + cycle.toString(net));
+                    infoMsg("Cycle " + i + ": " + cycle.toString(net));
                     i++;
                 }
             }
@@ -168,7 +168,7 @@ public class ONStructureTask extends AbstractStructuralVerification {
         try {
             markings = asonAlg.getReachableMarkings(group);
         } catch (UnboundedException e) {
-            infoMsg("ERROR : " + e.getMessage());
+            errMsg(e.getMessage());
             return e.getNode();
         }
 
@@ -205,6 +205,7 @@ public class ONStructureTask extends AbstractStructuralVerification {
     public int getErrNumber() {
         return this.errNumber;
     }
+
     @Override
     public int getWarningNumber() {
         return this.warningNumber;

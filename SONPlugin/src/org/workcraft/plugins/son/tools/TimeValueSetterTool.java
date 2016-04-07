@@ -34,7 +34,7 @@ import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.TimeEstimatorSettings;
 import org.workcraft.plugins.son.VisualSON;
-import org.workcraft.plugins.son.algorithm.ConsistencyAlg;
+import org.workcraft.plugins.son.algorithm.TimeAlg;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
@@ -64,14 +64,13 @@ public class TimeValueSetterTool extends AbstractTool {
     protected SON net;
     protected GraphEditor editor;
     protected VisualSON visualNet;
-    protected ConsistencyAlg timeAlg;
 
     private JPanel interfacePanel, timeInputPanel, timePropertyPanel, timeSetterPanel, buttonPanel;
     private GranularityPanel granularityPanel;
     private JButton estimatorButton, clearButton;
 
     private int labelheight = 20;
-    private int labelwidth = 35;
+    private int labelwidth = 40;
     protected Dimension buttonSize = new Dimension(100, 25);
     private TimeEstimatorSettings settings;
 
@@ -81,7 +80,7 @@ public class TimeValueSetterTool extends AbstractTool {
     private Color selectedColor = Color.ORANGE;
     private Font font = new Font("Arial", Font.PLAIN, 12);
     private String startLabel = "Start time interval: ";
-    private String endLabel = "End time interval: ";
+    private String endLabel = "Finish time interval: ";
     private String durationLabel = "Duration interval: ";
     private String timeLabel = "Time interval: ";
 
@@ -89,7 +88,7 @@ public class TimeValueSetterTool extends AbstractTool {
     public void createInterfacePanel(final GraphEditor editor) {
         super.createInterfacePanel(editor);
 
-        //workcraft invoke this method before activate method
+        // workcraft invoke this method before activate method
         visualNet = (VisualSON) editor.getModel();
         net = (SON) visualNet.getMathModel();
         this.editor = editor;
@@ -136,6 +135,7 @@ public class TimeValueSetterTool extends AbstractTool {
             @Override
             public void actionPerformed(ActionEvent e) {
                 editor.requestFocus();
+                editor.getWorkspaceEntry().saveMemento();
                 Granularity g = granularityPanel.getSelection();
                 TimeEstimatorDialog estimator = new TimeEstimatorDialog(editor, settings, selection, g);
                 visualNet.setForegroundColor(selection, selectedColor);
@@ -150,6 +150,7 @@ public class TimeValueSetterTool extends AbstractTool {
         clearButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                editor.getWorkspaceEntry().saveMemento();
                 Interval interval = new Interval();
                 if (visualSelection != null) {
                     if (visualSelection instanceof VisualComponent) {
@@ -199,6 +200,7 @@ public class TimeValueSetterTool extends AbstractTool {
         min.addFocusListener(new FocusListener() {
             @Override
             public void focusLost(FocusEvent e) {
+                editor.getWorkspaceEntry().saveMemento();
                 setValue(node, title, min, true);
             }
 
@@ -230,6 +232,7 @@ public class TimeValueSetterTool extends AbstractTool {
         max.addFocusListener(new FocusListener() {
             @Override
             public void focusLost(FocusEvent e) {
+                editor.getWorkspaceEntry().saveMemento();
                 setValue(node, title, max, false);
             }
 
@@ -282,7 +285,7 @@ public class TimeValueSetterTool extends AbstractTool {
         Interval value = con.getTime();
         if (isMin) {
             int min = Interval.getInteger(field.getText());
-            //24 hour clock granularity checking
+            // 24 hour clock granularity checking
             if (granularityPanel.getHourMinsButton().isSelected()) {
                 try {
                     HourMins.validValue(min);
@@ -327,7 +330,7 @@ public class TimeValueSetterTool extends AbstractTool {
         Interval value = c.getStartTime();
         if (isMin) {
             int min = Interval.getInteger(field.getText());
-            //24 hour clock granularity checking
+            // 24 hour clock granularity checking
             if (granularityPanel.getHourMinsButton().isSelected()) {
                 try {
                     HourMins.validValue(min);
@@ -373,7 +376,7 @@ public class TimeValueSetterTool extends AbstractTool {
         Interval value = c.getEndTime();
         if (isMin) {
             int min = Interval.getInteger(field.getText());
-            //24 hour clock granularity checking
+            // 24 hour clock granularity checking
             if (granularityPanel.getHourMinsButton().isSelected()) {
                 try {
                     HourMins.validValue(min);
@@ -541,18 +544,17 @@ public class TimeValueSetterTool extends AbstractTool {
         net = (SON) visualNet.getMathModel();
         WorkspaceEntry we = editor.getWorkspaceEntry();
         we.setCanSelect(false);
-        timeAlg = new ConsistencyAlg(net);
         settings = new TimeEstimatorSettings();
 
         net.refreshAllColor();
         net.clearMarking();
 
-        //set property states for initial and final states
-        timeAlg.removeProperties();
-        timeAlg.setProperties();
-        //save visibility state
+        // set property states for initial and final states
+        TimeAlg.removeProperties(net);
+        TimeAlg.setProperties(net);
+        // save visibility state
         visibility = SONSettings.getTimeVisibility();
-        //set visibility to true
+        // set visibility to true
         SONSettings.setTimeVisibility(true);
 
         editor.forceRedraw();
@@ -562,7 +564,7 @@ public class TimeValueSetterTool extends AbstractTool {
     @Override
     public void deactivated(final GraphEditor editor) {
         if (!visibility) {
-            timeAlg.removeProperties();
+            TimeAlg.removeProperties(net);
         }
         SONSettings.setTimeVisibility(visibility);
         net.refreshAllColor();
@@ -572,7 +574,6 @@ public class TimeValueSetterTool extends AbstractTool {
     @Override
     public void mousePressed(GraphEditorMouseEvent e) {
         net.refreshNodeColor();
-
         Node node = HitMan.hitTestForConnection(e.getPosition(), e.getModel().getRoot());
         if (node instanceof VisualSONConnection) {
             estimatorButton.setEnabled(false);
@@ -600,13 +601,12 @@ public class TimeValueSetterTool extends AbstractTool {
             }
         }
 
-        Node node3 = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(),
-                new Func<Node, Boolean>() {
-                    @Override
-                    public Boolean eval(Node node) {
-                        return (node instanceof VisualPlaceNode) || (node instanceof VisualEvent);
-                    }
-                });
+        Node node3 = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(), new Func<Node, Boolean>() {
+            @Override
+            public Boolean eval(Node node) {
+                return (node instanceof VisualPlaceNode) || (node instanceof VisualEvent);
+            }
+        });
         if (node3 instanceof VisualPlaceNode || node3 instanceof VisualEvent) {
             if (!(node3 instanceof VisualChannelPlace)) {
                 estimatorButton.setEnabled(true);

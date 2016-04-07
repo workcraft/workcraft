@@ -35,14 +35,14 @@ public class CSONStructureTask extends AbstractStructuralVerification {
 
         infoMsg("-----------------Communication-SON Structure Verification-----------------");
 
-        //group info
+        // group info
         infoMsg("Initialising selected groups and components...");
         ArrayList<Node> components = new ArrayList<>();
         for (ONGroup group : groups) {
             components.addAll(group.getComponents());
         }
 
-        infoMsg("Selected Groups : " +  net.toString(groups));
+        infoMsg("Selected Groups : " + net.toString(groups));
 
         ArrayList<ChannelPlace> relatedCPlaces = new ArrayList<>();
         relatedCPlaces.addAll(getRelationAlg().getRelatedChannelPlace(groups));
@@ -55,7 +55,7 @@ public class CSONStructureTask extends AbstractStructuralVerification {
             return;
         }
 
-        //channel place relation
+        // channel place relation
         infoMsg("Running component relation tasks...");
         Collection<ChannelPlace> task1 = cPlaceRelationTask(relatedCPlaces);
         Collection<ChannelPlace> task2 = cPlaceConTypeTask(relatedCPlaces);
@@ -67,17 +67,17 @@ public class CSONStructureTask extends AbstractStructuralVerification {
         } else {
             errNumber = errNumber + relationErrors.size();
             for (Node cPlace : task1) {
-                errMsg("ERROR : Invalid channel place relation (input/output size != 1).", cPlace);
+                errMsg("Invalid channel place relation (input/output size != 1).", cPlace);
             }
 
             for (Node cPlace : task2) {
-                errMsg("ERROR : Invalid communication types (inconsistent input and output connection types).", cPlace);
+                errMsg("Invalid communication types (inconsistent input and output connection types).", cPlace);
             }
         }
 
         infoMsg("Component relation tasks complete.");
 
-        //global cycle detection
+        // global cycle detection
         infoMsg("Running cycle detection task...");
         cycleErrors.addAll(getCSONCycleAlg().cycleTask(components));
 
@@ -85,10 +85,10 @@ public class CSONStructureTask extends AbstractStructuralVerification {
             infoMsg("Communication-SON is cycle free");
         } else {
             errNumber++;
-            errMsg("ERROR : Communication-SON involves global cycle paths = " + cycleErrors.size() + ".");
+            errMsg("Communication-SON involves global cycle paths = " + cycleErrors.size() + ".");
             int i = 1;
             for (Path cycle : cycleErrors) {
-                errMsg("Cycle " + i + ": " + cycle.toString(net));
+                infoMsg("Cycle " + i + ": " + cycle.toString(net));
                 i++;
             }
         }

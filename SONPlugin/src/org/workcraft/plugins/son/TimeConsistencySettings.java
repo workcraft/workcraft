@@ -63,7 +63,7 @@ public class TimeConsistencySettings {
     }
 
     public boolean isCausalConsistency() {
-        if ((getTabIndex() == 1) && causalConsistency) {
+        if ((getTabIndex() == 0) && causalConsistency) {
             return true;
         } else {
             return false;

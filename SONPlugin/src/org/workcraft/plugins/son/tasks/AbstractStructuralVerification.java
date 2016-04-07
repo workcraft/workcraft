@@ -9,6 +9,7 @@ import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.RelationAlgorithm;
+import org.workcraft.util.LogUtils;
 
 abstract class AbstractStructuralVerification implements StructuralVerification {
 
@@ -63,11 +64,11 @@ abstract class AbstractStructuralVerification implements StructuralVerification 
     }
 
     public void errMsg(String msg) {
-        logger.info(msg);
+        logger.info(LogUtils.PREFIX_ERROR + msg);
     }
 
     public void errMsg(String msg, Node node) {
-        logger.info(msg + " [" + net.getNodeReference(node) + "]");
+        logger.info(LogUtils.PREFIX_ERROR + msg + " [" + net.getNodeReference(node) + "]");
     }
 
     public RelationAlgorithm getRelationAlg() {

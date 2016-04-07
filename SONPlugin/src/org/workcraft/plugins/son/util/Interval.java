@@ -34,13 +34,15 @@ public class Interval {
     }
 
     static public Integer getMin(String value) {
-        if (value.length() != 9) return null;
+        if (value.length() != 9) {
+            return null;
+        }
         Integer result = 0;
 
         String first = value.substring(0, 4);
 
         try {
-            //return decimal number
+            // return decimal number
             result = Integer.parseInt(first);
         } catch (NumberFormatException e) {
             e.printStackTrace();
@@ -50,13 +52,15 @@ public class Interval {
     }
 
     static public Integer getMax(String value) {
-        if (value.length() != 9) return null;
+        if (value.length() != 9) {
+            return null;
+        }
         Integer result = 9999;
 
         String last = value.substring(5, 9);
 
         try {
-            //return decimal number
+            // return decimal number
             result = Integer.parseInt(last);
         } catch (NumberFormatException e) {
             e.printStackTrace();
@@ -65,12 +69,14 @@ public class Interval {
     }
 
     static public Integer getInteger(String value) {
-        if (value.length() != 4) return null;
+        if (value.length() != 4) {
+            return null;
+        }
 
         Integer result = 0;
 
         try {
-            //return decimal number
+            // return decimal number
             result = Integer.parseInt(value);
         } catch (NumberFormatException e) {
             e.printStackTrace();
@@ -86,12 +92,14 @@ public class Interval {
     }
 
     public boolean isOverlapping(Interval other) {
-        if (other == null) return false; // for readability's sake, this condition is pulled out
-
+        if (other == null) {
+            return false; // for readability's sake, this condition is pulled
+                          // out
+        }
         // overlap happens ONLY when this's max is on the right of other's min
         // AND this's min is on the left of other's max.
-        return ((this.max == null) || (other.min == null) || (this.max.intValue() >= other.min.intValue())) &&
-            ((this.min == null) || (other.max == null) || (this.min.intValue() <= other.max.intValue()));
+        return ((this.max == null) || (other.min == null) || (this.max.intValue() >= other.min.intValue()))
+                && ((this.min == null) || (other.max == null) || (this.min.intValue() <= other.max.intValue()));
     }
 
     public static Interval getOverlapping(Collection<Interval> intervals) {
@@ -100,7 +108,8 @@ public class Interval {
         Interval first = intervals.iterator().next();
         for (Interval interval : intervals) {
             if (first.isOverlapping(interval)) {
-                result = new Interval(Math.max(first.getMin(), interval.getMin()), Math.min(first.getMax(), interval.getMax()));
+                result = new Interval(Math.max(first.getMin(), interval.getMin()),
+                        Math.min(first.getMax(), interval.getMax()));
             } else {
                 return null;
             }
@@ -111,7 +120,13 @@ public class Interval {
     }
 
     public static Interval getOverlapping(Interval first, Interval second) {
-        return new Interval(Math.max(first.getMin(), second.getMin()), Math.min(first.getMax(), second.getMax()));
+        // System.out.println("first "+first.toString()+ " second "+
+        // second.toString() +" "+ first.isOverlapping(second));
+        if (first.isOverlapping(second)) {
+            return new Interval(Math.max(first.getMin(), second.getMin()), Math.min(first.getMax(), second.getMax()));
+        } else {
+            return null;
+        }
     }
 
     public boolean isInInterval(Integer number, Interval other) {
