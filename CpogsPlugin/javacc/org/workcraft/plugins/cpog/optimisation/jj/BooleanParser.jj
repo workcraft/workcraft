@@ -99,13 +99,13 @@ SKIP :
 }
 TOKEN : /* OPERATORS */
 {
-      < EQUALS: "eq" | "=" | "==" | "<->" | "<=>" >
-|      < NOTEQUALS: "neq" | "!=" >
-|      < IMPLIES: "imp" | "=>" | "\u21d2" | "->" >
-|      < OR: "or" | "|" | "+" | "\u2228" >
-|      < XOR: "xor" | "^" | "\u2295" >
-|    < AND: "and" | "&" | "*" | "\u2227" | "\u2022" >
-|    < NOT: "not" | "!" | "�" >
+    < EQUALS: "eq" | "=" | "==" | "<->" | "<=>" >
+|   < NOTEQUALS: "neq" | "!=" >
+|   < IMPLIES: "imp" | "=>" | "\u21d2" | "->" >
+|   < OR: "or" | "|" | "+" | "\u2228" >
+|   < XOR: "xor" | "^" | "\u2295" >
+|   < AND: "and" | "&" | "*" | "\u2227" | "\u2022" | "\u00b7" >
+|   < NOT: "not" | "!" | "~" | "\u00ac" >
 |   < POSTNOT: "'" >
 }
 TOKEN :

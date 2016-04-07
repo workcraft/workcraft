@@ -64,6 +64,10 @@ public class CircuitComponent extends MathGroup implements Container, Observable
         return module;
     }
 
+    public boolean isMapped() {
+        return (module == null) || module.isEmpty();
+    }
+
     public void setIsEnvironment(boolean value) {
         this.isEnvironment = value;
         sendNotification(new PropertyChangedEvent(this, PROPERTY_IS_ENVIRONMENT));

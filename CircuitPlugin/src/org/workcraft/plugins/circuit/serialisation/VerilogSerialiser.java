@@ -29,6 +29,7 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
@@ -41,9 +42,17 @@ import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
+import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.jj.substitution.ParseException;
 import org.workcraft.plugins.circuit.jj.substitution.SubstitutionParser;
 import org.workcraft.plugins.circuit.verilog.SubstitutionRule;
+import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
+import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
+import org.workcraft.plugins.cpog.optimisation.Literal;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanUtils;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
+import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString.Style;
+import org.workcraft.plugins.cpog.optimisation.expressions.DumbBooleanWorker;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelSerialiser;
@@ -114,8 +123,8 @@ public class VerilogSerialiser implements ModelSerialiser {
     private void writeHeader(PrintWriter out, Circuit circuit) {
         String topName = circuit.getTitle();
         if ((topName == null) || topName.isEmpty()) {
-            LogUtils.logWarningLine("The top module does not have a name.");
-            topName = "";
+            topName = "UNTITLED";
+            LogUtils.logWarningLine("The top module does not have a name. Exporting as `" + topName + "` module.");
         }
         out.print(KEYWORD_MODULE + " " + topName + " (");
         boolean isFirstPort = true;
@@ -145,58 +154,138 @@ public class VerilogSerialiser implements ModelSerialiser {
 
     private void writeInstances(PrintWriter out, Circuit circuit) {
         HashMap<String, SubstitutionRule> substitutionRules = readSubsritutionRules();
+        // Write out assign statements
+        boolean hasAssignments = false;
         for (FunctionComponent component: Hierarchy.getDescendantsOfType(circuit.getRoot(), FunctionComponent.class)) {
-            String moduleName = component.getModule();
-            String instanceRef = circuit.getNodeReference(component);
-            String instanceFlatName = NamespaceHelper.hierarchicalToFlatName(instanceRef);
-            if ((moduleName == null) || moduleName.isEmpty()) {
-                LogUtils.logWarningLine("Component '" + instanceFlatName + "' is not associated to a module.");
-                moduleName = "";
-            }
-            SubstitutionRule substitutionRule = substitutionRules.get(moduleName);
-            if (substitutionRule != null) {
-                String newModuleName = substitutionRule.newName;
-                if (newModuleName != null) {
-                    LogUtils.logInfoLine("In component '" + instanceFlatName + "' renaming module '" + moduleName + "' to '" + newModuleName + "'.");
-                    moduleName = newModuleName;
-                }
-            }
-            if (component.getIsZeroDelay() && (component.isBuffer() || component.isInverter())) {
-                out.println("    // This inverter should have a short delay");
-            }
-            out.print("    " + moduleName + " " + instanceFlatName + " (");
-            boolean first = true;
-            for (Contact contact: component.getContacts()) {
-                if (first) {
-                    first = false;
+            if (component.isMapped()) {
+                if (writeAssigns(out, circuit, component)) {
+                    hasAssignments = true;
                 } else {
-                    out.print(", ");
+                    String ref = circuit.getNodeReference(component);
+                    LogUtils.logErrorLine("Unmapped component '" + ref + "' cannot be exported as assign statements.");
                 }
-                String contactName = contact.getName();
-                String wireName = CircuitUtils.getWireName(circuit, contact);
-                if ((wireName == null) || wireName.isEmpty()) {
-                    LogUtils.logWarningLine("In component '" + instanceFlatName + "' contact '" + contactName + "' is disconnected.");
-                    wireName = "";
-                }
-                if (substitutionRule != null) {
-                    String newContactName = substitutionRule.substitutions.get(contactName);
-                    if (newContactName != null) {
-                        LogUtils.logInfoLine("In component '" + instanceFlatName + "' renaming contact '" + contactName + "' to '" + newContactName + "'.");
-                        contactName = newContactName;
-                    }
-                }
-                out.print("." + contactName + "(" + wireName + ")");
             }
-            out.print(");\n");
         }
+        if (hasAssignments) {
+            out.print("\n");
+        }
+        // Write out mapped components
+        for (FunctionComponent component: Hierarchy.getDescendantsOfType(circuit.getRoot(), FunctionComponent.class)) {
+            if (!component.isMapped()) {
+                writeInstance(out, circuit, component, substitutionRules);
+            }
+        }
+    }
+
+    private boolean writeAssigns(PrintWriter out, Circuit circuit, FunctionComponent component) {
+        boolean result = false;
+        String instanceRef = circuit.getNodeReference(component);
+        String instanceFlatName = NamespaceHelper.hierarchicalToFlatName(instanceRef);
+        LogUtils.logWarningLine("Component '" + instanceFlatName + "' is not associated to a module and is exported as assign statements.");
+        HashMap<String, BooleanFormula> signals = getSignalMap(circuit);
+        LinkedList<BooleanVariable> variables = new LinkedList<>();
+        LinkedList<BooleanFormula> values = new LinkedList<>();
+        for (FunctionContact contact: component.getFunctionContacts()) {
+            if (contact.isOutput()) continue;
+            String wireName = CircuitUtils.getWireName(circuit, contact);
+            BooleanFormula wire = signals.get(wireName);
+            if (wire != null) {
+                variables.add(contact);
+                values.add(wire);
+            }
+        }
+        for (FunctionContact contact: component.getFunctionContacts()) {
+            if (contact.isInput()) continue;
+            String formula = null;
+            String wireName = CircuitUtils.getWireName(circuit, contact);
+            BooleanFormula setFunction = BooleanUtils.cleverReplace(contact.getSetFunction(), variables, values);
+            String setFormula = FormulaToString.toString(setFunction, Style.VERILOG);
+            BooleanFormula resetFunction = BooleanUtils.cleverReplace(contact.getResetFunction(), variables, values);
+            if (resetFunction != null) {
+                resetFunction = new DumbBooleanWorker().not(resetFunction);
+            }
+            String resetFormula = FormulaToString.toString(resetFunction, Style.VERILOG);
+            if (!setFormula.isEmpty() && !resetFormula.isEmpty()) {
+                formula = setFormula + wireName + "& (" + resetFormula + ")";
+            } else if (!setFormula.isEmpty()) {
+                formula = setFormula;
+            } else if (!resetFormula.isEmpty()) {
+                formula = resetFormula;
+            }
+            if ((formula != null) && !formula.isEmpty()) {
+                out.println("    assign " + wireName + " = " + formula + ";");
+                result = true;
+            }
+        }
+        return result;
+    }
+
+    private HashMap<String, BooleanFormula> getSignalMap(Circuit circuit) {
+        HashMap<String, BooleanFormula> result = new HashMap<>();
+        for (FunctionContact contact: circuit.getFunctionContacts()) {
+            String signalName = null;
+            BooleanFormula signal = null;
+            if (contact.isDriver()) {
+                signalName = CircuitUtils.getWireName(circuit, contact);
+                if (contact.isPort()) {
+                    signal = contact;
+                } else {
+                    signal = new Literal(signalName);
+                }
+            }
+            if ((signalName != null) && (signal != null)) {
+                result.put(signalName, signal);
+            }
+        }
+        return result;
+    }
+
+    private void writeInstance(PrintWriter out, Circuit circuit, FunctionComponent component,
+            HashMap<String, SubstitutionRule> substitutionRules) {
+        String instanceRef = circuit.getNodeReference(component);
+        String instanceFlatName = NamespaceHelper.hierarchicalToFlatName(instanceRef);
+        String moduleName = component.getModule();
+        SubstitutionRule substitutionRule = substitutionRules.get(moduleName);
+        if (substitutionRule != null) {
+            String newModuleName = substitutionRule.newName;
+            if (newModuleName != null) {
+                LogUtils.logInfoLine("In component '" + instanceFlatName + "' renaming module '" + moduleName + "' to '" + newModuleName + "'.");
+                moduleName = newModuleName;
+            }
+        }
+        if (component.getIsZeroDelay() && (component.isBuffer() || component.isInverter())) {
+            out.println("    // This inverter should have a short delay");
+        }
+        out.print("    " + moduleName + " " + instanceFlatName + " (");
+        boolean first = true;
+        for (Contact contact: component.getContacts()) {
+            if (first) {
+                first = false;
+            } else {
+                out.print(", ");
+            }
+            String contactName = contact.getName();
+            String wireName = CircuitUtils.getWireName(circuit, contact);
+            if ((wireName == null) || wireName.isEmpty()) {
+                LogUtils.logWarningLine("In component '" + instanceFlatName + "' contact '" + contactName + "' is disconnected.");
+                wireName = "";
+            }
+            if (substitutionRule != null) {
+                String newContactName = substitutionRule.substitutions.get(contactName);
+                if (newContactName != null) {
+                    LogUtils.logInfoLine("In component '" + instanceFlatName + "' renaming contact '" + contactName + "' to '" + newContactName + "'.");
+                    contactName = newContactName;
+                }
+            }
+            out.print("." + contactName + "(" + wireName + ")");
+        }
+        out.print(");\n");
     }
 
     private HashMap<String, SubstitutionRule> readSubsritutionRules() {
         HashMap<String, SubstitutionRule> result = new HashMap<>();
         String substitutionsFileName = CircuitSettings.getSubstitutionLibrary();
-        if ((substitutionsFileName == null) || substitutionsFileName.isEmpty()) {
-            LogUtils.logWarningLine("File of substitutions is not specified.");
-        } else {
+        if ((substitutionsFileName != null) && !substitutionsFileName.isEmpty()) {
             File libraryFile = new File(substitutionsFileName);
             final Framework framework = Framework.getInstance();
             if (framework.checkFile(libraryFile, "Access error for the file of substitutions")) {

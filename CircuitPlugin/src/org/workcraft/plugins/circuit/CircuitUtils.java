@@ -206,7 +206,7 @@ public class CircuitUtils {
         return getSignalName((Circuit) circuit.getMathModel(), contact.getReferencedContact());
     }
 
-    private static String getContactName(Circuit circuit, Contact contact) {
+    public static String getContactName(Circuit circuit, Contact contact) {
         String result = null;
         if (contact != null) {
             String contactRef = circuit.getNodeReference(contact);
