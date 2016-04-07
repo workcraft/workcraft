@@ -1255,6 +1255,10 @@ public class MainWindow extends JFrame {
         return editorInFocus;
     }
 
+    public WorkspaceEntry getCurrentWorkspaceEntry() {
+        return getCurrentEditor().getWorkspaceEntry();
+    }
+
     public void repaintCurrentEditor() {
         if (editorInFocus != null) {
             editorInFocus.repaint();

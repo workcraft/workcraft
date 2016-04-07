@@ -15,6 +15,9 @@ import javax.swing.JTable;
 import javax.swing.SwingConstants;
 import javax.swing.table.TableCellEditor;
 
+import org.workcraft.Framework;
+import org.workcraft.workspace.WorkspaceEntry;
+
 @SuppressWarnings("serial")
 public class FileCellEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
 
@@ -54,7 +57,29 @@ public class FileCellEditor extends AbstractCellEditor implements TableCellEdito
             JFileChooser fc = new JFileChooser();
             fc.setDialogType(JFileChooser.OPEN_DIALOG);
             fc.setMultiSelectionEnabled(false);
-            fc.setSelectedFile(file);
+            boolean fcConfigured = false;
+            if (file != null) {
+                if (file.exists()) {
+                    fc.setSelectedFile(file);
+                    fcConfigured = true;
+                } else {
+                    File dir = file.getParentFile();
+                    if (dir.exists()) {
+                        fc.setCurrentDirectory(dir);
+                        fcConfigured = true;
+                    }
+                }
+            }
+            if (!fcConfigured) {
+                Framework framework = Framework.getInstance();
+                WorkspaceEntry we = framework.getMainWindow().getCurrentWorkspaceEntry();
+                File file = we.getFile();
+                File dir = file.exists() ? file.getParentFile() : null;
+                if ((dir != null) && dir.exists()) {
+                    fc.setCurrentDirectory(dir);
+                    fcConfigured = true;
+                }
+            }
             fc.setDialogTitle("Select file");
             if (fc.showDialog(null, "Open") == JFileChooser.APPROVE_OPTION) {
                 file = fc.getSelectedFile();
