@@ -74,11 +74,12 @@ public class VerQuery extends AbstractTool implements Tool {
 
     int cntSyncNodes = 0;
     int index = 0;
+    static int q3flag = 0;
     JFrame mainFrame = null;
     JComboBox mdcombob = null;
     static JComboBox q1combob = null;
     static JComboBox q2combob = null;
-    JComboBox qscombob = null;
+    static JComboBox qscombob = null;
     static String level = "";
     static String display = "";
     static String highlight = "";
@@ -150,6 +151,7 @@ public class VerQuery extends AbstractTool implements Tool {
             String queue2 = "";
             String rstr1 = "";
             String rstr2 = "";
+            q3flag = 0;
             if (index == 2) {
                 queue1 = (String) q1combob.getSelectedItem();
                 rstr1 = queue1;
@@ -157,6 +159,11 @@ public class VerQuery extends AbstractTool implements Tool {
                 queue2 = (String) q2combob.getSelectedItem();
                 rstr2 = queue2;
                 rstr2 = rstr2.replace(rstr2.charAt(0), Character.toUpperCase(rstr2.charAt(0)));
+            } else if (index == 3) {
+                q3flag = 1;
+                queue1 = (String) qscombob.getSelectedItem();
+                rstr1 = queue1;
+                rstr1 = rstr1.replace(rstr1.charAt(0), Character.toUpperCase(rstr1.charAt(0)));
             }
             qarg = "-q" + index + rstr1 + rstr2;
         }
@@ -459,7 +466,30 @@ public class VerQuery extends AbstractTool implements Tool {
         }
     }
 
-    void createPanel(List<JPanel> panellist, Xmas cnet, int grnum) {
+    void populateQslists(VisualXmas vnet, Xmas cnet) {
+        int cnt = 0;
+        SyncComponent sc;
+        VisualSyncComponent vsc;
+
+        if (cnt > 1) {
+            qscombob.addItem("ALL");
+        } else {
+            qscombob.addItem("NONE");
+        }
+        for (Node node: vnet.getNodes()) {
+            if (node instanceof VisualSyncComponent) {
+                vsc = (VisualSyncComponent) node;
+                sc = vsc.getReferencedSyncComponent();
+                String rstr;
+                rstr = cnet.getName(sc);
+                rstr = rstr.replace(rstr.charAt(0), Character.toUpperCase(rstr.charAt(0)));
+                qscombob.addItem(rstr);
+                cnt++;
+            }
+        }
+    }
+
+    void createPanel(List<JPanel> panellist, Xmas cnet, VisualXmas vnet, int grnum) {
         int no = 1;
         String typ = null;
         panellist.add(new JPanel());
@@ -512,7 +542,7 @@ public class VerQuery extends AbstractTool implements Tool {
         panellist.add(new JPanel());
         panellist.get(panellist.size() - 1).add(new JLabel(" Synchroniser" + ": "));
         panellist.get(panellist.size() - 1).add(qscombob = new JComboBox());
-        populateQslists(cnet);
+        populateQslists(vnet, cnet);
         panellist.get(panellist.size() - 1).add(jcb = new JCheckBox(""));
         ItemListener itemListener = new ItemListener() {
             @Override
@@ -561,7 +591,7 @@ public class VerQuery extends AbstractTool implements Tool {
         panelmain.add(panela);
 
         jcbn.clear();
-        createPanel(panellist, cnet, grnum);
+        createPanel(panellist, cnet, vnet, grnum);
         for (JPanel plist : panellist) {
             panelmain.add(plist);
         }
@@ -613,7 +643,7 @@ public class VerQuery extends AbstractTool implements Tool {
                             n++;
                             System.out.println(s);
                         }
-                        if (level.equals("advanced")) {
+                        if (level.equals("advanced") && (q3flag == 0)) {
                             System.out.println("LEVEL IS ADVANCED ");
                             File qslFile = XmasSettings.getTempVxmQslFile();
                             processQsl(qslFile.getAbsolutePath());
@@ -623,6 +653,10 @@ public class VerQuery extends AbstractTool implements Tool {
 
                             File queFile = XmasSettings.getTempVxmQueFile();
                             str2 = processQue(queFile.getAbsolutePath());
+                        } else if (level.equals("advanced") && (q3flag == 1)) {
+                            System.out.println("LEVEL IS ADVANCED ");
+                            File equFile = XmasSettings.getTempVxmEquFile();
+                            str = processEq(equFile.getAbsolutePath());
                         } else if (level.equals("normal") && test == 2) {
                             System.out.println("LEVEL IS NORMAL ");
                             File locFile = XmasSettings.getTempVxmLocFile();
@@ -630,8 +664,10 @@ public class VerQuery extends AbstractTool implements Tool {
                         }
                         if (test > 0) {
                             if (display.equals("popup")) {
-                                if (!level.equals("advanced")) {
+                                if (!level.equals("advanced") && (q3flag == 0)) {
                                     SolutionsDialog1 solutionsDialog = new SolutionsDialog1(test, str2);
+                                } else if (level.equals("advanced") && (q3flag == 1)) {
+                                    SolutionsDialog2 solutionsDialog = new SolutionsDialog2(test, str);
                                 } else {
                                     SolutionsDialog2 solutionsDialog = new SolutionsDialog2(test, str2);
                                 }

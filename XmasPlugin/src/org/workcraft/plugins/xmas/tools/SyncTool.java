@@ -193,9 +193,9 @@ public class SyncTool implements Tool {
                 String rstr3;
                 rstr3 = s.name3;
                 rstr3 = rstr3.replace(rstr3.charAt(0), Character.toUpperCase(rstr3.charAt(0)));
-                //System.out.println("//gensync2s " + str + " " + s.g1 + " " + s.g2 + " " + s.typ);
+                System.out.println("//gensync2s " + str + " " + s.g1 + " " + s.g2 + " " + s.typ);
                 writerS.println("//gensync2s " + str + " " + s.g1 + " " + s.g2 + " " + s.typ);
-                //System.out.println(rstr2 + " "+ s.l1 + " " + rstr3 + " " + s.l2 + " " + "0");
+                System.out.println(rstr2 + " " + s.l1 + " " + rstr3 + " " + s.l2 + " " + "0");
                 writerS.println(rstr2 + " " + s.l1 + " " + rstr3 + " " + s.l2 + " " + "0");
             }
         } catch (FileNotFoundException e) {
@@ -308,8 +308,8 @@ public class SyncTool implements Tool {
     public List<Integer> grnums = new ArrayList<>();
     public List<Integer> grnums1 = new ArrayList<>();
     public List<Integer> grnums2 = new ArrayList<>();
-    public List<String> slist1;
-    public List<String> slist2;
+    public List<String> slist1 = new ArrayList<>();
+    public List<String> slist2 = new ArrayList<>();
 
     public void run(WorkspaceEntry we) {
         System.out.println("Running tests");
@@ -325,8 +325,13 @@ public class SyncTool implements Tool {
         Xmas cnet = (Xmas) we.getModelEntry().getMathModel();
 
         cntSyncnodes = 0;
-        if (loaded == 0) slist1 = new ArrayList<String>();
-        if (loaded == 0) slist2 = new ArrayList<String>();
+        if (loaded == 0) {
+            grnums = new ArrayList<Integer>();
+            grnums1 = new ArrayList<Integer>();
+            grnums2 = new ArrayList<Integer>();
+            slist2 = new ArrayList<String>();
+            slist2 = new ArrayList<String>();
+        }
         VisualSourceComponent src1 = null;
         VisualQueueComponent qu1 = null;
         VisualSyncComponent syn1 = null;
@@ -546,6 +551,32 @@ public class SyncTool implements Tool {
                                 }
                             }
                         }
+                    } else if (vn1 instanceof VisualForkComponent) {
+                        VisualForkComponent vsc = (VisualForkComponent) vn1;
+                        ForkComponent sc = vsc.getReferencedForkComponent();
+                        contacts2 = sc.getOutputs();
+                        ccontacts = sc.getOutputs();
+                        for (XmasContact node : contacts2) {
+                            //System.out.println("Switch grno = " + sc.getGr());
+                            //System.out.println("InputContact =" + cnet.getName(sc));
+                        }
+                        for (XmasContact contactNode2: ccontacts) {
+                            int cno = 0;  //???
+                            for (Connection c: cnet.getConnections(contactNode2)) {
+                                if (c.getSecond() instanceof XmasContact) {
+                                    Node cpNode = c.getSecond().getParent();
+                                    cno++;
+                                    //System.out.println("  Found contact = " + cnet.getName(cp_node));
+                                    if (cnet.getName(cpNode).contains("Sync") || cnet.getName(cpNode).contains("sync")) {
+                                        if (checksynclist(cnet.getName(cpNode)) == 1) {
+                                            synclist.add(new Sync(cnet.getName(cpNode), cnet.getName(sc), "", "o", sc.getGr(), cno));
+                                        } else {
+                                            storeSname2(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), 0);
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     } else if (vn1 instanceof VisualJoinComponent) {                   //Join
                         VisualJoinComponent vsc = (VisualJoinComponent) vn1;
                         JoinComponent sc = vsc.getReferencedJoinComponent();
@@ -632,8 +663,9 @@ public class SyncTool implements Tool {
                             //System.out.println("Merge grno = " + sc.getGr());
                             //System.out.println("OutputContact =" + cnet.getName(sc));
                         }
+                        int cno = 0;
+                        int cno2 = 0;
                         for (XmasContact contactNode2 : ccontacts) {
-                            int cno = 0;
                             for (Connection c : cnet.getConnections(contactNode2)) {
                                 if (c.getSecond() instanceof XmasContact) {
                                     Node cpNode = c.getFirst().getParent();
@@ -642,9 +674,19 @@ public class SyncTool implements Tool {
                                     if (cnet.getName(cpNode).contains("Sync") || cnet.getName(cpNode).contains("sync")) {
                                         if (checksynclist(cnet.getName(cpNode)) == 1) {
                                             //System.out.println("  Found contact__ = merge ");
-                                            synclist.add(new Sync(cnet.getName(cpNode), "", cnet.getName(sc), "i", sc.getGr(), cno));
+                                            if (cno == 1) {
+                                                cno2 = 2;
+                                            } else if (cno == 2) {
+                                                cno2 = 1;
+                                            }
+                                            synclist.add(new Sync(cnet.getName(cpNode), "", cnet.getName(sc), "i", sc.getGr(), cno2));
                                         } else {
-                                            storeSname(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), cno);
+                                            if (cno == 1) {
+                                                cno2 = 2;
+                                            } else if (cno == 2) {
+                                                cno2 = 1;
+                                            }
+                                            storeSname(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), cno2);
                                         }
                                     }
                                 }
@@ -670,6 +712,47 @@ public class SyncTool implements Tool {
                                         } else {
                                             storeSname(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), 0);
                                         }
+                                    }
+                                }
+                            }
+                        }
+                    } else if (vn2 instanceof VisualJoinComponent) {
+                        VisualJoinComponent vsc = (VisualJoinComponent) vn2;
+                        JoinComponent sc = vsc.getReferencedJoinComponent();
+                        contacts2 = sc.getInputs();
+                        ccontacts = sc.getInputs();
+                        for (XmasContact node : contacts2) {
+                            //System.out.println("Join grno = " + sc.getGr());
+                            //System.out.println("OutputContact =" + cnet.getName(sc));
+                        }
+                        int cno = 0;
+                        int cno2 = 0;
+                        for (XmasContact contactNode2: ccontacts) {
+                            for (Connection c: cnet.getConnections(contactNode2)) {
+                                if (c.getSecond() instanceof XmasContact) {
+                                    Node cpNode = c.getFirst().getParent();
+                                    cno++;
+                                    //System.out.println("  Found contact__ = " + cnet.getName(cpNode));
+                                    if (cnet.getName(cpNode).contains("Sync") || cnet.getName(cpNode).contains("sync")) {
+                                        if (checksynclist(cnet.getName(cpNode)) == 1) {
+                                            //System.out.println("  Found 1st sync contact__ = join ");
+                                            if (cno == 1) {
+                                                cno2 = 2;
+                                            } else if (cno == 2) {
+                                                cno2 = 1;
+                                            }
+                                            synclist.add(new Sync(cnet.getName(cpNode), "", cnet.getName(sc), "i", sc.getGr(), cno2));
+                                        } else {
+                                            //System.out.println("  Found 2nd sync contact__ = join cno==" + cno);
+                                            if (cno == 1) {
+                                                cno2 = 2;
+                                            } else if (cno == 2) {
+                                                cno2 = 1;
+                                            }
+                                            storeSname(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), cno2);
+                                        }
+                                    } else {
+                                        //System.out.println("  Found other sync contact__ = ??? " + cnet.getName(cpNode) + "cno==" + cno);
                                     }
                                 }
                             }
@@ -826,11 +909,12 @@ public class SyncTool implements Tool {
                         VisualQueueComponent vsc = (VisualQueueComponent) node;
                         QueueComponent sc = vsc.getReferencedQueueComponent();
                         int qno = sc.getGr();
+                        //System.out.println("grnumssize== " + grnums1.size() + "qno == " + qno);
                         for (int i = 0; i < grnums1.size(); i++) {
                             if (grnums1.get(i) == qno) gp = slist1.get(i);
                             if (grnums2.get(i) == qno) gp = slist2.get(i);
                         }
-                        //System.out.println("Found Source = " + " no= " + no + " grp= " + grnums.get(no) + " sl= " + gp);
+                        //System.out.println("Found Queue = " + " no= " + no + " grp= " + grnums.get(no) + " sl= " + gp);
                         //sc.setGp(Integer.parseInt(gp));
                         sc.setGp(gp);
                     }
@@ -839,10 +923,8 @@ public class SyncTool implements Tool {
             }
 
         });
-
         mainFrame.pack();
         mainFrame.setVisible(true);
-
     }
 
 }
