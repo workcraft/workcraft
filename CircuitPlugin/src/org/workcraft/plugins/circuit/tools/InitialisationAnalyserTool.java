@@ -47,7 +47,7 @@ public class InitialisationAnalyserTool extends AbstractTool {
 
     @Override
     public String getLabel() {
-        return "Initialisisation analiser";
+        return "Initialisation analyser";
     }
 
     @Override
