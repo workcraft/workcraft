@@ -125,7 +125,7 @@ public class PGMinerImportTool implements Tool {
                 if (dialog.getExtractConcurrency()) {
                     PGMinerTask task = new PGMinerTask(inputFile, dialog.getSplit());
 
-                    PGMinerResultHandler result = new PGMinerResultHandler((VisualCPOG) we.getModelEntry().getVisualModel(), we, false, task.getOutputFile(inputFile));
+                    PGMinerResultHandler result = new PGMinerResultHandler((VisualCPOG) we.getModelEntry().getVisualModel(), we, false);
                     framework.getTaskManager().queue(task, "PGMiner", result);
                 } else {
                     Scanner k;
