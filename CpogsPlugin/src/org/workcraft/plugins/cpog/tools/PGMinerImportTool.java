@@ -1,8 +1,6 @@
 package org.workcraft.plugins.cpog.tools;
 
 import java.io.File;
-import java.io.PrintStream;
-import java.util.HashSet;
 import java.util.Scanner;
 
 import org.workcraft.Framework;
@@ -45,67 +43,8 @@ public class PGMinerImportTool implements Tool {
             return null;
         }
 
-        if (!dialog.getExtractConcurrency() || dialog.getSplit()) {
-            return new File(dialog.getFilePath());
-        }
 
-        try {
-            File inputFile = File.createTempFile("input", ".tr");
-            int c = 0;
-            File originalFile = new File(dialog.getFilePath());
-            Scanner k = new Scanner(originalFile);
-            while (k.hasNextLine()) {
-                c++;
-                k.nextLine();
-            }
-            k.close();
-
-            k = new Scanner(originalFile);
-            String[] lines = new String[c];
-
-            c = 0;
-            while (k.hasNext()) {
-                lines[c] = k.nextLine();
-                c++;
-            }
-            k.close();
-
-            HashSet<String> visitedEvents;
-            int i = 0;
-            String[] newLines = new String[lines.length];
-            for (String line : lines) {
-                String[] events = line.split(" ");
-                line = "";
-                visitedEvents = new HashSet<>();
-                for (String event : events) {
-                    if (visitedEvents.contains(event)) {
-                        int d = 1;
-                        while (visitedEvents.contains(event + "_" + d)) {
-                            d++;
-                        }
-                        event = event + "_" + d;
-                    }
-                    if (!line.isEmpty()) {
-                        line = line + " ";
-                    }
-                    line = line + event;
-                    visitedEvents.add(event);
-                }
-                newLines[i] = line;
-                i++;
-            }
-
-            PrintStream expressions = new PrintStream(inputFile);
-
-            for (String line : newLines) {
-                expressions.println(line);
-            }
-            expressions.close();
-            return inputFile;
-        } catch (Exception e) {
-            return null;
-        }
-
+        return new File(dialog.getFilePath());
     }
 
     @Override
