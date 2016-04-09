@@ -1,11 +1,7 @@
 package org.workcraft.plugins.cpog.tasks;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.workcraft.plugins.cpog.CpogSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
@@ -14,7 +10,6 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
-import org.workcraft.util.FileUtils;
 import org.workcraft.util.ToolUtils;
 
 public class PGMinerTask implements Task<ExternalProcessResult> {
@@ -35,33 +30,23 @@ public class PGMinerTask implements Task<ExternalProcessResult> {
             String toolName = ToolUtils.getAbsoluteCommandPath(CpogSettings.getPgminerCommand());
             command.add(toolName);
 
-            if (split) {
-                command.add("-split");
-            }
             command.add(inputFile.getAbsolutePath());
+
+            if (split) {
+                command.add("-s");
+            }
 
             //Call PGMiner
             ExternalProcessTask task = new ExternalProcessTask(command, new File("."));
             SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
-
             Result<? extends ExternalProcessResult> result = task.run(mon);
 
             if (result.getOutcome() != Outcome.FINISHED) {
-
                 return result;
-            }
-            Map<String, byte[]> outputFiles = new HashMap<>();
-            try {
-                File outputFile = getOutputFile(inputFile);
-                if (outputFile.exists()) {
-                    outputFiles.put("output.cpog", FileUtils.readAllBytes(outputFile));
-                }
-            } catch (IOException e) {
-                return new Result<ExternalProcessResult>(e);
             }
 
             ExternalProcessResult retVal = result.getReturnValue();
-            ExternalProcessResult finalResult = new ExternalProcessResult(retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), outputFiles);
+            ExternalProcessResult finalResult = new ExternalProcessResult(retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), null);
             if (retVal.getReturnCode() == 0) {
                 return Result.finished(finalResult);
             } else {
@@ -72,21 +57,6 @@ public class PGMinerTask implements Task<ExternalProcessResult> {
         }
 
         return null;
-    }
-
-    public File getOutputFile(File inputFile) {
-
-
-        String filePath = inputFile.getAbsolutePath();
-
-        int index = filePath.lastIndexOf('/');
-        String fileName = filePath.substring(index + 1);
-        String suffix = fileName.substring(fileName.indexOf('.'));
-        fileName = fileName.replace(suffix, "") + ".cpog";
-        filePath = filePath.substring(0, index + 1);
-        File outputFile = new File(filePath + fileName);
-
-        return outputFile;
     }
 
 

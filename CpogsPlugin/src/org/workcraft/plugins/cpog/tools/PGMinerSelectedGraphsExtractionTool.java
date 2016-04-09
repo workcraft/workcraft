@@ -32,13 +32,11 @@ public class PGMinerSelectedGraphsExtractionTool implements Tool {
     }
 
     public File getInputFile(WorkspaceEntry we) {
-        File inputFile = null;
         try {
             VisualCPOG visualCpog = (VisualCPOG) we.getModelEntry().getVisualModel();
             String allGraphs = CpogParsingTool.getExpressionFromGraph(visualCpog);
             ArrayList<String> tempGraphs = new ArrayList<>();
             ArrayList<String> graphs = new ArrayList<>();
-            inputFile = File.createTempFile("input", ".tr");
 
             int i = allGraphs.indexOf(" + ");
             while (i > -1) {
@@ -49,6 +47,8 @@ public class PGMinerSelectedGraphsExtractionTool implements Tool {
             allGraphs = allGraphs.replaceAll(" -> ", " ");
 
             String[] graphList = allGraphs.split("\n");
+
+            allGraphs = "";
 
             for (String g : graphList) tempGraphs.add(g);
 
@@ -68,17 +68,21 @@ public class PGMinerSelectedGraphsExtractionTool implements Tool {
                 graphs.add(graph);
             }
 
+            File inputFile = File.createTempFile("input", ".tr");
             PrintStream expressions = new PrintStream(inputFile);
 
-            for (String graph : graphs) {
+            for (String graph: graphs) {
                 expressions.println(graph);
             }
 
             expressions.close();
 
+            return inputFile;
+
         } catch (IOException exception) {
             exception.printStackTrace();
         } catch (ArrayIndexOutOfBoundsException e2) {
+
             JOptionPane.showMessageDialog(null,
                     "Error: No scenarios have been selected",
                     "Error",
@@ -86,19 +90,17 @@ public class PGMinerSelectedGraphsExtractionTool implements Tool {
             throw e2;
         }
 
-        return inputFile;
+        return null;
     }
 
     public void run(WorkspaceEntry we) {
 
         try {
 
-            File inputFile = getInputFile(we);
-            if (inputFile == null) return;
-            PGMinerTask task = new PGMinerTask(inputFile, false);
+            PGMinerTask task = new PGMinerTask(getInputFile(we), false);
 
             final Framework framework = Framework.getInstance();
-            PGMinerResultHandler result = new PGMinerResultHandler((VisualCPOG) we.getModelEntry().getVisualModel(), we, true, task.getOutputFile(inputFile));
+            PGMinerResultHandler result = new PGMinerResultHandler((VisualCPOG) we.getModelEntry().getVisualModel(), we, true);
             framework.getTaskManager().queue(task, "PGMiner", result);
         } catch (ArrayIndexOutOfBoundsException e) {
 
