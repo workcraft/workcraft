@@ -276,9 +276,13 @@ public abstract class VisualComponent extends VisualTransformableNode implements
         return Alignment.LEFT;
     }
 
-    protected void cacheLabelRenderedText(DrawRequest r) {
-        if (labelRenderedText.isDifferent(getLabel(), labelFont, getLabelPositioning(), getLabelOffset())) {
-            labelRenderedText = new RenderedText(getLabel(), labelFont, getLabelPositioning(), getLabelOffset());
+    public void cacheLabelRenderedText(DrawRequest r) {
+        cacheLabelRenderedText(getLabel(), labelFont, getLabelPositioning(), getLabelOffset());
+    }
+
+    protected void cacheLabelRenderedText(String text, Font font, Positioning positioning, Point2D offset) {
+        if (labelRenderedText.isDifferent(text, font, positioning, offset)) {
+            labelRenderedText = new RenderedText(text, font, positioning, offset);
         }
     }
 
@@ -292,7 +296,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
         }
     }
 
-    protected void drawPivot(DrawRequest r) {
+    public void drawPivot(DrawRequest r) {
         Graphics2D g = r.getGraphics();
         float s2 = (float) CommonVisualSettings.getPivotSize() / 2;
         Path2D p = new Path2D.Double();

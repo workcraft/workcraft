@@ -18,7 +18,7 @@ import org.workcraft.observation.NodesAddingEvent;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Finite State Machine")
-@CustomTools(ToolsProvider.class)
+@CustomTools(FsmToolsProvider.class)
 public class VisualFsm extends AbstractVisualModel {
 
     public VisualFsm(Fsm model) {

@@ -1,4 +1,4 @@
-package org.workcraft.plugins.fst;
+package org.workcraft.plugins.graph;
 
 import java.util.ArrayList;
 
@@ -9,20 +9,18 @@ import org.workcraft.gui.graph.tools.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.gui.graph.tools.SelectionTool;
-import org.workcraft.plugins.fsm.State;
-import org.workcraft.plugins.fst.tools.FstSimulationTool;
 
-public class ToolsProvider implements CustomToolsProvider {
+public class GraphToolsProvider implements CustomToolsProvider {
 
     @Override
     public Iterable<GraphEditorTool> getTools() {
         ArrayList<GraphEditorTool> result = new ArrayList<>();
 
-        result.add(new SelectionTool(false));
+        result.add(new SelectionTool());
         result.add(new CommentGeneratorTool());
         result.add(new ConnectionTool(false, true));
-        result.add(new NodeGeneratorTool(new DefaultNodeGenerator(State.class)));
-        result.add(new FstSimulationTool());
+        result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Vertex.class)));
         return result;
     }
+
 }

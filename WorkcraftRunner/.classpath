@@ -20,5 +20,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/PcompPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/PunfPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/PetrifyExtraPlugin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/PogPlugin"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

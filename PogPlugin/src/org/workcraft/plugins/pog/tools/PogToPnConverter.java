@@ -1,0 +1,168 @@
+package org.workcraft.plugins.pog.tools;
+
+import java.awt.geom.Point2D;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Map;
+import java.util.Map.Entry;
+
+import org.workcraft.dom.Connection;
+import org.workcraft.dom.Node;
+import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
+import org.workcraft.dom.references.NameManager;
+import org.workcraft.dom.visual.ConnectionHelper;
+import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.plugins.petri.VisualPetriNet;
+import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.plugins.petri.VisualTransition;
+import org.workcraft.plugins.pog.Pog;
+import org.workcraft.plugins.pog.Symbol;
+import org.workcraft.plugins.pog.VisualPog;
+import org.workcraft.plugins.pog.VisualVertex;
+import org.workcraft.util.Hierarchy;
+
+public class PogToPnConverter {
+    private final VisualPog srcModel;
+    private final VisualPetriNet dstModel;
+
+    private final Map<VisualConnection, VisualPlace> arcToPlaceMap;
+    private final Map<VisualVertex, VisualTransition> vertexToTransitionMap;
+    private final Map<String, String> refToSymbolMap;
+
+    public PogToPnConverter(VisualPog srcModel, VisualPetriNet dstModel) {
+        this.srcModel = srcModel;
+        this.dstModel = dstModel;
+        arcToPlaceMap = convertArcs();
+        vertexToTransitionMap = convertVertices();
+        refToSymbolMap = cacheLabels();
+        try {
+            connect();
+            connectTerminals();
+        } catch (InvalidConnectionException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private Map<String, String> cacheLabels() {
+        Map<String, String> result = new HashMap<>();
+        for (Entry<VisualVertex, VisualTransition> entry: vertexToTransitionMap.entrySet()) {
+            VisualVertex vertex = entry.getKey();
+            VisualTransition transition = entry.getValue();
+            Symbol symbol = vertex.getReferencedVertex().getSymbol();
+            String dstName = dstModel.getMathName(transition);
+            String srcName = (symbol == null) ? "" : srcModel.getMathName(symbol);
+            result.put(dstName, srcName);
+        }
+        return result;
+    }
+
+    private Map<VisualConnection, VisualPlace> convertArcs() {
+        Map<VisualConnection, VisualPlace> result = new HashMap<>();
+        for (VisualConnection connection: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualConnection.class)) {
+            String name = srcModel.getMathModel().getNodeReference(connection.getReferencedConnection());
+            VisualPlace place = dstModel.createPlace(name, null);
+            place.setPosition(connection.getMiddleSegmentCenterPoint());
+            place.setForegroundColor(connection.getColor());
+            place.getReferencedPlace().setTokens(0);
+            place.setTokenColor(connection.getColor());
+            result.put(connection, place);
+        }
+        return result;
+    }
+
+    private Map<VisualVertex, VisualTransition> convertVertices() {
+        Map<VisualVertex, VisualTransition> result = new HashMap<>();
+        HierarchicalUniqueNameReferenceManager refManager = (HierarchicalUniqueNameReferenceManager) dstModel.getPetriNet().getReferenceManager();
+        NameManager nameManagerer = refManager.getNameManager(null);
+        for (VisualVertex vertex: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualVertex.class)) {
+            Symbol symbol = vertex.getReferencedVertex().getSymbol();
+            String symbolName = (symbol == null) ? Pog.EPSILON_SERIALISATION : srcModel.getMathName(symbol);
+            String name = nameManagerer.getDerivedName(null, symbolName);
+            VisualTransition transition = dstModel.createTransition(name, null);
+            transition.copyPosition(vertex);
+            transition.copyStyle(vertex);
+            if (symbol != null) {
+                transition.setLabel(symbolName);
+            }
+            result.put(vertex, transition);
+        }
+        return result;
+    }
+
+    private void connect() throws InvalidConnectionException {
+        for (VisualVertex vertex: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualVertex.class)) {
+            VisualTransition transition = vertexToTransitionMap.get(vertex);
+            if (transition == null) continue;
+            for (Connection srcConnection: srcModel.getConnections(vertex)) {
+                if (srcConnection instanceof VisualConnection) {
+                    VisualConnection arc = (VisualConnection) srcConnection;
+                    VisualPlace place = arcToPlaceMap.get(arc);
+                    if (place == null) continue;
+                    Point2D splitPoint = arc.getSplitPoint();
+                    if (arc.getFirst() == vertex) {
+                        VisualConnection dstConnection = dstModel.connect(transition, place);
+                        dstConnection.copyStyle(arc);
+                        LinkedList<Point2D> prefixLocationsInRootSpace = ConnectionHelper.getPrefixControlPoints(arc, splitPoint);
+                        ConnectionHelper.addControlPoints(dstConnection, prefixLocationsInRootSpace);
+                    } else {
+                        VisualConnection dstConnection = dstModel.connect(place, transition);
+                        dstConnection.copyStyle(arc);
+                        LinkedList<Point2D> suffixLocationsInRootSpace = ConnectionHelper.getSuffixControlPoints(arc, splitPoint);
+                        ConnectionHelper.addControlPoints(dstConnection, suffixLocationsInRootSpace);
+                    }
+                }
+            }
+        }
+    }
+
+    private void connectTerminals() throws InvalidConnectionException {
+        for (VisualVertex vertex: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualVertex.class)) {
+            VisualTransition transition = vertexToTransitionMap.get(vertex);
+            if (transition == null) continue;
+            if (srcModel.getPreset(vertex).isEmpty()) {
+                VisualPlace place = dstModel.createPlace(null, null);
+                place.setPosition(new Point2D.Double(vertex.getX() - 1.0, vertex.getY()));
+                place.getReferencedPlace().setTokens(1);
+                dstModel.connect(place, transition);
+            }
+            if (srcModel.getPostset(vertex).isEmpty()) {
+                VisualPlace place = dstModel.createPlace(null, null);
+                place.setPosition(new Point2D.Double(vertex.getX() + 1.0, vertex.getY()));
+                place.getReferencedPlace().setTokens(0);
+                dstModel.connect(transition, place);
+            }
+        }
+    }
+
+    public VisualPog getSrcModel() {
+        return srcModel;
+    }
+
+    public VisualPetriNet getDstModel() {
+        return dstModel;
+    }
+
+    public VisualPlace getRelatedPlace(VisualConnection arc) {
+        return arcToPlaceMap.get(arc);
+    }
+
+    public VisualTransition getRelatedTransition(VisualVertex vertex) {
+        return vertexToTransitionMap.get(vertex);
+    }
+
+    public boolean isRelated(Node highLevelNode, Node node) {
+        boolean result = false;
+        if (highLevelNode instanceof VisualVertex) {
+            result = node == getRelatedTransition((VisualVertex) highLevelNode);
+        } else if (highLevelNode instanceof VisualConnection) {
+            result = node == getRelatedPlace((VisualConnection) highLevelNode);
+        }
+        return result;
+    }
+
+    public String getSymbol(String ref) {
+        return refToSymbolMap.get(ref);
+    }
+
+}

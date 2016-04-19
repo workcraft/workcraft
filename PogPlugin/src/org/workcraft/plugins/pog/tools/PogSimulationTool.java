@@ -1,11 +1,10 @@
-package org.workcraft.plugins.fsm.tools;
+package org.workcraft.plugins.pog.tools;
 
 import java.awt.Color;
 import java.awt.geom.Point2D;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
@@ -15,24 +14,19 @@ import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.plugins.fsm.Fsm;
-import org.workcraft.plugins.fsm.State;
-import org.workcraft.plugins.fsm.VisualEvent;
-import org.workcraft.plugins.fsm.VisualFsm;
-import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.plugins.petri.PetriNet;
-import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPetriNet;
-import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.petri.tools.PetriNetSimulationTool;
+import org.workcraft.plugins.pog.VisualPog;
+import org.workcraft.plugins.pog.VisualVertex;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.util.Func;
 
-public class FsmSimulationTool extends PetriNetSimulationTool {
+public class PogSimulationTool extends PetriNetSimulationTool {
 
-    private FsmToPnConverter generator;
+    private PogToPnConverter generator;
 
     @Override
     public void activated(final GraphEditor editor) {
@@ -46,7 +40,7 @@ public class FsmSimulationTool extends PetriNetSimulationTool {
         if (ref != null) {
             label = generator.getSymbol(ref);
             if (label == "") {
-                label = Character.toString(VisualEvent.EPSILON_SYMBOL);
+                label = Character.toString(VisualVertex.EPSILON_SYMBOL);
             }
         }
         if (label == null) {
@@ -57,30 +51,15 @@ public class FsmSimulationTool extends PetriNetSimulationTool {
 
     @Override
     public VisualModel getUnderlyingModel(VisualModel model) {
-        final VisualFsm fsm = (VisualFsm) model;
+        final VisualPog pog = (VisualPog) model;
         final VisualPetriNet pn = new VisualPetriNet(new PetriNet());
-        generator = new FsmToPnConverter(fsm, pn);
+        generator = new PogToPnConverter(pog, pn);
         return generator.getDstModel();
     }
 
     @Override
     public void applyInitState(final GraphEditor editor) {
-        if ((savedState == null) || savedState.isEmpty()) {
-            return;
-        }
-        MathModel model = editor.getModel().getMathModel();
-        if (model instanceof Fsm) {
-            editor.getWorkspaceEntry().saveMemento();
-            Fsm fsm = (Fsm) model;
-            for (State state: fsm.getStates()) {
-                String ref = fsm.getNodeReference(state);
-                Node node = net.getNodeByReference(ref);
-                if (node instanceof Place) {
-                    boolean isInitial = ((Place) node).getTokens() > 0;
-                    state.setInitial(isInitial);
-                }
-            }
-        }
+        // Not applicable to this model
     }
 
     @Override
@@ -100,11 +79,12 @@ public class FsmSimulationTool extends PetriNetSimulationTool {
         }
     }
 
+    @Override
     protected boolean isContainerExcited(Container container) {
         if (excitedContainers.containsKey(container)) return excitedContainers.get(container);
         boolean ret = false;
         for (Node node: container.getChildren()) {
-            if (node instanceof VisualEvent) {
+            if (node instanceof VisualVertex) {
                 ret = ret || (getExcitedTransitionOfNode(node) != null);
             }
             if (node instanceof Container) {
@@ -125,7 +105,7 @@ public class FsmSimulationTool extends PetriNetSimulationTool {
                 final boolean isExcited = getExcitedTransitionOfNode(node) != null;
                 final boolean isHighlighted = generator.isRelated(node, transition);
 
-                if (node instanceof VisualEvent) {
+                if (node instanceof VisualVertex) {
                     return new Decoration() {
                         @Override
                         public Color getColorisation() {
@@ -138,21 +118,6 @@ public class FsmSimulationTool extends PetriNetSimulationTool {
                         public Color getBackground() {
                             if (isHighlighted) return CommonSimulationSettings.getEnabledForegroundColor();
                             if (isExcited) return CommonSimulationSettings.getEnabledBackgroundColor();
-                            return null;
-                        }
-                    };
-                }
-
-                if (node instanceof VisualState) {
-                    final VisualPlace p = generator.getRelatedPlace((VisualState) node);
-                    return new Decoration() {
-                        @Override
-                        public Color getColorisation() {
-                            return null;
-                        }
-                        @Override
-                        public Color getBackground() {
-                            if (p.getReferencedPlace().getTokens() > 0) return CommonSimulationSettings.getEnabledForegroundColor();
                             return null;
                         }
                     };
@@ -184,8 +149,8 @@ public class FsmSimulationTool extends PetriNetSimulationTool {
     }
 
     private Transition getExcitedTransitionOfNode(Node node) {
-        if ((node != null) && (node instanceof VisualEvent)) {
-            VisualTransition vTransition = generator.getRelatedTransition((VisualEvent) node);
+        if ((node != null) && (node instanceof VisualVertex)) {
+            VisualTransition vTransition = generator.getRelatedTransition((VisualVertex) node);
             if (vTransition != null) {
                 Transition transition = vTransition.getReferencedTransition();
                 if (net.isEnabled(transition)) {
