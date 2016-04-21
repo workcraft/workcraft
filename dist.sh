@@ -43,7 +43,7 @@ if [ ! -e "$core_dir/build" ]; then
     err "You need to run './gradlew assemble' first"
 fi
 
-if [ -z "$@" ] || [ "$@" == "all" ]; then
+if [ -z "$@" ] || [ "$@" = "all" ]; then
     platforms="$allplatforms"
 else
     platforms="$@"
