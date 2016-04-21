@@ -21,6 +21,8 @@
 
 package org.workcraft.plugins.pog;
 
+import java.util.Collection;
+
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
@@ -80,6 +82,10 @@ public class VisualPog extends AbstractVisualModel {
         Container container = Hierarchy.getNearestContainer(v1, v2);
         container.add(vConnection);
         return vConnection;
+    }
+
+    public Collection<VisualVertex> getVisualVertex() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualVertex.class);
     }
 
 }

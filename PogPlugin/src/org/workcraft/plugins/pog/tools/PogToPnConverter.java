@@ -194,9 +194,15 @@ public class PogToPnConverter {
     public boolean isRelated(Node highLevelNode, Node node) {
         boolean result = false;
         if (highLevelNode instanceof VisualVertex) {
-            result = node == getRelatedTransition((VisualVertex) highLevelNode);
+            VisualTransition transiton = getRelatedTransition((VisualVertex) highLevelNode);
+            if (transiton != null) {
+                result = (node == transiton) || (node == transiton.getReferencedTransition());
+            }
         } else if (highLevelNode instanceof VisualConnection) {
-            result = node == getRelatedPlace((VisualConnection) highLevelNode);
+            VisualPlace place = getRelatedPlace((VisualConnection) highLevelNode);
+            if (place != null) {
+                result = (node == place) || (node == place.getReferencedPlace());
+            }
         }
         return result;
     }

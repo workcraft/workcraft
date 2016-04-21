@@ -48,7 +48,7 @@ public class MixUtils {
             x /= count;
             y /= count;
         }
-        return count > 0 ? new Point2D.Double(x / count, y /count) : null;
+        return (count > 0) ? new Point2D.Double(x / count, y / count) : null;
     }
 
 }

@@ -9,6 +9,7 @@ import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
@@ -17,6 +18,7 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPetriNet;
+import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.petri.tools.PetriNetSimulationTool;
 import org.workcraft.plugins.pog.VisualPog;
@@ -80,72 +82,86 @@ public class PogSimulationTool extends PetriNetSimulationTool {
     }
 
     @Override
-    protected boolean isContainerExcited(Container container) {
-        if (excitedContainers.containsKey(container)) return excitedContainers.get(container);
-        boolean ret = false;
-        for (Node node: container.getChildren()) {
-            if (node instanceof VisualVertex) {
-                ret = ret || (getExcitedTransitionOfNode(node) != null);
-            }
-            if (node instanceof Container) {
-                ret = ret || isContainerExcited((Container) node);
-            }
-            if (ret) break;
-        }
-        excitedContainers.put(container, ret);
-        return ret;
-    }
-
-    @Override
     public Decorator getDecorator(final GraphEditor editor) {
         return new Decorator() {
             @Override
             public Decoration getDecoration(Node node) {
-                Node transition = getTraceCurrentNode();
-                final boolean isExcited = getExcitedTransitionOfNode(node) != null;
-                final boolean isHighlighted = generator.isRelated(node, transition);
-
+                if (generator == null) return null;
                 if (node instanceof VisualVertex) {
-                    return new Decoration() {
-                        @Override
-                        public Color getColorisation() {
-                            if (isHighlighted) return CommonSimulationSettings.getEnabledBackgroundColor();
-                            if (isExcited) return CommonSimulationSettings.getEnabledForegroundColor();
-                            return null;
-                        }
-
-                        @Override
-                        public Color getBackground() {
-                            if (isHighlighted) return CommonSimulationSettings.getEnabledForegroundColor();
-                            if (isExcited) return CommonSimulationSettings.getEnabledBackgroundColor();
-                            return null;
-                        }
-                    };
-                }
-
-                if (node instanceof VisualPage || node instanceof VisualGroup) {
-                    if (node.getParent() == null) return null; // do not work with the root node
-                    final boolean ret = isContainerExcited((Container) node);
-                    return new ContainerDecoration() {
-                        @Override
-                        public Color getColorisation() {
-                            return null;
-                        }
-                        @Override
-                        public Color getBackground() {
-                            return null;
-                        }
-                        @Override
-                        public boolean isContainerExcited() {
-                            return ret;
-                        }
-                    };
-
+                    return getVertexDecoration((VisualVertex) node);
+                } else if (node instanceof VisualConnection) {
+                    return getConnectionDecorator((VisualConnection) node);
+                } else if (node instanceof VisualPage || node instanceof VisualGroup) {
+                    return getContainerDecoration((Container) node);
                 }
 
                 return null;
             }
         };
+    }
+
+    private Decoration getVertexDecoration(VisualVertex vertex) {
+        Node transition = getTraceCurrentNode();
+        final boolean isHighlighted = generator.isRelated(vertex, transition);
+        final boolean isExcited = isVertexExcited(vertex);
+        return new Decoration() {
+            @Override
+            public Color getColorisation() {
+                if (isHighlighted) return CommonSimulationSettings.getEnabledBackgroundColor();
+                if (isExcited) return CommonSimulationSettings.getEnabledForegroundColor();
+                return null;
+            }
+
+            @Override
+            public Color getBackground() {
+                if (isHighlighted) return CommonSimulationSettings.getEnabledForegroundColor();
+                if (isExcited) return CommonSimulationSettings.getEnabledBackgroundColor();
+                return null;
+            }
+        };
+    }
+
+    protected Decoration getConnectionDecorator(VisualConnection node) {
+        if (!isConnectionExcited((VisualConnection) node)) return null;
+        return new Decoration() {
+            @Override
+            public Color getColorisation() {
+                return CommonSimulationSettings.getEnabledForegroundColor();
+            }
+
+            @Override
+            public Color getBackground() {
+                return CommonSimulationSettings.getEnabledBackgroundColor();
+            }
+        };
+    }
+
+    private Decoration getContainerDecoration(Container container) {
+        final boolean isExcited = isContainerExcited(container);
+        return new ContainerDecoration() {
+            @Override
+            public Color getColorisation() {
+                return null;
+            }
+            @Override
+            public Color getBackground() {
+                return null;
+            }
+            @Override
+            public boolean isContainerExcited() {
+                return isExcited;
+            }
+        };
+    }
+
+    private boolean isConnectionExcited(VisualConnection connection) {
+        VisualPlace place = generator.getRelatedPlace(connection);
+        return (place == null) ? false : place.getReferencedPlace().getTokens() != 0;
+    }
+
+    private boolean isVertexExcited(VisualVertex vertex) {
+        VisualTransition transition = generator.getRelatedTransition(vertex);
+        return (transition == null) ? false : net.isEnabled(transition.getReferencedTransition());
     }
 
     private Transition getExcitedTransitionOfNode(Node node) {

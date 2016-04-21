@@ -1,5 +1,6 @@
 package org.workcraft.plugins.fsm.tools;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -7,13 +8,22 @@ import java.util.Queue;
 
 import javax.swing.JOptionPane;
 
+import org.workcraft.Framework;
 import org.workcraft.VerificationTool;
+import org.workcraft.dom.references.ReferenceHelper;
+import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.ToolboxPanel;
+import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.State;
+import org.workcraft.plugins.fsm.VisualFsm;
+import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class DeadlockCheckerTool extends VerificationTool {
+
+    private static final String TITLE = "Verification result";
 
     @Override
     public String getDisplayName() {
@@ -27,11 +37,13 @@ public class DeadlockCheckerTool extends VerificationTool {
 
     @Override
     public void run(WorkspaceEntry we) {
+        final Framework framework = Framework.getInstance();
+        final MainWindow mainWindow = framework.getMainWindow();
         final Fsm fsm = (Fsm) we.getModelEntry().getMathModel();
         HashSet<State> deadlockStates = checkDeadlock(fsm);
         if (deadlockStates.isEmpty()) {
-            JOptionPane.showMessageDialog(null,    "The model is deadlock-free.",
-                    "Verification result", JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(mainWindow, "The model is deadlock-free.",
+                    TITLE, JOptionPane.INFORMATION_MESSAGE);
         } else {
             HashSet<State> finalDeadlockStates = new HashSet<>();
             for (State state: deadlockStates) {
@@ -42,15 +54,30 @@ public class DeadlockCheckerTool extends VerificationTool {
             deadlockStates.removeAll(finalDeadlockStates);
             String message = "The model has a deadlock.";
             if (!deadlockStates.isEmpty()) {
-                String stateStr = FsmUtils.statesToString(fsm, deadlockStates);
+                String stateStr = ReferenceHelper.getNodesAsString(fsm, (Collection) deadlockStates);
                 message += "\n\nNon-final deadlock states: \n" + stateStr;
             }
             if (!finalDeadlockStates.isEmpty()) {
-                String stateStr = FsmUtils.statesToString(fsm, finalDeadlockStates);
-                message += "\n\nFinal deadlockstates: \n" + stateStr;
+                String stateStr = ReferenceHelper.getNodesAsString(fsm, (Collection) finalDeadlockStates);
+                message += "\n\nFinal deadlock states: \n" + stateStr;
             }
-            JOptionPane.showMessageDialog(null,    message,
-                    "Verification result", JOptionPane.WARNING_MESSAGE);
+            message += "\n\nSelect deadlock states?\n";
+            if (JOptionPane.showConfirmDialog(mainWindow, message,
+                    TITLE, JOptionPane.WARNING_MESSAGE + JOptionPane.YES_NO_OPTION) == 0) {
+
+                final ToolboxPanel toolbox = mainWindow.getCurrentToolbox();
+                final SelectionTool selectionTool = toolbox.getToolInstance(SelectionTool.class);
+                toolbox.selectTool(selectionTool);
+
+                VisualFsm visualFsm = (VisualFsm) we.getModelEntry().getVisualModel();
+                visualFsm.selectNone();
+                for (VisualState visualState: visualFsm.getVisualStates()) {
+                    State state = visualState.getReferencedState();
+                    if (deadlockStates.contains(state)) {
+                        visualFsm.addToSelection(visualState);
+                    }
+                }
+            }
         }
     }
 

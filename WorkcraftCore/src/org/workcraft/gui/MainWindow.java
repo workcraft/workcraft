@@ -1255,6 +1255,16 @@ public class MainWindow extends JFrame {
         return editorInFocus;
     }
 
+    public ToolboxPanel getToolbox(final WorkspaceEntry we) {
+        GraphEditorPanel editor = getEditor(we);
+        return (editor == null) ? null : editor.getToolBox();
+    }
+
+    public ToolboxPanel getCurrentToolbox() {
+        GraphEditorPanel editor = getCurrentEditor();
+        return (editor == null) ? null : editor.getToolBox();
+    }
+
     public WorkspaceEntry getCurrentWorkspaceEntry() {
         return getCurrentEditor().getWorkspaceEntry();
     }
