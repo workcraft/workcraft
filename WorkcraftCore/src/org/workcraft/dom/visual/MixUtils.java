@@ -1,8 +1,8 @@
 package org.workcraft.dom.visual;
 
+import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.LinkedList;
 
 public class MixUtils {
 
@@ -27,14 +27,28 @@ public class MixUtils {
         return result;
     }
 
-    public static double average(LinkedList<Double> sizes) {
+    public static double average(Collection<Double> sizes) {
         double sum = 0.0;
-        int count = 0;
+        int count = sizes.size();
         for (double size: sizes) {
             sum += size;
-            count++;
         }
         return count > 0 ? sum / count : 0.0;
+    }
+
+    public static Point2D middlePoint(Collection<Point2D> points) {
+        double x = 0.0;
+        double y = 0.0;
+        int count = points.size();
+        for (Point2D point: points) {
+            x += point.getX();
+            y += point.getY();
+        }
+        if (count > 0) {
+            x /= count;
+            y /= count;
+        }
+        return count > 0 ? new Point2D.Double(x / count, y /count) : null;
     }
 
 }

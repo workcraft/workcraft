@@ -11,6 +11,8 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.visual.ConnectionHelper;
+import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.VisualPetriNet;
@@ -116,19 +118,57 @@ public class PogToPnConverter {
         }
     }
 
+    private Point2D getBestPredPosition(VisualModel model, VisualTransformableNode node) {
+        double dx = 0.0;
+        double dy = 0.0;
+        int count = 0;
+        for (Connection connection: model.getConnections(node)) {
+            Node second = connection.getSecond();
+            if ((second != node) && (connection instanceof VisualConnection)) {
+                Point2D pos = ((VisualConnection) connection).getMiddleSegmentCenterPoint();
+                dx += pos.getX() - node.getX();
+                dy += pos.getY() - node.getY();
+                count++;
+            }
+        }
+        double x = (count > 0) ? node.getX() - dx / count : node.getX() + 5.0;
+        double y = (count > 0) ? node.getY() - dy / count : node.getY();
+        return new Point2D.Double(x, y);
+    }
+
+    private Point2D getBestSuccPosition(VisualModel model, VisualTransformableNode node) {
+        double dx = 0.0;
+        double dy = 0.0;
+        int count = 0;
+        for (Connection connection: model.getConnections(node)) {
+            Node first = connection.getFirst();
+            if ((first != node) && (connection instanceof VisualConnection)) {
+                Point2D pos = ((VisualConnection) connection).getMiddleSegmentCenterPoint();
+                dx += node.getX() - pos.getX();
+                dy += node.getY() - pos.getY();
+                count++;
+            }
+        }
+        double x = (count > 0) ? node.getX() + dx / count : node.getX() - 5.0;
+        double y = (count > 0) ? node.getY() + dy / count : node.getY();
+        return new Point2D.Double(x, y);
+    }
+
     private void connectTerminals() throws InvalidConnectionException {
         for (VisualVertex vertex: Hierarchy.getDescendantsOfType(srcModel.getRoot(), VisualVertex.class)) {
             VisualTransition transition = vertexToTransitionMap.get(vertex);
             if (transition == null) continue;
             if (srcModel.getPreset(vertex).isEmpty()) {
                 VisualPlace place = dstModel.createPlace(null, null);
-                place.setPosition(new Point2D.Double(vertex.getX() - 1.0, vertex.getY()));
+                Point2D pos = getBestPredPosition(srcModel, vertex);
+                place.setPosition(pos);
                 place.getReferencedPlace().setTokens(1);
                 dstModel.connect(place, transition);
             }
             if (srcModel.getPostset(vertex).isEmpty()) {
                 VisualPlace place = dstModel.createPlace(null, null);
-                place.setPosition(new Point2D.Double(vertex.getX() + 1.0, vertex.getY()));
+                Point2D pos = getBestSuccPosition(srcModel, vertex);
+                place.setPosition(pos);
                 place.getReferencedPlace().setTokens(0);
                 dstModel.connect(transition, place);
             }
