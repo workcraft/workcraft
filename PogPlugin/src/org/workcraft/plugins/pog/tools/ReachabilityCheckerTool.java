@@ -11,13 +11,12 @@ import org.workcraft.Framework;
 import org.workcraft.VerificationTool;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.references.ReferenceHelper;
+import org.workcraft.dom.visual.SelectionHelper;
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.ToolboxPanel;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.pog.Pog;
 import org.workcraft.plugins.pog.Vertex;
-import org.workcraft.plugins.pog.VisualPog;
-import org.workcraft.plugins.pog.VisualVertex;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class ReachabilityCheckerTool extends VerificationTool {
@@ -49,18 +48,9 @@ public class ReachabilityCheckerTool extends VerificationTool {
                     "The graph has unreachable vertices:\n" + refStr + "\n\nSelect unreachable vertices?",
                     TITLE, JOptionPane.WARNING_MESSAGE + JOptionPane.YES_NO_OPTION) == 0) {
 
-                final ToolboxPanel toolbox = mainWindow.getCurrentToolbox();
-                final SelectionTool selectionTool = toolbox.getToolInstance(SelectionTool.class);
-                toolbox.selectTool(selectionTool);
-
-                VisualPog visualPog = (VisualPog) we.getModelEntry().getVisualModel();
-                visualPog.selectNone();
-                for (VisualVertex visualVertex: visualPog.getVisualVertex()) {
-                    Vertex vertex = visualVertex.getReferencedVertex();
-                    if (unreachable.contains(vertex)) {
-                        visualPog.addToSelection(visualVertex);
-                    }
-                }
+                VisualModel visualPog = we.getModelEntry().getVisualModel();
+                mainWindow.getToolbox(we).selectToolInstance(SelectionTool.class);
+                SelectionHelper.selectByReferencedComponents(visualPog, (HashSet) unreachable);
             }
         }
     }

@@ -11,14 +11,13 @@ import javax.swing.JOptionPane;
 import org.workcraft.Framework;
 import org.workcraft.VerificationTool;
 import org.workcraft.dom.references.ReferenceHelper;
+import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.ToolboxPanel;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.VisualFsm;
-import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class ReversibilityCheckerTool extends VerificationTool {
@@ -50,18 +49,9 @@ public class ReversibilityCheckerTool extends VerificationTool {
                     "The model has irreversible states:\n" + refStr + "\n\nSelect irreversible states?\n",
                     TITLE, JOptionPane.WARNING_MESSAGE + JOptionPane.YES_NO_OPTION) == 0) {
 
-                final ToolboxPanel toolbox = mainWindow.getCurrentToolbox();
-                final SelectionTool selectionTool = toolbox.getToolInstance(SelectionTool.class);
-                toolbox.selectTool(selectionTool);
-
                 VisualFsm visualFsm = (VisualFsm) we.getModelEntry().getVisualModel();
-                visualFsm.selectNone();
-                for (VisualState visualState: visualFsm.getVisualStates()) {
-                    State state = visualState.getReferencedState();
-                    if (irreversibleStates.contains(state)) {
-                        visualFsm.addToSelection(visualState);
-                    }
-                }
+                mainWindow.getToolbox(we).selectToolInstance(SelectionTool.class);
+                SelectionHelper.selectByReferencedComponents(visualFsm, (HashSet) irreversibleStates);
             }
         }
     }
