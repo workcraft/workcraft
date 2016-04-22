@@ -354,7 +354,7 @@ public class SONSimulationTool extends PetriNetSimulationTool {
             public void mouseReleased(MouseEvent arg0) {
             }
         });
-        traceTable.setDefaultRenderer(Object.class,    new TraceTableCellRendererImplementation());
+        traceTable.setDefaultRenderer(Object.class, new TraceTableCellRendererImplementation());
     }
 
     @Override
@@ -750,7 +750,9 @@ public class SONSimulationTool extends PetriNetSimulationTool {
         return reachabilitySimulationTask(editor, causalPredecessors, markingRefs);
     }
 
-    private Map<PlaceNode, Boolean> reachabilitySimulationTask(final GraphEditor editor, Collection<TransitionNode> causalPredecessors,  Collection<String> markingRefs) {
+    private Map<PlaceNode, Boolean> reachabilitySimulationTask(final GraphEditor editor,
+            Collection<TransitionNode> causalPredecessors, Collection<String> markingRefs) {
+
         Step enabled = null;
         enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
 

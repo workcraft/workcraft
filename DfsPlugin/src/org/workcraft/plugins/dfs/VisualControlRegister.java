@@ -71,10 +71,10 @@ public class VisualControlRegister extends VisualBinaryRegister {
         double tr = (size - strokeWidth1 - strokeWidth1) / 6;
 
         Path2D shape = new Path2D.Double();
-        shape.moveTo(-w2,  0);
+        shape.moveTo(-w2, 0);
         shape.lineTo(-w2 + dx - strokeWidth2, -h2);
         shape.lineTo(+w2 - dx + strokeWidth2, -h2);
-        shape.lineTo(+w2,   0);
+        shape.lineTo(+w2, 0);
         shape.lineTo(+w2 - dx + strokeWidth2, +h2);
         shape.lineTo(-w2 + dx - strokeWidth2, +h2);
         shape.closePath();
@@ -193,10 +193,10 @@ public class VisualControlRegister extends VisualBinaryRegister {
         double dx = size / 5 - strokeWidth / 2;
 
         Path2D shape = new Path2D.Double();
-        shape.moveTo(-w2,  0);
+        shape.moveTo(-w2, 0);
         shape.lineTo(-w2 + dx, -h2);
         shape.lineTo(+w2 - dx, -h2);
-        shape.lineTo(+w2,   0);
+        shape.lineTo(+w2, 0);
         shape.lineTo(+w2 - dx, +h2);
         shape.lineTo(-w2 + dx, +h2);
         shape.closePath();

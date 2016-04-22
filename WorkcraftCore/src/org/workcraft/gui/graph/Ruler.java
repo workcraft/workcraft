@@ -108,9 +108,9 @@ public class Ruler implements GridListener {
         }
 
         // corner
-        g.clearRect(shape.x, shape.y,  size, size);
-        g.drawLine(shape.x, shape.y + size,  shape.x + size, shape.y + size);
-        g.drawLine(shape.x + size, shape.y,  shape.x + size, shape.y + size);
+        g.clearRect(shape.x, shape.y, size, size);
+        g.drawLine(shape.x, shape.y + size, shape.x + size, shape.y + size);
+        g.drawLine(shape.x + size, shape.y, shape.x + size, shape.y + size);
     }
 
     /**

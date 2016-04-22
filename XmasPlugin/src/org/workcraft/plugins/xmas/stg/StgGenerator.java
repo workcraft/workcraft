@@ -897,7 +897,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
                     createReplicaReadArcBetweenDoneSignals(i.dn, switchStg.a.dn, 0.0);
                     createReplicaReadArcBetweenDoneSignals(i.dn, switchStg.b.dn, 0.0);
                     createReplicaReadArc(i.rdy.zero, switchStg.a.dn.riseList.get(0), -6.0, 0.0);
-                    createReplicaReadArc(i.rdy.one, switchStg.a.dn.riseList.get(2), -6.0,  0.0);
+                    createReplicaReadArc(i.rdy.one, switchStg.a.dn.riseList.get(2), -6.0, 0.0);
                     createReplicaReadArc(i.rdy.zero, switchStg.b.dn.riseList.get(0), -6.0, 0.0);
                     createReplicaReadArc(i.rdy.one, switchStg.b.dn.riseList.get(2), -6.0, 0.0);
                 }

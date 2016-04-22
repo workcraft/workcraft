@@ -49,7 +49,7 @@ public class ScencoExhaustiveTool implements Tool {
         if (!CpogParsingTool.hasEnoughScenarios(we)) {
             JOptionPane.showMessageDialog(mainWindow, ScencoSolver.MSG_NOT_ENOUGH_SCENARIOS,
                     ScencoSolver.ACCESS_SCENCO_ERROR, JOptionPane.ERROR_MESSAGE);
-        }  else if (CpogParsingTool.hasTooScenarios(we)) {
+        } else if (CpogParsingTool.hasTooScenarios(we)) {
             JOptionPane.showMessageDialog(mainWindow, ScencoSolver.MSG_TOO_MANY_SCENARIOS,
                     ScencoSolver.ACCESS_SCENCO_ERROR, JOptionPane.ERROR_MESSAGE);
         } else {

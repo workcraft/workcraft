@@ -588,6 +588,6 @@ public class VisualModelTests {
     private Collection<Node> boxHitTest(VisualModel model, Rectangle2D.Double rect) {
         Point2D.Double p1 = new Point2D.Double(rect.getMinX(), rect.getMinY());
         Point2D.Double p2 = new Point2D.Double(rect.getMaxX(), rect.getMaxY());
-        return model.boxHitTest(p1,    p2);
+        return model.boxHitTest(p1, p2);
     }
 }

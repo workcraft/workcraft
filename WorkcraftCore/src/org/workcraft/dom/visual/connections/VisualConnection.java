@@ -258,7 +258,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
         }
     }
 
-    public void setVisualConnectionDependencies(VisualNode first,    VisualNode second,
+    public void setVisualConnectionDependencies(VisualNode first, VisualNode second,
             ConnectionGraphic graphic, MathConnection refConnection) {
         if (first == null) {
             throw new NullPointerException("first");
@@ -307,7 +307,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
                 graphic.setDefaultControlPoints();
             }
             children.add(graphic);
-            observableHierarchyImpl.sendNotification(new NodesAddedEvent(this,    getGraphic()));
+            observableHierarchyImpl.sendNotification(new NodesAddedEvent(this, getGraphic()));
             graphic.invalidate();
             observableStateImpl.sendNotification(new PropertyChangedEvent(this, PROPERTY_CONNECTION_TYPE));
         }

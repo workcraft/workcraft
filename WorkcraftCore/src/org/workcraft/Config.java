@@ -214,7 +214,7 @@ public class Config {
             Element e = (Element) nl.item(i);
 
             if (e.getTagName().equals("var")) {
-                set(e.getAttribute("name"),  e.getAttribute("value"));
+                set(e.getAttribute("name"), e.getAttribute("value"));
             } else {
                 if (e.getTagName().equals("group")) {
                     String name = e.getAttribute("name");
@@ -225,7 +225,7 @@ public class Config {
                         }
                         Element e2 = (Element) nl2.item(j);
                         if (e2.getTagName().equals("var")) {
-                            set(name + "." + e2.getAttribute("name"),  e2.getAttribute("value"));
+                            set(name + "." + e2.getAttribute("name"), e2.getAttribute("value"));
                         }
                     }
                 }

@@ -237,7 +237,7 @@ public class SON extends AbstractMathModel {
         }
         for (Block block : this.getBlocks()) {
             setFillColor(block, CommonVisualSettings.getFillColor());
-            setForegroundColor(block,  CommonVisualSettings.getBorderColor());
+            setForegroundColor(block, CommonVisualSettings.getBorderColor());
         }
     }
 
@@ -256,7 +256,7 @@ public class SON extends AbstractMathModel {
         }
         for (Block block : this.getBlocks()) {
             setFillColor(block, CommonVisualSettings.getFillColor());
-            setForegroundColor(block,  CommonVisualSettings.getBorderColor());
+            setForegroundColor(block, CommonVisualSettings.getBorderColor());
         }
     }
 

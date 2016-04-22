@@ -9,7 +9,7 @@ public final class PropertyCombiner implements PropertyDescriptor {
     private final Class<?> type;
     private final Set<PropertyDescriptor> values;
 
-    public PropertyCombiner(String name,    Class<?> type, Set<PropertyDescriptor> values) {
+    public PropertyCombiner(String name, Class<?> type, Set<PropertyDescriptor> values) {
         this.name = name;
         this.type = type;
         this.values = values;

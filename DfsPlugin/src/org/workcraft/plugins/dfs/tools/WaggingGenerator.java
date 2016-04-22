@@ -162,7 +162,7 @@ public class WaggingGenerator {
                 for (Node succ: dfs.getPostset(replicaToOriginalMap.get(cur))) {
                     if (selectedComponents.contains(succ)) continue;
                     Point2D.Double position = new Point2D.Double(cur.getX() / 2 + ((VisualComponent) succ).getX() / 2, cur.getY());
-                    VisualPopRegister pop = createPopRegister(Hierarchy.getNearestContainer(cur, succ),    position);
+                    VisualPopRegister pop = createPopRegister(Hierarchy.getNearestContainer(cur, succ), position);
                     createConnection(cur, pop);
                     createConnection(pop, (VisualComponent) succ);
                     waggingData.popRegisters.add(pop);

@@ -182,7 +182,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
         traceTable = new JTable(new TraceTableModel());
         traceTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         traceTable.setRowHeight(FontHelper.getFontSizeInPixels(traceTable.getFont()));
-        traceTable.setDefaultRenderer(Object.class,    new TraceTableCellRendererImplementation());
+        traceTable.setDefaultRenderer(Object.class, new TraceTableCellRendererImplementation());
 
         tracePane = new JScrollPane();
         tracePane.setViewportView(traceTable);
@@ -728,7 +728,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus,    int row, int column) {
+                boolean isSelected, boolean hasFocus, int row, int column) {
             JLabel result = null;
             label.setBorder(PropertyEditorTable.BORDER_RENDER);
             if ((net != null) && (value instanceof String)) {

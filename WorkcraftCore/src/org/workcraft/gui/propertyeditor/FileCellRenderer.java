@@ -59,7 +59,7 @@ public class FileCellRenderer extends JPanel implements TableCellRenderer {
             if (isSelected) {
                 if (selectedBorder == null) {
                     selectedBorder = BorderFactory.createMatteBorder(
-                            0, 0, 0, 0,    table.getSelectionBackground());
+                            0, 0, 0, 0, table.getSelectionBackground());
                 }
                 setBorder(selectedBorder);
             } else {

@@ -157,7 +157,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
                 if (palette == Palette.GENERATED) {
                     tokenColors = ColorUtils.getHsbPalette(
                             new float[]{0.05f, 0.45f, 0.85f, 0.25f, 0.65f, 0.15f, 0.55f, 0.95f, 0.35f, 0.75f},
-                            new float[]{0.50f},  new float[]{0.7f, 0.5f, 0.3f});
+                            new float[]{0.50f}, new float[]{0.7f, 0.5f, 0.3f});
                 } else {
                     tokenColors = palette.getColors();
                 }

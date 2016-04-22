@@ -24,13 +24,11 @@ public class ReachabilityAlg extends RelationAlgorithm {
     }
 
     //get path between a given initial node and a set of final nodes. (recursion)
-//    private void dfs(LinkedList<Node> visited, Collection<Node> v,  Before before) {
+//    private void dfs(LinkedList<Node> visited, Collection<Node> v, Before before) {
 //        LinkedList<Node> post = getCausalPreset(visited.getLast(), before);
-//
 //        if (v.contains(visited.getLast())) {
 //            pathResult.addAll(visited);
 //        }
-//
 //        // examine post nodes
 //        for (Node node : post) {
 //            if (visited.contains(node)) {
@@ -51,7 +49,6 @@ public class ReachabilityAlg extends RelationAlgorithm {
 //            visited.addLast(node);
 //            dfs(visited, v, before);
 //            visited.removeLast();
-//
 //        }
 //    }
 

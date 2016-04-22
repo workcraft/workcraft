@@ -72,7 +72,7 @@ public class PathAlgorithm {
     }
 
     //get paths between two given nodes. (recursion)
-    public Collection<Path> getPaths(Condition s,  Collection<Condition> v, Collection<Node> nodes) {
+    public Collection<Path> getPaths(Condition s, Collection<Condition> v, Collection<Node> nodes) {
         pathResult.clear();
         LinkedList<Node> visited = new LinkedList<>();
         visited.add(s);

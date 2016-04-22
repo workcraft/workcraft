@@ -141,7 +141,7 @@ public class StgSimulationTool extends PetriNetSimulationTool {
 
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
-                boolean isSelected, boolean hasFocus,    int row, int column) {
+                boolean isSelected, boolean hasFocus, int row, int column) {
             JLabel result = null;
             label.setBorder(PropertyEditorTable.BORDER_RENDER);
             if ((net != null) && (value instanceof String)) {
@@ -170,7 +170,7 @@ public class StgSimulationTool extends PetriNetSimulationTool {
         stateTable = new JTable(new StateTableModel());
         stateTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         stateTable.setRowHeight(FontHelper.getFontSizeInPixels(stateTable.getFont()));
-        stateTable.setDefaultRenderer(Object.class,    new StateTableCellRendererImplementation());
+        stateTable.setDefaultRenderer(Object.class, new StateTableCellRendererImplementation());
         statePane.setViewportView(stateTable);
         traceTable.setDefaultRenderer(Object.class, new TraceTableCellRendererImplementation());
     }
