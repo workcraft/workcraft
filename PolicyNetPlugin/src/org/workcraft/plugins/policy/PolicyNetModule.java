@@ -2,7 +2,6 @@ package org.workcraft.plugins.policy;
 
 import org.workcraft.CompatibilityManager;
 import org.workcraft.Framework;
-import org.workcraft.Initialiser;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Tool;
@@ -35,33 +34,10 @@ public class PolicyNetModule implements Module {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
 
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new PetriNetGeneratorTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new TransitionBundlerTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new CheckDeadlockTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new PetriNetToPolicyNetConverterTool();
-            }
-        });
+        pm.registerClass(Tool.class, PetriNetGeneratorTool.class);
+        pm.registerClass(Tool.class, TransitionBundlerTool.class);
+        pm.registerClass(Tool.class, CheckDeadlockTool.class);
+        pm.registerClass(Tool.class, PetriNetToPolicyNetConverterTool.class);
 
         pm.registerClass(ModelDescriptor.class, PolicyNetDescriptor.class);
         pm.registerClass(XMLSerialiser.class, BundleSerialiser.class);

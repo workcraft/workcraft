@@ -2,7 +2,6 @@ package org.workcraft.plugins.cpog;
 
 import org.workcraft.CompatibilityManager;
 import org.workcraft.Framework;
-import org.workcraft.Initialiser;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Tool;
@@ -71,36 +70,13 @@ public class CpogModule implements Module {
         pm.registerClass(Tool.class, ScencoSequentialTool.class);
         pm.registerClass(Tool.class, ScencoExhaustiveTool.class);
         pm.registerClass(Tool.class, ScencoRandomTool.class);
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new GraphStatisticsTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new CpogToGraphConverterTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new GraphToCpogConverterTool();
-            }
-        });
-
+        pm.registerClass(Tool.class, GraphStatisticsTool.class);
+        pm.registerClass(Tool.class, CpogToGraphConverterTool.class);
+        pm.registerClass(Tool.class, GraphToCpogConverterTool.class);
         pm.registerClass(Tool.class, PGMinerImportTool.class);
-
         pm.registerClass(Tool.class, PGMinerSelectedGraphsExtractionTool.class);
-
         pm.registerClass(Tool.class, AlgebraImportTool.class);
-
         pm.registerClass(Tool.class, AlgebraExpressionFromGraphsTool.class);
-
     }
 
     private void initCompatibilityManager() {

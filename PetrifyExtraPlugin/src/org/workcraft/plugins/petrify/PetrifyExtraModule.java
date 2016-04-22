@@ -11,6 +11,13 @@ import org.workcraft.plugins.petrify.tools.ShowSg;
 
 public class PetrifyExtraModule implements Module {
 
+    private final class ShowBinarySg extends ShowSg {
+        @Override
+        public boolean isBinary() {
+            return true;
+        }
+    }
+
     @Override
     public void init() {
         final Framework framework = Framework.getInstance();
@@ -18,17 +25,12 @@ public class PetrifyExtraModule implements Module {
         pm.registerClass(Exporter.class, AstgExporter.class);
         pm.registerClass(Settings.class, PetrifyExtraUtilitySettings.class);
 
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new ShowSg(false);
-            }
-        });
+        pm.registerClass(Tool.class, ShowSg.class);
 
         pm.registerClass(Tool.class, new Initialiser<Tool>() {
             @Override
             public Tool create() {
-                return new ShowSg(true);
+                return new ShowBinarySg();
             }
         });
     }

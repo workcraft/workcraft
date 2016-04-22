@@ -16,6 +16,13 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class GraphModule implements Module {
 
+    private final class GraphContractorTool extends AbstractContractorTool {
+        @Override
+        public boolean isApplicableTo(WorkspaceEntry we) {
+            return we.getModelEntry().getMathModel() instanceof Graph;
+        }
+    }
+
     private final class VertexMergerTool extends AbstractMergerTool {
         @Override
         public String getDisplayName() {
@@ -53,12 +60,7 @@ public class GraphModule implements Module {
         pm.registerClass(Tool.class, new Initialiser<Tool>() {
             @Override
             public Tool create() {
-                return new AbstractContractorTool() {
-                    @Override
-                    public boolean isApplicableTo(WorkspaceEntry we) {
-                        return we.getModelEntry().getMathModel() instanceof Graph;
-                    }
-                };
+                return new GraphContractorTool();
             }
         });
 
