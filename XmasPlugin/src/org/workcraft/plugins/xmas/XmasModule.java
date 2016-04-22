@@ -20,7 +20,7 @@ public class XmasModule implements Module {
 
     @Override
     public String getDescription() {
-        return "xMAS circuit model";
+        return "xMAS Circuit";
     }
 
     @Override

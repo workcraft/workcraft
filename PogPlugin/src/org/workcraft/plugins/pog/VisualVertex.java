@@ -73,11 +73,11 @@ public class VisualVertex extends VisualComponent {
     public VisualVertex(Vertex vertex) {
         super(vertex);
         addPropertyDeclarations();
-        removePropertyDeclarationByName("Name positioning");
-        removePropertyDeclarationByName("Name color");
+        //removePropertyDeclarationByName("Name positioning");
+        //removePropertyDeclarationByName("Name color");
         removePropertyDeclarationByName("Label");
         renamePropertyDeclarationByName("Label positioning", "Symbol positioning");
-        removePropertyDeclarationByName("Label color");
+        renamePropertyDeclarationByName("Label color", "Symbol color");
     }
 
     private void addPropertyDeclarations() {
@@ -128,6 +128,7 @@ public class VisualVertex extends VisualComponent {
         g.setStroke(new BasicStroke((float) strokeWidth));
         g.draw(shape);
         drawLabelInLocalSpace(r);
+        drawNameInLocalSpace(r);
     }
 
     @Override

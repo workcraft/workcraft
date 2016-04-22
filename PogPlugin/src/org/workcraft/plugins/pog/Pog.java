@@ -132,7 +132,7 @@ public class Pog extends AbstractMathModel {
             properties.addSorted(symbolDescriptors);
         } else if (node instanceof Vertex) {
             Vertex vertex = (Vertex) node;
-            properties.removeByName("Name");
+            // properties.removeByName("Name");
             properties.add(new VertexSymbolPropertyDescriptor(this, vertex));
         }
         return properties;
