@@ -9,7 +9,7 @@ import org.workcraft.gui.graph.tools.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.policy.tools.SelectionTool;
+import org.workcraft.plugins.policy.tools.PolicySelectionTool;
 import org.workcraft.plugins.policy.tools.PolicySimulationTool;
 
 public class PolicyNetToolProvider implements CustomToolsProvider {
@@ -18,7 +18,7 @@ public class PolicyNetToolProvider implements CustomToolsProvider {
     public Iterable<GraphEditorTool> getTools() {
         ArrayList<GraphEditorTool> result = new ArrayList<>();
 
-        result.add(new SelectionTool(false));
+        result.add(new PolicySelectionTool(false));
         result.add(new CommentGeneratorTool());
         result.add(new ConnectionTool());
 

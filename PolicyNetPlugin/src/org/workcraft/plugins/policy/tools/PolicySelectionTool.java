@@ -18,13 +18,13 @@ import org.workcraft.plugins.policy.VisualBundledTransition;
 import org.workcraft.plugins.policy.VisualPolicyNet;
 import org.workcraft.util.GUI;
 
-public class SelectionTool extends PetriNetSelectionTool {
+public class PolicySelectionTool extends PetriNetSelectionTool {
 
-    public SelectionTool() {
+    public PolicySelectionTool() {
         super();
     }
 
-    public SelectionTool(boolean enablePages) {
+    public PolicySelectionTool(boolean enablePages) {
         super(false);
     }
 

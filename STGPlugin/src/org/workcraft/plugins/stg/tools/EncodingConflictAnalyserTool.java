@@ -184,6 +184,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 
     @Override
     public void activated(final GraphEditor editor) {
+        editor.getWorkspaceEntry().setCanModify(true);
         stg = (VisualSTG) editor.getModel();
         super.activated(editor);
         editor.getWorkspaceEntry().setCanModify(false);
