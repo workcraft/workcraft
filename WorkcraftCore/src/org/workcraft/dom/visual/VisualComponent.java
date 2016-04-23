@@ -99,7 +99,6 @@ public abstract class VisualComponent extends VisualTransformableNode implements
         if (hasNameProperties) {
             addNamePropertyDeclarations();
         }
-
     }
 
     private void addColorPropertyDeclarations() {

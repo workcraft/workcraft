@@ -22,6 +22,7 @@
 package org.workcraft.plugins.dtd;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
@@ -34,6 +35,9 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
+import org.workcraft.observation.StateEvent;
+import org.workcraft.observation.StateSupervisor;
+import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Digital Timing Diagram")
@@ -53,6 +57,52 @@ public class VisualDtd extends AbstractVisualModel {
                 throw new RuntimeException(e);
             }
         }
+
+        new StateSupervisor() {
+            @Override
+            public void handleEvent(StateEvent e) {
+                if (e instanceof TransformChangedEvent) {
+                    TransformChangedEvent tce = (TransformChangedEvent) e;
+                    if (tce.getSender() instanceof VisualTransition) {
+                        VisualTransition transition = (VisualTransition) tce.getSender();
+                        VisualSignal signal = getVisualSignal(transition);
+                        if (signal != null) {
+                            if (signal.getY() != transition.getY()) {
+                                transition.setY(signal.getY());
+                            }
+                        }
+                    } else if (tce.getSender() instanceof VisualSignal) {
+                        VisualSignal signal = (VisualSignal) tce.getSender();
+                        for (VisualTransition transition: getVisualTransitions(signal)) {
+                            if (transition.getY() != signal.getY()) {
+                                transition.setY(signal.getY());
+                            }
+                        }
+                    }
+                }
+            }
+        }.attach(getRoot());
+    }
+
+    protected VisualSignal getVisualSignal(VisualTransition transition) {
+        for (VisualSignal signal: getVisualSignals()) {
+            Signal refSignal = transition.getReferencedTransition().getSignal();
+            if (signal.getReferencedSignal() == refSignal) {
+                return signal;
+            }
+        }
+        return null;
+    }
+
+    protected Collection<VisualTransition> getVisualTransitions(VisualSignal signal) {
+        HashSet<VisualTransition> result = new HashSet<>();
+        Signal refSignal = signal.getReferencedSignal();
+        for (VisualTransition transition: getVisualTransitions()) {
+            if (transition.getReferencedTransition().getSignal() == refSignal) {
+                result.add(transition);
+            }
+        }
+        return result;
     }
 
     @Override
@@ -84,7 +134,11 @@ public class VisualDtd extends AbstractVisualModel {
         return vConnection;
     }
 
-    public Collection<VisualTransition> getVisualTransition() {
+    public Collection<VisualSignal> getVisualSignals() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualSignal.class);
+    }
+
+    public Collection<VisualTransition> getVisualTransitions() {
         return Hierarchy.getDescendantsOfType(getRoot(), VisualTransition.class);
     }
 
