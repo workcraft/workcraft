@@ -1,5 +1,7 @@
 package org.workcraft.plugins.dtd;
 
+import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateSupervisor;
 import org.workcraft.observation.TransformChangedEvent;
@@ -17,36 +19,52 @@ public final class DtdStateSupervisor extends StateSupervisor {
         if (e instanceof TransformChangedEvent) {
             TransformChangedEvent tce = (TransformChangedEvent) e;
             if (tce.getSender() instanceof VisualTransition) {
-                handleTransitionTransformation((VisualTransition) tce.getSender());
+                VisualTransition transition = (VisualTransition) tce.getSender();
+                handleTransitionTransformation(transition);
+                handleComponentTransformation(transition);
             } else if (tce.getSender() instanceof VisualSignal) {
-                handleSignalTransformation((VisualSignal) tce.getSender());
+                VisualSignal signal = (VisualSignal) tce.getSender();
+                handleSignalTransformation(signal);
+                handleComponentTransformation(signal);
             }
         }
     }
 
     private void handleTransitionTransformation(VisualTransition transition) {
         VisualSignal signal = dtd.getVisualSignal(transition);
-        if (signal != null) {
-            if (signal.getY() != transition.getY()) {
+        if ((signal != null) && (signal.getY() != transition.getY())) {
+            transition.setY(signal.getY());
+        }
+    }
+
+    private void handleSignalTransformation(VisualSignal signal) {
+        for (VisualTransition transition: dtd.getVisualTransitions(signal)) {
+            if (transition.getY() != signal.getY()) {
                 transition.setY(signal.getY());
             }
         }
     }
 
-    private void handleSignalTransformation(VisualSignal signal) {
-        double xMin = signal.getX();
-        boolean first = true;
-        for (VisualTransition transition: dtd.getVisualTransitions(signal)) {
-            if (transition.getY() != signal.getY()) {
-                transition.setY(signal.getY());
-            }
-            if (first || (transition.getX() < xMin)) {
-                xMin = transition.getX() - 1.0;
-                first = false;
+    private void handleComponentTransformation(VisualComponent component) {
+        VisualComponent minComponent = null;
+        for (Node predNode: dtd.getPreset(component)) {
+            VisualComponent predComponent = (VisualComponent) predNode;
+            if ((minComponent == null) || (minComponent.getX() < predComponent.getX())) {
+                minComponent = predComponent;
             }
         }
-        if (signal.getX() > xMin) {
-            signal.setX(xMin);
+        VisualComponent maxComponent = null;
+        for (Node succNode: dtd.getPostset(component)) {
+            VisualComponent succComponent = (VisualComponent) succNode;
+            if ((maxComponent == null) || (maxComponent.getX() > succComponent.getX())) {
+                maxComponent = succComponent;
+            }
+        }
+        if ((minComponent != null) && (component.getX() < minComponent.getX())) {
+            component.setX(minComponent.getX());
+        }
+        if ((maxComponent != null) && (component.getX() > maxComponent.getX())) {
+            component.setX(maxComponent.getX());
         }
     }
 

@@ -4,8 +4,10 @@ import java.awt.event.MouseEvent;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.SelectionTool;
+import org.workcraft.plugins.dtd.DtdUtils;
 import org.workcraft.plugins.dtd.VisualDtd;
 import org.workcraft.plugins.dtd.VisualSignal;
 
@@ -23,8 +25,13 @@ public class DtdSelectionTool extends SelectionTool {
             Node node = HitMan.hitTestForSelection(e.getPosition(), model);
             if ((node instanceof VisualSignal) && (e.getClickCount() > 1)) {
                 VisualSignal signal = (VisualSignal) node;
-                model.appendVisualTransition(signal);
-                processed = true;
+                processed = model.appendSignalEvent(signal).isValid();
+            }
+            if ((node instanceof VisualConnection) && (e.getClickCount() > 1)) {
+                VisualConnection connection = (VisualConnection) node;
+                if (DtdUtils.isLevelConnection(connection)) {
+                    processed = model.insetrSignalPulse(connection).isValid();
+                }
             }
         }
 
