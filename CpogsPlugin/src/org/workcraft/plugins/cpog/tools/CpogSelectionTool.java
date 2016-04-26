@@ -85,7 +85,7 @@ public class CpogSelectionTool extends SelectionTool {
     private class RenderTypeChangedHandler extends StateSupervisor {
         private VisualCPOG visualCpog;
 
-        public RenderTypeChangedHandler(VisualCPOG visualCpog) {
+        RenderTypeChangedHandler(VisualCPOG visualCpog) {
             this.visualCpog = visualCpog;
         }
 

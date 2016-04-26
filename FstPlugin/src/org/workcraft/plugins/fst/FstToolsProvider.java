@@ -20,7 +20,7 @@ public class FstToolsProvider implements CustomToolsProvider {
 
         result.add(new SelectionTool(false));
         result.add(new CommentGeneratorTool());
-        result.add(new ConnectionTool(false, true));
+        result.add(new ConnectionTool(false, true, true));
         result.add(new NodeGeneratorTool(new DefaultNodeGenerator(State.class)));
         result.add(new FstSimulationTool());
         return result;

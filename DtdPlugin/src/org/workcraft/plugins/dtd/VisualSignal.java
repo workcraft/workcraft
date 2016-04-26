@@ -26,11 +26,14 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
+import java.awt.geom.Path2D;
+import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
+import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.VisualComponent;
@@ -51,21 +54,31 @@ public class VisualSignal extends VisualComponent {
     }
 
     public Shape getShape() {
-        double xy = -size / 2 + strokeWidth / 2;
-        double wh = size - strokeWidth;
-        return new Rectangle2D.Double(xy, xy, wh, wh);
+        Path2D shape = new Path2D.Double();
+        double h = 0.2 * size;
+        double w2 = 0.05 * size;
+        // One
+        shape.moveTo(-w2, -0.5 * size + w2);
+        shape.lineTo(0.0, -0.5 * size);
+        shape.lineTo(0.0, -0.5 * size + h);
+        shape.moveTo(-w2, -0.5 * size + h);
+        shape.lineTo(+w2, -0.5 * size + h);
+        // Zero
+        shape.moveTo(-w2, 0.5 * size);
+        shape.lineTo(+w2, 0.5 * size);
+        shape.lineTo(+w2, 0.5 * size - h);
+        shape.lineTo(-w2, 0.5 * size - h);
+        shape.closePath();
+        return shape;
     }
 
     @Override
     public void draw(DrawRequest r) {
         Graphics2D g = r.getGraphics();
         Color colorisation = r.getDecoration().getColorisation();
-        Color background = r.getDecoration().getBackground();
         Shape shape = getShape();
-        g.setColor(Coloriser.colorise(getFillColor(), background));
-        g.fill(shape);
         g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-        g.setStroke(new BasicStroke((float) strokeWidth));
+        g.setStroke(new BasicStroke(0.1f * (float) strokeWidth));
         g.draw(shape);
         drawLabelInLocalSpace(r);
         drawNameInLocalSpace(r);
@@ -73,12 +86,17 @@ public class VisualSignal extends VisualComponent {
 
     @Override
     public Rectangle2D getInternalBoundingBoxInLocalSpace() {
-        return getShape().getBounds2D();
+        return BoundingBoxHelper.expand(getShape().getBounds2D(), 0.1 * size, 0.0);
+    }
+
+    @Override
+    public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
+        return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
     }
 
     @Override
     public Positioning getNamePositioning() {
-        return Positioning.CENTER;
+        return Positioning.LEFT;
     }
 
     public Signal getReferencedSignal() {

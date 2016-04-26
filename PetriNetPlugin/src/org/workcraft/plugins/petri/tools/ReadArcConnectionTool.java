@@ -20,7 +20,7 @@ import org.workcraft.util.GUI;
 public class ReadArcConnectionTool extends ConnectionTool {
 
     public ReadArcConnectionTool() {
-        super(true, false);
+        super(true, false, true);
     }
 
     @Override

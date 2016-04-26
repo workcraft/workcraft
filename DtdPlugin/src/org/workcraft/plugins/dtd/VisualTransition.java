@@ -53,20 +53,22 @@ public class VisualTransition extends VisualComponent {
 
     public Shape getShape() {
         Path2D shape = new Path2D.Double();
-        shape.moveTo(0.0, -0.5 * size);
-        shape.lineTo(0.0, 0.5 * size);
         if (getReferencedTransition() != null) {
             switch (getReferencedTransition().getDirection()) {
             case PLUS:
-                shape.moveTo(-0.1 * size, -0.4 * size);
-                shape.lineTo(0.0, -0.5 * size);
-                shape.lineTo(+0.1 * size, -0.4 * size);
+                shape.moveTo(0.0, 0.5 * size);
+                shape.lineTo(0.0, -0.4 * size + strokeWidth);
+                shape.moveTo(-strokeWidth, -0.4 * size + strokeWidth);
+                shape.lineTo(0.0, -0.5 * size + strokeWidth);
+                shape.lineTo(+strokeWidth * size, -0.4 * size + strokeWidth);
                 shape.closePath();
                 break;
             case MINUS:
-                shape.moveTo(-0.1 * size, 0.4 * size);
-                shape.lineTo(0.0, 0.5 * size);
-                shape.lineTo(+0.1 * size, 0.4 * size);
+                shape.moveTo(0.0, -0.5 * size);
+                shape.lineTo(0.0, 0.4 * size - strokeWidth);
+                shape.moveTo(-strokeWidth, 0.4 * size - strokeWidth);
+                shape.lineTo(0.0, 0.5 * size - strokeWidth);
+                shape.lineTo(+strokeWidth, 0.4 * size - strokeWidth);
                 shape.closePath();
                 break;
             default:

@@ -8,7 +8,7 @@ import org.workcraft.gui.graph.tools.CustomToolsProvider;
 import org.workcraft.gui.graph.tools.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
-import org.workcraft.gui.graph.tools.SelectionTool;
+import org.workcraft.plugins.dtd.tools.DtdSelectionTool;
 
 public class DtdToolsProvider implements CustomToolsProvider {
 
@@ -16,11 +16,10 @@ public class DtdToolsProvider implements CustomToolsProvider {
     public Iterable<GraphEditorTool> getTools() {
         ArrayList<GraphEditorTool> result = new ArrayList<>();
 
-        result.add(new SelectionTool(false));
+        result.add(new DtdSelectionTool());
         result.add(new CommentGeneratorTool());
-        result.add(new ConnectionTool());
+        result.add(new ConnectionTool(false, true, false));
         result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Signal.class)));
-        result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Transition.class)));
         return result;
     }
 

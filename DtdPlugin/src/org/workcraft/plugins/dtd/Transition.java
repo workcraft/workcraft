@@ -35,6 +35,10 @@ public class Transition extends Vertex {
         public String toString() {
             return name;
         }
+
+        public Direction reverse() {
+            return (this == PLUS) ? MINUS : PLUS;
+        }
     }
 
     private Direction direction = Direction.PLUS;

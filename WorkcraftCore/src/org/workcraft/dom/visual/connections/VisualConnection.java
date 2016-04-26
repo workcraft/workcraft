@@ -574,47 +574,48 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
             setConnectionType(srcConnection.getConnectionType());
             setColor(srcConnection.getColor());
             setLineWidth(srcConnection.getLineWidth());
+            setScaleMode(srcConnection.getScaleMode());
+            setArrow(srcConnection.hasArrow());
             setArrowLength(srcConnection.getArrowLength());
             setArrowWidth(srcConnection.getArrowWidth());
             setBubble(srcConnection.hasBubble());
             setBubbleSize(srcConnection.getBubbleSize());
-            setScaleMode(srcConnection.getScaleMode());
         }
     }
 
     @Override
     public void mixStyle(Stylable... srcs) {
         super.mixStyle(srcs);
-        boolean dstHasBubble = false;
-        boolean dstHasArrow = false;
         LinkedList<ConnectionType> connectionTypes = new LinkedList<>();
         LinkedList<Color> colors = new LinkedList<>();
         LinkedList<Double> lineWidths = new LinkedList<>();
+        LinkedList<ScaleMode> scaleModes = new LinkedList<>();
+        boolean dstHasArrow = false;
         LinkedList<Double> arrowLengths = new LinkedList<>();
         LinkedList<Double> arrowWidths = new LinkedList<>();
+        boolean dstHasBubble = false;
         LinkedList<Double> bubbleSizes = new LinkedList<>();
-        LinkedList<ScaleMode> scaleModes = new LinkedList<>();
         for (Stylable src: srcs) {
             if (src instanceof VisualConnection) {
                 VisualConnection srcConnection = (VisualConnection) src;
-                dstHasArrow |= srcConnection.hasArrow();
-                dstHasBubble |= srcConnection.hasBubble();
                 connectionTypes.add(srcConnection.getConnectionType());
                 colors.add(srcConnection.getColor());
                 lineWidths.add(srcConnection.getLineWidth());
+                scaleModes.add(srcConnection.getScaleMode());
+                dstHasArrow |= srcConnection.hasArrow();
                 arrowLengths.add(srcConnection.getArrowLength());
                 arrowWidths.add(srcConnection.getArrowWidth());
                 bubbleSizes.add(srcConnection.getBubbleSize());
-                scaleModes.add(srcConnection.getScaleMode());
+                dstHasBubble |= srcConnection.hasBubble();
             }
         }
-        setArrow(dstHasArrow);
-        setBubble(dstHasBubble);
         setConnectionType(MixUtils.vote(connectionTypes, ConnectionType.class, ConnectionType.POLYLINE));
         setColor(Coloriser.mix(colors));
         setLineWidth(MixUtils.average(lineWidths));
+        setArrow(dstHasArrow);
         setArrowLength(MixUtils.average(arrowLengths));
         setArrowWidth(MixUtils.average(arrowWidths));
+        setBubble(dstHasBubble);
         setScaleMode(MixUtils.vote(scaleModes, ScaleMode.class, ScaleMode.ADAPTIVE));
     }
 

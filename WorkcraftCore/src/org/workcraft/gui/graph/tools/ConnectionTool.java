@@ -62,6 +62,7 @@ public class ConnectionTool extends AbstractTool {
 
     protected boolean forbidSelfLoops = true;
     protected boolean directedArcs = true;
+    protected boolean useTemplate = true;
 
     private Point2D firstPoint = null;
     private VisualNode firstNode = null;
@@ -73,12 +74,13 @@ public class ConnectionTool extends AbstractTool {
     private VisualConnection templateNode = null;
 
     public ConnectionTool() {
-        this(true, true);
+        this(true, true, true);
     }
 
-    public ConnectionTool(boolean forbidSelfLoops, boolean directedArcs) {
+    public ConnectionTool(boolean forbidSelfLoops, boolean directedArcs, boolean useTemplate) {
         this.forbidSelfLoops = forbidSelfLoops;
         this.directedArcs = directedArcs;
+        this.useTemplate = useTemplate;
     }
 
     @Override
@@ -130,7 +132,7 @@ public class ConnectionTool extends AbstractTool {
     public void activated(final GraphEditor editor) {
         super.activated(editor);
         resetState(editor);
-        if (templateNode == null) {
+        if (useTemplate && (templateNode == null)) {
             templateNode = createDefaultTemplateNode();
         }
         editor.getModel().setTemplateNode(templateNode);
