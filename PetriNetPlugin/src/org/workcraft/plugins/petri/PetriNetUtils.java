@@ -9,7 +9,6 @@ import java.util.LinkedList;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.Replica;
 import org.workcraft.dom.visual.TransformHelper;
@@ -312,7 +311,7 @@ public class PetriNetUtils {
         return positionInRootSpace;
     }
 
-    public static boolean hasReadArcConnection(AbstractVisualModel visualModel, Node first, Node second) {
+    public static boolean hasReadArcConnection(VisualModel visualModel, Node first, Node second) {
         boolean found = false;
         VisualPlace place = null;
         VisualTransition transition = null;
@@ -341,7 +340,7 @@ public class PetriNetUtils {
         return found;
     }
 
-    public static boolean hasProducingArcConnection(AbstractVisualModel visualModel, Node first, Node second) {
+    public static boolean hasProducingArcConnection(VisualModel visualModel, Node first, Node second) {
         boolean found = false;
         VisualPlace place = null;
         VisualTransition transition = null;
@@ -370,7 +369,7 @@ public class PetriNetUtils {
         return found;
     }
 
-    public static boolean hasConsumingArcConnection(AbstractVisualModel visualModel, Node first, Node second) {
+    public static boolean hasConsumingArcConnection(VisualModel visualModel, Node first, Node second) {
         boolean found = false;
         VisualPlace place = null;
         VisualTransition transition = null;
@@ -395,6 +394,23 @@ public class PetriNetUtils {
                 Connection connection = visualModel.getConnection(place, transition);
                 found = (connection instanceof VisualConnection) && !(connection instanceof VisualReadArc);
             }
+        }
+        return found;
+    }
+
+    public static boolean hasImplicitPlaceArcConnection(VisualModel visualModel, Node first, Node second) {
+        boolean found = false;
+        VisualTransition predTransition = null;
+        VisualTransition succTransition = null;
+        if (first instanceof VisualTransition) {
+            predTransition = (VisualTransition) first;
+        }
+        if (second instanceof VisualTransition) {
+            succTransition = (VisualTransition) second;
+        }
+        if ((predTransition != null) && (succTransition != null)) {
+            Connection connection = visualModel.getConnection(predTransition, succTransition);
+            found = connection instanceof VisualConnection;
         }
         return found;
     }

@@ -121,6 +121,9 @@ public class VisualSTG extends AbstractVisualModel {
         if (PetriNetUtils.hasConsumingArcConnection(this, first, second)) {
             throw new InvalidConnectionException("This consuming arc already exists.");
         }
+        if (PetriNetUtils.hasImplicitPlaceArcConnection(this, first, second)) {
+            throw new InvalidConnectionException("This implicit place arc already exists.");
+        }
     }
 
     @Override
@@ -282,32 +285,34 @@ public class VisualSTG extends AbstractVisualModel {
         Collection<Node> postset = getPostset(place);
         Collection<Replica> replicas = place.getReplicas();
         if ((preset.size() == 1) && (postset.size() == 1) && replicas.isEmpty()) {
-            final STGPlace stgPlace = (STGPlace) place.getReferencedPlace();
-            stgPlace.setImplicit(true);
             VisualComponent first = (VisualComponent) preset.iterator().next();
             VisualComponent second = (VisualComponent) postset.iterator().next();
+            if (!PetriNetUtils.hasImplicitPlaceArcConnection(this, first, second)) {
+                final STGPlace stgPlace = (STGPlace) place.getReferencedPlace();
+                stgPlace.setImplicit(true);
 
-            VisualConnection con1 = null;
-            VisualConnection con2 = null;
-            Collection<Connection> connections = new ArrayList<>(getConnections(place));
-            for (Connection con: connections) {
-                if (con.getFirst() == place) {
-                    con2 = (VisualConnection) con;
-                } else if (con.getSecond() == place) {
-                    con1 = (VisualConnection) con;
+                VisualConnection con1 = null;
+                VisualConnection con2 = null;
+                Collection<Connection> connections = new ArrayList<>(getConnections(place));
+                for (Connection con: connections) {
+                    if (con.getFirst() == place) {
+                        con2 = (VisualConnection) con;
+                    } else if (con.getSecond() == place) {
+                        con1 = (VisualConnection) con;
+                    }
                 }
+                MathConnection refCon1 = con1.getReferencedConnection();
+                MathConnection refCon2 = con2.getReferencedConnection();
+                VisualImplicitPlaceArc connection = new VisualImplicitPlaceArc(first, second, refCon1, refCon2, (STGPlace) place.getReferencedPlace());
+                Container parent = Hierarchy.getNearestAncestor(Hierarchy.getCommonParent(first, second), Container.class);
+                parent.add(connection);
+                if (preserveConnectionShape) {
+                    LinkedList<Point2D> locations = ConnectionHelper.getMergedControlPoints(place, con1, con2);
+                    ConnectionHelper.addControlPoints(connection, locations);
+                }
+                // Remove explicit place, all its connections will get removed automatically by the hanging connection remover
+                remove(place);
             }
-            MathConnection refCon1 = con1.getReferencedConnection();
-            MathConnection refCon2 = con2.getReferencedConnection();
-            VisualImplicitPlaceArc connection = new VisualImplicitPlaceArc(first, second, refCon1, refCon2, (STGPlace) place.getReferencedPlace());
-            Container parent = Hierarchy.getNearestAncestor(Hierarchy.getCommonParent(first, second), Container.class);
-            parent.add(connection);
-            if (preserveConnectionShape) {
-                LinkedList<Point2D> locations = ConnectionHelper.getMergedControlPoints(place, con1, con2);
-                ConnectionHelper.addControlPoints(connection, locations);
-            }
-            // Remove explicit place, all its connections will get removed automatically by the hanging connection remover
-            remove(place);
         }
     }
 
