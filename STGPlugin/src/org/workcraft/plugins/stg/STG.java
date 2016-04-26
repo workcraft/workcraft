@@ -360,15 +360,16 @@ public class STG extends AbstractMathModel implements STGModel {
     @Override
     public String getNodeReference(NamespaceProvider provider, Node node) {
         if (node instanceof STGPlace) {
-            if (((STGPlace) node).isImplicit()) {
+            if (node != null && ((STGPlace) node).isImplicit()) {
                 Set<Node> preset = getPreset(node);
                 Set<Node> postset = getPostset(node);
                 if (!(preset.size() == 1 && postset.size() == 1)) {
-                    throw new RuntimeException("An implicit place cannot have more that one transition in its preset or postset.");
+                    throw new RuntimeException("An implicit place must have one transition in its preset and one transition in its postset.");
                 }
-
-                return "<" + NamespaceHelper.hierarchicalToFlatName(referenceManager.getNodeReference(null, preset.iterator().next()))
-                        + "," + NamespaceHelper.hierarchicalToFlatName(referenceManager.getNodeReference(null, postset.iterator().next())) + ">";
+                String predNodeRef = referenceManager.getNodeReference(null, preset.iterator().next());
+                String succNodeRef = referenceManager.getNodeReference(null, postset.iterator().next());
+                return "<" + NamespaceHelper.hierarchicalToFlatName(predNodeRef) + ","
+                        + NamespaceHelper.hierarchicalToFlatName(succNodeRef) + ">";
             }
         }
         return super.getNodeReference(provider, node);
