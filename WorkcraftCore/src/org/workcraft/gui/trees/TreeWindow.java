@@ -140,10 +140,10 @@ public class TreeWindow<Node> extends JPanel {
 
         if (popupProvider != null) {
             tree.addMouseListener(new MouseAdapter() {
-                public void mousePressed(java.awt.event.MouseEvent e) {
+                public void mousePressed(MouseEvent e) {
                     maybeShowPopup(e);
                 }
-                public void mouseReleased(java.awt.event.MouseEvent e) {
+                public void mouseReleased(MouseEvent e) {
                     maybeShowPopup(e);
                 }
 

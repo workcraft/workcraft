@@ -199,8 +199,8 @@ public class CreateWorkDialog extends JDialog {
         okButton.setPreferredSize(new Dimension(100, 25));
         okButton.setEnabled(false);
         okButton.setText("OK");
-        okButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent e) {
+        okButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 ok();
             }
         });
@@ -208,8 +208,8 @@ public class CreateWorkDialog extends JDialog {
         cancelButton = new JButton();
         cancelButton.setPreferredSize(new Dimension(100, 25));
         cancelButton.setText("Cancel");
-        cancelButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent e) {
+        cancelButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
                 cancel();
             }
         });

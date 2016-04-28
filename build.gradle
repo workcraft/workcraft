@@ -15,7 +15,7 @@ repositories {
 
 ext {
     checkstyleVersion = '6.17'
-    cpdVersion = '5.4.1'
+    pmdVersion = '5.4.1'
     jacocoVersion = '0.7.6.201602180812'
 }
 
@@ -81,10 +81,22 @@ subprojects {
 
     task checkstyle(dependsOn: tasks.withType(Checkstyle))
 
+    apply plugin: 'pmd'
+
+    pmd {
+        toolVersion = pmdVersion
+        consoleOutput = true
+        ruleSetFiles = files("${project.rootDir}/config/pmd/rules.xml")
+        ruleSets = []
+    }
+    pmdMain.exclude '**/jj/**'
+
+    task pmd(dependsOn: pmdMain)
+
     apply plugin: 'cpd'
 
     cpd {
-        toolVersion = cpdVersion
+        toolVersion = pmdVersion
         minimumTokenCount = 2000
     }
 

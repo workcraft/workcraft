@@ -359,7 +359,7 @@ public class Workspace {
 
     public void writeWorkspaceFile(File file) {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        org.w3c.dom.Document doc;
+        Document doc;
         DocumentBuilder db;
         try {
             db = dbf.newDocumentBuilder();
