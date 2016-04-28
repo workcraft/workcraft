@@ -26,7 +26,6 @@ subprojects {
 
     apply plugin: 'java'
     apply plugin: 'ca.coglinc.javacc'
-    apply plugin: 'cpd'
     apply plugin: 'jacoco'
 
     apply plugin: 'eclipse'
@@ -80,9 +79,9 @@ subprojects {
     }
     checkstyleMain.exclude '**/jj/**'
 
-    def checkstyleTasks = tasks.withType(Checkstyle)
+    task checkstyle(dependsOn: tasks.withType(Checkstyle))
 
-    task checkstyle(dependsOn: checkstyleTasks)
+    apply plugin: 'cpd'
 
     cpd {
         toolVersion = cpdVersion
