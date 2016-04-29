@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,14 +16,23 @@ import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
+import org.workcraft.Framework;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.FontHelper;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.propertyeditor.PropertyEditorTable;
+import org.workcraft.gui.workspace.Path;
+import org.workcraft.plugins.dtd.Dtd;
+import org.workcraft.plugins.dtd.DtdDescriptor;
+import org.workcraft.plugins.dtd.Transition.Direction;
+import org.workcraft.plugins.dtd.VisualDtd;
+import org.workcraft.plugins.dtd.VisualDtd.SignalEvent;
+import org.workcraft.plugins.dtd.VisualSignal;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
@@ -33,6 +43,9 @@ import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.util.ColorGenerator;
+import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.Workspace;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class StgSimulationTool extends PetriNetSimulationTool {
     private static final Color COLOR_INPUT = Color.RED.darker();
@@ -245,6 +258,55 @@ public class StgSimulationTool extends PetriNetSimulationTool {
         super.activated(editor);
         initialiseStateMap();
         setStatePaneVisibility(true);
+    }
+
+    @Override
+    public void deactivated(final GraphEditor editor) {
+        WorkspaceEntry we = editor.getWorkspaceEntry();
+        Framework framework = Framework.getInstance();
+        final Workspace workspace = framework.getWorkspace();
+        final Path<String> directory = we.getWorkspacePath().getParent();
+        final String desiredName = we.getWorkspacePath().getNode();
+        VisualDtd dtd = new VisualDtd(new Dtd());
+        VisualSTG stg = (VisualSTG) visualNet;
+        HashMap<String, VisualSignal> signalMap = new HashMap<>();
+        HashMap<SignalTransition, SignalEvent> transitionMap = new HashMap<>();
+        double x = 0.0;
+        for (String transitionName: mainTrace) {
+            Node node = net.getNodeByReference(transitionName);
+            if (node instanceof SignalTransition) {
+                SignalTransition transition = (SignalTransition) node;
+                String signalName = transition.getSignalName();
+                
+                VisualSignal signal = signalMap.get(signalName);
+                if (signal == null) {
+                    signal = dtd.createVisualSignal(signalName);
+                    signal.setPosition(new Point2D.Double(0.0, 2.0 * signalMap.size()));
+                    signalMap.put(signalName, signal);
+                }
+                Direction direction = (transition.getDirection() == SignalTransition.Direction.PLUS) ? Direction.PLUS : Direction.MINUS;
+                SignalEvent signalEvent = dtd.appendSignalEvent(signal, direction);
+                x += 2.0;
+                signalEvent.edge.setX(x);
+                transitionMap.put(transition, signalEvent);
+                for (Node predPlace: net.getPreset(transition)) {
+                    for (Node predTransition: net.getPreset(predPlace)) {
+                        if (predTransition instanceof SignalTransition) {
+                            SignalEvent predEvent = transitionMap.get(predTransition);
+                            if (predEvent != null) {
+                                try {
+                                    dtd.connect(predEvent.edge, signalEvent.edge);
+                                } catch (InvalidConnectionException e) {
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        final ModelEntry me = new ModelEntry(new DtdDescriptor(), dtd);
+        workspace.add(directory, desiredName, me, true, true);
+        super.deactivated(editor);
     }
 
     public String getTraceLabelByReference(String ref) {

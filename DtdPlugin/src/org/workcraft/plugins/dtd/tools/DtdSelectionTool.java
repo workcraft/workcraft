@@ -25,7 +25,7 @@ public class DtdSelectionTool extends SelectionTool {
             Node node = HitMan.hitTestForSelection(e.getPosition(), model);
             if ((node instanceof VisualSignal) && (e.getClickCount() > 1)) {
                 VisualSignal signal = (VisualSignal) node;
-                processed = model.appendSignalEvent(signal).isValid();
+                processed = model.appendSignalEvent(signal, null).isValid();
             }
             if ((node instanceof VisualConnection) && (e.getClickCount() > 1)) {
                 VisualConnection connection = (VisualConnection) node;

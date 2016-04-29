@@ -195,6 +195,15 @@ public class VisualDtd extends AbstractVisualModel {
         return result;
     }
 
+    public VisualSignal createVisualSignal(String name) {
+        Signal mathSignal = new Signal();
+        getMathModel().add(mathSignal);
+        getMathModel().setName(mathSignal, name);
+        VisualSignal visualSignal = new VisualSignal(mathSignal);
+        add(visualSignal);
+        return visualSignal;
+    }
+
     public VisualTransition createVisualTransition(Signal signal, Direction direction) {
         Transition mathTransition = new Transition(signal);
         if (direction != null) {
@@ -210,7 +219,7 @@ public class VisualDtd extends AbstractVisualModel {
         return createVisualTransition(signal.getReferencedSignal(), direction);
     }
 
-    public SignalEvent appendSignalEvent(VisualSignal signal) {
+    public SignalEvent appendSignalEvent(VisualSignal signal, Direction direction) {
         VisualTransition lastTransition = null;
         for (VisualTransition transition: getVisualTransitions(signal)) {
             if ((lastTransition == null) || (transition.getX() > lastTransition.getX())) {
@@ -218,7 +227,9 @@ public class VisualDtd extends AbstractVisualModel {
             }
         }
         VisualComponent fromComponent = (lastTransition != null) ? lastTransition : signal;
-        Direction direction = (lastTransition != null) ? lastTransition.getDirection().reverse() : null;
+        if ((direction == null) && (lastTransition != null)) {
+            direction = lastTransition.getDirection().reverse();
+        }
         VisualTransition edge = createVisualTransition(signal, direction);
         edge.setPosition(new Point2D.Double(fromComponent.getX() + APPEND_EDGE_OFFSET, fromComponent.getY()));
         VisualConnection level = null;
