@@ -38,6 +38,11 @@ public class Dtd extends Pog {
         });
     }
 
+    @Override
+    public boolean keepUnusedSymbols() {
+        return true;
+    }
+
     public Signal createSignal(String name, Type type) {
         Signal signal = createNode(name, null, Signal.class);
         signal.setType(type);

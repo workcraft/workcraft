@@ -64,6 +64,10 @@ public class Pog extends AbstractMathModel {
         new SymbolConsistencySupervisor(this).attach(getRoot());
     }
 
+    public boolean keepUnusedSymbols() {
+        return false;
+    }
+
     public MathConnection connect(Node first, Node second) {
         MathConnection con = new MathConnection((MathNode) first, (MathNode) second);
         Hierarchy.getNearestContainer(first, second).add(con);

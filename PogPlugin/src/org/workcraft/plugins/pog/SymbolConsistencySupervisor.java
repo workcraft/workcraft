@@ -30,7 +30,7 @@ public class SymbolConsistencySupervisor extends StateSupervisor {
 
     @Override
     public void handleHierarchyEvent(HierarchyEvent e) {
-        if (e instanceof NodesDeletingEvent) {
+        if (!pog.keepUnusedSymbols() && (e instanceof NodesDeletingEvent)) {
             for (Node node: e.getAffectedNodes()) {
                 if (node instanceof Vertex) {
                     // Remove unused symbols on vertex deletion

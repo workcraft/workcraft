@@ -7,6 +7,7 @@ import java.awt.Graphics;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 
 import javax.swing.JLabel;
@@ -17,6 +18,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
 import org.workcraft.Framework;
+import org.workcraft.Trace;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
@@ -37,8 +39,10 @@ import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.petri.tools.PetriNetSimulationTool;
+import org.workcraft.plugins.stg.DummyTransition;
 import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.stg.STGSettings;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualSTG;
@@ -48,10 +52,6 @@ import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class StgSimulationTool extends PetriNetSimulationTool {
-    private static final Color COLOR_INPUT = Color.RED.darker();
-    private static final Color COLOR_OUTPUT = Color.BLUE.darker();
-    private static final Color COLOR_INTERNAL = Color.GREEN.darker();
-
     protected Map<String, SignalState> stateMap;
     protected JTable stateTable;
 
@@ -160,11 +160,8 @@ public class StgSimulationTool extends PetriNetSimulationTool {
             if ((net != null) && (value instanceof String)) {
                 label.setText(value.toString());
                 Node node = net.getNodeByReference(value.toString());
-                if (node instanceof SignalTransition) {
-                    SignalTransition st = (SignalTransition) node;
-                    Color color = getTypeColor(st.getSignalType());
-                    label.setForeground(color);
-                }
+                Color color = getNodeColor(node);
+                label.setForeground(color);
                 if (isActive(row, column)) {
                     label.setBackground(table.getSelectionBackground());
                 } else {
@@ -262,22 +259,38 @@ public class StgSimulationTool extends PetriNetSimulationTool {
 
     @Override
     public void deactivated(final GraphEditor editor) {
-        WorkspaceEntry we = editor.getWorkspaceEntry();
-        Framework framework = Framework.getInstance();
-        final Workspace workspace = framework.getWorkspace();
-        final Path<String> directory = we.getWorkspacePath().getParent();
-        final String desiredName = we.getWorkspacePath().getNode();
+        if (!mainTrace.isEmpty()) {
+            VisualDtd dtd = generateDtd((STG) net, mainTrace);
+            WorkspaceEntry we = editor.getWorkspaceEntry();
+            final Path<String> directory = we.getWorkspacePath().getParent();
+            final String desiredName = we.getWorkspacePath().getNode();
+            final ModelEntry me = new ModelEntry(new DtdDescriptor(), dtd);
+            Framework framework = Framework.getInstance();
+            final Workspace workspace = framework.getWorkspace();
+            workspace.add(directory, desiredName, me, true, true);
+        }
+        super.deactivated(editor);
+    }
+
+    private VisualDtd generateDtd(STG stg, Trace trace) {
         VisualDtd dtd = new VisualDtd(new Dtd());
-        VisualSTG stg = (VisualSTG) visualNet;
         HashMap<String, VisualSignal> signalMap = new HashMap<>();
-        HashMap<SignalTransition, SignalEvent> transitionMap = new HashMap<>();
+        HashMap<Node, HashSet<SignalEvent>> causeMap = new HashMap<>();
         double x = 0.0;
-        for (String transitionName: mainTrace) {
-            Node node = net.getNodeByReference(transitionName);
-            if (node instanceof SignalTransition) {
+        for (String transitionName: trace) {
+            Node node = stg.getNodeByReference(transitionName);
+            if (node instanceof DummyTransition) {
+                HashSet<SignalEvent> propagatedCauses = new HashSet<>();
+                for (Node pred: stg.getPreset(node)) {
+                    propagatedCauses.addAll(causeMap.get(pred));
+                    causeMap.remove(pred);
+                }
+                for (Node succ: stg.getPostset(node)) {
+                    causeMap.put(succ, propagatedCauses);
+                }
+            } else if (node instanceof SignalTransition) {
                 SignalTransition transition = (SignalTransition) node;
                 String signalName = transition.getSignalName();
-                
                 VisualSignal signal = signalMap.get(signalName);
                 if (signal == null) {
                     signal = dtd.createVisualSignal(signalName);
@@ -285,28 +298,28 @@ public class StgSimulationTool extends PetriNetSimulationTool {
                     signalMap.put(signalName, signal);
                 }
                 Direction direction = (transition.getDirection() == SignalTransition.Direction.PLUS) ? Direction.PLUS : Direction.MINUS;
-                SignalEvent signalEvent = dtd.appendSignalEvent(signal, direction);
+                SignalEvent curEvent = dtd.appendSignalEvent(signal, direction);
                 x += 2.0;
-                signalEvent.edge.setX(x);
-                transitionMap.put(transition, signalEvent);
-                for (Node predPlace: net.getPreset(transition)) {
-                    for (Node predTransition: net.getPreset(predPlace)) {
-                        if (predTransition instanceof SignalTransition) {
-                            SignalEvent predEvent = transitionMap.get(predTransition);
-                            if (predEvent != null) {
-                                try {
-                                    dtd.connect(predEvent.edge, signalEvent.edge);
-                                } catch (InvalidConnectionException e) {
-                                }
-                            }
+                curEvent.edge.setX(x);
+                for (Node pred: stg.getPreset(transition)) {
+                    HashSet<SignalEvent> predEvents = causeMap.get(pred);
+                    if (predEvents == null) continue;
+                    for (SignalEvent predEvent: predEvents) {
+                        try {
+                            dtd.connect(predEvent.edge, curEvent.edge);
+                        } catch (InvalidConnectionException e) {
                         }
                     }
+                    causeMap.remove(pred);
+                }
+                for (Node succ: stg.getPostset(transition)) {
+                    HashSet<SignalEvent> signalEvents = new HashSet<>();
+                    signalEvents.add(curEvent);
+                    causeMap.put(succ, signalEvents);
                 }
             }
         }
-        final ModelEntry me = new ModelEntry(new DtdDescriptor(), dtd);
-        workspace.add(directory, desiredName, me, true, true);
-        super.deactivated(editor);
+        return dtd;
     }
 
     public String getTraceLabelByReference(String ref) {
@@ -331,7 +344,7 @@ public class StgSimulationTool extends PetriNetSimulationTool {
                 if (!stateMap.containsKey(signalReference)) {
                     SignalState signalState = new SignalState();
                     signalState.name = signalReference;
-                    signalState.color = getTypeColor(transition.getSignalType());
+                    signalState.color = getNodeColor(transition);
                     stateMap.put(signalReference, signalState);
                 }
             }
@@ -339,20 +352,23 @@ public class StgSimulationTool extends PetriNetSimulationTool {
         updateSignalState();
     }
 
-    private Color getTypeColor(SignalTransition.Type type) {
-        Color result = Color.BLACK;
-        switch (type) {
-        case INPUT:
-            result = COLOR_INPUT;
-            break;
-        case OUTPUT:
-            result = COLOR_OUTPUT;
-            break;
-        case INTERNAL:
-            result = COLOR_INTERNAL;
-            break;
-        default:
-            result = Color.BLACK;
+    private Color getNodeColor(Node node) {
+        Color result = STGSettings.getDummyColor();
+        if (node instanceof SignalTransition) {
+            SignalTransition transition = (SignalTransition) node;
+            switch (transition.getSignalType()) {
+            case INPUT:
+                result = STGSettings.getInputColor();
+                break;
+            case OUTPUT:
+                result = STGSettings.getOutputColor();
+                break;
+            case INTERNAL:
+                result = STGSettings.getInternalColor();
+                break;
+            default:
+                result = STGSettings.getDummyColor();
+            }
         }
         return result;
     }
