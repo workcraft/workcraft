@@ -30,13 +30,11 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.JButton;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.swing.text.BadLocationException;
 
 import org.workcraft.dom.Connection;
@@ -1119,12 +1117,12 @@ public class CpogSelectionTool extends SelectionTool {
 
 
     }
-    
+
     public void setExpressionText(String exp) {
         expressionText.setText(exp);
     }
-    
+
     public CpogParsingTool getParsingTool() {
-    	return parsingTool;
+        return parsingTool;
     }
 }

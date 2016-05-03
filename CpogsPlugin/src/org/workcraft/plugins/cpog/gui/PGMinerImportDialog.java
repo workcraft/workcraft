@@ -1,5 +1,6 @@
 package org.workcraft.plugins.cpog.gui;
 
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -53,6 +54,8 @@ public class PGMinerImportDialog extends JDialog {
 
         importButton = new JButton("Import");
         cancelButton = new JButton("Cancel");
+        importButton.setPreferredSize(new Dimension(100, 25));
+        cancelButton.setPreferredSize(new Dimension(100, 25));
 
         addButtonListeners();
 

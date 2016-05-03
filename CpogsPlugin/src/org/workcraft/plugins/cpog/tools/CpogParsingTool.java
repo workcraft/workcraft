@@ -203,21 +203,21 @@ public class CpogParsingTool {
         ArrayList<Node> vertices = new ArrayList<>();
         ArrayList<String> expression = new ArrayList<>();
         String total = "";
-        
+
         if (visualCpog.getSelection().isEmpty()) {
-        	originalSelection = visualCpog.selection();
-        	visualCpog.selectAll();
-        	if (visualCpog.selection().isEmpty()) {
-        		JOptionPane.showMessageDialog(null, "There are no graphs to select", "Graph to expression error",
-                        JOptionPane.ERROR_MESSAGE);
-        	return "";
-        	}
+            originalSelection = visualCpog.selection();
+            visualCpog.selectAll();
+            if (visualCpog.selection().isEmpty()) {
+                JOptionPane.showMessageDialog(null, "There are no graphs to select", "Graph to expression error",
+                                JOptionPane.ERROR_MESSAGE);
+                return "";
+            }
         } else {
             originalSelection = copySelected(visualCpog);
         }
-        
+
         groups = getScenarios(visualCpog);
-        
+
         //Add vertices from group
         if (!groups.isEmpty()) {
             for (VisualTransformableNode group : groups) {

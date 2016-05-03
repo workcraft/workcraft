@@ -96,9 +96,9 @@ public class CpogModule implements Module {
         pm.registerClass(Tool.class, PGMinerImportTool.class);
 
         pm.registerClass(Tool.class, PGMinerSelectedGraphsExtractionTool.class);
-        
+
         pm.registerClass(Tool.class, AlgebraImportTool.class);
-        
+
         pm.registerClass(Tool.class, AlgebraExpressionFromGraphsTool.class);
 
     }

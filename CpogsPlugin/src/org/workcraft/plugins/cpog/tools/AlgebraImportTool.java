@@ -12,32 +12,32 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class AlgebraImportTool implements Tool {
 
-	@Override
-	public boolean isApplicableTo(WorkspaceEntry we) {
-		if (we.getModelEntry() == null) return false;
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        if (we.getModelEntry() == null) return false;
         if (we.getModelEntry().getVisualModel() instanceof VisualCPOG) return true;
-		return false;
-	}
+        return false;
+    }
 
-	@Override
-	public String getSection() {
-		return "! Algebra";
-	}
+    @Override
+    public String getSection() {
+        return "! Algebra";
+    }
 
-	@Override
-	public String getDisplayName() {
-		return "Import CPOG expressions from file";
-	}
+    @Override
+    public String getDisplayName() {
+        return "Import CPOG expressions from file";
+    }
 
-	@Override
-	public void run(WorkspaceEntry we) {
-		final Framework framework = Framework.getInstance();
+    @Override
+    public void run(WorkspaceEntry we) {
+        final Framework framework = Framework.getInstance();
         final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
         final ToolboxPanel toolbox = editor.getToolBox();
         final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
-       
-		editor.getWorkspaceEntry().captureMemento();
-		
+
+        editor.getWorkspaceEntry().captureMemento();
+
         JFileChooser chooser = new JFileChooser();
         File f;
         if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
