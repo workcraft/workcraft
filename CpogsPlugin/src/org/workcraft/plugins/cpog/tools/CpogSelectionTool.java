@@ -175,44 +175,6 @@ public class CpogSelectionTool extends SelectionTool {
         });
         buttonPanel.add(btnInsert);
 
-        final JButton btnFileInsert = new JButton("Text File");
-        btnFileInsert.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                editor.getWorkspaceEntry().captureMemento();
-                JFileChooser chooser = new JFileChooser();
-                File textFile;
-                FileNameExtensionFilter filter = new FileNameExtensionFilter(
-                        "Text Files", "txt");
-                chooser.setFileFilter(filter);
-                if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-
-                    textFile = chooser.getSelectedFile();
-
-                    if (insertCpogFromFile(textFile)) {
-                        editor.getWorkspaceEntry().saveMemento();
-                    } else {
-                        editor.getWorkspaceEntry().cancelMemento();
-                    }
-
-                }
-            }
-        });
-        buttonPanel.add(btnFileInsert);
-
-        final JButton btnGetGraphExpression = new JButton("Get expression");
-        btnGetGraphExpression.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                VisualCPOG visualCpog = (VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel();
-                expressionText.setText(parsingTool.getExpressionFromGraph(visualCpog));
-            }
-
-        });
-        buttonPanel.add(btnGetGraphExpression);
-
         insertTransitives = new Checkbox("Insert Transitives", false);
         controlPanel.add(insertTransitives);
 
@@ -1156,5 +1118,13 @@ public class CpogSelectionTool extends SelectionTool {
         return true;
 
 
+    }
+    
+    public void setExpressionText(String exp) {
+        expressionText.setText(exp);
+    }
+    
+    public CpogParsingTool getParsingTool() {
+    	return parsingTool;
     }
 }

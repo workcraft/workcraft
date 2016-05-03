@@ -13,6 +13,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import javax.swing.JOptionPane;
+
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -196,14 +198,26 @@ public class CpogParsingTool {
     }
 
     public static String getExpressionFromGraph(VisualCPOG visualCpog) {
-        Collection<Node> originalSelection;
+        Collection<Node> originalSelection = null;
         ArrayList<VisualTransformableNode> groups = new ArrayList<>();
         ArrayList<Node> vertices = new ArrayList<>();
         ArrayList<String> expression = new ArrayList<>();
         String total = "";
-
+        
+        if (visualCpog.getSelection().isEmpty()) {
+        	originalSelection = visualCpog.selection();
+        	visualCpog.selectAll();
+        	if (visualCpog.selection().isEmpty()) {
+        		JOptionPane.showMessageDialog(null, "There are no graphs to select", "Graph to expression error",
+                        JOptionPane.ERROR_MESSAGE);
+        	return "";
+        	}
+        } else {
+            originalSelection = copySelected(visualCpog);
+        }
+        
         groups = getScenarios(visualCpog);
-        originalSelection = copySelected(visualCpog);
+        
         //Add vertices from group
         if (!groups.isEmpty()) {
             for (VisualTransformableNode group : groups) {
