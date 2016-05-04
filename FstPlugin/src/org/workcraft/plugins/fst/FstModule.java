@@ -7,7 +7,6 @@ import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Tool;
 import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.cpog.tools.PnToCpogTool;
@@ -51,7 +50,6 @@ public class FstModule  implements Module {
         pm.registerClass(Importer.class, DotGImporter.class);
 
         pm.registerClass(ModelSerialiser.class, DotGSerialiser.class);
-        pm.registerClass(Settings.class, FstSettings.class);
 
         pm.registerClass(Tool.class, StgToFstConverterTool.class);
         pm.registerClass(Tool.class, FstToStgConverterTool.class);

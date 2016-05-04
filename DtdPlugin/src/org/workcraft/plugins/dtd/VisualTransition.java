@@ -44,6 +44,8 @@ public class VisualTransition extends VisualComponent {
 
     public VisualTransition(Transition transition) {
         super(transition);
+        renamePropertyDeclarationByName("Foreground color", "Color");
+        removePropertyDeclarationByName("Fill color");
         removePropertyDeclarationByName("Name");
         removePropertyDeclarationByName("Name positioning");
         removePropertyDeclarationByName("Name color");

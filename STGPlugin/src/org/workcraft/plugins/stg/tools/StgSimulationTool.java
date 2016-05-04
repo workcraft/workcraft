@@ -31,6 +31,7 @@ import org.workcraft.gui.propertyeditor.PropertyEditorTable;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.dtd.Dtd;
 import org.workcraft.plugins.dtd.DtdDescriptor;
+import org.workcraft.plugins.dtd.Signal.Type;
 import org.workcraft.plugins.dtd.Transition.Direction;
 import org.workcraft.plugins.dtd.VisualDtd;
 import org.workcraft.plugins.dtd.VisualDtd.SignalEvent;
@@ -39,10 +40,10 @@ import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.petri.tools.PetriNetSimulationTool;
+import org.workcraft.plugins.shared.CommonSignalSettings;
 import org.workcraft.plugins.stg.DummyTransition;
 import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.STG;
-import org.workcraft.plugins.stg.STGSettings;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualSTG;
@@ -272,6 +273,23 @@ public class StgSimulationTool extends PetriNetSimulationTool {
         super.deactivated(editor);
     }
 
+    private Type convertTransitionSignalType(SignalTransition transition) {
+        switch (transition.getSignalType()) {
+        case INPUT:    return Type.INPUT;
+        case OUTPUT:   return Type.OUTPUT;
+        case INTERNAL: return Type.INTERNAL;
+        default:       return null;
+        }
+    }
+
+    private Direction convertTransitionDirection(SignalTransition transition) {
+        switch (transition.getDirection()) {
+        case PLUS:  return Direction.PLUS;
+        case MINUS: return Direction.MINUS;
+        default:    return null;
+        }
+    }
+
     private VisualDtd generateDtd(STG stg, Trace trace) {
         VisualDtd dtd = new VisualDtd(new Dtd());
         HashMap<String, VisualSignal> signalMap = new HashMap<>();
@@ -295,9 +313,10 @@ public class StgSimulationTool extends PetriNetSimulationTool {
                 if (signal == null) {
                     signal = dtd.createVisualSignal(signalName);
                     signal.setPosition(new Point2D.Double(0.0, 2.0 * signalMap.size()));
+                    signal.setType(convertTransitionSignalType(transition));
                     signalMap.put(signalName, signal);
                 }
-                Direction direction = (transition.getDirection() == SignalTransition.Direction.PLUS) ? Direction.PLUS : Direction.MINUS;
+                Direction direction =  convertTransitionDirection(transition);
                 SignalEvent curEvent = dtd.appendSignalEvent(signal, direction);
                 x += 2.0;
                 curEvent.edge.setX(x);
@@ -353,24 +372,16 @@ public class StgSimulationTool extends PetriNetSimulationTool {
     }
 
     private Color getNodeColor(Node node) {
-        Color result = STGSettings.getDummyColor();
         if (node instanceof SignalTransition) {
             SignalTransition transition = (SignalTransition) node;
             switch (transition.getSignalType()) {
-            case INPUT:
-                result = STGSettings.getInputColor();
-                break;
-            case OUTPUT:
-                result = STGSettings.getOutputColor();
-                break;
-            case INTERNAL:
-                result = STGSettings.getInternalColor();
-                break;
-            default:
-                result = STGSettings.getDummyColor();
+            case INPUT:    return CommonSignalSettings.getInputColor();
+            case OUTPUT:   return CommonSignalSettings.getOutputColor();
+            case INTERNAL: return CommonSignalSettings.getInternalColor();
+            default:       return CommonSignalSettings.getDummyColor();
             }
         }
-        return result;
+        return Color.BLACK;
     }
 
     @Override

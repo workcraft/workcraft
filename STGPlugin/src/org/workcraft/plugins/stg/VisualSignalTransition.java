@@ -29,6 +29,7 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.observation.StateObserver;
+import org.workcraft.plugins.shared.CommonSignalSettings;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
@@ -57,7 +58,7 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
             result.append("-");
             break;
         case TOGGLE:
-            if (STGSettings.getShowToggle()) {
+            if (CommonSignalSettings.getShowToggle()) {
                 result.append("~");
             }
             break;
@@ -68,10 +69,10 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
     @Override
     public Color getColor() {
         switch (getType()) {
-        case INPUT:        return STGSettings.getInputColor();
-        case OUTPUT:    return STGSettings.getOutputColor();
-        case INTERNAL:    return STGSettings.getInternalColor();
-        default:        return STGSettings.getDummyColor();
+        case INPUT:    return CommonSignalSettings.getInputColor();
+        case OUTPUT:   return CommonSignalSettings.getOutputColor();
+        case INTERNAL: return CommonSignalSettings.getInternalColor();
+        default:       return CommonSignalSettings.getDummyColor();
         }
     }
 
@@ -83,7 +84,7 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
     @NoAutoSerialisation
     public void setType(SignalTransition.Type type) {
         getReferencedTransition().setSignalType(type);
-        updateRenderedText();
+//        updateRenderedText();
     }
 
     @NoAutoSerialisation

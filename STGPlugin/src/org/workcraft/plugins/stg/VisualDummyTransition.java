@@ -28,6 +28,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.observation.StateObserver;
+import org.workcraft.plugins.shared.CommonSignalSettings;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @Hotkey(KeyEvent.VK_D)
@@ -46,7 +47,7 @@ public class VisualDummyTransition extends VisualNamedTransition implements Stat
 
     @Override
     public Color getColor() {
-        return STGSettings.getDummyColor();
+        return CommonSignalSettings.getDummyColor();
     }
 
 }

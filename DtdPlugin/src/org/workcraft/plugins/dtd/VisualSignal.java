@@ -38,6 +38,8 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.plugins.shared.CommonSignalSettings;
+import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @Hotkey(KeyEvent.VK_X)
 @DisplayName("Signal")
@@ -46,11 +48,28 @@ public class VisualSignal extends VisualComponent {
 
     public VisualSignal(Signal signal) {
         super(signal);
+        renamePropertyDeclarationByName("Foreground color", "Color");
+        removePropertyDeclarationByName("Fill color");
         removePropertyDeclarationByName("Name positioning");
         removePropertyDeclarationByName("Name color");
         removePropertyDeclarationByName("Label");
         removePropertyDeclarationByName("Label positioning");
         removePropertyDeclarationByName("Label color");
+    }
+
+
+    public Signal getReferencedSignal() {
+        return (Signal) getReferencedComponent();
+    }
+
+    @NoAutoSerialisation
+    public Signal.Type getType() {
+        return getReferencedSignal().getType();
+    }
+
+    @NoAutoSerialisation
+    public void setType(Signal.Type type) {
+        getReferencedSignal().setType(type);
     }
 
     public Shape getShape() {
@@ -99,13 +118,23 @@ public class VisualSignal extends VisualComponent {
         return Positioning.LEFT;
     }
 
-    public Signal getReferencedSignal() {
-        return (Signal) getReferencedComponent();
-    }
-
     @Override
     public boolean getLabelVisibility() {
         return false;
     }
 
+    @Override
+    public boolean getNameVisibility() {
+        return true;
+    }
+
+    @Override
+    public Color getNameColor() {
+        switch (getType()) {
+        case INPUT:    return CommonSignalSettings.getInputColor();
+        case OUTPUT:   return CommonSignalSettings.getOutputColor();
+        case INTERNAL: return CommonSignalSettings.getInternalColor();
+        default:       return CommonSignalSettings.getDummyColor();
+        }
+    }
 }

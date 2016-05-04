@@ -19,8 +19,7 @@
 *
 */
 
-package org.workcraft.plugins.fst;
-
+package org.workcraft.plugins.shared;
 import java.awt.Color;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,9 +29,9 @@ import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 
-public class FstSettings implements Settings {
+public class CommonSignalSettings implements Settings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
-    private static final String prefix = "FstSettings";
+    private static final String prefix = "CommonSignalSettings";
 
     private static final String keyInputColor = prefix + ".inputColor";
     private static final String keyOutputColor = prefix + ".outputColor";
@@ -52,53 +51,53 @@ public class FstSettings implements Settings {
     private static Color dummyColor = defaultDummyColor;
     private static boolean showToggle = defaultShowToggle;
 
-    public FstSettings() {
-        properties.add(new PropertyDeclaration<FstSettings, Color>(
-                this, "Input transition color", Color.class, true, false, false) {
-            protected void setter(FstSettings object, Color value) {
+    public CommonSignalSettings() {
+        properties.add(new PropertyDeclaration<CommonSignalSettings, Color>(
+                this, "Input signal color", Color.class, true, false, false) {
+            protected void setter(CommonSignalSettings object, Color value) {
                 setInputColor(value);
             }
-            protected Color getter(FstSettings object) {
+            protected Color getter(CommonSignalSettings object) {
                 return getInputColor();
             }
         });
 
-        properties.add(new PropertyDeclaration<FstSettings, Color>(
-                this, "Output transition color", Color.class, true, false, false) {
-            protected void setter(FstSettings object, Color value) {
+        properties.add(new PropertyDeclaration<CommonSignalSettings, Color>(
+                this, "Output signal color", Color.class, true, false, false) {
+            protected void setter(CommonSignalSettings object, Color value) {
                 setOutputColor(value);
             }
-            protected Color getter(FstSettings object) {
+            protected Color getter(CommonSignalSettings object) {
                 return getOutputColor();
             }
         });
 
-        properties.add(new PropertyDeclaration<FstSettings, Color>(
-                this, "Internal transition color", Color.class, true, false, false) {
-            protected void setter(FstSettings object, Color value) {
+        properties.add(new PropertyDeclaration<CommonSignalSettings, Color>(
+                this, "Internal signal color", Color.class, true, false, false) {
+            protected void setter(CommonSignalSettings object, Color value) {
                 setInternalColor(value);
             }
-            protected Color getter(FstSettings object) {
+            protected Color getter(CommonSignalSettings object) {
                 return getInternalColor();
             }
         });
 
-        properties.add(new PropertyDeclaration<FstSettings, Color>(
-                this, "Dummy transition color", Color.class, true, false, false) {
-            protected void setter(FstSettings object, Color value) {
+        properties.add(new PropertyDeclaration<CommonSignalSettings, Color>(
+                this, "Dummy color", Color.class, true, false, false) {
+            protected void setter(CommonSignalSettings object, Color value) {
                 setDummyColor(value);
             }
-            protected Color getter(FstSettings object) {
+            protected Color getter(CommonSignalSettings object) {
                 return getDummyColor();
             }
         });
 
-        properties.add(new PropertyDeclaration<FstSettings, Boolean>(
+        properties.add(new PropertyDeclaration<CommonSignalSettings, Boolean>(
                 this, "Show signal toggle (~)", Boolean.class, true, false, false) {
-            protected void setter(FstSettings object, Boolean value) {
+            protected void setter(CommonSignalSettings object, Boolean value) {
                 setShowToggle(value);
             }
-            protected Boolean getter(FstSettings object) {
+            protected Boolean getter(CommonSignalSettings object) {
                 return getShowToggle();
             }
         });
@@ -129,12 +128,12 @@ public class FstSettings implements Settings {
 
     @Override
     public String getSection() {
-        return "Models";
+        return "Common";
     }
 
     @Override
     public String getName() {
-        return "Finite State Trasducer";
+        return "Signal";
     }
 
     public static void setInputColor(Color value) {
