@@ -112,7 +112,7 @@ public class VisualDtd extends AbstractVisualModel {
         if ((first instanceof VisualComponent) && (second instanceof VisualComponent)) {
             VisualComponent firstComponent = (VisualComponent) first;
             VisualComponent secondComponent = (VisualComponent) second;
-            if (firstComponent.getX() > secondComponent.getX()) {
+            if (firstComponent.getRootSpaceX() > secondComponent.getRootSpaceX()) {
                 throw new InvalidConnectionException("Invalid order of events.");
             }
         }
@@ -160,8 +160,8 @@ public class VisualDtd extends AbstractVisualModel {
             vConnection.setConnectionType(ConnectionType.BEZIER);
             Bezier bezier = (Bezier) vConnection.getGraphic();
             BezierControlPoint[] cp = bezier.getBezierControlPoints();
-            cp[0].setRootSpacePosition(new Point2D.Double(v1.getX() + CAUSALITY_ARC_OFFSET, v1.getY()));
-            cp[1].setRootSpacePosition(new Point2D.Double(v2.getX() - CAUSALITY_ARC_OFFSET, v2.getY()));
+            cp[0].setRootSpacePosition(new Point2D.Double(v1.getRootSpaceX() + CAUSALITY_ARC_OFFSET, v1.getRootSpaceY()));
+            cp[1].setRootSpacePosition(new Point2D.Double(v2.getRootSpaceX() - CAUSALITY_ARC_OFFSET, v2.getRootSpaceY()));
         }
         return vConnection;
     }
@@ -222,7 +222,7 @@ public class VisualDtd extends AbstractVisualModel {
     public SignalEvent appendSignalEvent(VisualSignal signal, Direction direction) {
         VisualTransition lastTransition = null;
         for (VisualTransition transition: getVisualTransitions(signal)) {
-            if ((lastTransition == null) || (transition.getX() > lastTransition.getX())) {
+            if ((lastTransition == null) || (transition.getRootSpaceX() > lastTransition.getRootSpaceX())) {
                 lastTransition = transition;
             }
         }
@@ -231,7 +231,7 @@ public class VisualDtd extends AbstractVisualModel {
             direction = lastTransition.getDirection().reverse();
         }
         VisualTransition edge = createVisualTransition(signal, direction);
-        edge.setPosition(new Point2D.Double(fromComponent.getX() + APPEND_EDGE_OFFSET, fromComponent.getY()));
+        edge.setRootSpacePosition(new Point2D.Double(fromComponent.getRootSpaceX() + APPEND_EDGE_OFFSET, fromComponent.getRootSpaceY()));
         VisualConnection level = null;
         try {
             level = connect(fromComponent, edge);
@@ -248,14 +248,14 @@ public class VisualDtd extends AbstractVisualModel {
         VisualTransition leadEdge = createVisualTransition(signal, direction);
         VisualTransition trailEdge = createVisualTransition(signal, direction.reverse());
 
-        double y = fromComponent.getY();
+        double y = fromComponent.getRootSpaceY();
         Point2D p = connection.getMiddleSegmentCenterPoint();
-        double leadX = (p.getX() - INSERT_PULSE_OFFSET < fromComponent.getX())
-                ? 0.5 * (p.getX() + fromComponent.getX()) : p.getX() - 0.5 * INSERT_PULSE_OFFSET;
-        double trailX = (p.getX() + INSERT_PULSE_OFFSET > toTransition.getX())
-                ? 0.5 * (p.getX() + toTransition.getX()) : p.getX() + 0.5 * INSERT_PULSE_OFFSET;
-        leadEdge.setPosition(new Point2D.Double(leadX, y));
-        trailEdge.setPosition(new Point2D.Double(trailX, y));
+        double leadX = (p.getX() - INSERT_PULSE_OFFSET < fromComponent.getRootSpaceX())
+                ? 0.5 * (p.getX() + fromComponent.getRootSpaceX()) : p.getX() - 0.5 * INSERT_PULSE_OFFSET;
+        double trailX = (p.getX() + INSERT_PULSE_OFFSET > toTransition.getRootSpaceX())
+                ? 0.5 * (p.getX() + toTransition.getRootSpaceX()) : p.getX() + 0.5 * INSERT_PULSE_OFFSET;
+        leadEdge.setRootSpacePosition(new Point2D.Double(leadX, y));
+        trailEdge.setRootSpacePosition(new Point2D.Double(trailX, y));
 
         remove(connection);
         VisualConnection leadLevel = null;

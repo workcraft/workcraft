@@ -60,18 +60,18 @@ public class VisualTransition extends VisualComponent {
             switch (getReferencedTransition().getDirection()) {
             case PLUS:
                 shape.moveTo(0.0, 0.5 * size);
-                shape.lineTo(0.0, -0.4 * size + strokeWidth);
-                shape.moveTo(-strokeWidth, -0.4 * size + strokeWidth);
-                shape.lineTo(0.0, -0.5 * size + strokeWidth);
-                shape.lineTo(+strokeWidth * size, -0.4 * size + strokeWidth);
+                shape.lineTo(0.0, -0.4 * size + 0.5 * strokeWidth);
+                shape.moveTo(0.0, -0.5 * size + strokeWidth);
+                shape.lineTo(+0.5 * strokeWidth, -0.4 * size + strokeWidth);
+                shape.lineTo(-0.5 * strokeWidth, -0.4 * size + strokeWidth);
                 shape.closePath();
                 break;
             case MINUS:
                 shape.moveTo(0.0, -0.5 * size);
-                shape.lineTo(0.0, 0.4 * size - strokeWidth);
-                shape.moveTo(-strokeWidth, 0.4 * size - strokeWidth);
-                shape.lineTo(0.0, 0.5 * size - strokeWidth);
-                shape.lineTo(+strokeWidth, 0.4 * size - strokeWidth);
+                shape.lineTo(0.0, 0.4 * size - 0.5 * strokeWidth);
+                shape.moveTo(0.0, 0.5 * size - strokeWidth);
+                shape.lineTo(-0.5 * strokeWidth, 0.4 * size - strokeWidth);
+                shape.lineTo(+0.5 * strokeWidth, 0.4 * size - strokeWidth);
                 shape.closePath();
                 break;
             default:
@@ -87,7 +87,7 @@ public class VisualTransition extends VisualComponent {
         Color colorisation = r.getDecoration().getColorisation();
         Shape shape = getShape();
         g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-        g.setStroke(new BasicStroke((float) strokeWidth));
+        g.setStroke(new BasicStroke((float) strokeWidth / 2));
         g.draw(shape);
     }
 
@@ -106,6 +106,16 @@ public class VisualTransition extends VisualComponent {
 
     public Direction getDirection() {
         return getReferencedTransition().getDirection();
+    }
+
+    @Override
+    public boolean getLabelVisibility() {
+        return false;
+    }
+
+    @Override
+    public boolean getNameVisibility() {
+        return false;
     }
 
 }

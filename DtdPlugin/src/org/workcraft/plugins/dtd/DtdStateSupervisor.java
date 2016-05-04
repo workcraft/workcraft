@@ -32,15 +32,17 @@ public final class DtdStateSupervisor extends StateSupervisor {
 
     private void handleTransitionTransformation(VisualTransition transition) {
         VisualSignal signal = dtd.getVisualSignal(transition);
-        if ((signal != null) && (signal.getY() != transition.getY())) {
-            transition.setY(signal.getY());
+        double y = signal.getRootSpaceY();
+        if ((signal != null) && (y != transition.getRootSpaceY())) {
+            transition.setRootSpaceY(y);
         }
     }
 
     private void handleSignalTransformation(VisualSignal signal) {
         for (VisualTransition transition: dtd.getVisualTransitions(signal)) {
-            if (transition.getY() != signal.getY()) {
-                transition.setY(signal.getY());
+            double y = signal.getRootSpaceY();
+            if (transition.getRootSpaceY() != y) {
+                transition.setRootSpaceY(y);
             }
         }
     }
@@ -49,22 +51,22 @@ public final class DtdStateSupervisor extends StateSupervisor {
         VisualComponent minComponent = null;
         for (Node predNode: dtd.getPreset(component)) {
             VisualComponent predComponent = (VisualComponent) predNode;
-            if ((minComponent == null) || (minComponent.getX() < predComponent.getX())) {
+            if ((minComponent == null) || (minComponent.getRootSpaceX() < predComponent.getRootSpaceX())) {
                 minComponent = predComponent;
             }
         }
         VisualComponent maxComponent = null;
         for (Node succNode: dtd.getPostset(component)) {
             VisualComponent succComponent = (VisualComponent) succNode;
-            if ((maxComponent == null) || (maxComponent.getX() > succComponent.getX())) {
+            if ((maxComponent == null) || (maxComponent.getRootSpaceX() > succComponent.getRootSpaceX())) {
                 maxComponent = succComponent;
             }
         }
-        if ((minComponent != null) && (component.getX() < minComponent.getX())) {
-            component.setX(minComponent.getX());
+        if ((minComponent != null) && (component.getRootSpaceX() < minComponent.getRootSpaceX())) {
+            component.setRootSpaceX(minComponent.getRootSpaceX());
         }
-        if ((maxComponent != null) && (component.getX() > maxComponent.getX())) {
-            component.setX(maxComponent.getX());
+        if ((maxComponent != null) && (component.getRootSpaceX() > maxComponent.getRootSpaceX())) {
+            component.setRootSpaceX(maxComponent.getRootSpaceX());
         }
     }
 

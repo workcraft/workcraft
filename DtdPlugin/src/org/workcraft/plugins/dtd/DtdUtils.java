@@ -36,7 +36,7 @@ public class DtdUtils {
         connection.setConnectionType(ConnectionType.POLYLINE);
         Polyline polyline = (Polyline) connection.getGraphic();
         connection.setArrow(false);
-        connection.setLineWidth(CommonVisualSettings.getStrokeWidth());
+        connection.setLineWidth(0.5 * CommonVisualSettings.getStrokeWidth());
         connection.setScaleMode(ScaleMode.LOCK_RELATIVELY);
 
         double offset = 0.0;
@@ -44,8 +44,8 @@ public class DtdUtils {
             Transition t = ((VisualTransition) v2).getReferencedTransition();
             offset = CommonVisualSettings.getBaseSize() * ((t.getDirection() == Direction.MINUS) ? -0.5 : 0.5);
         }
-        Point2D cp1 = new Point2D.Double(v1.getX(), v1.getY() + offset);
-        Point2D cp2 = new Point2D.Double(v2.getX(), v2.getY() + offset);
+        Point2D cp1 = new Point2D.Double(v1.getRootSpaceX(), v1.getRootSpaceY() + offset);
+        Point2D cp2 = new Point2D.Double(v2.getRootSpaceX(), v2.getRootSpaceY() + offset);
         polyline.addControlPoint(cp1);
         polyline.addControlPoint(cp2);
     }
