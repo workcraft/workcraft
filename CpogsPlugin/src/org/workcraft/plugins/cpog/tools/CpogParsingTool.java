@@ -58,7 +58,7 @@ public class CpogParsingTool {
         Func<String, BooleanVariable> boolVars = new Func<String, BooleanVariable>() {
             public BooleanVariable eval(final String label) {
                 if (variableMap.containsKey(label)) {
-                    if (!visualCpog.getVariables().contains(variableMap.get(label))) {
+                    if (!visualCpog.getVariables(visualCpog.getRoot()).contains(variableMap.get(label))) {
                         if (variableMap.get(label).getParent() != null) {
                             return variableMap.get(label);
                         } else  variableMap.remove(label);

@@ -107,8 +107,7 @@ public class CpogModule implements Module {
         final Framework framework = Framework.getInstance();
         final CompatibilityManager cm = framework.getCompatibilityManager();
 
-        cm.registerMetaReplacement(
-                "<descriptor class=\"org.workcraft.plugins.cpog.CpogModelDescriptor\"/>",
+        cm.registerMetaReplacement("<descriptor class=\"org.workcraft.plugins.cpog.CpogModelDescriptor\"/>",
                 "<descriptor class=\"org.workcraft.plugins.cpog.CpogDescriptor\"/>");
     }
 
