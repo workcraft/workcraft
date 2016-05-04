@@ -17,6 +17,8 @@ import org.workcraft.plugins.cpog.serialisation.VertexDeserialiser;
 import org.workcraft.plugins.cpog.serialisation.VertexSerialiser;
 import org.workcraft.plugins.cpog.serialisation.VisualCPOGGroupDeserialiser;
 import org.workcraft.plugins.cpog.serialisation.VisualCPOGGroupSerialiser;
+import org.workcraft.plugins.cpog.tools.AlgebraExpressionFromGraphsTool;
+import org.workcraft.plugins.cpog.tools.AlgebraImportTool;
 import org.workcraft.plugins.cpog.tools.CpogToGraphConverterTool;
 import org.workcraft.plugins.cpog.tools.GraphStatisticsTool;
 import org.workcraft.plugins.cpog.tools.GraphToCpogConverterTool;
@@ -95,14 +97,17 @@ public class CpogModule implements Module {
 
         pm.registerClass(Tool.class, PGMinerSelectedGraphsExtractionTool.class);
 
+        pm.registerClass(Tool.class, AlgebraImportTool.class);
+
+        pm.registerClass(Tool.class, AlgebraExpressionFromGraphsTool.class);
+
     }
 
     private void initCompatibilityManager() {
         final Framework framework = Framework.getInstance();
         final CompatibilityManager cm = framework.getCompatibilityManager();
 
-        cm.registerMetaReplacement(
-                "<descriptor class=\"org.workcraft.plugins.cpog.CpogModelDescriptor\"/>",
+        cm.registerMetaReplacement("<descriptor class=\"org.workcraft.plugins.cpog.CpogModelDescriptor\"/>",
                 "<descriptor class=\"org.workcraft.plugins.cpog.CpogDescriptor\"/>");
     }
 
