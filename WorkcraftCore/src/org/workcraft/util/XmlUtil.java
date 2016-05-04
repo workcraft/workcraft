@@ -30,6 +30,8 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -88,7 +90,8 @@ public class XmlUtil {
             transformer.setOutputProperty("{http://xml.apache.org/xalan}indent-amount", "2");
 
             DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(new OutputStreamWriter(os));
+            CharsetEncoder utf8Encoder = Charset.forName("UTF-8").newEncoder();
+            StreamResult result = new StreamResult(new OutputStreamWriter(os, utf8Encoder));
             transformer.transform(source, result);
         } catch (TransformerException e) {
             System.err.println(e.getMessage());
@@ -113,7 +116,8 @@ public class XmlUtil {
             FileOutputStream fos = new FileOutputStream(file.getPath());
 
             DOMSource source = new DOMSource(doc);
-            StreamResult result = new StreamResult(new OutputStreamWriter(fos));
+            CharsetEncoder utf8Encoder = Charset.forName("UTF-8").newEncoder();
+            StreamResult result = new StreamResult(new OutputStreamWriter(fos, utf8Encoder));
 
             transformer.transform(source, result);
             fos.close();

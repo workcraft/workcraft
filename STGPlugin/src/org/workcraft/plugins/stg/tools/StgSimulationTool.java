@@ -282,7 +282,7 @@ public class StgSimulationTool extends PetriNetSimulationTool {
         }
     }
 
-    private Direction convertTransitionDirection(SignalTransition transition) {
+    private Direction getTransitionDirection(SignalTransition transition) {
         switch (transition.getDirection()) {
         case PLUS:  return Direction.PLUS;
         case MINUS: return Direction.MINUS;
@@ -316,7 +316,7 @@ public class StgSimulationTool extends PetriNetSimulationTool {
                     signal.setType(convertTransitionSignalType(transition));
                     signalMap.put(signalName, signal);
                 }
-                Direction direction =  convertTransitionDirection(transition);
+                Direction direction =  getTransitionDirection(transition);
                 SignalEvent curEvent = dtd.appendSignalEvent(signal, direction);
                 x += 2.0;
                 curEvent.edge.setX(x);

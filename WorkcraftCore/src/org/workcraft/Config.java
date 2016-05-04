@@ -26,6 +26,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
 import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -283,7 +285,8 @@ public class Config {
             file.createNewFile();
             FileOutputStream fos = new FileOutputStream(file);
             DOMSource source = new DOMSource(xmldoc);
-            StreamResult result = new StreamResult(new OutputStreamWriter(fos, "utf-8"));
+            CharsetEncoder utf8Encoder = Charset.forName("UTF-8").newEncoder();
+            StreamResult result = new StreamResult(new OutputStreamWriter(fos, utf8Encoder));
 
             transformer.transform(source, result);
             fos.close();

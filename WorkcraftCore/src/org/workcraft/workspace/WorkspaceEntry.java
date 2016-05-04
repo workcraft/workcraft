@@ -28,6 +28,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.zip.ZipEntry;
@@ -313,7 +315,8 @@ public class WorkspaceEntry implements ObservableState {
             ZipEntry ze;
             while ((ze = zis.getNextEntry()) != null) {
                 StringBuilder isb = new StringBuilder();
-                BufferedReader br = new BufferedReader(new InputStreamReader(zis, "UTF-8"));
+                CharsetDecoder utf8Decoder = Charset.forName("UTF-8").newDecoder();
+                BufferedReader br = new BufferedReader(new InputStreamReader(zis, utf8Decoder));
                 String line = "=== " + ze.getName() + " ===";
                 while (line != null) {
                     isb.append(line);
