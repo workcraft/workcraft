@@ -128,10 +128,6 @@ public class CpogSelectionTool extends SelectionTool {
 
     int scenarioNo = 0;
 
-    public CpogSelectionTool() {
-        super(false);
-    }
-
     @Override
     public void createInterfacePanel(final GraphEditor editor) {
         this.editor = editor;

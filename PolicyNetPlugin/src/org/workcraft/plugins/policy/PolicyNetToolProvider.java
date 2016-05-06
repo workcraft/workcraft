@@ -18,7 +18,7 @@ public class PolicyNetToolProvider implements CustomToolsProvider {
     public Iterable<GraphEditorTool> getTools() {
         ArrayList<GraphEditorTool> result = new ArrayList<>();
 
-        result.add(new PolicySelectionTool(false));
+        result.add(new PolicySelectionTool());
         result.add(new CommentGeneratorTool());
         result.add(new ConnectionTool());
 

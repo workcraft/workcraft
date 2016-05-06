@@ -17,7 +17,7 @@ public class FsmToolsProvider implements CustomToolsProvider {
     public Iterable<GraphEditorTool> getTools() {
         ArrayList<GraphEditorTool> result = new ArrayList<>();
 
-        result.add(new SelectionTool(false));
+        result.add(new SelectionTool(true, false, true, true));
         result.add(new CommentGeneratorTool());
         result.add(new ConnectionTool(false, true, true));
         result.add(new NodeGeneratorTool(new DefaultNodeGenerator(State.class)));

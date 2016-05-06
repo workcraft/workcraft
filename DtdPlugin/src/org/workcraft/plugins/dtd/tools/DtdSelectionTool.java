@@ -14,7 +14,7 @@ import org.workcraft.plugins.dtd.VisualSignal;
 public class DtdSelectionTool extends SelectionTool {
 
     public DtdSelectionTool() {
-        super(false);
+        super(false, false, false, false);
     }
 
     @Override
