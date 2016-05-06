@@ -1,5 +1,7 @@
 package org.workcraft.plugins.dtd;
 
+import java.awt.geom.Rectangle2D;
+
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.observation.StateEvent;
@@ -32,41 +34,39 @@ public final class DtdStateSupervisor extends StateSupervisor {
 
     private void handleTransitionTransformation(VisualTransition transition) {
         VisualSignal signal = dtd.getVisualSignal(transition);
-        double y = signal.getRootSpaceY();
-        if ((signal != null) && (y != transition.getRootSpaceY())) {
-            transition.setRootSpaceY(y);
+        double y = signal.getY();
+        if ((signal != null) && (y != transition.getY())) {
+            transition.setY(y);
         }
     }
 
     private void handleSignalTransformation(VisualSignal signal) {
         for (VisualTransition transition: dtd.getVisualTransitions(signal)) {
-            double y = signal.getRootSpaceY();
-            if (transition.getRootSpaceY() != y) {
-                transition.setRootSpaceY(y);
+            double y = signal.getY();
+            if (transition.getY() != y) {
+                transition.setY(y);
             }
         }
     }
 
     private void handleComponentTransformation(VisualComponent component) {
-        VisualComponent minComponent = null;
+        Rectangle2D bb = component.getBoundingBox();
+        double xMin = bb.getMinX();
         for (Node predNode: dtd.getPreset(component)) {
             VisualComponent predComponent = (VisualComponent) predNode;
-            if ((minComponent == null) || (minComponent.getRootSpaceX() < predComponent.getRootSpaceX())) {
-                minComponent = predComponent;
-            }
+            xMin = Math.max(xMin, predComponent.getBoundingBox().getMaxX());
         }
-        VisualComponent maxComponent = null;
+        double xMax = bb.getMaxX();
         for (Node succNode: dtd.getPostset(component)) {
             VisualComponent succComponent = (VisualComponent) succNode;
-            if ((maxComponent == null) || (maxComponent.getRootSpaceX() > succComponent.getRootSpaceX())) {
-                maxComponent = succComponent;
-            }
+            xMax = Math.min(xMax, succComponent.getBoundingBox().getMinX());
         }
-        if ((minComponent != null) && (component.getRootSpaceX() < minComponent.getRootSpaceX())) {
-            component.setRootSpaceX(minComponent.getRootSpaceX());
-        }
-        if ((maxComponent != null) && (component.getRootSpaceX() > maxComponent.getRootSpaceX())) {
-            component.setRootSpaceX(maxComponent.getRootSpaceX());
+        if (xMin > bb.getMinX()) {
+            double xOffset =  component.getX() - bb.getMinX();
+            component.setX(xMin + xOffset);
+        } else if (xMax < bb.getMaxX()) {
+            double xOffset = bb.getMaxX() - component.getX();
+            component.setX(xMax - xOffset);
         }
     }
 

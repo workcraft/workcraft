@@ -56,6 +56,10 @@ public class StgSimulationTool extends PetriNetSimulationTool {
     protected Map<String, SignalState> stateMap;
     protected JTable stateTable;
 
+    public StgSimulationTool() {
+        super(true);
+    }
+
     public final class SignalState {
         public String name = "";
         public Color color = Color.BLACK;
@@ -259,18 +263,15 @@ public class StgSimulationTool extends PetriNetSimulationTool {
     }
 
     @Override
-    public void deactivated(final GraphEditor editor) {
-        if (!mainTrace.isEmpty()) {
-            VisualDtd dtd = generateDtd((STG) net, mainTrace);
-            WorkspaceEntry we = editor.getWorkspaceEntry();
-            final Path<String> directory = we.getWorkspacePath().getParent();
-            final String desiredName = we.getWorkspacePath().getNode();
-            final ModelEntry me = new ModelEntry(new DtdDescriptor(), dtd);
-            Framework framework = Framework.getInstance();
-            final Workspace workspace = framework.getWorkspace();
-            workspace.add(directory, desiredName, me, true, true);
-        }
-        super.deactivated(editor);
+    public void generateTraceGraph(final GraphEditor editor) {
+        VisualDtd dtd = generateDtd((STG) net, mainTrace);
+        WorkspaceEntry we = editor.getWorkspaceEntry();
+        final Path<String> directory = we.getWorkspacePath().getParent();
+        final String desiredName = we.getWorkspacePath().getNode();
+        final ModelEntry me = new ModelEntry(new DtdDescriptor(), dtd);
+        Framework framework = Framework.getInstance();
+        final Workspace workspace = framework.getWorkspace();
+        workspace.add(directory, desiredName, me, true, true);
     }
 
     private Type convertTransitionSignalType(SignalTransition transition) {

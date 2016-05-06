@@ -50,7 +50,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
 import javax.swing.JSlider;
 import javax.swing.JSplitPane;
 import javax.swing.JTable;
@@ -110,7 +109,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
 
     private JSlider speedSlider;
     private JButton randomButton, playButton, stopButton, backwardButton, forwardButton;
-    private JButton copyStateButton, pasteStateButton, mergeTraceButton, saveInitStateButton;
+    private JButton generateGraphButton, copyStateButton, pasteStateButton, mergeTraceButton, saveInitStateButton;
 
     // cache of "excited" containers (the ones containing the excited simulation elements)
     protected HashMap<Container, Boolean> excitedContainers = new HashMap<>();
@@ -126,6 +125,17 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
     private boolean random = false;
     public HashMap<Place, Integer> savedState = new HashMap<>();
 
+    private final boolean enableTraceGraph;
+
+    public PetriNetSimulationTool() {
+        this(false);
+    }
+
+    public PetriNetSimulationTool(boolean enableTraceGraph) {
+        super();
+        this.enableTraceGraph = enableTraceGraph;
+    }
+
     @Override
     public void createInterfacePanel(final GraphEditor editor) {
         super.createInterfacePanel(editor);
@@ -139,17 +149,19 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
         speedSlider = new JSlider(-1000, 1000, 0);
         speedSlider.setToolTipText("Simulation playback speed");
 
+        generateGraphButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-graph.svg"), "Generate trace digram");
         copyStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-copy.svg"), "Copy trace to clipboard");
         pasteStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-paste.svg"), "Paste trace from clipboard");
         mergeTraceButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-merge.svg"), "Merge branch into trace");
         saveInitStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-marking-save.svg"), "Save current state as initial");
 
-        int buttonWidth = (int) Math.round(playButton.getPreferredSize().getWidth() + 5);
-        int buttonHeight = (int) Math.round(playButton.getPreferredSize().getHeight() + 5);
-        Dimension panelSize = new Dimension(buttonWidth * 5, buttonHeight);
+        FlowLayout flowLayout = new FlowLayout();
+        int buttonWidth = (int) Math.round(playButton.getPreferredSize().getWidth() + flowLayout.getHgap());
+        int buttonHeight = (int) Math.round(playButton.getPreferredSize().getHeight() + flowLayout.getVgap());
+        Dimension panelSize = new Dimension(buttonWidth * 5 + flowLayout.getHgap(), buttonHeight + flowLayout.getVgap());
 
         JPanel simulationControl = new JPanel();
-        simulationControl.setLayout(new FlowLayout());
+        simulationControl.setLayout(flowLayout);
         simulationControl.setPreferredSize(panelSize);
         simulationControl.setMaximumSize(panelSize);
         simulationControl.add(playButton);
@@ -165,9 +177,12 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
         speedControl.add(speedSlider, BorderLayout.CENTER);
 
         JPanel traceControl = new JPanel();
-        traceControl.setLayout(new FlowLayout());
+        traceControl.setLayout(flowLayout);
         traceControl.setPreferredSize(panelSize);
-        traceControl.add(new JSeparator());
+        traceControl.setMaximumSize(panelSize);
+        if (enableTraceGraph) {
+            traceControl.add(generateGraphButton);
+        }
         traceControl.add(copyStateButton);
         traceControl.add(pasteStateButton);
         traceControl.add(mergeTraceButton);
@@ -288,6 +303,14 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
             @Override
             public void actionPerformed(ActionEvent e) {
                 step(editor);
+                editor.requestFocus();
+            }
+        });
+
+        generateGraphButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                generateTraceGraph(editor);
                 editor.requestFocus();
             }
         });
@@ -604,6 +627,9 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
             timer = null;
         }
         updateState(editor);
+    }
+
+    public void generateTraceGraph(final GraphEditor editor) {
     }
 
     private void copyState(final GraphEditor editor) {
