@@ -195,6 +195,7 @@ public class PetriNetSimulationTool extends AbstractTool implements ClipboardOwn
         controlPanel.add(traceControl);
 
         traceTable = new JTable(new TraceTableModel());
+        traceTable.getTableHeader().setReorderingAllowed(false);
         traceTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         traceTable.setRowHeight(FontHelper.getFontSizeInPixels(traceTable.getFont()));
         traceTable.setDefaultRenderer(Object.class, new TraceTableCellRendererImplementation());

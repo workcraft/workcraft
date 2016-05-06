@@ -10,7 +10,9 @@ import org.workcraft.plugins.stg.SignalTransition.Type;
 public interface STGModel extends PetriNetModel {
     Collection<Transition> getDummyTransitions();
     Collection<SignalTransition> getSignalTransitions();
+    Collection<SignalTransition> getSignalTransitions(Type type);
 
     Set<String> getDummyReferences();
+    Set<String> getSignalReferences();
     Set<String> getSignalReferences(Type type);
 }
