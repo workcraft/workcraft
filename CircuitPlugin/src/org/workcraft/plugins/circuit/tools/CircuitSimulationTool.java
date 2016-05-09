@@ -135,19 +135,19 @@ public class CircuitSimulationTool extends StgSimulationTool {
     @Override
     public void initialiseSignalState() {
         super.initialiseSignalState();
-        for (String signalName: stateMap.keySet()) {
-            SignalState signalState = stateMap.get(signalName);
+        for (String signalName: signalDataMap.keySet()) {
+            SignalData signalState = signalDataMap.get(signalName);
             String zeroName = SignalStg.getLowName(signalName);
             Node zeroNode = net.getNodeByReference(zeroName);
             if (zeroNode instanceof Place) {
                 Place zeroPlace = (Place) zeroNode;
-                signalState.value = (zeroPlace.getTokens() > 0) ? 0 : 1;
+                signalState.value = (zeroPlace.getTokens() > 0) ? SignalState.LOW : SignalState.HIGH;
             }
             String oneName = SignalStg.getHighName(signalName);
             Node oneNode = net.getNodeByReference(oneName);
             if (oneNode instanceof Place) {
                 Place onePlace = (Place) oneNode;
-                signalState.value = (onePlace.getTokens() > 0) ? 1 : 0;
+                signalState.value = (onePlace.getTokens() > 0) ? SignalState.HIGH : SignalState.LOW;
             }
         }
     }

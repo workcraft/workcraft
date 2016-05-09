@@ -216,7 +216,9 @@ public class VisualDtd extends AbstractVisualModel {
     }
 
     public VisualTransition createVisualTransition(VisualSignal signal, Direction direction) {
-        return createVisualTransition(signal.getReferencedSignal(), direction);
+        VisualTransition transition = createVisualTransition(signal.getReferencedSignal(), direction);
+        transition.setForegroundColor(signal.getForegroundColor());
+        return transition;
     }
 
     public SignalEvent appendSignalEvent(VisualSignal signal, Direction direction) {
@@ -235,6 +237,7 @@ public class VisualDtd extends AbstractVisualModel {
         VisualConnection level = null;
         try {
             level = connect(fromComponent, edge);
+            level.setColor(signal.getForegroundColor());
         } catch (InvalidConnectionException e) {
         }
         return new SignalEvent(level, edge);

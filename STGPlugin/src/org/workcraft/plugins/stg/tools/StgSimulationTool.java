@@ -23,8 +23,10 @@ import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.TransferHandler;
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.TableModelEvent;
 import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
 import org.workcraft.Framework;
@@ -37,6 +39,10 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.gui.propertyeditor.BooleanCellEditor;
+import org.workcraft.gui.propertyeditor.BooleanCellRenderer;
+import org.workcraft.gui.propertyeditor.ColorCellEditor;
+import org.workcraft.gui.propertyeditor.ColorCellRenderer;
 import org.workcraft.gui.propertyeditor.PropertyEditorTable;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.dtd.Dtd;
@@ -51,7 +57,6 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.petri.tools.PetriNetSimulationTool;
 import org.workcraft.plugins.shared.CommonSignalSettings;
-import org.workcraft.plugins.stg.DummyTransition;
 import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
@@ -65,10 +70,10 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class StgSimulationTool extends PetriNetSimulationTool {
     private static final int COLUMN_SIGNAL = 0;
     private static final int COLUMN_STATE = 1;
-    private static final int COLUMN_VISIBILITY = 2;
+    private static final int COLUMN_VISIBILE = 2;
     private static final int COLUMN_COLOR = 3;
 
-    protected HashMap<String, SignalState> stateMap = new HashMap<>();
+    protected HashMap<String, SignalData> signalDataMap = new HashMap<>();
     protected LinkedList<String> signals = new LinkedList<>();
     protected JTable stateTable;
 
@@ -76,24 +81,51 @@ public class StgSimulationTool extends PetriNetSimulationTool {
         super(true);
     }
 
-    public final class SignalState {
+    public enum SignalState {
+        HIGH("1"),
+        LOW("0"),
+        UNDEFINED("?");
+
+        private final String name;
+
+        SignalState(String name) {
+            this.name = name;
+        }
+
+        @Override
+        public String toString() {
+            return name;
+        }
+
+        public SignalState toggle() {
+            switch (this) {
+            case HIGH: return LOW;
+            case LOW: return HIGH;
+            default: return this;
+            }
+        }
+    }
+
+    public final class SignalData {
         public final String signal;
         public final SignalTransition.Type type;
 
-        public Color color = Color.BLACK;
+        public SignalState value = SignalState.UNDEFINED;
         public boolean excited = false;
-        public int value = -1;
+        public Boolean visible = true;
+        public Color color = Color.BLACK;
 
-        public SignalState(String signal, SignalTransition.Type type) {
+        public SignalData(String signal, SignalTransition.Type type) {
             this.signal = signal;
             this.type = type;
         }
 
-        public void copy(SignalState signalState) {
-            if (signalState != null) {
-                color = signalState.color;
-                excited = signalState.excited;
-                value = signalState.value;
+        public void copy(SignalData signalData) {
+            if (signalData != null) {
+                value = signalData.value;
+                excited = signalData.excited;
+                visible = signalData.visible;
+                color = signalData.color;
             }
         }
     }
@@ -102,7 +134,7 @@ public class StgSimulationTool extends PetriNetSimulationTool {
     private final class StateTableModel extends AbstractTableModel {
         @Override
         public int getColumnCount() {
-            return 2;
+            return 4;
         }
 
         @Override
@@ -110,25 +142,55 @@ public class StgSimulationTool extends PetriNetSimulationTool {
             switch (column) {
             case COLUMN_SIGNAL: return "Signal";
             case COLUMN_STATE: return "State";
-            case COLUMN_VISIBILITY: return "Visibility";
+            case COLUMN_VISIBILE: return "Visible";
             case COLUMN_COLOR: return "Color";
             default: return null;
             }
         }
 
         @Override
+        public Class getColumnClass(int col) {
+            switch (col) {
+            case COLUMN_SIGNAL: return SignalData.class;
+            case COLUMN_STATE: return SignalData.class;
+            case COLUMN_VISIBILE: return Boolean.class;
+            case COLUMN_COLOR: return Color.class;
+            default: return null;
+            }
+        }
+
+        @Override
         public int getRowCount() {
-            return (stateMap == null) ? 0 : stateMap.size();
+            return (signalDataMap == null) ? 0 : signalDataMap.size();
         }
 
         @Override
         public Object getValueAt(int row, int col) {
-            Object result = null;
-            if (row < stateMap.size()) {
-                String name = signals.get(row);
-                result = stateMap.get(name);
+            if (row < signalDataMap.size()) {
+                String signalName = signals.get(row);
+                SignalData signalData = signalDataMap.get(signalName);
+                if (signalData != null) {
+                    switch (col) {
+                    case COLUMN_SIGNAL: return signalData;
+                    case COLUMN_STATE: return signalData;
+                    case COLUMN_VISIBILE: return signalData.visible;
+                    case COLUMN_COLOR: return signalData.color;
+                    default: return null;
+                    }
+                }
             }
-            return result;
+            return null;
+        }
+
+        @Override
+        public boolean isCellEditable(int row, int col) {
+            switch (col) {
+            case COLUMN_SIGNAL: return false;
+            case COLUMN_STATE: return false;
+            case COLUMN_VISIBILE: return true;
+            case COLUMN_COLOR: return true;
+            default: return false;
+            }
         }
 
         public void reorder(int from, int to) {
@@ -140,7 +202,7 @@ public class StgSimulationTool extends PetriNetSimulationTool {
         }
     }
 
-    private final class StateTableCellRendererImplementation implements TableCellRenderer {
+    private final class SignalDataRenderer implements TableCellRenderer {
         final JLabel label = new JLabel() {
             @Override
             public void paint(Graphics g) {
@@ -153,38 +215,29 @@ public class StgSimulationTool extends PetriNetSimulationTool {
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value,
                 boolean isSelected, boolean hasFocus, int row, int column) {
-            JLabel result = null;
+            label.setText("");
             label.setBorder(PropertyEditorTable.BORDER_RENDER);
+            label.setForeground(table.getForeground());
             label.setBackground(table.getBackground());
-            if ((net != null) && (value instanceof SignalState)) {
-                SignalState st = (SignalState) value;
+            label.setFont(table.getFont().deriveFont(Font.PLAIN));
+            if ((net != null) && (value instanceof SignalData)) {
+                SignalData st = (SignalData) value;
                 switch (column) {
                 case COLUMN_SIGNAL:
                     label.setText(st.signal);
-                    Color color = getTypeColor(st.type);
-                    label.setForeground(color);
-                    Font plainFont = table.getFont().deriveFont(Font.PLAIN);
-                    label.setFont(plainFont);
-                    result = label;
+                    label.setForeground(getTypeColor(st.type));
                     break;
                 case COLUMN_STATE:
-                    if (st.value < 0) {
-                        label.setText("?");
-                    } else {
-                        label.setText(Integer.toString(st.value));
-                    }
-                    label.setForeground(table.getForeground());
+                    label.setText(st.value.toString());
                     if (st.excited) {
-                        Font boldFont = table.getFont().deriveFont(Font.BOLD);
-                        label.setFont(boldFont);
+                        label.setFont(table.getFont().deriveFont(Font.BOLD));
                     }
-                    result = label;
                     break;
                 default:
                     break;
                 }
             }
-            return result;
+            return label;
         }
     }
 
@@ -299,14 +352,41 @@ public class StgSimulationTool extends PetriNetSimulationTool {
     @Override
     public void createInterfacePanel(final GraphEditor editor) {
         super.createInterfacePanel(editor);
-        stateTable = new JTable(new StateTableModel());
+
+        stateTable = new JTable(new StateTableModel()) {
+            @Override
+            public void editingStopped(ChangeEvent e) {
+                TableCellEditor cellEditor = getCellEditor();
+                if (cellEditor != null) {
+                    String signalName = signals.get(editingRow);
+                    SignalData signalData = signalDataMap.get(signalName);
+                    Object value = cellEditor.getCellEditorValue();
+                        switch (editingColumn) {
+                        case COLUMN_VISIBILE:
+                            signalData.visible = (Boolean) value;
+                            break;
+                        case COLUMN_COLOR:
+                            signalData.color = (Color) value;
+                            break;
+                        }
+                        setValueAt(value, editingRow, editingColumn);
+                        removeEditor();
+                    }
+                }
+        };
+
         stateTable.getTableHeader().setReorderingAllowed(false);
         stateTable.setDragEnabled(true);
         stateTable.setDropMode(DropMode.INSERT_ROWS);
         stateTable.setTransferHandler(new StateTableRowTransferHandler(stateTable));
         stateTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         stateTable.setRowHeight(FontHelper.getFontSizeInPixels(stateTable.getFont()));
-        stateTable.setDefaultRenderer(Object.class, new StateTableCellRendererImplementation());
+        stateTable.setDefaultRenderer(SignalData.class, new SignalDataRenderer());
+        stateTable.setDefaultRenderer(Boolean.class, new BooleanCellRenderer());
+        stateTable.setDefaultEditor(Boolean.class, new BooleanCellEditor());
+        stateTable.setDefaultRenderer(Color.class, new ColorCellRenderer());
+        stateTable.setDefaultEditor(Color.class, new ColorCellEditor());
+
         statePane.setViewportView(stateTable);
         traceTable.setDefaultRenderer(Object.class, new TraceTableCellRendererImplementation());
     }
@@ -333,21 +413,17 @@ public class StgSimulationTool extends PetriNetSimulationTool {
             if (node instanceof SignalTransition) {
                 SignalTransition transition = (SignalTransition) node;
                 String signalReference = ((STG) net).getSignalReference(transition);
-                SignalState signalState = stateMap.get(signalReference);
+                SignalData signalState = signalDataMap.get(signalReference);
                 if (signalState != null) {
                     switch (transition.getDirection()) {
                     case MINUS:
-                        signalState.value = 0;
+                        signalState.value = SignalState.LOW;
                         break;
                     case PLUS:
-                        signalState.value = 1;
+                        signalState.value = SignalState.HIGH;
                         break;
                     case TOGGLE:
-                        if (signalState.value == 1) {
-                            signalState.value = 0;
-                        } else if (signalState.value == 0) {
-                            signalState.value = 1;
-                        }
+                        signalState.value = signalState.value.toggle();
                         break;
                     default:
                         break;
@@ -360,19 +436,19 @@ public class StgSimulationTool extends PetriNetSimulationTool {
             if (node instanceof SignalTransition) {
                 SignalTransition transition = (SignalTransition) node;
                 String signalReference = ((STG) net).getSignalReference(transition);
-                SignalState st = stateMap.get(signalReference);
-                if (st != null) {
-                    st.excited |= net.isEnabled(transition);
+                SignalData signalData = signalDataMap.get(signalReference);
+                if (signalData != null) {
+                    signalData.excited |= net.isEnabled(transition);
                 }
             }
         }
     }
 
     public void initialiseSignalState() {
-        for (String signalName: stateMap.keySet()) {
-            SignalState signalState = stateMap.get(signalName);
-            signalState.value = -1;
-            signalState.excited = false;
+        for (String signalName: signalDataMap.keySet()) {
+            SignalData signalData = signalDataMap.get(signalName);
+            signalData.value = SignalState.UNDEFINED;
+            signalData.excited = false;
         }
     }
 
@@ -385,7 +461,9 @@ public class StgSimulationTool extends PetriNetSimulationTool {
 
     @Override
     public void generateTraceGraph(final GraphEditor editor) {
-        VisualDtd dtd = generateDtd((STG) net, mainTrace);
+        STG stg = (STG) net;
+        LinkedList<SignalData> orderedTraceSignal = getOrderedTraceSignals(stg, mainTrace);
+        VisualDtd dtd = generateDtd(stg, mainTrace, orderedTraceSignal);
         WorkspaceEntry we = editor.getWorkspaceEntry();
         final Path<String> directory = we.getWorkspacePath().getParent();
         final String desiredName = we.getWorkspacePath().getNode();
@@ -412,36 +490,58 @@ public class StgSimulationTool extends PetriNetSimulationTool {
         }
     }
 
-    private VisualDtd generateDtd(STG stg, Trace trace) {
-        VisualDtd dtd = new VisualDtd(new Dtd());
-        HashMap<String, VisualSignal> signalMap = new HashMap<>();
-        HashMap<Node, HashSet<SignalEvent>> causeMap = new HashMap<>();
-        HashSet<String> presentSignals = new HashSet<>();
+    private LinkedList<SignalData> getOrderedTraceSignals(STG stg, Trace trace) {
+        LinkedList<SignalData> result = new LinkedList<>();
+        HashSet<String> traceSignals = new HashSet<>();
         for (String transitionName: trace) {
             Node node = stg.getNodeByReference(transitionName);
             if (node instanceof SignalTransition) {
                 SignalTransition transition = (SignalTransition) node;
                 String signalName = transition.getSignalName();
-                presentSignals.add(signalName);
+                traceSignals.add(signalName);
             }
         }
         for (String signalName: signals) {
-            if (!presentSignals.contains(signalName) || signalMap.containsKey(signalName)) continue;
-            VisualSignal signal = dtd.createVisualSignal(signalName);
+            if (traceSignals.contains(signalName)) {
+                SignalData signalData = signalDataMap.get(signalName);
+                if ((signalData != null) && signalData.visible) {
+                    result.add(signalData);
+                }
+            }
+        }
+        return result;
+    }
+
+    private VisualDtd generateDtd(STG stg, Trace trace, LinkedList<SignalData> signalDataList) {
+        VisualDtd dtd = new VisualDtd(new Dtd());
+        HashMap<String, VisualSignal> signalMap = new HashMap<>();
+        HashMap<Node, HashSet<SignalEvent>> causeMap = new HashMap<>();
+        for (SignalData signalData: signalDataList) {
+            VisualSignal signal = dtd.createVisualSignal(signalData.signal);
             signal.setPosition(new Point2D.Double(0.0, 2.0 * signalMap.size()));
-            SignalState signalState = stateMap.get(signalName);
-            SignalTransition.Type type = (signalState == null) ? null : signalState.type;
+            SignalTransition.Type type = (signalData == null) ? null : signalData.type;
             signal.setType(convertSignalType(type));
-            signalMap.put(signalName, signal);
+            signal.setForegroundColor(signalData.color);
+            signalMap.put(signalData.signal, signal);
         }
         double x = 0.0;
         for (String transitionName: trace) {
             Node node = stg.getNodeByReference(transitionName);
-            if (node instanceof DummyTransition) {
+            boolean skip = true;
+            if (node instanceof SignalTransition) {
+                SignalTransition transition = (SignalTransition) node;
+                String signalName = transition.getSignalName();
+                SignalData signalData = signalDataMap.get(signalName);
+                skip = (signalData == null) || !signalData.visible;
+            }
+            if (skip) {
                 HashSet<SignalEvent> propagatedCauses = new HashSet<>();
                 for (Node pred: stg.getPreset(node)) {
-                    propagatedCauses.addAll(causeMap.get(pred));
-                    causeMap.remove(pred);
+                    HashSet<SignalEvent> cause = causeMap.get(pred);
+                    if (cause != null) {
+                        propagatedCauses.addAll(cause);
+                        causeMap.remove(pred);
+                    }
                 }
                 for (Node succ: stg.getPostset(node)) {
                     causeMap.put(succ, propagatedCauses);
@@ -491,13 +591,13 @@ public class StgSimulationTool extends PetriNetSimulationTool {
     protected void initialiseStateMap() {
         STG stg = (STG) net;
         Set<String> signalSet = stg.getSignalReferences();
-        HashMap<String, SignalState> newStateMap = new HashMap<>(signalSet.size());
+        HashMap<String, SignalData> newStateMap = new HashMap<>(signalSet.size());
         for (String signal: signalSet) {
-            SignalState signalState = new SignalState(signal, stg.getSignalType(signal));
-            signalState.copy(stateMap.get(signal));
-            newStateMap.put(signal, signalState);
+            SignalData signalData = new SignalData(signal, stg.getSignalType(signal));
+            signalData.copy(signalDataMap.get(signal));
+            newStateMap.put(signal, signalData);
         }
-        stateMap = newStateMap;
+        signalDataMap = newStateMap;
 
         signals.retainAll(signalSet);
         signalSet.removeAll(signals);
