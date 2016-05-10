@@ -18,7 +18,6 @@ import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.xmas.components.VisualSyncComponent;
-import org.workcraft.plugins.xmas.components.VisualXmasContact;
 import org.workcraft.util.Hierarchy;
 
 public class SyncSelectionTool extends SelectionTool {
@@ -50,9 +49,6 @@ public class SyncSelectionTool extends SelectionTool {
             removeInputMenuItem.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    for (VisualXmasContact contact : component.getContacts()) {
-                        contact = null;
-                    }
                 }
             });
             popup.add(removeInputMenuItem);

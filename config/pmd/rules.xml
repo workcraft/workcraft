@@ -11,4 +11,5 @@
     <rule ref="rulesets/java/unnecessary.xml">
         <exclude name="UselessParentheses"/> <!--Too nitpicky-->
     </rule>
+    <rule ref="rulesets/java/unusedcode.xml/UnusedLocalVariable"/>
 </ruleset>

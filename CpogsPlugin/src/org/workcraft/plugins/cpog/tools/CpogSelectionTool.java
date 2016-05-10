@@ -266,11 +266,10 @@ public class CpogSelectionTool extends SelectionTool {
         }
 
         CpogFormula f = null;
-        GraphFunc<String, CpogFormula> pgf = null;
         final HashMap<String, VisualVertex> localVertices = new HashMap<>();
         try {
             f = CpogExpressionParser.parse(text,
-                    pgf = new GraphFunc<String, CpogFormula>() {
+                    new GraphFunc<String, CpogFormula>() {
 
                         boolean ref;
 

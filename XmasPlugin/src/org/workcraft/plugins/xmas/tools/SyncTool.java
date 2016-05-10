@@ -275,7 +275,6 @@ public class SyncTool implements Tool {
                             sel = (String) cb.getSelectedItem();
                         } else if (cn2 instanceof JTextField) {
                             JTextField tf = (JTextField) cn2;
-                            String str = tf.getText().toString();
                             if (sel.equals("mesochronous")) {
                                 if (n == 2) {
                                     tf.setEnabled(false);
@@ -332,11 +331,6 @@ public class SyncTool implements Tool {
             slist2 = new ArrayList<String>();
             slist2 = new ArrayList<String>();
         }
-        VisualSourceComponent src1 = null;
-        VisualQueueComponent qu1 = null;
-        VisualSyncComponent syn1 = null;
-        VisualSinkComponent snk1 = null;
-        VisualGroup gr = null;
         VisualGroup gr1 = null;
         VisualGroup gr2 = null;
         int gno = 1;
@@ -399,26 +393,16 @@ public class SyncTool implements Tool {
             gno++;
         }
 
-        int numNodes = 0;
-        Collection<XmasContact> contacts;
-
-        for (Node node : cnet.getNodes()) {
-            //System.out.println("Name =" + cnet.getName(node));
-            numNodes++;
-        }
         //GEN JSON
         File jsonFile = XmasSettings.getTempVxmJsonFile();
         PrintWriter writer = null;
 
         try {
             writer = new PrintWriter(jsonFile);
-            int cntNodes = 0;
-            List<VisualGroup> groups = new ArrayList<>();
             List<VisualComponent> vcomps = new ArrayList<>();
             List<VisualSyncComponent> vscomps = new ArrayList<>();
 
             for (Node node : vnet.getNodes()) {
-                cntNodes++;
                 if (node instanceof VisualSyncComponent) {
                     cntSyncnodes++;
                     vscomps.add((VisualSyncComponent) node);
@@ -453,17 +437,11 @@ public class SyncTool implements Tool {
                 //if (vn1 instanceof VisualQueueComponent && vn2 instanceof VisualSyncComponent) {
 
                 if (vn2 instanceof VisualSyncComponent) {   //vn2
-                    Collection<XmasContact> contacts2;
                     Collection<XmasContact> ccontacts;
                     if (vn1 instanceof VisualQueueComponent) {                    //Queue
                         VisualQueueComponent vsc = (VisualQueueComponent) vn1;
                         QueueComponent sc = vsc.getReferencedQueueComponent();
-                        contacts2 = sc.getOutputs();
                         ccontacts = sc.getOutputs();
-                        for (XmasContact node : contacts2) {
-                            //System.out.println("Queue grno = " + sc.getGr());
-                            //System.out.println("InputContact =" + cnet.getName(sc));
-                        }
                         for (XmasContact contactNode2 : ccontacts) {
                             for (Connection c : cnet.getConnections(contactNode2)) {
                                 if (c.getSecond() instanceof XmasContact) {
@@ -480,12 +458,7 @@ public class SyncTool implements Tool {
                     } else if (vn1 instanceof VisualFunctionComponent) {            //Fun
                         VisualFunctionComponent vsc = (VisualFunctionComponent) vn1;
                         FunctionComponent sc = vsc.getReferencedFunctionComponent();
-                        contacts2 = sc.getOutputs();
                         ccontacts = sc.getOutputs();
-                        for (XmasContact node : contacts2) {
-                            //System.out.println("Fun grno = " + sc.getGr());
-                            //System.out.println("InputContact =" + cnet.getName(sc));
-                        }
                         for (XmasContact contactNode2 : ccontacts) {
                             for (Connection c : cnet.getConnections(contactNode2)) {
                                 if (c.getSecond() instanceof XmasContact) {
@@ -502,12 +475,7 @@ public class SyncTool implements Tool {
                     } else if (vn1 instanceof VisualMergeComponent) {                //Merge
                         VisualMergeComponent vsc = (VisualMergeComponent) vn1;
                         MergeComponent sc = vsc.getReferencedMergeComponent();
-                        contacts2 = sc.getOutputs();
                         ccontacts = sc.getOutputs();
-                        for (XmasContact node : contacts2) {
-                            //System.out.println("Merge grno = " + sc.getGr());
-                            //System.out.println("InputContact =" + cnet.getName(sc));
-                        }
                         for (XmasContact contactNode2 : ccontacts) {
                             int cno = 0;
                             for (Connection c : cnet.getConnections(contactNode2)) {
@@ -528,12 +496,7 @@ public class SyncTool implements Tool {
                     } else if (vn1 instanceof VisualSwitchComponent) {                //Switch
                         VisualSwitchComponent vsc = (VisualSwitchComponent) vn1;
                         SwitchComponent sc = vsc.getReferencedSwitchComponent();
-                        contacts2 = sc.getOutputs();
                         ccontacts = sc.getOutputs();
-                        for (XmasContact node : contacts2) {
-                            //System.out.println("Switch grno = " + sc.getGr());
-                            //System.out.println("InputContact =" + cnet.getName(sc));
-                        }
                         for (XmasContact contactNode2 : ccontacts) {
                             int cno = 0;
                             for (Connection c : cnet.getConnections(contactNode2)) {
@@ -554,12 +517,7 @@ public class SyncTool implements Tool {
                     } else if (vn1 instanceof VisualForkComponent) {
                         VisualForkComponent vsc = (VisualForkComponent) vn1;
                         ForkComponent sc = vsc.getReferencedForkComponent();
-                        contacts2 = sc.getOutputs();
                         ccontacts = sc.getOutputs();
-                        for (XmasContact node : contacts2) {
-                            //System.out.println("Switch grno = " + sc.getGr());
-                            //System.out.println("InputContact =" + cnet.getName(sc));
-                        }
                         for (XmasContact contactNode2: ccontacts) {
                             int cno = 0;  //???
                             for (Connection c: cnet.getConnections(contactNode2)) {
@@ -580,12 +538,7 @@ public class SyncTool implements Tool {
                     } else if (vn1 instanceof VisualJoinComponent) {                   //Join
                         VisualJoinComponent vsc = (VisualJoinComponent) vn1;
                         JoinComponent sc = vsc.getReferencedJoinComponent();
-                        contacts2 = sc.getOutputs();
                         ccontacts = sc.getOutputs();
-                        for (XmasContact node : contacts2) {
-                            //System.out.println("Join grno = " + sc.getGr());
-                            //System.out.println("InputContact =" + cnet.getName(sc));
-                        }
                         for (XmasContact contactNode2 : ccontacts) {
                             int cno = 0;
                             for (Connection c : cnet.getConnections(contactNode2)) {
@@ -603,17 +556,11 @@ public class SyncTool implements Tool {
                         }
                     }
                 } else if (vn1 instanceof VisualSyncComponent) {    //vn1
-                    Collection<XmasContact> contacts2;
                     Collection<XmasContact> ccontacts;
                     if (vn2 instanceof VisualQueueComponent) {               //Queue
                         VisualQueueComponent vsc = (VisualQueueComponent) vn2;
                         QueueComponent sc = vsc.getReferencedQueueComponent();
-                        contacts2 = sc.getInputs();
                         ccontacts = sc.getInputs();
-                        for (XmasContact node : contacts2) {
-                            //System.out.println("Queue grno = " + sc.getGr());
-                            //System.out.println("OutputContact =" + cnet.getName(sc));
-                        }
                         for (XmasContact contactNode2 : ccontacts) {
                             for (Connection c : cnet.getConnections(contactNode2)) {
                                 if (c.getSecond() instanceof XmasContact) {
@@ -633,12 +580,7 @@ public class SyncTool implements Tool {
                     } else if (vn2 instanceof VisualFunctionComponent) {       //Function
                         VisualFunctionComponent vsc = (VisualFunctionComponent) vn2;
                         FunctionComponent sc = vsc.getReferencedFunctionComponent();
-                        contacts2 = sc.getInputs();
                         ccontacts = sc.getInputs();
-                        for (XmasContact node : contacts2) {
-                            //System.out.println("Fun grno = " + sc.getGr());
-                            //System.out.println("OutputContact =" + cnet.getName(sc));
-                        }
                         for (XmasContact contactNode2 : ccontacts) {
                             for (Connection c : cnet.getConnections(contactNode2)) {
                                 if (c.getSecond() instanceof XmasContact) {
@@ -657,12 +599,7 @@ public class SyncTool implements Tool {
                     } else if (vn2 instanceof VisualMergeComponent) {                //Merge
                         VisualMergeComponent vsc = (VisualMergeComponent) vn2;
                         MergeComponent sc = vsc.getReferencedMergeComponent();
-                        contacts2 = sc.getInputs();
                         ccontacts = sc.getInputs();
-                        for (XmasContact node : contacts2) {
-                            //System.out.println("Merge grno = " + sc.getGr());
-                            //System.out.println("OutputContact =" + cnet.getName(sc));
-                        }
                         int cno = 0;
                         int cno2 = 0;
                         for (XmasContact contactNode2 : ccontacts) {
@@ -695,12 +632,7 @@ public class SyncTool implements Tool {
                     } else if (vn2 instanceof VisualSwitchComponent) {           //Switch - base
                         VisualSwitchComponent vsc = (VisualSwitchComponent) vn2;
                         SwitchComponent sc = vsc.getReferencedSwitchComponent();
-                        contacts2 = sc.getInputs();
                         ccontacts = sc.getInputs();
-                        for (XmasContact node : contacts2) {
-                            //System.out.println("Switch grno = " + sc.getGr());
-                            //System.out.println("OutputContact =" + cnet.getName(sc));
-                        }
                         for (XmasContact contactNode2 : ccontacts) {
                             for (Connection c : cnet.getConnections(contactNode2)) {
                                 if (c.getSecond() instanceof XmasContact) {
@@ -719,12 +651,7 @@ public class SyncTool implements Tool {
                     } else if (vn2 instanceof VisualJoinComponent) {
                         VisualJoinComponent vsc = (VisualJoinComponent) vn2;
                         JoinComponent sc = vsc.getReferencedJoinComponent();
-                        contacts2 = sc.getInputs();
                         ccontacts = sc.getInputs();
-                        for (XmasContact node : contacts2) {
-                            //System.out.println("Join grno = " + sc.getGr());
-                            //System.out.println("OutputContact =" + cnet.getName(sc));
-                        }
                         int cno = 0;
                         int cno2 = 0;
                         for (XmasContact contactNode2: ccontacts) {
@@ -760,12 +687,7 @@ public class SyncTool implements Tool {
                     } else if (vn2 instanceof VisualForkComponent) {           //Fork - base
                         VisualForkComponent vsc = (VisualForkComponent) vn2;
                         ForkComponent sc = vsc.getReferencedForkComponent();
-                        contacts2 = sc.getInputs();
                         ccontacts = sc.getInputs();
-                        for (XmasContact node : contacts2) {
-                            //System.out.println("Fun grno = " + sc.getGr());
-                            //System.out.println("OutputContact =" + cnet.getName(sc));
-                        }
                         for (XmasContact contactNode2 : ccontacts) {
                             for (Connection c : cnet.getConnections(contactNode2)) {
                                 if (c.getSecond() instanceof XmasContact) {

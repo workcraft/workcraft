@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Scanner;
 
 import org.workcraft.Tool;
-import org.workcraft.plugins.xmas.VisualXmas;
 import org.workcraft.plugins.xmas.Xmas;
 import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.util.LogUtils;
@@ -107,7 +106,6 @@ public class VerConfTool implements Tool {
             Scanner line = new Scanner(sc.nextLine());
             Scanner nxt = new Scanner(line.next());
             String check = nxt.next();
-            String str;
             if (check.startsWith("trace")) {
                 nxt = new Scanner(line.next());
                 trcombob.setSelectedItem(nxt.next());
@@ -160,11 +158,7 @@ public class VerConfTool implements Tool {
 
     public void run(WorkspaceEntry we) {
         System.out.println("Running tests");
-        final VisualXmas vnet = (VisualXmas) we.getModelEntry().getVisualModel();
-
         cntSyncNodes = 0;
-
-        Xmas cnet = (Xmas) we.getModelEntry().getMathModel();
 
         //SyncMenu dialog = new SyncMenu();
 
@@ -233,11 +227,8 @@ public class VerConfTool implements Tool {
         okButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                int no = 1;
-
                 dispose();
                 writeOutput();
-
             }
 
         });

@@ -212,7 +212,6 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
             @Override
             public Decoration getDecoration(Node node) {
                 if (node instanceof VisualNamedTransition) {
-                    VisualNamedTransition t = (VisualNamedTransition) node;
                     final String name = stg.getNodeMathReference(node);
                     if (selectedCores == null) {
                         final Color color = (density == null) ? null : density.getColor(name);

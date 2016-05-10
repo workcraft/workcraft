@@ -224,11 +224,7 @@ public class PnToCpogConverter {
             // last vertex must be place after all the other ones
             xRightmostVertex = xRightmostVertex + 5;
 
-            // counting pre vertices of last vertex
-            int numberPreConnections = 0;
-            for (Connection connection : visualCpog.getConnections(vertex)) {
-                numberPreConnections++;
-            }
+            int numberPreConnections = visualCpog.getConnections(vertex).size();
 
             // if last vertex has got more than one pre vertices
             // it must be placed on the right of the rightmost

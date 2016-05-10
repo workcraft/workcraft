@@ -340,7 +340,6 @@ public class XmasSimulationTool extends StgSimulationTool {
                 } else if (node instanceof VisualQueueComponent) {
                     final VisualQueueComponent queue = (VisualQueueComponent) node;
                     final QueueStg queueStg = generator.getQueueStg(queue);
-                    final boolean isInTrace = generator.isRelated(node, traceCurrentNode);
 
                     return new QueueDecoration() {
                         @Override

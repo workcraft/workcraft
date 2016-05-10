@@ -56,7 +56,7 @@ public class TestTool extends AbstractTool implements Tool {
     public void run(WorkspaceEntry we) {
         System.out.println("================================================================================");
         SON net = (SON) we.getModelEntry().getMathModel();
-        VisualSON vnet = (VisualSON) we.getModelEntry().getVisualModel();
+        // VisualSON vnet = (VisualSON) we.getModelEntry().getVisualModel();
         // reachableMarkingsTest(net);
         esitmationTest(net);
         // timeTest(net);
@@ -98,7 +98,7 @@ public class TestTool extends AbstractTool implements Tool {
     private void esitmationTest(SON net) {
         // DFSEstimationAlg timeAlg = new DFSEstimationAlg(net, new Interval(0,
         // 0), Granularity.YEAR_YEAR, null);
-        BSONAlg bsonAlg = new BSONAlg(net);
+        // BSONAlg bsonAlg = new BSONAlg(net);
 
         // try {
         // //timeAlg.entireEst();
@@ -178,7 +178,7 @@ public class TestTool extends AbstractTool implements Tool {
     }
 
     private void getScenario(SON net) {
-        ScenarioGeneratorTool s = new ScenarioGeneratorTool();
+        new ScenarioGeneratorTool();
     }
 
     private void dfsTest(SON net) {

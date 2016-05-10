@@ -78,10 +78,6 @@ public class PNetExt {
     }
 
     private static void readFile(String file, int syncflag) {
-        String typ = null;
-        String g1 = null;
-        String g2 = null;
-        ArrayList storeWordList = new ArrayList();
         Scanner sc = null;
         try {
             sc = new Scanner(new File(file));
@@ -89,7 +85,6 @@ public class PNetExt {
             LogUtils.logErrorLine(e.getMessage());
         }
         String name;
-        int num;
         while (sc.hasNextLine()) {
             Scanner line = new Scanner(sc.nextLine());
             Scanner nxt = new Scanner(line.next());
@@ -99,22 +94,18 @@ public class PNetExt {
                     nxt = new Scanner(line.next());
                     name = nxt.next();
                     sourcelist.add(new Source(name, name));
-                    typ = "Source";
                 } else if (check.startsWith("//genfunction")) {
                     nxt = new Scanner(line.next());
                     name = nxt.next();
                     funlist.add(new Fun(name));
-                    typ = "Function";
                 } else if (check.startsWith("//genmerge")) {
                     nxt = new Scanner(line.next());
                     name = nxt.next();
                     mergelist.add(new Merge(name, name));
-                    typ = "Merge";
                 } else if (check.startsWith("//genswitch")) {
                     nxt = new Scanner(line.next());
                     name = nxt.next();
                     switchlist.add(new Switch(name, name));
-                    typ = "Switch";
                 }
             }
         }

@@ -27,7 +27,7 @@ public class SolutionPanel extends JPanel {
         buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.Y_AXIS));
 
-        JButton saveButton = new JButton("Save");
+        new JButton("Save");
 
         JButton playButton = new JButton("Play trace");
         playButton.addActionListener(new ActionListener() {
