@@ -14,4 +14,8 @@
     <rule ref="rulesets/java/unusedcode.xml/UnusedLocalVariable"/>
 
     <rule ref="rulesets/java/controversial.xml/UnnecessaryConstructor"/>
+
+    <rule ref="rulesets/java/design.xml/NonCaseLabelInSwitchStatement"/>
+    <rule ref="rulesets/java/design.xml/DefaultLabelNotLastInSwitchStmt"/>
+    <rule ref="rulesets/java/design.xml/IdempotentOperations"/>
 </ruleset>
