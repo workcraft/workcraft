@@ -24,7 +24,7 @@ import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualSTG;
 
-public     class StgToPetriNetConverter extends DefaultModelConverter<VisualSTG, VisualPetriNet>  {
+public class StgToPetriNetConverter extends DefaultModelConverter<VisualSTG, VisualPetriNet>  {
 
     public StgToPetriNetConverter(VisualSTG srcModel, VisualPetriNet dstModel) {
         super(srcModel, dstModel);

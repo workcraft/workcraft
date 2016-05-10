@@ -46,9 +46,10 @@ import org.workcraft.util.Hierarchy;
 @CustomTools(DtdToolsProvider.class)
 public class VisualDtd extends AbstractVisualModel {
 
-    private static final double APPEND_EDGE_OFFSET = 4.0;
+    private static final double ARROW_LENGTH = 0.2;
+    private static final double APPEND_EDGE_OFFSET = 2.0;
     private static final double INSERT_PULSE_OFFSET = 1.0;
-    private static final double CAUSALITY_ARC_OFFSET = 2.0;
+    private static final double CAUSALITY_ARC_OFFSET = 1.5;
 
     public class SignalEvent {
         public final VisualConnection level;
@@ -112,7 +113,7 @@ public class VisualDtd extends AbstractVisualModel {
         if ((first instanceof VisualComponent) && (second instanceof VisualComponent)) {
             VisualComponent firstComponent = (VisualComponent) first;
             VisualComponent secondComponent = (VisualComponent) second;
-            if (firstComponent.getRootSpaceX() > secondComponent.getRootSpaceX()) {
+            if (firstComponent.getX() > secondComponent.getX()) {
                 throw new InvalidConnectionException("Invalid order of events.");
             }
         }
@@ -158,10 +159,13 @@ public class VisualDtd extends AbstractVisualModel {
             DtdUtils.decorateLevelConnection(vConnection);
         } else {
             vConnection.setConnectionType(ConnectionType.BEZIER);
+            vConnection.setArrowLength(ARROW_LENGTH);
             Bezier bezier = (Bezier) vConnection.getGraphic();
             BezierControlPoint[] cp = bezier.getBezierControlPoints();
-            cp[0].setRootSpacePosition(new Point2D.Double(v1.getRootSpaceX() + CAUSALITY_ARC_OFFSET, v1.getRootSpaceY()));
-            cp[1].setRootSpacePosition(new Point2D.Double(v2.getRootSpaceX() - CAUSALITY_ARC_OFFSET, v2.getRootSpaceY()));
+            Point2D p1 = new Point2D.Double(v1.getX() + CAUSALITY_ARC_OFFSET, v1.getY());
+            cp[0].setRootSpacePosition(p1);
+            Point2D p2 = new Point2D.Double(v2.getX() - CAUSALITY_ARC_OFFSET, v2.getY());
+            cp[1].setRootSpacePosition(p2);
         }
         return vConnection;
     }
@@ -224,7 +228,7 @@ public class VisualDtd extends AbstractVisualModel {
     public SignalEvent appendSignalEvent(VisualSignal signal, Direction direction) {
         VisualTransition lastTransition = null;
         for (VisualTransition transition: getVisualTransitions(signal)) {
-            if ((lastTransition == null) || (transition.getRootSpaceX() > lastTransition.getRootSpaceX())) {
+            if ((lastTransition == null) || (transition.getX() > lastTransition.getX())) {
                 lastTransition = transition;
             }
         }
@@ -233,7 +237,8 @@ public class VisualDtd extends AbstractVisualModel {
             direction = lastTransition.getDirection().reverse();
         }
         VisualTransition edge = createVisualTransition(signal, direction);
-        edge.setRootSpacePosition(new Point2D.Double(fromComponent.getRootSpaceX() + APPEND_EDGE_OFFSET, fromComponent.getRootSpaceY()));
+        Point2D pos = new Point2D.Double(fromComponent.getX() + APPEND_EDGE_OFFSET, fromComponent.getY());
+        edge.setRootSpacePosition(pos);
         VisualConnection level = null;
         try {
             level = connect(fromComponent, edge);
@@ -251,12 +256,12 @@ public class VisualDtd extends AbstractVisualModel {
         VisualTransition leadEdge = createVisualTransition(signal, direction);
         VisualTransition trailEdge = createVisualTransition(signal, direction.reverse());
 
-        double y = fromComponent.getRootSpaceY();
+        double y = fromComponent.getY();
         Point2D p = connection.getMiddleSegmentCenterPoint();
-        double leadX = (p.getX() - INSERT_PULSE_OFFSET < fromComponent.getRootSpaceX())
-                ? 0.5 * (p.getX() + fromComponent.getRootSpaceX()) : p.getX() - 0.5 * INSERT_PULSE_OFFSET;
-        double trailX = (p.getX() + INSERT_PULSE_OFFSET > toTransition.getRootSpaceX())
-                ? 0.5 * (p.getX() + toTransition.getRootSpaceX()) : p.getX() + 0.5 * INSERT_PULSE_OFFSET;
+        double leadX = (p.getX() - INSERT_PULSE_OFFSET < fromComponent.getX())
+                ? 0.5 * (p.getX() + fromComponent.getX()) : p.getX() - 0.5 * INSERT_PULSE_OFFSET;
+        double trailX = (p.getX() + INSERT_PULSE_OFFSET > toTransition.getX())
+                ? 0.5 * (p.getX() + toTransition.getX()) : p.getX() + 0.5 * INSERT_PULSE_OFFSET;
         leadEdge.setRootSpacePosition(new Point2D.Double(leadX, y));
         trailEdge.setRootSpacePosition(new Point2D.Double(trailX, y));
 
