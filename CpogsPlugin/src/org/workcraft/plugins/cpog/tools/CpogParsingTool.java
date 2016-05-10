@@ -854,7 +854,7 @@ public class CpogParsingTool {
             }
         }
         for (VisualScenarioPage page : pages) {
-            Rectangle2D.Double rect = (java.awt.geom.Rectangle2D.Double) page.getBoundingBox();
+            Rectangle2D.Double rect = (Rectangle2D.Double) page.getBoundingBox();
             Point2D.Double bl = new Point2D.Double(0, rect.getCenterY() + (rect.getHeight() / 2));
 
             if (startPoint == null) {

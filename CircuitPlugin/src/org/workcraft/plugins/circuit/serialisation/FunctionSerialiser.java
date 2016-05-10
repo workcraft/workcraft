@@ -35,7 +35,7 @@ public class FunctionSerialiser implements CustomXMLSerialiser {
 
     @Override
     public String getClassName() {
-        return org.workcraft.plugins.circuit.FunctionContact.class.getName();
+        return FunctionContact.class.getName();
     }
 
     @Override

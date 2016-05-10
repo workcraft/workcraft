@@ -152,7 +152,7 @@ public class PluginManager implements PluginProvider {
 
     public static void saveManifest(File file, List<LegacyPluginInfo> plugins) throws IOException {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        org.w3c.dom.Document doc;
+        Document doc;
         DocumentBuilder db;
         try {
             db = dbf.newDocumentBuilder();

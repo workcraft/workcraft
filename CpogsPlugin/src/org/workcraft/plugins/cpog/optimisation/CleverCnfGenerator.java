@@ -127,7 +127,7 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
                 Literal[][]res = new Literal[preres[0].length][];
                 for (int i = 0; i < res.length; i++) {
                     res[i] = new Literal[1];
-                    res[i][0] = CnfOperations.not(preres[0][i]);
+                    res[i][0] = not(preres[0][i]);
                 }
                 return res;
             }
@@ -139,7 +139,7 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
             public Literal[][] visit(BooleanVariable variable) {
                 Literal[][]result = new Literal[1][];
                 result[0] = new Literal[1];
-                result[0][0] = CnfOperations.literal(variable);
+                result[0][0] = literal(variable);
                 return result;
             }
             @Override

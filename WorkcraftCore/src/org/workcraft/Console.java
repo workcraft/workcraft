@@ -114,7 +114,7 @@ public class Console {
                     framework.execJavaScript(new File(scriptName));
                 } catch (FileNotFoundException e) {
                     LogUtils.logErrorLine("Script specified from command line not found: " + arg);
-                } catch (org.mozilla.javascript.WrappedException e) {
+                } catch (WrappedException e) {
                     e.getWrappedException().printStackTrace();
                     System.exit(1);
                 } catch (org.mozilla.javascript.RhinoException e) {
@@ -178,7 +178,7 @@ public class Console {
                     if (!out.equals("undefined")) {
                         System.out.println(out);
                     }
-                } catch (org.mozilla.javascript.WrappedException e) {
+                } catch (WrappedException e) {
                     System.err.println(e.getWrappedException().getMessage());
                 } catch (org.mozilla.javascript.RhinoException e) {
                     System.err.println(e.getMessage());

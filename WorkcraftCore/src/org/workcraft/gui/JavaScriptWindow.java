@@ -46,7 +46,7 @@ public class JavaScriptWindow extends JPanel {
         txtScript.setTokenMarker(new JavaScriptTokenMarker());
         txtScript.addKeyListener(new java.awt.event.KeyAdapter() {
             @Override
-            public void keyReleased(java.awt.event.KeyEvent e) {
+            public void keyReleased(KeyEvent e) {
                 if ((e.getKeyCode() == KeyEvent.VK_ENTER) && (e.isControlDown() == true)) {
                     execScript();
                 }
