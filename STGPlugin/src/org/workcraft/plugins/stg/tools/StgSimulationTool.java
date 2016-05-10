@@ -53,6 +53,7 @@ import org.workcraft.plugins.shared.CommonSignalSettings;
 import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.STG;
 import org.workcraft.plugins.stg.SignalTransition;
+import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.util.ColorGenerator;
@@ -512,18 +513,23 @@ public class StgSimulationTool extends PetriNetSimulationTool {
 
     protected void initialiseStateMap() {
         STG stg = (STG) net;
-        Set<String> signalSet = stg.getSignalReferences();
-        HashMap<String, SignalData> newStateMap = new HashMap<>(signalSet.size());
-        for (String signal: signalSet) {
-            SignalData signalData = new SignalData(signal, stg.getSignalType(signal));
-            signalData.copy(signalDataMap.get(signal));
-            newStateMap.put(signal, signalData);
+        HashMap<String, SignalData> newStateMap = new HashMap<>();
+        LinkedList<String> allSignals = new LinkedList<>();
+        for (Type type: Type.values()) {
+            Set<String> typedSignals = stg.getSignalReferences(type);
+            allSignals.addAll(typedSignals);
+            for (String signal: typedSignals) {
+                SignalData signalData = new SignalData(signal, stg.getSignalType(signal));
+                signalData.copy(signalDataMap.get(signal));
+                signalData.visible = type != Type.INTERNAL;
+                newStateMap.put(signal, signalData);
+            }
         }
         signalDataMap = newStateMap;
 
-        signals.retainAll(signalSet);
-        signalSet.removeAll(signals);
-        signals.addAll(signalSet);
+        signals.retainAll(allSignals);
+        allSignals.removeAll(signals);
+        signals.addAll(allSignals);
         updateSignalState();
     }
 
