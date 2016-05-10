@@ -86,11 +86,11 @@ public class Fsm extends AbstractMathModel {
         return event;
     }
 
-    final public Collection<State> getStates() {
+    public final Collection<State> getStates() {
         return Hierarchy.getDescendantsOfType(getRoot(), State.class);
     }
 
-    final public Collection<Symbol> getSymbols() {
+    public final Collection<Symbol> getSymbols() {
         return Hierarchy.getDescendantsOfType(getRoot(), Symbol.class);
     }
 
@@ -98,11 +98,11 @@ public class Fsm extends AbstractMathModel {
         return symbol != null;
     }
 
-    final public Collection<Event> getEvents() {
+    public final Collection<Event> getEvents() {
         return Hierarchy.getDescendantsOfType(getRoot(), Event.class);
     }
 
-    final public Collection<Event> getEvents(final Symbol symbol) {
+    public final Collection<Event> getEvents(final Symbol symbol) {
         return Hierarchy.getDescendantsOfType(getRoot(), Event.class, new Func<Event, Boolean>() {
             @Override
             public Boolean eval(Event arg) {

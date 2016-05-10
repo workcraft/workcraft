@@ -90,11 +90,11 @@ public class SelectionTool extends AbstractTool {
     private enum DrugState { NONE, MOVE, SELECT };
     private enum SelectionMode { NONE, ADD, REMOVE, REPLACE };
 
-    static private final Color highlightColor = new Color(1.0f, 0.5f, 0.0f).brighter();
-    static private final Color selectionColor = new Color(99, 130, 191).brighter();
-    static private final Color selectionBorderColor = new Color(200, 200, 200);
-    static private final Color selectionFillColor = new Color(99, 130, 191, 32);
-    static private final Color grayOutColor = Color.LIGHT_GRAY;
+    private static final Color highlightColor = new Color(1.0f, 0.5f, 0.0f).brighter();
+    private static final Color selectionColor = new Color(99, 130, 191).brighter();
+    private static final Color selectionBorderColor = new Color(200, 200, 200);
+    private static final Color selectionFillColor = new Color(99, 130, 191, 32);
+    private static final Color grayOutColor = Color.LIGHT_GRAY;
 
     protected JPanel interfacePanel;
     protected JPanel controlPanel;

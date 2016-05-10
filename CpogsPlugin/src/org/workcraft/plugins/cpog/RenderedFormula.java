@@ -16,13 +16,13 @@ import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToGraphics
 import org.workcraft.plugins.cpog.optimisation.expressions.One;
 
 public class RenderedFormula implements Touchable {
-    final public String text;
-    final public BooleanFormula formula;
-    final public Font font;
-    final public Positioning positioning;
-    final public double xOffset;
-    final public double yOffset;
-    final private FormulaRenderingResult renderingResult;
+    public final String text;
+    public final BooleanFormula formula;
+    public final Font font;
+    public final Positioning positioning;
+    public final double xOffset;
+    public final double yOffset;
+    private final FormulaRenderingResult renderingResult;
     private Rectangle2D boundingBox;
 
     public RenderedFormula(String text, BooleanFormula formula, Font font, Positioning positioning, Point2D offset) {

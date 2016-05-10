@@ -37,8 +37,8 @@ import org.workcraft.plugins.stg.VisualSTG;
 
 public class EncodingConflictAnalyserTool extends AbstractTool {
 
-    final static private int COLUMN_COLOR = 0;
-    final static private int COLUMN_CORE = 1;
+    private static final int COLUMN_COLOR = 0;
+    private static final int COLUMN_CORE = 1;
 
     private VisualSTG stg;
     private ArrayList<Core> cores;

@@ -27,7 +27,7 @@ import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
 
 class Inverter implements BooleanVisitor<BooleanFormula> {
-    public final static Inverter instance = new Inverter();
+    public static final Inverter instance = new Inverter();
 
     @Override
     public BooleanFormula visit(Not node) {

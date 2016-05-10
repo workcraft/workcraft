@@ -104,11 +104,11 @@ public class Fst extends Fsm {
         return event;
     }
 
-    final public Collection<Signal> getSignals() {
+    public final Collection<Signal> getSignals() {
         return Hierarchy.getDescendantsOfType(getRoot(), Signal.class);
     }
 
-    final public Collection<Signal> getSignals(final Type type) {
+    public final Collection<Signal> getSignals(final Type type) {
         return Hierarchy.getDescendantsOfType(getRoot(), Signal.class, new Func<Signal, Boolean>() {
             @Override
             public Boolean eval(Signal arg) {
@@ -117,7 +117,7 @@ public class Fst extends Fsm {
         });
     }
 
-    final public Collection<SignalEvent> getSignalEvents() {
+    public final Collection<SignalEvent> getSignalEvents() {
         return Hierarchy.getDescendantsOfType(getRoot(), SignalEvent.class);
     }
 

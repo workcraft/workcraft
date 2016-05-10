@@ -10,7 +10,7 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateSupervisor;
 
 public class SymbolConsistencySupervisor extends StateSupervisor {
-    final private Fsm fsm;
+    private final Fsm fsm;
 
     public SymbolConsistencySupervisor(Fsm fsm) {
         this.fsm = fsm;

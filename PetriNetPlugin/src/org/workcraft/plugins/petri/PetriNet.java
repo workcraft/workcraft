@@ -60,7 +60,7 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
         super(root, man);
     }
 
-    final public Place createPlace(String name, Container container) {
+    public final Place createPlace(String name, Container container) {
         if (container == null) {
             container = getRoot();
         }
@@ -72,7 +72,7 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
         return place;
     }
 
-    final public Transition createTransition(String name, Container container) {
+    public final Transition createTransition(String name, Container container) {
         if (container == null) {
             container = getRoot();
         }
@@ -85,17 +85,17 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
     }
 
     @Override
-    final public Collection<Place> getPlaces() {
+    public final Collection<Place> getPlaces() {
         return Hierarchy.getDescendantsOfType(getRoot(), Place.class);
     }
 
     @Override
-    final public Collection<Transition> getTransitions() {
+    public final Collection<Transition> getTransitions() {
         return Hierarchy.getDescendantsOfType(getRoot(), Transition.class);
     }
 
     @Override
-    final public Collection<Connection> getConnections() {
+    public final Collection<Connection> getConnections() {
         return Hierarchy.getDescendantsOfType(getRoot(), Connection.class);
     }
 
@@ -105,11 +105,11 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
     }
 
     @Override
-    final public boolean isEnabled(Transition t) {
+    public final boolean isEnabled(Transition t) {
         return isEnabled(this, t);
     }
 
-    final public static boolean isUnfireEnabled(PetriNetModel net, Transition t) {
+    public static final boolean isUnfireEnabled(PetriNetModel net, Transition t) {
         // gather number of connections for each post-place
         Map<Place, Integer> map = new HashMap<>();
         for (Connection c: net.getConnections(t)) {
@@ -129,7 +129,7 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
         return true;
     }
 
-    final public static boolean isEnabled(PetriNetModel net, Transition t) {
+    public static final boolean isEnabled(PetriNetModel net, Transition t) {
         // gather number of connections for each pre-place
         Map<Place, Integer> map = new HashMap<>();
         for (Connection c: net.getConnections(t)) {
@@ -150,16 +150,16 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
     }
 
     @Override
-    final public void fire(Transition t) {
+    public final void fire(Transition t) {
         fire(this, t);
     }
 
     @Override
-    final public void unFire(Transition t) {
+    public final void unFire(Transition t) {
         unFire(this, t);
     }
 
-    final public static void unFire(PetriNetModel net, Transition t) {
+    public static final void unFire(PetriNetModel net, Transition t) {
         // the opposite action to fire, no additional checks,
         // (the transition must be "unfireble")
 
@@ -178,7 +178,7 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
         }
     }
 
-    final public static void fire(PetriNetModel net, Transition t) {
+    public static final void fire(PetriNetModel net, Transition t) {
         if (net.isEnabled(t)) {
             // first consume tokens and then produce tokens (to avoid extra capacity)
             for (Connection c : net.getConnections(t)) {

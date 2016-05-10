@@ -69,7 +69,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
             return name;
         }
 
-        static public AffineTransform getDirectionTransform(Direction dir) {
+        public static AffineTransform getDirectionTransform(Direction dir) {
             AffineTransform result = new AffineTransform();
             if (dir != null) {
                 switch (dir) {

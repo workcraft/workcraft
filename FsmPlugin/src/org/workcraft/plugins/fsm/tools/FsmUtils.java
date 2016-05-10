@@ -9,7 +9,7 @@ import org.workcraft.plugins.fsm.State;
 
 public class FsmUtils {
 
-    static public HashMap<State, HashSet<Event>> calcStateOutgoingEventsMap(final Fsm fsm) {
+    public static HashMap<State, HashSet<Event>> calcStateOutgoingEventsMap(final Fsm fsm) {
         HashMap<State, HashSet<Event>> stateOutgoingEvents = new HashMap<>();
         for (State state: fsm.getStates()) {
             HashSet<Event> events = new HashSet<>();
@@ -23,7 +23,7 @@ public class FsmUtils {
         return stateOutgoingEvents;
     }
 
-    static public HashMap<State, HashSet<Event>> calcStateIncommingEventsMap(final Fsm fsm) {
+    public static HashMap<State, HashSet<Event>> calcStateIncommingEventsMap(final Fsm fsm) {
         HashMap<State, HashSet<Event>> stateIncommingEvents = new HashMap<>();
         for (State state: fsm.getStates()) {
             HashSet<Event> events = new HashSet<>();

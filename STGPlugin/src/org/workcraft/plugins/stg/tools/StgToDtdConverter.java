@@ -23,10 +23,10 @@ public class StgToDtdConverter {
     private static final double SIGNAL_OFFSET = 1.5;
     private static final double EVENT_OFFSET = 1.0;
 
-    final private STG stg;
-    final private VisualDtd dtd;
-    final private HashMap<String, VisualSignal> signalMap;
-    final private HashMap<SignalEvent, SignalTransition> eventMap;
+    private final STG stg;
+    private final VisualDtd dtd;
+    private final HashMap<String, VisualSignal> signalMap;
+    private final HashMap<SignalEvent, SignalTransition> eventMap;
 
     public StgToDtdConverter(STG stg, Trace trace, LinkedList<Pair<String, Color>> signals) {
         this(stg, trace, signals, null);

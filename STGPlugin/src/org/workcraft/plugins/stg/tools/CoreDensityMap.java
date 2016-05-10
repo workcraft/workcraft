@@ -12,8 +12,8 @@ import org.workcraft.plugins.stg.STGSettings;
 import org.workcraft.util.ColorUtils;
 
 public class CoreDensityMap {
-    final static private float DENSITY_MAP_BRIGHTNESS_TOP = 0.5f;
-    final static private float DENSITY_MAP_BRIGHTNESS_BOTTOM = 1.0f;
+    private static final float DENSITY_MAP_BRIGHTNESS_TOP = 0.5f;
+    private static final float DENSITY_MAP_BRIGHTNESS_BOTTOM = 1.0f;
 
     private final HashMap<String, Integer> nameToDensity;
     private final HashMap<Integer, Color> densityToColor;

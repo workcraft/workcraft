@@ -26,9 +26,9 @@ public class TransitionBundler {
     private class Marking extends HashMap<Place, Integer> {
     }
 
-    final private VisualPolicyNet policyNet;
-    final private VisualPetriNet petriNet;
-    final private PetriNet model;
+    private final VisualPolicyNet policyNet;
+    private final VisualPetriNet petriNet;
+    private final PetriNet model;
     final Step unbundled;
 
     private HashMap<VisualBundledTransition, Transition> vbt2t;

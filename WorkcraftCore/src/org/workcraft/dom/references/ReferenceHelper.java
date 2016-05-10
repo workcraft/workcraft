@@ -15,7 +15,7 @@ public class ReferenceHelper {
 
     private static final int MAX_STRING_LENGTH = 50;
 
-    static public String getDefaultPrefix(Node node) {
+    public static String getDefaultPrefix(Node node) {
         if (node instanceof Connection) return "con";
         if (node instanceof CommentNode) return "comment";
         if (node instanceof PageNode) return "pg";
@@ -23,13 +23,13 @@ public class ReferenceHelper {
         return "node";
     }
 
-    static public String getNodesAsString(final Model model, Collection<Node> nodes) {
+    public static String getNodesAsString(final Model model, Collection<Node> nodes) {
         ArrayList<String> refs = getReferenceList(model, nodes);
         Collections.sort(refs);
         return getReferencesAsString(refs);
     }
 
-    static private ArrayList<String> getReferenceList(final Model model, Collection<Node> nodes) {
+    private static ArrayList<String> getReferenceList(final Model model, Collection<Node> nodes) {
         ArrayList<String> refs = new ArrayList<>();
         for (Node node: nodes) {
             String ref = model.getNodeReference(node);
@@ -40,7 +40,7 @@ public class ReferenceHelper {
         return refs;
     }
 
-    static public String getReferencesAsString(ArrayList<String> refs) {
+    public static String getReferencesAsString(ArrayList<String> refs) {
         String str = "";
         for (String ref: refs) {
             if (!str.isEmpty()) {
@@ -51,7 +51,7 @@ public class ReferenceHelper {
         return wrapString(str, MAX_STRING_LENGTH);
     }
 
-    static private String wrapString(String str, int len) {
+    private static String wrapString(String str, int len) {
         StringBuilder sb = new StringBuilder(str);
         int i = 0;
         while ((i + len < sb.length()) && ((i = sb.lastIndexOf(" ", i + len)) != -1)) {

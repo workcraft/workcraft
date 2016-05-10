@@ -8,7 +8,7 @@ import org.workcraft.plugins.stg.STGModel;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-abstract public class PetrifySynthesis extends SynthesisTool {
+public abstract class PetrifySynthesis extends SynthesisTool {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
@@ -31,6 +31,6 @@ abstract public class PetrifySynthesis extends SynthesisTool {
         return false;
     }
 
-    abstract public String[] getSynthesisParameter();
+    public abstract String[] getSynthesisParameter();
 
 }

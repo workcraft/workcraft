@@ -25,7 +25,7 @@ import org.workcraft.plugins.stg.VisualSTG;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.util.Hierarchy;
 
-abstract public class StgGenerator {
+public abstract class StgGenerator {
 
     public enum SignalLayoutType { LEFT_TO_RIGHT, RIGHT_TO_LEFT, LEFT_TO_RIGHT_INVERTED, RIGHT_TO_LEFT_INVERTED }
 
@@ -46,7 +46,7 @@ abstract public class StgGenerator {
         return stg;
     }
 
-    abstract public void convert();
+    public abstract void convert();
 
     public void setPosition(Movable node, double x, double y) {
         TransformHelper.applyTransform(node, AffineTransform.getTranslateInstance(x, y));

@@ -16,16 +16,16 @@ public class MpsatResultParser {
     private String mpsatOutput;
     private LinkedList<Solution> solutions;
 
-    final static private Pattern patternReachability0 =
+    private static final Pattern patternReachability0 =
             Pattern.compile("SOLUTION .+\ntotal cost of all paths: .+\n", Pattern.UNIX_LINES);
 
-    final static private Pattern patternReachability1 =
+    private static final Pattern patternReachability1 =
             Pattern.compile("SOLUTION .+\n(.*)\npath cost: .+\n", Pattern.UNIX_LINES);
 
-    final static private Pattern patternReachability2 =
+    private static final Pattern patternReachability2 =
             Pattern.compile("SOLUTION .+\n(.*)\n(.*)\ntotal cost of all paths: .+\n(\nConflict for signal (.+)\n)?", Pattern.UNIX_LINES);
 
-    final static private Pattern patternNormalcy1 =
+    private static final Pattern patternNormalcy1 =
             Pattern.compile("SOLUTION .+\n(.*)\ntriggers: .+\n", Pattern.UNIX_LINES);
 
     public MpsatResultParser(ExternalProcessResult result) {

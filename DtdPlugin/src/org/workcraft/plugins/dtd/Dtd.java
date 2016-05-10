@@ -72,11 +72,11 @@ public class Dtd extends Pog {
         return transition;
     }
 
-    final public Collection<Signal> getSignals() {
+    public final Collection<Signal> getSignals() {
         return Hierarchy.getDescendantsOfType(getRoot(), Signal.class);
     }
 
-    final public Collection<Signal> getSignals(final Type type) {
+    public final Collection<Signal> getSignals(final Type type) {
         return Hierarchy.getDescendantsOfType(getRoot(), Signal.class, new Func<Signal, Boolean>() {
             @Override
             public Boolean eval(Signal arg) {
@@ -85,7 +85,7 @@ public class Dtd extends Pog {
         });
     }
 
-    final public Collection<Transition> getTransitions() {
+    public final Collection<Transition> getTransitions() {
         return Hierarchy.getDescendantsOfType(getRoot(), Transition.class);
     }
 

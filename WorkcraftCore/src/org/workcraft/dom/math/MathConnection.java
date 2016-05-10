@@ -37,15 +37,15 @@ public class MathConnection extends MathNode implements Connection {
         setDependencies(first, second);
     }
 
-    final public MathNode getFirst() {
+    public final MathNode getFirst() {
         return first;
     }
 
-    final public MathNode getSecond() {
+    public final MathNode getSecond() {
         return second;
     }
 
-    final public void setDependencies(MathNode first, MathNode second) {
+    public final void setDependencies(MathNode first, MathNode second) {
         this.first = first;
         this.second = second;
     }

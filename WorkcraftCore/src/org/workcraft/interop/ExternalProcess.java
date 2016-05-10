@@ -87,8 +87,8 @@ public class ExternalProcess {
     }
 
     class WaiterThread extends Thread {
-        final private InputReaderThread inputReaderThread;
-        final private ErrorReaderThread errorReaderThread;
+        private final InputReaderThread inputReaderThread;
+        private final ErrorReaderThread errorReaderThread;
 
         WaiterThread(InputReaderThread inputReaderThread, ErrorReaderThread errorReaderThread) {
             this.inputReaderThread = inputReaderThread;

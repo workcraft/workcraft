@@ -64,7 +64,7 @@ public abstract class MathNode implements Node, ObservableState {
     }
 
     @Override
-    final public void sendNotification(StateEvent e) {
+    public final void sendNotification(StateEvent e) {
         observableStateImpl.sendNotification(e);
     }
 
