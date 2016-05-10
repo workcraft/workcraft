@@ -65,25 +65,21 @@ class ConnectionByComponentsIdentifier implements
         return new Pair(componentKeyProvider.getKey(item.getFirst()),
                 componentKeyProvider.getKey(item.getSecond()));
     }
-}
 
-interface KeyProvider<T> {
-    Object getKey(T item);
-}
+    private static class Finder<T> {
+        private final HashMap<Object, T> map;
+        private final KeyProvider<T> keyProvider;
 
-class Finder<T> {
-    private final HashMap<Object, T> map;
-    private final KeyProvider<T> keyProvider;
-
-    Finder(Iterable<T> items, KeyProvider<T> keyProvider) {
-        this.keyProvider = keyProvider;
-        map = new HashMap<Object, T>();
-        for (T item : items) {
-            map.put(keyProvider.getKey(item), item);
+        Finder(Iterable<T> items, KeyProvider<T> keyProvider) {
+            this.keyProvider = keyProvider;
+            map = new HashMap<Object, T>();
+            for (T item : items) {
+                map.put(keyProvider.getKey(item), item);
+            }
         }
-    }
 
-    public T getMatching(T item) {
-        return map.get(keyProvider.getKey(item));
+        public T getMatching(T item) {
+            return map.get(keyProvider.getKey(item));
+        }
     }
 }

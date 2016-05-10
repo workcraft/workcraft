@@ -1423,36 +1423,35 @@ public class MainWindow extends JFrame {
         return workspaceWindow;
     }
 
-}
+    private static class ImporterFileFilter extends javax.swing.filechooser.FileFilter {
+        private Importer importer;
 
-class ImporterFileFilter extends javax.swing.filechooser.FileFilter {
-    private Importer importer;
+        ImporterFileFilter(Importer importer) {
+            this.importer = importer;
+        }
 
-    ImporterFileFilter(Importer importer) {
-        this.importer = importer;
+        public boolean accept(File f) {
+            return f.isDirectory() || importer.accept(f);
+        }
+
+        public String getDescription() {
+            return importer.getDescription();
+        }
     }
 
-    public boolean accept(File f) {
-        return f.isDirectory() || importer.accept(f);
-    }
+    private static class ExporterFileFilter extends javax.swing.filechooser.FileFilter {
+        private Exporter exporter;
 
-    public String getDescription() {
-        return importer.getDescription();
-    }
-}
+        ExporterFileFilter(Exporter exporter) {
+            this.exporter = exporter;
+        }
 
-class ExporterFileFilter extends javax.swing.filechooser.FileFilter {
-    private Exporter exporter;
+        public boolean accept(File f) {
+            return f.isDirectory() || f.getName().endsWith(exporter.getExtenstion());
+        }
 
-    ExporterFileFilter(Exporter exporter) {
-        this.exporter = exporter;
-    }
-
-    public boolean accept(File f) {
-        return f.isDirectory() || f.getName().endsWith(exporter.getExtenstion());
-    }
-
-    public String getDescription() {
-        return exporter.getDescription();
+        public String getDescription() {
+            return exporter.getDescription();
+        }
     }
 }

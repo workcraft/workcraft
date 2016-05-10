@@ -28,23 +28,24 @@ import java.lang.annotation.RetentionPolicy;
 
 import org.junit.Test;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Inherited
-@interface Bojo {
-    String value();
-}
-
-@Bojo("qwe")
-class A {
-
-}
-
-//@Bojo("xru")
-class B extends A {
-
-}
-
 public class Annotations {
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Inherited
+    @interface Bojo {
+        String value();
+    }
+
+    @Bojo("qwe")
+    static class A {
+
+    }
+
+    //@Bojo("xru")
+    static class B extends A {
+
+    }
+
     @Test
     public void test() {
         A a = new A();
