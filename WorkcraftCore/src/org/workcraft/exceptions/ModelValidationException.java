@@ -27,9 +27,6 @@ public class ModelValidationException extends Exception {
 
     private static final long serialVersionUID = 1L;
     private LinkedList<String> errors = new LinkedList<>();
-    public ModelValidationException() {
-        super();
-    }
 
     public void addError(String message) {
         errors.add(message);

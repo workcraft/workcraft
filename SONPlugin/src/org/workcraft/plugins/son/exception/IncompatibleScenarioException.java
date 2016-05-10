@@ -4,7 +4,4 @@ public class IncompatibleScenarioException extends Exception {
 
     private static final long serialVersionUID = 1L;
 
-    public IncompatibleScenarioException() {
-        super();
-    }
 }

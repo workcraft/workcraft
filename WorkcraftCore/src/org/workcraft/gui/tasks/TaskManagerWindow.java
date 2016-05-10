@@ -96,10 +96,6 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
     public class ScrollPaneWidthTrackingPanel extends JPanel implements Scrollable {
         private static final long serialVersionUID = 1L;
 
-        public ScrollPaneWidthTrackingPanel() {
-            super();
-        }
-
         public Dimension getPreferredScrollableViewportSize() {
             return getPreferredSize();
         }

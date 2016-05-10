@@ -10,9 +10,6 @@ import static org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperati
 public class OneHotNumberProvider implements NumberProvider<OneHotIntBooleanFormula> {
     private final List<BooleanFormula> rho = new ArrayList<>();
 
-    public OneHotNumberProvider() {
-    }
-
     @Override
     public OneHotIntBooleanFormula generate(String varPrefix, int range) {
         List<BooleanVariable> vars = new ArrayList<>();

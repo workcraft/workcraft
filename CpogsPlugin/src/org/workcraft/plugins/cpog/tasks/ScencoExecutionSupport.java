@@ -41,9 +41,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class ScencoExecutionSupport {
 
-    public ScencoExecutionSupport() {
-    }
-
     // UTILITY FUNCTIONS
     // FUNCTION TO CONVERT BINARY TO INT
     protected String binaryToInt(String string) {
