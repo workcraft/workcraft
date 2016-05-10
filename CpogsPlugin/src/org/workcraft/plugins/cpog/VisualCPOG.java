@@ -50,7 +50,7 @@ import org.workcraft.plugins.cpog.tools.CpogSelectionTool;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Conditional Partial Order Graph")
-@CustomTools(CustomToolsProvider.class)
+@CustomTools(CpogToolsProvider.class)
 public class VisualCPOG extends AbstractVisualModel {
     private final class BooleanFormulaPropertyDescriptor implements PropertyDescriptor {
         private final Node node;

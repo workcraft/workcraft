@@ -14,8 +14,8 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import java.awt.geom.Point2D.Double;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -82,6 +82,27 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class CpogSelectionTool extends SelectionTool {
 
+    private class RenderTypeChangedHandler extends StateSupervisor {
+        private VisualCPOG visualCpog;
+
+        RenderTypeChangedHandler(VisualCPOG visualCpog) {
+            this.visualCpog = visualCpog;
+        }
+
+        @Override
+        public void handleEvent(StateEvent e) {
+            if (e instanceof PropertyChangedEvent) {
+                PropertyChangedEvent pce = (PropertyChangedEvent) e;
+                if (VisualVertex.PROPERTY_RENDER_TYPE.equals(pce.getPropertyName())) {
+                    try {
+                        correctConnectionLengths(visualCpog, (VisualVertex) pce.getSender());
+                    } catch (InvalidConnectionException e1) {
+                    }
+                }
+            }
+        }
+    }
+
     final int margin = 4;
     final double minRadius = 2.0;
     final double expandRadius = 2.0;
@@ -106,10 +127,6 @@ public class CpogSelectionTool extends SelectionTool {
     protected boolean cancelInPlaceEdit;
 
     int scenarioNo = 0;
-
-    public CpogSelectionTool() {
-        super(false);
-    }
 
     @Override
     public void createInterfacePanel(final GraphEditor editor) {
@@ -181,7 +198,8 @@ public class CpogSelectionTool extends SelectionTool {
 
         scenarioPageGroupButton(getGroupPanel());
 
-        renderTypeChangeHandler();
+        final VisualCPOG visualCpog = (VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel();
+        new RenderTypeChangedHandler(visualCpog).attach(visualCpog.getRoot());
     }
 
     public void scenarioPageGroupButton(JPanel groupPanel) {
@@ -1039,32 +1057,6 @@ public class CpogSelectionTool extends SelectionTool {
             a = (VisualArc) visualCpog.connect(f, s);
             a.setCondition(b);
         }
-    }
-
-    private void renderTypeChangeHandler() {
-        final VisualCPOG visualCpog = (VisualCPOG) editor.getWorkspaceEntry().getModelEntry().getVisualModel();
-
-        final class RenderTypeChangedHandler extends StateSupervisor {
-
-            @Override
-            public void handleEvent(StateEvent e) {
-                if (e instanceof PropertyChangedEvent) {
-                    PropertyChangedEvent pce = (PropertyChangedEvent) e;
-                    if (pce.getPropertyName().compareTo("Render type") == 0) {
-                        try {
-                            correctConnectionLengths(visualCpog, (VisualVertex) pce.getSender());
-                        } catch (InvalidConnectionException e1) {
-                            // TODO Auto-generated catch block
-                            e1.printStackTrace();
-                        }
-                    }
-                }
-
-            }
-        }
-
-        new RenderTypeChangedHandler().attach(visualCpog.getRoot());
-
     }
 
     public boolean insertCpogFromFile(File f) {

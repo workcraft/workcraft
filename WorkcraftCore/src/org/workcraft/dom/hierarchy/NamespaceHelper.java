@@ -162,7 +162,7 @@ public class NamespaceHelper {
         return mathTargetContainer;
     }
 
-    private static void copyPageStructure(VisualModel srcModel, Container srcContainer,    VisualModel dstModel, Container dstContainer) {
+    private static void copyPageStructure(VisualModel srcModel, Container srcContainer, VisualModel dstModel, Container dstContainer) {
         HashMap<Container, Container> toProcess = new HashMap<>();
         for (Node srcNode: srcContainer.getChildren()) {
             if (srcNode instanceof VisualPage) {

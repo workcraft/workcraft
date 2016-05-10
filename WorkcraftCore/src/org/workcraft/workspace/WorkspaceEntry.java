@@ -28,6 +28,8 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.zip.ZipEntry;
@@ -61,6 +63,7 @@ public class WorkspaceEntry implements ObservableState {
     private final MementoManager history = new MementoManager();
     private boolean canSelect = true;
     private boolean canModify = true;
+    private boolean canCopy = true;
     private Memento capturedMemento = null;
     private Memento savedMemento = null;
 
@@ -198,9 +201,9 @@ public class WorkspaceEntry implements ObservableState {
         MainWindowActions.MERGE_WORK_ACTION.setEnabled(canModify);
         MainWindowActions.EDIT_UNDO_ACTION.setEnabled(canModify && history.canUndo());
         MainWindowActions.EDIT_REDO_ACTION.setEnabled(canModify && history.canRedo());
-        MainWindowActions.EDIT_CUT_ACTION.setEnabled(canModify && canSelect);
-        MainWindowActions.EDIT_COPY_ACTION.setEnabled(canModify && canSelect);
-        MainWindowActions.EDIT_PASTE_ACTION.setEnabled(canModify && canSelect);
+        MainWindowActions.EDIT_CUT_ACTION.setEnabled(canModify && canSelect && canCopy);
+        MainWindowActions.EDIT_COPY_ACTION.setEnabled(canModify && canSelect && canCopy);
+        MainWindowActions.EDIT_PASTE_ACTION.setEnabled(canModify && canSelect && canCopy);
         MainWindowActions.EDIT_DELETE_ACTION.setEnabled(canModify && canSelect);
         MainWindowActions.EDIT_SELECT_ALL_ACTION.setEnabled(canModify && canSelect);
         MainWindowActions.EDIT_SELECT_INVERSE_ACTION.setEnabled(canModify && canSelect);
@@ -219,6 +222,11 @@ public class WorkspaceEntry implements ObservableState {
 
     public void setCanSelect(boolean canSelect) {
         this.canSelect = canSelect;
+        updateActionState();
+    }
+
+    public void setCanCopy(boolean canCopy) {
+        this.canCopy = canCopy;
         updateActionState();
     }
 
@@ -313,7 +321,8 @@ public class WorkspaceEntry implements ObservableState {
             ZipEntry ze;
             while ((ze = zis.getNextEntry()) != null) {
                 StringBuilder isb = new StringBuilder();
-                BufferedReader br = new BufferedReader(new InputStreamReader(zis, "UTF-8"));
+                CharsetDecoder utf8Decoder = Charset.forName("UTF-8").newDecoder();
+                BufferedReader br = new BufferedReader(new InputStreamReader(zis, utf8Decoder));
                 String line = "=== " + ze.getName() + " ===";
                 while (line != null) {
                     isb.append(line);

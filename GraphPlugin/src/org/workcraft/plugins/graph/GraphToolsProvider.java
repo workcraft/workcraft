@@ -10,7 +10,7 @@ import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.gui.graph.tools.SelectionTool;
 
-public class ToolsProvider implements CustomToolsProvider {
+public class GraphToolsProvider implements CustomToolsProvider {
 
     @Override
     public Iterable<GraphEditorTool> getTools() {
@@ -18,7 +18,7 @@ public class ToolsProvider implements CustomToolsProvider {
 
         result.add(new SelectionTool());
         result.add(new CommentGeneratorTool());
-        result.add(new ConnectionTool(false, true));
+        result.add(new ConnectionTool(false, true, true));
         result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Vertex.class)));
         return result;
     }

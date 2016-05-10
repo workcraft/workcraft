@@ -7,6 +7,7 @@ import java.awt.Font;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
@@ -231,6 +232,14 @@ public class MpsatConfigurationDialog extends JDialog {
         reachText = new JTextArea();
         reachText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
         reachText.setText("");
+        reachText.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if (e.getKeyChar() > 127) {
+                    e.consume();  // ignore non-ASCII characters
+                }
+            }
+        });
         JScrollPane reachScrollPane = new JScrollPane(reachText);
 
         satisfiebleRadioButton = new JRadioButton("satisfiable");

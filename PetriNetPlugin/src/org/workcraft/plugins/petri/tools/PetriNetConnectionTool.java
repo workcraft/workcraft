@@ -15,7 +15,7 @@ import org.workcraft.plugins.petri.VisualTransition;
 public class PetriNetConnectionTool extends ConnectionTool {
 
     public PetriNetConnectionTool() {
-        super(true, true);
+        super(true, true, true);
     }
 
     @Override

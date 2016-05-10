@@ -32,7 +32,7 @@ public class StgToFstConversionResultHandler extends DummyProgressMonitor<WriteS
 
     private final ColorGenerator colorGenerator = new ColorGenerator(ColorUtils.getHsbPalette(
             new float[]{0.45f, 0.15f, 0.70f, 0.25f, 0.05f, 0.80f, 0.55f, 0.20f, 075f, 0.50f},
-            new float[]{0.30f},  new float[]{0.9f, 0.7f, 0.5f}));
+            new float[]{0.30f}, new float[]{0.9f, 0.7f, 0.5f}));
 
     private final WriteSgConversionTask task;
 
@@ -90,7 +90,7 @@ public class StgToFstConversionResultHandler extends DummyProgressMonitor<WriteS
                     Color color = codeToColorMap.get(code);
                     if (color == null) {
                         color = colorGenerator.updateColor();
-                        codeToColorMap.put(code,  color);
+                        codeToColorMap.put(code, color);
                     }
                     state.setFillColor(color);
                 }

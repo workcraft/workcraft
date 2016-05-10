@@ -3,7 +3,6 @@ package org.workcraft.plugins.circuit.tools;
 import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -40,7 +39,6 @@ import org.workcraft.util.Hierarchy;
 public class InitialisationAnalyserTool extends AbstractTool {
 
     private Circuit circuit;
-    private ArrayList<String> signals;
     private HashSet<Node> initHighSet;
     private HashSet<Node> initLowSet;
     private HashSet<Node> initErrorSet;
@@ -62,28 +60,14 @@ public class InitialisationAnalyserTool extends AbstractTool {
 
     @Override
     public void activated(final GraphEditor editor) {
+        editor.getWorkspaceEntry().setCanModify(false);
         circuit = (Circuit) editor.getModel().getMathModel();
-        signals = getSignals();
         updateState(circuit);
         super.activated(editor);
     }
 
-    private ArrayList<String> getSignals() {
-        ArrayList<String> result = new ArrayList<>();
-        if (circuit != null) {
-            for (Contact contact: circuit.getFunctionContacts()) {
-                if (contact.isDriver()) {
-                    String ref = circuit.getNodeReference(contact);
-                    result.add(ref);
-                }
-            }
-        }
-        return result;
-    }
-
     @Override
     public void deactivated(final GraphEditor editor) {
-        signals = null;
         initHighSet = null;
         initLowSet = null;
         initErrorSet = null;

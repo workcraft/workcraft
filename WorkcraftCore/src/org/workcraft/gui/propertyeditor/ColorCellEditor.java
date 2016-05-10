@@ -67,10 +67,8 @@ public class ColorCellEditor extends AbstractCellEditor implements TableCellEdit
         }
         if (dialog == null) {
             dialog = JColorChooser.createDialog(null,
-                    "Pick a Color",
-                    true,  //modal
-                    chooser,
-                    approx,  //OK button handler
+                    "Pick a Color", true, // modal
+                    chooser, approx, //OK button handler
                     null); //no CANCEL button handler
         }
     }

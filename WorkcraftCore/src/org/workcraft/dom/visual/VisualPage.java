@@ -207,7 +207,7 @@ public class VisualPage extends VisualComponent implements Collapsible, Containe
     }
 
     public Point2D getExpansion() {
-        return new Point2D.Double(0.2,  0.2);
+        return new Point2D.Double(0.2, 0.2);
     }
 
     @Override

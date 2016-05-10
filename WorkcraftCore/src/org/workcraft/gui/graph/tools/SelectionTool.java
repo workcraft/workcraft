@@ -116,15 +116,21 @@ public class SelectionTool extends AbstractTool {
     private VisualNode currentNode = null;
 
     private boolean cancelInPlaceEdit = false;
-    private boolean enablePages = true;
+    private boolean enableGroupping = true;
+    private boolean enablePaging = true;
+    private boolean enableFlipping = true;
+    private boolean enableRotating = true;
 
     public SelectionTool() {
-        super();
+        this(true, true, true, true);
     }
 
-    public SelectionTool(boolean enablePages) {
+    public SelectionTool(boolean enableGroupping, boolean enablePaging, boolean enableFlipping, boolean enableRotating) {
         super();
-        this.enablePages = enablePages;
+        this.enableGroupping = enableGroupping;
+        this.enablePaging = enablePaging;
+        this.enableFlipping = enableFlipping;
+        this.enableRotating = enableRotating;
     }
 
     @Override
@@ -159,18 +165,20 @@ public class SelectionTool extends AbstractTool {
         JPanel groupPanel = new JPanel(new FlowLayout());
         controlPanel.add(groupPanel);
 
-        JButton groupButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/icons/svg/selection-group.svg"), "Group selection (Ctrl+G)");
-        groupButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                selectionGroup(editor);
-                editor.requestFocus();
-            }
-        });
-        groupPanel.add(groupButton);
+        if (enableGroupping) {
+            JButton groupButton = GUI.createIconButton(GUI.createIconFromSVG(
+                    "images/icons/svg/selection-group.svg"), "Group selection (Ctrl+G)");
+            groupButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    selectionGroup(editor);
+                    editor.requestFocus();
+                }
+            });
+            groupPanel.add(groupButton);
+        }
 
-        if (enablePages) {
+        if (enablePaging) {
             JButton groupPageButton = GUI.createIconButton(GUI.createIconFromSVG(
                     "images/icons/svg/selection-page.svg"), "Combine selection into a page (Alt+G)");
             groupPageButton.addActionListener(new ActionListener() {
@@ -183,85 +191,91 @@ public class SelectionTool extends AbstractTool {
             groupPanel.add(groupPageButton);
         }
 
-        JButton ungroupButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/icons/svg/selection-ungroup.svg"), "Ungroup selection (Ctrl+Shift+G)");
-        ungroupButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                selectionUngroup(editor);
-                editor.requestFocus();
-            }
-        });
-        groupPanel.add(ungroupButton);
+        if (enableGroupping || enablePaging) {
+            JButton ungroupButton = GUI.createIconButton(GUI.createIconFromSVG(
+                    "images/icons/svg/selection-ungroup.svg"), "Ungroup selection (Ctrl+Shift+G)");
+            ungroupButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    selectionUngroup(editor);
+                    editor.requestFocus();
+                }
+            });
+            groupPanel.add(ungroupButton);
 
-        JPanel levelPanel = new JPanel(new FlowLayout());
-        controlPanel.add(levelPanel);
-        JButton levelUpButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/icons/svg/selection-level_up.svg"), "Level up (PageUp)");
-        levelUpButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                changeLevelUp(editor);
-                editor.requestFocus();
-            }
-        });
-        levelPanel.add(levelUpButton);
-        JButton levelDownButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/icons/svg/selection-level_down.svg"), "Level down (PageDown)");
-        levelDownButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                changeLevelDown(editor);
-                editor.requestFocus();
-            }
-        });
-        levelPanel.add(levelDownButton);
+            JPanel levelPanel = new JPanel(new FlowLayout());
+            controlPanel.add(levelPanel);
+            JButton levelUpButton = GUI.createIconButton(GUI.createIconFromSVG(
+                    "images/icons/svg/selection-level_up.svg"), "Level up (PageUp)");
+            levelUpButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    changeLevelUp(editor);
+                    editor.requestFocus();
+                }
+            });
+            levelPanel.add(levelUpButton);
+            JButton levelDownButton = GUI.createIconButton(GUI.createIconFromSVG(
+                    "images/icons/svg/selection-level_down.svg"), "Level down (PageDown)");
+            levelDownButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    changeLevelDown(editor);
+                    editor.requestFocus();
+                }
+            });
+            levelPanel.add(levelDownButton);
+        }
 
-        JPanel flipPanel = new JPanel(new FlowLayout());
-        controlPanel.add(flipPanel);
-        JButton flipHorizontalButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/icons/svg/selection-flip_horizontal.svg"), "Flip horizontal");
-        flipHorizontalButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                selectionFlipHorizontal(editor);
-                editor.requestFocus();
-            }
-        });
-        flipPanel.add(flipHorizontalButton);
-        JButton flipVerticalButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/icons/svg/selection-flip_vertical.svg"), "Flip vertical");
-        flipVerticalButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                selectionFlipVertical(editor);
-                editor.requestFocus();
-            }
-        });
-        flipPanel.add(flipVerticalButton);
+        if (enableFlipping) {
+            JPanel flipPanel = new JPanel(new FlowLayout());
+            controlPanel.add(flipPanel);
+            JButton flipHorizontalButton = GUI.createIconButton(GUI.createIconFromSVG(
+                    "images/icons/svg/selection-flip_horizontal.svg"), "Flip horizontal");
+            flipHorizontalButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    selectionFlipHorizontal(editor);
+                    editor.requestFocus();
+                }
+            });
+            flipPanel.add(flipHorizontalButton);
+            JButton flipVerticalButton = GUI.createIconButton(GUI.createIconFromSVG(
+                    "images/icons/svg/selection-flip_vertical.svg"), "Flip vertical");
+            flipVerticalButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    selectionFlipVertical(editor);
+                    editor.requestFocus();
+                }
+            });
+            flipPanel.add(flipVerticalButton);
+        }
 
-        JPanel rotatePanel = new JPanel(new FlowLayout());
-        controlPanel.add(rotatePanel);
-        JButton rotateClockwiseButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/icons/svg/selection-rotate_clockwise.svg"), "Rotate clockwise");
-        rotateClockwiseButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                selectionRotateClockwise(editor);
-                editor.requestFocus();
-            }
-        });
-        rotatePanel.add(rotateClockwiseButton);
-        JButton rotateCounterclockwiseButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/icons/svg/selection-rotate_counterclockwise.svg"), "Rotate counterclockwise");
-        rotateCounterclockwiseButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                selectionRotateCounterclockwise(editor);
-                editor.requestFocus();
-            }
-        });
-        rotatePanel.add(rotateCounterclockwiseButton);
+        if (enableRotating) {
+            JPanel rotatePanel = new JPanel(new FlowLayout());
+            controlPanel.add(rotatePanel);
+            JButton rotateClockwiseButton = GUI.createIconButton(GUI.createIconFromSVG(
+                    "images/icons/svg/selection-rotate_clockwise.svg"), "Rotate clockwise");
+            rotateClockwiseButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    selectionRotateClockwise(editor);
+                    editor.requestFocus();
+                }
+            });
+            rotatePanel.add(rotateClockwiseButton);
+            JButton rotateCounterclockwiseButton = GUI.createIconButton(GUI.createIconFromSVG(
+                    "images/icons/svg/selection-rotate_counterclockwise.svg"), "Rotate counterclockwise");
+            rotateCounterclockwiseButton.addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    selectionRotateCounterclockwise(editor);
+                    editor.requestFocus();
+                }
+            });
+            rotatePanel.add(rotateCounterclockwiseButton);
+        }
     }
 
     @Override
@@ -567,7 +581,7 @@ public class SelectionTool extends AbstractTool {
             }
         }
 
-        if (enablePages && e.isAltDown() && !e.isCtrlDown()) {
+        if (enablePaging && e.isAltDown() && !e.isCtrlDown()) {
             switch (e.getKeyCode()) {
             case KeyEvent.VK_G:
                 if (e.isShiftDown()) {
@@ -579,7 +593,7 @@ public class SelectionTool extends AbstractTool {
             }
         }
 
-        if (e.isCtrlDown() && !e.isAltDown()) {
+        if (enableGroupping && e.isCtrlDown() && !e.isAltDown()) {
             switch (e.getKeyCode()) {
             case KeyEvent.VK_G:
                 if (e.isShiftDown()) {

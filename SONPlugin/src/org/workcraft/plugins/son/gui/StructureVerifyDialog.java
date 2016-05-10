@@ -318,7 +318,7 @@ public class StructureVerifyDialog extends JDialog {
     }
 
     public StructureVerifyDialog(Window owner, String title, ModalityType modalityType, WorkspaceEntry we) {
-        //super(owner, "Structure Verification Setting",  ModalityType.APPLICATION_MODAL);
+        //super(owner, "Structure Verification Setting", ModalityType.APPLICATION_MODAL);
         super(owner, title, modalityType);
         this.we = we;
         net = (SON) we.getModelEntry().getMathModel();
@@ -334,7 +334,7 @@ public class StructureVerifyDialog extends JDialog {
     }
 
     public StructureVerifyDialog(Window owner, WorkspaceEntry we) {
-        this(owner, "Structure Verification Setting",  ModalityType.APPLICATION_MODAL, we);
+        this(owner, "Structure Verification Setting", ModalityType.APPLICATION_MODAL, we);
     }
 
     protected String groupPanelTitle() {

@@ -53,7 +53,7 @@ public class GenericCellEditor extends AbstractCellEditor implements TableCellEd
     }
 
     public Component getTableCellEditorComponent(JTable table, Object value,
-            boolean isSelected,    int row, int column) {
+            boolean isSelected, int row, int column) {
         textField.setText(value.toString());
         textField.setFont(table.getFont());
         return textField;

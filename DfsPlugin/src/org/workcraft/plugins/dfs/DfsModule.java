@@ -19,6 +19,49 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class DfsModule implements Module {
 
+    private final class WaggingGenerator2WayTool extends WaggingGeneratorTool {
+        @Override
+        public String getDisplayName() {
+            return "2-way wagging";
+        }
+
+        @Override
+        public int getWayCount() {
+            return 2;
+        }
+    }
+
+    private final class WaggingGenerator3WayTool extends WaggingGeneratorTool {
+        @Override
+        public String getDisplayName() {
+            return "3-way wagging";
+        }
+
+        @Override
+        public int getWayCount() {
+            return 3;
+        }
+    }
+
+    private final class WaggingGenerator4WayTool extends WaggingGeneratorTool {
+        @Override
+        public String getDisplayName() {
+            return "4-way wagging";
+        }
+
+        @Override
+        public int getWayCount() {
+            return 4;
+        }
+    }
+
+    private final class DfsContractorTool extends AbstractContractorTool {
+        @Override
+        public boolean isApplicableTo(WorkspaceEntry we) {
+            return we.getModelEntry().getMathModel() instanceof Dfs;
+        }
+    }
+
     @Override
     public String getDescription() {
         return "Dataflow Structure";
@@ -34,110 +77,44 @@ public class DfsModule implements Module {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
 
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new StgGeneratorTool();
-            }
-        });
+        pm.registerClass(Tool.class, StgGeneratorTool.class);
 
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new WaggingGeneratorTool() {
-                    @Override
-                    public String getDisplayName() {
-                        return "2-way wagging";
-                    }
-                    @Override
-                    public int getWayCount() {
-                        return 2;
-                    }
-                };
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new WaggingGeneratorTool() {
-                    @Override
-                    public String getDisplayName() {
-                        return "3-way wagging";
-                    }
-                    @Override
-                    public int getWayCount() {
-                        return 3;
-                    }
-                };
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new WaggingGeneratorTool() {
-                    @Override
-                    public String getDisplayName() {
-                        return "4-way wagging";
-                    }
-                    @Override
-                    public int getWayCount() {
-                        return 4;
-                    }
-                };
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new WaggingGeneratorTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new AbstractContractorTool() {
-                    @Override
-                    public boolean isApplicableTo(WorkspaceEntry we) {
-                        return we.getModelEntry().getMathModel() instanceof Dfs;
-                    }
-                };
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new CheckDataflowDeadlockTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new CheckDataflowHazardTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new CheckDataflowTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new ComponentMergerTool();
-            }
-        });
+        pm.registerClass(Tool.class, WaggingGeneratorTool.class);
+        pm.registerClass(Tool.class, CheckDataflowDeadlockTool.class);
+        pm.registerClass(Tool.class, CheckDataflowHazardTool.class);
+        pm.registerClass(Tool.class, CheckDataflowTool.class);
+        pm.registerClass(Tool.class, ComponentMergerTool.class);
 
         pm.registerClass(ModelDescriptor.class, DfsDescriptor.class);
         pm.registerClass(Settings.class, DfsSettings.class);
+
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new WaggingGenerator2WayTool();
+            }
+        });
+
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new WaggingGenerator3WayTool();
+            }
+        });
+
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new WaggingGenerator4WayTool();
+            }
+        });
+
+        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+            @Override
+            public Tool create() {
+                return new DfsContractorTool();
+            }
+        });
     }
 
     private void initCompatibilityManager() {

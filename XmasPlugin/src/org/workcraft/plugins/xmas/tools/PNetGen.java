@@ -414,7 +414,7 @@ public class PNetGen implements Tool {
         }
     }
 
-    private static void genfunction(String id, String id1, String idp, JsonNode y,  int fieldgr, PrintWriter writer) {
+    private static void genfunction(String id, String id1, String idp, JsonNode y, int fieldgr, PrintWriter writer) {
         if (printoutput) {
             System.out.println("//genfunction " + id);
         }
@@ -449,7 +449,7 @@ public class PNetGen implements Tool {
 
     }
 
-    private static void genfork(String id, String id1, String id2, String idp1, String idp2, JsonNode y,  int fieldgr, PrintWriter writer) {
+    private static void genfork(String id, String id1, String id2, String idp1, String idp2, JsonNode y, int fieldgr, PrintWriter writer) {
         if (printoutput) {
             System.out.println("//genfork " + id);
         }
@@ -523,7 +523,7 @@ public class PNetGen implements Tool {
 
     }
 
-    private static void genjoin(String id, String id1, String idp, JsonNode y,  int fieldgr, PrintWriter writer) {
+    private static void genjoin(String id, String id1, String idp, JsonNode y, int fieldgr, PrintWriter writer) {
         if (printoutput) {
             System.out.println("//genjoin " + id);
         }
@@ -575,7 +575,7 @@ public class PNetGen implements Tool {
 
     }
 
-    private static void genswitch(String id, String id1, String id2, String idp1, String idp2, JsonNode y,  int fieldgr, PrintWriter writer) {
+    private static void genswitch(String id, String id1, String id2, String idp1, String idp2, JsonNode y, int fieldgr, PrintWriter writer) {
         if (printoutput) {
             System.out.println("//genswitch " + id);
         }
@@ -669,7 +669,7 @@ public class PNetGen implements Tool {
 
     }
 
-    private static void genmerge(String id, String id1, String idp, JsonNode y,  int fieldgr, PrintWriter writer) {
+    private static void genmerge(String id, String id1, String idp, JsonNode y, int fieldgr, PrintWriter writer) {
         if (printoutput) {
             System.out.println("//genmerge " + id);
         }
@@ -743,7 +743,7 @@ public class PNetGen implements Tool {
 
     }
 
-    private static void genqueue(String id, String id1, String idp, JsonNode y, int init, String gpf,  int fieldgr, PrintWriter writer) {
+    private static void genqueue(String id, String id1, String idp, JsonNode y, int init, String gpf, int fieldgr, PrintWriter writer) {
         if (printoutput) {
             System.out.println("//genqueue " + id + " " + gpf);
         }
@@ -782,7 +782,7 @@ public class PNetGen implements Tool {
         }
     }
 
-    private static void genqueue2p(int size, String id, String id1, String idp, JsonNode y, int init, String gpf,  int fieldgr, PrintWriter writer) {
+    private static void genqueue2p(int size, String id, String id1, String idp, JsonNode y, int init, String gpf, int fieldgr, PrintWriter writer) {
         int inc = 0;
         if (printoutput) {
             if (size == 2) System.out.println("//genqueue2p " + id + " " + gpf);

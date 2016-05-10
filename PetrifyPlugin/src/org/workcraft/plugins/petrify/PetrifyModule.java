@@ -19,6 +19,34 @@ import org.workcraft.plugins.petrify.tools.PetrifyUntoggle;
 
 public class PetrifyModule implements Module {
 
+    private final class PetrifyNetSynthesisEr extends PetrifyNetSynthesis {
+        @Override
+        public String getDisplayName() {
+            return "Net synthesis [Petrify with -er option]";
+        }
+
+        @Override
+        public ArrayList<String> getArgs() {
+            ArrayList<String> args = super.getArgs();
+            args.add("-er");
+            return args;
+        }
+    }
+
+    private final class PetrifyNetSynthesisHideEr extends PetrifyNetSynthesisHide {
+        @Override
+        public String getDisplayName() {
+            return "Net synthesis hiding selected signals and dummies [Petrify with -er option]";
+        }
+
+        @Override
+        public ArrayList<String> getArgs() {
+            ArrayList<String> args = super.getArgs();
+            args.add("-er");
+            return args;
+        }
+    }
+
     @Override
     public void init() {
         final Framework framework = Framework.getInstance();
@@ -32,42 +60,20 @@ public class PetrifyModule implements Module {
         pm.registerClass(Tool.class, PetrifySynthesisGeneralisedCelement.class);
         pm.registerClass(Tool.class, PetrifySynthesisTechnologyMapping.class);
         pm.registerClass(Tool.class, PetrifyDummyContraction.class);
-
         pm.registerClass(Tool.class, PetrifyNetSynthesis.class);
+        pm.registerClass(Tool.class, PetrifyNetSynthesisHide.class);
+
         pm.registerClass(Tool.class, new Initialiser<Tool>() {
             @Override
             public Tool create() {
-                return new PetrifyNetSynthesis() {
-                    @Override
-                    public String getDisplayName() {
-                        return "Net synthesis [Petrify with -er option]";
-                    }
-                    @Override
-                    public ArrayList<String> getArgs() {
-                        ArrayList<String> args = super.getArgs();
-                        args.add("-er");
-                        return args;
-                    }
-                };
+                return new PetrifyNetSynthesisEr();
             }
         });
 
-        pm.registerClass(Tool.class, PetrifyNetSynthesisHide.class);
         pm.registerClass(Tool.class, new Initialiser<Tool>() {
             @Override
             public Tool create() {
-                return new PetrifyNetSynthesisHide() {
-                    @Override
-                    public String getDisplayName() {
-                        return "Net synthesis hiding selected signals and dummies [Petrify with -er option]";
-                    }
-                    @Override
-                    public ArrayList<String> getArgs() {
-                        ArrayList<String> args = super.getArgs();
-                        args.add("-er");
-                        return args;
-                    }
-                };
+                return new PetrifyNetSynthesisHideEr();
             }
         });
     }

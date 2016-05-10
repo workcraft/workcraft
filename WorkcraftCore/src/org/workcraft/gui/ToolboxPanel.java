@@ -166,6 +166,15 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
         return null;
     }
 
+    public <T extends GraphEditorTool> T selectToolInstance(Class<T> cls) {
+        final T tool = getToolInstance(cls);
+        if (tool != null) {
+            selectTool(tool);
+            return (T) tool;
+        }
+        return null;
+    }
+
     public void selectTool(GraphEditorTool tool) {
         if (selectedTool != null) {
             ToolTracker oldTracker = hotkeyMap.get(selectedTool.getHotKeyCode());
@@ -207,7 +216,9 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
         setLayout(new SimpleFlowLayout(5, 5));
 
         Class<? extends CustomToolsProvider> customTools = Annotations.getCustomToolsProvider(model.getClass());
-        if (customTools != null) {
+        if (customTools == null) {
+            addCommonTools();
+        } else {
             boolean selected = true;
             CustomToolsProvider provider = null;
             try {
@@ -221,8 +232,6 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
                     selected = false;
                 }
             }
-        } else {
-            addCommonTools();
         }
 
         for (Class<?> cls : Annotations.getDefaultCreateButtons(model.getClass())) {

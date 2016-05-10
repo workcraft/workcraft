@@ -584,7 +584,7 @@ public final class Framework {
     }
 
     private ModelDescriptor loadMetaDescriptor(Document metaDoc)
-            throws InstantiationException, IllegalAccessException,    ClassNotFoundException {
+            throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         Element descriptorElement = XmlUtil.getChildElement("descriptor", metaDoc.getDocumentElement());
         String descriptorClass = XmlUtil.readStringAttr(descriptorElement, "class");
         ModelDescriptor descriptor = (ModelDescriptor) Class.forName(descriptorClass).newInstance();

@@ -2,7 +2,6 @@ package org.workcraft.plugins.stg;
 
 import org.workcraft.CompatibilityManager;
 import org.workcraft.Framework;
-import org.workcraft.Initialiser;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Tool;
@@ -19,11 +18,11 @@ import org.workcraft.plugins.stg.tools.DummyInserterTool;
 import org.workcraft.plugins.stg.tools.DummyToSignalTransitionConverterTool;
 import org.workcraft.plugins.stg.tools.MakePlacesExplicitTool;
 import org.workcraft.plugins.stg.tools.MakePlacesImplicitTool;
+import org.workcraft.plugins.stg.tools.NamedTransitionContractorTool;
 import org.workcraft.plugins.stg.tools.PetriNetToStgConverterTool;
 import org.workcraft.plugins.stg.tools.SignalMirrorTool;
 import org.workcraft.plugins.stg.tools.SignalToDummyTransitionConverterTool;
 import org.workcraft.plugins.stg.tools.StgToPetriNetConverterTool;
-import org.workcraft.plugins.stg.tools.NamedTransitionContractorTool;
 import org.workcraft.plugins.stg.tools.TransitionMergerTool;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
@@ -56,75 +55,16 @@ public class STGModule implements Module {
         pm.registerClass(ModelSerialiser.class, DotGSerialiser.class);
         pm.registerClass(Settings.class, STGSettings.class);
 
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new SignalMirrorTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new MakePlacesImplicitTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new MakePlacesExplicitTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new SignalToDummyTransitionConverterTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new DummyToSignalTransitionConverterTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new NamedTransitionContractorTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new PetriNetToStgConverterTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new StgToPetriNetConverterTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new TransitionMergerTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new DummyInserterTool();
-            }
-        });
+        pm.registerClass(Tool.class, SignalMirrorTool.class);
+        pm.registerClass(Tool.class, MakePlacesImplicitTool.class);
+        pm.registerClass(Tool.class, MakePlacesExplicitTool.class);
+        pm.registerClass(Tool.class, SignalToDummyTransitionConverterTool.class);
+        pm.registerClass(Tool.class, DummyToSignalTransitionConverterTool.class);
+        pm.registerClass(Tool.class, NamedTransitionContractorTool.class);
+        pm.registerClass(Tool.class, PetriNetToStgConverterTool.class);
+        pm.registerClass(Tool.class, StgToPetriNetConverterTool.class);
+        pm.registerClass(Tool.class, TransitionMergerTool.class);
+        pm.registerClass(Tool.class, DummyInserterTool.class);
     }
 
     private void initCompatibilityManager() {

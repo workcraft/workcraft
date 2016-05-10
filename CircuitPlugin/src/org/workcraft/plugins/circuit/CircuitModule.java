@@ -2,7 +2,6 @@ package org.workcraft.plugins.circuit;
 
 import org.workcraft.CompatibilityManager;
 import org.workcraft.Framework;
-import org.workcraft.Initialiser;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Tool;
@@ -15,11 +14,14 @@ import org.workcraft.plugins.circuit.interop.VerilogExporter;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.serialisation.FunctionDeserialiser;
 import org.workcraft.plugins.circuit.serialisation.FunctionSerialiser;
+import org.workcraft.plugins.circuit.tools.BubbleToggleTool;
+import org.workcraft.plugins.circuit.tools.BufferInsertionTool;
+import org.workcraft.plugins.circuit.tools.CheckCircuitConformationTool;
+import org.workcraft.plugins.circuit.tools.CheckCircuitDeadlockTool;
+import org.workcraft.plugins.circuit.tools.CheckCircuitHazardTool;
 import org.workcraft.plugins.circuit.tools.CheckCircuitTool;
 import org.workcraft.plugins.circuit.tools.CircuitLayoutTool;
 import org.workcraft.plugins.circuit.tools.ComponentContractionTool;
-import org.workcraft.plugins.circuit.tools.BubbleToggleTool;
-import org.workcraft.plugins.circuit.tools.BufferInsertionTool;
 import org.workcraft.plugins.circuit.tools.JointContractionTool;
 import org.workcraft.plugins.circuit.tools.JointSplitTool;
 import org.workcraft.plugins.circuit.tools.StgGeneratorTool;
@@ -42,134 +44,19 @@ public class CircuitModule implements Module {
     private void initPluginManager() {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
+        pm.registerClass(Tool.class, CircuitLayoutTool.class);
+        pm.registerClass(Tool.class, StgGeneratorTool.class);
 
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new CircuitLayoutTool();
-            }
-        });
+        pm.registerClass(Tool.class, CheckCircuitConformationTool.class);
+        pm.registerClass(Tool.class, CheckCircuitDeadlockTool.class);
+        pm.registerClass(Tool.class, CheckCircuitHazardTool.class);
+        pm.registerClass(Tool.class, CheckCircuitTool.class);
 
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new StgGeneratorTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new CheckCircuitTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new CheckCircuitTool() {
-                    @Override
-                    public Position getPosition() {
-                        return Position.TOP;
-                    }
-                    @Override
-                    public String getDisplayName() {
-                        return "Conformation [MPSat]";
-                    }
-                    @Override
-                    public boolean checkDeadlock() {
-                        return false;
-                    }
-                    @Override
-                    public boolean checkHazard() {
-                        return false;
-                    }
-                };
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new CheckCircuitTool() {
-                    @Override
-                    public Position getPosition() {
-                        return Position.TOP;
-                    }
-                    @Override
-                    public String getDisplayName() {
-                        return "Deadlock [MPSat]";
-                    }
-                    @Override
-                    public boolean checkConformation() {
-                        return false;
-                    }
-                    @Override
-                    public boolean checkHazard() {
-                        return false;
-                    }
-                };
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new CheckCircuitTool() {
-                    @Override
-                    public Position getPosition() {
-                        return Position.TOP;
-                    }
-                    @Override
-                    public String getDisplayName() {
-                        return "Hazard [MPSat]";
-                    }
-                    @Override
-                    public boolean checkConformation() {
-                        return false;
-                    }
-                    @Override
-                    public boolean checkDeadlock() {
-                        return false;
-                    }
-                };
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new JointContractionTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new JointSplitTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new ComponentContractionTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new BufferInsertionTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new BubbleToggleTool();
-            }
-        });
+        pm.registerClass(Tool.class, JointContractionTool.class);
+        pm.registerClass(Tool.class, JointSplitTool.class);
+        pm.registerClass(Tool.class, ComponentContractionTool.class);
+        pm.registerClass(Tool.class, BufferInsertionTool.class);
+        pm.registerClass(Tool.class, BubbleToggleTool.class);
 
         pm.registerClass(ModelDescriptor.class, CircuitDescriptor.class);
         pm.registerClass(XMLSerialiser.class, FunctionSerialiser.class);

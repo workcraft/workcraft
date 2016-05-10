@@ -105,13 +105,13 @@ public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver
         g.draw(visibleCurve);
 
         if (connectionInfo.hasArrow()) {
-            DrawHelper.drawArrowHead(g, curveInfo.headPosition,    curveInfo.headOrientation,
+            DrawHelper.drawArrowHead(g, curveInfo.headPosition, curveInfo.headOrientation,
                     connectionInfo.getArrowLength(), connectionInfo.getArrowWidth(), color);
         }
 
         if (connectionInfo.hasBubble()) {
             DrawHelper.drawBubbleHead(g, curveInfo.headPosition, curveInfo.headOrientation,
-                    connectionInfo.getBubbleSize(),    color, connectionInfo.getStroke());
+                    connectionInfo.getBubbleSize(), color, connectionInfo.getStroke());
         }
     }
 

@@ -57,7 +57,7 @@ public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatC
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        JOptionPane.showMessageDialog(null,    verifiedMessage, title, JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(null, verifiedMessage, title, JOptionPane.INFORMATION_MESSAGE);
                     }
                 });
                 return;
@@ -91,7 +91,7 @@ public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatC
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
                     public void run() {
-                        JOptionPane.showMessageDialog(null,    unsupportedMessage, "Unsupported MPSat mode", JOptionPane.WARNING_MESSAGE);
+                        JOptionPane.showMessageDialog(null, unsupportedMessage, "Unsupported MPSat mode", JOptionPane.WARNING_MESSAGE);
                     }
                 });
                 break;

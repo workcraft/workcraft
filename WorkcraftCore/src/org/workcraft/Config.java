@@ -26,6 +26,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
+import java.nio.charset.Charset;
+import java.nio.charset.CharsetEncoder;
 import java.util.HashMap;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -214,7 +216,7 @@ public class Config {
             Element e = (Element) nl.item(i);
 
             if (e.getTagName().equals("var")) {
-                set(e.getAttribute("name"),  e.getAttribute("value"));
+                set(e.getAttribute("name"), e.getAttribute("value"));
             } else {
                 if (e.getTagName().equals("group")) {
                     String name = e.getAttribute("name");
@@ -225,7 +227,7 @@ public class Config {
                         }
                         Element e2 = (Element) nl2.item(j);
                         if (e2.getTagName().equals("var")) {
-                            set(name + "." + e2.getAttribute("name"),  e2.getAttribute("value"));
+                            set(name + "." + e2.getAttribute("name"), e2.getAttribute("value"));
                         }
                     }
                 }
@@ -283,7 +285,8 @@ public class Config {
             file.createNewFile();
             FileOutputStream fos = new FileOutputStream(file);
             DOMSource source = new DOMSource(xmldoc);
-            StreamResult result = new StreamResult(new OutputStreamWriter(fos, "utf-8"));
+            CharsetEncoder utf8Encoder = Charset.forName("UTF-8").newEncoder();
+            StreamResult result = new StreamResult(new OutputStreamWriter(fos, utf8Encoder));
 
             transformer.transform(source, result);
             fos.close();

@@ -15,7 +15,7 @@ import org.workcraft.plugins.fst.Signal.Type;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Finite State Transducer")
-@CustomTools(ToolsProvider.class)
+@CustomTools(FstToolsProvider.class)
 public class VisualFst extends VisualFsm {
 
     public VisualFst(Fst model) {

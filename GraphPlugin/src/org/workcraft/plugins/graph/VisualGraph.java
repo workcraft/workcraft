@@ -35,7 +35,7 @@ import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Directed Graph")
-@CustomTools(ToolsProvider.class)
+@CustomTools(GraphToolsProvider.class)
 public class VisualGraph extends AbstractVisualModel {
 
     public VisualGraph(Graph model) {
@@ -74,4 +74,5 @@ public class VisualGraph extends AbstractVisualModel {
         container.add(vConnection);
         return vConnection;
     }
+
 }

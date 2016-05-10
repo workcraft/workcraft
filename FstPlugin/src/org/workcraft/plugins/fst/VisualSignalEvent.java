@@ -7,6 +7,7 @@ import org.workcraft.dom.visual.Stylable;
 import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.plugins.fst.SignalEvent.Direction;
+import org.workcraft.plugins.shared.CommonSignalSettings;
 
 public class VisualSignalEvent extends VisualEvent {
 
@@ -25,31 +26,36 @@ public class VisualSignalEvent extends VisualEvent {
 
     @Override
     public Color getLabelColor() {
-        Signal signal = getReferencedSignalEvent().getSignal();
+        Signal signal = getReferencedSignal();
         if (signal != null) {
             switch (signal.getType()) {
-            case INPUT: return FstSettings.getInputColor();
-            case OUTPUT: return FstSettings.getOutputColor();
-            case INTERNAL: return FstSettings.getInternalColor();
-            case DUMMY: return FstSettings.getDummyColor();
+            case INPUT:    return CommonSignalSettings.getInputColor();
+            case OUTPUT:   return CommonSignalSettings.getOutputColor();
+            case INTERNAL: return CommonSignalSettings.getInternalColor();
+            default:       return CommonSignalSettings.getDummyColor();
             }
         }
         return Color.BLACK;
     }
 
+
+    public SignalEvent getReferencedSignalEvent() {
+        return (SignalEvent) getReferencedEvent();
+    }
+
+    private Signal getReferencedSignal() {
+        return getReferencedSignalEvent().getSignal();
+    }
+
     @Override
     public String getLabel(DrawRequest r) {
         String result = super.getLabel(r);
-        if (getReferencedSignalEvent().getSignal().hasDirection()) {
-            if (FstSettings.getShowToggle() || (getReferencedSignalEvent().getDirection() != Direction.TOGGLE)) {
+        if (getReferencedSignal().hasDirection()) {
+            if (CommonSignalSettings.getShowToggle() || (getReferencedSignalEvent().getDirection() != Direction.TOGGLE)) {
                 result += getReferencedSignalEvent().getDirection();
             }
         }
         return result;
-    }
-
-    public SignalEvent getReferencedSignalEvent() {
-        return (SignalEvent) getReferencedEvent();
     }
 
     @Override

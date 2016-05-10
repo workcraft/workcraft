@@ -153,6 +153,7 @@ public class STG extends AbstractMathModel implements STGModel {
                 });
     }
 
+    @Override
     public Collection<SignalTransition> getSignalTransitions(final Type type) {
         return Hierarchy.getDescendantsOfType(getRoot(),
                 SignalTransition.class, new Func<SignalTransition, Boolean>() {
@@ -222,19 +223,28 @@ public class STG extends AbstractMathModel implements STGModel {
     }
 
     @Override
-    public Set<String> getSignalReferences(Type type) {
+    public Set<String> getDummyReferences() {
         Set<String> result = new HashSet<>();
-        for (SignalTransition st : getSignalTransitions(type)) {
+        for (Transition t : getDummyTransitions()) {
+            result.add(referenceManager.getNamePair(t).getFirst());
+        }
+        return result;
+    }
+
+    @Override
+    public Set<String> getSignalReferences() {
+        Set<String> result = new HashSet<>();
+        for (SignalTransition st : getSignalTransitions()) {
             result.add(getSignalReference(st));
         }
         return result;
     }
 
     @Override
-    public Set<String> getDummyReferences() {
+    public Set<String> getSignalReferences(Type type) {
         Set<String> result = new HashSet<>();
-        for (Transition t : getDummyTransitions()) {
-            result.add(referenceManager.getNamePair(t).getFirst());
+        for (SignalTransition st : getSignalTransitions(type)) {
+            result.add(getSignalReference(st));
         }
         return result;
     }

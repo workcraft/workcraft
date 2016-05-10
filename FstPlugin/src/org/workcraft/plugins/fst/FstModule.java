@@ -7,7 +7,6 @@ import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Tool;
 import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.cpog.tools.PnToCpogTool;
@@ -22,6 +21,13 @@ import org.workcraft.plugins.fst.tools.StgToFstConverterTool;
 import org.workcraft.serialisation.ModelSerialiser;
 
 public class FstModule  implements Module {
+
+    private final class StgToBinaryFstConverterTool extends StgToFstConverterTool {
+        @Override
+        public boolean isBinary() {
+            return true;
+        }
+    }
 
     @Override
     public String getDescription() {
@@ -44,54 +50,18 @@ public class FstModule  implements Module {
         pm.registerClass(Importer.class, DotGImporter.class);
 
         pm.registerClass(ModelSerialiser.class, DotGSerialiser.class);
-        pm.registerClass(Settings.class, FstSettings.class);
+
+        pm.registerClass(Tool.class, StgToFstConverterTool.class);
+        pm.registerClass(Tool.class, FstToStgConverterTool.class);
+        pm.registerClass(Tool.class, PnToFsmConverterTool.class);
+        pm.registerClass(Tool.class, FsmToFstConverterTool.class);
+        pm.registerClass(Tool.class, FstToFsmConverterTool.class);
+        pm.registerClass(Tool.class, PnToCpogTool.class);
 
         pm.registerClass(Tool.class, new Initialiser<Tool>() {
             @Override
             public Tool create() {
-                return new StgToFstConverterTool(false);
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new StgToFstConverterTool(true);
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new FstToStgConverterTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new PnToFsmConverterTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new FsmToFstConverterTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new FstToFsmConverterTool();
-            }
-        });
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new PnToCpogTool();
+                return new StgToBinaryFstConverterTool();
             }
         });
     }

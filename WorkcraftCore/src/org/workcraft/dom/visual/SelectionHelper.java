@@ -5,6 +5,7 @@ import java.util.HashSet;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.util.Hierarchy;
 
@@ -62,6 +63,16 @@ public class SelectionHelper {
             }
         }
         return result;
+    }
+
+    static public void selectByReferencedComponents(VisualModel model, HashSet<MathNode> nodes) {
+        model.selectNone();
+        for (VisualComponent component: Hierarchy.getDescendantsOfType(model.getRoot(), VisualComponent.class)) {
+            MathNode node = component.getReferencedComponent();
+            if (nodes.contains(node)) {
+                model.addToSelection(component);
+            }
+        }
     }
 
 }

@@ -164,7 +164,7 @@ public class VisualPlace extends VisualComponent {
         Decoration d = r.getDecoration();
         Shape shape;
         if (count == 1) {
-            shape = new Ellipse2D.Double(-size / 2, -size / 2,    size, size);
+            shape = new Ellipse2D.Double(-size / 2, -size / 2, size, size);
             g.setColor(Coloriser.colorise(color, d.getColorisation()));
             g.fill(shape);
         } else {
@@ -174,14 +174,14 @@ public class VisualPlace extends VisualComponent {
                 double radius = (diameter / 2 - borderWidth - separation) / (1 + 1 / Math.sin(alpha));
                 double step = radius / Math.sin(alpha);
                 radius -= separation;
-                for (int i = 0; i < count; i++)     {
+                for (int i = 0; i < count; i++) {
                     if (i == 6) {
                         shape = new Ellipse2D.Double(-radius, -radius, radius * 2, radius * 2);
                     } else {
                         shape = new Ellipse2D.Double(
                                 -step * Math.sin(i * alpha * 2) - radius,
                                 -step * Math.cos(i * alpha * 2) - radius,
-                                radius * 2,    radius * 2);
+                                radius * 2, radius * 2);
                     }
                     g.setColor(Coloriser.colorise(color, d.getColorisation()));
                     g.fill(shape);

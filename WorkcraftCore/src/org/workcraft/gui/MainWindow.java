@@ -288,7 +288,7 @@ public class MainWindow extends JFrame {
         }
 
         final GraphEditorPanel editor = new GraphEditorPanel(this, we);
-        String title = getTitle(we, visualModel);
+        String title = getTitle(we);
         final DockableWindow editorWindow;
         if (editorWindows.isEmpty()) {
             editorWindow = createDockableWindow(editor, title, documentPlaceholder,
@@ -1187,27 +1187,31 @@ public class MainWindow extends JFrame {
         lastSavePath = fc.getCurrentDirectory().getPath();
     }
 
-    private String getTitle(WorkspaceEntry we, VisualModel model) {
+    private String getTitle(WorkspaceEntry we) {
         String prefix = we.isChanged() ? "*" : TITLE_PLACEHOLDER;
-        String suffix = null;
-        switch (CommonEditorSettings.getTitleStyle()) {
-        case LONG:
-            suffix = " - " + model.getDisplayName();
-            break;
-        case SHORT:
-            suffix = " [" + model.getShortName() + "]";
-            break;
-        default:
-            suffix = TITLE_PLACEHOLDER;
-            break;
+        String suffix = TITLE_PLACEHOLDER;
+        VisualModel model = we.getModelEntry().getVisualModel();
+        if (model != null) {
+            switch (CommonEditorSettings.getTitleStyle()) {
+            case LONG:
+                suffix = " - " + model.getDisplayName();
+                break;
+            case SHORT:
+                suffix = " [" + model.getShortName() + "]";
+                break;
+            default:
+                suffix = TITLE_PLACEHOLDER;
+                break;
+            }
         }
         return prefix + we.getTitle() + suffix;
     }
 
     public void refreshWorkspaceEntryTitle(WorkspaceEntry we, boolean updateHeaders) {
         for (DockableWindow w : editorWindows.get(we)) {
-            final GraphEditorPanel editor = getCurrentEditor();
-            String title = getTitle(we, editor.getModel());
+//            final GraphEditorPanel editor = getCurrentEditor();
+//            String title = getTitle(we, editor.getModel());
+            String title = getTitle(we);
             w.setTitle(title);
         }
         if (updateHeaders) {
@@ -1253,6 +1257,16 @@ public class MainWindow extends JFrame {
 
     public GraphEditorPanel getCurrentEditor() {
         return editorInFocus;
+    }
+
+    public ToolboxPanel getToolbox(final WorkspaceEntry we) {
+        GraphEditorPanel editor = getEditor(we);
+        return (editor == null) ? null : editor.getToolBox();
+    }
+
+    public ToolboxPanel getCurrentToolbox() {
+        GraphEditorPanel editor = getCurrentEditor();
+        return (editor == null) ? null : editor.getToolBox();
     }
 
     public WorkspaceEntry getCurrentWorkspaceEntry() {

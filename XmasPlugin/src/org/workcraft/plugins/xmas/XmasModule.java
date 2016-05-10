@@ -2,7 +2,6 @@ package org.workcraft.plugins.xmas;
 
 import org.workcraft.CompatibilityManager;
 import org.workcraft.Framework;
-import org.workcraft.Initialiser;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Tool;
@@ -21,7 +20,7 @@ public class XmasModule implements Module {
 
     @Override
     public String getDescription() {
-        return "xMAS circuit model";
+        return "xMAS Circuit";
     }
 
     @Override
@@ -34,38 +33,17 @@ public class XmasModule implements Module {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
 
+        pm.registerClass(ModelDescriptor.class, XmasDescriptor.class);
+        pm.registerClass(Settings.class, XmasSettings.class);
+
         pm.registerClass(Tool.class, JsonExport.class);
         pm.registerClass(Tool.class, PNetGen.class);
         pm.registerClass(Tool.class, SyncTool.class);
         pm.registerClass(Tool.class, VerConfTool.class);
-
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new StgGeneratorTool();
-            }
-        });
-        framework.getPluginManager().registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new VerTool();
-            }
-        });
-        framework.getPluginManager().registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new VerAnalysis();
-            }
-        });
-        framework.getPluginManager().registerClass(Tool.class, new Initialiser<Tool>() {
-            @Override
-            public Tool create() {
-                return new VerQuery();
-            }
-        });
-
-        pm.registerClass(ModelDescriptor.class, XmasDescriptor.class);
-        pm.registerClass(Settings.class, XmasSettings.class);
+        pm.registerClass(Tool.class, StgGeneratorTool.class);
+        pm.registerClass(Tool.class, VerTool.class);
+        pm.registerClass(Tool.class, VerAnalysis.class);
+        pm.registerClass(Tool.class, VerQuery.class);
     }
 
     private void initCompatibilityManager() {

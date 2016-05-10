@@ -78,7 +78,7 @@ public class ControlPointScaler {
             Point2D dp = changeBasis(p, v0, up0);
             Point2D mP1 = multiply(v, dp.getX());
             Point2D mP2 = multiply(up, dp.getY());
-            cp.setPosition(add(add(mP1, mP2),    newC1));
+            cp.setPosition(add(add(mP1, mP2), newC1));
         }
     }
 

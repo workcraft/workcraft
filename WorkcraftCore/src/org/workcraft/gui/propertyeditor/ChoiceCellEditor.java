@@ -57,7 +57,7 @@ public class ChoiceCellEditor extends AbstractCellEditor implements TableCellEdi
         return ((ChoiceWrapper) comboBox.getSelectedItem()).value;
     }
 
-    public Component getTableCellEditorComponent(JTable table,    Object value,
+    public Component getTableCellEditorComponent(JTable table, Object value,
             boolean isSelected, int row, int column) {
         // FIXME: This is a hack to enable choice operation in a group
         // selection with different initial values of the corresponding

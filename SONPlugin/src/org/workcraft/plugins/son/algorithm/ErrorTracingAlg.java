@@ -117,7 +117,7 @@ public class ErrorTracingAlg extends SimulationAlg {
         }
     }
 
-    private void setSyncErrNum(Collection<TransitionNode> sync, Map<Condition, Collection<Phase>> phases,  boolean isLower) {
+    private void setSyncErrNum(Collection<TransitionNode> sync, Map<Condition, Collection<Phase>> phases, boolean isLower) {
         int err = 0;
 
         for (TransitionNode e : sync) {
@@ -162,7 +162,7 @@ public class ErrorTracingAlg extends SimulationAlg {
     }
 
     //Backward error tracing
-    public void setRevErrNum(Collection<TransitionNode> fireList, Collection<Path> sync, Map<Condition, Collection<Phase>> phases,  boolean isLower) {
+    public void setRevErrNum(Collection<TransitionNode> fireList, Collection<Path> sync, Map<Condition, Collection<Phase>> phases, boolean isLower) {
 
         while (!fireList.isEmpty()) {
             Collection<TransitionNode> removeList = new ArrayList<>();
@@ -241,7 +241,7 @@ public class ErrorTracingAlg extends SimulationAlg {
         }
     }
 
-    private void setRevSyncErrNum(Collection<TransitionNode> sync, Map<Condition, Collection<Phase>> phases,  boolean isLower) {
+    private void setRevSyncErrNum(Collection<TransitionNode> sync, Map<Condition, Collection<Phase>> phases, boolean isLower) {
         int err = 0;
 
         for (TransitionNode e : sync) {
