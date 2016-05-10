@@ -263,7 +263,7 @@ public class MainWindow extends JFrame {
         if (visualModel == null) {
             VisualModelDescriptor vmd = descriptor.getVisualModelDescriptor();
             if (vmd == null) {
-                JOptionPane.showMessageDialog(MainWindow.this,
+                JOptionPane.showMessageDialog(this,
                         "A visual model could not be created for the selected model.\n" + "Model '"
                                 + descriptor.getDisplayName() + "' does not have visual model support.",
                         "Error", JOptionPane.ERROR_MESSAGE);
@@ -273,7 +273,7 @@ public class MainWindow extends JFrame {
                 visualModel = vmd.create((MathModel) modelEntry.getModel());
                 modelEntry.setModel(visualModel);
             } catch (VisualModelInstantiationException e) {
-                JOptionPane.showMessageDialog(MainWindow.this,
+                JOptionPane.showMessageDialog(this,
                         "A visual model could not be created for the selected model.\nPlease refer to the Problems window for details.\n",
                         "Error", JOptionPane.ERROR_MESSAGE);
                 e.printStackTrace();

@@ -119,16 +119,16 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
         return getReferencedTransition().getSignalType();
     }
 
-    @Override
-    public void copyStyle(Stylable src) {
-        super.copyStyle(src);
-        // FIXME: type, direction and name of the signal cannot be copied as it breaks template functionality
+// FIXME: type, direction and name of the signal cannot be copied as it breaks template functionality
+//    @Override
+//    public void copyStyle(Stylable src) {
+//        super.copyStyle(src);
 //        if (src instanceof VisualSignalTransition) {
 //            VisualSignalTransition srcSignalTransition = (VisualSignalTransition)src;
 //            setType(srcSignalTransition.getType());
 //            setDirection(srcSignalTransition.getDirection());
 //        }
-    }
+//    }
 
     @Override
     public void mixStyle(Stylable... srcs) {

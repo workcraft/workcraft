@@ -193,10 +193,6 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
         return listScroller;
     }
 
-    protected void createGroupItemsPanel() {
-        super.createGroupItemsPanel();
-    }
-
     protected void createSelectionPane() {
         UIManager.getDefaults().put("TabbedPane.contentBorderInsets", new Insets(1, 1, 1, 1));
         UIManager.getDefaults().put("TabbedPane.tabsOverlapBorder", false);

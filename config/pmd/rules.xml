@@ -8,4 +8,7 @@
     <rule ref="rulesets/java/imports.xml">
         <exclude name="TooManyStaticImports"/> <!-- Used often -->
     </rule>
+    <rule ref="rulesets/java/unnecessary.xml">
+        <exclude name="UselessParentheses"/> <!--Too nitpicky-->
+    </rule>
 </ruleset>

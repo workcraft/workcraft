@@ -78,7 +78,7 @@ public class ReachibilityDialog extends JDialog {
     }
 
     private void close() {
-        ReachibilityDialog.this.setVisible(false);
+        this.setVisible(false);
     }
 
 }

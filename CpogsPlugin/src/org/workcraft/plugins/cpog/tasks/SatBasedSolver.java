@@ -359,7 +359,6 @@ public class SatBasedSolver {
         cpogSize = "";
         disableFunction = "";
         oldSynt = "";
-        return;
     }
 
     private void instantiateParameters(int elements, int scenarios) {
