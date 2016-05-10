@@ -20,7 +20,7 @@ import org.workcraft.workspace.WorkspaceEntry;
     mpsat -T -f -p2 -cl -! -d gate_library.lib file.bp.pnml file.mapped.v
 */
 
-abstract public class MpsatSynthesis extends SynthesisTool {
+public abstract class MpsatSynthesis extends SynthesisTool {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
@@ -36,6 +36,6 @@ abstract public class MpsatSynthesis extends SynthesisTool {
         framework.getTaskManager().queue(task, "MPSat logic synthesis", new MpsatSynthesisResultHandler(task));
     }
 
-    abstract public MpsatSynthesisMode getSynthesisMode();
+    public abstract MpsatSynthesisMode getSynthesisMode();
 
 }

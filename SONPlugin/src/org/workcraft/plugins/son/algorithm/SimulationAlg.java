@@ -169,7 +169,7 @@ public class SimulationAlg extends RelationAlgorithm {
         return result;
     }
 
-    final public Step getEnabledNodes(Collection<Path> sync, Map<Condition, Collection<Phase>> phases, boolean isRev) {
+    public final Step getEnabledNodes(Collection<Path> sync, Map<Condition, Collection<Phase>> phases, boolean isRev) {
         Step result = null;
         if (!isRev) {
             result = getEnabled(sync, phases);

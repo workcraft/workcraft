@@ -5,9 +5,9 @@ import java.util.List;
 import org.workcraft.Trace;
 
 public class Solution {
-    final private Trace mainTrace;
-    final private Trace branchTrace;
-    final private String comment;
+    private final Trace mainTrace;
+    private final Trace branchTrace;
+    private final String comment;
 
     public Solution(Trace mainTrace, Trace branchTrace) {
         this(mainTrace, branchTrace, null);

@@ -23,7 +23,7 @@ public class SimpleFlowLayout implements LayoutManager {
         }
     }
 
-    //public final static LineBreak BR = new LineBreak();
+    //public static final LineBreak BR = new LineBreak();
 
     private int hgap;
     private int vgap;

@@ -8,7 +8,7 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-abstract public class AbstractLayoutTool implements Tool {
+public abstract class AbstractLayoutTool implements Tool {
 
     @Override
     public String getSection() {
@@ -34,6 +34,6 @@ abstract public class AbstractLayoutTool implements Tool {
         }
     }
 
-    abstract public void layout(VisualModel model);
+    public abstract void layout(VisualModel model);
 
 }

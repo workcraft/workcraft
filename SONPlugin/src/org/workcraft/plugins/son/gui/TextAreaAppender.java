@@ -8,10 +8,10 @@ import org.apache.log4j.spi.LoggingEvent;
 
 public class TextAreaAppender extends WriterAppender {
 
-    static private JTextArea jTextArea = null;
+    private static JTextArea jTextArea = null;
 
     /** Set the target JTextArea for the logging information to appear. */
-    static public void setTextArea(JTextArea jTextArea) {
+    public static void setTextArea(JTextArea jTextArea) {
         TextAreaAppender.jTextArea = jTextArea;
     }
 

@@ -11,7 +11,7 @@ import org.workcraft.plugins.cpog.optimisation.jj.ParseException;
 
 public class VisualContactFormulaProperties {
 
-    abstract private class FunctionPropertyDescriptor implements PropertyDescriptor, Disableable {
+    private abstract class FunctionPropertyDescriptor implements PropertyDescriptor, Disableable {
         @Override
         public Class<?> getType() {
             return String.class;

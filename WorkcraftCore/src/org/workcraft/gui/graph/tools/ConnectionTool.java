@@ -55,10 +55,10 @@ public class ConnectionTool extends AbstractTool {
 
     public enum ContinuousConnectionMode { FAN, FOLD }
 
-    static protected final Color incompleteConnectionColor = Color.GREEN;
-    static protected final Color validConnectionColor = Color.BLUE;
-    static protected final Color invalidConnectionColor = Color.RED;
-    static private final Color highlightColor = new Color(1.0f, 0.5f, 0.0f).brighter();
+    protected static final Color incompleteConnectionColor = Color.GREEN;
+    protected static final Color validConnectionColor = Color.BLUE;
+    protected static final Color invalidConnectionColor = Color.RED;
+    private static final Color highlightColor = new Color(1.0f, 0.5f, 0.0f).brighter();
 
     protected boolean forbidSelfLoops = true;
     protected boolean directedArcs = true;

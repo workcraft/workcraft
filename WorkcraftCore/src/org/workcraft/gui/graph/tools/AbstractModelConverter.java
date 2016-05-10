@@ -15,11 +15,11 @@ import org.workcraft.dom.visual.VisualReplica;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.util.Hierarchy;
 
-abstract public class AbstractModelConverter<TSrcModel extends VisualModel, TDstModel extends VisualModel> implements ModelConverter<TSrcModel, TDstModel> {
-    final private TSrcModel srcModel;
-    final private TDstModel dstModel;
-    final private HashMap<VisualNode, VisualNode> srcToDstNodes = new HashMap<>();
-    final private HashMap<String, Container> refToDstPage = new HashMap<>();
+public abstract class AbstractModelConverter<TSrcModel extends VisualModel, TDstModel extends VisualModel> implements ModelConverter<TSrcModel, TDstModel> {
+    private final TSrcModel srcModel;
+    private final TDstModel dstModel;
+    private final HashMap<VisualNode, VisualNode> srcToDstNodes = new HashMap<>();
+    private final HashMap<String, Container> refToDstPage = new HashMap<>();
 
     public AbstractModelConverter(TSrcModel srcModel, TDstModel dstModel) {
         this.srcModel = srcModel;

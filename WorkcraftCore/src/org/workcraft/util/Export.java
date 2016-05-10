@@ -99,7 +99,7 @@ public class Export {
         }
     }
 
-    static public Exporter chooseBestExporter(PluginProvider provider, Model model, UUID targetFormat) {
+    public static Exporter chooseBestExporter(PluginProvider provider, Model model, UUID targetFormat) {
         Iterable<PluginInfo<? extends Exporter>> plugins = provider.getPlugins(Exporter.class);
 
         Exporter best = null;
@@ -120,7 +120,7 @@ public class Export {
         return best;
     }
 
-    static public void exportToFile(Model model, File file, UUID targetFormat, PluginProvider provider)
+    public static void exportToFile(Model model, File file, UUID targetFormat, PluginProvider provider)
             throws IOException, ModelValidationException, SerialisationException {
         Exporter exporter = chooseBestExporter(provider, model, targetFormat);
         if (exporter == null) {
@@ -130,7 +130,7 @@ public class Export {
         exportToFile(exporter, model, file);
     }
 
-    static public ExportTask createExportTask(Model model, File file, UUID targetFormat, PluginProvider provider)
+    public static ExportTask createExportTask(Model model, File file, UUID targetFormat, PluginProvider provider)
             throws SerialisationException {
         Exporter exporter = chooseBestExporter(provider, model, targetFormat);
         if (exporter == null) {
@@ -140,7 +140,7 @@ public class Export {
         return new ExportTask(exporter, model, file.getAbsolutePath());
     }
 
-    static public void exportToFile(Exporter exporter, Model model, File file) throws IOException, ModelValidationException, SerialisationException {
+    public static void exportToFile(Exporter exporter, Model model, File file) throws IOException, ModelValidationException, SerialisationException {
         file.createNewFile();
         FileOutputStream fos = new FileOutputStream(file);
         boolean ok = false;
@@ -164,7 +164,7 @@ public class Export {
         }
     }
 
-    static public void exportToFile(Exporter exporter, Model model, String fileName)
+    public static void exportToFile(Exporter exporter, Model model, String fileName)
             throws IOException, ModelValidationException, SerialisationException {
         exportToFile(exporter, model, new File(fileName));
     }

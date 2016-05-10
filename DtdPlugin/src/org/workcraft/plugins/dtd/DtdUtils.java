@@ -12,7 +12,7 @@ import org.workcraft.plugins.shared.CommonVisualSettings;
 
 public class DtdUtils {
 
-    static public boolean isLevelConnection(VisualConnection connection) {
+    public static boolean isLevelConnection(VisualConnection connection) {
         boolean result = false;
         if (connection != null) {
             VisualComponent v1 = (VisualComponent) connection.getFirst();
@@ -31,7 +31,7 @@ public class DtdUtils {
         return result;
     }
 
-    static public void decorateLevelConnection(VisualConnection connection) {
+    public static void decorateLevelConnection(VisualConnection connection) {
         VisualComponent v1 = (VisualComponent) connection.getFirst();
         VisualComponent v2 = (VisualComponent) connection.getSecond();
 

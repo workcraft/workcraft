@@ -58,13 +58,13 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class MainMenu extends JMenuBar {
     private static final String MENU_SECTION_PROMOTED_PREFIX = "!";
 
-    final private MainWindow mainWindow;
-    final private JMenu mnExport = new JMenu("Export");
-    final private JMenu mnRecent = new JMenu("Open recent");
-    final private JMenu mnWindows = new JMenu("Windows");
-    final private HashMap<Integer, ActionCheckBoxMenuItem> windowItems = new HashMap<>();
-    final private LinkedList<JMenu> mnToolsList = new LinkedList<>();
-    final private JMenu mnHelp = new JMenu("Help");
+    private final MainWindow mainWindow;
+    private final JMenu mnExport = new JMenu("Export");
+    private final JMenu mnRecent = new JMenu("Open recent");
+    private final JMenu mnWindows = new JMenu("Windows");
+    private final HashMap<Integer, ActionCheckBoxMenuItem> windowItems = new HashMap<>();
+    private final LinkedList<JMenu> mnToolsList = new LinkedList<>();
+    private final JMenu mnHelp = new JMenu("Help");
 
     MainMenu(final MainWindow mainWindow) {
         this.mainWindow = mainWindow;
@@ -407,7 +407,7 @@ public class MainMenu extends JMenuBar {
         mnExport.setEnabled(enable);
     }
 
-    final public void registerUtilityWindow(DockableWindow window) {
+    public final void registerUtilityWindow(DockableWindow window) {
         ActionCheckBoxMenuItem miWindowItem = new ActionCheckBoxMenuItem(new ToggleWindowAction(window));
         miWindowItem.addScriptedActionListener(mainWindow.getDefaultActionListener());
         miWindowItem.setSelected(!window.isClosed());
@@ -415,7 +415,7 @@ public class MainMenu extends JMenuBar {
         mnWindows.add(miWindowItem);
     }
 
-    final public void setRecentMenu(ArrayList<String> entries) {
+    public final void setRecentMenu(ArrayList<String> entries) {
         mnRecent.removeAll();
         mnRecent.setEnabled(false);
         int index = 0;
@@ -451,14 +451,14 @@ public class MainMenu extends JMenuBar {
         mnRecent.add(miClear);
     }
 
-    final public void utilityWindowClosed(int id) {
+    public final void utilityWindowClosed(int id) {
         ActionCheckBoxMenuItem mi = windowItems.get(id);
         if (mi != null) {
             mi.setSelected(false);
         }
     }
 
-    final public void utilityWindowDisplayed(int id) {
+    public final void utilityWindowDisplayed(int id) {
         ActionCheckBoxMenuItem mi = windowItems.get(id);
         if (mi != null) {
             mi.setSelected(true);

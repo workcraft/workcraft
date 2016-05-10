@@ -21,7 +21,7 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.WorkspaceEntry;
 
-abstract public class AbstractMergerTool extends TransformationTool {
+public abstract class AbstractMergerTool extends TransformationTool {
 
     @Override
     public String getDisplayName() {

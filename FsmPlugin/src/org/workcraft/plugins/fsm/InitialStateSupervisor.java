@@ -10,7 +10,7 @@ import org.workcraft.observation.StateSupervisor;
 import org.workcraft.util.Hierarchy;
 
 public class InitialStateSupervisor extends StateSupervisor {
-    final private Fsm fsm;
+    private final Fsm fsm;
 
     public InitialStateSupervisor(Fsm fsm) {
         this.fsm = fsm;

@@ -273,7 +273,7 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
         groupImpl.removeAllObservers();
     }
 
-    abstract public Shape getShape();
+    public abstract Shape getShape();
 
     public Shape transformShape(Shape shape) {
         AffineTransform rotateTransform = new AffineTransform();

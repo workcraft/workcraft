@@ -11,7 +11,7 @@ import org.workcraft.util.Hierarchy;
 
 public class SelectionHelper {
 
-    static public Collection<Node> getOrderedCurrentLevelSelection(VisualModel model) {
+    public static Collection<Node> getOrderedCurrentLevelSelection(VisualModel model) {
         HashSet<Node> result = new HashSet<>();
         Collection<Node> selection = model.getSelection();
         Container currentLevel = model.getCurrentLevel();
@@ -23,7 +23,7 @@ public class SelectionHelper {
         return result;
     }
 
-    static public Collection<Node> getRecursivelyIncludedNodes(Collection<Node> nodes) {
+    public static Collection<Node> getRecursivelyIncludedNodes(Collection<Node> nodes) {
         HashSet<Node> result = new HashSet<>();
         for (Node node : nodes) {
             if (node instanceof VisualNode) {
@@ -34,11 +34,11 @@ public class SelectionHelper {
         return result;
     }
 
-    static public Collection<VisualConnection> getCurrentLevelConnections(VisualModel model) {
+    public static Collection<VisualConnection> getCurrentLevelConnections(VisualModel model) {
         return Hierarchy.getChildrenOfType(model.getCurrentLevel(), VisualConnection.class);
     }
 
-    static public Collection<Node> getGroupableCurrentLevelSelection(VisualModel model) {
+    public static Collection<Node> getGroupableCurrentLevelSelection(VisualModel model) {
         HashSet<Node> result = new HashSet<>();
         Collection<Node> currentLevelSelection = getOrderedCurrentLevelSelection(model);
         for (Node node : currentLevelSelection) {
@@ -52,7 +52,7 @@ public class SelectionHelper {
         return result;
     }
 
-    static public Collection<VisualConnection> getIncludedConnections(Collection<Node> nodes, Collection<VisualConnection> connections) {
+    public static Collection<VisualConnection> getIncludedConnections(Collection<Node> nodes, Collection<VisualConnection> connections) {
         Collection<VisualConnection> result = new HashSet<>();
         Collection<Node> recursiveNodes = getRecursivelyIncludedNodes(nodes);
         for (VisualConnection connection : connections) {
@@ -65,7 +65,7 @@ public class SelectionHelper {
         return result;
     }
 
-    static public void selectByReferencedComponents(VisualModel model, HashSet<MathNode> nodes) {
+    public static void selectByReferencedComponents(VisualModel model, HashSet<MathNode> nodes) {
         model.selectNone();
         for (VisualComponent component: Hierarchy.getDescendantsOfType(model.getRoot(), VisualComponent.class)) {
             MathNode node = component.getReferencedComponent();

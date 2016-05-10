@@ -72,15 +72,15 @@ public class STG extends AbstractMathModel implements STGModel {
         new SignalTypeConsistencySupervisor(this).attach(getRoot());
     }
 
-    final public Place createPlace() {
+    public final Place createPlace() {
         return createPlace(null, null);
     }
 
-    final public STGPlace createPlace(String name, Container container) {
+    public final STGPlace createPlace(String name, Container container) {
         return createNode(name, container, STGPlace.class);
     }
 
-    final public DummyTransition createDummyTransition(String name, Container container) {
+    public final DummyTransition createDummyTransition(String name, Container container) {
         DummyTransition transition = createNode(name, container, DummyTransition.class);
         if (name == null) {
             name = transition.getName();
@@ -89,11 +89,11 @@ public class STG extends AbstractMathModel implements STGModel {
         return transition;
     }
 
-    final public SignalTransition createSignalTransition() {
+    public final SignalTransition createSignalTransition() {
         return createSignalTransition(null, null);
     }
 
-    final public SignalTransition createSignalTransition(String name, Container container) {
+    public final SignalTransition createSignalTransition(String name, Container container) {
         SignalTransition transition = createNode(name, container, SignalTransition.class);
         if (name == null) {
             name = transition.getName();
@@ -113,32 +113,32 @@ public class STG extends AbstractMathModel implements STGModel {
     }
 
     @Override
-    final public void fire(Transition t) {
+    public final void fire(Transition t) {
         PetriNet.fire(this, t);
     }
 
     @Override
-    final public void unFire(Transition t) {
+    public final void unFire(Transition t) {
         PetriNet.unFire(this, t);
     }
 
     @Override
-    final public Collection<SignalTransition> getSignalTransitions() {
+    public final Collection<SignalTransition> getSignalTransitions() {
         return Hierarchy.getDescendantsOfType(getRoot(), SignalTransition.class);
     }
 
     @Override
-    final public Collection<Place> getPlaces() {
+    public final Collection<Place> getPlaces() {
         return Hierarchy.getDescendantsOfType(getRoot(), Place.class);
     }
 
     @Override
-    final public Collection<Connection> getConnections() {
+    public final Collection<Connection> getConnections() {
         return Hierarchy.getDescendantsOfType(getRoot(), Connection.class);
     }
 
     @Override
-    final public Collection<Transition> getTransitions() {
+    public final Collection<Transition> getTransitions() {
         return Hierarchy.getDescendantsOfType(getRoot(), Transition.class);
     }
 

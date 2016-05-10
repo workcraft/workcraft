@@ -11,7 +11,7 @@ import org.workcraft.util.Hierarchy;
 
 public class UniqueNameReferenceManager extends HierarchySupervisor implements ReferenceManager {
     private References refs;
-    final private UniqueNameManager mgr;
+    private final UniqueNameManager mgr;
 
     public UniqueNameReferenceManager(References refs) {
         this.refs = refs;

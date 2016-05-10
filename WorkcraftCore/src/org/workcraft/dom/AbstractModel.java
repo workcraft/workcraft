@@ -42,7 +42,7 @@ public abstract class AbstractModel implements Model {
     private Container root;
     private ReferenceManager mgr;
     private String title = "";
-    final private NodeContextTracker nodeContextTracker = new NodeContextTracker();
+    private final NodeContextTracker nodeContextTracker = new NodeContextTracker();
 
     public AbstractModel(Container root) {
         this(root, null);

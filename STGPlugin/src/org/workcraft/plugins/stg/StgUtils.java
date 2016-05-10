@@ -36,7 +36,7 @@ public class StgUtils {
         stg.remove(oldTransition);
     }
 
-    static public DummyTransition convertSignalToDummyTransition(STG stg, SignalTransition signalTransition) {
+    public static DummyTransition convertSignalToDummyTransition(STG stg, SignalTransition signalTransition) {
         Container container = (Container) signalTransition.getParent();
         DummyTransition dummyTransition = stg.createDummyTransition(null, container);
         replaceNamedTransition(stg, signalTransition, dummyTransition);
@@ -85,14 +85,14 @@ public class StgUtils {
         stg.remove(oldTransition);
     }
 
-    static public VisualDummyTransition convertSignalToDummyTransition(VisualSTG stg, VisualSignalTransition signalTransition) {
+    public static VisualDummyTransition convertSignalToDummyTransition(VisualSTG stg, VisualSignalTransition signalTransition) {
         Container container = (Container) signalTransition.getParent();
         VisualDummyTransition dummyTransition = stg.createDummyTransition(null, container);
         replaceNamedTransition(stg, signalTransition, dummyTransition);
         return dummyTransition;
     }
 
-    static public VisualSignalTransition convertDummyToSignalTransition(VisualSTG stg, VisualNamedTransition dummyTransition) {
+    public static VisualSignalTransition convertDummyToSignalTransition(VisualSTG stg, VisualNamedTransition dummyTransition) {
         Container container = (Container) dummyTransition.getParent();
         VisualSignalTransition signalTransition = stg.createSignalTransition(null, Type.INTERNAL, Direction.TOGGLE, container);
         replaceNamedTransition(stg, dummyTransition, signalTransition);

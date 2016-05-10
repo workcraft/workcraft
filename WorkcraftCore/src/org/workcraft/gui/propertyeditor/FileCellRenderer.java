@@ -19,8 +19,8 @@ public class FileCellRenderer extends JPanel implements TableCellRenderer {
     Border unselectedBorder = null;
     Border selectedBorder = null;
 
-    final private JButton chooseButton;
-    final private JButton clearButton;
+    private final JButton chooseButton;
+    private final JButton clearButton;
 
     public FileCellRenderer() {
         chooseButton = new JButton();

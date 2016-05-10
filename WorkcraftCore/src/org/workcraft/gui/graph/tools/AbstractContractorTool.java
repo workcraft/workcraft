@@ -7,7 +7,7 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.workspace.WorkspaceEntry;
 
-abstract public class AbstractContractorTool extends TransformationTool {
+public abstract class AbstractContractorTool extends TransformationTool {
 
     @Override
     public String getDisplayName() {

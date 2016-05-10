@@ -16,10 +16,10 @@ import org.workcraft.util.Identifier;
 
 public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor implements ReferenceManager {
 
-    final private HashMap<NamespaceProvider, NameManager> managers = new HashMap<>();
+    private final HashMap<NamespaceProvider, NameManager> managers = new HashMap<>();
 
     // every node belongs to some name space provider (except the main root node of the model)
-    final private HashMap<Node, NamespaceProvider> node2namespace = new HashMap<>();
+    private final HashMap<Node, NamespaceProvider> node2namespace = new HashMap<>();
     private NamespaceProvider topProvider; // namespace provided by root
     private References refs;
 

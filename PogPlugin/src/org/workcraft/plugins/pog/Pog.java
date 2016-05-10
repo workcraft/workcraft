@@ -78,15 +78,15 @@ public class Pog extends AbstractMathModel {
         return createNode(name, null, Symbol.class);
     }
 
-    final public Collection<Symbol> getSymbols() {
+    public final Collection<Symbol> getSymbols() {
         return Hierarchy.getDescendantsOfType(getRoot(), Symbol.class);
     }
 
-    final public Collection<Vertex> getVertices() {
+    public final Collection<Vertex> getVertices() {
         return Hierarchy.getDescendantsOfType(getRoot(), Vertex.class);
     }
 
-    final public Collection<Vertex> getVertices(final Symbol symbol) {
+    public final Collection<Vertex> getVertices(final Symbol symbol) {
         return Hierarchy.getDescendantsOfType(getRoot(), Vertex.class, new Func<Vertex, Boolean>() {
             @Override
             public Boolean eval(Vertex arg) {

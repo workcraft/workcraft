@@ -25,7 +25,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-abstract public class PropertyDeclaration<O, V> implements PropertyDescriptor, Disableable {
+public abstract class PropertyDeclaration<O, V> implements PropertyDescriptor, Disableable {
     private final O object;
     private String name;
     private Class<V> cls;
@@ -42,9 +42,9 @@ abstract public class PropertyDeclaration<O, V> implements PropertyDescriptor, D
         this.templatable = templatable;
     }
 
-    abstract protected void setter(O object, V value);
+    protected abstract void setter(O object, V value);
 
-    abstract protected V getter(O object);
+    protected abstract V getter(O object);
 
     @Override
     public Map<V, String> getChoice() {

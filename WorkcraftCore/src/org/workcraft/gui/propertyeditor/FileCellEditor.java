@@ -24,9 +24,9 @@ public class FileCellEditor extends AbstractCellEditor implements TableCellEdito
     protected static final String TAG_EDIT = "edit";
     protected static final String TAG_CLEAR = "clear";
 
-    final private JPanel panel;
-    final private JButton chooseButton;
-    final private JButton clearButton;
+    private final JPanel panel;
+    private final JButton chooseButton;
+    private final JButton clearButton;
     private File file;
 
     public FileCellEditor() {

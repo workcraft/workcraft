@@ -44,7 +44,7 @@ public abstract class StateSupervisor extends HierarchySupervisor implements Sta
     }
 
     @Override
-    final public void handleEvent(HierarchyEvent e) {
+    public final void handleEvent(HierarchyEvent e) {
         if (e instanceof NodesAddedEvent) {
             for (Node n : e.getAffectedNodes()) {
                 nodeAdded(n);
@@ -62,7 +62,7 @@ public abstract class StateSupervisor extends HierarchySupervisor implements Sta
     }
 
     @Override
-    final public void notify(StateEvent e) {
+    public final void notify(StateEvent e) {
         handleEvent(e);
     }
 

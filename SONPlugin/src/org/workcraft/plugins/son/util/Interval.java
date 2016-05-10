@@ -33,7 +33,7 @@ public class Interval {
         return max;
     }
 
-    static public Integer getMin(String value) {
+    public static Integer getMin(String value) {
         if (value.length() != 9) {
             return null;
         }
@@ -51,7 +51,7 @@ public class Interval {
         return result;
     }
 
-    static public Integer getMax(String value) {
+    public static Integer getMax(String value) {
         if (value.length() != 9) {
             return null;
         }
@@ -68,7 +68,7 @@ public class Interval {
         return result;
     }
 
-    static public Integer getInteger(String value) {
+    public static Integer getInteger(String value) {
         if (value.length() != 4) {
             return null;
         }

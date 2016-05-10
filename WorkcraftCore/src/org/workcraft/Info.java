@@ -32,7 +32,7 @@ public class Info {
             "    " + OPTION_VERSION + "\t - report the version information and exit\n" +
             "    " + OPTION_HELP + "\t - display this help message and exit\n";
 
-    static public String getVersion() {
+    public static String getVersion() {
         String version = majorVersion + "." + minorVersion + "." + revisionVersion;
         if ((statusVersion != null) && !statusVersion.isEmpty()) {
             version += " (" + statusVersion + ")";
@@ -40,11 +40,11 @@ public class Info {
         return version;
     }
 
-    static public String getTitle() {
+    public static String getTitle() {
         return title + " " + majorVersion;
     }
 
-    static public String getSubtitle() {
+    public static String getSubtitle() {
         switch (majorVersion) {
         case 1: return subtitle1;
         case 2: return subtitle2;
@@ -54,11 +54,11 @@ public class Info {
         }
     }
 
-    static public String getFullTitle() {
+    public static String getFullTitle() {
         return getTitle() + " (" + getSubtitle() + "), version " + getVersion();
     }
 
-    static public String getCopyright() {
+    public static String getCopyright() {
         return "Copyright " + startYear + "-" + currentYear + " " + organisation;
     }
 

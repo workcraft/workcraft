@@ -45,7 +45,7 @@ import org.workcraft.gui.actions.ScriptedActionListener;
 @SuppressWarnings("serial")
 public class DockableWindowContentPanel extends JPanel {
 
-    static public class ViewAction extends Action {
+    public static class ViewAction extends Action {
         public static final int CLOSE_ACTION = 1;
         public static final int MINIMIZE_ACTION = 2;
         public static final int MAXIMIZE_ACTION = 3;

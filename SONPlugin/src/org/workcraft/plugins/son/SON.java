@@ -67,7 +67,7 @@ public class SON extends AbstractMathModel {
     public void validate() throws ModelValidationException {
     }
 
-    final public Condition createCondition(String name, Container container) {
+    public final Condition createCondition(String name, Container container) {
         if (container == null) {
             container = getRoot();
         }
@@ -303,11 +303,11 @@ public class SON extends AbstractMathModel {
         }
     }
 
-    final public ChannelPlace createChannelPlace() {
+    public final ChannelPlace createChannelPlace() {
         return createChannelPlace(null);
     }
 
-    final public ChannelPlace createChannelPlace(String name) {
+    public final ChannelPlace createChannelPlace(String name) {
         ChannelPlace newCP = new ChannelPlace();
         if (name != null) {
             setName(newCP, name);
@@ -317,7 +317,7 @@ public class SON extends AbstractMathModel {
     }
 
     // Scenarios
-    final public Scenario createScenario(String name, ScenarioRef scenario) {
+    public final Scenario createScenario(String name, ScenarioRef scenario) {
         Scenario s = new Scenario();
         if (name != null) {
             setName(s, name);

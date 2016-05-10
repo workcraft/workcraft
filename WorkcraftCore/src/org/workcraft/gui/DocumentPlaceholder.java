@@ -32,7 +32,7 @@ import org.workcraft.util.GUI;
 
 @SuppressWarnings("serial")
 public class DocumentPlaceholder extends JPanel {
-    static private BufferedImage logoImage;
+    private static BufferedImage logoImage;
     @Override
     public void paint(Graphics g) {
         super.paint(g);

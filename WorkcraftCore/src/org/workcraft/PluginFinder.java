@@ -14,7 +14,7 @@ import org.workcraft.exceptions.PluginInstantiationException;
 
 public class PluginFinder {
 
-    static public List<Class<?>> search(File starting) throws PluginInstantiationException {
+    public static List<Class<?>> search(File starting) throws PluginInstantiationException {
         List<Class<?>> result = new ArrayList<Class<?>>();
 
         search(starting, starting, result);
