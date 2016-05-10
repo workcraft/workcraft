@@ -63,6 +63,7 @@ public class WorkspaceEntry implements ObservableState {
     private final MementoManager history = new MementoManager();
     private boolean canSelect = true;
     private boolean canModify = true;
+    private boolean canCopy = true;
     private Memento capturedMemento = null;
     private Memento savedMemento = null;
 
@@ -200,9 +201,9 @@ public class WorkspaceEntry implements ObservableState {
         MainWindowActions.MERGE_WORK_ACTION.setEnabled(canModify);
         MainWindowActions.EDIT_UNDO_ACTION.setEnabled(canModify && history.canUndo());
         MainWindowActions.EDIT_REDO_ACTION.setEnabled(canModify && history.canRedo());
-        MainWindowActions.EDIT_CUT_ACTION.setEnabled(canModify && canSelect);
-        MainWindowActions.EDIT_COPY_ACTION.setEnabled(canModify && canSelect);
-        MainWindowActions.EDIT_PASTE_ACTION.setEnabled(canModify && canSelect);
+        MainWindowActions.EDIT_CUT_ACTION.setEnabled(canModify && canSelect && canCopy);
+        MainWindowActions.EDIT_COPY_ACTION.setEnabled(canModify && canSelect && canCopy);
+        MainWindowActions.EDIT_PASTE_ACTION.setEnabled(canModify && canSelect && canCopy);
         MainWindowActions.EDIT_DELETE_ACTION.setEnabled(canModify && canSelect);
         MainWindowActions.EDIT_SELECT_ALL_ACTION.setEnabled(canModify && canSelect);
         MainWindowActions.EDIT_SELECT_INVERSE_ACTION.setEnabled(canModify && canSelect);
@@ -221,6 +222,11 @@ public class WorkspaceEntry implements ObservableState {
 
     public void setCanSelect(boolean canSelect) {
         this.canSelect = canSelect;
+        updateActionState();
+    }
+
+    public void setCanCopy(boolean canCopy) {
+        this.canCopy = canCopy;
         updateActionState();
     }
 

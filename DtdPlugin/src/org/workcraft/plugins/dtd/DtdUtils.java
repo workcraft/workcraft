@@ -14,17 +14,19 @@ public class DtdUtils {
 
     static public boolean isLevelConnection(VisualConnection connection) {
         boolean result = false;
-        VisualComponent v1 = (VisualComponent) connection.getFirst();
-        VisualComponent v2 = (VisualComponent) connection.getSecond();
-        if (v2 instanceof VisualTransition) {
-            Signal s2 = ((VisualTransition) v2).getReferencedTransition().getSignal();
-            Signal s1 = null;
-            if (v1 instanceof VisualSignal) {
-                s1 = ((VisualSignal) v1).getReferencedSignal();
-            } else if (v1 instanceof VisualTransition) {
-                s1 = ((VisualTransition) v1).getReferencedTransition().getSignal();
+        if (connection != null) {
+            VisualComponent v1 = (VisualComponent) connection.getFirst();
+            VisualComponent v2 = (VisualComponent) connection.getSecond();
+            if (v2 instanceof VisualTransition) {
+                Signal s2 = ((VisualTransition) v2).getReferencedTransition().getSignal();
+                Signal s1 = null;
+                if (v1 instanceof VisualSignal) {
+                    s1 = ((VisualSignal) v1).getReferencedSignal();
+                } else if (v1 instanceof VisualTransition) {
+                    s1 = ((VisualTransition) v1).getReferencedTransition().getSignal();
+                }
+                result = s1 == s2;
             }
-            result = s1 == s2;
         }
         return result;
     }

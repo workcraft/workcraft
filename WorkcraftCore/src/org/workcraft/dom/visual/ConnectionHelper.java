@@ -6,6 +6,7 @@ import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.connections.ConnectionGraphic;
 import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.PartialCurveInfo;
@@ -16,7 +17,7 @@ import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 public class ConnectionHelper {
     public static final double SAME_ANCHOR_POINT_THRESHOLD = 0.1;
 
-    static public void addControlPoints(VisualConnection connection, List<Point2D> locationsInRootSpace) {
+    public static void addControlPoints(VisualConnection connection, List<Point2D> locationsInRootSpace) {
         if ((connection != null) && (connection.getGraphic() instanceof Polyline) && (locationsInRootSpace != null)) {
             Polyline polyline = (Polyline) connection.getGraphic();
             AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(connection);
@@ -30,7 +31,7 @@ public class ConnectionHelper {
         }
     }
 
-    static public void prependControlPoints(VisualConnection connection, List<Point2D> locationsInRootSpace) {
+    public static void prependControlPoints(VisualConnection connection, List<Point2D> locationsInRootSpace) {
         if ((connection != null) && (connection.getGraphic() instanceof Polyline) && (locationsInRootSpace != null)) {
             Polyline polyline = (Polyline) connection.getGraphic();
             AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(connection);
@@ -45,7 +46,7 @@ public class ConnectionHelper {
         }
     }
 
-    static public ControlPoint createControlPoint(VisualConnection connection, Point2D locationInRootSpace) {
+    public static ControlPoint createControlPoint(VisualConnection connection, Point2D locationInRootSpace) {
         ControlPoint result = null;
         if ((connection != null) && (locationInRootSpace != null)) {
             AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(connection);
@@ -61,7 +62,7 @@ public class ConnectionHelper {
         return result;
     }
 
-    static public LinkedList<Point2D> getPrefixControlPoints(VisualConnection connection, Point2D splitPointInLocalSpace) {
+    public static LinkedList<Point2D> getPrefixControlPoints(VisualConnection connection, Point2D splitPointInLocalSpace) {
         LinkedList<Point2D> locationsInRootSpace = new LinkedList<>();
         if ((connection != null) && (connection.getGraphic() instanceof Polyline) && (splitPointInLocalSpace != null)) {
             Polyline polyline = (Polyline) connection.getGraphic();
@@ -80,7 +81,7 @@ public class ConnectionHelper {
         return locationsInRootSpace;
     }
 
-    static public LinkedList<Point2D> getSuffixControlPoints(VisualConnection connection, Point2D splitPointInLocalSpace) {
+    public static LinkedList<Point2D> getSuffixControlPoints(VisualConnection connection, Point2D splitPointInLocalSpace) {
         LinkedList<Point2D> locationsInRootSpace = new LinkedList<>();
         if ((connection != null) && (connection.getGraphic() instanceof Polyline) && (splitPointInLocalSpace != null)) {
             Polyline polyline = (Polyline) connection.getGraphic();
@@ -99,7 +100,7 @@ public class ConnectionHelper {
         return locationsInRootSpace;
     }
 
-    static public LinkedList<Point2D> getMergedControlPoints(VisualTransformableNode mergeNode, VisualConnection con1, VisualConnection con2) {
+    public static LinkedList<Point2D> getMergedControlPoints(VisualTransformableNode mergeNode, VisualConnection con1, VisualConnection con2) {
         LinkedList<Point2D> locations = new LinkedList<>();
         Point2D lastLocation = null;
         if (con1 != null) {
@@ -139,7 +140,7 @@ public class ConnectionHelper {
         return locations;
     }
 
-    static public void filterControlPoints(Polyline polyline, double distanceThreshold, double gradientThreshold) {
+    public static void filterControlPoints(Polyline polyline, double distanceThreshold, double gradientThreshold) {
         PartialCurveInfo curveInfo = polyline.getCurveInfo();
         Point2D startPos = polyline.getPointOnCurve(curveInfo.tStart);
         Point2D endPos = polyline.getPointOnCurve(curveInfo.tEnd);
@@ -187,7 +188,7 @@ public class ConnectionHelper {
         }
     }
 
-    static private double clacGradient(Point2D p1, Point2D p2, Point2D p3) {
+    private static double clacGradient(Point2D p1, Point2D p2, Point2D p3) {
         double p1x = p1.getX();
         double p1y = p1.getY();
         double p2x = p2.getX();
@@ -196,6 +197,11 @@ public class ConnectionHelper {
         double p3y = p3.getY();
         double result = p1x * (p2y - p3y) + p2x * (p3y - p1y) + p3x * (p1y - p2y);
         return result;
+    }
+
+    public static VisualConnection getParentConnection(ControlPoint cp) {
+        Node graphic = cp.getParent();
+        return (graphic == null) ? null : (VisualConnection) graphic.getParent();
     }
 
 }
