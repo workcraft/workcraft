@@ -117,7 +117,7 @@ public class MpsatConformationTask extends MpsatChainTask {
                         new MpsatChainResult(devExportResult, pcompResult, null, null, toolchainPreparationSettings));
             }
             WorkspaceEntry stgWorkspaceEntry = framework.getWorkspace().open(stgFile, true);
-            STG stg = (STG) stgWorkspaceEntry.getModelEntry().getMathModel();
+            stgWorkspaceEntry.getModelEntry().getMathModel();
             framework.getWorkspace().close(stgWorkspaceEntry);
             monitor.progressUpdate(0.50);
 

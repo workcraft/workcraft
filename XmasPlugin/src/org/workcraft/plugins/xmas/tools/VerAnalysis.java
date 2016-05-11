@@ -86,7 +86,6 @@ public class VerAnalysis extends AbstractTool implements Tool {
     public List<JRadioButton> rlist = new ArrayList<>();
 
     private static List<String> processArg(String file, int index) {
-        String typ = null;
         Scanner sc = null;
         try {
             sc = new Scanner(new File(file));
@@ -97,8 +96,6 @@ public class VerAnalysis extends AbstractTool implements Tool {
         String larg = "";
         String sarg = "";
         String aarg = "";
-        String arg = "";
-        int num;
         while (sc.hasNextLine()) {
             Scanner line = new Scanner(sc.nextLine());
             Scanner nxt = new Scanner(line.next());
@@ -214,8 +211,6 @@ public class VerAnalysis extends AbstractTool implements Tool {
     }
 
     public void initHighlight(Xmas xnet, VisualXmas vnet) {
-        QueueComponent qc;
-        SyncComponent sc;
         VisualQueueComponent vqc;
         VisualSyncComponent vsc;
 
@@ -276,7 +271,6 @@ public class VerAnalysis extends AbstractTool implements Tool {
         VisualSyncComponent vsc;
 
         for (String st : s.split(" |;|\n")) {
-            int n = 1;
             if (st.contains("->")) {
                 //System.out.println("testst" + st);
                 typ = 0;
@@ -384,7 +378,6 @@ public class VerAnalysis extends AbstractTool implements Tool {
 
     void createPanel(List<JPanel> panellist, String file) {
         int no = 1;
-        String typ = null;
         Scanner sc = null;
         try {
             sc = new Scanner(new File(file));
@@ -494,7 +487,6 @@ public class VerAnalysis extends AbstractTool implements Tool {
         okButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                int no = 1;
                 dispose();
                 if (index != 0) {
                     try {
@@ -536,9 +528,9 @@ public class VerAnalysis extends AbstractTool implements Tool {
                         if (test > 0) {
                             if (display.equals("popup")) {
                                 if (!level.equals("advanced")) {
-                                    SolutionsDialog1 solutionsDialog = new SolutionsDialog1(test, str);
+                                    new SolutionsDialog1(test, str);
                                 } else {
-                                    SolutionsDialog2 solutionsDialog = new SolutionsDialog2(test, str);
+                                    new SolutionsDialog2(test, str);
                                 }
                             }
                             if (test == 2) {

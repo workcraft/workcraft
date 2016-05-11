@@ -40,9 +40,6 @@ public class Signal extends Symbol {
 
     private Type type = Type.OUTPUT;
 
-    public Signal() {
-    }
-
     public Type getType() {
         return type;
     }

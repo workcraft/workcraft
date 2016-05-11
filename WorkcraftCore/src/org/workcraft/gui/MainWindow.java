@@ -263,7 +263,7 @@ public class MainWindow extends JFrame {
         if (visualModel == null) {
             VisualModelDescriptor vmd = descriptor.getVisualModelDescriptor();
             if (vmd == null) {
-                JOptionPane.showMessageDialog(MainWindow.this,
+                JOptionPane.showMessageDialog(this,
                         "A visual model could not be created for the selected model.\n" + "Model '"
                                 + descriptor.getDisplayName() + "' does not have visual model support.",
                         "Error", JOptionPane.ERROR_MESSAGE);
@@ -273,7 +273,7 @@ public class MainWindow extends JFrame {
                 visualModel = vmd.create((MathModel) modelEntry.getModel());
                 modelEntry.setModel(visualModel);
             } catch (VisualModelInstantiationException e) {
-                JOptionPane.showMessageDialog(MainWindow.this,
+                JOptionPane.showMessageDialog(this,
                         "A visual model could not be created for the selected model.\nPlease refer to the Problems window for details.\n",
                         "Error", JOptionPane.ERROR_MESSAGE);
                 e.printStackTrace();
@@ -1423,36 +1423,35 @@ public class MainWindow extends JFrame {
         return workspaceWindow;
     }
 
-}
+    private static class ImporterFileFilter extends javax.swing.filechooser.FileFilter {
+        private Importer importer;
 
-class ImporterFileFilter extends javax.swing.filechooser.FileFilter {
-    private Importer importer;
+        ImporterFileFilter(Importer importer) {
+            this.importer = importer;
+        }
 
-    ImporterFileFilter(Importer importer) {
-        this.importer = importer;
+        public boolean accept(File f) {
+            return f.isDirectory() || importer.accept(f);
+        }
+
+        public String getDescription() {
+            return importer.getDescription();
+        }
     }
 
-    public boolean accept(File f) {
-        return f.isDirectory() || importer.accept(f);
-    }
+    private static class ExporterFileFilter extends javax.swing.filechooser.FileFilter {
+        private Exporter exporter;
 
-    public String getDescription() {
-        return importer.getDescription();
-    }
-}
+        ExporterFileFilter(Exporter exporter) {
+            this.exporter = exporter;
+        }
 
-class ExporterFileFilter extends javax.swing.filechooser.FileFilter {
-    private Exporter exporter;
+        public boolean accept(File f) {
+            return f.isDirectory() || f.getName().endsWith(exporter.getExtenstion());
+        }
 
-    ExporterFileFilter(Exporter exporter) {
-        this.exporter = exporter;
-    }
-
-    public boolean accept(File f) {
-        return f.isDirectory() || f.getName().endsWith(exporter.getExtenstion());
-    }
-
-    public String getDescription() {
-        return exporter.getDescription();
+        public String getDescription() {
+            return exporter.getDescription();
+        }
     }
 }

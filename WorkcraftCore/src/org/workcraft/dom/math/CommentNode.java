@@ -7,8 +7,4 @@ import org.workcraft.annotations.VisualClass;
 @VisualClass(org.workcraft.dom.visual.VisualComment.class)
 public class CommentNode extends MathNode {
 
-    public CommentNode() {
-
-    }
-
 }

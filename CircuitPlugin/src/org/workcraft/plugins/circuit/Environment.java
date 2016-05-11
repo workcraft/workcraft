@@ -11,10 +11,6 @@ public class Environment extends MathNode {
     private File file;
     private File base;
 
-    public Environment() {
-
-    }
-
     public File getFile() {
         return file;
     }

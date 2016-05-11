@@ -23,79 +23,6 @@ package org.workcraft.gui.workspace;
 import java.util.ArrayList;
 import java.util.List;
 
-class EmptyPath<Node> extends Path<Node> {
-    static EmptyPath<?> instance = new EmptyPath<>();
-    @SuppressWarnings("unchecked")
-    public static <Node> EmptyPath<Node> instance() {
-        return (EmptyPath<Node>) instance;
-    }
-
-    @Override
-    public Node getNode() {
-        throw new org.workcraft.exceptions.NotSupportedException();
-    }
-
-    @Override
-    public Path<Node> getParent() {
-        throw new org.workcraft.exceptions.NotSupportedException();
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return true;
-    }
-}
-
-class RootPath<Node> extends Path<Node> {
-    private final Node root;
-
-    RootPath(Node root) {
-        this.root = root;
-    }
-
-    @Override
-    public Node getNode() {
-        return root;
-    }
-
-    @Override
-    public Path<Node> getParent() {
-        return EmptyPath.instance();
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return false;
-    }
-
-}
-
-class NormalPath<Node> extends Path<Node> {
-    private final Path<Node> parent;
-    private final Node node;
-
-    NormalPath(Path<Node> parent, Node node) {
-        if (node == null || parent == null) {
-            throw new NullPointerException();
-        }
-        this.parent = parent;
-        this.node = node;
-    }
-
-    public Path<Node> getParent() {
-        return parent;
-    }
-
-    public Node getNode() {
-        return node;
-    }
-
-    @Override
-    public boolean isEmpty() {
-        return false;
-    }
-}
-
 public abstract class Path<Node> {
     public abstract boolean isEmpty();
     public abstract Node getNode();
@@ -209,5 +136,78 @@ public abstract class Path<Node> {
             return node.toString();
         }
         return parent.toString() + "/" + node.toString();
+    }
+
+    private static class EmptyPath<Node> extends Path<Node> {
+        static EmptyPath<?> instance = new EmptyPath<>();
+        @SuppressWarnings("unchecked")
+        public static <Node> EmptyPath<Node> instance() {
+            return (EmptyPath<Node>) instance;
+        }
+
+        @Override
+        public Node getNode() {
+            throw new org.workcraft.exceptions.NotSupportedException();
+        }
+
+        @Override
+        public Path<Node> getParent() {
+            throw new org.workcraft.exceptions.NotSupportedException();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return true;
+        }
+    }
+
+    private static class RootPath<Node> extends Path<Node> {
+        private final Node root;
+
+        RootPath(Node root) {
+            this.root = root;
+        }
+
+        @Override
+        public Node getNode() {
+            return root;
+        }
+
+        @Override
+        public Path<Node> getParent() {
+            return EmptyPath.instance();
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return false;
+        }
+
+    }
+
+    private static class NormalPath<Node> extends Path<Node> {
+        private final Path<Node> parent;
+        private final Node node;
+
+        NormalPath(Path<Node> parent, Node node) {
+            if (node == null || parent == null) {
+                throw new NullPointerException();
+            }
+            this.parent = parent;
+            this.node = node;
+        }
+
+        public Path<Node> getParent() {
+            return parent;
+        }
+
+        public Node getNode() {
+            return node;
+        }
+
+        @Override
+        public boolean isEmpty() {
+            return false;
+        }
     }
 }

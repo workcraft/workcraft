@@ -153,11 +153,6 @@ public class JsonExport implements Tool {
             no++;
         }
 
-        //Set Component properties from VisualComponent
-        VisualSourceComponent vsc;
-        VisualFunctionComponent fsc;
-        VisualQueueComponent vqc;
-
         for (SourceComponent node : cnet.getSourceComponents()) {
             //System.out.println("Num =" + cnet.getPostset(node).size());
             //System.out.println("Name =" + cnet.getName(node));
@@ -174,27 +169,18 @@ public class JsonExport implements Tool {
             //System.out.println("OutputContact =" + cnet.getName(node));
             contactNode = node;
         }
-        /* //All contacts
-        for (Contact node : cnet.getContact()) {
-            System.out.println("Name =" + cnet.getName(node));
-            contactNode = node;
-        }*/
+        //All contacts
         //System.out.println("Name_ =" + cnet.getName(contactNode));
         for (Connection c : cnet.getConnections(contactNode)) {
             //System.out.println("OutputConnection =" + cnet.getName(c));
             //if (c.getFirst() instanceof Contact) System.out.println("Found First Contact");
             if (c.getSecond() instanceof XmasContact) {
                 //System.out.println("Found Output Contact" + cnet.getName(c.getSecond()));
-                Node cpNode = c.getSecond().getParent();
+                //Node cpNode = c.getSecond().getParent();
                 //System.out.println("Found Output Component" + cnet.getName(cpNode));
             }
         }
-        int numNodes = 0;
-        for (Node node : cnet.getNodes()) {
-            //System.out.println("Name =" + cnet.getName(node));
-            //cnet.getLabel(node);
-            numNodes++;
-        }
+        int numNodes = cnet.getNodes().size();
         //GEN JSON
         File file = XmasSettings.getTempVxmJsonFile();
         PrintWriter writer = null;
@@ -383,7 +369,7 @@ public class JsonExport implements Tool {
                     writer.println("      \"fields\": [");
                     System.out.println("        {");
                     writer.println("        {");
-                    int quchecksize = quNode.getCapacity();
+                    //int quchecksize = quNode.getCapacity();
                     //System.out.println("capacity = " + quchecksize + ",");
                     int qusize = quNode.getCapacity();
                     //int qusize = 2;    //hardwire

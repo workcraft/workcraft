@@ -12,7 +12,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -91,7 +90,6 @@ public class VerQuery extends AbstractTool implements Tool {
     }
 
     private static List<String> processArg(String file, int index) {
-        String typ = null;
         Scanner sc = null;
         try {
             sc = new Scanner(new File(file));
@@ -103,8 +101,6 @@ public class VerQuery extends AbstractTool implements Tool {
         String sarg = "";
         String aarg = "";
         String qarg = "";
-        String arg = "";
-        int num;
         while (sc.hasNextLine()) {
             Scanner line = new Scanner(sc.nextLine());
             Scanner nxt = new Scanner(line.next());
@@ -258,8 +254,6 @@ public class VerQuery extends AbstractTool implements Tool {
     }
 
     public void initHighlight(Xmas xnet, VisualXmas vnet) {
-        QueueComponent qc;
-        SyncComponent sc;
         VisualQueueComponent vqc;
         VisualSyncComponent vsc;
 
@@ -320,7 +314,6 @@ public class VerQuery extends AbstractTool implements Tool {
         VisualSyncComponent vsc;
 
         for (String st : s.split(" |;|\n")) {
-            int n = 1;
             //if (st.startsWith("Q")) {
             if (st.contains("->")) {
                 //System.out.println("testst" + st);
@@ -490,8 +483,6 @@ public class VerQuery extends AbstractTool implements Tool {
     }
 
     void createPanel(List<JPanel> panellist, Xmas cnet, VisualXmas vnet, int grnum) {
-        int no = 1;
-        String typ = null;
         panellist.add(new JPanel());
         panellist.get(panellist.size() - 1).add(new JLabel(" Sources" + ": "));
         panellist.get(panellist.size() - 1).add(mdcombob = new JComboBox());
@@ -571,12 +562,7 @@ public class VerQuery extends AbstractTool implements Tool {
         final VisualXmas vnet = (VisualXmas) we.getModelEntry().getVisualModel();
         Xmas cnet = (Xmas) we.getModelEntry().getMathModel();
 
-        PrintWriter writer = null;
-
-        int grnum = 0;
-        for (VisualGroup vg: Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualGroup.class)) {
-            grnum++;
-        }
+        int grnum = Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualGroup.class).size();
 
         mainFrame = new JFrame("Analysis");
         JPanel panelmain = new JPanel();
@@ -617,7 +603,6 @@ public class VerQuery extends AbstractTool implements Tool {
         okButton.addActionListener(new ActionListener() {
 
             public void actionPerformed(ActionEvent e) {
-                int no = 1;
                 dispose();
                 if (index != 0) {
                     try {
@@ -665,11 +650,11 @@ public class VerQuery extends AbstractTool implements Tool {
                         if (test > 0) {
                             if (display.equals("popup")) {
                                 if (!level.equals("advanced") && (q3flag == 0)) {
-                                    SolutionsDialog1 solutionsDialog = new SolutionsDialog1(test, str2);
+                                    new SolutionsDialog1(test, str2);
                                 } else if (level.equals("advanced") && (q3flag == 1)) {
-                                    SolutionsDialog2 solutionsDialog = new SolutionsDialog2(test, str);
+                                    new SolutionsDialog2(test, str);
                                 } else {
-                                    SolutionsDialog2 solutionsDialog = new SolutionsDialog2(test, str2);
+                                    new SolutionsDialog2(test, str2);
                                 }
                             }
                             if (test == 2) {

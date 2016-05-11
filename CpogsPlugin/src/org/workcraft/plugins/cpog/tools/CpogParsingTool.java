@@ -105,7 +105,7 @@ public class CpogParsingTool {
 
         findAllChildren(q, visualCpog, outer, pages);
 
-        double x = positionNodes(originalX, originalY, outer);
+        positionNodes(originalX, originalY, outer);
 
     }
 

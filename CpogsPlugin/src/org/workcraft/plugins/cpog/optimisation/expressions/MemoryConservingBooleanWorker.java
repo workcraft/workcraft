@@ -26,59 +26,6 @@ import java.util.Map;
 import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
 
-class Inverter implements BooleanVisitor<BooleanFormula> {
-    public static final Inverter instance = new Inverter();
-
-    @Override
-    public BooleanFormula visit(Not node) {
-        return node.getX();
-    }
-
-    protected BooleanFormula visitDefault(BooleanFormula node) {
-        return new Not(node);
-    }
-
-    @Override
-    public BooleanFormula visit(And node) {
-        return visitDefault(node);
-    }
-
-    @Override
-    public BooleanFormula visit(Iff node) {
-        return visitDefault(node);
-    }
-
-    @Override
-    public BooleanFormula visit(Xor node) {
-        return visitDefault(node);
-    }
-
-    @Override
-    public BooleanFormula visit(Zero node) {
-        throw new RuntimeException("no constants expected here");
-    }
-
-    @Override
-    public BooleanFormula visit(One node) {
-        throw new RuntimeException("no constants expected here");
-    }
-
-    @Override
-    public BooleanFormula visit(Imply node) {
-        return visitDefault(node);
-    }
-
-    @Override
-    public BooleanFormula visit(BooleanVariable node) {
-        return visitDefault(node);
-    }
-
-    @Override
-    public BooleanFormula visit(Or node) {
-        return visitDefault(node);
-    }
-}
-
 public class MemoryConservingBooleanWorker implements ReducedBooleanWorker {
     Map<BooleanFormula, Integer> codes = new HashMap<>();
     Map<IntPair, BooleanFormula> ands = new HashMap<>();
@@ -195,4 +142,58 @@ public class MemoryConservingBooleanWorker implements ReducedBooleanWorker {
             newCode(inverted);
         }
     }
+
+    private static class Inverter implements BooleanVisitor<BooleanFormula> {
+        public static final Inverter instance = new Inverter();
+
+        @Override
+        public BooleanFormula visit(Not node) {
+            return node.getX();
+        }
+
+        protected BooleanFormula visitDefault(BooleanFormula node) {
+            return new Not(node);
+        }
+
+        @Override
+        public BooleanFormula visit(And node) {
+            return visitDefault(node);
+        }
+
+        @Override
+        public BooleanFormula visit(Iff node) {
+            return visitDefault(node);
+        }
+
+        @Override
+        public BooleanFormula visit(Xor node) {
+            return visitDefault(node);
+        }
+
+        @Override
+        public BooleanFormula visit(Zero node) {
+            throw new RuntimeException("no constants expected here");
+        }
+
+        @Override
+        public BooleanFormula visit(One node) {
+            throw new RuntimeException("no constants expected here");
+        }
+
+        @Override
+        public BooleanFormula visit(Imply node) {
+            return visitDefault(node);
+        }
+
+        @Override
+        public BooleanFormula visit(BooleanVariable node) {
+            return visitDefault(node);
+        }
+
+        @Override
+        public BooleanFormula visit(Or node) {
+            return visitDefault(node);
+        }
+    }
+
 }

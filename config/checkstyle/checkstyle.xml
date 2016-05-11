@@ -19,7 +19,7 @@
 
     <module name="TreeWalker">
         <module name="OuterTypeFilename"/>
-        <!--<module name="OneTopLevelClass"/>-->
+        <module name="OneTopLevelClass"/>
         <module name="NoLineWrap" />
 
         <module name="PackageName" />

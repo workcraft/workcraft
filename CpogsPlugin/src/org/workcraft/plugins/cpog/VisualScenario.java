@@ -131,7 +131,7 @@ public class VisualScenario extends VisualGroup {
     public void draw(DrawRequest r) {
         Graphics2D g = r.getGraphics();
         Color colorisation = r.getDecoration().getColorisation();
-        Color background = r.getDecoration().getBackground();
+//        Color background = r.getDecoration().getBackground();
 
         Rectangle2D bb = getContentsBoundingBox();
 

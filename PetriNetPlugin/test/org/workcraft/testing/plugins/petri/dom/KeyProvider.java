@@ -19,12 +19,8 @@
 *
 */
 
-package org.workcraft.plugins.circuit;
+package org.workcraft.testing.plugins.petri.dom;
 
-import org.workcraft.annotations.VisualClass;
-import org.workcraft.dom.math.MathNode;
-
-@VisualClass(org.workcraft.plugins.circuit.VisualJoint.class)
-public class Joint extends MathNode {
-
+interface KeyProvider<T> {
+    Object getKey(T item);
 }

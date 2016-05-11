@@ -41,9 +41,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class ScencoExecutionSupport {
 
-    public ScencoExecutionSupport() {
-    }
-
     // UTILITY FUNCTIONS
     // FUNCTION TO CONVERT BINARY TO INT
     protected String binaryToInt(String string) {
@@ -115,7 +112,6 @@ public class ScencoExecutionSupport {
             }
             System.out.println();
         }
-        return;
     }
 
     // RESET ALL THE PARAMETERS TO CALL SCENCO TOOL
@@ -132,7 +128,6 @@ public class ScencoExecutionSupport {
         cpogSize = "";
         disableFunction = "";
         oldSynt = "";
-        return;
     }
 
     protected int scanScenarios(int m, ArrayList<VisualTransformableNode> scenarios,

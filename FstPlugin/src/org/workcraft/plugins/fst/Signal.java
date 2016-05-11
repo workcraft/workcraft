@@ -37,9 +37,6 @@ public class Signal extends Symbol {
 
     private Type type = Type.DUMMY;
 
-    public Signal() {
-    }
-
     public Type getType() {
         return type;
     }

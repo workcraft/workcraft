@@ -436,8 +436,8 @@ public class VerilogImporter implements Importer {
             return null;
         }
         String expression = "";
-        int index = 0;
-        for (Pin verilogPin: verilogInstance.connections) {
+        int index;
+        for (index = 0; index < verilogInstance.connections.size(); index++) {
             if (index > 0) {
                 String pinName = getPrimitiveGatePinName(index);
                 if (!expression.isEmpty()) {
@@ -445,7 +445,6 @@ public class VerilogImporter implements Importer {
                 }
                 expression += pinName;
             }
-            index++;
         }
         if (isInvertingPrimitive(verilogInstance.moduleName)) {
             if (index > 1) {

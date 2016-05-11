@@ -32,20 +32,10 @@ public class VisualLocality extends VisualGroup {
     }
 
     @Override
-    public void remove(Node node) {
-        super.remove(node);
-    }
-
-    @Override
     public void add(Collection<Node> nodes) {
         for (Node node : nodes) {
             this.add(node);
         }
-    }
-
-    @Override
-    public void remove(Collection<Node> nodes) {
-        super.remove(nodes);
     }
 
     public Locality getLocality() {

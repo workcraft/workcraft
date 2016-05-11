@@ -14,7 +14,6 @@ import org.codehaus.jackson.JsonParser;
 import org.codehaus.jackson.JsonToken;
 import org.codehaus.jackson.map.MappingJsonFactory;
 import org.workcraft.Tool;
-import org.workcraft.plugins.xmas.VisualXmas;
 import org.workcraft.plugins.xmas.Xmas;
 import org.workcraft.plugins.xmas.components.FunctionComponent;
 import org.workcraft.plugins.xmas.components.SourceComponent;
@@ -112,7 +111,7 @@ public class PNetGen implements Tool {
                 qs = str.replace("Qs", "Sync");
             } else {
                 nxt = new Scanner(line.next());
-                String str = nxt.next();
+                nxt.next();
                 nxt = new Scanner(line.next());
                 cn = nxt.next();
                 nxt = new Scanner(line.next());
@@ -245,10 +244,8 @@ public class PNetGen implements Tool {
     }
 
     private static void createSlsto() {  //patch new
-        int i, j, pos = 0;
-
-        for (i = 0; i < slsti.size(); i++) {
-            pos = searchSlsto(slsti.get(i).b);
+        for (int i = 0; i < slsti.size(); i++) {
+            int pos = searchSlsto(slsti.get(i).b);
             slsto.add(new Info(slsto2.get(pos).a, slsto2.get(pos).b, "", slsto2.get(pos).d));
         }
     }
@@ -992,7 +989,7 @@ public class PNetGen implements Tool {
     public void run(WorkspaceEntry we) {
         System.out.println("");
         Xmas cnet = (Xmas) we.getModelEntry().getMathModel();
-        VisualXmas vnet = (VisualXmas) we.getModelEntry().getVisualModel();
+        //VisualXmas vnet = (VisualXmas) we.getModelEntry().getVisualModel();
         //srcNodes = Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualSourceComponent.class);
         srcNodes = cnet.getSourceComponents();
         //funNodes = Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualFunctionComponent.class);
@@ -1055,8 +1052,8 @@ public class PNetGen implements Tool {
                             String idNamep2 = "";
                             String fieldsize = "";
                             String fieldgpf = "";
-                            String fieldgpf1 = "";
-                            String styp = "";
+                            //String fieldgpf1 = "";
+                            //String styp = "";
                             int fieldinit = 0;
                             int fieldgr = 0;
                             String typeName = node.get("type").getValueAsText();
@@ -1120,12 +1117,12 @@ public class PNetGen implements Tool {
                                     if (y2.get(i).has("gpf1")) {
                                         fieldgpf = y2.get(i).get("gpf1").getValueAsText();
                                     }
-                                    if (y2.get(i).has("gpf2")) {
-                                        fieldgpf1 = y2.get(i).get("gpf2").getValueAsText();
-                                    }
-                                    if (y2.get(i).has("typ")) {
-                                        styp = y2.get(i).get("typ").getValueAsText();
-                                    }
+                                    //if (y2.get(i).has("gpf2")) {
+                                    //    fieldgpf1 = y2.get(i).get("gpf2").getValueAsText();
+                                    //}
+                                    //if (y2.get(i).has("typ")) {
+                                    //    styp = y2.get(i).get("typ").getValueAsText();
+                                    //}
                                 }
                             }
 
@@ -1163,7 +1160,7 @@ public class PNetGen implements Tool {
             if (writer != null) {
                 writer.close();
                 System.out.println("Control CPNs created");
-                PNetExt pnconv = new PNetExt(srcNodes, funNodes, swNodes, syncflag);
+                //PNetExt pnconv = new PNetExt(srcNodes, funNodes, swNodes, syncflag);
                 //printlst();
             }
             /*if (writer_s != null) {

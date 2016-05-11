@@ -814,7 +814,6 @@ public class SONSimulationTool extends PetriNetSimulationTool {
 
         branchTrace.add(newStep);
         step(editor);
-        return;
     }
 
     protected Step getStep(StepRef stepRef) {

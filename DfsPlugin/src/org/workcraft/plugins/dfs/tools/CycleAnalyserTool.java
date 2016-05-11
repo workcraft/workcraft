@@ -119,7 +119,7 @@ public class CycleAnalyserTool extends AbstractTool {
         dimension.width = 40;
         cycleCountText.setPreferredSize(dimension);
         cycleCountText.setDocument(new IntDocument(3));
-        cycleCountText.setText(new Integer(cycleCount).toString());
+        cycleCountText.setText(String.valueOf(cycleCount));
         cycleCountText.addKeyListener(new KeyListener() {
             @Override
             public void keyPressed(KeyEvent arg0) {
@@ -128,10 +128,10 @@ public class CycleAnalyserTool extends AbstractTool {
                         cycleCount = Integer.parseInt(cycleCountText.getText());
                         resetSelectedCycle(editor);
                     } catch (NumberFormatException e) {
-                        cycleCountText.setText(new Integer(cycleCount).toString());
+                        cycleCountText.setText(String.valueOf(cycleCount));
                     }
                 } else if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                    cycleCountText.setText(new Integer(cycleCount).toString());
+                    cycleCountText.setText(String.valueOf(cycleCount));
                 }
             }
             @Override
@@ -145,7 +145,7 @@ public class CycleAnalyserTool extends AbstractTool {
         cycleCountText.addFocusListener(new FocusListener() {
             @Override
             public void focusGained(FocusEvent arg0) {
-                cycleCountText.setText(new Integer(cycleCount).toString());
+                cycleCountText.setText(String.valueOf(cycleCount));
             }
 
             @Override

@@ -103,7 +103,7 @@ public class TransformationResultHandler extends DummyProgressMonitor<Transforma
             Node first = nodeMap.get(connection.getFirst());
             Node second = nodeMap.get(connection.getSecond());
             try {
-                Connection newConnection = dstModel.connect(first, second);
+                dstModel.connect(first, second);
             } catch (InvalidConnectionException e) {
                 e.printStackTrace();
             }

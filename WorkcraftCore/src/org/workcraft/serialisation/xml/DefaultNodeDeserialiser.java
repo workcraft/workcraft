@@ -163,7 +163,6 @@ class DefaultNodeDeserialiser {
                     if (Dependent.class.isAssignableFrom(cls)) {
                         // Check for the simple case when there is only one reference to the underlying model.
                         String ref = currentLevelElement.getAttribute("ref");
-                        String master = currentLevelElement.getAttribute("master");
                         if (ref.isEmpty()) {
                             // Bad luck, we probably can't do anything.
                             // But let's try a default constructor just in case.
