@@ -94,12 +94,12 @@ import org.workcraft.workspace.Workspace;
 import org.xml.sax.SAXException;
 
 public final class Framework {
-    private static final String SETTINGS_DIRECTORY_NAME = ".workcraft";
+    private static final String SETTINGS_DIRECTORY_NAME = "workcraft";
     private static final String CONFIG_FILE_NAME = "config.xml";
     private static final String PLUGINS_FILE_NAME = "plugins.xml";
     private static final String UILAYOUT_FILE_NAME = "uilayout.xml";
 
-    public static final String SETTINGS_DIRECTORY_PATH = System.getProperty("user.home") + File.separator + SETTINGS_DIRECTORY_NAME;
+    public static final String SETTINGS_DIRECTORY_PATH = DesktopApi.getConfigPath() + File.separator + SETTINGS_DIRECTORY_NAME;
     public static final String CONFIG_FILE_PATH =  SETTINGS_DIRECTORY_PATH + File.separator + CONFIG_FILE_NAME;
     public static final String PLUGINS_FILE_PATH =  SETTINGS_DIRECTORY_PATH + File.separator + PLUGINS_FILE_NAME;
     public static final String UILAYOUT_FILE_PATH =  SETTINGS_DIRECTORY_PATH + File.separator + UILAYOUT_FILE_NAME;
