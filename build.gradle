@@ -64,6 +64,12 @@ subprojects {
         arguments = [grammar_encoding: 'UTF-8', static: 'false']
     }
 
+    task cleanJavacc(type: Delete) {
+        delete 'src-gen'
+    }
+
+    task cleanAll(dependsOn: ['clean', 'cleanJavacc'])
+
     dependencies {
         compile fileTree(dir: '../ThirdParty', include: ['*.jar'])
         compile fileTree(dir: '../ThirdParty/batik', include: ['*.jar'])
