@@ -10,18 +10,18 @@ import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.plugins.graph.Graph;
 import org.workcraft.plugins.dtd.Signal.Type;
 import org.workcraft.plugins.dtd.propertydescriptors.DirectionPropertyDescriptor;
 import org.workcraft.plugins.dtd.propertydescriptors.SignalTypePropertyDescriptor;
 import org.workcraft.plugins.dtd.propertydescriptors.TransitionPropertyDescriptor;
 import org.workcraft.plugins.dtd.propertydescriptors.TypePropertyDescriptor;
-import org.workcraft.plugins.pog.Pog;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
 @VisualClass(org.workcraft.plugins.dtd.VisualDtd.class)
-public class Dtd extends Pog {
+public class Dtd extends Graph {
 
     public Dtd() {
         this(null, null);

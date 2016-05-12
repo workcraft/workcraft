@@ -11,7 +11,7 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
-import org.workcraft.plugins.stg.STGModel;
+import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.interop.DotGImporter;
 import org.workcraft.tasks.Result;
@@ -30,7 +30,7 @@ public class MpsatCscResolutionResultHandler implements Runnable {
         this.result = result;
     }
 
-    public STGModel getResolvedStg() {
+    public StgModel getResolvedStg() {
         final byte[] output = result.getReturnValue().getOutputFile(MpsatTask.FILE_MPSAT_G);
         if (output == null) {
             return null;
@@ -48,7 +48,7 @@ public class MpsatCscResolutionResultHandler implements Runnable {
         Path<String> path = we.getWorkspacePath();
         String fileName = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
 
-        STGModel model = getResolvedStg();
+        StgModel model = getResolvedStg();
         if (model == null) {
             JOptionPane.showMessageDialog(framework.getMainWindow(),
                     "MPSat output: \n\n" + new String(result.getReturnValue().getErrors()),

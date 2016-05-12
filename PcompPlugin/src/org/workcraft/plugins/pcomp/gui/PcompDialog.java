@@ -26,7 +26,7 @@ import org.workcraft.gui.trees.TreeWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.gui.workspace.WorkspaceChooser;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
-import org.workcraft.plugins.stg.STGWorkspaceFilter;
+import org.workcraft.plugins.stg.StgWorkspaceFilter;
 
 @SuppressWarnings("serial")
 public class PcompDialog extends JDialog {
@@ -88,7 +88,7 @@ public class PcompDialog extends JDialog {
 
         final JPanel content = new JPanel(new TableLayout(sizes));
         final Framework framework = Framework.getInstance();
-        chooser = new WorkspaceChooser(framework.getWorkspace(), new STGWorkspaceFilter());
+        chooser = new WorkspaceChooser(framework.getWorkspace(), new StgWorkspaceFilter());
         chooser.setBorder(BorderFactory.createCompoundBorder(
                 BorderFactory.createTitledBorder("Source STGs"),
                 BorderFactory.createEmptyBorder(2, 2, 2, 2)));

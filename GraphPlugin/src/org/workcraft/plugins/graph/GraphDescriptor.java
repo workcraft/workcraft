@@ -5,7 +5,6 @@ import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 
 public class GraphDescriptor implements ModelDescriptor {
-
     @Override
     public String getDisplayName() {
         return "Directed Graph";

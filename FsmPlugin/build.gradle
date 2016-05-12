@@ -1,5 +1,5 @@
 dependencies {
     compile project(':WorkcraftCore')
     compile project(':GraphPlugin')
-    compile project(':PetriNetPlugin')
+    compile project(':PetriPlugin')
 }

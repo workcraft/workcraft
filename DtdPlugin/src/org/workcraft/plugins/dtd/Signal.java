@@ -4,7 +4,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.pog.Symbol;
+import org.workcraft.plugins.graph.Symbol;
 
 @DisplayName("Signal")
 @VisualClass(org.workcraft.plugins.dtd.VisualSignal.class)

@@ -23,7 +23,7 @@ import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.punf.PunfUtilitySettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
-import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.tasks.ProgressMonitor;
@@ -74,7 +74,7 @@ public class CheckCircuitTask extends MpsatChainTask {
             boolean hasEnvironment = (envFile != null) && envFile.exists();
 
             CircuitToStgConverter generator = new CircuitToStgConverter(visualCircuit);
-            STG devStg = (STG) generator.getStg().getMathModel();
+            Stg devStg = (Stg) generator.getStg().getMathModel();
             String devStgName = (hasEnvironment ? StgUtils.DEVICE_FILE_NAME : StgUtils.SYSTEM_FILE_NAME) + StgUtils.ASTG_FILE_EXT;
             File devStgFile =  new File(directory, devStgName);
             Result<? extends Object> devExportResult = CircuitStgUtils.exportStg(devStg, devStgFile, directory, monitor);
@@ -88,9 +88,9 @@ public class CheckCircuitTask extends MpsatChainTask {
             monitor.progressUpdate(0.10);
 
             // Environment STG
-            STG envStg = null;
+            Stg envStg = null;
             if (hasEnvironment) {
-                envStg = (STG) framework.loadFile(envFile).getMathModel();
+                envStg = (Stg) framework.loadFile(envFile).getMathModel();
                 // Make sure that input signals of the device STG are also inputs in the environment STG
                 Set<String> inputSignalNames = devStg.getSignalNames(Type.INPUT, null);
                 Set<String> outputSignalNames = devStg.getSignalNames(Type.OUTPUT, null);

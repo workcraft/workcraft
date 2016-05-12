@@ -14,7 +14,7 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.pcomp.gui.PcompDialog;
 import org.workcraft.plugins.pcomp.tasks.PcompResultHandler;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
-import org.workcraft.plugins.stg.STGModel;
+import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.serialisation.Format;
 import org.workcraft.util.Export;
@@ -32,7 +32,7 @@ public class PcompTool implements Tool {
     }
 
     public final boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.canHas(we, STGModel.class);
+        return WorkspaceUtils.canHas(we, StgModel.class);
     }
 
     @Override
@@ -67,10 +67,10 @@ public class PcompTool implements Tool {
     }
 
     public File exportStg(WorkspaceEntry we, File directory) {
-        STGModel model;
+        StgModel model;
         ModelEntry modelEntry = we.getModelEntry();
-        if (modelEntry.getMathModel() instanceof STGModel) {
-            model = (STGModel) modelEntry.getMathModel();
+        if (modelEntry.getMathModel() instanceof StgModel) {
+            model = (StgModel) modelEntry.getMathModel();
         } else {
             throw new RuntimeException("Unexpected model class " + we.getClass().getName());
         }

@@ -1,5 +1,0 @@
-dependencies {
-    compile project(':WorkcraftCore')
-    compile project(':STGPlugin')
-    compile project(':GraphPlugin')
-}

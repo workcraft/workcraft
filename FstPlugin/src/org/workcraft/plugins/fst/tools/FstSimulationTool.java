@@ -26,8 +26,8 @@ import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
-import org.workcraft.plugins.stg.STG;
-import org.workcraft.plugins.stg.VisualSTG;
+import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
 import org.workcraft.util.Func;
 
@@ -54,15 +54,15 @@ public class FstSimulationTool extends StgSimulationTool {
     }
 
     @Override
-    public VisualModel getUnderlyingModel(VisualModel model) {
+    public void generateUnderlyingModel(VisualModel model) {
         final VisualFst fst = (VisualFst) model;
-        final VisualSTG stg = new VisualSTG(new STG());
+        final VisualStg stg = new VisualStg(new Stg());
         generator = new FstToStgConverter(fst, stg);
-        return generator.getDstModel();
+        setUnderlyingModel(generator.getDstModel());
     }
 
     @Override
-    public void applyInitState(final GraphEditor editor) {
+    public void applySavedState(final GraphEditor editor) {
         if ((savedState == null) || savedState.isEmpty()) {
             return;
         }
@@ -72,9 +72,9 @@ public class FstSimulationTool extends StgSimulationTool {
             Fst fst = (Fst) model;
             for (State state: fst.getStates()) {
                 String ref = fst.getNodeReference(state);
-                Node node = net.getNodeByReference(ref);
-                if (node instanceof Place) {
-                    boolean isInitial = ((Place) node).getTokens() > 0;
+                Node underlyingNode = getUnderlyingStg().getNodeByReference(ref);
+                if ((underlyingNode instanceof Place) && savedState.containsKey(underlyingNode)) {
+                    boolean isInitial = savedState.get(underlyingNode) > 0;
                     state.setInitial(isInitial);
                 }
             }
@@ -105,7 +105,8 @@ public class FstSimulationTool extends StgSimulationTool {
         }
     }
 
-    protected boolean isContainerExcited(Container container) {
+    @Override
+    public boolean isContainerExcited(Container container) {
         if (excitedContainers.containsKey(container)) return excitedContainers.get(container);
         boolean ret = false;
         for (Node node: container.getChildren()) {
@@ -193,7 +194,7 @@ public class FstSimulationTool extends StgSimulationTool {
             VisualTransition vTransition = generator.getRelatedTransition((VisualEvent) node);
             if (vTransition != null) {
                 Transition transition = vTransition.getReferencedTransition();
-                if (net.isEnabled(transition)) {
+                if (isEnabledNode(transition)) {
                     return transition;
                 }
             }

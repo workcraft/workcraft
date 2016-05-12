@@ -27,7 +27,6 @@ import java.awt.Graphics2D;
 import javax.swing.Icon;
 import javax.swing.JPanel;
 
-import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.plugins.shared.CommonEditorSettings;
@@ -47,11 +46,6 @@ public abstract class AbstractTool implements GraphEditorTool {
 
     @Override
     public void reactivated(final GraphEditor editor) {
-    }
-
-    @Override
-    public VisualModel getUnderlyingModel(VisualModel model) {
-        return model;
     }
 
     @Override

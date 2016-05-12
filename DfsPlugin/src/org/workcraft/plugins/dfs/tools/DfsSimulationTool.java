@@ -62,14 +62,14 @@ public class DfsSimulationTool extends StgSimulationTool {
     }
 
     @Override
-    public VisualModel getUnderlyingModel(VisualModel model) {
+    public void generateUnderlyingModel(VisualModel model) {
         generator = new StgGenerator((VisualDfs) model);
-        return generator.getStgModel();
+        setUnderlyingModel(generator.getStgModel());
     }
 
     private VisualPlace getVisualPlace(Place place) {
         VisualPlace result = null;
-        for (VisualPlace vp: Hierarchy.getDescendantsOfType(visualNet.getRoot(), VisualPlace.class)) {
+        for (VisualPlace vp: Hierarchy.getDescendantsOfType(getUnderlyingModel().getRoot(), VisualPlace.class)) {
             if (vp.getReferencedPlace() == place) {
                 result = vp;
                 break;
@@ -86,7 +86,7 @@ public class DfsSimulationTool extends StgSimulationTool {
     }
 
     @Override
-    public void applyInitState(final GraphEditor editor) {
+    public void applySavedState(final GraphEditor editor) {
         if ((savedState == null) || savedState.isEmpty()) {
             return;
         }
@@ -94,7 +94,7 @@ public class DfsSimulationTool extends StgSimulationTool {
         VisualDfs dfs = (VisualDfs) editor.getModel();
         for (VisualLogic l : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualLogic.class)) {
             String refC = StgGenerator.nameC + dfs.getNodeMathReference(l) + StgGenerator.name1;
-            Node nodeC = net.getNodeByReference(refC);
+            Node nodeC = getUnderlyingStg().getNodeByReference(refC);
             if ((nodeC instanceof Place) && savedState.containsKey(nodeC)) {
                 boolean computed = savedState.get(nodeC) > 0;
                 l.getReferencedLogic().setComputed(computed);
@@ -102,7 +102,7 @@ public class DfsSimulationTool extends StgSimulationTool {
         }
         for (VisualRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualRegister.class)) {
             String refM = StgGenerator.nameM + dfs.getNodeMathReference(r) + StgGenerator.name1;
-            Node nodeM = net.getNodeByReference(refM);
+            Node nodeM = getUnderlyingStg().getNodeByReference(refM);
             if ((nodeM instanceof Place) && savedState.containsKey(nodeM)) {
                 boolean marked = savedState.get(nodeM) > 0;
                 r.getReferencedRegister().setMarked(marked);
@@ -111,13 +111,13 @@ public class DfsSimulationTool extends StgSimulationTool {
         }
         for (VisualCounterflowLogic l : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualCounterflowLogic.class)) {
             String refFwC = StgGenerator.nameFwC + dfs.getNodeMathReference(l) + StgGenerator.name1;
-            Node nodeFwC = net.getNodeByReference(refFwC);
+            Node nodeFwC = getUnderlyingStg().getNodeByReference(refFwC);
             if ((nodeFwC instanceof Place) && savedState.containsKey(nodeFwC)) {
                 boolean forwardComputed = savedState.get(nodeFwC) > 0;
                 l.getReferencedCounterflowLogic().setForwardComputed(forwardComputed);
             }
             String refBwC = StgGenerator.nameBwC + dfs.getNodeMathReference(l) + StgGenerator.name1;
-            Node nodeBwC = net.getNodeByReference(refBwC);
+            Node nodeBwC = getUnderlyingStg().getNodeByReference(refBwC);
             if ((nodeBwC instanceof Place) && savedState.containsKey(nodeBwC)) {
                 boolean backwardComputed = savedState.get(nodeBwC) > 0;
                 l.getReferencedCounterflowLogic().setBackwardComputed(backwardComputed);
@@ -125,14 +125,14 @@ public class DfsSimulationTool extends StgSimulationTool {
         }
         for (VisualCounterflowRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualCounterflowRegister.class)) {
             String refOrM = StgGenerator.nameOrM + dfs.getNodeMathReference(r) + StgGenerator.name1;
-            Node nodeOrM = net.getNodeByReference(refOrM);
+            Node nodeOrM = getUnderlyingStg().getNodeByReference(refOrM);
             if ((nodeOrM instanceof Place) && savedState.containsKey(nodeOrM)) {
                 boolean orMarked = savedState.get(nodeOrM) > 0;
                 r.getReferencedCounterflowRegister().setOrMarked(orMarked);
                 copyTokenColor(r, nodeOrM);
             }
             String refAndM = StgGenerator.nameAndM + dfs.getNodeMathReference(r) + StgGenerator.name1;
-            Node nodeAndM = net.getNodeByReference(refAndM);
+            Node nodeAndM = getUnderlyingStg().getNodeByReference(refAndM);
             if ((nodeAndM instanceof Place) && savedState.containsKey(nodeAndM)) {
                 boolean andMarked = savedState.get(nodeAndM) > 0;
                 r.getReferencedCounterflowRegister().setAndMarked(andMarked);
@@ -142,7 +142,7 @@ public class DfsSimulationTool extends StgSimulationTool {
         for (VisualBinaryRegister r : Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualBinaryRegister.class)) {
             r.getReferencedBinaryRegister().setMarking(Marking.EMPTY);
             String refTrueM = StgGenerator.nameTrueM + dfs.getNodeMathReference(r) + StgGenerator.name1;
-            Node nodeTrueM = net.getNodeByReference(refTrueM);
+            Node nodeTrueM = getUnderlyingStg().getNodeByReference(refTrueM);
             if ((nodeTrueM instanceof Place) && savedState.containsKey(nodeTrueM)) {
                 if (savedState.get(nodeTrueM) > 0) {
                     r.getReferencedBinaryRegister().setMarking(Marking.TRUE_TOKEN);
@@ -150,7 +150,7 @@ public class DfsSimulationTool extends StgSimulationTool {
                 copyTokenColor(r, nodeTrueM);
             }
             String refFalseM = StgGenerator.nameFalseM + dfs.getNodeMathReference(r) + StgGenerator.name1;
-            Node nodeFalseM = net.getNodeByReference(refFalseM);
+            Node nodeFalseM = getUnderlyingStg().getNodeByReference(refFalseM);
             if ((nodeFalseM instanceof Place) && savedState.containsKey(nodeFalseM)) {
                 if (savedState.get(nodeFalseM) > 0) {
                     r.getReferencedBinaryRegister().setMarking(Marking.FALSE_TOKEN);
@@ -474,7 +474,7 @@ public class DfsSimulationTool extends StgSimulationTool {
             for (VisualSignalTransition t: ts) {
                 if (t == null) continue;
                 Transition transition = t.getReferencedTransition();
-                if (net.isEnabled(transition)) {
+                if (isEnabledNode(transition)) {
                     return transition;
                 }
             }

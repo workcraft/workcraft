@@ -17,18 +17,18 @@ import org.workcraft.plugins.fst.VisualSignalEvent;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.stg.VisualNamedTransition;
-import org.workcraft.plugins.stg.VisualSTG;
+import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.util.Hierarchy;
 
 public class FstToStgConverter {
     private final VisualFst srcModel;
-    private final VisualSTG dstModel;
+    private final VisualStg dstModel;
 
     private final Map<VisualState, VisualPlace> stateToPlaceMap;
     private final Map<VisualSignalEvent, VisualNamedTransition> eventToTransitionMap;
     private final Map<String, String> refToEventLabelMap;
 
-    public FstToStgConverter(VisualFst srcModel, VisualSTG dstModel) {
+    public FstToStgConverter(VisualFst srcModel, VisualStg dstModel) {
         this.srcModel = srcModel;
         this.dstModel = dstModel;
         stateToPlaceMap = convertStates();
@@ -139,7 +139,7 @@ public class FstToStgConverter {
         return srcModel;
     }
 
-    public VisualSTG getDstModel() {
+    public VisualStg getDstModel() {
         return dstModel;
     }
 

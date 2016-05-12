@@ -12,9 +12,9 @@ import org.workcraft.plugins.fsm.serialisation.EventDeserialiser;
 import org.workcraft.plugins.fsm.serialisation.EventSerialiser;
 import org.workcraft.plugins.fsm.tools.DeadlockCheckerTool;
 import org.workcraft.plugins.fsm.tools.DeterminismCheckerTool;
-import org.workcraft.plugins.fsm.tools.DgToFsmConverterTool;
-import org.workcraft.plugins.fsm.tools.FsmToDgConverterTool;
-import org.workcraft.plugins.fsm.tools.FsmToPnConverterTool;
+import org.workcraft.plugins.fsm.tools.GraphToFsmConverterTool;
+import org.workcraft.plugins.fsm.tools.FsmToGraphConverterTool;
+import org.workcraft.plugins.fsm.tools.FsmToPetriConverterTool;
 import org.workcraft.plugins.fsm.tools.ReachabilityCheckerTool;
 import org.workcraft.plugins.fsm.tools.ReversibilityCheckerTool;
 import org.workcraft.plugins.fsm.tools.StateMergerTool;
@@ -51,9 +51,9 @@ public class FsmModule  implements Module {
         pm.registerClass(XMLSerialiser.class, EventSerialiser.class);
         pm.registerClass(XMLDeserialiser.class, EventDeserialiser.class);
 
-        pm.registerClass(Tool.class, FsmToDgConverterTool.class);
-        pm.registerClass(Tool.class, DgToFsmConverterTool.class);
-        pm.registerClass(Tool.class, FsmToPnConverterTool.class);
+        pm.registerClass(Tool.class, FsmToGraphConverterTool.class);
+        pm.registerClass(Tool.class, GraphToFsmConverterTool.class);
+        pm.registerClass(Tool.class, FsmToPetriConverterTool.class);
         pm.registerClass(Tool.class, DeadlockCheckerTool.class);
         pm.registerClass(Tool.class, DeterminismCheckerTool.class);
         pm.registerClass(Tool.class, ReachabilityCheckerTool.class);

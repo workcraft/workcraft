@@ -1,5 +1,5 @@
 dependencies {
     compile project(':WorkcraftCore')
-    compile project(':CpogsPlugin')
+    compile project(':CpogPlugin')
     compile project(':MpsatVerificationPlugin')
 }
