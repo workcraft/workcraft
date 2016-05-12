@@ -161,4 +161,28 @@ public class DesktopApi {
         return result;
     }
 
+    public static String getConfigPath() {
+        String result = null;
+        OsType os = getOs();
+        if (os.isLinux()) {
+            result = System.getenv("XDG_CONFIG_HOME");
+            if (result == null) {
+                result = System.getProperty("user.home") + File.separator
+                        + ".config";
+            }
+        } else if (os.isMac()) {
+            result = System.getProperty("user.home") + File.separator +
+                    "Library" + File.separator + "Application Support";
+        } else if (os.isWindows()) {
+            result = System.getenv("APPDATA");
+            if (result == null) {
+                result = System.getProperty("user.home");
+            }
+        }
+        if (result == null) {
+            result = "";
+        }
+        return result;
+    }
+
 }
