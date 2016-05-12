@@ -4,8 +4,10 @@ import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
 import org.workcraft.Tool;
+import org.workcraft.dom.Node;
 import org.workcraft.plugins.dfs.Dfs;
 import org.workcraft.plugins.dfs.VisualDfs;
+import org.workcraft.plugins.dfs.VisualRegister;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class WaggingGeneratorTool implements Tool {
@@ -28,10 +30,16 @@ public class WaggingGeneratorTool implements Tool {
     @Override
     public void run(WorkspaceEntry we) {
         final VisualDfs dfs = (VisualDfs) we.getModelEntry().getVisualModel();
-        if (dfs.getSelection().size() < 1) {
+        int selectedRegisterCount = 0;
+        for (Node node: dfs.getSelection()) {
+            if (node instanceof VisualRegister) {
+                selectedRegisterCount++;
+            }
+        }
+        if (selectedRegisterCount < 1) {
             final Framework framework = Framework.getInstance();
             JOptionPane.showMessageDialog(framework.getMainWindow(),
-                    "Select at least one component for wagging!", "Wagging", JOptionPane.ERROR_MESSAGE);
+                    "Select at least one register for wagging!", "Wagging", JOptionPane.ERROR_MESSAGE);
         } else {
             int count = getWayCount();
             if (count >= 2) {

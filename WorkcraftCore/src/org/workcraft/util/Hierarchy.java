@@ -88,15 +88,14 @@ public class Hierarchy {
 
     public static Node getCommonParent(Node... nodes) {
         ArrayList<Node[]> paths = new ArrayList<>(nodes.length);
-        int minPathLength = Integer.MAX_VALUE;
+        int minPathLength = -1;
         for (Node node : nodes) {
             final Node[] path = getPath(node);
-            if (minPathLength > path.length) {
+            if ((minPathLength < 0) || (minPathLength > path.length)) {
                 minPathLength = path.length;
             }
             paths.add(path);
         }
-
         Node result = null;
         for (int i = 0; i < minPathLength; i++) {
             Node node = paths.get(0)[i];

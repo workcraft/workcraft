@@ -12,7 +12,6 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.Polyline;
@@ -36,6 +35,7 @@ import org.workcraft.plugins.dfs.VisualPopRegister;
 import org.workcraft.plugins.dfs.VisualPushRegister;
 import org.workcraft.plugins.dfs.VisualRegister;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.Pair;
 
 public class WaggingGenerator {
     private final VisualDfs dfs;
@@ -59,21 +59,28 @@ public class WaggingGenerator {
         this.count = count;
 
         for (Node node: dfs.getSelection()) {
-            if (node instanceof VisualNode) {
-                if (node instanceof VisualComponent) {
-                    selectedComponents.add((VisualComponent) node);
-                } else if (node instanceof VisualConnection) {
-                    selectedConnections.add((VisualConnection) node);
-                }
+            if (node instanceof VisualComponent) {
+                selectedComponents.add((VisualComponent) node);
+            } else if (node instanceof VisualConnection) {
+                selectedConnections.add((VisualConnection) node);
+            }
+        }
+        for (VisualConnection connection: Hierarchy.getDescendantsOfType(dfs.getRoot(), VisualConnection.class)) {
+            if (selectedComponents.contains(connection.getFirst()) && selectedComponents.contains(connection.getSecond())) {
+                selectedConnections.add(connection);
             }
         }
     }
 
     public void run() {
         replicateSelection();
-        insertInterface();
-        insertPushControl();
-        insertPopControl();
+        Pair<Boolean, Boolean> hasInterface = insertInterface();
+        if (hasInterface.getFirst()) {
+            insertPushControl();
+        }
+        if (hasInterface.getSecond()) {
+            insertPopControl();
+        }
         createGroups();
     }
 
@@ -84,23 +91,25 @@ public class WaggingGenerator {
         for (VisualComponent component: selectedComponents) {
             bb = BoundingBoxHelper.union(bb, component.getBoundingBox());
         }
-        double step = Math.ceil(bb.getHeight());
-        for (int i = 0; i < count; ++i) {
-            HashMap<VisualComponent, VisualComponent> mapComponentToReplica = new HashMap<>();
-            WaggingData waggingData = new WaggingData();
-            for (VisualComponent component: selectedComponents) {
-                VisualComponent replicaComponenet = replicateComponent(component);
-                if (replicaComponenet != null) {
-                    replicaComponenet.setY(replicaComponenet.getY() + step * (2 * i + 1 - count) / 2);
-                    mapComponentToReplica.put(component, replicaComponenet);
-                    replicaToOriginalMap.put(replicaComponenet, component);
-                    waggingData.dataComponents.add(replicaComponenet);
+        if (bb != null) {
+            double step = Math.ceil(bb.getHeight());
+            for (int i = 0; i < count; ++i) {
+                HashMap<VisualComponent, VisualComponent> mapComponentToReplica = new HashMap<>();
+                WaggingData waggingData = new WaggingData();
+                for (VisualComponent component: selectedComponents) {
+                    VisualComponent replicaComponenet = replicateComponent(component);
+                    if (replicaComponenet != null) {
+                        replicaComponenet.setY(replicaComponenet.getY() + step * (2 * i + 1 - count) / 2);
+                        mapComponentToReplica.put(component, replicaComponenet);
+                        replicaToOriginalMap.put(replicaComponenet, component);
+                        waggingData.dataComponents.add(replicaComponenet);
+                    }
                 }
+                for (VisualConnection connection: selectedConnections) {
+                    replicateConnection(connection, mapComponentToReplica);
+                }
+                wagging.add(waggingData);
             }
-            for (VisualConnection connection: selectedConnections) {
-                replicateConnection(connection, mapComponentToReplica);
-            }
-            wagging.add(waggingData);
         }
     }
 
@@ -146,7 +155,9 @@ public class WaggingGenerator {
         return replica;
     }
 
-    private void insertInterface() {
+    private Pair<Boolean, Boolean> insertInterface() {
+        boolean hasPred = false;
+        boolean hasSucc = false;
         for (WaggingData waggingData: wagging) {
             waggingData.pushRegisters.clear();
             waggingData.popRegisters.clear();
@@ -158,6 +169,7 @@ public class WaggingGenerator {
                     createConnection((VisualComponent) pred, push);
                     createConnection(push, cur);
                     waggingData.pushRegisters.add(push);
+                    hasPred = true;
                 }
                 for (Node succ: dfs.getPostset(replicaToOriginalMap.get(cur))) {
                     if (selectedComponents.contains(succ)) continue;
@@ -166,9 +178,11 @@ public class WaggingGenerator {
                     createConnection(cur, pop);
                     createConnection(pop, (VisualComponent) succ);
                     waggingData.popRegisters.add(pop);
+                    hasSucc = true;
                 }
             }
         }
+        return Pair.of(hasPred,  hasSucc);
     }
 
     private void insertPushControl() {
@@ -268,6 +282,10 @@ public class WaggingGenerator {
     }
 
     private void createGroups() {
+        dfs.selectNone();
+        for (VisualComponent component: selectedComponents) {
+            dfs.addToSelection(component);
+        }
         dfs.deleteSelection();
         // data components
         ArrayList<Node> dataNodes = new ArrayList<>();
