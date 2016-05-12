@@ -1,8 +1,0 @@
-dependencies {
-    compile project(':WorkcraftCore')
-    compile project(':PetriNetPlugin')
-    compile project(':DtdPlugin')
-
-    testCompile project(':WorkcraftCore')
-    testCompile project(':PetriNetPlugin')
-}

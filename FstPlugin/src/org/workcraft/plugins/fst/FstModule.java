@@ -9,14 +9,14 @@ import org.workcraft.Tool;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
-import org.workcraft.plugins.cpog.tools.PnToCpogTool;
+import org.workcraft.plugins.cpog.tools.PetriToCpogTool;
 import org.workcraft.plugins.fst.interop.DotGExporter;
 import org.workcraft.plugins.fst.interop.DotGImporter;
 import org.workcraft.plugins.fst.serialisation.DotGSerialiser;
 import org.workcraft.plugins.fst.tools.FsmToFstConverterTool;
 import org.workcraft.plugins.fst.tools.FstToFsmConverterTool;
 import org.workcraft.plugins.fst.tools.FstToStgConverterTool;
-import org.workcraft.plugins.fst.tools.PnToFsmConverterTool;
+import org.workcraft.plugins.fst.tools.PetriToFsmConverterTool;
 import org.workcraft.plugins.fst.tools.StgToFstConverterTool;
 import org.workcraft.serialisation.ModelSerialiser;
 
@@ -53,10 +53,10 @@ public class FstModule  implements Module {
 
         pm.registerClass(Tool.class, StgToFstConverterTool.class);
         pm.registerClass(Tool.class, FstToStgConverterTool.class);
-        pm.registerClass(Tool.class, PnToFsmConverterTool.class);
+        pm.registerClass(Tool.class, PetriToFsmConverterTool.class);
         pm.registerClass(Tool.class, FsmToFstConverterTool.class);
         pm.registerClass(Tool.class, FstToFsmConverterTool.class);
-        pm.registerClass(Tool.class, PnToCpogTool.class);
+        pm.registerClass(Tool.class, PetriToCpogTool.class);
 
         pm.registerClass(Tool.class, new Initialiser<Tool>() {
             @Override

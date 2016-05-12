@@ -7,7 +7,7 @@ import org.workcraft.VerificationTool;
 import org.workcraft.plugins.mpsat.MpsatCombinedChainResultHandler;
 import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainTask;
-import org.workcraft.plugins.stg.STGModel;
+import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -20,7 +20,7 @@ public class MpsatCombinedChecker extends VerificationTool {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.canHas(we, STGModel.class);
+        return WorkspaceUtils.canHas(we, StgModel.class);
     }
 
     @Override

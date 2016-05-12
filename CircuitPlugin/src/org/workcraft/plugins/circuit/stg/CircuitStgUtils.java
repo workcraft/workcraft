@@ -14,11 +14,11 @@ import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
-import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.StgUtils;
-import org.workcraft.plugins.stg.VisualSTG;
+import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -35,17 +35,17 @@ public class CircuitStgUtils {
         CircuitToStgConverter generator = new CircuitToStgConverter(circuit);
         File envWorkFile = circuit.getEnvironmentFile();
         if ((envWorkFile != null) && envWorkFile.exists()) {
-            STG devStg = (STG) generator.getStg().getMathModel();
-            STG systemStg = createSystemStg(devStg, envWorkFile, circuit.getTitle());
+            Stg devStg = (Stg) generator.getStg().getMathModel();
+            Stg systemStg = createSystemStg(devStg, envWorkFile, circuit.getTitle());
             if (systemStg != null) {
-                generator = new CircuitToStgConverter(circuit, new VisualSTG(systemStg));
+                generator = new CircuitToStgConverter(circuit, new VisualStg(systemStg));
             }
         }
         return generator;
     }
 
-    private static STG createSystemStg(STG devStg, File envWorkFile, String title) {
-        STG systemStg = null;
+    private static Stg createSystemStg(Stg devStg, File envWorkFile, String title) {
+        Stg systemStg = null;
         String prefix = FileUtils.getTempPrefix(title);
         File directory = FileUtils.createTempDirectory(prefix);
         try {
@@ -83,21 +83,21 @@ public class CircuitStgUtils {
 
         Framework framework = Framework.getInstance();
         ModelEntry modelEntry = framework.loadFile(envFile);
-        STG envStg = (STG) modelEntry.getMathModel();
+        Stg envStg = (Stg) modelEntry.getMathModel();
         CircuitStgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
         File envStgFile = exportStg(envStg, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.ASTG_FILE_EXT, directory);
         return envStgFile;
     }
 
-    private static File exportDevStg(STG devStg, File directory) throws IOException {
+    private static File exportDevStg(Stg devStg, File directory) throws IOException {
         return exportStg(devStg, StgUtils.DEVICE_FILE_NAME + StgUtils.ASTG_FILE_EXT, directory);
     }
 
-    private static File exportSytemStg(STG systemStg, File directory) throws IOException {
+    private static File exportSytemStg(Stg systemStg, File directory) throws IOException {
         return exportStg(systemStg, StgUtils.SYSTEM_FILE_NAME + StgUtils.ASTG_FILE_EXT, directory);
     }
 
-    private static File exportStg(STG stg, String fileName, File directory) throws IOException {
+    private static File exportStg(Stg stg, String fileName, File directory) throws IOException {
         File stgFile = new File(directory, fileName);
         Result<? extends Object> exportResult = exportStg(stg, stgFile, directory, null);
 
@@ -113,7 +113,7 @@ public class CircuitStgUtils {
         return stgFile;
     }
 
-    public static Result<? extends Object> exportStg(STG stg, File stgFile, File directory,
+    public static Result<? extends Object> exportStg(Stg stg, File stgFile, File directory,
             ProgressMonitor<? super MpsatChainResult> monitor) {
 
         Framework framework = Framework.getInstance();
@@ -145,19 +145,19 @@ public class CircuitStgUtils {
         return framework.getTaskManager().execute(pcompTask, description, subtaskMonitor);
     }
 
-    public static STG importStg(File stgFile) {
-        STG stg = null;
+    public static Stg importStg(File stgFile) {
+        Stg stg = null;
         try {
             Framework framework = Framework.getInstance();
             WorkspaceEntry stgWorkspaceEntry = framework.getWorkspace().open(stgFile, true);
-            stg = (STG) stgWorkspaceEntry.getModelEntry().getMathModel();
+            stg = (Stg) stgWorkspaceEntry.getModelEntry().getMathModel();
             framework.getWorkspace().close(stgWorkspaceEntry);
         } catch (DeserialisationException e) {
         }
         return stg;
     }
 
-    public static void restoreInterfaceSignals(STG stg, Collection<String> inputSignalNames, Collection<String> outputSignalNames) {
+    public static void restoreInterfaceSignals(Stg stg, Collection<String> inputSignalNames, Collection<String> outputSignalNames) {
         for (String signalName: stg.getSignalNames(null)) {
             stg.setSignalType(signalName, Type.INTERNAL, null);
         }
@@ -169,7 +169,7 @@ public class CircuitStgUtils {
         }
     }
 
-    public static void convertInternalSignalsToDummies(STG stg) {
+    public static void convertInternalSignalsToDummies(Stg stg) {
         for (SignalTransition transition: stg.getSignalTransitions(Type.INTERNAL)) {
             StgUtils.convertSignalToDummyTransition(stg, transition);
         }

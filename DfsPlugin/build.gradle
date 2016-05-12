@@ -1,6 +1,6 @@
 dependencies {
     compile project(':WorkcraftCore')
-    compile project(':PetriNetPlugin')
-    compile project(':STGPlugin')
+    compile project(':PetriPlugin')
+    compile project(':StgPlugin')
     compile project(':MpsatVerificationPlugin')
 }

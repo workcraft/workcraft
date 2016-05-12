@@ -155,9 +155,10 @@ public class CompatibilityManager {
                         byte[] data = replaceMetaData(line).getBytes();
                         zos.write(data, 0, data.length);
                     } else if (modelName == null) {
-                        byte[] data = replaceModelName(line).getBytes();
+                        String processedLine = replaceModelName(line);
+                        byte[] data = processedLine.getBytes();
                         zos.write(data, 0, data.length);
-                        modelName = extractModelName(line);
+                        modelName = extractModelName(processedLine);
                     } else {
                         String s = extractClassName(line);
                         if (s != null) {

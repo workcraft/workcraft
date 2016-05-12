@@ -20,7 +20,7 @@ import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.punf.PunfUtilitySettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
-import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
@@ -54,7 +54,7 @@ public class MpsatConformationTask extends MpsatChainTask {
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         try {
-            STG devStg = (STG) we.getModelEntry().getVisualModel().getMathModel();
+            Stg devStg = (Stg) we.getModelEntry().getVisualModel().getMathModel();
             Exporter devStgExporter = Export.chooseBestExporter(framework.getPluginManager(), devStg, Format.STG);
             if (devStgExporter == null) {
                 throw new RuntimeException("Exporter not available: model class " + devStg.getClass().getName() + " to format STG.");
@@ -82,7 +82,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             if (envFile.getName().endsWith(".g")) {
                 envStgFile = envFile;
             } else {
-                STG envStg = (STG) framework.loadFile(envFile).getMathModel();
+                Stg envStg = (Stg) framework.loadFile(envFile).getMathModel();
                 Exporter envStgExporter = Export.chooseBestExporter(framework.getPluginManager(), envStg, Format.STG);
                 envStgFile = new File(directory, "env.g");
                 ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile.getAbsolutePath());

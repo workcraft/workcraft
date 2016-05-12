@@ -72,10 +72,10 @@ public class XmasSimulationTool extends StgSimulationTool {
     }
 
     @Override
-    public VisualModel getUnderlyingModel(VisualModel model) {
+    public void generateUnderlyingModel(VisualModel model) {
         generator = new StgGenerator((VisualXmas) model);
         skipTransitions = getSkipTransitions((VisualXmas) model);
-        return generator.getStgModel();
+        setUnderlyingModel(generator.getStgModel());
     }
 
     @Override
@@ -381,7 +381,7 @@ public class XmasSimulationTool extends StgSimulationTool {
             for (VisualSignalTransition t: ts) {
                 if (t == null) continue;
                 Transition transition = t.getReferencedTransition();
-                if (net.isEnabled(transition)) {
+                if (isEnabledNode(transition)) {
                     return transition;
                 }
             }

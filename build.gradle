@@ -132,8 +132,8 @@ apply plugin: 'com.github.kt3k.coveralls'
 
 def coverallsProjects = subprojects.findAll {
     it.name == 'WorkcraftCore' ||
-    it.name == 'PetriNetPlugin' ||
-    it.name == 'STGPlugin'
+    it.name == 'PetriPlugin' ||
+    it.name == 'StgPlugin'
 }
 
 task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {

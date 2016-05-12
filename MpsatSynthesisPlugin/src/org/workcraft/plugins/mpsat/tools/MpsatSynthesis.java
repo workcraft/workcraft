@@ -6,7 +6,7 @@ import org.workcraft.plugins.mpsat.MpsatSynthesisResultHandler;
 import org.workcraft.plugins.mpsat.MpsatSynthesisMode;
 import org.workcraft.plugins.mpsat.MpsatSynthesisSettings;
 import org.workcraft.plugins.mpsat.tasks.MpsatSynthesisChainTask;
-import org.workcraft.plugins.stg.STGModel;
+import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 /*
@@ -24,7 +24,7 @@ public abstract class MpsatSynthesis extends SynthesisTool {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.canHas(we, STGModel.class);
+        return WorkspaceUtils.canHas(we, StgModel.class);
     }
 
     @Override

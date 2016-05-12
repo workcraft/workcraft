@@ -4,7 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.plugins.petrify.tasks.TransformationResultHandler;
 import org.workcraft.plugins.petrify.tasks.TransformationTask;
-import org.workcraft.plugins.stg.STGModel;
+import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -22,7 +22,7 @@ public class PetrifyCscConflictResolution implements Tool {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.canHas(we, STGModel.class);
+        return WorkspaceUtils.canHas(we, StgModel.class);
     }
 
     @Override

@@ -3,5 +3,5 @@ dependencies {
     compile project(':CircuitPlugin')
     compile project(':FstPlugin')
     compile project(':PunfPlugin')
-    compile project(':STGPlugin')
+    compile project(':StgPlugin')
 }

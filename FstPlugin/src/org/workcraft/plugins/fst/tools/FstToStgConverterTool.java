@@ -6,9 +6,9 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.shared.CommonEditorSettings;
-import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgDescriptor;
-import org.workcraft.plugins.stg.VisualSTG;
+import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -28,7 +28,7 @@ public class FstToStgConverterTool extends ConversionTool {
     @Override
     public void run(WorkspaceEntry we) {
         final VisualFst fst = (VisualFst) we.getModelEntry().getVisualModel();
-        final VisualSTG stg = new VisualSTG(new STG());
+        final VisualStg stg = new VisualStg(new Stg());
         final FstToStgConverter converter = new FstToStgConverter(fst, stg);
         final Framework framework = Framework.getInstance();
         final Workspace workspace = framework.getWorkspace();

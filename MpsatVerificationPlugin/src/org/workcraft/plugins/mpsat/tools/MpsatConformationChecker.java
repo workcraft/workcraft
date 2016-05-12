@@ -11,8 +11,8 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.tasks.MpsatConformationTask;
 import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.stg.STG;
-import org.workcraft.plugins.stg.STGModel;
+import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -25,7 +25,7 @@ public class MpsatConformationChecker extends VerificationTool {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.canHas(we, STGModel.class);
+        return WorkspaceUtils.canHas(we, StgModel.class);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class MpsatConformationChecker extends VerificationTool {
     public final void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
-        STG stg = (STG) we.getModelEntry().getMathModel();
+        Stg stg = (Stg) we.getModelEntry().getMathModel();
         // Check for limitations:
         if (stg.getPlaces().isEmpty()) {
             // - The set of device STG place names is non-empty (this limitation can be easily removed).
@@ -77,7 +77,7 @@ public class MpsatConformationChecker extends VerificationTool {
         }
     }
 
-    private boolean hasDisconnectedTransitions(STG stg) {
+    private boolean hasDisconnectedTransitions(Stg stg) {
         for (Transition t: stg.getTransitions()) {
             if (stg.getPreset(t).isEmpty() && stg.getPostset(t).isEmpty()) {
                 return true;

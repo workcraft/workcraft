@@ -1,5 +1,0 @@
-dependencies {
-    compile project(':WorkcraftCore')
-    compile project(':MpsatVerificationPlugin')
-    compile project(':PetriNetPlugin')
-}

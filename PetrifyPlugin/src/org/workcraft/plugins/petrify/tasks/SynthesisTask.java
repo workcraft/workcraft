@@ -14,7 +14,7 @@ import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.petrify.PetrifyUtilitySettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
-import org.workcraft.plugins.stg.STGModel;
+import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -99,7 +99,7 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
         command.add(logFile.getAbsolutePath());
 
         // Input file
-        STGModel stg = WorkspaceUtils.getAs(we, STGModel.class);
+        StgModel stg = WorkspaceUtils.getAs(we, StgModel.class);
         File stgFile = getInputFile(stg, directory);
         command.add(stgFile.getAbsolutePath());
 

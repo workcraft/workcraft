@@ -1,0 +1,8 @@
+dependencies {
+    compile project(':WorkcraftCore')
+    compile project(':PetriPlugin')
+    compile project(':DtdPlugin')
+
+    testCompile project(':WorkcraftCore')
+    testCompile project(':PetriPlugin')
+}

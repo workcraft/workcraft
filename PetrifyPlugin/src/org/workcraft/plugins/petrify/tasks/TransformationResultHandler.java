@@ -25,7 +25,7 @@ import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.LabelParser;
-import org.workcraft.plugins.stg.STGModel;
+import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -56,7 +56,7 @@ public class TransformationResultHandler extends DummyProgressMonitor<Transforma
                 final Framework framework = Framework.getInstance();
                 Path<String> path = we.getWorkspacePath();
                 if (result.getOutcome() == Outcome.FINISHED) {
-                    STGModel stgModel = result.getReturnValue().getResult();
+                    StgModel stgModel = result.getReturnValue().getResult();
                     PetriNetModel model = convertResultStgToPetriNet ? stgModel : convertStgToPetriNet(stgModel);
                     final Workspace workspace = framework.getWorkspace();
                     final Path<String> directory = path.getParent();
@@ -80,7 +80,7 @@ public class TransformationResultHandler extends DummyProgressMonitor<Transforma
         });
     }
 
-    private PetriNetModel convertStgToPetriNet(STGModel srcModel) {
+    private PetriNetModel convertStgToPetriNet(StgModel srcModel) {
         PetriNet dstModel = new PetriNet();
         HashMap<Node, Node> nodeMap = new HashMap<>();
         for (Place place: srcModel.getPlaces()) {
@@ -111,7 +111,7 @@ public class TransformationResultHandler extends DummyProgressMonitor<Transforma
         return dstModel;
     }
 
-    private String convertName(STGModel srcModel, PetriNet dstModel, String srcName) {
+    private String convertName(StgModel srcModel, PetriNet dstModel, String srcName) {
         String candidateName = LabelParser.getTransitionName(srcName);
         candidateName = candidateName.replace("+", "_PLUS").replace("-", "_MINUS").replace("~", "_TOGGLE");
 

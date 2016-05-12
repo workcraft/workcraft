@@ -18,7 +18,7 @@ import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petrify.PetrifyUtilitySettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
-import org.workcraft.plugins.stg.STGModel;
+import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.DotGImporter;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
@@ -100,7 +100,7 @@ public class TransformationTask implements Task<TransformationResult>, ExternalP
                 return new Result<TransformationResult>(Outcome.CANCELLED);
             } else {
                 final Outcome outcome;
-                STGModel outStg = null;
+                StgModel outStg = null;
                 if (res.getReturnValue().getReturnCode() == 0) {
                     outcome = Outcome.FINISHED;
                 } else {

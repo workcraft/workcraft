@@ -26,13 +26,13 @@ import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
-import org.workcraft.plugins.petri.tools.PetriNetSimulationTool;
+import org.workcraft.plugins.petri.tools.PetriSimulationTool;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.util.Func;
 
-public class FsmSimulationTool extends PetriNetSimulationTool {
+public class FsmSimulationTool extends PetriSimulationTool {
 
-    private FsmToPnConverter generator;
+    private FsmToPetriConverter generator;
 
     @Override
     public void activated(final GraphEditor editor) {
@@ -56,15 +56,15 @@ public class FsmSimulationTool extends PetriNetSimulationTool {
     }
 
     @Override
-    public VisualModel getUnderlyingModel(VisualModel model) {
+    public void generateUnderlyingModel(VisualModel model) {
         final VisualFsm fsm = (VisualFsm) model;
-        final VisualPetriNet pn = new VisualPetriNet(new PetriNet());
-        generator = new FsmToPnConverter(fsm, pn);
-        return generator.getDstModel();
+        final VisualPetriNet petri = new VisualPetriNet(new PetriNet());
+        generator = new FsmToPetriConverter(fsm, petri);
+        setUnderlyingModel(generator.getDstModel());
     }
 
     @Override
-    public void applyInitState(final GraphEditor editor) {
+    public void applySavedState(final GraphEditor editor) {
         if ((savedState == null) || savedState.isEmpty()) {
             return;
         }
@@ -74,9 +74,9 @@ public class FsmSimulationTool extends PetriNetSimulationTool {
             Fsm fsm = (Fsm) model;
             for (State state: fsm.getStates()) {
                 String ref = fsm.getNodeReference(state);
-                Node node = net.getNodeByReference(ref);
-                if (node instanceof Place) {
-                    boolean isInitial = ((Place) node).getTokens() > 0;
+                Node underlyingNode = getUnderlyingPetri().getNodeByReference(ref);
+                if ((underlyingNode instanceof Place) && savedState.containsKey(underlyingNode)) {
+                    boolean isInitial = savedState.get(underlyingNode) > 0;
                     state.setInitial(isInitial);
                 }
             }
@@ -100,7 +100,8 @@ public class FsmSimulationTool extends PetriNetSimulationTool {
         }
     }
 
-    protected boolean isContainerExcited(Container container) {
+    @Override
+    public boolean isContainerExcited(Container container) {
         if (excitedContainers.containsKey(container)) return excitedContainers.get(container);
         boolean ret = false;
         for (Node node: container.getChildren()) {
@@ -188,7 +189,7 @@ public class FsmSimulationTool extends PetriNetSimulationTool {
             VisualTransition vTransition = generator.getRelatedTransition((VisualEvent) node);
             if (vTransition != null) {
                 Transition transition = vTransition.getReferencedTransition();
-                if (net.isEnabled(transition)) {
+                if (isEnabledNode(transition)) {
                     return transition;
                 }
             }

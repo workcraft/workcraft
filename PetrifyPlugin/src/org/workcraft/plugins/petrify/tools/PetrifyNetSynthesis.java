@@ -9,7 +9,7 @@ import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petrify.tasks.TransformationResultHandler;
 import org.workcraft.plugins.petrify.tasks.TransformationTask;
-import org.workcraft.plugins.stg.STGModel;
+import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -35,7 +35,7 @@ public class PetrifyNetSynthesis extends ConversionTool {
         ArrayList<String> args = getArgs();
         final TransformationTask task = new TransformationTask(we, "Net synthesis", args.toArray(new String[args.size()]));
         final Framework framework = Framework.getInstance();
-        boolean hasSignals = WorkspaceUtils.canHas(we, STGModel.class) || WorkspaceUtils.canHas(we, Fst.class);
+        boolean hasSignals = WorkspaceUtils.canHas(we, StgModel.class) || WorkspaceUtils.canHas(we, Fst.class);
         TransformationResultHandler monitor = new TransformationResultHandler(we, hasSignals);
         framework.getTaskManager().queue(task, "Petrify net synthesis", monitor);
     }

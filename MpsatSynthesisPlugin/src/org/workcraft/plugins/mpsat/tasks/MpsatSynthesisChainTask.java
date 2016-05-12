@@ -8,7 +8,7 @@ import org.workcraft.plugins.mpsat.MpsatSynthesisSettings;
 import org.workcraft.plugins.punf.PunfUtilitySettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
-import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -36,7 +36,7 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> 
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         try {
-            STG model = WorkspaceUtils.getAs(we, STG.class);
+            Stg model = WorkspaceUtils.getAs(we, Stg.class);
             Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
             if (exporter == null) {
                 throw new RuntimeException("Exporter not available: model class " + model.getClass().getName() + " to format STG.");

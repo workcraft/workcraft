@@ -74,23 +74,23 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
         try {
             // Common variables
             monitor.progressUpdate(0.05);
-            PetriNetModel pn = (PetriNetModel) getWorkspaceEntry().getModelEntry().getMathModel();
-            Exporter pnExporter = Export.chooseBestExporter(framework.getPluginManager(), pn, Format.STG);
-            if (pnExporter == null) {
-                throw new RuntimeException("Exporter not available: model class " + pn.getClass().getName() + " to format STG.");
+            PetriNetModel petri = (PetriNetModel) getWorkspaceEntry().getModelEntry().getMathModel();
+            Exporter petriExporter = Export.chooseBestExporter(framework.getPluginManager(), petri, Format.STG);
+            if (petriExporter == null) {
+                throw new RuntimeException("Exporter not available: model class " + petri.getClass().getName() + " to format STG.");
             }
             SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
             monitor.progressUpdate(0.10);
 
             // Generating .g file for Petri Net
-            File pnFile = FileUtils.createTempFile("stg-", ".g");
-            pnFile.deleteOnExit();
-            ExportTask pnExportTask = new ExportTask(pnExporter, pn, pnFile.getAbsolutePath());
-            Result<? extends Object> pnExportResult = framework.getTaskManager().execute(
-                    pnExportTask, "Exporting .g", subtaskMonitor);
+            File petriFile = FileUtils.createTempFile("stg-", ".g");
+            petriFile.deleteOnExit();
+            ExportTask petriExportTask = new ExportTask(petriExporter, petri, petriFile.getAbsolutePath());
+            Result<? extends Object> petriExportResult = framework.getTaskManager().execute(
+                    petriExportTask, "Exporting .g", subtaskMonitor);
 
-            if (pnExportResult.getOutcome() != Outcome.FINISHED) {
-                if (pnExportResult.getOutcome() == Outcome.CANCELLED) {
+            if (petriExportResult.getOutcome() != Outcome.FINISHED) {
+                if (petriExportResult.getOutcome() == Outcome.CANCELLED) {
                     return new Result<WriteSgConversionResult>(Outcome.CANCELLED);
                 }
                 return new Result<WriteSgConversionResult>(Outcome.FAILED);
@@ -104,7 +104,7 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
             }
 
             while (true) {
-                WriteSgTask writeSgTask = new WriteSgTask(pnFile.getAbsolutePath(), null, writeSgOptions);
+                WriteSgTask writeSgTask = new WriteSgTask(petriFile.getAbsolutePath(), null, writeSgOptions);
                 Result<? extends ExternalProcessResult> writeSgResult = framework.getTaskManager().execute(
                         writeSgTask, "Building state graph", subtaskMonitor);
 

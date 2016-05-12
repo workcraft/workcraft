@@ -38,11 +38,11 @@ import org.workcraft.plugins.cpog.optimisation.dnf.DnfClause;
 import org.workcraft.plugins.cpog.optimisation.dnf.DnfGenerator;
 import org.workcraft.plugins.cpog.optimisation.expressions.DumbBooleanWorker;
 import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
-import org.workcraft.plugins.stg.VisualSTG;
+import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.generator.SignalStg;
 import org.workcraft.util.Geometry;
@@ -64,7 +64,7 @@ public class CircuitToStgConverter {
     private static final Point2D OFFSET_INC_MINUS = new Point2D.Double(0.0, +1.0);
 
     private final VisualCircuit circuit;
-    private final VisualSTG stg;
+    private final VisualStg stg;
 
     private final HashMap<String, Container> refToPageMap;
     private final Map<VisualNode, Pair<VisualContact, Boolean>> nodeToDriverMap;
@@ -72,7 +72,7 @@ public class CircuitToStgConverter {
 
     public CircuitToStgConverter(VisualCircuit circuit) {
         this.circuit = circuit;
-        this.stg = new VisualSTG(new STG());
+        this.stg = new VisualStg(new Stg());
         this.refToPageMap = convertPages();
         HashSet<VisualContact> drivers = identifyDrivers();
         this.nodeToDriverMap = associateNodesToDrivers(drivers);
@@ -85,7 +85,7 @@ public class CircuitToStgConverter {
         //groupDriverStgs(drivers);
     }
 
-    public CircuitToStgConverter(VisualCircuit circuit, VisualSTG stg) {
+    public CircuitToStgConverter(VisualCircuit circuit, VisualStg stg) {
         this.circuit = circuit;
         this.stg = stg;
         this.refToPageMap = convertPages();
@@ -99,7 +99,7 @@ public class CircuitToStgConverter {
         //groupDriverStgs(drivers);
     }
 
-    public VisualSTG getStg() {
+    public VisualStg getStg() {
         return stg;
     }
 

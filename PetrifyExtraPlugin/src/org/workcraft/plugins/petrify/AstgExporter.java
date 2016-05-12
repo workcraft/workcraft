@@ -36,7 +36,7 @@ import org.workcraft.gui.DesktopApi;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.petrify.tasks.DrawAstgTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
-import org.workcraft.plugins.stg.STGModel;
+import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -110,7 +110,7 @@ public class AstgExporter implements Exporter {
     }
 
     public int getCompatibility(Model model) {
-        if (model instanceof STGModel) {
+        if (model instanceof StgModel) {
             return Exporter.GENERAL_COMPATIBILITY;
         } else {
             return Exporter.NOT_COMPATIBLE;

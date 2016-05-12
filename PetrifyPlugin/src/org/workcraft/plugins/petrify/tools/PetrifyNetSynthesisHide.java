@@ -10,7 +10,7 @@ import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.petrify.tasks.TransformationResultHandler;
 import org.workcraft.plugins.petrify.tasks.TransformationTask;
-import org.workcraft.plugins.stg.STGModel;
+import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.VisualDummyTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.util.WorkspaceUtils;
@@ -62,7 +62,7 @@ public class PetrifyNetSynthesisHide extends PetrifyNetSynthesis {
         }
         final TransformationTask task = new TransformationTask(we, "Net synthesis", args.toArray(new String[args.size()]));
         final Framework framework = Framework.getInstance();
-        boolean hasSignals = WorkspaceUtils.canHas(we, STGModel.class);
+        boolean hasSignals = WorkspaceUtils.canHas(we, StgModel.class);
         TransformationResultHandler monitor = new TransformationResultHandler(we, hasSignals);
         framework.getTaskManager().queue(task, "Petrify net synthesis", monitor);
     }

@@ -4,7 +4,7 @@ import org.workcraft.ConversionTool;
 import org.workcraft.Framework;
 import org.workcraft.plugins.fst.task.StgToFstConversionResultHandler;
 import org.workcraft.plugins.fst.task.WriteSgConversionTask;
-import org.workcraft.plugins.stg.STG;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -16,7 +16,7 @@ public class StgToFstConverterTool extends ConversionTool {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.canHas(we, STG.class);
+        return WorkspaceUtils.canHas(we, Stg.class);
     }
 
     @Override
