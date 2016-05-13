@@ -50,6 +50,7 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
             printCommandLine(this.args);
             process.start();
         } catch (IOException e) {
+            LogUtils.logErrorLine(e.getMessage());
             return Result.exception(e);
         }
 

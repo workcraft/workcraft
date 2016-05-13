@@ -5,6 +5,7 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat.gui.ReachibilityDialog;
 import org.workcraft.plugins.mpsat.gui.Solution;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
@@ -43,13 +44,14 @@ final class MpsatReachabilityResultHandler implements Runnable {
         List<Solution> solutions = mdp.getSolutions();
         String title = "Verification results";
         String message = getMessage(!solutions.isEmpty());
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
         if (Solution.hasTraces(solutions)) {
             String extendedMessage = "<html><br>&#160;" + message +  "<br><br>&#160;Trace(s) leading to the problematic state(s):<br><br></html>";
             final ReachibilityDialog dialog = new ReachibilityDialog(we, title, extendedMessage, solutions);
-            GUI.centerToParent(dialog, Framework.getInstance().getMainWindow());
+            GUI.centerToParent(dialog, mainWindow);
             dialog.setVisible(true);
         } else {
-            JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(mainWindow, message, title, JOptionPane.INFORMATION_MESSAGE);
         }
     }
 

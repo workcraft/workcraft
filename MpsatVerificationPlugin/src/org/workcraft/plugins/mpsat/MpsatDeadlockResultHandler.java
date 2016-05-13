@@ -8,6 +8,7 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat.gui.ReachibilityDialog;
 import org.workcraft.plugins.mpsat.gui.Solution;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
@@ -16,7 +17,7 @@ import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
 final class MpsatDeadlockResultHandler implements Runnable {
-
+    private static final String TITLE = "Verification results";
     private final WorkspaceEntry we;
     private final Result<? extends ExternalProcessResult> result;
 
@@ -29,17 +30,17 @@ final class MpsatDeadlockResultHandler implements Runnable {
     public void run() {
         MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue());
         List<Solution> solutions = mdp.getSolutions();
-        String title = "Verification results";
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
         if (solutions.isEmpty()) {
             String message = "The system is deadlock-free.";
-            JOptionPane.showMessageDialog(null, message, title, JOptionPane.INFORMATION_MESSAGE);
+            JOptionPane.showMessageDialog(mainWindow, message, TITLE, JOptionPane.INFORMATION_MESSAGE);
         } else if (!Solution.hasTraces(solutions)) {
             String message = "The system has a deadlock.";
-            JOptionPane.showMessageDialog(null, message, title, JOptionPane.WARNING_MESSAGE);
+            JOptionPane.showMessageDialog(mainWindow, message, TITLE, JOptionPane.WARNING_MESSAGE);
         } else {
             String message = "<html><br>&#160;The system has a deadlock after the following trace(s):<br><br></html>";
-            final ReachibilityDialog solutionsDialog = new ReachibilityDialog(we, title, message, solutions);
-            GUI.centerToParent(solutionsDialog, Framework.getInstance().getMainWindow());
+            final ReachibilityDialog solutionsDialog = new ReachibilityDialog(we, TITLE, message, solutions);
+            GUI.centerToParent(solutionsDialog, mainWindow);
             solutionsDialog.setVisible(true);
         }
     }

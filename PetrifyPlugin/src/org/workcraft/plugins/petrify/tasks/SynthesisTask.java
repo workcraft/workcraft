@@ -109,24 +109,23 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
         SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessResult> res = task.run(mon);
         try {
-            if (res.getOutcome() == Outcome.CANCELLED) {
-                return new Result<SynthesisResult>(Outcome.CANCELLED);
-            } else {
-                final Outcome outcome;
-                if (res.getReturnValue().getReturnCode() == 0) {
-                    outcome = Outcome.FINISHED;
-                } else {
-                    outcome = Outcome.FAILED;
-                }
-
+            if (res.getOutcome() == Outcome.FINISHED) {
                 String equations = equationsFile.exists() ? FileUtils.readAllText(equationsFile) : "";
                 String verilog = verilogFile.exists() ? FileUtils.readAllText(verilogFile) : "";
                 String log = logFile.exists() ? FileUtils.readAllText(logFile) : "";
                 String stdout = new String(res.getReturnValue().getOutput());
                 String stderr = new String(res.getReturnValue().getErrors());
                 SynthesisResult result = new SynthesisResult(equations, verilog, log, stdout, stderr);
-                return new Result<SynthesisResult>(outcome, result);
+                if (res.getReturnValue().getReturnCode() == 0) {
+                    return Result.finished(result);
+                } else {
+                    return Result.failed(result);
+                }
             }
+            if (res.getOutcome() == Outcome.CANCELLED) {
+                return Result.cancelled();
+            }
+            return Result.failed(null);
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {

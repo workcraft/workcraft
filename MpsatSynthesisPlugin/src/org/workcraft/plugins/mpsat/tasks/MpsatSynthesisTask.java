@@ -97,7 +97,7 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
         command.add(inputFileName);
 
         // Output file
-        String outputFileName = canOutputVerilog ? VERILOG_FILE_NAME : EQN_FILE_NAME;
+        String outputFileName = canOutputVerilog && CircuitSettings.getOpenSynthesisResult() ? VERILOG_FILE_NAME : EQN_FILE_NAME;
         File outputFile = new File(directory, outputFileName);
         command.add(outputFile.getAbsolutePath());
 
@@ -105,27 +105,29 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
         boolean printStderr = MpsatSynthesisUtilitySettings.getPrintStderr();
         ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
         Result<? extends ExternalProcessResult> res = task.run(monitor);
-        if (res.getOutcome() == Outcome.CANCELLED) {
-            return res;
-        }
-
-        Map<String, byte[]> outputFiles = new HashMap<>();
-        try {
-            File g = new File(directory, outputFileName);
-            if (g.exists()) {
-                outputFiles.put(outputFileName, FileUtils.readAllBytes(g));
+        if (res.getOutcome() == Outcome.FINISHED) {
+            Map<String, byte[]> outputFiles = new HashMap<>();
+            try {
+                File outFile = new File(directory, outputFileName);
+                if (outFile.exists()) {
+                    outputFiles.put(outputFileName, FileUtils.readAllBytes(outFile));
+                }
+            } catch (IOException e) {
+                return new Result<ExternalProcessResult>(e);
             }
-        } catch (IOException e) {
-            return new Result<ExternalProcessResult>(e);
-        }
 
-        ExternalProcessResult retVal = res.getReturnValue();
-        ExternalProcessResult result = new ExternalProcessResult(retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), outputFiles);
-        if (retVal.getReturnCode() < 2) {
-            return Result.finished(result);
-        } else {
-            return Result.failed(result);
+            ExternalProcessResult retVal = res.getReturnValue();
+            ExternalProcessResult result = new ExternalProcessResult(retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), outputFiles);
+            if (retVal.getReturnCode() < 2) {
+                return Result.finished(result);
+            } else {
+                return Result.failed(result);
+            }
         }
+        if (res.getOutcome() == Outcome.CANCELLED) {
+            return Result.cancelled();
+        }
+        return Result.failed(null);
     }
 
 }
