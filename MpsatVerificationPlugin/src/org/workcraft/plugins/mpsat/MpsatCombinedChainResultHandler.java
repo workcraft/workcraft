@@ -8,6 +8,8 @@ import java.util.List;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.workcraft.Framework;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat.gui.Solution;
 import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainTask;
@@ -18,7 +20,8 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatCombinedChainResult> {
-    private String errorMessage;
+    private static final String TITLE = "MPSat verification";
+    private static final String ERROR_CAUSE_PREFIX  = "\n\n";
     private final MpsatCombinedChainTask task;
 
     public MpsatCombinedChainResultHandler(MpsatCombinedChainTask task) {
@@ -27,41 +30,45 @@ public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatC
 
     @Override
     public void finished(final Result<? extends MpsatCombinedChainResult> result, String description) {
-        final WorkspaceEntry we = task.getWorkspaceEntry();
+        switch (result.getOutcome()) {
+        case FINISHED:
+            final WorkspaceEntry we = task.getWorkspaceEntry();
+            handleSuccess(result, we);
+            break;
+        case FAILED:
+            handleFailure(result);
+            break;
+        default:
+            break;
+        }
+    }
+
+    private void handleSuccess(final Result<? extends MpsatCombinedChainResult> result, WorkspaceEntry we) {
         MpsatCombinedChainResult returnValue = result.getReturnValue();
-        Result<? extends Object> exportResult = returnValue.getExportResult();
-        Result<? extends ExternalProcessResult> pcompResult = returnValue.getPcompResult();
-        Result<? extends ExternalProcessResult> punfResult = returnValue.getPunfResult();
         List<Result<? extends ExternalProcessResult>> mpsatResultList = returnValue.getMpsatResultList();
-        if (result.getOutcome() == Outcome.FINISHED) {
-            List<MpsatSettings> mpsatSettingsList = result.getReturnValue().getMpsatSettingsList();
-            Result<? extends ExternalProcessResult> violationMpsatResult = null;
-            MpsatSettings violationMpsatSettings = null;
-            String verifiedMessageDetailes = "";
-            for (int index = 0; index < mpsatResultList.size(); ++index) {
-                Result<? extends ExternalProcessResult> mpsatResult = mpsatResultList.get(index);
-                MpsatSettings mpsatSettings = mpsatSettingsList.get(index);
-                MpsatResultParser mdp = new MpsatResultParser(mpsatResult.getReturnValue());
-                List<Solution> solutions = mdp.getSolutions();
-                if (!Solution.hasTraces(solutions)) {
-                    verifiedMessageDetailes += "\n * " + mpsatSettings.getName();
-                } else {
-                    violationMpsatResult = mpsatResult;
-                    violationMpsatSettings = mpsatSettings;
-                }
+        List<MpsatSettings> mpsatSettingsList = result.getReturnValue().getMpsatSettingsList();
+        Result<? extends ExternalProcessResult> violationMpsatResult = null;
+        MpsatSettings violationMpsatSettings = null;
+        String verifiedMessageDetailes = "";
+        for (int index = 0; index < mpsatResultList.size(); ++index) {
+            Result<? extends ExternalProcessResult> mpsatResult = mpsatResultList.get(index);
+            MpsatSettings mpsatSettings = mpsatSettingsList.get(index);
+            MpsatResultParser mdp = new MpsatResultParser(mpsatResult.getReturnValue());
+            List<Solution> solutions = mdp.getSolutions();
+            if (!Solution.hasTraces(solutions)) {
+                verifiedMessageDetailes += "\n * " + mpsatSettings.getName();
+            } else {
+                violationMpsatResult = mpsatResult;
+                violationMpsatSettings = mpsatSettings;
             }
+        }
+        if (violationMpsatSettings == null) {
             // No solution found in any of the Mpsat tasks
-            if (violationMpsatSettings == null) {
-                final String title = "Verification results";
-                final String verifiedMessage = "The following checks passed:" + verifiedMessageDetailes;
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        JOptionPane.showMessageDialog(null, verifiedMessage, title, JOptionPane.INFORMATION_MESSAGE);
-                    }
-                });
-                return;
-            }
+            MainWindow mainWindow = Framework.getInstance().getMainWindow();
+            JOptionPane.showMessageDialog(mainWindow,
+                    "The following checks passed:" + verifiedMessageDetailes,
+                    TITLE, JOptionPane.INFORMATION_MESSAGE);
+        } else {
             // One of the Mpsat tasks returned a solution trace
             switch (violationMpsatSettings.getMode()) {
             case UNDEFINED:
@@ -87,74 +94,66 @@ public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatC
                 SwingUtilities.invokeLater(new MpsatCscResolutionResultHandler(we, violationMpsatResult));
                 break;
             default:
-                final String unsupportedMessage = "MPSat mode '" + violationMpsatSettings.getMode().getArgument() + "' is not (yet) supported.";
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        JOptionPane.showMessageDialog(null, unsupportedMessage, "Unsupported MPSat mode", JOptionPane.WARNING_MESSAGE);
-                    }
-                });
+                MainWindow mainWindow = Framework.getInstance().getMainWindow();
+                String modeString = violationMpsatSettings.getMode().getArgument();
+                JOptionPane.showMessageDialog(mainWindow,
+                        "Warning: MPSat mode '" + modeString + "' is not (yet) supported.",
+                        TITLE, JOptionPane.ERROR_MESSAGE);
                 break;
             }
-        } else if (result.getOutcome() != Outcome.CANCELLED) {
-            errorMessage = "MPSat tool chain execution failed :-(";
-            Throwable cause1 = result.getCause();
+        }
+    }
 
-            if (cause1 != null) {
-                // Exception was thrown somewhere in the chain task run() method (not in any of the subtasks)
-                errorMessage += "\n\nFailure caused by: " + cause1.toString() + "\nPlease see the 'Problems' tab for more details.";
-            } else {
-                String errorMessageDetails = null;
-                if (exportResult != null && exportResult.getOutcome() == Outcome.FAILED) {
-                    errorMessageDetails = "Failed to export the model as a .g file.";
-                    Throwable cause = exportResult.getCause();
-                    if (cause != null) {
-                        errorMessageDetails = "Failure caused by: " + cause.toString();
-                    } else {
-                        errorMessageDetails = "The exporter class did not offer further explanation.";
+    private void handleFailure(final Result<? extends MpsatCombinedChainResult> result) {
+        String errorMessage = "Error: MPSat verification failed.";
+        Throwable genericCause = result.getCause();
+        if (genericCause != null) {
+            // Exception was thrown somewhere in the chain task run() method (not in any of the subtasks)
+            errorMessage += ERROR_CAUSE_PREFIX + genericCause.toString();
+        } else {
+            MpsatCombinedChainResult returnValue = result.getReturnValue();
+            Result<? extends Object> exportResult = (returnValue == null) ? null : returnValue.getExportResult();
+            Result<? extends ExternalProcessResult> punfResult = (returnValue == null) ? null : returnValue.getPunfResult();
+            List<Result<? extends ExternalProcessResult>> mpsatResultList = (returnValue == null) ? null : returnValue.getMpsatResultList();
+            if ((exportResult != null) && (exportResult.getOutcome() == Outcome.FAILED)) {
+                errorMessage += "\n\nCould not export the model as a .g file.";
+                Throwable exportCause = exportResult.getCause();
+                if (exportCause != null) {
+                    errorMessage += ERROR_CAUSE_PREFIX + exportCause.toString();
+                }
+            } else if ((punfResult != null) && (punfResult.getOutcome() == Outcome.FAILED)) {
+                errorMessage += "\n\nPunf could not build the unfolding prefix.";
+                Throwable punfCause = punfResult.getCause();
+                if (punfCause != null) {
+                    errorMessage += ERROR_CAUSE_PREFIX + punfCause.toString();
+                } else {
+                    ExternalProcessResult punfReturnValue = punfResult.getReturnValue();
+                    if (punfReturnValue != null) {
+                        errorMessage += ERROR_CAUSE_PREFIX + new String(punfReturnValue.getErrors());
                     }
-                } else if ((pcompResult != null) && (pcompResult.getOutcome() == Outcome.FAILED)) {
-                    errorMessageDetails = "Pcomp could not compose the STGs.";
-                    Throwable cause = pcompResult.getCause();
-                    if (cause != null) {
-                        errorMessageDetails = "Failure caused by: " + cause.toString();
-                    } else {
-                        errorMessageDetails = "Failure caused by the following errors:\n" + new String(pcompResult.getReturnValue().getErrors());
-                    }
-                } else if ((punfResult != null) && (punfResult.getOutcome() == Outcome.FAILED)) {
-                    errorMessage = "Punf could not build the unfolding prefix.";
-                    Throwable cause = punfResult.getCause();
-                    if (cause != null) {
-                        errorMessageDetails = "Failure caused by: " + cause.toString();
-                    } else {
-                        errorMessageDetails = "Failure caused by the following errors:\n" + new String(punfResult.getReturnValue().getErrors());
-                    }
-                } else if (mpsatResultList != null) {
-                    for (Result<? extends ExternalProcessResult> mpsatResult: mpsatResultList) {
-                        if (mpsatResult.getOutcome() == Outcome.FAILED) {
-                            errorMessageDetails = "MPSat failed to execute as expected.";
-                            Throwable cause = mpsatResult.getCause();
-                            if (cause != null) {
-                                errorMessageDetails = "Failure caused by: " + cause.toString();
-                            } else {
-                                byte[] errors = mpsatResult.getReturnValue().getErrors();
-                                errorMessageDetails = "Failure caused by the following errors:\n" + new String(errors);
+                }
+            } else if (mpsatResultList != null) {
+                errorMessage += "\n\nMPSat did not execute as expected.";
+                for (Result<? extends ExternalProcessResult> mpsatResult: mpsatResultList) {
+                    if ((mpsatResult != null) && (mpsatResult.getOutcome() == Outcome.FAILED)) {
+                        Throwable mpsatCause = mpsatResult.getCause();
+                        if (mpsatCause != null) {
+                            errorMessage += ERROR_CAUSE_PREFIX + mpsatCause.toString();
+                        } else {
+                            ExternalProcessResult mpsatReturnValue = mpsatResult.getReturnValue();
+                            if (mpsatReturnValue != null) {
+                                String mpsatError = new String(mpsatReturnValue.getErrors());
+                                errorMessage += ERROR_CAUSE_PREFIX + mpsatError;
                             }
                         }
                     }
                 }
-                if (errorMessageDetails == null) {
-                    errorMessageDetails = "MPSat chain task returned failure status without further explanation.";
-                }
-                errorMessage += "\n\n" + errorMessageDetails;
+            } else {
+                errorMessage += "\n\nMPSat chain task returned failure status without further explanation.";
             }
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    JOptionPane.showMessageDialog(null, errorMessage, "Error", JOptionPane.ERROR_MESSAGE);
-                }
-            });
         }
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        JOptionPane.showMessageDialog(mainWindow, errorMessage, TITLE, JOptionPane.ERROR_MESSAGE);
     }
 
 }

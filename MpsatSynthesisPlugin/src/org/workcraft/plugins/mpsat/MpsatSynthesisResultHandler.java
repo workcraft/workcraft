@@ -12,6 +12,7 @@ import javax.swing.SwingUtilities;
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitDescriptor;
@@ -35,7 +36,8 @@ import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynthesisChainResult> {
-    private String errorMessage;
+    private static final String TITLE = "MPSat synthesis";
+    private static final String ERROR_CAUSE_PREFIX  = "\n\n";
     private final MpsatSynthesisChainTask task;
 
     public MpsatSynthesisResultHandler(MpsatSynthesisChainTask task) {
@@ -74,64 +76,12 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
             handleSynthesisResult(mpsatReturnValue, false, RenderType.GATE);
             break;
         default:
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    JOptionPane.showMessageDialog(null,
-                            "MPSat mode \'" + mpsatMode.getArgument() + "\' is not (yet) supported.",
-                            "Sorry..", JOptionPane.WARNING_MESSAGE);
-                }
-            });
+            MainWindow mainWindow = Framework.getInstance().getMainWindow();
+            JOptionPane.showMessageDialog(mainWindow,
+                    "Warning: MPSat mode \'" + mpsatMode.getArgument() + "\' is not (yet) supported.",
+                    TITLE, JOptionPane.WARNING_MESSAGE);
             break;
         }
-    }
-
-    private void handleFailure(final Result<? extends MpsatSynthesisChainResult> result) {
-        MpsatSynthesisChainResult returnValue = result.getReturnValue();
-        errorMessage = "MPSat tool chain execution failed :-(";
-        Throwable genericCause = result.getCause();
-        if (genericCause != null) {
-            // Exception was thrown somewhere in the chain task run() method (not in any of the subtasks)
-            errorMessage += "\n\nFailure caused by: " + genericCause.toString() + "\nPlease see the 'Problems' tab for more details.";
-        } else {
-            Result<? extends Object> exportResult = returnValue.getExportResult();
-            Result<? extends ExternalProcessResult> punfResult = returnValue.getPunfResult();
-            Result<? extends ExternalProcessResult> mpsatResult = returnValue.getMpsatResult();
-            if (exportResult != null && exportResult.getOutcome() == Outcome.FAILED) {
-                errorMessage += "\n\nFailed to export the model as a .g file.";
-                Throwable cause = exportResult.getCause();
-                if (cause != null) {
-                    errorMessage += "\n\nFailure caused by: " + cause.toString();
-                } else {
-                    errorMessage += "\n\nThe exporter class did not offer further explanation.";
-                }
-            } else if (punfResult != null && punfResult.getOutcome() == Outcome.FAILED) {
-                errorMessage += "\n\nPunf could not build the unfolding prefix.";
-                Throwable cause = punfResult.getCause();
-                if (cause != null) {
-                    errorMessage += "\n\nFailure caused by: " + cause.toString();
-                } else {
-                    errorMessage += "\n\nFailure caused by the following errors:\n" + new String(punfResult.getReturnValue().getErrors());
-                }
-            } else if (mpsatResult != null && mpsatResult.getOutcome() == Outcome.FAILED) {
-                errorMessage += "\n\nMPSat failed to execute as expected.";
-                Throwable cause = mpsatResult.getCause();
-                if (cause != null) {
-                    errorMessage += "\n\nFailure caused by: " + cause.toString();
-                } else {
-                    byte[] errors = mpsatResult.getReturnValue().getErrors();
-                    errorMessage += "\n\nFailure caused by the following errors:\n" + new String(errors);
-                }
-            } else {
-                errorMessage += "\n\nMPSat chain task returned failure status without further explanation.";
-            }
-        }
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                JOptionPane.showMessageDialog(null, errorMessage, "Error", JOptionPane.ERROR_MESSAGE);
-            }
-        });
     }
 
     private void handleSynthesisResult(ExternalProcessResult mpsatResult, boolean sequentialAssign, RenderType renderType) {
@@ -177,14 +127,14 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
                     visualCircuit.setTitle(title);
                     if (!we.getFile().exists()) {
                         JOptionPane.showMessageDialog(null,
-                                "Error: unsaved STG cannot be set as the circuit environment.",
-                                "MPSat synthesis", JOptionPane.ERROR_MESSAGE);
+                                "Error: Unsaved STG cannot be set as the circuit environment.",
+                                TITLE, JOptionPane.ERROR_MESSAGE);
                     } else {
                         visualCircuit.setEnvironmentFile(we.getFile());
                         if (we.isChanged()) {
                             JOptionPane.showMessageDialog(null,
-                                    "Warning: the STG with unsaved changes is set as the circuit environment.",
-                                    "MPSat synthesis", JOptionPane.WARNING_MESSAGE);
+                                    "Warning: The STG with unsaved changes is set as the circuit environment.",
+                                    TITLE, JOptionPane.WARNING_MESSAGE);
                         }
                     }
                     SwingUtilities.invokeLater(new Runnable() {
@@ -198,6 +148,54 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
                 throw new RuntimeException(e);
             }
         }
+    }
+
+    private void handleFailure(final Result<? extends MpsatSynthesisChainResult> result) {
+        String errorMessage = "Error: MPSat synthesis failed.";
+        Throwable genericCause = result.getCause();
+        if (genericCause != null) {
+            // Exception was thrown somewhere in the chain task run() method (not in any of the subtasks)
+            errorMessage += ERROR_CAUSE_PREFIX + genericCause.toString();
+        } else {
+            MpsatSynthesisChainResult returnValue = result.getReturnValue();
+            Result<? extends Object> exportResult = (returnValue == null) ? null : returnValue.getExportResult();
+            Result<? extends ExternalProcessResult> punfResult = (returnValue == null) ? null : returnValue.getPunfResult();
+            Result<? extends ExternalProcessResult> mpsatResult = (returnValue == null) ? null : returnValue.getMpsatResult();
+            if ((exportResult != null) && (exportResult.getOutcome() == Outcome.FAILED)) {
+                errorMessage += "\n\nCould not export the model as a .g file.";
+                Throwable exportCause = exportResult.getCause();
+                if (exportCause != null) {
+                    errorMessage += ERROR_CAUSE_PREFIX + exportCause.toString();
+                }
+            } else if ((punfResult != null) && (punfResult.getOutcome() == Outcome.FAILED)) {
+                errorMessage += "\n\nPunf could not build the unfolding prefix.";
+                Throwable punfCause = punfResult.getCause();
+                if (punfCause != null) {
+                    errorMessage += ERROR_CAUSE_PREFIX + punfCause.toString();
+                } else {
+                    ExternalProcessResult punfReturnValue = punfResult.getReturnValue();
+                    if (punfReturnValue != null) {
+                        errorMessage += ERROR_CAUSE_PREFIX + new String(punfReturnValue.getErrors());
+                    }
+                }
+            } else if ((mpsatResult != null) && (mpsatResult.getOutcome() == Outcome.FAILED)) {
+                errorMessage += "\n\nMPSat did not execute as expected.";
+                Throwable mpsatCause = mpsatResult.getCause();
+                if (mpsatCause != null) {
+                    errorMessage += ERROR_CAUSE_PREFIX + mpsatCause.toString();
+                } else {
+                    ExternalProcessResult mpsatReturnValue = mpsatResult.getReturnValue();
+                    if (mpsatReturnValue != null) {
+                        String mpsatError = new String(mpsatReturnValue.getErrors());
+                        errorMessage += ERROR_CAUSE_PREFIX + mpsatError;
+                    }
+                }
+            } else {
+                errorMessage += "\n\nMPSat chain task returned failure status without further explanation.";
+            }
+        }
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        JOptionPane.showMessageDialog(mainWindow, errorMessage, TITLE, JOptionPane.ERROR_MESSAGE);
     }
 
 }

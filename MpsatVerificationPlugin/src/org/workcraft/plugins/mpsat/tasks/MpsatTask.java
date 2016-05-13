@@ -78,27 +78,29 @@ public class MpsatTask implements Task<ExternalProcessResult> {
         boolean printStderr = MpsatUtilitySettings.getPrintStderr();
         ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
         Result<? extends ExternalProcessResult> res = task.run(monitor);
-        if (res.getOutcome() == Outcome.CANCELLED) {
-            return res;
-        }
-
-        Map<String, byte[]> outputFiles = new HashMap<>();
-        try {
-            File outFile = new File(directory, FILE_MPSAT_G);
-            if (outFile.exists()) {
-                outputFiles.put(FILE_MPSAT_G, FileUtils.readAllBytes(outFile));
+        if (res.getOutcome() == Outcome.FINISHED) {
+            Map<String, byte[]> outputFiles = new HashMap<>();
+            try {
+                File outFile = new File(directory, FILE_MPSAT_G);
+                if (outFile.exists()) {
+                    outputFiles.put(FILE_MPSAT_G, FileUtils.readAllBytes(outFile));
+                }
+            } catch (IOException e) {
+                return new Result<ExternalProcessResult>(e);
             }
-        } catch (IOException e) {
-            return new Result<ExternalProcessResult>(e);
-        }
 
-        ExternalProcessResult retVal = res.getReturnValue();
-        ExternalProcessResult result = new ExternalProcessResult(retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), outputFiles);
-        if (retVal.getReturnCode() < 2) {
-            return Result.finished(result);
-        } else {
-            return Result.failed(result);
+            ExternalProcessResult retVal = res.getReturnValue();
+            ExternalProcessResult result = new ExternalProcessResult(retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), outputFiles);
+            if (retVal.getReturnCode() < 2) {
+                return Result.finished(result);
+            } else {
+                return Result.failed(result);
+            }
         }
+        if (res.getOutcome() == Outcome.CANCELLED) {
+            return Result.cancelled();
+        }
+        return Result.failed(null);
     }
 
 }

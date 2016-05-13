@@ -1,11 +1,11 @@
 package org.workcraft.plugins.petrify.tools;
 
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.gui.DesktopApi;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petrify.tasks.DrawSgResult;
 import org.workcraft.plugins.petrify.tasks.DrawSgTask;
@@ -16,6 +16,8 @@ import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class ShowSg implements Tool {
+    private static final String TITLE = "State graph synthesis";
+    private static final String ERROR_CAUSE_PREFIX  = "\n\n";
 
     public boolean isBinary() {
         return false;
@@ -64,20 +66,18 @@ public class ShowSg implements Tool {
                 if (result.getOutcome() == Outcome.FINISHED) {
                     DesktopApi.open(result.getReturnValue().getFile());
                 } else  if (result.getOutcome() != Outcome.CANCELLED) {
-                    String errorMessage = "Petrify tool chain execution failed :-(";
+                    String errorMessage = "Petrify tool chain execution failed.";
                     Throwable cause = result.getCause();
                     if (cause != null) {
-                        errorMessage += "\n\nFailure caused by: " + cause.toString() + "\nPlease see the 'Problems' tab for more details.";
+                        errorMessage += ERROR_CAUSE_PREFIX + cause.toString();
                     } else {
-                        errorMessage += "\n\nFailure caused by: \n" + result.getReturnValue().getErrorMessages();
-                    }
-                    final String err = errorMessage;
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            JOptionPane.showMessageDialog(null, err, "Error", JOptionPane.ERROR_MESSAGE);
+                        DrawSgResult returnValue = result.getReturnValue();
+                        if (returnValue != null) {
+                            errorMessage += ERROR_CAUSE_PREFIX + returnValue.getErrorMessages();
                         }
-                    });
+                    }
+                    MainWindow mainWindow = Framework.getInstance().getMainWindow();
+                    JOptionPane.showMessageDialog(mainWindow, errorMessage, TITLE, JOptionPane.ERROR_MESSAGE);
                 }
             }
         };

@@ -40,7 +40,9 @@ final class MpsatEncodingConflictResultHandler implements Runnable {
         MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue());
         List<Solution> solutions = mdp.getSolutions();
         if (!Solution.hasTraces(solutions)) {
-            JOptionPane.showMessageDialog(null, "No encoding conflicts.", "Verification results", JOptionPane.INFORMATION_MESSAGE);
+            MainWindow mainWindow = Framework.getInstance().getMainWindow();
+            JOptionPane.showMessageDialog(mainWindow, "No encoding conflicts.",
+                    "Verification results", JOptionPane.INFORMATION_MESSAGE);
         } else {
             final Framework framework = Framework.getInstance();
             final MainWindow mainWindow = framework.getMainWindow();
