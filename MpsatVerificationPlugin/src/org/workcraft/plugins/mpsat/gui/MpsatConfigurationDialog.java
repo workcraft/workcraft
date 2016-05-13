@@ -29,7 +29,6 @@ import javax.swing.KeyStroke;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.SimpleFlowLayout;
-import org.workcraft.plugins.mpsat.MpsatBuiltinPresets;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
 import org.workcraft.plugins.mpsat.MpsatSettings;
@@ -116,15 +115,22 @@ public class MpsatConfigurationDialog extends JDialog {
     private void createPresetPanel() {
         ArrayList<Preset<MpsatSettings>> builtInPresets = new ArrayList<>();
 
+        builtInPresets.add(new Preset<>("Deadlock freeness",
+                MpsatSettings.getDeadlockReachSettings(), true));
+
         if (presetManager.isAllowStgPresets()) {
-            builtInPresets.add(MpsatBuiltinPresets.CONSISTENCY_CHECKER);
-            builtInPresets.add(MpsatBuiltinPresets.DI_INTERFACE_CHECKER);
-            builtInPresets.add(MpsatBuiltinPresets.INPUT_PROPERNESS_CHECKER);
-            builtInPresets.add(MpsatBuiltinPresets.OUTPUT_PERSISTENCY_CHECKER);
-            builtInPresets.add(MpsatBuiltinPresets.NORMALCY_CHECKER);
+            builtInPresets.add(new Preset<>("Consistency",
+                    MpsatSettings.getConsistencySettings(), true));
+
+            builtInPresets.add(new Preset<>("Delay insensitive interface",
+                    MpsatSettings.getDiInterfaceSettings(), true));
+
+            builtInPresets.add(new Preset<>("Input properness",
+                    MpsatSettings.getInputPropernessSettings(), true));
+
+            builtInPresets.add(new Preset<>("Output persistency (without dummies)",
+                    MpsatSettings.getOutputPersistencySettings(), true));
         }
-        builtInPresets.add(MpsatBuiltinPresets.DEADLOCK_CHECKER_SHORTEST_TRACE);
-        builtInPresets.add(MpsatBuiltinPresets.DEADLOCK_CHECKER_ALL_TRACES);
 
         SettingsToControlsMapper<MpsatSettings> guiMapper = new SettingsToControlsMapper<MpsatSettings>() {
             @Override
@@ -151,13 +157,10 @@ public class MpsatConfigurationDialog extends JDialog {
         Dimension modeComboDimention = modeCombo.getPreferredSize();
         modeComboDimention.width = 318;
         modeCombo.setPreferredSize(modeComboDimention);
+        modeCombo.addItem(MpsatMode.REACHABILITY);
         if (presetManager.isAllowStgPresets()) {
             modeCombo.addItem(MpsatMode.STG_REACHABILITY);
-            modeCombo.addItem(MpsatMode.NORMALCY);
-        } else {
-            modeCombo.addItem(MpsatMode.REACHABILITY);
         }
-        modeCombo.addItem(MpsatMode.DEADLOCK);
         modeCombo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
