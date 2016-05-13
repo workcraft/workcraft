@@ -24,7 +24,7 @@ public class MpsatDeadlockChecker extends AbstractMpsatChecker  {
 
     @Override
     public Position getPosition() {
-        return Position.TOP;
+        return null;
     }
 
     @Override

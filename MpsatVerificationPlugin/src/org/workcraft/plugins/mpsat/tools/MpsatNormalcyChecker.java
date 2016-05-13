@@ -5,11 +5,11 @@ import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class MpsatConsistencyChecker extends AbstractMpsatChecker {
+public class MpsatNormalcyChecker extends AbstractMpsatChecker {
 
     @Override
     public String getDisplayName() {
-        return "Consistency [MPSat]";
+        return "Normalcy [MPSat]";
     }
 
     @Override
@@ -18,18 +18,13 @@ public class MpsatConsistencyChecker extends AbstractMpsatChecker {
     }
 
     @Override
-    public int getPriority() {
-        return 5;
-    }
-
-    @Override
     public Position getPosition() {
-        return null;
+        return Position.TOP;
     }
 
     @Override
     public MpsatSettings getSettings() {
-        return MpsatSettings.getConsistencySettings();
+        return MpsatSettings.getNormalcySettings();
     }
 
 }

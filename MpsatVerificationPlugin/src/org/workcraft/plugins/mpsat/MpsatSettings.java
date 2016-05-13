@@ -45,6 +45,9 @@ public class MpsatSettings {
     //   false - property holds when predicate is satisfiable
     private final boolean inversePredicate;
 
+    public static final String REACH_DEADLOCK =
+            "forall t in TRANSITIONS { ~@t }\n";
+
     public static final String REACH_CONSISTENCY =
             "// Checks whether the STG is consistent, i.e. rising and falling transitions of every signal alternate in all traces\n" +
             "exists s in SIGNALS \\ DUMMY {\n" +
@@ -88,7 +91,7 @@ public class MpsatSettings {
             "    exists ti in TRINP {\n" +
             "        let pre_ti = pre ti {\n" +
             "            // Check if some ti_trig can trigger ti\n" +
-            "            exists ti_trig in pre pre_ti * TRINP s.t. card((post ti_trig \\ pre ti_trig) * pre_ti) != 0 {\n" +
+            "            exists ti_trig in pre pre_ti * TRINP s.t. sig ti_trig != sig ti & card((post ti_trig \\ pre ti_trig) * pre_ti) != 0 {\n" +
             "                forall p in pre_ti \\ post ti_trig { $p }\n" +
             "                &\n" +
             "                @ti_trig\n" +
@@ -295,6 +298,12 @@ public class MpsatSettings {
         }
 
         return args.toArray(new String[args.size()]);
+    }
+
+    public static MpsatSettings getDeadlockReachSettings() {
+        return new MpsatSettings("Deadlock freeness", MpsatMode.REACHABILITY, 0,
+                MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
+                MpsatSettings.REACH_DEADLOCK, true);
     }
 
     public static MpsatSettings getConsistencySettings() {

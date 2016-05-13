@@ -18,11 +18,6 @@ public class MpsatDiInterfaceChecker extends AbstractMpsatChecker {
     }
 
     @Override
-    public int getPriority() {
-        return 3;
-    }
-
-    @Override
     public Position getPosition() {
         return Position.TOP;
     }

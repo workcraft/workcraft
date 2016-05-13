@@ -45,7 +45,7 @@ public class PresetManagerPanel<T> extends JPanel {
     }
 
     private void initialise() {
-        presetManager.sort();
+        //presetManager.sort();
         presetCombo = new JComboBox();
         for (Preset<T> p : presetManager.list()) {
             presetCombo.addItem(p);
