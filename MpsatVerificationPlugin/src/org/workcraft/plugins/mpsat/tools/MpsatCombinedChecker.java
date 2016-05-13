@@ -15,7 +15,7 @@ public class MpsatCombinedChecker extends VerificationTool {
 
     @Override
     public String getDisplayName() {
-        return "Consistency, deadlock freenes, DI interface, input properness and output persistency (reuse unfolding) [MPSat]";
+        return "Consistency, deadlock freeness, DI interface, input properness and output persistency (reuse unfolding) [MPSat]";
     }
 
     @Override

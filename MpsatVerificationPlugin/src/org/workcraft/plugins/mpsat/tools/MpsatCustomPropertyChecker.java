@@ -18,6 +18,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatCustomPropertyChecker extends VerificationTool {
 
+    private static final String MPSAT_PRESETS_FILE = "mpsat_presets.xml";
+
     @Override
     public String getDisplayName() {
         return "Custom properties [MPSat]...";
@@ -35,7 +37,7 @@ public class MpsatCustomPropertyChecker extends VerificationTool {
 
     @Override
     public void run(WorkspaceEntry we) {
-        File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, "mpsat_presets.xml");
+        File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, MPSAT_PRESETS_FILE);
         boolean allowStgPresets = WorkspaceUtils.canHas(we, StgModel.class);
         MpsatPresetManager pmgr = new MpsatPresetManager(presetFile, new MpsatSettingsSerialiser(), allowStgPresets);
         final Framework framework = Framework.getInstance();

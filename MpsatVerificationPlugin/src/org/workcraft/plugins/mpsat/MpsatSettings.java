@@ -88,7 +88,7 @@ public class MpsatSettings {
             "    exists ti in TRINP {\n" +
             "        let pre_ti = pre ti {\n" +
             "            // Check if some ti_trig can trigger ti\n" +
-            "            exists ti_trig in pre pre_ti * TRINP s.t. card((post ti_trig \\ pre ti_trig) * pre_ti) != 0 {\n" +
+            "            exists ti_trig in pre pre_ti * TRINP s.t. sig ti_trig != sig ti & card((post ti_trig \\ pre ti_trig) * pre_ti) != 0 {\n" +
             "                forall p in pre_ti \\ post ti_trig { $p }\n" +
             "                &\n" +
             "                @ti_trig\n" +

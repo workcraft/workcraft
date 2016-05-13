@@ -116,13 +116,15 @@ public class MpsatConfigurationDialog extends JDialog {
     private void createPresetPanel() {
         ArrayList<Preset<MpsatSettings>> builtInPresets = new ArrayList<>();
 
-        builtInPresets.add(MpsatBuiltinPresets.DEADLOCK_CHECKER);
-        builtInPresets.add(MpsatBuiltinPresets.DEADLOCK_CHECKER_ALL_TRACES);
         if (presetManager.isAllowStgPresets()) {
             builtInPresets.add(MpsatBuiltinPresets.CONSISTENCY_CHECKER);
-            builtInPresets.add(MpsatBuiltinPresets.PERSISTENCY_CHECKER);
+            builtInPresets.add(MpsatBuiltinPresets.DI_INTERFACE_CHECKER);
+            builtInPresets.add(MpsatBuiltinPresets.INPUT_PROPERNESS_CHECKER);
+            builtInPresets.add(MpsatBuiltinPresets.OUTPUT_PERSISTENCY_CHECKER);
             builtInPresets.add(MpsatBuiltinPresets.NORMALCY_CHECKER);
         }
+        builtInPresets.add(MpsatBuiltinPresets.DEADLOCK_CHECKER_SHORTEST_TRACE);
+        builtInPresets.add(MpsatBuiltinPresets.DEADLOCK_CHECKER_ALL_TRACES);
 
         SettingsToControlsMapper<MpsatSettings> guiMapper = new SettingsToControlsMapper<MpsatSettings>() {
             @Override
@@ -149,13 +151,13 @@ public class MpsatConfigurationDialog extends JDialog {
         Dimension modeComboDimention = modeCombo.getPreferredSize();
         modeComboDimention.width = 318;
         modeCombo.setPreferredSize(modeComboDimention);
-        modeCombo.addItem(MpsatMode.DEADLOCK);
         if (presetManager.isAllowStgPresets()) {
             modeCombo.addItem(MpsatMode.STG_REACHABILITY);
             modeCombo.addItem(MpsatMode.NORMALCY);
         } else {
             modeCombo.addItem(MpsatMode.REACHABILITY);
         }
+        modeCombo.addItem(MpsatMode.DEADLOCK);
         modeCombo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

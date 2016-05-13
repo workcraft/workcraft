@@ -19,6 +19,22 @@ public class PresetManager<T> {
     private File presetFile;
     private final SettingsSerialiser<T> serialiser;
 
+    public PresetManager(File presetFile, SettingsSerialiser<T> serialiser) {
+        this.presetFile = presetFile;
+        this.serialiser = serialiser;
+
+        try {
+            if (presetFile.exists()) {
+                Document doc = XmlUtil.loadDocument(presetFile);
+                for (Element p : XmlUtil.getChildElements("preset", doc.getDocumentElement())) {
+                    presets.add(new Preset<T>(p, serialiser));
+                }
+            }
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     private void savePresets() {
         try {
             Document doc = XmlUtil.createDocument();
@@ -41,22 +57,6 @@ public class PresetManager<T> {
         }
     }
 
-    public PresetManager(File presetFile, SettingsSerialiser<T> serialiser) {
-        this.presetFile = presetFile;
-        this.serialiser = serialiser;
-
-        try {
-            if (presetFile.exists()) {
-                Document doc = XmlUtil.loadDocument(presetFile);
-                for (Element p : XmlUtil.getChildElements("preset", doc.getDocumentElement())) {
-                    presets.add(new Preset<T>(p, serialiser));
-                }
-            }
-        } catch (ParserConfigurationException | SAXException | IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     public void sort() {
         Collections.sort(presets, new Comparator<Preset<T>>() {
             @Override
@@ -72,7 +72,7 @@ public class PresetManager<T> {
 
     public Preset<T> save(T settings, String description) {
         Preset<T> preset = new Preset<>(description, settings, false);
-        presets.add(preset);
+        presets.add(0, preset);
         savePresets();
         return preset;
     }
