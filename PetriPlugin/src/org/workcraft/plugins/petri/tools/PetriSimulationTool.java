@@ -38,6 +38,7 @@ import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
+import org.workcraft.util.LogUtils;
 
 public class PetriSimulationTool extends SimulationTool {
 
@@ -141,7 +142,23 @@ public class PetriSimulationTool extends SimulationTool {
             }
         }
         if (isEnabledNode(transition)) {
+            HashMap<Place, Integer> capacity = new HashMap<>();
+            for (Node node: getUnderlyingPetri().getPostset(transition)) {
+                if (node instanceof Place) {
+                    Place place = (Place) node;
+                    capacity.put(place,  place.getCapacity());
+                }
+            }
             getUnderlyingPetri().fire(transition);
+            for (Node node: getUnderlyingPetri().getPostset(transition)) {
+                if (node instanceof Place) {
+                    Place place = (Place) node;
+                    if (place.getCapacity() > capacity.get(place)) {
+                        String placeRef = getUnderlyingPetri().getNodeReference(place);
+                        LogUtils.logWarningLine("Capacity of place '" + placeRef + "' is incresed to " + place.getCapacity() + ".");
+                    }
+                }
+            }
             result = true;
         }
         return result;

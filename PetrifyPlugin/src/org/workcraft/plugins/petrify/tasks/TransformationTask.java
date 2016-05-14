@@ -33,6 +33,7 @@ import org.workcraft.util.ToolUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class TransformationTask implements Task<TransformationResult>, ExternalProcessListener {
+    private static final String EXPORT_FAILED_MESSAGE = "Unable to export the model.";
     private WorkspaceEntry we;
     String[] args;
 
@@ -96,26 +97,28 @@ public class TransformationTask implements Task<TransformationResult>, ExternalP
             SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
             Result<? extends ExternalProcessResult> res = task.run(mon);
 
-            if (res.getOutcome() == Outcome.CANCELLED) {
-                return new Result<TransformationResult>(Outcome.CANCELLED);
-            } else {
-                final Outcome outcome;
+            if (res.getOutcome() == Outcome.FINISHED) {
                 StgModel outStg = null;
-                if (res.getReturnValue().getReturnCode() == 0) {
-                    outcome = Outcome.FINISHED;
-                } else {
-                    outcome = Outcome.FAILED;
-                }
-                try {
-                    String out = outFile.exists() ? FileUtils.readAllText(outFile) : "";
+                if (outFile.exists()) {
+                    String out = FileUtils.readAllText(outFile);
                     ByteArrayInputStream outStream = new ByteArrayInputStream(out.getBytes());
-                    outStg = new DotGImporter().importSTG(outStream);
-                } catch (DeserialisationException e) {
-                    return Result.exception(e);
+                    try {
+                        outStg = new DotGImporter().importSTG(outStream);
+                    } catch (DeserialisationException e) {
+                        return Result.exception(e);
+                    }
                 }
                 TransformationResult result = new TransformationResult(res, outStg);
-                return new Result<TransformationResult>(outcome, result);
+                if (res.getReturnValue().getReturnCode() == 0) {
+                    return Result.finished(result);
+                } else {
+                    return Result.failed(result);
+                }
             }
+            if (res.getOutcome() == Outcome.CANCELLED) {
+                return Result.cancelled();
+            }
+            return Result.failed(null);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         } finally {
@@ -141,12 +144,12 @@ public class TransformationTask implements Task<TransformationResult>, ExternalP
         File modelFile = new File(directory, "original" + extension);
         try {
             ExportTask exportTask = Export.createExportTask(model, modelFile, format, framework.getPluginManager());
-            final Result<? extends Object> exportResult = framework.getTaskManager().execute(exportTask, "Exporting model");
+            Result<? extends Object> exportResult = framework.getTaskManager().execute(exportTask, "Exporting model");
             if (exportResult.getOutcome() != Outcome.FINISHED) {
-                modelFile = null;
+                throw new RuntimeException(EXPORT_FAILED_MESSAGE);
             }
         } catch (SerialisationException e) {
-            throw new RuntimeException("Unable to export the model.");
+            throw new RuntimeException(EXPORT_FAILED_MESSAGE);
         }
         return modelFile;
     }

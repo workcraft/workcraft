@@ -28,7 +28,7 @@ import org.workcraft.observation.PropertyChangedEvent;
 
 @VisualClass(org.workcraft.plugins.petri.VisualPlace.class)
 public class Place extends MathNode {
-    public static final String PROPERTY_CAPACITY = "Capacity";
+    public static final String PROPERTY_CAPACITY = "Promised capacity";
     public static final String PROPERTY_TOKENS = "Tokens";
 
     protected int tokens = 0;
