@@ -144,7 +144,7 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
         ExportTask exportTask = new ExportTask(stgExporter, model, stgFile.getAbsolutePath());
         Result<? extends Object> exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
         if (exportResult.getOutcome() != Outcome.FINISHED) {
-            stgFile = null;
+            throw new RuntimeException("Unable to export the model.");
         }
         return stgFile;
     }
