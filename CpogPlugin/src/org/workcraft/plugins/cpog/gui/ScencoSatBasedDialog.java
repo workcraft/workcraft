@@ -110,7 +110,7 @@ public class ScencoSatBasedDialog extends JDialog {
         optimiseBox.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForBox);
         optimiseBox.addItem(ScencoDialogSupport.textOptimiseForFirstElement);
         optimiseBox.addItem(ScencoDialogSupport.textOptimiseForSecondElement);
-        optimiseBox.setSelectedIndex(settings.isCpogSize() ? 1 : 0);
+        optimiseBox.setSelectedIndex(settings.isCpogSize() ? 0 : 1);
         optimiseBox.setBackground(Color.WHITE);
 
         // ABC TOOL DISABLE FLAG
