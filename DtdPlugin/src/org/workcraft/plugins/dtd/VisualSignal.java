@@ -38,16 +38,21 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.shared.CommonSignalSettings;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @Hotkey(KeyEvent.VK_X)
 @DisplayName("Signal")
-@SVGIcon("images/icons/svg/rho.svg")
+@SVGIcon("images/icons/svg/dtd-signal.svg")
 public class VisualSignal extends VisualComponent {
 
     public VisualSignal(Signal signal) {
         super(signal);
+        configureProperties();
+    }
+
+    private void configureProperties() {
         renamePropertyDeclarationByName("Foreground color", "Color");
         removePropertyDeclarationByName("Fill color");
         removePropertyDeclarationByName("Name positioning");
@@ -55,8 +60,17 @@ public class VisualSignal extends VisualComponent {
         removePropertyDeclarationByName("Label");
         removePropertyDeclarationByName("Label positioning");
         removePropertyDeclarationByName("Label color");
-    }
 
+        addPropertyDeclaration(new PropertyDeclaration<VisualSignal, Signal.Type>(
+                this, Signal.PROPERTY_TYPE, Signal.Type.class, true, true, true) {
+            protected void setter(VisualSignal object, Signal.Type value) {
+                object.setType(value);
+            }
+            protected Signal.Type getter(VisualSignal object) {
+                return object.getType();
+            }
+        });
+    }
 
     public Signal getReferencedSignal() {
         return (Signal) getReferencedComponent();

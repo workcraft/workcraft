@@ -2,6 +2,7 @@ package org.workcraft.plugins.fsm.tools;
 
 import org.workcraft.ConversionTool;
 import org.workcraft.Framework;
+import org.workcraft.dom.math.MathModel;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.FsmDescriptor;
@@ -22,7 +23,8 @@ public class GraphToFsmConverterTool extends ConversionTool {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return we.getModelEntry().getMathModel() instanceof Graph;
+        MathModel mathModel = we.getModelEntry().getMathModel();
+        return mathModel.getClass().equals(Graph.class);
     }
 
     @Override

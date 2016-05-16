@@ -2,6 +2,7 @@ package org.workcraft.plugins.policy.tools;
 
 import org.workcraft.ConversionTool;
 import org.workcraft.Framework;
+import org.workcraft.dom.math.MathModel;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.VisualPetriNet;
@@ -22,7 +23,8 @@ public class PetriToPolicyConverterTool extends ConversionTool {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return we.getModelEntry().getMathModel() instanceof PetriNet;
+        MathModel mathModel = we.getModelEntry().getMathModel();
+        return mathModel.getClass().equals(PetriNet.class);
     }
 
     @Override

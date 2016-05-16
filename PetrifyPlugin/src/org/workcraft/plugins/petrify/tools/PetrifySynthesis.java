@@ -2,7 +2,7 @@ package org.workcraft.plugins.petrify.tools;
 
 import org.workcraft.Framework;
 import org.workcraft.SynthesisTool;
-import org.workcraft.plugins.petrify.SynthesisResultHandler;
+import org.workcraft.plugins.petrify.tasks.SynthesisResultHandler;
 import org.workcraft.plugins.petrify.tasks.SynthesisTask;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.util.WorkspaceUtils;

@@ -1,7 +1,6 @@
 package org.workcraft.plugins.dtd;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
@@ -9,13 +8,9 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.plugins.graph.Graph;
 import org.workcraft.plugins.dtd.Signal.Type;
-import org.workcraft.plugins.dtd.propertydescriptors.DirectionPropertyDescriptor;
 import org.workcraft.plugins.dtd.propertydescriptors.SignalTypePropertyDescriptor;
-import org.workcraft.plugins.dtd.propertydescriptors.TransitionPropertyDescriptor;
-import org.workcraft.plugins.dtd.propertydescriptors.TypePropertyDescriptor;
+import org.workcraft.plugins.graph.Graph;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
@@ -93,19 +88,11 @@ public class Dtd extends Graph {
     public ModelProperties getProperties(Node node) {
         ModelProperties properties = super.getProperties(node);
         if (node == null) {
-            LinkedList<PropertyDescriptor> signalDescriptors = new LinkedList<>();
             for (final Signal signal: getSignals()) {
-                signalDescriptors.add(new SignalTypePropertyDescriptor(this, signal));
+                SignalTypePropertyDescriptor typeDescriptor = new SignalTypePropertyDescriptor(this, signal);
+                properties.insertOrderedByFirstWord(typeDescriptor);
             }
-            properties.addSorted(signalDescriptors);
         } else if (node instanceof Transition) {
-            LinkedList<PropertyDescriptor> transitionDescriptors = new LinkedList<>();
-            Transition transition = (Transition) node;
-            transitionDescriptors.add(new TransitionPropertyDescriptor(this, transition));
-            Signal signal = transition.getSignal();
-            transitionDescriptors.add(new TypePropertyDescriptor(signal));
-            transitionDescriptors.add(new DirectionPropertyDescriptor(transition));
-            properties.addSorted(transitionDescriptors);
             properties.removeByName(Transition.PROPERTY_SYMBOL);
         }
         return properties;

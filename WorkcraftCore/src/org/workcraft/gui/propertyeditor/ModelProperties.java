@@ -81,6 +81,23 @@ public class ModelProperties implements Properties {
         }
     }
 
+    public void insertOrderedByFirstWord(PropertyDescriptor descriptor) {
+        String propertyName = descriptor.getName();
+        int spacePos = propertyName.indexOf(' ');
+        String prefix = (spacePos < 0) ? propertyName : propertyName.substring(0, spacePos);
+        boolean found = false;
+        int index = 0;
+        for (PropertyDescriptor propertyDescriptor: propertyDescriptors) {
+            if (propertyDescriptor.getName().startsWith(prefix)) {
+                found = true;
+            } else if (found) {
+                break;
+            }
+            index++;
+        }
+        propertyDescriptors.add(index, descriptor);
+    }
+
     public void remove(final PropertyDescriptor descriptor) {
         if (descriptor != null) {
             propertyDescriptors.remove(descriptor);

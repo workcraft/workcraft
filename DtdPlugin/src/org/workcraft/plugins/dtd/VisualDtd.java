@@ -30,7 +30,6 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
-import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.Bezier;
@@ -40,11 +39,12 @@ import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.plugins.dtd.Transition.Direction;
+import org.workcraft.plugins.graph.VisualGraph;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Digital Timing Diagram")
 @CustomTools(DtdToolsProvider.class)
-public class VisualDtd extends AbstractVisualModel {
+public class VisualDtd extends VisualGraph {
 
     private static final double ARROW_LENGTH = 0.2;
     private static final double APPEND_EDGE_OFFSET = 2.0;
@@ -151,13 +151,15 @@ public class VisualDtd extends AbstractVisualModel {
         if (mConnection == null) {
             mConnection = ((Dtd) getMathModel()).connect(m1, m2);
         }
-        VisualConnection vConnection = new VisualConnection(mConnection, v1, v2);
-        Container container = Hierarchy.getNearestContainer(v1, v2);
-        container.add(vConnection);
 
-        if (DtdUtils.isLevelConnection(vConnection)) {
-            DtdUtils.decorateLevelConnection(vConnection);
+        VisualConnection vConnection;
+        if (DtdUtils.isLevelConnection(mConnection)) {
+            vConnection = new VisualLevelConnection(mConnection, v1, v2);
+            DtdUtils.decorateVisualLevelConnection(vConnection);
         } else {
+            vConnection = new VisualConnection(mConnection, v1, v2);
+            Container container = Hierarchy.getNearestContainer(v1, v2);
+            container.add(vConnection);
             vConnection.setConnectionType(ConnectionType.BEZIER);
             vConnection.setArrowLength(ARROW_LENGTH);
             Bezier bezier = (Bezier) vConnection.getGraphic();
@@ -167,6 +169,8 @@ public class VisualDtd extends AbstractVisualModel {
             Point2D p2 = new Point2D.Double(v2.getX() - CAUSALITY_ARC_OFFSET, v2.getY());
             cp[1].setRootSpacePosition(p2);
         }
+        Container container = Hierarchy.getNearestContainer(v1, v2);
+        container.add(vConnection);
         return vConnection;
     }
 
@@ -248,7 +252,7 @@ public class VisualDtd extends AbstractVisualModel {
         return new SignalEvent(level, edge);
     }
 
-    public SignalPulse insetrSignalPulse(VisualConnection connection) {
+    public SignalPulse insetrSignalPulse(VisualLevelConnection connection) {
         VisualComponent fromComponent = (VisualComponent) connection.getFirst();
         VisualTransition toTransition = (VisualTransition) connection.getSecond();
         Signal signal = toTransition.getSignal();

@@ -2,10 +2,10 @@ package org.workcraft.plugins.mpsat.tools;
 
 import org.workcraft.Framework;
 import org.workcraft.SynthesisTool;
-import org.workcraft.plugins.mpsat.MpsatSynthesisResultHandler;
 import org.workcraft.plugins.mpsat.MpsatSynthesisMode;
 import org.workcraft.plugins.mpsat.MpsatSynthesisSettings;
 import org.workcraft.plugins.mpsat.tasks.MpsatSynthesisChainTask;
+import org.workcraft.plugins.mpsat.tasks.MpsatSynthesisResultHandler;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;

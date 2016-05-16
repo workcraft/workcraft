@@ -5,7 +5,6 @@ import java.io.File;
 import java.util.HashMap;
 
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.VisualModel;
@@ -42,38 +41,32 @@ public class StgToFstConversionResultHandler extends DummyProgressMonitor<WriteS
 
     @Override
     public void finished(final Result<? extends WriteSgConversionResult> result, String description) {
-
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                final Framework framework = Framework.getInstance();
-                WorkspaceEntry we = task.getWorkspaceEntry();
-                Path<String> path = we.getWorkspacePath();
-                if (result.getOutcome() == Outcome.FINISHED) {
-                    Fst model = result.getReturnValue().getConversionResult();
-                    final Workspace workspace = framework.getWorkspace();
-                    final Path<String> directory = path.getParent();
-                    final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode())); ;
-                    final ModelEntry me = new ModelEntry(new FstDescriptor(), model);
-                    boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
-                    workspace.add(directory, name, me, true, openInEditor);
-                    VisualModel visualModel = me.getVisualModel();
-                    if (visualModel instanceof VisualFst) {
-                        highlightCscConflicts((VisualFst) visualModel);
-                    }
-                } else if (result.getOutcome() != Outcome.CANCELLED) {
-                    MainWindow mainWindow = framework.getMainWindow();
-                    if (result.getCause() == null) {
-                        Result<? extends ExternalProcessResult> petrifyResult = result.getReturnValue().getResult();
-                        JOptionPane.showMessageDialog(mainWindow,
-                                "Petrify output: \n\n" + new String(petrifyResult.getReturnValue().getErrors()),
-                                "Conversion failed", JOptionPane.WARNING_MESSAGE);
-                    } else {
-                        ExceptionDialog.show(mainWindow, result.getCause());
-                    }
-                }
+        final Framework framework = Framework.getInstance();
+        WorkspaceEntry we = task.getWorkspaceEntry();
+        Path<String> path = we.getWorkspacePath();
+        if (result.getOutcome() == Outcome.FINISHED) {
+            Fst model = result.getReturnValue().getConversionResult();
+            final Workspace workspace = framework.getWorkspace();
+            final Path<String> directory = path.getParent();
+            final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode())); ;
+            final ModelEntry me = new ModelEntry(new FstDescriptor(), model);
+            boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
+            workspace.add(directory, name, me, true, openInEditor);
+            VisualModel visualModel = me.getVisualModel();
+            if (visualModel instanceof VisualFst) {
+                highlightCscConflicts((VisualFst) visualModel);
             }
-        });
+        } else if (result.getOutcome() != Outcome.CANCELLED) {
+            MainWindow mainWindow = framework.getMainWindow();
+            if (result.getCause() == null) {
+                Result<? extends ExternalProcessResult> petrifyResult = result.getReturnValue().getResult();
+                JOptionPane.showMessageDialog(mainWindow,
+                        "Petrify output: \n\n" + new String(petrifyResult.getReturnValue().getErrors()),
+                        "Conversion failed", JOptionPane.WARNING_MESSAGE);
+            } else {
+                ExceptionDialog.show(mainWindow, result.getCause());
+            }
+        }
     }
 
     protected void highlightCscConflicts(VisualFst visualFst) {

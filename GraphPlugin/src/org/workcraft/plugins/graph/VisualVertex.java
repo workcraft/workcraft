@@ -138,11 +138,10 @@ public class VisualVertex extends VisualComponent {
 
     @Override
     public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-        Shape shape = getShape();
         if (getRenderType() == RenderType.LABEL) {
-            shape = getLabelBoundingBox();
+            return getLabelBoundingBox().contains(pointInLocalSpace);
         }
-        return shape.contains(pointInLocalSpace);
+        return super.hitTestInLocalSpace(pointInLocalSpace);
     }
 
     public RenderType getRenderType() {

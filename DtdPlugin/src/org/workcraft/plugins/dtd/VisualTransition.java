@@ -33,14 +33,14 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.plugins.dtd.Transition.Direction;
+import org.workcraft.plugins.graph.VisualVertex;
 
 @Hotkey(KeyEvent.VK_T)
 @DisplayName("Transition")
 @SVGIcon("images/icons/svg/transition.svg")
-public class VisualTransition extends VisualComponent {
+public class VisualTransition extends VisualVertex {
 
     public VisualTransition(Transition transition) {
         super(transition);
@@ -52,6 +52,10 @@ public class VisualTransition extends VisualComponent {
         removePropertyDeclarationByName("Label");
         removePropertyDeclarationByName("Label positioning");
         removePropertyDeclarationByName("Label color");
+        removePropertyDeclarationByName("Symbol");
+        removePropertyDeclarationByName("Symbol positioning");
+        removePropertyDeclarationByName("Symbol color");
+        removePropertyDeclarationByName("Render type");
     }
 
     public Shape getShape() {

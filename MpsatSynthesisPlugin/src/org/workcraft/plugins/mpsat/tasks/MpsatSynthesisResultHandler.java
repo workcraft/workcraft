@@ -1,7 +1,7 @@
 /**
  *
  */
-package org.workcraft.plugins.mpsat;
+package org.workcraft.plugins.mpsat.tasks;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -20,9 +20,8 @@ import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
-import org.workcraft.plugins.mpsat.tasks.MpsatSynthesisChainResult;
-import org.workcraft.plugins.mpsat.tasks.MpsatSynthesisChainTask;
-import org.workcraft.plugins.mpsat.tasks.MpsatSynthesisTask;
+import org.workcraft.plugins.mpsat.MpsatSynthesisMode;
+import org.workcraft.plugins.mpsat.MpsatSynthesisUtilitySettings;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.DummyProgressMonitor;
