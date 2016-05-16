@@ -97,7 +97,8 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
         command.add(inputFileName);
 
         // Output file
-        String outputFileName = canOutputVerilog && CircuitSettings.getOpenSynthesisResult() ? VERILOG_FILE_NAME : EQN_FILE_NAME;
+        boolean needVerilog = canOutputVerilog && MpsatSynthesisUtilitySettings.getOpenSynthesisResult();
+        String outputFileName = needVerilog ? VERILOG_FILE_NAME : EQN_FILE_NAME;
         File outputFile = new File(directory, outputFileName);
         command.add(outputFile.getAbsolutePath());
 
