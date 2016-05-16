@@ -22,7 +22,6 @@
 package org.workcraft.plugins.graph;
 
 import java.util.Collection;
-import java.util.LinkedList;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
@@ -34,7 +33,6 @@ import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.gui.propertyeditor.ModelProperties;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.graph.propertydescriptors.SymbolPropertyDescriptor;
 import org.workcraft.plugins.graph.propertydescriptors.VertexSymbolPropertyDescriptor;
 import org.workcraft.serialisation.References;
@@ -129,14 +127,12 @@ public class Graph extends AbstractMathModel {
     public ModelProperties getProperties(Node node) {
         ModelProperties properties = super.getProperties(node);
         if (node == null) {
-            LinkedList<PropertyDescriptor> symbolDescriptors = new LinkedList<>();
             for (final Symbol symbol: getSymbols()) {
-                symbolDescriptors.add(new SymbolPropertyDescriptor(this, symbol));
+                SymbolPropertyDescriptor symbolDescriptor = new SymbolPropertyDescriptor(this, symbol);
+                properties.insertOrderedByFirstWord(symbolDescriptor);
             }
-            properties.addSorted(symbolDescriptors);
         } else if (node instanceof Vertex) {
             Vertex vertex = (Vertex) node;
-            // properties.removeByName("Name");
             properties.add(new VertexSymbolPropertyDescriptor(this, vertex));
         }
         return properties;

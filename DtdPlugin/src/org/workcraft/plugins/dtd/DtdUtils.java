@@ -2,6 +2,8 @@ package org.workcraft.plugins.dtd;
 
 import java.awt.geom.Point2D;
 
+import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -12,18 +14,18 @@ import org.workcraft.plugins.shared.CommonVisualSettings;
 
 public class DtdUtils {
 
-    public static boolean isLevelConnection(VisualConnection connection) {
+    public static boolean isLevelConnection(MathConnection connection) {
         boolean result = false;
         if (connection != null) {
-            VisualComponent v1 = (VisualComponent) connection.getFirst();
-            VisualComponent v2 = (VisualComponent) connection.getSecond();
-            if (v2 instanceof VisualTransition) {
-                Signal s2 = ((VisualTransition) v2).getReferencedTransition().getSignal();
+            MathNode c1 = (MathNode) connection.getFirst();
+            MathNode c2 = (MathNode) connection.getSecond();
+            if (c2 instanceof Transition) {
+                Signal s2 = ((Transition) c2).getSignal();
                 Signal s1 = null;
-                if (v1 instanceof VisualSignal) {
-                    s1 = ((VisualSignal) v1).getReferencedSignal();
-                } else if (v1 instanceof VisualTransition) {
-                    s1 = ((VisualTransition) v1).getReferencedTransition().getSignal();
+                if (c1 instanceof Signal) {
+                    s1 = (Signal) c1;
+                } else if (c1 instanceof Transition) {
+                    s1 = ((Transition) c1).getSignal();
                 }
                 result = s1 == s2;
             }
@@ -31,7 +33,11 @@ public class DtdUtils {
         return result;
     }
 
-    public static void decorateLevelConnection(VisualConnection connection) {
+    public static boolean isVisualLevelConnection(VisualConnection connection) {
+        return isLevelConnection(connection.getReferencedConnection());
+    }
+
+    public static void decorateVisualLevelConnection(VisualConnection connection) {
         VisualComponent v1 = (VisualComponent) connection.getFirst();
         VisualComponent v2 = (VisualComponent) connection.getSecond();
 

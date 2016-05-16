@@ -1,16 +1,21 @@
 package org.workcraft.plugins.policy.tools;
 
-import org.workcraft.ConversionTool;
 import org.workcraft.Framework;
+import org.workcraft.TransformationTool;
 import org.workcraft.plugins.policy.PolicyNet;
 import org.workcraft.plugins.policy.VisualPolicyNet;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class TransitionBundlerTool extends ConversionTool {
+public class TransitionBundlerTool extends TransformationTool {
 
     @Override
     public String getDisplayName() {
         return "Bundle transitions";
+    }
+
+    @Override
+    public Position getPosition() {
+        return null;
     }
 
     @Override

@@ -45,7 +45,6 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
-import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
@@ -416,14 +415,14 @@ public class VisualStg extends AbstractVisualModel {
         if (node == null) {
             Stg stg = (Stg) getMathModel();
             for (Type type : Type.values()) {
-                LinkedList<PropertyDescriptor> typeDescriptors = new LinkedList<>();
                 Container container = NamespaceHelper.getMathContainer(this, getCurrentLevel());
                 for (final String signalName : stg.getSignalNames(type, container)) {
                     if (stg.getSignalTransitions(signalName, container).isEmpty()) continue;
-                    typeDescriptors.add(new SignalNamePropertyDescriptor(stg, signalName, container));
-                    typeDescriptors.add(new SignalTypePropertyDescriptor(stg, signalName, container));
+                    SignalNamePropertyDescriptor symbolDescriptor = new SignalNamePropertyDescriptor(stg, signalName, container);
+                    properties.insertOrderedByFirstWord(symbolDescriptor);
+                    SignalTypePropertyDescriptor typeDescriptor = new SignalTypePropertyDescriptor(stg, signalName, container);
+                    properties.insertOrderedByFirstWord(typeDescriptor);
                 }
-                properties.addSorted(typeDescriptors);
             }
         }
         return properties;

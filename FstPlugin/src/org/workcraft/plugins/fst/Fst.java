@@ -125,11 +125,10 @@ public class Fst extends Fsm {
     public ModelProperties getProperties(Node node) {
         ModelProperties properties = super.getProperties(node);
         if (node == null) {
-            LinkedList<PropertyDescriptor> signalDescriptors = new LinkedList<>();
             for (final Signal signal: getSignals()) {
-                signalDescriptors.add(new SignalTypePropertyDescriptor(this, signal));
+                SignalTypePropertyDescriptor typeDescriptor = new SignalTypePropertyDescriptor(this, signal);
+                properties.insertOrderedByFirstWord(typeDescriptor);
             }
-            properties.addSorted(signalDescriptors);
         } else if (node instanceof SignalEvent) {
             LinkedList<PropertyDescriptor> eventDescriptors = new LinkedList<>();
             SignalEvent signalEvent = (SignalEvent) node;

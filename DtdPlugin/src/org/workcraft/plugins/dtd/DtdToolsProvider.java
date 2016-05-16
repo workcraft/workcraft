@@ -20,7 +20,6 @@ public class DtdToolsProvider implements CustomToolsProvider {
         result.add(new CommentGeneratorTool());
         result.add(new ConnectionTool(false, true, false));
         result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Signal.class)));
-        result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Transition.class)));
         return result;
     }
 

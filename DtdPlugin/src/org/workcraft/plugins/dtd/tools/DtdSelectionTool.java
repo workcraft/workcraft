@@ -11,8 +11,8 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
-import org.workcraft.plugins.dtd.DtdUtils;
 import org.workcraft.plugins.dtd.VisualDtd;
+import org.workcraft.plugins.dtd.VisualLevelConnection;
 import org.workcraft.plugins.dtd.VisualSignal;
 
 public class DtdSelectionTool extends SelectionTool {
@@ -37,11 +37,9 @@ public class DtdSelectionTool extends SelectionTool {
                 VisualSignal signal = (VisualSignal) node;
                 processed = model.appendSignalEvent(signal, null).isValid();
             }
-            if ((node instanceof VisualConnection) && (e.getClickCount() > 1)) {
-                VisualConnection connection = (VisualConnection) node;
-                if (DtdUtils.isLevelConnection(connection)) {
-                    processed = model.insetrSignalPulse(connection).isValid();
-                }
+            if ((node instanceof VisualLevelConnection) && (e.getClickCount() > 1)) {
+                VisualLevelConnection connection = (VisualLevelConnection) node;
+                processed = model.insetrSignalPulse(connection).isValid();
             }
         }
 
@@ -62,7 +60,7 @@ public class DtdSelectionTool extends SelectionTool {
                 } else if (node instanceof ControlPoint) {
                     connection = ConnectionHelper.getParentConnection((ControlPoint) node);
                 }
-                if (DtdUtils.isLevelConnection(connection)) {
+                if (connection instanceof VisualLevelConnection) {
                     model.removeFromSelection(node);
                 }
             }

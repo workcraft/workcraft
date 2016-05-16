@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.HashMap;
 
 import javax.swing.JOptionPane;
-import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.Connection;
@@ -25,8 +24,8 @@ import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.LabelParser;
-import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.StgDescriptor;
+import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -50,34 +49,29 @@ public class TransformationResultHandler extends DummyProgressMonitor<Transforma
 
     @Override
     public void finished(final Result<? extends TransformationResult> result, String description) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                final Framework framework = Framework.getInstance();
-                Path<String> path = we.getWorkspacePath();
-                if (result.getOutcome() == Outcome.FINISHED) {
-                    StgModel stgModel = result.getReturnValue().getResult();
-                    PetriNetModel model = convertResultStgToPetriNet ? stgModel : convertStgToPetriNet(stgModel);
-                    final Workspace workspace = framework.getWorkspace();
-                    final Path<String> directory = path.getParent();
-                    final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
-                    final ModelDescriptor modelDescriptor = convertResultStgToPetriNet ? new StgDescriptor() : new PetriNetDescriptor();
-                    final ModelEntry me = new ModelEntry(modelDescriptor, model);
-                    boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
-                    workspace.add(directory, name, me, true, openInEditor);
-                } else {
-                    MainWindow mainWindow = framework.getMainWindow();
-                    if (result.getCause() == null) {
-                        Result<? extends ExternalProcessResult> petrifyResult = result.getReturnValue().getPetrifyResult();
-                        JOptionPane.showMessageDialog(mainWindow,
-                                "Petrify output: \n\n" + new String(petrifyResult.getReturnValue().getErrors()),
-                                "Transformation failed", JOptionPane.WARNING_MESSAGE);
-                    } else {
-                        ExceptionDialog.show(mainWindow, result.getCause());
-                    }
-                }
+        final Framework framework = Framework.getInstance();
+        Path<String> path = we.getWorkspacePath();
+        if (result.getOutcome() == Outcome.FINISHED) {
+            StgModel stgModel = result.getReturnValue().getResult();
+            PetriNetModel model = convertResultStgToPetriNet ? stgModel : convertStgToPetriNet(stgModel);
+            final Workspace workspace = framework.getWorkspace();
+            final Path<String> directory = path.getParent();
+            final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
+            final ModelDescriptor modelDescriptor = convertResultStgToPetriNet ? new StgDescriptor() : new PetriNetDescriptor();
+            final ModelEntry me = new ModelEntry(modelDescriptor, model);
+            boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
+            workspace.add(directory, name, me, true, openInEditor);
+        } else {
+            MainWindow mainWindow = framework.getMainWindow();
+            if (result.getCause() == null) {
+                Result<? extends ExternalProcessResult> petrifyResult = result.getReturnValue().getPetrifyResult();
+                JOptionPane.showMessageDialog(mainWindow,
+                        "Petrify output: \n\n" + new String(petrifyResult.getReturnValue().getErrors()),
+                        "Transformation failed", JOptionPane.WARNING_MESSAGE);
+            } else {
+                ExceptionDialog.show(mainWindow, result.getCause());
             }
-        });
+        }
     }
 
     private PetriNetModel convertStgToPetriNet(StgModel srcModel) {

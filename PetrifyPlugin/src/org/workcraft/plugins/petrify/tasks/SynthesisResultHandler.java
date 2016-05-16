@@ -1,4 +1,4 @@
-package org.workcraft.plugins.petrify;
+package org.workcraft.plugins.petrify.tasks;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -17,7 +17,7 @@ import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
-import org.workcraft.plugins.petrify.tasks.SynthesisResult;
+import org.workcraft.plugins.petrify.PetrifyUtilitySettings;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
