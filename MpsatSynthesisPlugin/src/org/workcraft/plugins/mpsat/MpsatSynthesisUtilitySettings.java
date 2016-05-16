@@ -38,18 +38,21 @@ public class MpsatSynthesisUtilitySettings implements Settings {
     private static final String keyAdvancedMode = prefix + ".advancedMode";
     private static final String keyPrintStdout = prefix + ".printStdout";
     private static final String keyPrintStderr = prefix + ".printStderr";
+    private static final String keyOpenSynthesisResult = prefix + ".openSynthesisResult";
 
     private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\UnfoldingTools\\mpsat.exe" : "tools/UnfoldingTools/mpsat";
     private static final String defaultArgs = "";
     private static final Boolean defaultAdvancedMode = false;
     private static final Boolean defaultPrintStdout = true;
     private static final Boolean defaultPrintStderr = true;
+    private static final boolean defaultOpenSynthesisResult = true;
 
     private static String command = defaultCommand;
     private static String args = defaultArgs;
     private static Boolean advancedMode = defaultAdvancedMode;
     private static Boolean printStdout = defaultPrintStdout;
     private static Boolean printStderr = defaultPrintStderr;
+    private static boolean openSynthesisResult = defaultOpenSynthesisResult;
 
     public MpsatSynthesisUtilitySettings() {
         properties.add(new PropertyDeclaration<MpsatSynthesisUtilitySettings, String>(
@@ -102,6 +105,16 @@ public class MpsatSynthesisUtilitySettings implements Settings {
                 return getPrintStderr();
             }
         });
+
+        properties.add(new PropertyDeclaration<MpsatSynthesisUtilitySettings, Boolean>(
+                this, "Open synthesis result as Digital Circuit", Boolean.class, true, false, false) {
+            protected void setter(MpsatSynthesisUtilitySettings object, Boolean value) {
+                setOpenSynthesisResult(value);
+            }
+            protected Boolean getter(MpsatSynthesisUtilitySettings object) {
+                return getOpenSynthesisResult();
+            }
+        });
     }
 
     @Override
@@ -116,6 +129,7 @@ public class MpsatSynthesisUtilitySettings implements Settings {
         setAdvancedMode(config.getBoolean(keyAdvancedMode, defaultAdvancedMode));
         setPrintStdout(config.getBoolean(keyPrintStdout, defaultPrintStdout));
         setPrintStderr(config.getBoolean(keyPrintStderr, defaultPrintStderr));
+        setOpenSynthesisResult(config.getBoolean(keyOpenSynthesisResult, defaultOpenSynthesisResult));
     }
 
     @Override
@@ -125,6 +139,7 @@ public class MpsatSynthesisUtilitySettings implements Settings {
         config.setBoolean(keyAdvancedMode, getAdvancedMode());
         config.setBoolean(keyPrintStdout, getPrintStdout());
         config.setBoolean(keyPrintStderr, getPrintStderr());
+        config.setBoolean(keyOpenSynthesisResult, getOpenSynthesisResult());
     }
 
     @Override
@@ -175,6 +190,14 @@ public class MpsatSynthesisUtilitySettings implements Settings {
 
     public static void setPrintStderr(Boolean value) {
         printStderr = value;
+    }
+
+    public static boolean getOpenSynthesisResult() {
+        return openSynthesisResult;
+    }
+
+    public static void setOpenSynthesisResult(boolean value) {
+        openSynthesisResult = value;
     }
 
 }

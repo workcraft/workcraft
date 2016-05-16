@@ -13,7 +13,6 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitDescriptor;
-import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
@@ -69,7 +68,7 @@ public class SynthesisResultHandler extends DummyProgressMonitor<SynthesisResult
         }
 
         String verilog = result.getReturnValue().getVerilog();
-        if (CircuitSettings.getOpenSynthesisResult() && (verilog != null) && !verilog.isEmpty()) {
+        if (PetrifyUtilitySettings.getOpenSynthesisResult() && (verilog != null) && !verilog.isEmpty()) {
             LogUtils.logInfoLine("Petrify synthesis result in Verilog format:");
             System.out.println(verilog);
             try {

@@ -25,7 +25,6 @@ public class CircuitSettings implements Settings {
     private static final String keySimplifyStg = prefix + ".simplifyStg";
     private static final String keyGateLibrary = prefix + ".gateLibrary";
     private static final String keySubstitutionLibrary = prefix + ".substitutionLibrary";
-    private static final String keyOpenSynthesisResult = prefix + ".openSynthesisResult";
 
     private static final boolean defaultShowContacts = false;
     private static final boolean defaultShowZeroDelayNames = false;
@@ -38,7 +37,6 @@ public class CircuitSettings implements Settings {
     private static final boolean defaultSimplifyStg = true;
     private static final String defaultGateLibrary = DesktopApi.getOs().isWindows() ? "libraries\\workcraft.lib" : "libraries/workcraft.lib";
     private static final String defaultSubstitutionLibrary = "";
-    private static final boolean defaultOpenSynthesisResult = true;
 
     private static boolean showContacts = defaultShowContacts;
     private static boolean showZeroDelayNames = defaultShowZeroDelayNames;
@@ -51,7 +49,6 @@ public class CircuitSettings implements Settings {
     private static boolean simplifyStg = defaultSimplifyStg;
     private static String gateLibrary = defaultGateLibrary;
     private static String substitutionLibrary = defaultSubstitutionLibrary;
-    private static boolean openSynthesisResult = defaultOpenSynthesisResult;
 
     public CircuitSettings() {
         properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
@@ -163,16 +160,6 @@ public class CircuitSettings implements Settings {
                 return getSubstitutionLibrary();
             }
         });
-
-        properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
-                this, "Import synthesis result", Boolean.class, true, false, false) {
-            protected void setter(CircuitSettings object, Boolean value) {
-                setOpenSynthesisResult(value);
-            }
-            protected Boolean getter(CircuitSettings object) {
-                return getOpenSynthesisResult();
-            }
-        });
     }
 
     @Override
@@ -203,7 +190,6 @@ public class CircuitSettings implements Settings {
         setSimplifyStg(config.getBoolean(keySimplifyStg, defaultSimplifyStg));
         setGateLibrary(config.getString(keyGateLibrary, defaultGateLibrary));
         setSubstitutionLibrary(config.getString(keySubstitutionLibrary, defaultSubstitutionLibrary));
-        setOpenSynthesisResult(config.getBoolean(keyOpenSynthesisResult, defaultOpenSynthesisResult));
     }
 
     @Override
@@ -219,7 +205,6 @@ public class CircuitSettings implements Settings {
         config.setBoolean(keySimplifyStg, getSimplifyStg());
         config.set(keyGateLibrary, getGateLibrary());
         config.set(keySubstitutionLibrary, getSubstitutionLibrary());
-        config.setBoolean(keyOpenSynthesisResult, getOpenSynthesisResult());
     }
 
     public static boolean getShowContacts() {
@@ -308,14 +293,6 @@ public class CircuitSettings implements Settings {
 
     public static void setSubstitutionLibrary(String value) {
         substitutionLibrary = value;
-    }
-
-    public static boolean getOpenSynthesisResult() {
-        return openSynthesisResult;
-    }
-
-    public static void setOpenSynthesisResult(boolean value) {
-        openSynthesisResult = value;
     }
 
 }
