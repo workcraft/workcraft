@@ -5,7 +5,7 @@ Workcraft is a cross-platform toolset to capture, simulate, synthesize
 and verify graph models. It supports a wide range of popular graph
 formalisms and provides a plugin-based framework to model and analyze
 new model types. For more information about Workcraft look at
-[workcraft.org](http://workcraft.org/).
+http://workcraft.org/.
 
 ### Building
 
@@ -15,13 +15,13 @@ you want to run your own gradle, you can.
 
 Use the `assemble` task to build the core and all the plugins:
 
-    $ ./gradlew assemble
+    ./gradlew assemble
 
 ### Running
 
 You can run Workcraft directly after building it:
 
-    $ ./workcraft
+    ./workcraft
 
 ### Miscellaneous
 
@@ -34,4 +34,4 @@ repo. This includes the binaries of backend tools, gate libraries and
 other platform-specific content.
 
 If you would like to contribute to Workcraft development, then read
-through the [CONTRIBUTING](CONTRIBUTING.md) document.
+through the [CONTRIBUTING.md](CONTRIBUTING.md) document.
