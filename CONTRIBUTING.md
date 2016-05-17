@@ -1,7 +1,7 @@
 # Contributing to Workcraft
 
 This doc contains information relevant to people contributing to Workcraft.
-Read the [README](README.md) first if you have not done it yet.
+Read the [README.md](README.md) first if you have not done it yet.
 
 ### Testing
 
@@ -9,7 +9,7 @@ Testing includes a collection of JUnit tests and checkstyle to enforce a sane
 code style throughout the Java codebase (see below). The tests should be run
 before proposing your changes for the merge into the master repo as follows:
 
-    $ ./gradlew check
+    ./gradlew check
 
 ### Code style
 
@@ -47,39 +47,25 @@ developing and debugging Workcraft.
 
 #### Integration of Gradle build system
 
-When setting Eclipse from Gradle scripts it is important to separate its
-`Workspace` directory from the `Project` directory (otherwise Gradle
-integration may fail).
+1. Clone the Workcraft git repo and set it as the current directory:
 
-* As an example, create `workspace` directory and clone the Workcraft
-  repo into it:
+        git clone https://github.com/tuura/workcraft.git
+        cd workcraft
 
-```
-$ mkdir workspace
-$ cd workspace
-$ git clone git@github.com:tuura/workcraft.git
-```
+2. Generate Java parser classes from JavaCC grammar files:
 
-* Generate Java parser classes from JavaCC grammar files:
+        ./gradlew compileJavacc
 
-```
-$ cd workcraft
-$ ./gradlew compileJavacc
-```
+3. Generate Eclipse projects from Gradle config files:
 
-* Install [Buildship Gradle Integration](https://marketplace.eclipse.org/content/buildship-gradle-integration)
-  plugin in Eclipse via the `Help->Instal New Software...` menu.
+        ./gradlew eclipse
 
-* In Eclipse select the `workspace` directory as the current `Workspace`.
+4. Start Eclipse and select `workcraft` as the current `Workspace` directory.
 
-* Import the project from Gradle config via the `File->Import...->Gradle`
-  menu. Select `workspace/workcraft` as the `Project` directory.
-  Follow the import accepting the default settings.
-
-* Import `WorkcraftRunner` project via the `File->Import...` as a
+5. Import all `workcraft` projects via the `File->Import...` as a
   `General->Existing Projects into Workspace` item.
 
-* Create a `Java Application` runner with the following configuration:
+6. Create a `Java Application` runner with the following configuration:
 
   * Name: Workcraft
   * Project: WorkcraftRunner
@@ -91,36 +77,31 @@ The default code style of eclipse uses tabs for indentation. This
 contradicts to the checkstyle that requires 4 spaces for each level of
 indentation. Therefore Eclipse settings need to be modified as follows:
 
-* Select `Windows->Preferences` menu.
+1. Select `Windows->Preferences` menu.
 
-* Go to the `Java->Code Style->Formatter` section.
+2. Go to the `Java->Code Style->Formatter` section.
 
-* Edit the indentation policy of `Eclipse [built-in]` profile by
-  changing its tab policy to `Spaces only`.
+3. Edit the indentation policy of `Eclipse [built-in]` profile by
+   changing its tab policy to `Spaces only`.
 
-* Save the modified profile under a new name and select it as the active
-  profile.
+4. Save the modified profile under a new name and select it as the active
+   profile.
 
 #### Integration of backend tools
 
-* Create symbolic link `workspace/tools` pointing to your the location
-  of the backend tools for your platform. E.g. for Linux:
+1. Create symbolic link pointing to the location of the backend tools for
+   your platform, e.g. for Linux:
 
-```
-  $ cd workspace
-  $ ln -s workcraft/dist-template/linux/tools
-```
+        ln -s dist-template/linux/tools
 
-* Choose `Run->Run Configurations...` menu and edit the Workcraft runner
+2. Choose `Run->Run Configurations...` menu and edit the Workcraft runner
   under `Java Application` section (the one created in the previous
-  section).
+  section): on the `Arguments` tab modify the `Working directory` so
+  it points to `${workspace_loc}`.
 
-* On the `Arguments` tab modify the `Working directory` so it points to
-  `${workspace_loc}`.
-
-Now workspace will be the current directory for Workcraft when started
-from Eclipse and the tools will be in the right place for Workcraft to
-locate the backend tools.
+This will set `workcraft` as the current directory when Workcraft is
+started from Eclipse and the tools directory will be in the right place
+to locate the backend tools.
 
 Note: Workcraft requires Java 1.7 or newer for a successful build. You
 may have several versions of Java installed with Java 1.7 being active
@@ -133,4 +114,4 @@ section.
 If Gradle complains about a missing `JAVA_HOME` env var even though it
 is set properly, the following may help in Debian-like systems:
 
-    $ sudo ln -s /usr/lib/jvm/your-jdk /usr/lib/jvm/default-java
+    sudo ln -s /usr/lib/jvm/your-jdk /usr/lib/jvm/default-java
