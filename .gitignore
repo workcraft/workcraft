@@ -1,19 +1,28 @@
-# gradle
-.gradle/
-build/
+# Gradle
+/.gradle/
+/*/build/
 
-dist/
+# Distribution
+/dist/
 *.zip
 *.tar.*
 
 # Eclipse
 /.metadata
-.classpath
-.project
-.settings
+/*/.classpath
+/*/.project
+/*/.settings
 !/WorkcraftRunner/.classpath
 !/WorkcraftRunner/.project
-bin/
+/*/bin/
 
 # Generated source files
-src-gen/
+/*/src-gen/
+
+# Platform-specific execution environment (usually symlinks to
+# dist-template/ and doc/ subdirectories)
+/help
+/libraries
+/overview
+/tools
+/tutorial
