@@ -13,10 +13,7 @@ import org.workcraft.util.Hierarchy;
 
 public class FunctionConsistencySupervisor extends HierarchySupervisor {
 
-    private final Circuit circuit;
-
     public FunctionConsistencySupervisor(Circuit circuit) {
-        this.circuit = circuit;
     }
 
     @Override

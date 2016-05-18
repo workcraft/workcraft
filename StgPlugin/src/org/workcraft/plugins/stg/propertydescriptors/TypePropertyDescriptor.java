@@ -12,11 +12,9 @@ import org.workcraft.plugins.stg.SignalTransition.Type;
 public class TypePropertyDescriptor implements PropertyDescriptor  {
     public static final String PROPERTY_SIGNAL_TYPE = "Signal type";
 
-    private final Stg stg;
     private final SignalTransition transition;
 
     public TypePropertyDescriptor(Stg stg, SignalTransition transition) {
-        this.stg = stg;
         this.transition = transition;
     }
 

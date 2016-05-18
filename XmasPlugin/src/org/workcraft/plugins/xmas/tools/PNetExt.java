@@ -16,13 +16,6 @@ import org.workcraft.util.LogUtils;
 
 public class PNetExt {
 
-    //private final Framework framework;
-
-    //VisualCircuit circuit;
-    //private CheckCircuitTask checkTask;
-
-    private static boolean printoutput = true;
-
     private static class Source {
 
         String name1;
