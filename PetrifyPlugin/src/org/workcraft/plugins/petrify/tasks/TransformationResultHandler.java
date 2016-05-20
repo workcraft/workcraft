@@ -61,7 +61,7 @@ public class TransformationResultHandler extends DummyProgressMonitor<Transforma
             final ModelEntry me = new ModelEntry(modelDescriptor, model);
             boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
             workspace.add(directory, name, me, true, openInEditor);
-        } else {
+        } else if (result.getOutcome() == Outcome.FAILED) {
             MainWindow mainWindow = framework.getMainWindow();
             if (result.getCause() == null) {
                 Result<? extends ExternalProcessResult> petrifyResult = result.getReturnValue().getPetrifyResult();

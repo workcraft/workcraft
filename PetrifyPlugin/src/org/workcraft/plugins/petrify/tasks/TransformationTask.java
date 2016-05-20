@@ -3,18 +3,24 @@ package org.workcraft.plugins.petrify.tasks;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.UUID;
 
 import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.Model;
+import org.workcraft.dom.references.ReferenceHelper;
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.petri.PetriNetModel;
+import org.workcraft.plugins.petri.PetriNetUtils;
+import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petrify.PetrifyUtilitySettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
@@ -33,7 +39,7 @@ import org.workcraft.util.ToolUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class TransformationTask implements Task<TransformationResult>, ExternalProcessListener {
-    private static final String EXPORT_FAILED_MESSAGE = "Unable to export the model.";
+    private static final String MESSAGE_EXPORT_FAILED = "Unable to export the model.";
     private WorkspaceEntry we;
     String[] args;
 
@@ -86,8 +92,29 @@ public class TransformationTask implements Task<TransformationResult>, ExternalP
             command.add("-o");
             command.add(outFile.getAbsolutePath());
 
-            // Input file
             Model model = we.getModelEntry().getMathModel();
+
+            // Check for isolated marked places and temporary remove them is requested
+            if (model instanceof PetriNetModel) {
+                PetriNetModel petri = (PetriNetModel) model;
+                HashSet<Place> isolatedPlaces = PetriNetUtils.getIsolatedMarkedPlaces(petri);
+                if (!isolatedPlaces.isEmpty()) {
+                    String refStr = ReferenceHelper.getNodesAsString(petri, (Collection) isolatedPlaces);
+                    int answer = JOptionPane.showConfirmDialog(Framework.getInstance().getMainWindow(),
+                            "Petrify does not support isolated marked places.\n\n"
+                                    + "Problematic places are:\n" + refStr + "\n\n"
+                                    + "Proceed without these places?",
+                            "Petrify transformation", JOptionPane.YES_NO_OPTION);
+                    if (answer != JOptionPane.YES_OPTION) {
+                        return Result.cancelled();
+                    }
+                    we.captureMemento();
+                    VisualModel visualModel = we.getModelEntry().getVisualModel();
+                    PetriNetUtils.removeIsolatedMarkedPlaces(visualModel);
+                }
+            }
+
+            // Input file
             File modelFile = getInputFile(model, directory);
             command.add(modelFile.getAbsolutePath());
 
@@ -123,6 +150,7 @@ public class TransformationTask implements Task<TransformationResult>, ExternalP
             throw new RuntimeException(e);
         } finally {
             FileUtils.deleteOnExitRecursively(directory);
+            we.cancelMemento();
         }
     }
 
@@ -146,10 +174,10 @@ public class TransformationTask implements Task<TransformationResult>, ExternalP
             ExportTask exportTask = Export.createExportTask(model, modelFile, format, framework.getPluginManager());
             Result<? extends Object> exportResult = framework.getTaskManager().execute(exportTask, "Exporting model");
             if (exportResult.getOutcome() != Outcome.FINISHED) {
-                throw new RuntimeException(EXPORT_FAILED_MESSAGE);
+                throw new RuntimeException(MESSAGE_EXPORT_FAILED);
             }
         } catch (SerialisationException e) {
-            throw new RuntimeException(EXPORT_FAILED_MESSAGE);
+            throw new RuntimeException(MESSAGE_EXPORT_FAILED);
         }
         return modelFile;
     }

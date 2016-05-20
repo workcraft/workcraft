@@ -3,14 +3,19 @@ package org.workcraft.plugins.petrify.tasks;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 
 import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
-import org.workcraft.dom.Model;
+import org.workcraft.dom.references.ReferenceHelper;
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.ExternalProcessListener;
+import org.workcraft.plugins.petri.PetriNetUtils;
+import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petrify.PetrifyUtilitySettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
@@ -98,8 +103,26 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
         command.add("-log");
         command.add(logFile.getAbsolutePath());
 
-        // Input file
         StgModel stg = WorkspaceUtils.getAs(we, StgModel.class);
+
+        // Check for isolated marked places and temporary remove them is requested
+        HashSet<Place> isolatedPlaces = PetriNetUtils.getIsolatedMarkedPlaces(stg);
+        if (!isolatedPlaces.isEmpty()) {
+            String refStr = ReferenceHelper.getNodesAsString(stg, (Collection) isolatedPlaces);
+            int answer = JOptionPane.showConfirmDialog(Framework.getInstance().getMainWindow(),
+                    "Petrify does not support isolated marked places.\n\n"
+                            + "Problematic places are:\n" + refStr + "\n\n"
+                            + "Proceed without these places?",
+                    "Petrify synthesis", JOptionPane.YES_NO_OPTION);
+            if (answer != JOptionPane.YES_OPTION) {
+                return Result.cancelled();
+            }
+            we.captureMemento();
+            VisualModel visualModel = we.getModelEntry().getVisualModel();
+            PetriNetUtils.removeIsolatedMarkedPlaces(visualModel);
+        }
+
+        // Input file
         File stgFile = getInputFile(stg, directory);
         command.add(stgFile.getAbsolutePath());
 
@@ -130,18 +153,19 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
             throw new RuntimeException(e);
         } finally {
             FileUtils.deleteOnExitRecursively(directory);
+            we.cancelMemento();
         }
     }
 
-    private File getInputFile(Model model, File directory) {
+    private File getInputFile(StgModel stg, File directory) {
         final Framework framework = Framework.getInstance();
-        Exporter stgExporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
+        Exporter stgExporter = Export.chooseBestExporter(framework.getPluginManager(), stg, Format.STG);
         if (stgExporter == null) {
-            throw new RuntimeException("Exporter not available: model class " + model.getClass().getName() + " to format STG.");
+            throw new RuntimeException("Exporter not available: model class " + stg.getClass().getName() + " to format STG.");
         }
 
         File stgFile = new File(directory, "petrify" + stgExporter.getExtenstion());
-        ExportTask exportTask = new ExportTask(stgExporter, model, stgFile.getAbsolutePath());
+        ExportTask exportTask = new ExportTask(stgExporter, stg, stgFile.getAbsolutePath());
         Result<? extends Object> exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
         if (exportResult.getOutcome() != Outcome.FINISHED) {
             throw new RuntimeException("Unable to export the model.");
