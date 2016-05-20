@@ -47,6 +47,9 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 @SuppressWarnings("serial")
 public class WorkspaceWindow extends JPanel {
+    private static final String DIALOG_OPEN_WORKSPACE = "Open workspace";
+    private static final String DIALOG_SAVE_WORKSPACE_AS = "Save workspace as...";
+
     public static class Actions {
 
         public static final Action ADD_FILES_TO_WORKSPACE_ACTION = new Action() {
@@ -99,7 +102,7 @@ public class WorkspaceWindow extends JPanel {
             }
 
             public String getText() {
-                return "Save workspace as...";
+                return DIALOG_SAVE_WORKSPACE_AS;
             }
         };
         public static final Action NEW_WORKSPACE_AS_ACTION = new Action() {
@@ -257,7 +260,7 @@ public class WorkspaceWindow extends JPanel {
         } else {
             fc = new JFileChooser();
         }
-        fc.setDialogTitle("Save workspace as...");
+        fc.setDialogTitle(DIALOG_SAVE_WORKSPACE_AS);
         fc.setFileFilter(FileFilters.WORKSPACE_FILES);
 
         File file;
@@ -270,8 +273,8 @@ public class WorkspaceWindow extends JPanel {
                 if (!file.exists()) {
                     break;
                 } else if (JOptionPane.showConfirmDialog(mainWindow,
-                        "The file '" + file.getName() + "' already exists. Do you want to overwrite it?",
-                        "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                        "The file '" + file.getName() + "' already exists.\n\n" + "Do you want to overwrite it?",
+                        DIALOG_SAVE_WORKSPACE_AS, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                     break;
                 }
             } else {
@@ -287,8 +290,8 @@ public class WorkspaceWindow extends JPanel {
         final MainWindow mainWindow = framework.getMainWindow();
         if (framework.getWorkspace().isChanged()) {
             int result = JOptionPane.showConfirmDialog(mainWindow,
-                            "Current workspace is not saved. Do you wish to save it before opening?",
-                            "Confirm", JOptionPane.YES_NO_CANCEL_OPTION,
+                            "Current workspace is not saved.\n" + "Save before opening?",
+                            DIALOG_OPEN_WORKSPACE, JOptionPane.YES_NO_CANCEL_OPTION,
                             JOptionPane.QUESTION_MESSAGE);
 
             if (result == JOptionPane.CANCEL_OPTION) {
@@ -329,7 +332,7 @@ public class WorkspaceWindow extends JPanel {
         }
 
         fc.setMultiSelectionEnabled(false);
-        fc.setDialogTitle("Open workspace");
+        fc.setDialogTitle(DIALOG_OPEN_WORKSPACE);
 
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
@@ -339,7 +342,7 @@ public class WorkspaceWindow extends JPanel {
             } catch (DeserialisationException e) {
                 JOptionPane.showMessageDialog(mainWindow,
                             "Workspace load failed. Please see the Problems window for details.",
-                            "Error", JOptionPane.ERROR_MESSAGE);
+                            DIALOG_OPEN_WORKSPACE, JOptionPane.ERROR_MESSAGE);
                 e.printStackTrace();
             }
         }

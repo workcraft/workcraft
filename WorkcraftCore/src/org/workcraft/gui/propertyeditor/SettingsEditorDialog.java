@@ -60,6 +60,7 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.PluginInfo;
 
 public class SettingsEditorDialog extends JDialog {
+    private static final String DIALOG_RESTORE_SETTINGS = "Restore settings";
     private static final long serialVersionUID = 1L;
     private JPanel contentPane;
     private JScrollPane sectionPane;
@@ -341,8 +342,8 @@ public class SettingsEditorDialog extends JDialog {
         } else {
             final Framework framework = Framework.getInstance();
             int answer = JOptionPane.showConfirmDialog(framework.getMainWindow(),
-                    "This will reset all the settings to defaults.\nContinue?",
-                    "Please confirm", JOptionPane.YES_NO_OPTION);
+                    "This will reset all the settings to defaults.\n" + "Continue?",
+                    DIALOG_RESTORE_SETTINGS, JOptionPane.YES_NO_OPTION);
             if (answer == JOptionPane.YES_OPTION) {
                 framework.resetConfig();
             }
