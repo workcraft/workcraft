@@ -50,12 +50,6 @@ public class DfsSimulationTool extends StgSimulationTool {
     private StgGenerator generator;
 
     @Override
-    public void activated(GraphEditor editor) {
-        super.activated(editor);
-        setStatePaneVisibility(false);
-    }
-
-    @Override
     public void deactivated(GraphEditor editor) {
         super.deactivated(editor);
         this.generator = null;
