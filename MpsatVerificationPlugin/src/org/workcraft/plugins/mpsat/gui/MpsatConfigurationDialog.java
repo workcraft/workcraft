@@ -56,21 +56,6 @@ public class MpsatConfigurationDialog extends JDialog {
     private TableLayout layout;
     private int modalResult = 0;
 
-    class IntMode {
-        private final int value;
-        private final String description;
-
-        IntMode(int value, String description) {
-            this.value = value;
-            this.description = description;
-        }
-
-        @Override
-        public String toString() {
-            return description;
-        }
-    }
-
     public MpsatConfigurationDialog(Window owner, MpsatPresetManager presetManager) {
         super(owner, "Custom property definition", ModalityType.APPLICATION_MODAL);
         this.presetManager = presetManager;
@@ -115,9 +100,6 @@ public class MpsatConfigurationDialog extends JDialog {
     private void createPresetPanel() {
         ArrayList<Preset<MpsatSettings>> builtInPresets = new ArrayList<>();
 
-        builtInPresets.add(new Preset<>("Deadlock freeness",
-                MpsatSettings.getDeadlockReachSettings(), true));
-
         if (presetManager.isAllowStgPresets()) {
             builtInPresets.add(new Preset<>("Consistency",
                     MpsatSettings.getConsistencySettings(), true));
@@ -131,6 +113,9 @@ public class MpsatConfigurationDialog extends JDialog {
             builtInPresets.add(new Preset<>("Output persistency (without dummies)",
                     MpsatSettings.getOutputPersistencySettings(), true));
         }
+
+        builtInPresets.add(new Preset<>("Deadlock freeness",
+                MpsatSettings.getDeadlockReachSettings(), true));
 
         SettingsToControlsMapper<MpsatSettings> guiMapper = new SettingsToControlsMapper<MpsatSettings>() {
             @Override
@@ -157,10 +142,10 @@ public class MpsatConfigurationDialog extends JDialog {
         Dimension modeComboDimention = modeCombo.getPreferredSize();
         modeComboDimention.width = 318;
         modeCombo.setPreferredSize(modeComboDimention);
-        modeCombo.addItem(MpsatMode.REACHABILITY);
         if (presetManager.isAllowStgPresets()) {
             modeCombo.addItem(MpsatMode.STG_REACHABILITY);
         }
+        modeCombo.addItem(MpsatMode.REACHABILITY);
         modeCombo.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
