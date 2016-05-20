@@ -29,5 +29,5 @@ public interface ModelSerialiser extends SerialFormat {
     String getDescription();
     String getExtension();
     boolean isApplicableTo(Model model);
-    ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer externalReferences) throws SerialisationException;
+    ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer refs) throws SerialisationException;
 }

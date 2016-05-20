@@ -9,6 +9,7 @@ import java.util.LinkedList;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.Replica;
 import org.workcraft.dom.visual.TransformHelper;
@@ -504,6 +505,26 @@ public class PetriNetUtils {
             return (place1 == place2) && (transition1 == transition2);
         }
         return false;
+    }
+
+    public static HashSet<Place> getIsolatedMarkedPlaces(PetriNetModel model) {
+        HashSet<Place> result = new HashSet<>();
+        for (Place place: model.getPlaces()) {
+            if ((place.getTokens() > 0) && model.getConnections(place).isEmpty()) {
+                result.add(place);
+            }
+        }
+        return result;
+    }
+
+    public static void removeIsolatedMarkedPlaces(VisualModel visualModel) {
+        MathModel model = visualModel.getMathModel();
+        for (VisualPlace visualPlace: getVisualPlaces(visualModel)) {
+            Place place = visualPlace.getReferencedPlace();
+            if ((place.getTokens() > 0) && model.getConnections(place).isEmpty()) {
+                visualModel.remove(visualPlace);
+            }
+        }
     }
 
 }

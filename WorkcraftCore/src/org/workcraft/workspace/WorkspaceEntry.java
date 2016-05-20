@@ -246,8 +246,10 @@ public class WorkspaceEntry implements ObservableState {
 
     public void cancelMemento() {
         final Framework framework = Framework.getInstance();
-        setModelEntry(framework.load(capturedMemento));
-        setChanged(savedMemento != capturedMemento);
+        if (capturedMemento != null) {
+            setModelEntry(framework.load(capturedMemento));
+            setChanged(savedMemento != capturedMemento);
+        }
         capturedMemento = null;
     }
 

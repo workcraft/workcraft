@@ -67,11 +67,11 @@ public class XMLModelSerialiser implements ModelSerialiser {
         return ".xml";
     }
 
-    public ReferenceProducer serialise(final Model model, OutputStream out, ReferenceProducer externalReferences)
+    public ReferenceProducer serialise(final Model model, OutputStream out, ReferenceProducer refs)
     throws SerialisationException {
         try {
 
-            ReferenceProducer internalReferences = new ReferenceProducer() {
+            ReferenceProducer internalRefs = new ReferenceProducer() {
                 public String getReference(Object obj) {
                     if (obj instanceof Node) {
                         return model.getNodeReference((Node) obj);
@@ -86,7 +86,7 @@ public class XMLModelSerialiser implements ModelSerialiser {
             Element modelElement = doc.createElement("model");
             Element rootElement = doc.createElement("root");
 
-            serialisation.begin(internalReferences, externalReferences);
+            serialisation.begin(internalRefs, refs);
 
             serialisation.serialise(modelElement, model);
             serialisation.serialise(rootElement, model.getRoot());
@@ -97,7 +97,7 @@ public class XMLModelSerialiser implements ModelSerialiser {
             modelElement.appendChild(rootElement);
             XmlUtil.writeDocument(doc, out);
 
-            return internalReferences;
+            return internalRefs;
         } catch (ParserConfigurationException e) {
             throw new SerialisationException(e);
         } catch (IOException e) {
