@@ -63,12 +63,10 @@ public class ScencoSolver {
 
     private String[] optEnc;
     private String[] optFormulaeVertices;
-    private String[] truthTableVertices;
     private String[] optVertices;
     private String[] optSources;
     private String[] optDests;
     private String[] optFormulaeArcs;
-    private String[] truthTableArcs;
     private String[] arcNames;
     private int v;
     private int a;
@@ -248,12 +246,10 @@ public class ScencoSolver {
     public void handleResult(String[] outputLines, String resultDirectoryPath) {
         optEnc = new String[m];
         optFormulaeVertices = new String[n * n];
-        truthTableVertices =  new String[n * n];
         optVertices = new String[n];
         optSources = new String[n * n];
         optDests = new String[n * n];
         optFormulaeArcs = new String[n * n];
-        truthTableArcs =  new String[n * n];
         arcNames = new String[n * n];
 
         try {
@@ -286,13 +282,13 @@ public class ScencoSolver {
                         String el = (String) st2.nextElement();
                         if (el.equals("V")) { //formula of a vertex
                             optVertices[v] = (String) st2.nextElement();
-                            truthTableVertices[v] = (String) st2.nextElement();
+                            st2.nextElement();
                             optFormulaeVertices[v++] = (String) st2.nextElement();
                         } else {
                             optSources[a] = (String) st2.nextElement();
                             optDests[a] = (String) st2.nextElement();
                             arcNames[a] = optSources[a] + "->" + optDests[a];
-                            truthTableArcs[a] = (String) st2.nextElement();
+                            st2.nextElement();
                             optFormulaeArcs[a++] = (String) st2.nextElement();
                         }
                         i++;

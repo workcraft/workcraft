@@ -8,7 +8,6 @@ import java.util.Collection;
 import org.workcraft.Tool;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.plugins.xmas.VisualXmas;
@@ -37,20 +36,6 @@ import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class JsonExport implements Tool {
-
-    //private final Framework framework;
-
-    //VisualCircuit circuit;
-    //private CheckCircuitTask checkTask;
-
-    //ProgressMonitor<? super MpsatChainResult> monitor;
-
-    /*public CircuitTestTool(Framework framework, Workspace ws) {
-        this.framework = framework;
-//        this.ws = ws;
-    }*/
-
-    private static final Positioning LEFT = null;
 
     public String getDisplayName() {
         return "Export to JSON file";

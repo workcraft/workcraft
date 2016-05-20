@@ -19,10 +19,6 @@ public class WriteSgTask implements Task<ExternalProcessResult>, ExternalProcess
     private String inputPath, outputPath;
     private final List<String> options;
 
-    private volatile boolean finished;
-    private volatile int returnCode;
-    private boolean userCancelled = false;
-
     private ProgressMonitor<? super ExternalProcessResult> monitor;
 
     private DataAccumulator stdoutAccum = new DataAccumulator();
@@ -104,8 +100,6 @@ public class WriteSgTask implements Task<ExternalProcessResult>, ExternalProcess
 
     @Override
     public void processFinished(int returnCode) {
-        this.returnCode = returnCode;
-        this.finished = true;
     }
 
 }

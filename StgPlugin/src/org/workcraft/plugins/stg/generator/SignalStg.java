@@ -12,9 +12,6 @@ import org.workcraft.plugins.stg.VisualSignalTransition;
 
 public class SignalStg extends NodeStg {
 
-    private static final String _NAME0 = "_0";
-    private static final String _NAME1 = "_1";
-
     public final VisualPlace zero;
     public final VisualPlace one;
     public final ArrayList<VisualSignalTransition> fallList = new ArrayList<>();
