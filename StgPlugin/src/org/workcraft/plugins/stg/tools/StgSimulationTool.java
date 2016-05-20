@@ -19,6 +19,7 @@ import javax.activation.DataHandler;
 import javax.swing.DropMode;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.TransferHandler;
@@ -125,6 +126,7 @@ public class StgSimulationTool extends PetriSimulationTool {
         }
     }
 
+    @SuppressWarnings("serial")
     private final class StateTable extends JTable {
         StateTable(StateTableModel model) {
             super(model);
@@ -183,7 +185,7 @@ public class StgSimulationTool extends PetriSimulationTool {
         }
 
         @Override
-        public Class getColumnClass(int col) {
+        public Class<?> getColumnClass(int col) {
             switch (col) {
             case COLUMN_SIGNAL: return SignalData.class;
             case COLUMN_STATE: return SignalData.class;
@@ -237,6 +239,7 @@ public class StgSimulationTool extends PetriSimulationTool {
     }
 
     private final class SignalDataRenderer implements TableCellRenderer {
+        @SuppressWarnings("serial")
         final JLabel label = new JLabel() {
             @Override
             public void paint(Graphics g) {
@@ -275,6 +278,7 @@ public class StgSimulationTool extends PetriSimulationTool {
         }
     }
 
+    @SuppressWarnings("serial")
     public class StateTableRowTransferHandler extends TransferHandler {
         private final DataFlavor localObjectFlavor = new ActivationDataFlavor(Integer.class, "Integer Row Index");
         private JTable table = null;
@@ -338,6 +342,7 @@ public class StgSimulationTool extends PetriSimulationTool {
     }
 
     private final class TraceTableCellRendererImplementation implements TableCellRenderer {
+        @SuppressWarnings("serial")
         private final JLabel label = new JLabel() {
             @Override
             public void paint(Graphics g) {
@@ -465,18 +470,31 @@ public class StgSimulationTool extends PetriSimulationTool {
 
     @Override
     public void generateTraceGraph(final GraphEditor editor) {
-        Stg stg = getUnderlyingStg();
-        LinkedList<Pair<String, Color>> orderedTraceSignals = getOrderedTraceSignals(stg, mainTrace);
-        StgToDtdConverter converter = new StgToDtdConverter(stg, mainTrace, orderedTraceSignals);
-        VisualDtd dtd = converter.getVisualDtd();
-
-        WorkspaceEntry we = editor.getWorkspaceEntry();
-        final Path<String> directory = we.getWorkspacePath().getParent();
-        final String desiredName = we.getWorkspacePath().getNode();
-        final ModelEntry me = new ModelEntry(new DtdDescriptor(), dtd);
         Framework framework = Framework.getInstance();
-        final Workspace workspace = framework.getWorkspace();
-        workspace.add(directory, desiredName, me, true, true);
+        Stg stg = getUnderlyingStg();
+        Trace trace = mainTrace;
+        if (trace.isEmpty()) {
+            int answer = JOptionPane.showConfirmDialog(framework.getMainWindow(),
+                    "<html>The main <b>Trace</b> is empty.<br>Proceed with the <b>Branch</b> instead?</html>",
+                    "Generation of Timing Diagram", JOptionPane.YES_NO_CANCEL_OPTION);
+            if (answer == JOptionPane.YES_OPTION) {
+                trace = branchTrace;
+            } else if (answer == JOptionPane.CANCEL_OPTION) {
+                trace = null;
+            }
+        }
+        if (trace != null) {
+            LinkedList<Pair<String, Color>> orderedTraceSignals = getOrderedTraceSignals(stg, trace);
+            StgToDtdConverter converter = new StgToDtdConverter(stg, trace, orderedTraceSignals);
+            VisualDtd dtd = converter.getVisualDtd();
+
+            WorkspaceEntry we = editor.getWorkspaceEntry();
+            final Path<String> directory = we.getWorkspacePath().getParent();
+            final String desiredName = we.getWorkspacePath().getNode();
+            final ModelEntry me = new ModelEntry(new DtdDescriptor(), dtd);
+            final Workspace workspace = framework.getWorkspace();
+            workspace.add(directory, desiredName, me, true, true);
+        }
     }
 
     private LinkedList<Pair<String, Color>> getOrderedTraceSignals(Stg stg, Trace trace) {

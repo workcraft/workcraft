@@ -137,6 +137,10 @@ public class MainWindow extends JFrame {
     public static final String TITLE_EDITOR_TOOLS = "Editor tools";
     public static final String TITLE_PLACEHOLDER = "";
 
+    private static final String DIALOG_CLOSE_WORK = "Close work";
+    private static final String DIALOG_SAVE_WORK = "Save work";
+    private static final String DIALOG_RESET_LAYOUT = "Reset layout";
+
     private final ScriptedActionListener defaultActionListener = new ScriptedActionListener() {
         public void actionPerformed(Action e) {
             e.run();
@@ -521,8 +525,8 @@ public class MainWindow extends JFrame {
 
             if (we.isChanged()) {
                 int result = JOptionPane.showConfirmDialog(this,
-                        "Document '" + we.getTitle() + "' has unsaved changes.\nSave before closing?", "Confirm",
-                        JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+                        "Document '" + we.getTitle() + "' has unsaved changes.\n" + "Save before closing?",
+                        DIALOG_CLOSE_WORK, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
                 switch (result) {
                 case JOptionPane.YES_OPTION:
@@ -681,8 +685,8 @@ public class MainWindow extends JFrame {
         final Framework framework = Framework.getInstance();
         if (framework.getWorkspace().isChanged() && !framework.getWorkspace().isTemporary()) {
             int result = JOptionPane.showConfirmDialog(this,
-                    "Current workspace has unsaved changes.\nSave before closing?", "Confirm",
-                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    "Current workspace has unsaved changes.\n" + "Save before closing?",
+                    DIALOG_CLOSE_WORK, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
             switch (result) {
             case JOptionPane.YES_OPTION:
@@ -933,8 +937,8 @@ public class MainWindow extends JFrame {
                     break;
                 }
                 if (JOptionPane.showConfirmDialog(this,
-                        "The file '" + f.getName() + "' already exists. Do you want to overwrite it?", "Confirm",
-                        JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                        "The file '" + f.getName() + "' already exists.\n" + "Overwrite it?",
+                        DIALOG_SAVE_WORK, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                     break;
                 }
             } else {
@@ -1390,12 +1394,11 @@ public class MainWindow extends JFrame {
 
     public void resetLayout() {
         if (JOptionPane.showConfirmDialog(this,
-                "This will reset the GUI to the default layout.\n\n" + "Are you sure you want to do this?", "Confirm",
-                JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                "This will reset the GUI to the default layout.\n" + "Are you sure you want to do this?",
+                DIALOG_RESET_LAYOUT, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             if (JOptionPane.showConfirmDialog(this,
-                    "This action requires GUI restart.\n\n"
-                            + "This will cause the visual editor windows to be closed.\n\nProceed?",
-                    "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    "This action requires GUI restart.\n\n" + "Close all editor windows?",
+                    DIALOG_RESET_LAYOUT, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 try {
                     final Framework framework = Framework.getInstance();
                     framework.shutdownGUI();

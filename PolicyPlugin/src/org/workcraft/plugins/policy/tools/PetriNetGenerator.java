@@ -7,7 +7,6 @@ import java.util.HashSet;
 import java.util.Map;
 
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.VisualPetriNet;
@@ -26,7 +25,6 @@ public class PetriNetGenerator {
 
     private final Map<VisualPlace, VisualPlace> placeMap;
     private final Map<VisualBundledTransition, VisualTransition> transitionMap;
-    private final Map<VisualLocality, VisualGroup> localityMap;
     private final Map<VisualBundle, VisualTransition> bundleMap;
 
     public PetriNetGenerator(VisualPolicyNet policyNet) {
@@ -35,7 +33,7 @@ public class PetriNetGenerator {
         placeMap = convertPlaces();
         transitionMap = convertTransitions();
         bundleMap = convertBundles();
-        localityMap = convertLocalities();
+        groupLocalities();
         try {
             connectTransitions();
             connectBundles();
@@ -97,8 +95,7 @@ public class PetriNetGenerator {
         return result;
     }
 
-    private Map<VisualLocality, VisualGroup> convertLocalities() {
-        Map<VisualLocality, VisualGroup> result = new HashMap<>();
+    private void groupLocalities() {
         for (VisualLocality locality : Hierarchy.getDescendantsOfType(policyNet.getRoot(), VisualLocality.class)) {
             HashSet<Node> nodes = new HashSet<>();
             for (Node node: locality.getChildren()) {
@@ -124,7 +121,6 @@ public class PetriNetGenerator {
             petriNet.groupSelection();
             petriNet.selectNone();
         }
-        return result;
     }
 
     private void connectTransitions() throws InvalidConnectionException {

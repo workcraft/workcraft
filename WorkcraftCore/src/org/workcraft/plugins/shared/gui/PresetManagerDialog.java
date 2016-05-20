@@ -22,6 +22,7 @@ import org.workcraft.plugins.shared.presets.PresetManager;
 
 @SuppressWarnings("serial")
 public class PresetManagerDialog<T> extends JDialog {
+    private static final String DIALOG_DELETE_PRESET = "Delete preset";
     private JPanel content;
     private JList list;
     private JButton okButton, deleteButton, renameButton;
@@ -63,8 +64,8 @@ public class PresetManagerDialog<T> extends JDialog {
                     @SuppressWarnings("unchecked")
                     Preset<T> p = (Preset<T>) o;
                     if (JOptionPane.showConfirmDialog(PresetManagerDialog.this,
-                            "Are you sure you want to delete the preset \""    + p.getDescription() + "\" ?",
-                            "Confirm", JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                            "Are you sure you want to delete the preset \'"    + p.getDescription() + "\'?",
+                            DIALOG_DELETE_PRESET, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                         presetManager.delete(p);
                         listDataModel.removeElement(o);
                         if (listDataModel.getSize() == 0) {

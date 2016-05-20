@@ -129,4 +129,12 @@ public class StgToDtdConverter {
         return result;
     }
 
+    public VisualSignal getDtdVisualSignal(String signalName) {
+        return (signalMap == null) ? null : signalMap.get(signalName);
+    }
+
+    public SignalTransition getStgSignalTransition(SignalEvent event) {
+        return (eventMap == null) ? null : eventMap.get(event);
+    }
+
 }

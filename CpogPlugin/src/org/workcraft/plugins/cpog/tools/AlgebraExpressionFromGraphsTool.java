@@ -8,6 +8,7 @@ import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
 import org.workcraft.Tool;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.ToolboxPanel;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.plugins.cpog.VisualCpog;
@@ -15,6 +16,9 @@ import org.workcraft.plugins.cpog.gui.AlgebraExportDialog;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class AlgebraExpressionFromGraphsTool implements Tool {
+
+    private static final String DIALOG_SAVE_FILE = "Save file";
+    private static final String DIALOG_EXPRESSION_EXPORT_ERROR = "Expression export error";
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
@@ -36,7 +40,8 @@ public class AlgebraExpressionFromGraphsTool implements Tool {
     @Override
     public void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
-        final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
+        final MainWindow mainWindow = framework.getMainWindow();
+        final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();;
         final ToolboxPanel toolbox = editor.getToolBox();
         final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
 
@@ -60,15 +65,16 @@ public class AlgebraExpressionFromGraphsTool implements Tool {
         if (dialog.getExport()) {
             String filePath = dialog.getFilePath();
             if (filePath.compareTo(" ") == 0 || filePath == "") {
-                JOptionPane.showMessageDialog(null, "No export file has been given", "Expression export error",
-                        JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(mainWindow,
+                        "No export file has been given",
+                        DIALOG_EXPRESSION_EXPORT_ERROR, JOptionPane.ERROR_MESSAGE);
                 return;
             }
             File file = new File(filePath);
             if (file.exists()) {
-                if (!(JOptionPane.showConfirmDialog(null,
-                            "The file '" + file.getName() + "' already exists. Do you want to overwrite it?", "Confirm",
-                            JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)) {
+                if (!(JOptionPane.showConfirmDialog(mainWindow,
+                            "The file '" + file.getName() + "' already exists.\n" + "Overwrite it?",
+                            DIALOG_SAVE_FILE, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)) {
                     return;
                 }
             }
@@ -84,8 +90,8 @@ public class AlgebraExpressionFromGraphsTool implements Tool {
 
 
         } else {
-            JOptionPane.showMessageDialog(null, "No export selection was made", "Expression export error",
-                            JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(null, "No export selection was made",
+                    DIALOG_EXPRESSION_EXPORT_ERROR, JOptionPane.ERROR_MESSAGE);
         }
 
 

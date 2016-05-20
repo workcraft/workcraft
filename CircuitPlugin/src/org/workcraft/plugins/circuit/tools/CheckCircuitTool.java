@@ -53,7 +53,7 @@ public class CheckCircuitTool extends VerificationTool {
             if (checkConformation) {
                 if (checkDeadlock || checkHazard) {
                     int answer = JOptionPane.showConfirmDialog(mainWindow,
-                            "The circuit conformation cannot be checked without environment STG.\n\n"
+                            "The circuit conformation cannot be checked without environment STG.\n"
                             + "Proceed with verification of the other properties?",
                             TITLE_VERIFICATION, JOptionPane.YES_NO_OPTION);
 
