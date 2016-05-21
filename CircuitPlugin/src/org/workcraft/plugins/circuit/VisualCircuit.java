@@ -143,7 +143,7 @@ public class VisualCircuit extends AbstractVisualModel {
             if (driven.isOutput() && driven.isPort()) {
                 outputPortCount++;
                 if (outputPortCount > 1) {
-                    throw new InvalidConnectionException("Fork on the output port is not allowed.");
+                    throw new InvalidConnectionException("Fork on output ports is not allowed.");
                 }
                 if ((driver != null) && driver.isInput() && driver.isPort()) {
                     throw new InvalidConnectionException("Direct connection from input port to output port is not allowed.");
@@ -164,7 +164,7 @@ public class VisualCircuit extends AbstractVisualModel {
             if (second instanceof VisualContact) {
                 VisualContact secondContact = (VisualContact) second;
                 if (firstComponent.getIsZeroDelay() && secondContact.isPort() && secondContact.isOutput()) {
-                    throw new InvalidConnectionException("Zero delay components cannot be connected to the output ports.");
+                    throw new InvalidConnectionException("Zero delay components cannot be connected to output ports.");
                 }
             }
         }
