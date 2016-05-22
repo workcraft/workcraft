@@ -7,14 +7,14 @@ import java.util.HashSet;
 import org.workcraft.Tool;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.formula.One;
+import org.workcraft.formula.Zero;
+import org.workcraft.formula.utils.FormulaToString;
 import org.workcraft.plugins.cpog.Cpog;
 import org.workcraft.plugins.cpog.VisualArc;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.VisualScenario;
 import org.workcraft.plugins.cpog.VisualVertex;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
-import org.workcraft.plugins.cpog.optimisation.expressions.One;
-import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class GraphStatisticsTool implements Tool {

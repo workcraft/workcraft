@@ -22,8 +22,8 @@
 package org.workcraft.plugins.circuit;
 
 import org.workcraft.annotations.VisualClass;
+import org.workcraft.formula.BooleanFormula;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 
 @VisualClass(org.workcraft.plugins.circuit.VisualFunctionContact.class)
 public class FunctionContact extends Contact {

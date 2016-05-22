@@ -41,11 +41,11 @@ import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
+import org.workcraft.formula.jj.BooleanFormulaParser;
+import org.workcraft.formula.jj.ParseException;
+import org.workcraft.formula.utils.FormulaToString;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
-import org.workcraft.plugins.cpog.optimisation.jj.BooleanParser;
-import org.workcraft.plugins.cpog.optimisation.jj.ParseException;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Conditional Partial Order Graph")
@@ -85,11 +85,11 @@ public class VisualCpog extends AbstractVisualModel {
         public void setValue(Object value) throws InvocationTargetException {
             try {
                 if (node instanceof VisualRhoClause) {
-                    ((VisualRhoClause) node).setFormula(BooleanParser.parse((String) value, mathModel.getVariables()));
+                    ((VisualRhoClause) node).setFormula(BooleanFormulaParser.parse((String) value, mathModel.getVariables()));
                 } else if (node instanceof VisualArc) {
-                    ((VisualArc) node).setCondition(BooleanParser.parse((String) value, mathModel.getVariables()));
+                    ((VisualArc) node).setCondition(BooleanFormulaParser.parse((String) value, mathModel.getVariables()));
                 } else if (node instanceof VisualVertex) {
-                    ((VisualVertex) node).setCondition(BooleanParser.parse((String) value, mathModel.getVariables()));
+                    ((VisualVertex) node).setCondition(BooleanFormulaParser.parse((String) value, mathModel.getVariables()));
                 }
             } catch (ParseException e) {
                 throw new InvocationTargetException(e);

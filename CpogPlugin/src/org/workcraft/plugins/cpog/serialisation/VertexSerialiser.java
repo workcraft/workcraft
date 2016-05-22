@@ -21,8 +21,9 @@
 
 package org.workcraft.plugins.cpog.serialisation;
 
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.serialisation.BooleanFormulaSerialiser;
 import org.workcraft.plugins.cpog.Vertex;
-import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 
 public class VertexSerialiser extends BooleanFormulaSerialiser {
     @Override

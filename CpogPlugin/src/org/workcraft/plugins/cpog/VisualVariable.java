@@ -39,11 +39,11 @@ import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.formula.One;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.cpog.optimisation.expressions.One;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @Hotkey(KeyEvent.VK_X)

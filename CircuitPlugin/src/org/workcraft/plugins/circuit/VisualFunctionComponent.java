@@ -17,6 +17,9 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.TransformHelper;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.One;
+import org.workcraft.formula.Zero;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
@@ -26,9 +29,6 @@ import org.workcraft.plugins.circuit.renderers.CElementRenderingResult;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.circuit.renderers.GateRenderer;
-import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.expressions.One;
-import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 @DisplayName("Function")
 @Hotkey(KeyEvent.VK_F)

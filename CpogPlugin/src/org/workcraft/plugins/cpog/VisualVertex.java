@@ -42,16 +42,16 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.Stylable;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.One;
+import org.workcraft.formula.Zero;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.cpog.expressions.CpogFormulaVariable;
-import org.workcraft.plugins.cpog.expressions.CpogVisitor;
-import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.PrettifyBooleanReplacer;
-import org.workcraft.plugins.cpog.optimisation.expressions.One;
-import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
+import org.workcraft.plugins.cpog.formula.CpogFormulaVariable;
+import org.workcraft.plugins.cpog.formula.CpogVisitor;
+import org.workcraft.plugins.cpog.formula.PrettifyBooleanReplacer;
 
 @Hotkey(KeyEvent.VK_V)
 @DisplayName("Vertex")

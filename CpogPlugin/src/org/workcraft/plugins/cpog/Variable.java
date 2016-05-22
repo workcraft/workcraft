@@ -23,9 +23,9 @@ package org.workcraft.plugins.cpog;
 
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.formula.BooleanVariable;
+import org.workcraft.formula.BooleanVisitor;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
-import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
 
 @VisualClass(org.workcraft.plugins.cpog.VisualVariable.class)
 public class Variable extends MathNode implements Comparable<Variable>, BooleanVariable {

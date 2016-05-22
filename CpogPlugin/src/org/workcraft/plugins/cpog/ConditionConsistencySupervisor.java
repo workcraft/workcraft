@@ -3,11 +3,11 @@ package org.workcraft.plugins.cpog;
 import java.util.ArrayList;
 
 import org.workcraft.dom.Node;
+import org.workcraft.formula.Zero;
+import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesDeletingEvent;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanUtils;
-import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 
 public final class ConditionConsistencySupervisor extends HierarchySupervisor {
 

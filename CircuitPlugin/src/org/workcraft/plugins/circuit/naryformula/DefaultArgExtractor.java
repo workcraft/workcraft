@@ -3,7 +3,7 @@ package org.workcraft.plugins.circuit.naryformula;
 import java.util.Arrays;
 import java.util.List;
 
-import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
+import org.workcraft.formula.BooleanVariable;
 
 public class DefaultArgExtractor implements NaryBooleanFormulaVisitor<List<NaryBooleanFormula>> {
 

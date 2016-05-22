@@ -42,15 +42,15 @@ import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.utils.FormulaRenderingResult;
+import org.workcraft.formula.utils.FormulaToGraphics;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
-import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaRenderingResult;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToGraphics;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Hierarchy;
 

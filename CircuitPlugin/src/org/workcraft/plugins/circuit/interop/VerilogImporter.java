@@ -44,6 +44,9 @@ import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.utils.BooleanUtils;
+import org.workcraft.formula.utils.FormulaToString;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitDescriptor;
@@ -68,9 +71,6 @@ import org.workcraft.plugins.circuit.verilog.Instance;
 import org.workcraft.plugins.circuit.verilog.Module;
 import org.workcraft.plugins.circuit.verilog.Pin;
 import org.workcraft.plugins.circuit.verilog.Port;
-import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanUtils;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
@@ -293,7 +293,7 @@ public class VerilogImporter implements Importer {
                 outContact.setSetFunction(setFormula);
                 BooleanFormula resetFormula = CircuitUtils.parseContactFuncton(circuit, component, assignGate.resetFunction);
                 outContact.setResetFunction(resetFormula);
-            } catch (org.workcraft.plugins.cpog.optimisation.jj.ParseException e) {
+            } catch (org.workcraft.formula.jj.ParseException e) {
                 throw new RuntimeException(e);
             }
         }

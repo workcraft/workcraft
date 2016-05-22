@@ -23,9 +23,9 @@ package org.workcraft.plugins.cpog;
 
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.One;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.expressions.One;
 
 @VisualClass(org.workcraft.plugins.cpog.VisualVertex.class)
 public class Vertex extends MathNode {

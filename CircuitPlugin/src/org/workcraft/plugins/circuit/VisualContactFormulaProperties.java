@@ -3,11 +3,11 @@ package org.workcraft.plugins.circuit;
 import java.util.Map;
 
 import org.workcraft.dom.Node;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.jj.ParseException;
+import org.workcraft.formula.utils.FormulaToString;
 import org.workcraft.gui.propertyeditor.Disableable;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
-import org.workcraft.plugins.cpog.optimisation.jj.ParseException;
 
 public class VisualContactFormulaProperties {
 

@@ -2,8 +2,8 @@ package org.workcraft.plugins.cpog.tools;
 
 import java.util.ArrayList;
 
-import org.workcraft.plugins.cpog.expressions.CpogFormula;
-import org.workcraft.plugins.cpog.expressions.CpogFormulaToString;
+import org.workcraft.plugins.cpog.formula.CpogFormula;
+import org.workcraft.plugins.cpog.formula.CpogFormulaToString;
 
 public class ArcCondition {
 

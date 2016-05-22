@@ -1,13 +1,13 @@
 package org.workcraft.plugins.circuit.genlib;
 
 import org.workcraft.exceptions.ArgumentException;
+import org.workcraft.formula.BooleanFormula;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.expression.ExpressionUtils;
-import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.util.LogUtils;
 
@@ -40,7 +40,7 @@ public class GenlibUtils {
             contact.setSetFunction(setFormula);
             BooleanFormula resetFormula = CircuitUtils.parseContactFuncton(circuit, component, resetFunction);
             contact.setResetFunction(resetFormula);
-        } catch (org.workcraft.plugins.cpog.optimisation.jj.ParseException e) {
+        } catch (org.workcraft.formula.jj.ParseException e) {
             throw new RuntimeException(e);
         }
         return component;

@@ -20,6 +20,12 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.One;
+import org.workcraft.formula.Zero;
+import org.workcraft.formula.jj.BooleanFormulaParser;
+import org.workcraft.formula.jj.ParseException;
+import org.workcraft.formula.utils.FormulaToString;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
 import org.workcraft.plugins.cpog.Variable;
@@ -29,12 +35,6 @@ import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.VisualScenario;
 import org.workcraft.plugins.cpog.VisualScenarioPage;
 import org.workcraft.plugins.cpog.VisualVertex;
-import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
-import org.workcraft.plugins.cpog.optimisation.expressions.One;
-import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
-import org.workcraft.plugins.cpog.optimisation.jj.BooleanParser;
-import org.workcraft.plugins.cpog.optimisation.jj.ParseException;
 import org.workcraft.util.Func;
 import org.workcraft.util.Geometry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -492,7 +492,7 @@ public class ScencoExecutionSupport {
         for (int i = 0; i < v; i++) {
             if (optFormulaeVertices[i].contains("x")) {
                 BooleanFormula formulaOpt = null;
-                formulaOpt = BooleanParser.parse(optFormulaeVertices[i], new Func<String, BooleanFormula>() {
+                formulaOpt = BooleanFormulaParser.parse(optFormulaeVertices[i], new Func<String, BooleanFormula>() {
 
                     @Override
                     public BooleanFormula eval(String arg) {
@@ -509,7 +509,7 @@ public class ScencoExecutionSupport {
         for (int i = 0; i < a; i++) {
             if (optFormulaeArcs[i].contains("x")) {
                 BooleanFormula formulaOpt = null;
-                formulaOpt = BooleanParser.parse(optFormulaeArcs[i], new Func<String, BooleanFormula>() {
+                formulaOpt = BooleanFormulaParser.parse(optFormulaeArcs[i], new Func<String, BooleanFormula>() {
                     @Override
                     public BooleanFormula eval(String arg) {
                         arg = arg.substring("x_".length());

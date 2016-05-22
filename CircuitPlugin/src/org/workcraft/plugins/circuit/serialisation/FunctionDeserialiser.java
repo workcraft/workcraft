@@ -23,8 +23,8 @@ package org.workcraft.plugins.circuit.serialisation;
 
 import org.w3c.dom.Element;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.formula.serialisation.BooleanFunctionDeserialiser;
 import org.workcraft.plugins.circuit.FunctionContact;
-import org.workcraft.plugins.cpog.serialisation.BooleanFunctionDeserialiser;
 import org.workcraft.serialisation.ReferenceResolver;
 import org.workcraft.serialisation.xml.CustomXMLDeserialiser;
 import org.workcraft.serialisation.xml.NodeFinaliser;

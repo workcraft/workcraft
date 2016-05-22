@@ -22,9 +22,9 @@
 package org.workcraft.plugins.cpog;
 
 import org.workcraft.dom.math.MathConnection;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.One;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.expressions.One;
 
 public class Arc extends MathConnection {
     public static final String PROPERTY_CONDITION = "Condition";
