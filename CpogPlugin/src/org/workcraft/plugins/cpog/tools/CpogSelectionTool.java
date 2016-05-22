@@ -103,9 +103,9 @@ public class CpogSelectionTool extends SelectionTool {
         }
     }
 
-    final int margin = 4;
-    final double minRadius = 2.0;
-    final double expandRadius = 2.0;
+    static final int margin = 4;
+    static final double minRadius = 2.0;
+    static final double expandRadius = 2.0;
     double maxX = 0, maxY = 0;
     Point2D.Double coordinate = new Point2D.Double(0, 0);
     int xpos = 0;

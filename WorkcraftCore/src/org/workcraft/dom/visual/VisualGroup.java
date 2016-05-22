@@ -50,7 +50,7 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
     public static final String PROPERTY_IS_COLLAPSED = "Is collapsed";
 
     protected double size = CommonVisualSettings.getBaseSize();
-    protected final double margin = 0.20;
+    protected static final double margin = 0.20;
 
     private boolean isCurrentLevelInside = false;
     private boolean isCollapsed = false;
