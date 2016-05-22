@@ -15,7 +15,7 @@ public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
     public static final String INTERNAL_ERROR_MSG = "Internal error. Contact developers at www.workcraft.org/";
 
     private ScencoExternalToolTask scenco;
-    private ScencoSolver solver;
+    private final ScencoSolver solver;
 
     public ScencoResultHandler(ScencoExternalToolTask scencoTask) {
         this.scenco = scencoTask;

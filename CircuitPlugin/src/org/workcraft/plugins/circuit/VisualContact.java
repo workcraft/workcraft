@@ -141,7 +141,7 @@ public class VisualContact extends VisualComponent implements StateObserver {
     public static final Color inputColor = Color.RED;
     public static final Color outputColor = Color.BLUE;
 
-    private double size = 0.3;
+    private static final double size = 0.3;
     private Direction direction = Direction.WEST;
 
     public VisualContact(Contact contact) {

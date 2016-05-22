@@ -1,11 +1,11 @@
 package org.workcraft.plugins.petrify.tasks;
 
 public class SynthesisResult {
-    private String equations;
-    private String verilog;
-    private String log;
-    private String stdout;
-    private String stderr;
+    private final String equations;
+    private final String verilog;
+    private final String log;
+    private final String stdout;
+    private final String stderr;
 
     public SynthesisResult(String equations, String verilog, String log, String stdout, String stderr) {
         this.equations = equations;

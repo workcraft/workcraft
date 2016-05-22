@@ -27,9 +27,9 @@ public class DFSEstimationAlg extends TimeAlg {
 
     protected Before before;
 
-    private List<Interval> possibleTimes;
-    private List<Interval> boundary;
-    private Set<Time> duration;
+    private final List<Interval> possibleTimes;
+    private final List<Interval> boundary;
+    private final Set<Time> duration;
     private boolean[] b = new boolean[3];
 
     protected Color color = Color.ORANGE;

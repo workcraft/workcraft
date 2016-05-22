@@ -43,8 +43,8 @@ public class PetriToCpogDialog extends JDialog {
     //other elements
     private JComboBox<String> significanceBox;
     private JButton closeButton, runButton;
-    private TableLayout layout;
-    private JPanel buttonPanel, content, settingPanel;
+    private final TableLayout layout;
+    private JPanel buttonPanel, settingPanel;
     protected int modalResult;
 
     public PetriToCpogDialog(Window owner, PetriToCpogSettings settings, WorkspaceEntry we) {
@@ -63,7 +63,7 @@ public class PetriToCpogDialog extends JDialog {
         layout.setHGap(3);
         layout.setVGap(3);
 
-        content = new JPanel(layout);
+        JPanel content = new JPanel(layout);
         content.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
 
         content.add(settingPanel, "0, 0");

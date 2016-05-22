@@ -7,7 +7,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class Encoding {
-    private Map<Variable, VariableState> states = new HashMap<>();
+    private final Map<Variable, VariableState> states = new HashMap<>();
 
     public Map<Variable, VariableState> getStates() {
         return Collections.unmodifiableMap(states);

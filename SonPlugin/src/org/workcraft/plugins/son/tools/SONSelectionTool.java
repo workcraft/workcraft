@@ -35,7 +35,7 @@ import org.workcraft.util.Hierarchy;
 
 public class SONSelectionTool extends SelectionTool {
 
-    private GraphEditorTool channelPlaceTool = null;
+    private final GraphEditorTool channelPlaceTool;
     private boolean asyn = true;
     private boolean sync = true;
 

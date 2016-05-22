@@ -44,7 +44,7 @@ public abstract class VisualNode implements Properties, Node, Touchable, Stylabl
     protected ObservableStateImpl observableStateImpl = new ObservableStateImpl();
     private Node parent = null;
     private boolean hidden = false;
-    private PopupMenuBuilder popupMenuBuilder = new PopupMenuBuilder();
+    private final PopupMenuBuilder popupMenuBuilder = new PopupMenuBuilder();
     private final ModelProperties properties = new ModelProperties();
 
     protected final void addPopupMenuSegment(PopupMenuSegment segment) {

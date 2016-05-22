@@ -33,8 +33,8 @@ import org.workcraft.util.XmlUtil;
 
 public class LegacyPluginInfo implements Initialiser<Object> {
     private String displayName;
-    private String className;
-    private String[] interfaceNames;
+    private final String className;
+    private final String[] interfaceNames;
 
     private void addInterfaces(Class<?> cls, Set<String> set) {
         if (cls == null || cls.equals(Object.class)) {

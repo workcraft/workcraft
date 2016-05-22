@@ -13,8 +13,8 @@ import org.workcraft.plugins.son.util.Marking;
 
 public class PathAlgorithm {
 
-    private SON net;
-    private static Collection<Path> pathResult = new ArrayList<>();
+    private final SON net;
+    private static final Collection<Path> pathResult = new ArrayList<>();
 
     public PathAlgorithm(SON net) {
         this.net = net;

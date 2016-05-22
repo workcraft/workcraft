@@ -27,11 +27,11 @@ import java.util.Map;
 
 public abstract class PropertyDeclaration<O, V> implements PropertyDescriptor, Disableable {
     private final O object;
-    private String name;
-    private Class<V> cls;
-    private boolean writable;
-    private boolean combinable;
-    private boolean templatable;
+    private final String name;
+    private final Class<V> cls;
+    private final boolean writable;
+    private final boolean combinable;
+    private final boolean templatable;
 
     public PropertyDeclaration(O object, String name, Class<V> cls, boolean writable, boolean combinable, boolean templatable) {
         this.object = object;

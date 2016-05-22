@@ -27,9 +27,9 @@ import java.util.Collection;
 import org.workcraft.dom.Node;
 
 public class NodesReparentedEvent implements HierarchyEvent {
-    private Node oldParentNode;
-    private Node newParentNode;
-    private Collection<Node> affectedNodes;
+    private final Node oldParentNode;
+    private final Node newParentNode;
+    private final Collection<Node> affectedNodes;
 
     public NodesReparentedEvent(Node oldParentNode, Node newParentNode, Collection<Node> affectedNodes) {
         this.oldParentNode = oldParentNode;

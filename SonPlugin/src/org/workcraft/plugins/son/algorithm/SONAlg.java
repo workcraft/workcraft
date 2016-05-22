@@ -10,9 +10,9 @@ import org.workcraft.plugins.son.elements.PlaceNode;
 
 public class SONAlg extends RelationAlgorithm {
 
-    private BSONAlg bsonAlg;
-    private Collection<ONGroup> upperGroups;
-    private Collection<ONGroup> lowerGroups;
+    private final BSONAlg bsonAlg;
+    private final Collection<ONGroup> upperGroups;
+    private final Collection<ONGroup> lowerGroups;
 
     public SONAlg(SON net) {
         super(net);

@@ -19,19 +19,19 @@ import org.workcraft.plugins.son.util.Marking;
 
 public class ONStructureTask extends AbstractStructuralVerification {
 
-    private SON net;
+    private final SON net;
 
-    private Collection<Node> relationErrors = new HashSet<>();
-    private Collection<Path> cycleErrors = new HashSet<>();
-    private Collection<ONGroup> groupErrors = new HashSet<>();
+    private final Collection<Node> relationErrors = new HashSet<>();
+    private final Collection<Path> cycleErrors = new HashSet<>();
+    private final Collection<ONGroup> groupErrors = new HashSet<>();
 
-    private ONCycleAlg onCycleAlg;
-    private ASONAlg asonAlg;
+    private final ONCycleAlg onCycleAlg;
+    private final ASONAlg asonAlg;
 
-    private Map<ONGroup, List<Marking>> reachableMarkings;
+    private final Map<ONGroup, List<Marking>> reachableMarkings;
 
     private int errNumber = 0;
-    private int warningNumber = 0;
+    private static final int warningNumber = 0;
 
     public ONStructureTask(SON net) {
         super(net);

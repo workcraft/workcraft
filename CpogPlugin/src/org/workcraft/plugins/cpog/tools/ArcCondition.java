@@ -7,8 +7,8 @@ import org.workcraft.plugins.cpog.formula.CpogFormulaToString;
 
 public class ArcCondition {
 
-    private CpogFormula formula;
-    private String boolForm;
+    private final CpogFormula formula;
+    private final String boolForm;
 
     public ArcCondition(CpogFormula formula, String boolForm) {
         this.formula = formula;

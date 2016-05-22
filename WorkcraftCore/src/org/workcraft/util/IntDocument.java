@@ -6,7 +6,7 @@ import javax.swing.text.PlainDocument;
 
 @SuppressWarnings("serial")
 public class IntDocument extends PlainDocument {
-    private int limit;
+    private final int limit;
 
     public IntDocument(int limit) {
         super();

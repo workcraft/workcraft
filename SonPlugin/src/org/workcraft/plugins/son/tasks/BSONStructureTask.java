@@ -23,19 +23,19 @@ import org.workcraft.plugins.son.util.Phase;
 
 public class BSONStructureTask extends AbstractStructuralVerification {
 
-    private SON net;
+    private final SON net;
 
-    private Collection<Node> relationErrors = new ArrayList<>();
-    private Collection<Path> cycleErrors = new ArrayList<>();
-    private Collection<ONGroup> groupErrors = new HashSet<>();
+    private final Collection<Node> relationErrors = new ArrayList<>();
+    private final Collection<Path> cycleErrors = new ArrayList<>();
+    private final Collection<ONGroup> groupErrors = new HashSet<>();
 
-    private BSONAlg bsonAlg;
-    private BSONCycleAlg bsonCycleAlg;
-    private Map<Condition, Collection<Phase>> allPhases;
-    private ArrayList<String> phaseCutTask = new ArrayList<>();
+    private final BSONAlg bsonAlg;
+    private final BSONCycleAlg bsonCycleAlg;
+    private final Map<Condition, Collection<Phase>> allPhases;
+    private final ArrayList<String> phaseCutTask = new ArrayList<>();
 
     private int errNumber = 0;
-    private int warningNumber = 0;
+    private static final int warningNumber = 0;
 
     public BSONStructureTask(SON net, Map<ONGroup, List<Marking>> allMarkings) {
         super(net);

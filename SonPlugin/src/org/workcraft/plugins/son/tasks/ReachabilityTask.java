@@ -33,21 +33,16 @@ public class ReachabilityTask implements Task<VerificationResult> {
 
     private SON net;
     private final WorkspaceEntry we;
-    private BSONAlg bsonAlg;
-    private ReachabilityAlg reachAlg;
+    private final BSONAlg bsonAlg;
+    private final ReachabilityAlg reachAlg;
 
-    private Collection<String> markingRefs;
+    private final Collection<String> markingRefs;
     private Collection<Node> causalPredecessors;
-    private Collection<String> causalPredecessorRefs;
+    private final Collection<String> causalPredecessorRefs;
 
     public ReachabilityTask(WorkspaceEntry we) {
         this.we = we;
         net = (SON) we.getModelEntry().getMathModel();
-
-        if (hasConflict()) {
-            JOptionPane.showMessageDialog(null, "Model has alternative behaviours", "Fail to run reachability task", JOptionPane.ERROR_MESSAGE);
-            return;
-        }
 
         bsonAlg = new BSONAlg(net);
         reachAlg = new ReachabilityAlg(net);
@@ -55,6 +50,11 @@ public class ReachabilityTask implements Task<VerificationResult> {
         markingRefs = new ArrayList<String>();
         causalPredecessors = new HashSet<Node>();
         causalPredecessorRefs = new HashSet<String>();
+
+        if (hasConflict()) {
+            JOptionPane.showMessageDialog(null, "Model has alternative behaviours", "Fail to run reachability task", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
         for (PlaceNode node : net.getPlaceNodes()) {
             if (node.isMarked()) {

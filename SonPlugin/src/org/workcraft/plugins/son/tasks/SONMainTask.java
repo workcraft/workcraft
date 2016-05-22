@@ -22,16 +22,16 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class SONMainTask implements Task<VerificationResult> {
 
-    private WorkspaceEntry we;
-    private Logger logger = Logger.getLogger(this.getClass().getName());
+    private final WorkspaceEntry we;
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
 
-    private StructureVerifySettings settings;
+    private final StructureVerifySettings settings;
     private int totalErrNum = 0;
     private int totalWarningNum = 0;
 
-    private Collection<String> groupErrors = new HashSet<>();
-    private Collection<String> relationErrors = new HashSet<>();
-    private Collection<ArrayList<String>> cycleErrors = new ArrayList<>();
+    private final Collection<String> groupErrors = new HashSet<>();
+    private final Collection<String> relationErrors = new HashSet<>();
+    private final Collection<ArrayList<String>> cycleErrors = new ArrayList<>();
 
     public SONMainTask(StructureVerifySettings settings, WorkspaceEntry we) {
         this.settings = settings;

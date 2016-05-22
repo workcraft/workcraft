@@ -73,7 +73,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
     private RenderedText nameRenderedText = new RenderedText("", nameFont, getNamePositioning(), getNameOffset());
     private Color nameColor = CommonVisualSettings.getNameColor();
 
-    private HashSet<Replica> replicas = new HashSet<>();
+    private final HashSet<Replica> replicas = new HashSet<>();
 
     public VisualComponent(MathNode refNode) {
         this(refNode, true, true, true);

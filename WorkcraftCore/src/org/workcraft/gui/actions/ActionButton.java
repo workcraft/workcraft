@@ -35,7 +35,7 @@ public class ActionButton extends JButton implements Actor {
         }
     }
 
-    private LinkedList<ScriptedActionListener> listeners = new LinkedList<>();
+    private final LinkedList<ScriptedActionListener> listeners = new LinkedList<>();
     private Action action = null;
 
     public ActionButton(Action action, String text) {

@@ -31,10 +31,10 @@ public class VisualCondition extends VisualPlaceNode {
     private static double size = 1.0;
     private static float strokeWidth = 0.1f;
 
-    private Positioning startTimePositioning = Positioning.LEFT;
+    private static final Positioning startTimePositioning = Positioning.LEFT;
     private RenderedText startTimeRenderedText = new RenderedText("", timeFont, startTimePositioning, new Point2D.Double(0.0, 0.0));
 
-    private Positioning endTimePositioning = Positioning.RIGHT;
+    private static final Positioning endTimePositioning = Positioning.RIGHT;
     private RenderedText endTimeRenderedText = new RenderedText("", timeFont, endTimePositioning, new Point2D.Double(0.0, 0.0));
 
     public VisualCondition(Condition refNode) {

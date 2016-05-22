@@ -5,9 +5,9 @@ import java.util.Set;
 import java.util.Vector;
 
 public class SCCResult {
-    private Set nodeIDsOfSCC = null;
-    private Vector[] adjList = null;
-    private int lowestNodeId = -1;
+    private final Set nodeIDsOfSCC;
+    private final Vector[] adjList;
+    private final int lowestNodeId;
 
     public SCCResult(Vector[] adjList, int lowestNodeId) {
         this.adjList = adjList;

@@ -7,11 +7,7 @@ import javax.swing.text.DocumentFilter;
 
 public class TimeInputFilter extends DocumentFilter {
 
-    private int maxLength;
-
-    public TimeInputFilter() {
-        maxLength = 4; // The number of characters allowed
-    }
+    private static final int maxLength = 4; // The number of characters allowed
 
     private boolean isInteger(String text) {
         try {

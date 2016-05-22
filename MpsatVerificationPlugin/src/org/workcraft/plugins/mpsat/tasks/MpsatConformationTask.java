@@ -40,7 +40,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             MpsatMode.UNDEFINED, 0, null, 0);
 
     private final WorkspaceEntry we;
-    private File envFile;
+    private final File envFile;
 
     public MpsatConformationTask(WorkspaceEntry we, File envFile) {
         super(we, null);

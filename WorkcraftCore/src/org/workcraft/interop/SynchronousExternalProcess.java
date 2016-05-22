@@ -47,10 +47,10 @@ public class SynchronousExternalProcess {
 
     private int returnCode;
     private boolean finished = false;
-    private ExternalProcess process;
+    private final ExternalProcess process;
 
-    private LinkedList<byte[]> errorData = new LinkedList<>();
-    private LinkedList<byte[]> outputData = new LinkedList<>();
+    private final LinkedList<byte[]> errorData = new LinkedList<>();
+    private final LinkedList<byte[]> outputData = new LinkedList<>();
 
     public SynchronousExternalProcess(String[] command, String workingDirectory) {
         process = new ExternalProcess(command, workingDirectory);

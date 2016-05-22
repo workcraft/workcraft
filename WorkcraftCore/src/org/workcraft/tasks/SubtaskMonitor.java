@@ -5,10 +5,10 @@ import java.io.IOException;
 import org.workcraft.util.DataAccumulator;
 
 public class SubtaskMonitor<T> implements ProgressMonitor<T> {
-    private ProgressMonitor<?> parent;
+    private final ProgressMonitor<?> parent;
 
-    private DataAccumulator stdoutAccum = new DataAccumulator();
-    private DataAccumulator stderrAccum = new DataAccumulator();
+    private final DataAccumulator stdoutAccum = new DataAccumulator();
+    private final DataAccumulator stderrAccum = new DataAccumulator();
 
     public SubtaskMonitor(ProgressMonitor<?> parent) {
         this.parent = parent;

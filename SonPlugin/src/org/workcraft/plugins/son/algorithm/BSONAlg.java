@@ -25,9 +25,9 @@ import org.workcraft.plugins.son.util.Phase;
 
 public class BSONAlg extends RelationAlgorithm {
 
-    private SON net;
+    private final SON net;
     private static Marking dfsResult = new Marking();
-    private Map<Condition, String> phaseCutErr = new HashMap<>();
+    private final Map<Condition, String> phaseCutErr = new HashMap<>();
 
     public BSONAlg(SON net) {
         super(net);

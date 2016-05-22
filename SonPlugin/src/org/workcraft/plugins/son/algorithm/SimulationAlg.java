@@ -22,12 +22,12 @@ import org.workcraft.plugins.son.util.Step;
 
 public class SimulationAlg extends RelationAlgorithm {
 
-    private SON net;
-    private BSONAlg bsonAlg;
-    private SONAlg sonAlg;
+    private final SON net;
+    private final BSONAlg bsonAlg;
+    private final SONAlg sonAlg;
 
-    private Collection<ONGroup> upperGroups;
-    private Collection<ONGroup> lowerGroups;
+    private final Collection<ONGroup> upperGroups;
+    private final Collection<ONGroup> lowerGroups;
 
     public SimulationAlg(SON net) {
         super(net);

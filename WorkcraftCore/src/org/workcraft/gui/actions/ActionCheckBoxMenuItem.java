@@ -35,7 +35,7 @@ public class ActionCheckBoxMenuItem extends JCheckBoxMenuItem implements Actor {
         }
     }
 
-    private LinkedList<ScriptedActionListener> listeners = new LinkedList<>();
+    private final LinkedList<ScriptedActionListener> listeners = new LinkedList<>();
     private Action scriptedAction = null;
 
     public ActionCheckBoxMenuItem(Action action) {

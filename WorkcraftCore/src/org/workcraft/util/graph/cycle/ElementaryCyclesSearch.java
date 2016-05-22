@@ -32,10 +32,10 @@ public class ElementaryCyclesSearch {
     private List cycles = null;
 
     /** Adjacency-list of graph */
-    private int[][] adjList = null;
+    private final int[][] adjList;
 
     /** Graphnodes */
-    private Object[] graphNodes = null;
+    private final Object[] graphNodes;
 
     /** Blocked nodes, used by the algorithm of Johnson */
     private boolean[] blocked = null;

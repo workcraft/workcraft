@@ -52,7 +52,7 @@ import org.workcraft.util.Hierarchy;
 public class Polyline implements ConnectionGraphic, Container, StateObserver,
         HierarchyObserver, ObservableHierarchy, SelectionObserver {
 
-    private ArbitraryInsertionGroupImpl groupImpl;
+    private final ArbitraryInsertionGroupImpl groupImpl;
     protected VisualConnectionProperties connectionInfo;
     protected PartialCurveInfo curveInfo = null;
     private Rectangle2D boundingBox = null;

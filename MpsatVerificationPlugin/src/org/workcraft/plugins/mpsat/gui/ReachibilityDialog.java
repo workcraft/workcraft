@@ -21,9 +21,9 @@ import info.clearthought.layout.TableLayout;
 
 @SuppressWarnings("serial")
 public class ReachibilityDialog extends JDialog {
-    private JPanel contents;
-    private JPanel solutionsPanel;
-    private JPanel buttonsPanel;
+    private final JPanel contents;
+    private final JPanel solutionsPanel;
+    private final JPanel buttonsPanel;
 
     public ReachibilityDialog(WorkspaceEntry we, String title, String message, List<Solution> solutions) {
 

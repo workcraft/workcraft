@@ -57,7 +57,7 @@ import org.workcraft.util.Hierarchy;
 @CustomTools (XmasToolsProvider.class)
 public class VisualXmas extends AbstractVisualModel {
 
-    private Xmas circuit;
+    private final Xmas circuit;
 
     @Override
     public void validateConnection(Node first, Node second)    throws InvalidConnectionException {

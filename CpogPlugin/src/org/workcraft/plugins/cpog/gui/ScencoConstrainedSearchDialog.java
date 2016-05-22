@@ -49,20 +49,21 @@ public class ScencoConstrainedSearchDialog extends JDialog {
             abcLabel, circuitSizeLabel;
     private JCheckBox verboseModeCheck, customEncodings, abcCheck;
     private JComboBox<String> optimiseBox;
-    private JPanel generationPanel, buttonsPanel, content, customPanel,
+    private JPanel generationPanel, buttonsPanel, customPanel,
             standardPanel;
     private JButton saveButton, closeButton;
     private JTextField numberOfSolutionsText, bitsText, circuitSizeText;
     private JTable encodingTable;
     JScrollPane scrollPane;
-    private TableLayout layout;
-    private int m, bits;
+    private final TableLayout layout;
+    private final int m;
+    private int bits;
     private JRadioButton normal, fast;
     private ButtonGroup group;
 
     // Core variables
     private SatBasedSolver encoder;
-    private EncoderSettings settings;
+    private final EncoderSettings settings;
     private int modalResult;
 
     public EncoderSettings getSettings() {
@@ -109,7 +110,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
         layout.setHGap(3);
         layout.setVGap(3);
 
-        content = new JPanel(layout);
+        JPanel content = new JPanel(layout);
         content.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
 
         content.add(standardPanel, "0, 0");

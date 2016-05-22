@@ -38,8 +38,8 @@ import org.workcraft.util.ConstructorParametersMatcher;
 import org.workcraft.util.XmlUtil;
 
 public class XMLDeserialisationManager implements DeserialiserFactory, NodeInitialiser, NodeFinaliser {
-    private HashMap<String, XMLDeserialiser> deserialisers = new HashMap<>();
-    private DefaultNodeDeserialiser nodeDeserialiser = new DefaultNodeDeserialiser(this, this, this);
+    private final HashMap<String, XMLDeserialiser> deserialisers = new HashMap<>();
+    private final DefaultNodeDeserialiser nodeDeserialiser = new DefaultNodeDeserialiser(this, this, this);
     private XMLDeserialiserState state = null;
 
     private void registerDeserialiser(XMLDeserialiser deserialiser) {

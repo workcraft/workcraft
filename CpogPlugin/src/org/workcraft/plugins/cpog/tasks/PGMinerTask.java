@@ -14,8 +14,8 @@ import org.workcraft.util.ToolUtils;
 
 public class PGMinerTask implements Task<ExternalProcessResult> {
 
-    private File inputFile;
-    private boolean split;
+    private final File inputFile;
+    private final boolean split;
 
     public PGMinerTask(File inputFile, boolean split) {
         this.inputFile = inputFile;

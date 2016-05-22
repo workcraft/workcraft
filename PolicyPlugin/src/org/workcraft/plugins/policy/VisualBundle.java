@@ -50,7 +50,7 @@ import org.workcraft.util.Pair;
 public class VisualBundle extends VisualNode implements Drawable, Dependent {
     public static final String PROPERTY_COLOR = "color";
 
-    private Bundle bundle;
+    private final Bundle bundle;
     protected double strokeWidth = CommonVisualSettings.getStrokeWidth();
     private Color color = ColorUtils.getLabColor(0.7f, (float) Math.random(), (float) Math.random());
     private Collection<Line2D> spanningTree = null;

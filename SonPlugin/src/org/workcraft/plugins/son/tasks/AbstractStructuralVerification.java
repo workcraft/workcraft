@@ -13,11 +13,11 @@ import org.workcraft.util.LogUtils;
 
 abstract class AbstractStructuralVerification implements StructuralVerification {
 
-    private SON net;
+    private final SON net;
 
-    private Logger logger = Logger.getLogger(this.getClass().getName());
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
 
-    private RelationAlgorithm relationAlg;
+    private final RelationAlgorithm relationAlg;
 
     AbstractStructuralVerification(SON net) {
         this.net = net;

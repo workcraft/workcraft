@@ -37,7 +37,7 @@ import org.workcraft.gui.actions.ScriptedActionListener;
 
 @SuppressWarnings("serial")
 public class DockableTab extends JPanel {
-    private JPanel buttonsPanel;
+    private final JPanel buttonsPanel;
     private JLabel label;
 
     public DockableTab(DockableWindow dockableWindow, ScriptedActionListener actionListener) {

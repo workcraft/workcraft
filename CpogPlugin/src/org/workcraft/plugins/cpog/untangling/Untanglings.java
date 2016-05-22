@@ -21,12 +21,12 @@ import org.workcraft.plugins.cpog.PetriToCpogSettings;
 
 public class Untanglings {
 
-    private NetSystem sys;
-    private LinkedList<Place> p;
-    private LinkedList<Transition> t;
-    private UntanglingSetup setup;
+    private final NetSystem sys;
+    private final LinkedList<Place> p;
+    private final LinkedList<Transition> t;
+    private final UntanglingSetup setup;
     private ReductionBasedRepresentativeUntangling untangling;
-    private ArrayList<PartialOrder> partialOrders;
+    private final ArrayList<PartialOrder> partialOrders;
 
     public Untanglings(PetriToCpogSettings settings) {
         this.sys = new NetSystem();

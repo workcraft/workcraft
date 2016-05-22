@@ -40,7 +40,7 @@ public abstract class TwoHotNumberProvider implements NumberProvider<TwoHotNumbe
 
     Map<Integer, TwoHotRange> halfTaken = new HashMap<>();
 
-    private Cnf constraints = new Cnf();
+    private final Cnf constraints = new Cnf();
 
     public Cnf getConstraints() {
         return constraints;

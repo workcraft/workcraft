@@ -36,7 +36,7 @@ public class VisualPage extends VisualComponent implements Collapsible, Containe
     private boolean isCollapsed = false;
     private boolean isExcited = false;
     private String referencedModel = "";
-    private DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
+    private final DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
     public void setReferencedModel(String model) {
         sendNotification(new TransformChangingEvent(this));

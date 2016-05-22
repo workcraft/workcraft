@@ -9,7 +9,7 @@ import org.workcraft.util.Func;
 
 public class FilteredTreeSource<T> implements TreeSource<T> {
     private final TreeSource<T> source;
-    private HashMap<T, Boolean> acceptableCache = new HashMap<>();
+    private final HashMap<T, Boolean> acceptableCache = new HashMap<>();
     private Func<T, Boolean> filter;
     private final LinkedList<TreeListener<T>> listeners = new LinkedList<>();
 

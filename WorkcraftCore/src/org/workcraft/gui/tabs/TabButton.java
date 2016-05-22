@@ -35,8 +35,8 @@ import org.workcraft.gui.actions.ScriptedActionListener;
 
 public class TabButton extends JLabel implements MouseListener {
     private static final long serialVersionUID = 1L;
-    private ScriptedActionListener actionListener;
-    private Action action;
+    private final ScriptedActionListener actionListener;
+    private final Action action;
 
     Border mouseOutBorder, mouseOverBorder;
 

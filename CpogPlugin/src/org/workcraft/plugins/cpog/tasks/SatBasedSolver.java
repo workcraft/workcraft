@@ -34,7 +34,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class SatBasedSolver {
 
     private EncoderSettings settings;
-    private ScencoExecutionSupport cpogBuilder;
+    private final ScencoExecutionSupport cpogBuilder;
 
     // SETTING PARAMETERS FOR CALLING SCENCO
     private String scencoCommand;
@@ -43,8 +43,8 @@ public class SatBasedSolver {
     private String gatesLibrary;
     private String verbose = "";
     private String genMode = "";
-    private String modBitFlag = "";
-    private String modBit = "";
+    private static final String modBitFlag = "";
+    private static final String modBit = "";
     private String numSol = "";
     private String customFlag = "";
     private String customPath = "";

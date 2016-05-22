@@ -29,8 +29,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessResult> {
 
     private VisualCpog visualCpog;
-    private WorkspaceEntry we;
-    private boolean createNewWindow;
+    private final WorkspaceEntry we;
+    private final boolean createNewWindow;
 
     public PGMinerResultHandler(VisualCpog visualCpog, WorkspaceEntry we, boolean createNewWindow) {
         this.visualCpog = visualCpog;

@@ -24,8 +24,8 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
     private boolean userCancelled = false;
     private ProgressMonitor<? super ExternalProcessResult> monitor;
 
-    private DataAccumulator stdoutAccum = new DataAccumulator();
-    private DataAccumulator stderrAccum = new DataAccumulator();
+    private final DataAccumulator stdoutAccum = new DataAccumulator();
+    private final DataAccumulator stderrAccum = new DataAccumulator();
 
     public ExternalProcessTask(List<String> args, File workingDir) {
         this(args, workingDir, false, false);

@@ -33,7 +33,7 @@ import org.workcraft.observation.NodesDeletedEvent;
 
 public class DefaultMathNodeRemover extends HierarchySupervisor {
 
-    private HashMap<MathNode, HashSet<Dependent>> referenceTracker = new HashMap<>();
+    private final HashMap<MathNode, HashSet<Dependent>> referenceTracker = new HashMap<>();
 
     private void addReference(MathNode mathNode, Dependent dependentNode) {
         if (mathNode != null) {

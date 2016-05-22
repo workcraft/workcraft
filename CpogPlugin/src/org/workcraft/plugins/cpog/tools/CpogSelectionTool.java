@@ -83,7 +83,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class CpogSelectionTool extends SelectionTool {
 
     private class RenderTypeChangedHandler extends StateSupervisor {
-        private VisualCpog visualCpog;
+        private final VisualCpog visualCpog;
 
         RenderTypeChangedHandler(VisualCpog visualCpog) {
             this.visualCpog = visualCpog;
@@ -114,14 +114,14 @@ public class CpogSelectionTool extends SelectionTool {
     private JTextArea expressionText;
     HashMap<String, CpogFormula> graphMap = new HashMap<>();
     final HashMap<String, Variable> variableMap = new HashMap<>();
-    private HashMap<String, GraphReference> referenceMap = new HashMap<>();
+    private final HashMap<String, GraphReference> referenceMap = new HashMap<>();
     private Checkbox insertTransitives;
     private final HashMap<String, Point2D> prevPoints = new HashMap<>();
     private double highestY = 0; //Sets first graph at y co-ordinate of 0
 
-    private CpogParsingTool parsingTool = new CpogParsingTool(variableMap, xpos, referenceMap);
+    private final CpogParsingTool parsingTool = new CpogParsingTool(variableMap, xpos, referenceMap);
 
-    private ArrayList<VisualPage> refPages = new ArrayList<>();
+    private final ArrayList<VisualPage> refPages = new ArrayList<>();
 
     private GraphEditor editor;
     protected boolean cancelInPlaceEdit;

@@ -70,8 +70,8 @@ import org.workcraft.util.Pair;
 public abstract class AbstractVisualModel extends AbstractModel implements VisualModel {
     private MathModel mathModel;
     private Container currentLevel;
-    private Set<Node> selection = new HashSet<>();
-    private ObservableStateImpl observableState = new ObservableStateImpl();
+    private final Set<Node> selection = new HashSet<>();
+    private final ObservableStateImpl observableState = new ObservableStateImpl();
 
     private VisualNode templateNode = null;
 

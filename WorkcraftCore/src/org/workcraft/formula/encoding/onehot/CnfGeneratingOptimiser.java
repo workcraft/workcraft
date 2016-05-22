@@ -41,7 +41,7 @@ import org.workcraft.formula.sat.OptimisationTask;
 import org.workcraft.formula.sat.SatProblemGenerator;
 
 public class CnfGeneratingOptimiser implements SatProblemGenerator<Cnf> {
-    private List<CnfClause> rho = new ArrayList<>();
+    private final List<CnfClause> rho = new ArrayList<>();
 
     TwoHotRange generateBinaryFunction(int variablesCount, int funcId) {
         TwoHotRangeProvider prov = new TwoHotRangeProvider();

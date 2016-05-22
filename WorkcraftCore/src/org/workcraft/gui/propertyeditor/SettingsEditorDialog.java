@@ -78,7 +78,7 @@ public class SettingsEditorDialog extends JDialog {
     private Config currentConfig;
 
     static class SettingsPageNode {
-        private Settings page;
+        private final Settings page;
 
         SettingsPageNode(Settings page) {
             this.page = page;

@@ -22,9 +22,9 @@
 package org.workcraft.history;
 
 public class HistoryEvent {
-    private String undoScript;
-    private String redoScript;
-    private String eventDescription;
+    private final String undoScript;
+    private final String redoScript;
+    private final String eventDescription;
 
     public HistoryEvent(String undoScript, String redoScript, String eventDescription, Object sender) {
         //super(sender);

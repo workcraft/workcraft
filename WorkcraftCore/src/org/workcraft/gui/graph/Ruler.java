@@ -44,7 +44,7 @@ public class Ruler implements GridListener {
     private int[] horizontalMinorTicks;
     private int majorTickSize = 10;
     private int minorTickSize = 3;
-    private Rectangle shape;
+    private final Rectangle shape;
     private int size = 15;
     private String[] verticalMajorCaptions;
     private int[] verticalMajorTicks;

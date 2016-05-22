@@ -25,7 +25,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 public class DefaultNodeImpl implements Node {
-    private Node parent;
+    private final Node parent;
 
     public DefaultNodeImpl(Node parent) {
         this.parent = parent;

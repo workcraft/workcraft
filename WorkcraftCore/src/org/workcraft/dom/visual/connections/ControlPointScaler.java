@@ -28,7 +28,7 @@ import static org.workcraft.util.Geometry.*;
 
 public class ControlPointScaler {
     private static final double THRESHOLD = 0.00001;
-    private Point2D oldC1, oldC2;
+    private final Point2D oldC1, oldC2;
 
     public ControlPointScaler(Point2D oldC1, Point2D oldC2) {
         this.oldC1 = oldC1;

@@ -21,8 +21,8 @@ import info.clearthought.layout.TableLayout;
 
 @SuppressWarnings("serial")
 public class SolutionPanel extends JPanel {
-    private JPanel buttonsPanel;
-    private JTextArea traceText;
+    private final JPanel buttonsPanel;
+    private final JTextArea traceText;
 
     public SolutionPanel(final WorkspaceEntry we, final Solution solution, final ActionListener closeAction) {
         super(new TableLayout(new double[][]

@@ -69,20 +69,20 @@ public class TimeValueSetterTool extends AbstractTool {
     private GranularityPanel granularityPanel;
     private JButton estimatorButton, clearButton;
 
-    private int labelheight = 20;
-    private int labelwidth = 40;
+    private static final int labelheight = 20;
+    private static final int labelwidth = 40;
     protected Dimension buttonSize = new Dimension(100, 25);
     private TimeEstimatorSettings settings;
 
     private Node selection = null;
     private Node visualSelection = null;
     private boolean visibility;
-    private Color selectedColor = Color.ORANGE;
-    private Font font = new Font("Arial", Font.PLAIN, 12);
-    private String startLabel = "Start time interval: ";
-    private String endLabel = "Finish time interval: ";
-    private String durationLabel = "Duration interval: ";
-    private String timeLabel = "Time interval: ";
+    private final Color selectedColor = Color.ORANGE;
+    private final Font font = new Font("Arial", Font.PLAIN, 12);
+    private static final String startLabel = "Start time interval: ";
+    private static final String endLabel = "Finish time interval: ";
+    private static final String durationLabel = "Duration interval: ";
+    private static final String timeLabel = "Time interval: ";
 
     @Override
     public void createInterfacePanel(final GraphEditor editor) {

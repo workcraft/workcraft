@@ -39,9 +39,9 @@ import org.workcraft.util.ConstructorParametersMatcher;
 import org.workcraft.util.XmlUtil;
 
 class DefaultNodeDeserialiser {
-    private DeserialiserFactory fac;
-    private NodeInitialiser initialiser;
-    private NodeFinaliser finaliser;
+    private final DeserialiserFactory fac;
+    private final NodeInitialiser initialiser;
+    private final NodeFinaliser finaliser;
 
     DefaultNodeDeserialiser(DeserialiserFactory factory, NodeInitialiser initialiser, NodeFinaliser finaliser) {
         this.fac = factory;

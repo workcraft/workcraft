@@ -31,8 +31,8 @@ public class TransitionBundler {
     private final PetriNet model;
     final Step unbundled;
 
-    private HashMap<VisualBundledTransition, Transition> vbt2t;
-    private HashMap<Transition, VisualBundledTransition> t2vbt;
+    private final HashMap<VisualBundledTransition, Transition> vbt2t;
+    private final HashMap<Transition, VisualBundledTransition> t2vbt;
 
     public TransitionBundler(PetriNetGenerator generator) {
         policyNet = generator.getPolicyNet();

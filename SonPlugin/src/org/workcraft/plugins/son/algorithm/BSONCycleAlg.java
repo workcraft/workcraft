@@ -17,9 +17,9 @@ import org.workcraft.plugins.son.util.Phase;
 
 public class BSONCycleAlg extends ONCycleAlg {
 
-    private SON net;
+    private final SON net;
     protected BSONAlg bsonAlg;
-    private Map<Condition, Collection<Phase>> phases;
+    private final Map<Condition, Collection<Phase>> phases;
 
     public BSONCycleAlg(SON net, Map<Condition, Collection<Phase>> phases) {
         super(net);

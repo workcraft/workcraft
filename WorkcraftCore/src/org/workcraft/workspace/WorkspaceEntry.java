@@ -91,7 +91,7 @@ public class WorkspaceEntry implements ObservableState {
         return modelEntry;
     }
 
-    private StateObserver modelObserver = new StateObserver() {
+    private final StateObserver modelObserver = new StateObserver() {
         @Override
         public void notify(StateEvent e) {
             if (e instanceof ModelModifiedEvent) {

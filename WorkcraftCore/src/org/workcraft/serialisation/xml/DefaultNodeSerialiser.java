@@ -36,8 +36,8 @@ import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.serialisation.ReferenceProducer;
 
 public class DefaultNodeSerialiser {
-    private SerialiserFactory fac;
-    private NodeSerialiser serialiser;
+    private final SerialiserFactory fac;
+    private final NodeSerialiser serialiser;
 
     public DefaultNodeSerialiser(SerialiserFactory factory, NodeSerialiser serialiser) {
         this.fac = factory;

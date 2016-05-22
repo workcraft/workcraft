@@ -23,11 +23,11 @@ import org.workcraft.plugins.shared.presets.PresetManager;
 @SuppressWarnings("serial")
 public class PresetManagerDialog<T> extends JDialog {
     private static final String DIALOG_DELETE_PRESET = "Delete preset";
-    private JPanel content;
-    private JList list;
-    private JButton okButton, deleteButton, renameButton;
-    private JScrollPane listScroll;
-    private DefaultListModel listDataModel;
+    private final JPanel content;
+    private final JList list;
+    private final JButton okButton, deleteButton, renameButton;
+    private final JScrollPane listScroll;
+    private final DefaultListModel listDataModel;
 
     public PresetManagerDialog(Window owner, final PresetManager<T> presetManager) {
         super(owner, "Manage presets");

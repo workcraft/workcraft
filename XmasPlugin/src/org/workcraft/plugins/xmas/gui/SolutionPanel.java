@@ -11,12 +11,10 @@ import javax.swing.JTextArea;
 
 @SuppressWarnings("serial")
 public class SolutionPanel extends JPanel {
-    private JPanel buttonsPanel;
-    private JTextArea sText;
 
     public SolutionPanel(final String str, final ActionListener closeAction) {
 
-        sText = new JTextArea();
+        JTextArea sText = new JTextArea();
         sText.setColumns(50);
         sText.setLineWrap(true);
         sText.setText(str);
@@ -24,7 +22,7 @@ public class SolutionPanel extends JPanel {
         final JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(sText);
 
-        buttonsPanel = new JPanel();
+        JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.Y_AXIS));
 
         new JButton("Save");

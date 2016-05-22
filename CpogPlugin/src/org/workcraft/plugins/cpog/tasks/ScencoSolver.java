@@ -36,9 +36,9 @@ public class ScencoSolver {
                                                      "\"http://www.eecs.berkeley.edu/~alanmi/abc/\" or try to " +
                                                      "set path of the folder containing Abc inside Workcraft settings.";
 
-    private EncoderSettings settings;
-    private WorkspaceEntry we;
-    private ScencoExecutionSupport cpogBuilder;
+    private final EncoderSettings settings;
+    private final WorkspaceEntry we;
+    private final ScencoExecutionSupport cpogBuilder;
     private VisualCpog cpog;
 
     // SETTING PARAMETERS FOR CALLING SCENCO

@@ -3,8 +3,8 @@ package org.workcraft.gui.actions;
 import org.workcraft.Framework;
 import org.workcraft.gui.DockableWindow;
 
-public     class ToggleWindowAction extends Action {
-    private DockableWindow window;
+public class ToggleWindowAction extends Action {
+    private final DockableWindow window;
 
     public ToggleWindowAction(DockableWindow window) {
         this.window = window;

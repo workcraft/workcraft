@@ -6,7 +6,7 @@ import org.workcraft.util.XmlUtil;
 public class Preset<T> {
     private String description;
     private T settings;
-    private boolean builtIn;
+    private final boolean builtIn;
 
     public Preset(String description, T settings, boolean builtIn) {
         this.description = description;

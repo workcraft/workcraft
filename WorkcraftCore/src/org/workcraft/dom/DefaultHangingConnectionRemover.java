@@ -32,7 +32,7 @@ import org.workcraft.util.Hierarchy;
 import net.sf.jga.fn.UnaryFunctor;
 
 public class DefaultHangingConnectionRemover extends HierarchySupervisor {
-    private NodeContext nct;
+    private final NodeContext nct;
 
     public DefaultHangingConnectionRemover(NodeContext nct) {
         this.nct = nct;

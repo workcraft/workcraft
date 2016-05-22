@@ -6,7 +6,7 @@ import java.util.List;
 import org.workcraft.gui.workspace.Path;
 
 public class CachedTreeSource<Node> implements TreeSource<Node> {
-    private TreeSourceCache<Node> cache = new TreeSourceCache<>();
+    private final TreeSourceCache<Node> cache = new TreeSourceCache<>();
     private final TreeSource<Node> source;
     private final LinkedList<TreeListener<Node>> listeners = new LinkedList<>();
 

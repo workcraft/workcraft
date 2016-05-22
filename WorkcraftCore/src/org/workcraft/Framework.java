@@ -107,8 +107,8 @@ public final class Framework {
     private static Framework instance = null;
 
     class ExecuteScriptAction implements ContextAction {
-        private String script;
-        private Scriptable scope;
+        private final String script;
+        private final Scriptable scope;
 
         ExecuteScriptAction(String script, Scriptable scope) {
             this.script = script;
@@ -121,8 +121,8 @@ public final class Framework {
     }
 
     class ExecuteCompiledScriptAction implements ContextAction {
-        private Script script;
-        private Scriptable scope;
+        private final Script script;
+        private final Scriptable scope;
 
         ExecuteCompiledScriptAction(Script script, Scriptable scope) {
             this.script = script;
@@ -135,8 +135,8 @@ public final class Framework {
     }
 
     class CompileScriptFromReaderAction implements ContextAction {
-        private String sourceName;
-        private BufferedReader reader;
+        private final String sourceName;
+        private final BufferedReader reader;
 
         CompileScriptFromReaderAction(BufferedReader reader, String sourceName) {
             this.sourceName = sourceName;
@@ -153,7 +153,7 @@ public final class Framework {
     }
 
     class CompileScriptAction implements ContextAction {
-        private String source, sourceName;
+        private final String source, sourceName;
 
         CompileScriptAction(String source, String sourceName) {
             this.source = source;
@@ -181,12 +181,12 @@ public final class Framework {
         }
     }
 
-    private PluginManager pluginManager;
-    private ModelManager modelManager;
-    private TaskManager taskManager;
-    private CompatibilityManager compatibilityManager;
+    private final PluginManager pluginManager;
+    private final ModelManager modelManager;
+    private final TaskManager taskManager;
+    private final CompatibilityManager compatibilityManager;
     private Config config;
-    private Workspace workspace;
+    private final Workspace workspace;
 
     private ScriptableObject systemScope;
     private ScriptableObject globalScope;
@@ -194,7 +194,7 @@ public final class Framework {
     private boolean inGUIMode = false;
     private boolean shutdownRequested = false;
     private boolean guiRestartRequested = false;
-    private ContextFactory contextFactory = new ContextFactory();
+    private final ContextFactory contextFactory = new ContextFactory();
     private MainWindow mainWindow;
     public Memento clipboard;
 

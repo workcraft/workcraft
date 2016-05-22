@@ -56,7 +56,7 @@ public class TreeWindow<Node> extends JPanel {
 
     private JTree tree;
     private final TreePopupProvider<Node> popupProvider;
-    private Set<Node> checkedNodes = new HashSet<>();
+    private final Set<Node> checkedNodes = new HashSet<>();
     private CheckBoxMode checkBoxMode = CheckBoxMode.NONE;
 
     private JCheckBox checkBox;

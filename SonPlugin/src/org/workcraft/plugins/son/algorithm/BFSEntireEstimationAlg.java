@@ -25,7 +25,7 @@ import org.workcraft.plugins.son.exception.TimeOutOfBoundsException;
 
 public class BFSEntireEstimationAlg extends DFSEstimationAlg {
 
-    private boolean twoDir;
+    private final boolean twoDir;
     private Condition superIni;
     private Condition superFinal;
 

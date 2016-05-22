@@ -74,8 +74,8 @@ public class FileFilters {
     }
 
     public static class GenericFileFilter extends FileFilter {
-        private String extension;
-        private String description;
+        private final String extension;
+        private final String description;
 
         public GenericFileFilter(String extension, String description) {
             this.extension = extension;

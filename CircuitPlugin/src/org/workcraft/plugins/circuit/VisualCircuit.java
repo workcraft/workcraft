@@ -62,7 +62,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 @CustomTools(CircuitToolsProvider.class)
 public class VisualCircuit extends AbstractVisualModel {
 
-    private Circuit circuit;
+    private final Circuit circuit;
 
     public VisualCircuit(Circuit model, VisualGroup root) {
         super(model, root);

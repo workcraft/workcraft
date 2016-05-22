@@ -49,9 +49,9 @@ public class CpogParsingTool {
         this.refMap = refMap;
     }
 
-    private HashMap<String, Variable> variableMap;
+    private final HashMap<String, Variable> variableMap;
     private int xpos;
-    private HashMap<String, GraphReference> refMap;
+    private final HashMap<String, GraphReference> refMap;
     private ArrayList<String> usedReferences;
 
     public BooleanFormula parseBool(String bool, final VisualCpog visualCpog) throws ParseException {

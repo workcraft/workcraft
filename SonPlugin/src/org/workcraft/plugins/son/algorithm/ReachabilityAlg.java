@@ -15,8 +15,8 @@ import org.workcraft.plugins.son.util.Before;
 
 public class ReachabilityAlg extends RelationAlgorithm {
 
-    private static Collection<Node> predecessors = new HashSet<>();
-    private SON net;
+    private static final Collection<Node> predecessors = new HashSet<>();
+    private final SON net;
 
     public ReachabilityAlg(SON net) {
         super(net);
