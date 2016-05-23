@@ -34,12 +34,12 @@ public class CommonCommentSettings implements Settings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CommonCommentSettings";
 
-    private static final String keyBaseSize  = prefix + ".baseSize";
-    private static final String keyStrokeWidth  = prefix + ".strokeWidth";
+    private static final String keyBaseSize = prefix + ".baseSize";
+    private static final String keyStrokeWidth = prefix + ".strokeWidth";
     private static final String keyTextAlignment = prefix + ".textAlignment";
-    private static final String keyTextColor  = prefix + ".textColor";
-    private static final String keyBorderColor  = prefix + ".borderColor";
-    private static final String keyFillColor  = prefix + ".fillColor";
+    private static final String keyTextColor = prefix + ".textColor";
+    private static final String keyBorderColor = prefix + ".borderColor";
+    private static final String keyFillColor = prefix + ".fillColor";
 
     private static final double defaultBaseSize = 1.0;
     private static final double defaultStrokeWidth = 0.02;

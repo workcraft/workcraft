@@ -84,7 +84,7 @@ public class ErrorWindow extends JPanel implements ComponentListener {
         public void puts(String s) {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    Container parent =     getParent().getParent().getParent();
+                    Container parent = getParent().getParent().getParent();
                     if (parent instanceof JTabbedPane) {
                         JTabbedPane tab = (JTabbedPane) parent;
                         for (int i = 0; i < tab.getTabCount(); i++) {
@@ -127,7 +127,7 @@ public class ErrorWindow extends JPanel implements ComponentListener {
             if (colorBack == null) {
                 return;
             }
-            Container parent =     getParent().getParent().getParent();
+            Container parent = getParent().getParent().getParent();
             if (parent instanceof JTabbedPane) {
                 JTabbedPane tab = (JTabbedPane) parent;
                 if (tab.getSelectedComponent() == getParent().getParent()) {
@@ -172,7 +172,7 @@ public class ErrorWindow extends JPanel implements ComponentListener {
             return;
         }
 
-        Container parent =     getParent().getParent().getParent();
+        Container parent = getParent().getParent().getParent();
         if (parent instanceof JTabbedPane) {
             JTabbedPane tab = (JTabbedPane) parent;
             for (int i = 0; i < tab.getComponentCount(); i++) {

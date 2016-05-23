@@ -45,7 +45,7 @@ public class PropertyEditorTableModel extends AbstractTableModel {
         }
 
         this.object = object;
-        declarations =  object.getDescriptors().toArray(new PropertyDescriptor[0]);
+        declarations = object.getDescriptors().toArray(new PropertyDescriptor[0]);
         rowClasses = new PropertyClass[declarations.length];
 
         fireTableDataChanged();

@@ -62,7 +62,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
 
             // Generating .g for the model
-            File devStgFile =  new File(directory, "dev.g");
+            File devStgFile = new File(directory, "dev.g");
             ExportTask devExportTask = new ExportTask(devStgExporter, devStg, devStgFile.getAbsolutePath());
             Result<? extends Object> devExportResult = framework.getTaskManager().execute(
                     devExportTask, "Exporting circuit .g", subtaskMonitor);

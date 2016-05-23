@@ -14,14 +14,14 @@ public class CircuitSettings implements Settings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CircuitSettings";
 
-    private static final String keyShowContacts  = prefix + ".showContacts";
+    private static final String keyShowContacts = prefix + ".showContacts";
     private static final String keyShowZeroDelayNames = prefix + ".showZeroDelayNames";
-    private static final String keyActiveWireColor  = prefix + ".activeWireColor";
-    private static final String keyInactiveWireColor  = prefix + ".inactiveWireColor";
-    private static final String keyInitialisedGateColor  = prefix + ".initialisedGateColor";
-    private static final String keyConflictGateColor  = prefix + ".conflictGateColor";
-    private static final String keyBorderWidth  = prefix + ".borderWidth";
-    private static final String keyWireWidth  = prefix + ".wireWidth";
+    private static final String keyActiveWireColor = prefix + ".activeWireColor";
+    private static final String keyInactiveWireColor = prefix + ".inactiveWireColor";
+    private static final String keyInitialisedGateColor = prefix + ".initialisedGateColor";
+    private static final String keyConflictGateColor = prefix + ".conflictGateColor";
+    private static final String keyBorderWidth = prefix + ".borderWidth";
+    private static final String keyWireWidth = prefix + ".wireWidth";
     private static final String keySimplifyStg = prefix + ".simplifyStg";
     private static final String keyGateLibrary = prefix + ".gateLibrary";
     private static final String keySubstitutionLibrary = prefix + ".substitutionLibrary";

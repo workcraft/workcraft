@@ -33,14 +33,14 @@ public class CommonSimulationSettings implements Settings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CommonSimulationSettings";
 
-    private static final String keyUseEnabledForeground  = prefix + ".useEnabledForeground";
-    private static final String keyEnabledForegroundColor  = prefix + ".enabledForegroundColor";
-    private static final String keyUseEnabledBackground  = prefix + ".useEnabledBackground";
-    private static final String keyEnabledBackgroundColor  = prefix + ".enabledBackgroundColor";
+    private static final String keyUseEnabledForeground = prefix + ".useEnabledForeground";
+    private static final String keyEnabledForegroundColor = prefix + ".enabledForegroundColor";
+    private static final String keyUseEnabledBackground = prefix + ".useEnabledBackground";
+    private static final String keyEnabledBackgroundColor = prefix + ".enabledBackgroundColor";
 
-    private static final boolean deafultUseEnabledForeground  = true;
+    private static final boolean deafultUseEnabledForeground = true;
     private static final Color deafultEnabledForegroundColor = new Color(1.0f, 0.5f, 0.0f);
-    private static final boolean deafultUseEnabledBackground  = false;
+    private static final boolean deafultUseEnabledBackground = false;
     private static final Color deafultEnabledBackgroundColor = new Color(1.0f, 0.5f, 0.0f);
 
     private static boolean useEnabledForeground = deafultUseEnabledForeground;

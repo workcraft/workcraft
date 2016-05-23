@@ -177,7 +177,7 @@ public class DotGSerialiser implements ModelSerialiser {
                     String predFlatName = NamespaceHelper.hierarchicalToFlatName(model.getNodeReference(predNode));
                     Node succNode = model.getPostset(p).iterator().next();
                     String succFlatName = NamespaceHelper.hierarchicalToFlatName(model.getNodeReference(succNode));
-                    reference = "<" + predFlatName + "," +    succFlatName + ">";
+                    reference = "<" + predFlatName + "," + succFlatName + ">";
                 } else {
                     reference = NamespaceHelper.hierarchicalToFlatName(model.getNodeReference(p));
                 }

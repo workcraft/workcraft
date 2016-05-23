@@ -31,10 +31,10 @@ public class XmasSettings implements Settings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "XmasSettings";
 
-    private static final String keyShowContacts  = prefix + ".showContacts";
+    private static final String keyShowContacts = prefix + ".showContacts";
     private static final String keyBorderWidth = prefix + ".borderWidth";
-    private static final String keyWireWidth  = prefix + ".wireWidth";
-    private static final String keyVxmCommand  = prefix + ".vxmCommand";
+    private static final String keyWireWidth = prefix + ".wireWidth";
+    private static final String keyVxmCommand = prefix + ".vxmCommand";
 
     private static final boolean defaultShowContacts = false;
     private static final double defaultBorderWidth = 0.06;

@@ -388,7 +388,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
             }
 
             GateRenderer.foreground = Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation());
-            GateRenderer.background  = Coloriser.colorise(getFillColor(), r.getDecoration().getBackground());
+            GateRenderer.background = Coloriser.colorise(getFillColor(), r.getDecoration().getBackground());
             rr.draw(g);
             g.transform(bt);
 

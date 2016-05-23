@@ -21,7 +21,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatCombinedChainResult> {
     private static final String TITLE = "MPSat verification";
-    private static final String ERROR_CAUSE_PREFIX  = "\n\n";
+    private static final String ERROR_CAUSE_PREFIX = "\n\n";
     private final MpsatCombinedChainTask task;
 
     public MpsatCombinedChainResultHandler(MpsatCombinedChainTask task) {

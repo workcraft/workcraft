@@ -34,21 +34,21 @@ public class CommonVisualSettings implements Settings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CommonVisualSettings";
 
-    private static final String keyBaseSize  = prefix + ".baseSize";
-    private static final String keyStrokeWidth  = prefix + ".strokeWidth";
+    private static final String keyBaseSize = prefix + ".baseSize";
+    private static final String keyStrokeWidth = prefix + ".strokeWidth";
     private static final String keyPivotSize = prefix + ".pivotSize";
-    private static final String keyPivotWidth  = prefix + ".pivotWidth";
+    private static final String keyPivotWidth = prefix + ".pivotWidth";
     private static final String keyBorderColor = prefix + ".borderColor";
-    private static final String keyFillColor  = prefix + ".fillColor";
-    private static final String keyLineSpacing  = prefix + ".lineSpacing";
-    private static final String keyLabelVisibility  = prefix + ".labelVisibility";
-    private static final String keyLabelPositioning  = prefix + ".labelPositioning";
-    private static final String keyLabelColor  = prefix + ".labelColor";
-    private static final String keyNameVisibility  = prefix + ".nameVisibility";
-    private static final String keyNamePositioning  = prefix + ".namePositioning";
-    private static final String keyNameColor  = prefix + ".nameColor";
+    private static final String keyFillColor = prefix + ".fillColor";
+    private static final String keyLineSpacing = prefix + ".lineSpacing";
+    private static final String keyLabelVisibility = prefix + ".labelVisibility";
+    private static final String keyLabelPositioning = prefix + ".labelPositioning";
+    private static final String keyLabelColor = prefix + ".labelColor";
+    private static final String keyNameVisibility = prefix + ".nameVisibility";
+    private static final String keyNamePositioning = prefix + ".namePositioning";
+    private static final String keyNameColor = prefix + ".nameColor";
     private static final String keyUseSubscript = prefix + ".useSubscript";
-    private static final String keyRedrawInterval  = prefix + ".redrawInterval";
+    private static final String keyRedrawInterval = prefix + ".redrawInterval";
 
     private static final double defaultBaseSize = 1.0;
     private static final double defaultStrokeWidth = 0.1;

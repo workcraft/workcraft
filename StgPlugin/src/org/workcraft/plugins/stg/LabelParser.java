@@ -46,7 +46,7 @@ public class LabelParser {
             if (instanceGroup == null) {
                 instance = null;
             } else {
-                instance =  Integer.parseInt(instanceGroup);
+                instance = Integer.parseInt(instanceGroup);
             }
             result = Triple.of(signalName, direction, instance);
         }
@@ -64,7 +64,7 @@ public class LabelParser {
             if (instanceGroup == null) {
                 instance = null;
             } else {
-                instance =  Integer.parseInt(instanceGroup);
+                instance = Integer.parseInt(instanceGroup);
             }
             result = Pair.of(name, instance);
         }
@@ -81,7 +81,7 @@ public class LabelParser {
             if (instanceGroup == null) {
                 instance = null;
             } else {
-                instance =  Integer.parseInt(instanceGroup);
+                instance = Integer.parseInt(instanceGroup);
             }
             result = Pair.of(name, instance);
         }

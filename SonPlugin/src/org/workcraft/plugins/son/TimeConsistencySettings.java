@@ -22,7 +22,7 @@ public class TimeConsistencySettings {
             ScenarioRef seletedScenario, ArrayList<Node> seletedNodes, int tabIndex,
             Granularity granularity, boolean causalConsistency,
             Interval defaultDuration, boolean causalHighlight) {
-        this.inconsistencyHighlight =     inconsistencyHighlight;
+        this.inconsistencyHighlight = inconsistencyHighlight;
         this.unspecifyHighlight = unspecifyHighlight;
         this.selectedGroups = selectedGroups;
         this.seletedScenario = seletedScenario;

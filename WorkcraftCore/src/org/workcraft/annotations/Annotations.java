@@ -34,7 +34,7 @@ public class Annotations {
     }
 
     public static String getDisplayName(Class<?> cls) {
-        DisplayName dna =  cls.getAnnotation(DisplayName.class);
+        DisplayName dna = cls.getAnnotation(DisplayName.class);
         if (dna == null) {
             return cls.getSimpleName();
         }
@@ -42,7 +42,7 @@ public class Annotations {
     }
 
     public static String getSVGIconPath(Class<?> cls) {
-        SVGIcon icon =  cls.getAnnotation(SVGIcon.class);
+        SVGIcon icon = cls.getAnnotation(SVGIcon.class);
         if (icon == null) {
             return null;
         }
@@ -50,7 +50,7 @@ public class Annotations {
     }
 
     public static String getIconPath(Class<?> cls) {
-        Icon icon =  cls.getAnnotation(Icon.class);
+        Icon icon = cls.getAnnotation(Icon.class);
         if (icon == null) {
             return null;
         }

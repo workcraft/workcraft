@@ -20,7 +20,7 @@ import org.workcraft.util.Hierarchy;
 public class Block extends PageNode implements TransitionNode, Time {
     private String label = "";
     private Color foregroundColor = CommonVisualSettings.getBorderColor();
-    private Color fillColor  = CommonVisualSettings.getFillColor();
+    private Color fillColor = CommonVisualSettings.getFillColor();
     private boolean isCollapsed = false;
 
     private Interval duration = new Interval(0000, 9999);

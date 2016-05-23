@@ -304,7 +304,7 @@ public class ScencoExecutionSupport {
                                     }
                                     //System.out.println("TMP: " + tmp);
                                     for (int j = tmp.length() - 1; j >= 0; j--) {
-                                        //System.out.println(j + ") " +  tmp.charAt(j));
+                                        //System.out.println(j + ") " + tmp.charAt(j));
                                         result += tmp.charAt(j);
                                     }
                                     if (i < cond.length()) {

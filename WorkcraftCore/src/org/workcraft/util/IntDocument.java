@@ -16,7 +16,7 @@ public class IntDocument extends PlainDocument {
     @Override
     public void insertString(int offset, String str, AttributeSet attr) throws BadLocationException {
         if (str != null) {
-            String s =  str.replaceAll("\\D++", "");
+            String s = str.replaceAll("\\D++", "");
             if (getLength() + s.length() <= limit) {
                 super.insertString(offset, s, attr);
             }

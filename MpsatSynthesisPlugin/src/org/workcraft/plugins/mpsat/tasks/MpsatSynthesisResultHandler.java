@@ -35,7 +35,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynthesisChainResult> {
     private static final String TITLE = "MPSat synthesis";
-    private static final String ERROR_CAUSE_PREFIX  = "\n\n";
+    private static final String ERROR_CAUSE_PREFIX = "\n\n";
     private final MpsatSynthesisChainTask task;
 
     public MpsatSynthesisResultHandler(MpsatSynthesisChainTask task) {

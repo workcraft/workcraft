@@ -46,7 +46,7 @@ final class MpsatReachabilityResultHandler implements Runnable {
         String message = getMessage(!solutions.isEmpty());
         MainWindow mainWindow = Framework.getInstance().getMainWindow();
         if (Solution.hasTraces(solutions)) {
-            String extendedMessage = "<html><br>&#160;" + message +  "<br><br>&#160;Trace(s) leading to the problematic state(s):<br><br></html>";
+            String extendedMessage = "<html><br>&#160;" + message + "<br><br>&#160;Trace(s) leading to the problematic state(s):<br><br></html>";
             final ReachibilityDialog dialog = new ReachibilityDialog(we, title, extendedMessage, solutions);
             GUI.centerToParent(dialog, mainWindow);
             dialog.setVisible(true);

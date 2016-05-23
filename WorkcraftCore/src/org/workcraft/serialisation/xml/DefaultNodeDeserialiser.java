@@ -134,7 +134,7 @@ class DefaultNodeDeserialiser {
             Object instance;
 
             // Check for a custom deserialiser first
-            XMLDeserialiser deserialiser  = fac.getDeserialiserFor(className);
+            XMLDeserialiser deserialiser = fac.getDeserialiserFor(className);
 
             if (deserialiser instanceof CustomXMLDeserialiser) {
                 //System.out.println("Using custom deserialiser " + deserialiser);

@@ -100,9 +100,9 @@ public final class Framework {
     private static final String UILAYOUT_FILE_NAME = "uilayout.xml";
 
     public static final String SETTINGS_DIRECTORY_PATH = DesktopApi.getConfigPath() + File.separator + SETTINGS_DIRECTORY_NAME;
-    public static final String CONFIG_FILE_PATH =  SETTINGS_DIRECTORY_PATH + File.separator + CONFIG_FILE_NAME;
-    public static final String PLUGINS_FILE_PATH =  SETTINGS_DIRECTORY_PATH + File.separator + PLUGINS_FILE_NAME;
-    public static final String UILAYOUT_FILE_PATH =  SETTINGS_DIRECTORY_PATH + File.separator + UILAYOUT_FILE_NAME;
+    public static final String CONFIG_FILE_PATH = SETTINGS_DIRECTORY_PATH + File.separator + CONFIG_FILE_NAME;
+    public static final String PLUGINS_FILE_PATH = SETTINGS_DIRECTORY_PATH + File.separator + PLUGINS_FILE_NAME;
+    public static final String UILAYOUT_FILE_PATH = SETTINGS_DIRECTORY_PATH + File.separator + UILAYOUT_FILE_NAME;
 
     private static Framework instance = null;
 
@@ -821,17 +821,17 @@ public final class Framework {
         }
         if (!f.exists()) {
             JOptionPane.showMessageDialog(null,
-                    "The path  \""    + f.getPath() + "\" does not exisit.\n",
+                    "The path  \"" + f.getPath() + "\" does not exisit.\n",
                     errorTitle, JOptionPane.ERROR_MESSAGE);
             result = false;
         } else if (!f.isFile()) {
             JOptionPane.showMessageDialog(null,
-                    "The path  \""    + f.getPath() + "\" is not a file.\n",
+                    "The path  \"" + f.getPath() + "\" is not a file.\n",
                     errorTitle, JOptionPane.ERROR_MESSAGE);
             result = false;
         } else if (!f.canRead()) {
             JOptionPane.showMessageDialog(null,
-                    "The file  \""    + f.getPath() + "\" cannot be read.\n",
+                    "The file  \"" + f.getPath() + "\" cannot be read.\n",
                     errorTitle, JOptionPane.ERROR_MESSAGE);
             result = false;
         }

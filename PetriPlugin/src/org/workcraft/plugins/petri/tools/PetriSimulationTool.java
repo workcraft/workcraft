@@ -146,7 +146,7 @@ public class PetriSimulationTool extends SimulationTool {
             for (Node node: getUnderlyingPetri().getPostset(transition)) {
                 if (node instanceof Place) {
                     Place place = (Place) node;
-                    capacity.put(place,  place.getCapacity());
+                    capacity.put(place, place.getCapacity());
                 }
             }
             getUnderlyingPetri().fire(transition);

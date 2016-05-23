@@ -139,8 +139,8 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
         if (reference.isEmpty() || reference.equals(NamespaceHelper.getHierarchySeparator())) {
             return provider;
         }
-        String head =  NamespaceHelper.getReferenceHead(reference);
-        String tail =  NamespaceHelper.getReferenceTail(reference);
+        String head = NamespaceHelper.getReferenceHead(reference);
+        String tail = NamespaceHelper.getReferenceTail(reference);
         NameManager man = getNameManager(provider);
         Node node;
         node = man.getNode(head);

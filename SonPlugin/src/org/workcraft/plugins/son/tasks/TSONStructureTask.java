@@ -48,7 +48,7 @@ public class TSONStructureTask extends AbstractStructuralVerification {
             blocks.addAll(cGroup.getBlocks());
         }
 
-        infoMsg("Selected Groups : " +  net.toString(groups));
+        infoMsg("Selected Groups : " + net.toString(groups));
         infoMsg("Collapsed Blocks : " + net.toString(blocks));
 
         if (blocks.isEmpty()) {

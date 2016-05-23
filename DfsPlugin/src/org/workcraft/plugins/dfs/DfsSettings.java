@@ -34,15 +34,15 @@ public class DfsSettings implements Settings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "DfsSettings";
 
-    private static final String keyComputedLogicColor  = prefix + ".computedLogicColor";
+    private static final String keyComputedLogicColor = prefix + ".computedLogicColor";
     private static final String keySynchronisationRegisterColor = prefix + "synchronisationRegisterColor";
     private static final String keyTokenPalette = prefix + "tokenPalette";
 
-    private static final Color defaultComputedLogicColor  = new Color(153, 153, 153);
+    private static final Color defaultComputedLogicColor = new Color(153, 153, 153);
     private static final Color defaultSynchronisationRegisterColor = new Color(153, 153, 153);
     private static final Palette defaultTokenPalette = Palette.RGB;
 
-    private static Color computedLogicColor  = defaultComputedLogicColor;
+    private static Color computedLogicColor = defaultComputedLogicColor;
     private static Color synchronisationRegisterColor = defaultSynchronisationRegisterColor;
     private static Palette tokenPalette = defaultTokenPalette;
 

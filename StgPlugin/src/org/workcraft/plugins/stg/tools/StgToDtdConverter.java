@@ -103,7 +103,7 @@ public class StgToDtdConverter {
                 SignalTransition transition = (SignalTransition) node;
                 String signalName = transition.getSignalName();
                 VisualSignal signal = signalMap.get(signalName);
-                Direction direction =  getDirection(transition.getDirection());
+                Direction direction = getDirection(transition.getDirection());
                 SignalEvent curEvent = dtd.appendSignalEvent(signal, direction);
                 result.put(curEvent, transition);
                 x += EVENT_OFFSET;

@@ -182,7 +182,7 @@ public class WaggingGenerator {
                 }
             }
         }
-        return Pair.of(hasPred,  hasSucc);
+        return Pair.of(hasPred, hasSucc);
     }
 
     private void insertPushControl() {

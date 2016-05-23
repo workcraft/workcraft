@@ -154,7 +154,7 @@ public class MpsatSettings {
             "     // places from the composed STG, it substitutes them with equivalent places that remain.\n" +
             "     // LIMITATION: syntax error if any of these sets is empty.\n" +
             "    PDEV_NAMES={\n" +
-            "        "  + REACH_CONFORMATION_DEV_PLACES + "\n" +
+            "        " + REACH_CONFORMATION_DEV_PLACES + "\n" +
             "    },\n" +
             "    // PDEV is the set of places with the names in PDEV_NAMES.\n" +
             "    // XML-based PUNF / MPSAT are needed here to process dead places correctly.\n" +

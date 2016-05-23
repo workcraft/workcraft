@@ -29,7 +29,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class SynthesisResultHandler extends DummyProgressMonitor<SynthesisResult> {
     private static final String TITLE = "Petrify synthesis";
-    private static final String ERROR_CAUSE_PREFIX  = "\n\n";
+    private static final String ERROR_CAUSE_PREFIX = "\n\n";
     private final WorkspaceEntry we;
     private final boolean boxSequentialComponents;
     private final boolean boxCombinationalComponents;

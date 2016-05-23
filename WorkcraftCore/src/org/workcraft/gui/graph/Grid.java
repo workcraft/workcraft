@@ -349,7 +349,7 @@ public class Grid implements ViewportListener {
         viewport.getInverseTransform().transform(viewUR, visibleLR);
 
         // Compute the leftmost, rightmost, topmost and bottom visible grid lines
-        int bottom  = (int) Math.ceil(visibleLR.getY() / interval);
+        int bottom = (int) Math.ceil(visibleLR.getY() / interval);
         int top = (int) Math.floor(visibleUL.getY() / interval);
         int left = (int) Math.ceil(visibleUL.getX() / interval);
         int right = (int) Math.floor(visibleLR.getX() / interval);
@@ -406,7 +406,7 @@ public class Grid implements ViewportListener {
         viewport.getInverseTransform().transform(viewUR, visibleLR);
 
         // Compute the leftmost, rightmost, topmost and bottom visible grid lines
-        int bottom  = (int) Math.ceil(visibleLR.getY() / interval);
+        int bottom = (int) Math.ceil(visibleLR.getY() / interval);
         int top = (int) Math.floor(visibleUL.getY() / interval);
         int left = (int) Math.ceil(visibleUL.getX() / interval);
         int right = (int) Math.floor(visibleLR.getX() / interval);
