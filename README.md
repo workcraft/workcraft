@@ -9,9 +9,13 @@ http://workcraft.org/.
 
 ### Building
 
-Workcraft is built via [Gradle](https://gradle.org/). These instructions
-use `gradlew`, a wrapper that will download version `2.11` for you. If
-you want to run your own gradle, you can.
+Workcraft requires Java JDK 1.7 or newer for a successful build and
+is assembled via [Gradle](https://gradle.org/). It is tested with
+both [Open JDK](http://openjdk.java.net/) and [Oracle JDK]
+(http://www.oracle.com/technetwork/java/javase/downloads/index.html).
+These instructions use `gradlew`, a wrapper that downloads and runs
+version `2.12`. Alternatively a pre-installed version of `gradle` can
+be used.
 
 Use the `assemble` task to build the core and all the plugins:
 
