@@ -36,15 +36,15 @@ import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.connections.ConnectionGraphic;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.BooleanOperations;
+import org.workcraft.formula.One;
+import org.workcraft.formula.Zero;
+import org.workcraft.formula.utils.FormulaRenderingResult;
+import org.workcraft.formula.utils.FormulaToGraphics;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaRenderingResult;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToGraphics;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.PrettifyBooleanReplacer;
-import org.workcraft.plugins.cpog.optimisation.expressions.BooleanOperations;
-import org.workcraft.plugins.cpog.optimisation.expressions.One;
-import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
+import org.workcraft.plugins.cpog.formula.PrettifyBooleanReplacer;
 import org.workcraft.util.Geometry;
 
 public class VisualArc extends VisualConnection {

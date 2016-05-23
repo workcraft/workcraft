@@ -11,11 +11,11 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.BooleanVariable;
 import org.workcraft.plugins.circuit.naryformula.NaryBooleanFormula;
 import org.workcraft.plugins.circuit.naryformula.NaryBooleanFormulaVisitor;
 import org.workcraft.plugins.circuit.naryformula.NaryFormulaBuilder;
-import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
 
 public class GateRenderer {
 

@@ -50,6 +50,8 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.utils.FormulaToString;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
@@ -67,15 +69,13 @@ import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.VisualScenarioPage;
 import org.workcraft.plugins.cpog.VisualVariable;
 import org.workcraft.plugins.cpog.VisualVertex;
-import org.workcraft.plugins.cpog.expressions.CpogConnector;
-import org.workcraft.plugins.cpog.expressions.CpogFormula;
-import org.workcraft.plugins.cpog.expressions.CpogFormulaToString;
-import org.workcraft.plugins.cpog.expressions.GraphFunc;
-import org.workcraft.plugins.cpog.expressions.jj.CpogExpressionParser;
-import org.workcraft.plugins.cpog.expressions.jj.ParseException;
-import org.workcraft.plugins.cpog.expressions.jj.TokenMgrError;
-import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
+import org.workcraft.plugins.cpog.formula.CpogConnector;
+import org.workcraft.plugins.cpog.formula.CpogFormula;
+import org.workcraft.plugins.cpog.formula.CpogFormulaToString;
+import org.workcraft.plugins.cpog.formula.GraphFunc;
+import org.workcraft.plugins.cpog.formula.jj.CpogFormulaParser;
+import org.workcraft.plugins.cpog.formula.jj.ParseException;
+import org.workcraft.plugins.cpog.formula.jj.TokenMgrError;
 import org.workcraft.plugins.stg.VisualNamedTransition;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -268,7 +268,7 @@ public class CpogSelectionTool extends SelectionTool {
         CpogFormula f = null;
         final HashMap<String, VisualVertex> localVertices = new HashMap<>();
         try {
-            f = CpogExpressionParser.parse(text,
+            f = CpogFormulaParser.parse(text,
                     new GraphFunc<String, CpogFormula>() {
 
                         boolean ref;
@@ -314,13 +314,13 @@ public class CpogSelectionTool extends SelectionTool {
                                     if (FormulaToString.toString(vertex.getCondition()) == "") {
                                         try {
                                             vertex.setCondition(parsingTool.parseBool(boolExpression, visualCpog));
-                                        } catch (ParseException e) {
+                                        } catch (org.workcraft.formula.jj.ParseException e) {
                                             throw new ParseException("Boolean error in: " + boolExpression);
                                         }
                                     } else {
                                         try {
                                             vertex.setCondition(parsingTool.parseBool(FormulaToString.toString(vertex.getCondition()) + "|" + boolExpression, visualCpog));
-                                        } catch (ParseException e) {
+                                        } catch (org.workcraft.formula.jj.ParseException e) {
                                             throw new ParseException("Boolean error in: " + boolExpression);
                                         }
                                     }
@@ -340,14 +340,14 @@ public class CpogSelectionTool extends SelectionTool {
                                     try {
                                         bf = parsingTool.parseBool(boolExpression, visualCpog);
                                         vertex.setCondition(bf);
-                                    } catch (ParseException e) {
+                                    } catch (org.workcraft.formula.jj.ParseException e) {
                                         throw new ParseException("Boolean error in: " + boolExpression);
                                     }
                                 } else {
                                     try {
                                         bf = parsingTool.parseBool(boolExpression, visualCpog);
                                         vertex.setCondition(bf);
-                                    } catch (ParseException e) {
+                                    } catch (org.workcraft.formula.jj.ParseException e) {
                                         throw new ParseException("Boolean error in: " + boolExpression);
                                     }
                                 }

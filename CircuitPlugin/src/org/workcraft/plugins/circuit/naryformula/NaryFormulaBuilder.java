@@ -4,18 +4,18 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import org.workcraft.plugins.cpog.optimisation.BinaryBooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
-import org.workcraft.plugins.cpog.optimisation.expressions.And;
-import org.workcraft.plugins.cpog.optimisation.expressions.BooleanVisitor;
-import org.workcraft.plugins.cpog.optimisation.expressions.Iff;
-import org.workcraft.plugins.cpog.optimisation.expressions.Imply;
-import org.workcraft.plugins.cpog.optimisation.expressions.Not;
-import org.workcraft.plugins.cpog.optimisation.expressions.One;
-import org.workcraft.plugins.cpog.optimisation.expressions.Or;
-import org.workcraft.plugins.cpog.optimisation.expressions.Xor;
-import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
+import org.workcraft.formula.And;
+import org.workcraft.formula.BinaryBooleanFormula;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.BooleanVariable;
+import org.workcraft.formula.BooleanVisitor;
+import org.workcraft.formula.Iff;
+import org.workcraft.formula.Imply;
+import org.workcraft.formula.Not;
+import org.workcraft.formula.One;
+import org.workcraft.formula.Or;
+import org.workcraft.formula.Xor;
+import org.workcraft.formula.Zero;
 
 public class NaryFormulaBuilder {
 

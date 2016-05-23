@@ -5,14 +5,14 @@ import java.util.Collection;
 
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Node;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.One;
+import org.workcraft.formula.Zero;
+import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.BooleanUtils;
-import org.workcraft.plugins.cpog.optimisation.expressions.One;
-import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
 import org.workcraft.util.Hierarchy;
 
 @VisualClass(org.workcraft.plugins.circuit.VisualFunctionComponent.class)

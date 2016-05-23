@@ -2,7 +2,7 @@ package org.workcraft.plugins.circuit.naryformula;
 
 import java.util.List;
 
-import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
+import org.workcraft.formula.BooleanVariable;
 
 public class Util {
     public static NaryBooleanFormula getXor(final List<NaryBooleanFormula> args) {

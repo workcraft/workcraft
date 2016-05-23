@@ -7,6 +7,9 @@ import java.util.HashMap;
 import java.util.StringTokenizer;
 
 import org.workcraft.dom.visual.VisualTransformableNode;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.encoding.Encoding;
+import org.workcraft.formula.jj.ParseException;
 import org.workcraft.plugins.cpog.CpogSettings;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
@@ -15,9 +18,6 @@ import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.VisualScenario;
 import org.workcraft.plugins.cpog.VisualVariable;
 import org.workcraft.plugins.cpog.VisualVertex;
-import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.CpogEncoding;
-import org.workcraft.plugins.cpog.optimisation.jj.ParseException;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.Hierarchy;
@@ -342,7 +342,7 @@ public class ScencoSolver {
             for (int i = 0; i < freeVariables; i++) vars[i] = cpog.createVisualVariable().getMathVariable();
             for (int i = 0; i < pr; i++) vars[freeVariables + i] = predicatives[i].getMathVariable();
 
-            CpogEncoding solution = null;
+            Encoding solution = null;
 
             // READ OUTPUT OF SCENCO INSTANTIATING THE OPTIMAL ENCODING SOLUTION
             // AND CONNECTING IT TO EACH VISUAL VERTEX EXPLOITING A MAP
@@ -358,7 +358,7 @@ public class ScencoSolver {
                 System.out.println(name + ": " + optEnc[i]);
             }
 
-            solution = new CpogEncoding(null, null);
+            solution = new Encoding(null, null);
             //BooleanFormula[][] encodingVars = optTask.getEncodingVars();
             BooleanFormula[] formule = new BooleanFormula[v + a];
 

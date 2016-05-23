@@ -12,10 +12,10 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.jj.BooleanFormulaParser;
+import org.workcraft.formula.jj.ParseException;
 import org.workcraft.plugins.circuit.Contact.IOType;
-import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.jj.BooleanParser;
-import org.workcraft.plugins.cpog.optimisation.jj.ParseException;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
@@ -303,7 +303,7 @@ public class CircuitUtils {
         if (function == null) {
             return null;
         }
-        return BooleanParser.parse(function, new Func<String, BooleanFormula>() {
+        return BooleanFormulaParser.parse(function, new Func<String, BooleanFormula>() {
             @Override
             public BooleanFormula eval(String name) {
                 FunctionContact contact = (FunctionContact) circuit.getNodeByReference(component, name);
@@ -322,7 +322,7 @@ public class CircuitUtils {
         if (function == null) {
             return null;
         }
-        return BooleanParser.parse(function, new Func<String, BooleanFormula>() {
+        return BooleanFormulaParser.parse(function, new Func<String, BooleanFormula>() {
             @Override
             public BooleanFormula eval(String name) {
                 FunctionContact port = (FunctionContact) circuit.getNodeByReference(null, name);
@@ -342,7 +342,7 @@ public class CircuitUtils {
         if (function == null) {
             return null;
         }
-        return BooleanParser.parse(function, new Func<String, BooleanFormula>() {
+        return BooleanFormulaParser.parse(function, new Func<String, BooleanFormula>() {
             @Override
             public BooleanFormula eval(String name) {
                 BooleanFormula result = null;
@@ -359,7 +359,7 @@ public class CircuitUtils {
         if (function == null) {
             return null;
         }
-        return BooleanParser.parse(function, new Func<String, BooleanFormula>() {
+        return BooleanFormulaParser.parse(function, new Func<String, BooleanFormula>() {
             @Override
             public BooleanFormula eval(String name) {
                 BooleanFormula result = null;

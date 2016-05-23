@@ -10,10 +10,10 @@ import java.awt.geom.Rectangle2D;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.Touchable;
-import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaRenderingResult;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToGraphics;
-import org.workcraft.plugins.cpog.optimisation.expressions.One;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.One;
+import org.workcraft.formula.utils.FormulaRenderingResult;
+import org.workcraft.formula.utils.FormulaToGraphics;
 
 public class RenderedFormula implements Touchable {
     public final String text;

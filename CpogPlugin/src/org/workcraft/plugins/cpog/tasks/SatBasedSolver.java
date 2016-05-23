@@ -10,6 +10,14 @@ import java.util.HashMap;
 import javax.swing.JOptionPane;
 
 import org.workcraft.dom.visual.VisualTransformableNode;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.encoding.Encoding;
+import org.workcraft.formula.encoding.onehot.OneHotIntBooleanFormula;
+import org.workcraft.formula.encoding.onehot.OneHotNumberProvider;
+import org.workcraft.formula.jj.ParseException;
+import org.workcraft.formula.sat.CleverCnfGenerator;
+import org.workcraft.formula.sat.DefaultSolver;
+import org.workcraft.formula.sat.Optimiser;
 import org.workcraft.plugins.cpog.CpogSettings;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.Variable;
@@ -17,14 +25,6 @@ import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.VisualScenario;
 import org.workcraft.plugins.cpog.VisualVariable;
 import org.workcraft.plugins.cpog.VisualVertex;
-import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.CleverCnfGenerator;
-import org.workcraft.plugins.cpog.optimisation.CpogEncoding;
-import org.workcraft.plugins.cpog.optimisation.DefaultCpogSolver;
-import org.workcraft.plugins.cpog.optimisation.OneHotIntBooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.OneHotNumberProvider;
-import org.workcraft.plugins.cpog.optimisation.Optimiser;
-import org.workcraft.plugins.cpog.optimisation.jj.ParseException;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.Hierarchy;
@@ -195,7 +195,7 @@ public class SatBasedSolver {
         int derivedVariables = settings.getCircuitSize();
 
         Optimiser<OneHotIntBooleanFormula> oneHot = new Optimiser<>(new OneHotNumberProvider());
-        DefaultCpogSolver<BooleanFormula> solverCnf = new DefaultCpogSolver<>(oneHot, new CleverCnfGenerator());
+        DefaultSolver<BooleanFormula> solverCnf = new DefaultSolver<>(oneHot, new CleverCnfGenerator());
 
         // GET PREDICATES FROM WORKCRAFT ENVIRONMENT
         VisualVariable[] predicatives = new VisualVariable[n];
@@ -208,7 +208,7 @@ public class SatBasedSolver {
         for (int i = 0; i < freeVariables; i++) vars[i] = cpog.createVisualVariable().getMathVariable();
         for (int i = 0; i < pr; i++) vars[freeVariables + i] = predicatives[i].getMathVariable();
 
-        CpogEncoding solution = null;
+        Encoding solution = null;
         try {
             // OLD SCENCO EXECUTION
             if (callScenco) {

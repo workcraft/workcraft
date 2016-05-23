@@ -37,13 +37,13 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.One;
+import org.workcraft.formula.Zero;
+import org.workcraft.formula.utils.FormulaRenderingResult;
+import org.workcraft.formula.utils.FormulaToGraphics;
 import org.workcraft.gui.Coloriser;
-import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaRenderingResult;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToGraphics;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.PrettifyBooleanReplacer;
-import org.workcraft.plugins.cpog.optimisation.expressions.One;
-import org.workcraft.plugins.cpog.optimisation.expressions.Zero;
+import org.workcraft.plugins.cpog.formula.PrettifyBooleanReplacer;
 
 @Hotkey(KeyEvent.VK_R)
 @DisplayName("RhoClause")

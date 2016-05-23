@@ -18,11 +18,11 @@ import java.util.TreeSet;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.formula.utils.FormulaRenderingResult;
+import org.workcraft.formula.utils.FormulaToGraphics;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaRenderingResult;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToGraphics;
 import org.workcraft.util.Hierarchy;
 
 public class VisualScenario extends VisualGroup {

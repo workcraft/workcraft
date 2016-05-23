@@ -22,6 +22,11 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.VisualTransformableNode;
+import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.BooleanVariable;
+import org.workcraft.formula.jj.BooleanFormulaParser;
+import org.workcraft.formula.jj.ParseException;
+import org.workcraft.formula.utils.FormulaToString;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.cpog.Variable;
 import org.workcraft.plugins.cpog.VisualArc;
@@ -30,11 +35,6 @@ import org.workcraft.plugins.cpog.VisualScenario;
 import org.workcraft.plugins.cpog.VisualScenarioPage;
 import org.workcraft.plugins.cpog.VisualVariable;
 import org.workcraft.plugins.cpog.VisualVertex;
-import org.workcraft.plugins.cpog.expressions.jj.ParseException;
-import org.workcraft.plugins.cpog.optimisation.BooleanFormula;
-import org.workcraft.plugins.cpog.optimisation.BooleanVariable;
-import org.workcraft.plugins.cpog.optimisation.booleanvisitors.FormulaToString;
-import org.workcraft.plugins.cpog.optimisation.jj.BooleanParser;
 import org.workcraft.util.Func;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -80,8 +80,8 @@ public class CpogParsingTool {
         BooleanFormula boolForm;
 
         try {
-            boolForm = BooleanParser.parse(bool, boolVars);
-        } catch (org.workcraft.plugins.cpog.optimisation.jj.ParseException e) {
+            boolForm = BooleanFormulaParser.parse(bool, boolVars);
+        } catch (ParseException e) {
             throw new ParseException("Boolean error in: " + bool);
         }
         return boolForm;

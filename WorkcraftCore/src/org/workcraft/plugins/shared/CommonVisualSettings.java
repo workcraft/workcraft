@@ -47,6 +47,7 @@ public class CommonVisualSettings implements Settings {
     private static final String keyNameVisibility  = prefix + ".nameVisibility";
     private static final String keyNamePositioning  = prefix + ".namePositioning";
     private static final String keyNameColor  = prefix + ".nameColor";
+    private static final String keyUseSubscript = prefix + ".useSubscript";
     private static final String keyRedrawInterval  = prefix + ".redrawInterval";
 
     private static final double defaultBaseSize = 1.0;
@@ -62,6 +63,7 @@ public class CommonVisualSettings implements Settings {
     private static final boolean defaultNameVisibility = true;
     private static final Positioning defaultNamePositioning = Positioning.BOTTOM;
     private static final Color defaultNameColor = Color.GRAY.darker();
+    private static final boolean defaultUseSubscript = false;
     private static final Integer defaultRedrawInterval = 20;
 
     private static double baseSize = defaultBaseSize;
@@ -77,6 +79,7 @@ public class CommonVisualSettings implements Settings {
     private static boolean nameVisibility = defaultNameVisibility;
     private static Positioning namePositioning = defaultNamePositioning;
     private static Color nameColor = defaultNameColor;
+    private static boolean useSubscript = defaultUseSubscript;
     private static Integer redrawInterval = defaultRedrawInterval;
 
     public CommonVisualSettings() {
@@ -210,6 +213,16 @@ public class CommonVisualSettings implements Settings {
             }
         });
 
+        properties.add(new PropertyDeclaration<CommonVisualSettings, Boolean>(
+                this, "In Boolean expressions render text after \'_\' as subscript", Boolean.class, true, false, false) {
+            protected void setter(CommonVisualSettings object, Boolean value) {
+                setUseSubscript(value);
+            }
+            protected Boolean getter(CommonVisualSettings object) {
+                return getUseSubscript();
+            }
+        });
+
         properties.add(new PropertyDeclaration<CommonVisualSettings, Integer>(
                 this, "Minimal redraw interval (ms)", Integer.class, true, false, false) {
             protected void setter(CommonVisualSettings object, Integer value) {
@@ -241,6 +254,7 @@ public class CommonVisualSettings implements Settings {
         setNameVisibility(config.getBoolean(keyNameVisibility, defaultNameVisibility));
         setNamePositioning(config.getTextPositioning(keyNamePositioning, defaultNamePositioning));
         setNameColor(config.getColor(keyNameColor, defaultNameColor));
+        setUseSubscript(config.getBoolean(keyUseSubscript, defaultUseSubscript));
         setRedrawInterval(config.getInt(keyRedrawInterval, defaultRedrawInterval));
     }
 
@@ -259,6 +273,7 @@ public class CommonVisualSettings implements Settings {
         config.setBoolean(keyNameVisibility, getNameVisibility());
         config.setColor(keyNameColor, getNameColor());
         config.setTextPositioning(keyNamePositioning, getNamePositioning());
+        config.setBoolean(keyUseSubscript, getUseSubscript());
         config.setInt(keyRedrawInterval, getRedrawInterval());
     }
 
@@ -374,6 +389,14 @@ public class CommonVisualSettings implements Settings {
 
     public static void setNameColor(Color value) {
         nameColor = value;
+    }
+
+    public static boolean getUseSubscript() {
+        return useSubscript;
+    }
+
+    public static void setUseSubscript(boolean value) {
+        useSubscript = value;
     }
 
     public static void setRedrawInterval(Integer value) {
