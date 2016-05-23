@@ -43,7 +43,7 @@ public class ComponentsTransformObserver implements TransformObserver, Node {
     private Touchable firstShape;
     private Touchable secondShape;
 
-    private VisualConnection connection;
+    private final VisualConnection connection;
 
     private boolean valid = false;
 

@@ -50,8 +50,8 @@ public class DockableWindowContentPanel extends JPanel {
         public static final int MINIMIZE_ACTION = 2;
         public static final int MAXIMIZE_ACTION = 3;
 
-        private int windowID;
-        private int actionType;
+        private final int windowID;
+        private final int actionType;
 
         public ViewAction(int windowID, int actionType) {
             this.actionType = actionType;
@@ -86,7 +86,7 @@ public class DockableWindowContentPanel extends JPanel {
     class DockableViewHeader extends JPanel {
         private final Border borderTitle = BorderFactory.createEmptyBorder(1, 3, 1, 1);
         private ActionButton btnMin, btnMax, btnClose;
-        private JLabel titleLabel = null;
+        private final JLabel titleLabel;
         private JPanel buttonPanel = null;
         private boolean maximized = false;
 
@@ -190,11 +190,11 @@ public class DockableWindowContentPanel extends JPanel {
     public static final int HEADER = 8;
 
     private String title;
-    private JComponent content;
-    private JPanel contentPane;
+    private final JComponent content;
+    private final JPanel contentPane;
     public final DockableViewHeader header;
-    private MainWindow mainWindow;
-    private int id;
+    private final MainWindow mainWindow;
+    private final int id;
     private int options;
 
     public DockableWindowContentPanel(MainWindow mainWindow,

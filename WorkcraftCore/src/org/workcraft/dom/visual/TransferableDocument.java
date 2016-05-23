@@ -39,8 +39,8 @@ import org.w3c.dom.Document;
 public class TransferableDocument implements Transferable {
     public static final DataFlavor DOCUMENT_FLAVOR = new DataFlavor(Document.class, "XML");
 
-    private DataFlavor[] flavors = {DOCUMENT_FLAVOR, DataFlavor.stringFlavor };
-    private Document doc;
+    private static final DataFlavor[] flavors = {DOCUMENT_FLAVOR, DataFlavor.stringFlavor};
+    private final Document doc;
 
     public TransferableDocument(Document doc) {
         this.doc = doc;

@@ -13,9 +13,9 @@ import org.workcraft.util.Pair;
 import org.workcraft.util.Triple;
 
 public class StgNameManager extends UniqueNameManager {
-    private InstanceManager instancedNameManager = new InstanceManager();
-    private ListMap<String, SignalTransition> signalTransitions = new ListMap<>();
-    private ListMap<String, DummyTransition> dummyTransitions = new ListMap<>();
+    private final InstanceManager instancedNameManager = new InstanceManager();
+    private final ListMap<String, SignalTransition> signalTransitions = new ListMap<>();
+    private final ListMap<String, DummyTransition> dummyTransitions = new ListMap<>();
 
     public int getInstanceNumber(Node node) {
         return instancedNameManager.getInstance(node).getSecond();

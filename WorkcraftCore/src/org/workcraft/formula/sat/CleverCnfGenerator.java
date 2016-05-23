@@ -60,8 +60,8 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
     static class ConstantExpectingCnfGenerator implements BooleanVisitor<Void> {
         private static boolean cleverOptimiseAnd = true;
 
-        private BooleanVisitor<Literal> dumbGenerator;
-        private Cnf result;
+        private final BooleanVisitor<Literal> dumbGenerator;
+        private final Cnf result;
 
         ConstantExpectingCnfGenerator(Cnf result, BooleanVisitor<Literal> dumbGenerator) {
             this.result = result;

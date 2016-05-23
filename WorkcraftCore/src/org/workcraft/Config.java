@@ -52,7 +52,7 @@ public class Config {
     protected HashMap<String, String> rootGroup = new HashMap<>();
 
     public String get(String key) {
-        String[] k  = key.split("\\.", 2);
+        String[] k = key.split("\\.", 2);
         HashMap<String, String> group;
 
         if (k.length == 1) {
@@ -208,7 +208,7 @@ public class Config {
         }
 
         Element xmlroot = xmldoc.getDocumentElement();
-        NodeList nl =  xmlroot.getChildNodes(), nl2;
+        NodeList nl = xmlroot.getChildNodes(), nl2;
         for (int i = 0; i < nl.getLength(); i++) {
             if (!(nl.item(i) instanceof Element)) {
                 continue;

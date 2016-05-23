@@ -22,7 +22,7 @@ public class PetriToCpogTask implements Task<PetriToCpogResult> {
 
     // conversion-related variables
     private VisualPetriNet petri;
-    private PetriToCpogSettings settings;
+    private final PetriToCpogSettings settings;
     private VisualCpog cpog;
 
     public PetriToCpogTask(WorkspaceEntry we, PetriToCpogSettings settings) {

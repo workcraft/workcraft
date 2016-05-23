@@ -33,13 +33,13 @@ public class CommonLogSettings implements Settings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CommonLogSettings";
 
-    private static final String keyTextSize  = prefix + ".textSize";
-    private static final String keyTextColor  = prefix + ".textColor";
-    private static final String keyInfoBackground  = prefix + ".infoBackground";
-    private static final String keyWarningBackground  = prefix + ".warningBackground";
-    private static final String keyErrorBackground  = prefix + ".warningBackground";
-    private static final String keyStdoutBackground  = prefix + ".stdoutBackground";
-    private static final String keyStderrBackground  = prefix + ".stderrBackground";
+    private static final String keyTextSize = prefix + ".textSize";
+    private static final String keyTextColor = prefix + ".textColor";
+    private static final String keyInfoBackground = prefix + ".infoBackground";
+    private static final String keyWarningBackground = prefix + ".warningBackground";
+    private static final String keyErrorBackground = prefix + ".warningBackground";
+    private static final String keyStdoutBackground = prefix + ".stdoutBackground";
+    private static final String keyStderrBackground = prefix + ".stderrBackground";
 
     private static final int defaultTextSize = 12;
     private static final Color defaultTextColor = Color.BLACK;

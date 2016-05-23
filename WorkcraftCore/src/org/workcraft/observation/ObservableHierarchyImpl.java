@@ -24,7 +24,7 @@ package org.workcraft.observation;
 import java.util.HashSet;
 
 public class ObservableHierarchyImpl implements ObservableHierarchy {
-    private HashSet<HierarchyObserver> observers = new HashSet<>();
+    private final HashSet<HierarchyObserver> observers = new HashSet<>();
 
     public void addObserver(HierarchyObserver obs) {
         observers.add(obs);

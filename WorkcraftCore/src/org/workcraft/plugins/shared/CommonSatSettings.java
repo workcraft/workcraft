@@ -26,7 +26,7 @@ public class CommonSatSettings implements Settings {
         }
     }
 
-    private static final LinkedList<PropertyDescriptor> properties  = new LinkedList<>();
+    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CommonSatSettings";
 
     private static final String keySatSolver = prefix + ".satSolver";

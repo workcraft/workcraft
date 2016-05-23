@@ -40,13 +40,13 @@ public class ScencoSingleSequentialDialog extends JDialog {
     private JLabel verboseModeLabel, optimiseLabel, abcLabel;
     private JCheckBox verboseModeCheck, abcCheck;
     private JComboBox<String> optimiseBox;
-    private JPanel buttonsPanel, content, standardPanel;
+    private JPanel buttonsPanel, standardPanel;
     private JButton saveButton, closeButton;
     JScrollPane scrollPane;
-    private TableLayout layout;
+    private final TableLayout layout;
     private int m, bits;
-    private EncoderSettings settings;
-    private WorkspaceEntry we;
+    private final EncoderSettings settings;
+    private final WorkspaceEntry we;
     private int modalResult;
 
     public ScencoSingleSequentialDialog(Window owner, PresetManager<EncoderSettings> presetManager, EncoderSettings settings, WorkspaceEntry we, String string) {
@@ -67,7 +67,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
         layout.setHGap(3);
         layout.setVGap(3);
 
-        content = new JPanel(layout);
+        JPanel content = new JPanel(layout);
         content.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
 
         content.add(standardPanel, "0, 0");

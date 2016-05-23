@@ -33,7 +33,7 @@ public class VisualPlaceNode extends VisualComponent {
     protected RenderedText errorRenderedText = new RenderedText("", errorFont, errLabelPositioning, new Point2D.Double(0.0, 0.0));
     protected Color errLabelColor = SONSettings.getErrLabelColor();
 
-    private Positioning durationLabelPositioning = Positioning.BOTTOM;
+    private static final Positioning durationLabelPositioning = Positioning.BOTTOM;
     private RenderedText durationRenderedText = new RenderedText("", timeFont, durationLabelPositioning, new Point2D.Double(0.0, 0.0));
 
     private String value = "";

@@ -106,7 +106,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
         }
     }
 
-    private ObservableHierarchyImpl observableHierarchyImpl = new ObservableHierarchyImpl();
+    private final ObservableHierarchyImpl observableHierarchyImpl = new ObservableHierarchyImpl();
 
     private MathConnection refConnection = null;
     private VisualNode first = null;
@@ -137,7 +137,7 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
     private boolean isTokenColorPropagator = false;
     private Point2D splitPoint = null;
 
-    private LinkedHashSet<Node> children = new LinkedHashSet<>();
+    private final LinkedHashSet<Node> children = new LinkedHashSet<>();
     private ComponentsTransformObserver componentsTransformObserver = null;
 
     public VisualConnection() {

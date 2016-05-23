@@ -12,8 +12,8 @@ import org.workcraft.tasks.Task;
 import org.workcraft.util.ToolUtils;
 
 public class PunfTask implements Task<ExternalProcessResult> {
-    private String inputPath;
-    private String outputPath;
+    private final String inputPath;
+    private final String outputPath;
 
     public PunfTask(String inputPath, String outputPath) {
         this.inputPath = inputPath;

@@ -250,7 +250,7 @@ CpogFormula literal1(String bool) :
                 exp = exp + str;
                 str = bracketInternals();
             }
-            result = new CpogFormulaParser(new StringReader(exp), vars , graphName, bool).formula();
+            result = new CpogFormulaParser(new StringReader(exp), vars, graphName, bool).formula();
         }
     )
     {

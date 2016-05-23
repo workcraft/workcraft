@@ -28,11 +28,11 @@ import java.util.UUID;
 import org.workcraft.dom.AbstractModel;
 
 public class ModelManager {
-    private Hashtable<UUID, Class<?>> uuidModelMap;
-    private Hashtable<UUID, LinkedList<Class<?>>> uuidComponentListMap;
-    private Hashtable<UUID, LinkedList<Class<?>>> uuidToolListMap;
-    private LinkedList<Class<?>> modelList;
-    private LinkedList<Tool> multiToolList;
+    private final Hashtable<UUID, Class<?>> uuidModelMap;
+    private final Hashtable<UUID, LinkedList<Class<?>>> uuidComponentListMap;
+    private final Hashtable<UUID, LinkedList<Class<?>>> uuidToolListMap;
+    private final LinkedList<Class<?>> modelList;
+    private final LinkedList<Tool> multiToolList;
 
     public ModelManager() {
         uuidModelMap = new Hashtable<UUID, Class<?>>();

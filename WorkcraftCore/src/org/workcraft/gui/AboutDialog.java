@@ -33,11 +33,11 @@ import org.workcraft.util.GUI;
 
 public class AboutDialog extends JDialog {
     private static final long serialVersionUID = 1L;
-    private JPanel contentPane;
-    private JLabel logoLabel;
-    private JEditorPane infoPane;
-    private JPanel buttonsPane;
-    private JButton okButton;
+    private final JPanel contentPane;
+    private final JLabel logoLabel;
+    private final JEditorPane infoPane;
+    private final JPanel buttonsPane;
+    private final JButton okButton;
 
     public AboutDialog(final MainWindow owner) {
         super(owner);

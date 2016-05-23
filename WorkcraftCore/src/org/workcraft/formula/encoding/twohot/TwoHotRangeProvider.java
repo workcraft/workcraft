@@ -33,7 +33,7 @@ import org.workcraft.formula.cnf.CnfClause;
 import org.workcraft.formula.encoding.CnfSorter;
 
 public class TwoHotRangeProvider {
-    private Cnf constraints = new Cnf();
+    private final Cnf constraints = new Cnf();
 
     public Cnf getConstraints() {
         return constraints;

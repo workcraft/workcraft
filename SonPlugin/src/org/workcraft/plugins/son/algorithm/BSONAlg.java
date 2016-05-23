@@ -25,9 +25,9 @@ import org.workcraft.plugins.son.util.Phase;
 
 public class BSONAlg extends RelationAlgorithm {
 
-    private SON net;
+    private final SON net;
     private static Marking dfsResult = new Marking();
-    private Map<Condition, String> phaseCutErr = new HashMap<>();
+    private final Map<Condition, String> phaseCutErr = new HashMap<>();
 
     public BSONAlg(SON net) {
         super(net);
@@ -130,13 +130,13 @@ public class BSONAlg extends RelationAlgorithm {
 
                     String err = null;
                     if (!min.isEmpty()) {
-                        err = "ERROR: Minimal phase "  + net.toString(min) + " is not a cut:";
+                        err = "ERROR: Minimal phase " + net.toString(min) + " is not a cut:";
                     }
                     if (!max.isEmpty()) {
                         if (err == null) {
-                            err = "ERROR: Maximal phase "  + net.toString(max) + " is not a cut:";
+                            err = "ERROR: Maximal phase " + net.toString(max) + " is not a cut:";
                         } else {
-                            err += "\nERROR: Maximal phase "  + net.toString(max) + " is not a cut:";
+                            err += "\nERROR: Maximal phase " + net.toString(max) + " is not a cut:";
                         }
                     }
                     if (err != null) {
@@ -583,7 +583,7 @@ public class BSONAlg extends RelationAlgorithm {
         //get Post(e)
         for (Condition c : postSet) {
             //get phase collection for each Pre(e)
-            Collection<Phase> postPhases =  null;
+            Collection<Phase> postPhases = null;
             if (phases.containsKey(c)) {
                 postPhases = phases.get(c);
             } else {

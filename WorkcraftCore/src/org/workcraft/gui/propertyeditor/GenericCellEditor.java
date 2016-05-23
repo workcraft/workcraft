@@ -32,7 +32,7 @@ import javax.swing.table.TableCellEditor;
 
 @SuppressWarnings("serial")
 public class GenericCellEditor extends AbstractCellEditor implements TableCellEditor {
-    private JTextField textField;
+    private final JTextField textField;
 
     public GenericCellEditor() {
         textField = new JTextField();

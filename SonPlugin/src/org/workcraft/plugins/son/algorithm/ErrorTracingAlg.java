@@ -15,8 +15,8 @@ import org.workcraft.plugins.son.util.Phase;
 
 public class ErrorTracingAlg extends SimulationAlg {
 
-    private SON net;
-    private BSONAlg bsonAlg;
+    private final SON net;
+    private final BSONAlg bsonAlg;
 
     public ErrorTracingAlg(SON net) {
         super(net);

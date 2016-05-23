@@ -14,7 +14,7 @@ import org.workcraft.plugins.son.elements.TransitionNode;
 
 public class CSONCycleAlg extends ONCycleAlg {
 
-    private SON net;
+    private final SON net;
 
     public CSONCycleAlg(SON net) {
         super(net);

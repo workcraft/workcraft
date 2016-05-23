@@ -11,8 +11,8 @@ import org.workcraft.plugins.son.elements.TransitionNode;
 
 public class TSONAlg extends RelationAlgorithm {
 
-    private SON net;
-    private RelationAlgorithm relation;
+    private final SON net;
+    private final RelationAlgorithm relation;
 
     public TSONAlg(SON net) {
         super(net);

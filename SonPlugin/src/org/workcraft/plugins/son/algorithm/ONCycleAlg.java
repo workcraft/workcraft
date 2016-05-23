@@ -10,7 +10,7 @@ import org.workcraft.plugins.son.SON;
 
 public class ONCycleAlg {
 
-    private SON net;
+    private final SON net;
     protected RelationAlgorithm relationAlg;
 
     public ONCycleAlg(SON net) {

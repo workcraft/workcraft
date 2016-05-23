@@ -281,7 +281,7 @@ public class StgSimulationTool extends PetriSimulationTool {
     @SuppressWarnings("serial")
     public class StateTableRowTransferHandler extends TransferHandler {
         private final DataFlavor localObjectFlavor = new ActivationDataFlavor(Integer.class, "Integer Row Index");
-        private JTable table = null;
+        private final JTable table;
 
         public StateTableRowTransferHandler(JTable table) {
             this.table = table;

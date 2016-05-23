@@ -40,15 +40,15 @@ import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.tabs.DockableTab;
 
 public class DockableWindow extends AbstractDockable {
-    private DockableWindowContentPanel panel;
-    private LinkedList<Component> dragSources = new LinkedList<>();
-    private MainWindow mainWindow;
+    private final DockableWindowContentPanel panel;
+    private final LinkedList<Component> dragSources = new LinkedList<>();
+    private final MainWindow mainWindow;
     private boolean inTab = false;
     private boolean closed = false;
 
-    private ArrayList<DockableWindowTabListener> tabListeners = new ArrayList<>();
+    private final ArrayList<DockableWindowTabListener> tabListeners = new ArrayList<>();
 
-    private ChangeListener tabChangeListener = new ChangeListener() {
+    private final ChangeListener tabChangeListener = new ChangeListener() {
         @Override
         public void stateChanged(ChangeEvent e) {
             JTabbedPane tabbedPane = (JTabbedPane) e.getSource();

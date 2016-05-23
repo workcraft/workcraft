@@ -51,7 +51,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceTree;
 
 public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
-    private WorkspaceWindow wsWindow;
+    private final WorkspaceWindow wsWindow;
 
     public WorkspacePopupProvider(WorkspaceWindow wsWindow) {
         this.wsWindow = wsWindow;

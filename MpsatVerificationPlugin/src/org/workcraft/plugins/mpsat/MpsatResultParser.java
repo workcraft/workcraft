@@ -14,7 +14,7 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 
 public class MpsatResultParser {
     private String mpsatOutput;
-    private LinkedList<Solution> solutions;
+    private final LinkedList<Solution> solutions;
 
     private static final Pattern patternReachability0 =
             Pattern.compile("SOLUTION .+\ntotal cost of all paths: .+\n", Pattern.UNIX_LINES);

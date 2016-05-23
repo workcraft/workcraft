@@ -100,15 +100,15 @@ public final class Framework {
     private static final String UILAYOUT_FILE_NAME = "uilayout.xml";
 
     public static final String SETTINGS_DIRECTORY_PATH = DesktopApi.getConfigPath() + File.separator + SETTINGS_DIRECTORY_NAME;
-    public static final String CONFIG_FILE_PATH =  SETTINGS_DIRECTORY_PATH + File.separator + CONFIG_FILE_NAME;
-    public static final String PLUGINS_FILE_PATH =  SETTINGS_DIRECTORY_PATH + File.separator + PLUGINS_FILE_NAME;
-    public static final String UILAYOUT_FILE_PATH =  SETTINGS_DIRECTORY_PATH + File.separator + UILAYOUT_FILE_NAME;
+    public static final String CONFIG_FILE_PATH = SETTINGS_DIRECTORY_PATH + File.separator + CONFIG_FILE_NAME;
+    public static final String PLUGINS_FILE_PATH = SETTINGS_DIRECTORY_PATH + File.separator + PLUGINS_FILE_NAME;
+    public static final String UILAYOUT_FILE_PATH = SETTINGS_DIRECTORY_PATH + File.separator + UILAYOUT_FILE_NAME;
 
     private static Framework instance = null;
 
     class ExecuteScriptAction implements ContextAction {
-        private String script;
-        private Scriptable scope;
+        private final String script;
+        private final Scriptable scope;
 
         ExecuteScriptAction(String script, Scriptable scope) {
             this.script = script;
@@ -121,8 +121,8 @@ public final class Framework {
     }
 
     class ExecuteCompiledScriptAction implements ContextAction {
-        private Script script;
-        private Scriptable scope;
+        private final Script script;
+        private final Scriptable scope;
 
         ExecuteCompiledScriptAction(Script script, Scriptable scope) {
             this.script = script;
@@ -135,8 +135,8 @@ public final class Framework {
     }
 
     class CompileScriptFromReaderAction implements ContextAction {
-        private String sourceName;
-        private BufferedReader reader;
+        private final String sourceName;
+        private final BufferedReader reader;
 
         CompileScriptFromReaderAction(BufferedReader reader, String sourceName) {
             this.sourceName = sourceName;
@@ -153,7 +153,7 @@ public final class Framework {
     }
 
     class CompileScriptAction implements ContextAction {
-        private String source, sourceName;
+        private final String source, sourceName;
 
         CompileScriptAction(String source, String sourceName) {
             this.source = source;
@@ -181,12 +181,12 @@ public final class Framework {
         }
     }
 
-    private PluginManager pluginManager;
-    private ModelManager modelManager;
-    private TaskManager taskManager;
-    private CompatibilityManager compatibilityManager;
+    private final PluginManager pluginManager;
+    private final ModelManager modelManager;
+    private final TaskManager taskManager;
+    private final CompatibilityManager compatibilityManager;
     private Config config;
-    private Workspace workspace;
+    private final Workspace workspace;
 
     private ScriptableObject systemScope;
     private ScriptableObject globalScope;
@@ -194,7 +194,7 @@ public final class Framework {
     private boolean inGUIMode = false;
     private boolean shutdownRequested = false;
     private boolean guiRestartRequested = false;
-    private ContextFactory contextFactory = new ContextFactory();
+    private final ContextFactory contextFactory = new ContextFactory();
     private MainWindow mainWindow;
     public Memento clipboard;
 
@@ -821,17 +821,17 @@ public final class Framework {
         }
         if (!f.exists()) {
             JOptionPane.showMessageDialog(null,
-                    "The path  \""    + f.getPath() + "\" does not exisit.\n",
+                    "The path  \"" + f.getPath() + "\" does not exisit.\n",
                     errorTitle, JOptionPane.ERROR_MESSAGE);
             result = false;
         } else if (!f.isFile()) {
             JOptionPane.showMessageDialog(null,
-                    "The path  \""    + f.getPath() + "\" is not a file.\n",
+                    "The path  \"" + f.getPath() + "\" is not a file.\n",
                     errorTitle, JOptionPane.ERROR_MESSAGE);
             result = false;
         } else if (!f.canRead()) {
             JOptionPane.showMessageDialog(null,
-                    "The file  \""    + f.getPath() + "\" cannot be read.\n",
+                    "The file  \"" + f.getPath() + "\" cannot be read.\n",
                     errorTitle, JOptionPane.ERROR_MESSAGE);
             result = false;
         }

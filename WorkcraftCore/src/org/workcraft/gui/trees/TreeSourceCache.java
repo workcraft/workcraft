@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public class TreeSourceCache<Node> {
-    private HashMap<Node, List<Node>> cache = new HashMap<>();
+    private final HashMap<Node, List<Node>> cache = new HashMap<>();
 
     public void clear(Node node, TreeSource<Node> source) {
         if (source.isLeaf(node)) {

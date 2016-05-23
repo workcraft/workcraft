@@ -62,7 +62,7 @@ public final class DtdStateSupervisor extends StateSupervisor {
             xMax = Math.min(xMax, succComponent.getBoundingBox().getMinX());
         }
         if (xMin > bb.getMinX()) {
-            double xOffset =  component.getX() - bb.getMinX();
+            double xOffset = component.getX() - bb.getMinX();
             component.setX(xMin + xOffset);
         } else if (xMax < bb.getMaxX()) {
             double xOffset = bb.getMaxX() - component.getX();

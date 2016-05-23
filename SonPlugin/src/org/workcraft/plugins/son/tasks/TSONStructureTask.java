@@ -14,14 +14,14 @@ import org.workcraft.plugins.son.elements.Block;
 
 public class TSONStructureTask extends AbstractStructuralVerification {
 
-    private SON net;
+    private final SON net;
 
-    private Collection<Node> relationErrors = new HashSet<>();
-    private Collection<ONGroup> groupErrors = new HashSet<>();
-    private Collection<Path> cycleErrors = new ArrayList<>();
+    private final Collection<Node> relationErrors = new HashSet<>();
+    private final Collection<ONGroup> groupErrors = new HashSet<>();
+    private final Collection<Path> cycleErrors = new ArrayList<>();
 
-    private TSONAlg tsonAlg;
-    private ONCycleAlg onCycleAlg;
+    private final TSONAlg tsonAlg;
+    private final ONCycleAlg onCycleAlg;
 
     private int errNumber = 0;
     private int warningNumber = 0;
@@ -48,7 +48,7 @@ public class TSONStructureTask extends AbstractStructuralVerification {
             blocks.addAll(cGroup.getBlocks());
         }
 
-        infoMsg("Selected Groups : " +  net.toString(groups));
+        infoMsg("Selected Groups : " + net.toString(groups));
         infoMsg("Collapsed Blocks : " + net.toString(blocks));
 
         if (blocks.isEmpty()) {

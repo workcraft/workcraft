@@ -20,9 +20,9 @@ import org.workcraft.plugins.petri.VisualPetriNet;
 
 public class PetriToCpogConverter {
 
-    private PetriNet pn;
-    private Cpog cpog;
-    private VisualCpog visualCpog;
+    private final PetriNet pn;
+    private final Cpog cpog;
+    private final VisualCpog visualCpog;
     private int xRightmostVertex;
 
     /** constructor **/

@@ -10,7 +10,7 @@ import org.workcraft.gui.graph.tools.GraphEditorTool;
 
 @SuppressWarnings("serial")
 public class ToolInterfaceWindow extends JPanel {
-    private JScrollPane content;
+    private final JScrollPane content;
 
     public ToolInterfaceWindow() {
         super(new BorderLayout());

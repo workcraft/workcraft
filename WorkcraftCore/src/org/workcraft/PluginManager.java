@@ -46,7 +46,7 @@ import org.workcraft.util.XmlUtil;
 public class PluginManager implements PluginProvider {
     public static final String VERSION_STAMP = "d971444cbd86148695f3427118632aca";
 
-    private ListMap<Class<?>, PluginInfo<?>> plugins = new ListMap<Class<?>, PluginInfo<?>>();
+    private final ListMap<Class<?>, PluginInfo<?>> plugins = new ListMap<Class<?>, PluginInfo<?>>();
 
     public static class PluginInstanceHolder<T> implements PluginInfo<T> {
         private final Initialiser<? extends T> initialiser;

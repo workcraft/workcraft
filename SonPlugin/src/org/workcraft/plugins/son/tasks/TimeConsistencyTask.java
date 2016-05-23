@@ -31,15 +31,15 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class TimeConsistencyTask implements Task<VerificationResult> {
 
-    private SON net;
-    private Logger logger = Logger.getLogger(this.getClass().getName());
+    private final SON net;
+    private final Logger logger = Logger.getLogger(this.getClass().getName());
 
     private ConsistencyAlg consistencyAlg;
     private DFSEstimationAlg estimationAlg;
-    private TimeConsistencySettings settings;
+    private final TimeConsistencySettings settings;
 
-    private Color causalColor = new Color(225, 90, 70);
-    private Color inconsistencyColor = new Color(250, 210, 80);
+    private static final Color causalColor = new Color(225, 90, 70);
+    private static final Color inconsistencyColor = new Color(250, 210, 80);
 
     private int totalErrNum = 0;
 

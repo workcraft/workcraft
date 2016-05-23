@@ -8,9 +8,9 @@ public class Result<T> {
         FAILED
     }
 
-    private Outcome outcome;
-    private Throwable cause;
-    private T result;
+    private final Outcome outcome;
+    private final Throwable cause;
+    private final T result;
 
     public Result(Outcome outcome) {
         this.outcome = outcome;

@@ -6,7 +6,7 @@ import javax.swing.text.PlainDocument;
 
 @SuppressWarnings("serial")
 public class IntDocument extends PlainDocument {
-    private int limit;
+    private final int limit;
 
     public IntDocument(int limit) {
         super();
@@ -16,7 +16,7 @@ public class IntDocument extends PlainDocument {
     @Override
     public void insertString(int offset, String str, AttributeSet attr) throws BadLocationException {
         if (str != null) {
-            String s =  str.replaceAll("\\D++", "");
+            String s = str.replaceAll("\\D++", "");
             if (getLength() + s.length() <= limit) {
                 super.insertString(offset, s, attr);
             }

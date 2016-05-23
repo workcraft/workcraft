@@ -42,8 +42,8 @@ import org.workcraft.util.Geometry.CurveSplitResult;
 
 public class Bezier implements ConnectionGraphic, ParametricCurve, StateObserver, SelectionObserver {
 
-    private Node parent;
-    private VisualConnectionProperties connectionInfo;
+    private final Node parent;
+    private final VisualConnectionProperties connectionInfo;
     private PartialCurveInfo curveInfo = null;
     private CubicCurve2D curve = null;
     private CubicCurve2D visibleCurve = null;

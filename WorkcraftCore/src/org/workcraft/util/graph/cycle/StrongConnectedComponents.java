@@ -29,7 +29,7 @@ import java.util.Vector;
  */
 public class StrongConnectedComponents {
     /** Adjacency-list of original graph */
-    private int[][] adjListOriginal = null;
+    private final int[][] adjListOriginal;
 
     /** Adjacency-list of currently viewed subgraph */
     private int[][] adjList = null;

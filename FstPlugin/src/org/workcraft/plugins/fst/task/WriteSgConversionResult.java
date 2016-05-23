@@ -5,8 +5,8 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.Result;
 
 public class WriteSgConversionResult {
-    private Result<? extends ExternalProcessResult> result;
-    private Fst fst;
+    private final Result<? extends ExternalProcessResult> result;
+    private final Fst fst;
 
     public WriteSgConversionResult(Result<? extends ExternalProcessResult> result, Fst fst) {
         this.result = result;

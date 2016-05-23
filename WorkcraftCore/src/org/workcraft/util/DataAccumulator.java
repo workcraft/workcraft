@@ -29,7 +29,7 @@ import java.util.Arrays;
 import java.util.LinkedList;
 
 public class DataAccumulator extends OutputStream {
-    private LinkedList<byte[]> dataChunks = new LinkedList<>();
+    private final LinkedList<byte[]> dataChunks = new LinkedList<>();
 
     public static byte[] loadStream(InputStream is) throws IOException {
         DataAccumulator accum = new DataAccumulator();

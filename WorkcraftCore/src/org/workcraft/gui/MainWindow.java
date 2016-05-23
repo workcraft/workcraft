@@ -168,18 +168,18 @@ public class MainWindow extends JFrame {
     private SimpleContainer editorToolsWindow;
     private WorkspaceWindow workspaceWindow;
 
-    private ListMap<WorkspaceEntry, DockableWindow> editorWindows = new ListMap<>();
-    private LinkedList<DockableWindow> utilityWindows = new LinkedList<>();
+    private final ListMap<WorkspaceEntry, DockableWindow> editorWindows = new ListMap<>();
+    private final LinkedList<DockableWindow> utilityWindows = new LinkedList<>();
 
     private GraphEditorPanel editorInFocus;
     private MainMenu mainMenu;
 
     private String lastSavePath = null;
     private String lastOpenPath = null;
-    private LinkedHashSet<String> recentFiles = new LinkedHashSet<>();
+    private final LinkedHashSet<String> recentFiles = new LinkedHashSet<>();
 
     private int dockableIDCounter = 0;
-    private HashMap<Integer, DockableWindow> idToDockableWindowMap = new HashMap<>();
+    private final HashMap<Integer, DockableWindow> idToDockableWindowMap = new HashMap<>();
 
     protected void createWindows() {
         workspaceWindow = new WorkspaceWindow();
@@ -1427,7 +1427,7 @@ public class MainWindow extends JFrame {
     }
 
     private static class ImporterFileFilter extends javax.swing.filechooser.FileFilter {
-        private Importer importer;
+        private final Importer importer;
 
         ImporterFileFilter(Importer importer) {
             this.importer = importer;
@@ -1443,7 +1443,7 @@ public class MainWindow extends JFrame {
     }
 
     private static class ExporterFileFilter extends javax.swing.filechooser.FileFilter {
-        private Exporter exporter;
+        private final Exporter exporter;
 
         ExporterFileFilter(Exporter exporter) {
             this.exporter = exporter;

@@ -117,7 +117,7 @@ public class GUI {
             BridgeContext bridgeContext = new BridgeContext(userAgentAdapter);
             GVTBuilder builder = new GVTBuilder();
 
-            GraphicsNode graphicsNode =    builder.build(bridgeContext, document);
+            GraphicsNode graphicsNode = builder.build(bridgeContext, document);
 
             double sizeY = bridgeContext.getDocumentSize().getHeight();
             double sizeX = bridgeContext.getDocumentSize().getWidth();

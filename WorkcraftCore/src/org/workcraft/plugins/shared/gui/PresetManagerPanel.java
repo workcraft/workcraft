@@ -28,7 +28,7 @@ public class PresetManagerPanel<T> extends JPanel {
     private final SettingsToControlsMapper<T> guiMapper;
     private JButton updatePresetButton;
     private JButton saveAsButton;
-    private Window dialogOwner;
+    private final Window dialogOwner;
 
     @SuppressWarnings("unchecked")
     public PresetManagerPanel(PresetManager<T> presetManager, List<Preset<T>> builtIn, SettingsToControlsMapper<T> guiMapper, Window dialogOwner) {

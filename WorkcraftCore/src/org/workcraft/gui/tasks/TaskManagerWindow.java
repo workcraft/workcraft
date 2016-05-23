@@ -119,8 +119,8 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
 
     static class TaskControlGenerator implements Runnable {
         private TaskControl taskControl;
-        private JPanel container;
-        private String description;
+        private final JPanel container;
+        private final String description;
 
         TaskControlGenerator(JPanel container, String description) {
             this.container = container;
@@ -142,8 +142,8 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
 
     private int counter = 0;
 
-    private JScrollPane scroll;
-    private JPanel content;
+    private final JScrollPane scroll;
+    private final JPanel content;
 
     public TaskManagerWindow() {
 

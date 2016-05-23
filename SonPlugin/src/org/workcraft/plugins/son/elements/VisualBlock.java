@@ -33,13 +33,13 @@ import org.workcraft.util.Hierarchy;
 @DisplayName("Block")
 @SVGIcon("images/icons/svg/son-block.svg")
 public class VisualBlock extends VisualPage implements VisualTransitionNode {
-    private Block mathBlock;
+    private final Block mathBlock;
     private static final float strokeWidth = 0.06f;
 
-    private Font font = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.45f);
+    private static final Font font = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.45f);
     protected Font timeFont = new Font("Sans-serif", Font.PLAIN, 1).deriveFont(0.35f);
 
-    private Positioning durationLabelPositioning = Positioning.BOTTOM;
+    private static final Positioning durationLabelPositioning = Positioning.BOTTOM;
     private RenderedText durationRenderedText = new RenderedText("", font, durationLabelPositioning, new Point2D.Double(0.0, 0.0));
 
     public VisualBlock(Block refNode) {

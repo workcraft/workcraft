@@ -5,8 +5,8 @@ import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.Result;
 
 public class TransformationResult {
-    private Result<? extends ExternalProcessResult> petrifyResult;
-    private StgModel result;
+    private final Result<? extends ExternalProcessResult> petrifyResult;
+    private final StgModel result;
 
     public TransformationResult(Result<? extends ExternalProcessResult> petrifyResult, StgModel result) {
         this.petrifyResult = petrifyResult;

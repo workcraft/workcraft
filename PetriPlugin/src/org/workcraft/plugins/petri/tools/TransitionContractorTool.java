@@ -43,7 +43,7 @@ public class TransitionContractorTool extends TransformationTool implements Node
 
     private static final String MESSAGE_TITLE = "Transition contraction";
 
-    private HashSet<VisualConnection> convertedReplicaConnections = new HashSet<>();
+    private final HashSet<VisualConnection> convertedReplicaConnections = new HashSet<>();
 
     @Override
     public String getDisplayName() {

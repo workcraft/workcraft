@@ -32,7 +32,7 @@ public class ScenarioTable extends JTable {
     protected ScenarioRef scenarioNodeRef = new ScenarioRef();
 
     private boolean isCellColorized = true;
-    private Color greyoutColor = Color.LIGHT_GRAY;
+    private static final Color greyoutColor = Color.LIGHT_GRAY;
 
     public ScenarioTable(ScenarioSaveList saveList, GraphEditor editor) {
         this(saveList, editor, null, null);

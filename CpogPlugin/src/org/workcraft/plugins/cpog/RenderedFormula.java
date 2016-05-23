@@ -23,7 +23,7 @@ public class RenderedFormula implements Touchable {
     public final double xOffset;
     public final double yOffset;
     private final FormulaRenderingResult renderingResult;
-    private Rectangle2D boundingBox;
+    private final Rectangle2D boundingBox;
 
     public RenderedFormula(String text, BooleanFormula formula, Font font, Positioning positioning, Point2D offset) {
         this.text = text;

@@ -107,9 +107,9 @@ public class SelectionTool extends AbstractTool {
 
     private Point2D offset;
     private Set<Point2D> snaps = new HashSet<>();
-    private DefaultAnchorGenerator anchorGenerator = new DefaultAnchorGenerator();
+    private final DefaultAnchorGenerator anchorGenerator = new DefaultAnchorGenerator();
 
-    private LinkedHashSet<Node> selected = new LinkedHashSet<>();
+    private final LinkedHashSet<Node> selected = new LinkedHashSet<>();
     private SelectionMode selectionMode = SelectionMode.NONE;
     private Rectangle2D selectionBox = null;
 

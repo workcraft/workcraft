@@ -271,8 +271,8 @@ public abstract class StgGenerator {
 
     public Point2D getComponentPosition(VisualComponent component) {
         AffineTransform transform = TransformHelper.getTransformToRoot(component);
-        double x =    getScale().getX() * (transform.getTranslateX() + component.getX());
-        double y =    getScale().getY() * (transform.getTranslateY() + component.getY());
+        double x = getScale().getX() * (transform.getTranslateX() + component.getX());
+        double y = getScale().getY() * (transform.getTranslateY() + component.getY());
         return new Point2D.Double(x, y);
     }
 

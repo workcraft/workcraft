@@ -5,8 +5,8 @@ import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.visual.VisualModel;
 
 public class WorkspaceMemoryObject {
-    private Model model;
-    private ModelDescriptor descriptor;
+    private final Model model;
+    private final ModelDescriptor descriptor;
 
     public WorkspaceMemoryObject(Model model, ModelDescriptor descriptor) {
         this.model = model;

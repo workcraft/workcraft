@@ -25,9 +25,9 @@ import org.workcraft.plugins.son.util.ScenarioRef;
 
 public class ConsistencyAlg extends TimeAlg {
 
-    private Before before;
-    private Collection<ChannelPlace> sync;
-    private BSONAlg bsonAlg;
+    private final Before before;
+    private final Collection<ChannelPlace> sync;
+    private final BSONAlg bsonAlg;
 
     public ConsistencyAlg(SON net, Interval d, Granularity g, ScenarioRef s) throws AlternativeStructureException {
         super(net, d, g, s);

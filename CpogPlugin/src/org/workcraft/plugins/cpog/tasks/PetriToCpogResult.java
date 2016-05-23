@@ -4,7 +4,7 @@ import org.workcraft.plugins.cpog.VisualCpog;
 
 public class PetriToCpogResult {
     private final String stdout;
-    private VisualCpog cpog;
+    private final VisualCpog cpog;
 
     public PetriToCpogResult(String stdout, VisualCpog cpog) {
         this.stdout = stdout;

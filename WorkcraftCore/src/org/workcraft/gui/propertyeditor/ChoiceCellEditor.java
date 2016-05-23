@@ -33,8 +33,8 @@ import javax.swing.table.TableCellEditor;
 
 @SuppressWarnings("serial")
 public class ChoiceCellEditor extends AbstractCellEditor implements TableCellEditor, ItemListener {
-    private JComboBox comboBox;
-    private ChoiceWrapper[] wrappers;
+    private final JComboBox comboBox;
+    private final ChoiceWrapper[] wrappers;
 
     public ChoiceCellEditor(PropertyDescriptor decl) {
         comboBox = new JComboBox();

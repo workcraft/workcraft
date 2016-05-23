@@ -76,8 +76,8 @@ public class VisualCircuitComponent extends VisualComponent implements
         Container, CustomTouchable, StateObserver, ObservableHierarchy {
     public static final String PROPERTY_RENDER_TYPE = "Render type";
 
-    private Color inputColor = VisualContact.inputColor;
-    private Color outputColor = VisualContact.outputColor;
+    private static final Color inputColor = VisualContact.inputColor;
+    private static final Color outputColor = VisualContact.outputColor;
 
     double marginSize = 0.2;
     double contactLength = 0.5;
@@ -88,7 +88,7 @@ public class VisualCircuitComponent extends VisualComponent implements
 
     protected DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
-    private HashMap<VisualContact, GlyphVector> contactLableGlyphs = new HashMap<>();
+    private final HashMap<VisualContact, GlyphVector> contactLableGlyphs = new HashMap<>();
 
     public VisualCircuitComponent(CircuitComponent component) {
         super(component, true, true, true);

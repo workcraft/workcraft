@@ -37,7 +37,7 @@ import org.workcraft.observation.StateObserver;
  *
  */
 public abstract class MathNode implements Node, ObservableState {
-    private ObservableStateImpl observableStateImpl = new ObservableStateImpl();
+    private final ObservableStateImpl observableStateImpl = new ObservableStateImpl();
 
     private Node parent = null;
 

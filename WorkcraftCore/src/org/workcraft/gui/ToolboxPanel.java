@@ -85,15 +85,15 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
         }
     }
 
-    private SelectionTool selectionTool;
-    private CommentGeneratorTool labelTool;
-    private ConnectionTool connectionTool;
+    private final SelectionTool selectionTool;
+    private final CommentGeneratorTool labelTool;
+    private final ConnectionTool connectionTool;
 
     private GraphEditorTool selectedTool;
 
-    private HashSet<GraphEditorTool> tools = new HashSet<>();
-    private HashMap<GraphEditorTool, JToggleButton> buttons = new HashMap<>();
-    private HashMap<Integer, ToolTracker> hotkeyMap = new HashMap<>();
+    private final HashSet<GraphEditorTool> tools = new HashSet<>();
+    private final HashMap<GraphEditorTool, JToggleButton> buttons = new HashMap<>();
+    private final HashMap<Integer, ToolTracker> hotkeyMap = new HashMap<>();
 
     private final GraphEditorPanel editor;
 

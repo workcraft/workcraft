@@ -48,8 +48,8 @@ import org.workcraft.util.Hierarchy;
 
 public class VisualSON extends AbstractVisualModel {
 
-    private String group = "Invalid Group Selection";
-    private String block = "Invalid Block Selection";
+    private static final String group = "Invalid Group Selection";
+    private static final String block = "Invalid Block Selection";
     private SON net;
     private Semantics currentConnectonSemantics;
 

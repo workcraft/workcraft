@@ -27,8 +27,8 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 
 public class SelectionChangedEvent implements StateEvent {
-    private VisualModel sender;
-    private Collection<Node> prevSelection;
+    private final VisualModel sender;
+    private final Collection<Node> prevSelection;
 
     public SelectionChangedEvent(VisualModel sender, Collection<Node> prevSelection) {
         this.sender = sender;

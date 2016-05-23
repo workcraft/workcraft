@@ -13,7 +13,7 @@ import org.workcraft.util.ToolUtils;
 import org.workcraft.tasks.Task;
 
 public class DrawAstgTask implements Task<ExternalProcessResult> {
-    private String inputPath, outputPath;
+    private final String inputPath, outputPath;
     private final List<String> options;
 
     public DrawAstgTask(String inputPath, String outputPath, List<String> options) {

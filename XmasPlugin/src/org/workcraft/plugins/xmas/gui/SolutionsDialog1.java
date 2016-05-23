@@ -13,13 +13,9 @@ import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
 public class SolutionsDialog1 extends JDialog {
-    private JPanel contents;
-    private JPanel solutionsPanel;
-    private JPanel buttonsPanel;
-
     public SolutionsDialog1(int n, String str) {
 
-        contents = new JPanel();
+        JPanel contents = new JPanel();
         contents.setLayout(new BorderLayout());
 
         if (n == 1) {
@@ -30,7 +26,7 @@ public class SolutionsDialog1 extends JDialog {
             contents.add(label, BorderLayout.NORTH);
         }
 
-        solutionsPanel = new JPanel();
+        JPanel solutionsPanel = new JPanel();
         solutionsPanel.setLayout(new BoxLayout(solutionsPanel, BoxLayout.Y_AXIS));
 
         solutionsPanel.add(new SolutionPanel(str, new ActionListener() {
@@ -41,7 +37,7 @@ public class SolutionsDialog1 extends JDialog {
         }));
 
         contents.add(solutionsPanel, BorderLayout.CENTER);
-        buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
         JButton okButton = new JButton("OK");
         okButton.addActionListener(new ActionListener() {

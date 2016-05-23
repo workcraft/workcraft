@@ -59,7 +59,7 @@ import org.workcraft.util.Hierarchy;
 @SVGIcon("images/icons/svg/circuit-port.svg")
 public class VisualFunctionContact extends VisualContact implements StateObserver {
 
-    private double size = 0.3;
+    private static final double size = 0.3;
     private static FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000.0, 1000.0), true, true);
     private static Font font;
     static {

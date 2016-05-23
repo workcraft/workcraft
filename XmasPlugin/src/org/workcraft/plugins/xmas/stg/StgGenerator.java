@@ -36,31 +36,31 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
 
     private enum XmasStgType { IORACLE, TORACLE, IRDY, IDN, TRDY, TDN }
 
-    private static final String _INITIATOR  = "I";
-    private static final String _TARGET     = "T";
-    private static final String _RDY        = "Rdy";
-    private static final String _DN               = "Dn";
-    private static final String _ORACLE        = "_oracle";
-    private static final String _MEM         = "_mem";
-    private static final String _HEAD        = "_hd";
-    private static final String _TAIL        = "_tl";
-    private static final String _PORT_I        = "_i";
-    private static final String _PORT_O        = "_o";
-    private static final String _PORT_A        = "_a";
-    private static final String _PORT_B        = "_b";
+    private static final String _INITIATOR = "I";
+    private static final String _TARGET    = "T";
+    private static final String _RDY       = "Rdy";
+    private static final String _DN        = "Dn";
+    private static final String _ORACLE    = "_oracle";
+    private static final String _MEM       = "_mem";
+    private static final String _HEAD      = "_hd";
+    private static final String _TAIL      = "_tl";
+    private static final String _PORT_I    = "_i";
+    private static final String _PORT_O    = "_o";
+    private static final String _PORT_A    = "_a";
+    private static final String _PORT_B    = "_b";
 
-    private static final String _O_IRDY    = _PORT_O + _INITIATOR + _RDY;
+    private static final String _O_IRDY = _PORT_O + _INITIATOR + _RDY;
     private static final String _O_IDN  = _PORT_O + _INITIATOR + _DN;
-    private static final String _A_IRDY    = _PORT_A + _INITIATOR + _RDY;
+    private static final String _A_IRDY = _PORT_A + _INITIATOR + _RDY;
     private static final String _A_IDN  = _PORT_A + _INITIATOR + _DN;
-    private static final String _B_IRDY    = _PORT_B + _INITIATOR + _RDY;
+    private static final String _B_IRDY = _PORT_B + _INITIATOR + _RDY;
     private static final String _B_IDN  = _PORT_B + _INITIATOR + _DN;
 
-    private static final String _I_TRDY    = _PORT_I + _TARGET + _RDY;
+    private static final String _I_TRDY = _PORT_I + _TARGET + _RDY;
     private static final String _I_TDN  = _PORT_I + _TARGET + _DN;
-    private static final String _A_TRDY    = _PORT_A + _TARGET + _RDY;
+    private static final String _A_TRDY = _PORT_A + _TARGET + _RDY;
     private static final String _A_TDN  = _PORT_A + _TARGET + _DN;
-    private static final String _B_TRDY    = _PORT_B + _TARGET + _RDY;
+    private static final String _B_TRDY = _PORT_B + _TARGET + _RDY;
     private static final String _B_TDN  = _PORT_B + _TARGET + _DN;
 
     private static final double QUEUE_SLOT_SPACING = 20.0;
@@ -213,7 +213,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         for (VisualPlace p: dn.getAllPlaces()) {
             xp += p.getRootSpaceX();
         }
-        xp /=  dn.getAllPlaces().size();
+        xp /= dn.getAllPlaces().size();
         Point2D centerPos = getSignalCenterPosition(dn);
         Point2D clk1Pos = centerPos;
         if (dn.fallList.size() > 1) {
@@ -244,8 +244,8 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
             xp += p.getRootSpaceX();
             yp += p.getRootSpaceY();
         }
-        xp /=  rdy.getAllPlaces().size();
-        yp /=  rdy.getAllPlaces().size();
+        xp /= rdy.getAllPlaces().size();
+        yp /= rdy.getAllPlaces().size();
         Point2D clk0Pos = new Point2D.Double(xt + (xt - xp) / 2.0, yp);
         createReplicaReadArcs(clockStg.zero, rdy.getAllTransitions(), clk0Pos);
     }
@@ -413,7 +413,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
             VisualXmasContact oContact = null;
             for (VisualXmasContact contact: component.getContacts()) {
                 if (contact.isOutput()) {
-                    oContact =  XmasUtils.getConnectedContact(getXmasModel(), contact);
+                    oContact = XmasUtils.getConnectedContact(getXmasModel(), contact);
                 }
             }
             if (oContact != null) {
@@ -473,7 +473,7 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
             VisualXmasContact iContact = null;
             for (VisualXmasContact contact: component.getContacts()) {
                 if (contact.isInput()) {
-                    iContact =  XmasUtils.getConnectedContact(getXmasModel(), contact);
+                    iContact = XmasUtils.getConnectedContact(getXmasModel(), contact);
                 }
             }
             if (iContact != null) {
@@ -537,9 +537,9 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
             VisualXmasContact oContact = null;
             for (VisualXmasContact contact: component.getContacts()) {
                 if (contact.isInput()) {
-                    iContact =  XmasUtils.getConnectedContact(getXmasModel(), contact);
+                    iContact = XmasUtils.getConnectedContact(getXmasModel(), contact);
                 } else {
-                    oContact =  XmasUtils.getConnectedContact(getXmasModel(), contact);
+                    oContact = XmasUtils.getConnectedContact(getXmasModel(), contact);
                 }
             }
             if (iContact != null) {
@@ -631,11 +631,11 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
             VisualXmasContact bContact = null;
             for (VisualXmasContact contact: component.getContacts()) {
                 if (contact.isInput()) {
-                    iContact =  XmasUtils.getConnectedContact(getXmasModel(), contact);
+                    iContact = XmasUtils.getConnectedContact(getXmasModel(), contact);
                 } else if (aContact == null) {
-                    aContact =  XmasUtils.getConnectedContact(getXmasModel(), contact);
+                    aContact = XmasUtils.getConnectedContact(getXmasModel(), contact);
                 } else {
-                    bContact =  XmasUtils.getConnectedContact(getXmasModel(), contact);
+                    bContact = XmasUtils.getConnectedContact(getXmasModel(), contact);
                 }
             }
             if (iContact != null) {
@@ -753,11 +753,11 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
             VisualXmasContact oContact = null;
             for (VisualXmasContact contact: component.getContacts()) {
                 if (contact.isOutput()) {
-                    oContact =  XmasUtils.getConnectedContact(getXmasModel(), contact);
+                    oContact = XmasUtils.getConnectedContact(getXmasModel(), contact);
                 } else if (aContact == null) {
-                    aContact =  XmasUtils.getConnectedContact(getXmasModel(), contact);
+                    aContact = XmasUtils.getConnectedContact(getXmasModel(), contact);
                 } else {
-                    bContact =  XmasUtils.getConnectedContact(getXmasModel(), contact);
+                    bContact = XmasUtils.getConnectedContact(getXmasModel(), contact);
                 }
             }
             if (aContact != null) {
@@ -880,11 +880,11 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
             VisualXmasContact bContact = null;
             for (VisualXmasContact contact: component.getContacts()) {
                 if (contact.isInput()) {
-                    iContact =  XmasUtils.getConnectedContact(getXmasModel(), contact);
+                    iContact = XmasUtils.getConnectedContact(getXmasModel(), contact);
                 } else if (aContact == null) {
-                    aContact =  XmasUtils.getConnectedContact(getXmasModel(), contact);
+                    aContact = XmasUtils.getConnectedContact(getXmasModel(), contact);
                 } else {
-                    bContact =  XmasUtils.getConnectedContact(getXmasModel(), contact);
+                    bContact = XmasUtils.getConnectedContact(getXmasModel(), contact);
                 }
             }
             if (iContact != null) {
@@ -995,11 +995,11 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
             VisualXmasContact oContact = null;
             for (VisualXmasContact contact: component.getContacts()) {
                 if (contact.isOutput()) {
-                    oContact =  XmasUtils.getConnectedContact(getXmasModel(), contact);
+                    oContact = XmasUtils.getConnectedContact(getXmasModel(), contact);
                 } else if (aContact == null) {
-                    aContact =  XmasUtils.getConnectedContact(getXmasModel(), contact);
+                    aContact = XmasUtils.getConnectedContact(getXmasModel(), contact);
                 } else {
-                    bContact =  XmasUtils.getConnectedContact(getXmasModel(), contact);
+                    bContact = XmasUtils.getConnectedContact(getXmasModel(), contact);
                 }
             }
             if (aContact != null) {
@@ -1189,9 +1189,9 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
             VisualXmasContact oContact = null;
             for (VisualXmasContact contact: component.getContacts()) {
                 if (contact.isOutput()) {
-                    oContact =  XmasUtils.getConnectedContact(getXmasModel(), contact);
+                    oContact = XmasUtils.getConnectedContact(getXmasModel(), contact);
                 } else {
-                    iContact =  XmasUtils.getConnectedContact(getXmasModel(), contact);
+                    iContact = XmasUtils.getConnectedContact(getXmasModel(), contact);
                 }
             }
             if (iContact != null) {

@@ -17,7 +17,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class ShowSg implements Tool {
     private static final String TITLE = "State graph synthesis";
-    private static final String ERROR_CAUSE_PREFIX  = "\n\n";
+    private static final String ERROR_CAUSE_PREFIX = "\n\n";
 
     public boolean isBinary() {
         return false;

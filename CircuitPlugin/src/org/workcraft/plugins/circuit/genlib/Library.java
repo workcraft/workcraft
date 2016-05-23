@@ -5,7 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.Set;
 
 public class Library {
-    private LinkedHashMap<String, Gate> gates = new LinkedHashMap<>();
+    private final LinkedHashMap<String, Gate> gates = new LinkedHashMap<>();
 
     public Library() {
     }

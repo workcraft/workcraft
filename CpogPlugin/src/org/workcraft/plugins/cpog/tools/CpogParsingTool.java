@@ -49,9 +49,9 @@ public class CpogParsingTool {
         this.refMap = refMap;
     }
 
-    private HashMap<String, Variable> variableMap;
+    private final HashMap<String, Variable> variableMap;
     private int xpos;
-    private HashMap<String, GraphReference> refMap;
+    private final HashMap<String, GraphReference> refMap;
     private ArrayList<String> usedReferences;
 
     public BooleanFormula parseBool(String bool, final VisualCpog visualCpog) throws ParseException {
@@ -428,7 +428,7 @@ public class CpogParsingTool {
         } else if (connections.size() > 1) {
 
             while (!connections.isEmpty()) {
-                VisualArc arc  = (VisualArc) connections.get(0);
+                VisualArc arc = (VisualArc) connections.get(0);
                 String insert = "";
 
                 if (!formulaToString(arc.getCondition()).equals("1")) {
@@ -820,7 +820,7 @@ public class CpogParsingTool {
     }
 
     public Point2D.Double getLowestVertex(VisualCpog visualCpog) {
-        Collection<VisualVertex> vertices =  visualCpog.getVertices(visualCpog.getCurrentLevel());
+        Collection<VisualVertex> vertices = visualCpog.getVertices(visualCpog.getCurrentLevel());
         vertices.removeAll(visualCpog.getSelection());
 
         ArrayList<Node> prevSelection = new ArrayList<>();

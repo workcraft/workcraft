@@ -137,7 +137,7 @@ public class XmasSimulationTool extends StgSimulationTool {
             VisualQueueComponent queue = (VisualQueueComponent) node;
             QueueStg queueStg = generator.getQueueStg(queue);
             int capacity = queue.getReferencedQueueComponent().getCapacity();
-            int idx =  (int) Math.floor(0.5 * capacity  + posNode.getX() * queue.slotWidth);
+            int idx = (int) Math.floor(0.5 * capacity + posNode.getX() * queue.slotWidth);
             if (idx >= capacity) idx = capacity - 1;
             if (idx < 0) idx = 0;
             SlotStg slot = queueStg.slotList.get(idx);

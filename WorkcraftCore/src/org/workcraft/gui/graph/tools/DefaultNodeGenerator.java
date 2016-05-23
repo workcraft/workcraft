@@ -32,10 +32,10 @@ import org.workcraft.util.GUI;
 
 public class DefaultNodeGenerator extends AbstractNodeGenerator {
 
-    private Class<?> cls;
-    private Class<?> vcls;
-    private String displayName;
-    private int hk;
+    private final Class<?> cls;
+    private final Class<?> vcls;
+    private final String displayName;
+    private final int hk;
     private Icon icon = null;
 
     public DefaultNodeGenerator(Class<?> cls) {

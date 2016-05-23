@@ -43,7 +43,7 @@ import info.clearthought.layout.TableLayout;
 
 @SuppressWarnings("serial")
 public class MpsatConfigurationDialog extends JDialog {
-    private JPanel contentPanel, optionsPanel, predicatePanel, buttonsPanel;
+    private JPanel optionsPanel, predicatePanel, buttonsPanel;
     private PresetManagerPanel<MpsatSettings> presetPanel;
     private JComboBox<MpsatMode> modeCombo;
     private JButton runButton, cancelButton, helpButton;
@@ -51,9 +51,9 @@ public class MpsatConfigurationDialog extends JDialog {
     private JTextArea reachText;
     private JRadioButton allSolutionsRadioButton, firstSolutionRadioButton, cheapestSolutionRadioButton;
     private JRadioButton satisfiebleRadioButton, unsatisfiebleRadioButton;
-    private MpsatPresetManager presetManager;
+    private final MpsatPresetManager presetManager;
 
-    private TableLayout layout;
+    private final TableLayout layout;
     private int modalResult = 0;
 
     public MpsatConfigurationDialog(Window owner, MpsatPresetManager presetManager) {
@@ -74,7 +74,7 @@ public class MpsatConfigurationDialog extends JDialog {
         layout.setHGap(3);
         layout.setVGap(3);
 
-        contentPanel = new JPanel(layout);
+        JPanel contentPanel = new JPanel(layout);
         contentPanel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
 
         contentPanel.add(presetPanel, "0 0");

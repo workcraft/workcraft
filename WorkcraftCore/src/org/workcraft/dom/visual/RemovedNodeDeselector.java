@@ -26,7 +26,7 @@ import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesDeletedEvent;
 
 public class RemovedNodeDeselector extends HierarchySupervisor {
-    private VisualModel visualModel;
+    private final VisualModel visualModel;
 
     public RemovedNodeDeselector(VisualModel visualModel) {
         this.visualModel = visualModel;

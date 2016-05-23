@@ -45,7 +45,7 @@ public class VisualScenario extends VisualGroup {
     private Rectangle2D labelBB = null;
     private Rectangle2D encodingBB = null;
 
-    private Map<Rectangle2D, Variable> variableBBs = new HashMap<>();
+    private final Map<Rectangle2D, Variable> variableBBs = new HashMap<>();
 
     private String label = "";
     private Encoding encoding = new Encoding();

@@ -35,7 +35,7 @@ public class ActionMenuItem extends JMenuItem implements Actor {
         }
     }
 
-    private LinkedList<ScriptedActionListener> listeners = new LinkedList<>();
+    private final LinkedList<ScriptedActionListener> listeners = new LinkedList<>();
     private Action scriptedAction = null;
 
     public ActionMenuItem(Action action) {

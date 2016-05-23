@@ -15,8 +15,8 @@ import org.workcraft.plugins.son.util.Before;
 
 public class ReachabilityAlg extends RelationAlgorithm {
 
-    private static Collection<Node> predecessors = new HashSet<>();
-    private SON net;
+    private static final Collection<Node> predecessors = new HashSet<>();
+    private final SON net;
 
     public ReachabilityAlg(SON net) {
         super(net);
@@ -67,7 +67,7 @@ public class ReachabilityAlg extends RelationAlgorithm {
         predecessors.clear();
         LinkedList<Node> visited = new LinkedList<>();
         BSONAlg bsonAlg = new BSONAlg(net);
-        Before before =  bsonAlg.getBeforeList();
+        Before before = bsonAlg.getBeforeList();
         visited.add(s);
         //dfs(visited, v, before);
         causalPredecessors(visited, s, before);

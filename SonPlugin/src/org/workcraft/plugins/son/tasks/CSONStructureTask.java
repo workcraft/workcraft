@@ -13,16 +13,16 @@ import org.workcraft.plugins.son.elements.ChannelPlace;
 
 public class CSONStructureTask extends AbstractStructuralVerification {
 
-    private SON net;
+    private final SON net;
 
-    private Collection<Node> relationErrors = new ArrayList<>();
-    private Collection<Path> cycleErrors = new ArrayList<>();
-    private Collection<ONGroup> groupErrors = new HashSet<>();
+    private final Collection<Node> relationErrors = new ArrayList<>();
+    private final Collection<Path> cycleErrors = new ArrayList<>();
+    private final Collection<ONGroup> groupErrors = new HashSet<>();
 
-    private CSONCycleAlg csonCycleAlg;
+    private final CSONCycleAlg csonCycleAlg;
 
     private int errNumber = 0;
-    private int warningNumber = 0;
+    private static final int warningNumber = 0;
 
     public CSONStructureTask(SON net) {
         super(net);

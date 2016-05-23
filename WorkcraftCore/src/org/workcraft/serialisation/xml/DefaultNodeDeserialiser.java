@@ -39,9 +39,9 @@ import org.workcraft.util.ConstructorParametersMatcher;
 import org.workcraft.util.XmlUtil;
 
 class DefaultNodeDeserialiser {
-    private DeserialiserFactory fac;
-    private NodeInitialiser initialiser;
-    private NodeFinaliser finaliser;
+    private final DeserialiserFactory fac;
+    private final NodeInitialiser initialiser;
+    private final NodeFinaliser finaliser;
 
     DefaultNodeDeserialiser(DeserialiserFactory factory, NodeInitialiser initialiser, NodeFinaliser finaliser) {
         this.fac = factory;
@@ -134,7 +134,7 @@ class DefaultNodeDeserialiser {
             Object instance;
 
             // Check for a custom deserialiser first
-            XMLDeserialiser deserialiser  = fac.getDeserialiserFor(className);
+            XMLDeserialiser deserialiser = fac.getDeserialiserFor(className);
 
             if (deserialiser instanceof CustomXMLDeserialiser) {
                 //System.out.println("Using custom deserialiser " + deserialiser);

@@ -4,9 +4,9 @@ import java.util.ArrayList;
 
 public class StructureVerifySettings {
 
-    private boolean errNodesHighlight, outputBefore;
-    private ArrayList<ONGroup> selectedGroups;
-    private int type;
+    private final boolean errNodesHighlight, outputBefore;
+    private final ArrayList<ONGroup> selectedGroups;
+    private final int type;
 
     public StructureVerifySettings(boolean errNodesHighlight, boolean outputBefore, ArrayList<ONGroup> selectedGroups, int type) {
         this.errNodesHighlight = errNodesHighlight;

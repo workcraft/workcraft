@@ -14,7 +14,7 @@ public class ConsistencyEnforcer extends HierarchySupervisor {
     private int variableCount = 0;
 
     public ConsistencyEnforcer(VisualCpog visualCPOG) {
-        this.visualCPOG  = visualCPOG;
+        this.visualCPOG = visualCPOG;
     }
 
     @Override

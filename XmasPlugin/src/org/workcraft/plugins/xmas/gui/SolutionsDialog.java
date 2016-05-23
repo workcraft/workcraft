@@ -15,18 +15,15 @@ import org.workcraft.Trace;
 
 @SuppressWarnings("serial")
 public class SolutionsDialog extends JDialog {
-    private JPanel contents;
-    private JPanel solutionsPanel;
-    private JPanel buttonsPanel;
 
     public SolutionsDialog(String text, List<Trace> solutions) {
 
         //contents = new JPanel(new TableLayout(sizes));
-        contents = new JPanel();
+        JPanel contents = new JPanel();
 
         contents.add(new JLabel(text), "0 0");
 
-        solutionsPanel = new JPanel();
+        JPanel solutionsPanel = new JPanel();
         solutionsPanel.setLayout(new BoxLayout(solutionsPanel, BoxLayout.Y_AXIS));
 
         /*for (Trace t : solutions)
@@ -38,7 +35,7 @@ public class SolutionsDialog extends JDialog {
             })); */
 
         contents.add(solutionsPanel, "0 1");
-        buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
         JButton okButton = new JButton("OK");
         okButton.addActionListener(new ActionListener() {

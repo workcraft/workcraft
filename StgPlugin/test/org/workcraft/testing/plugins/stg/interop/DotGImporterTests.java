@@ -74,7 +74,7 @@ public class DotGImporterTests {
         writer.close();
         fileStream.close();
 
-        ModelEntry importedEntry =  Import.importFromFile(new DotGImporter(), tempFile);
+        ModelEntry importedEntry = Import.importFromFile(new DotGImporter(), tempFile);
         Stg imported = (Stg) importedEntry.getModel();
 
         Assert.assertEquals(6, Hierarchy.getChildrenOfType(imported.getRoot(), Transition.class).size());

@@ -76,7 +76,7 @@ public class CheckCircuitTask extends MpsatChainTask {
             CircuitToStgConverter generator = new CircuitToStgConverter(visualCircuit);
             Stg devStg = (Stg) generator.getStg().getMathModel();
             String devStgName = (hasEnvironment ? StgUtils.DEVICE_FILE_NAME : StgUtils.SYSTEM_FILE_NAME) + StgUtils.ASTG_FILE_EXT;
-            File devStgFile =  new File(directory, devStgName);
+            File devStgFile = new File(directory, devStgName);
             Result<? extends Object> devExportResult = CircuitStgUtils.exportStg(devStg, devStgFile, directory, monitor);
             if (devExportResult.getOutcome() != Outcome.FINISHED) {
                 if (devExportResult.getOutcome() == Outcome.CANCELLED) {
@@ -344,7 +344,7 @@ public class CheckCircuitTask extends MpsatChainTask {
         } else {
             message = "Without environment restrictions";
         }
-        message +=  " the circuit is:\n";
+        message += " the circuit is:\n";
         if (checkConformation) {
             message += "  * conformant\n";
         }

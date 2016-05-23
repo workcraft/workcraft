@@ -11,7 +11,7 @@ import org.workcraft.gui.propertyeditor.Settings;
 
 public class CpogSettings implements Settings {
 
-    private static final LinkedList<PropertyDescriptor> properties  = new LinkedList<>();
+    private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CpogSettings";
 
     private static final String keyScencoCommand = prefix + ".scencoCommand";

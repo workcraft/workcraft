@@ -16,10 +16,10 @@ import org.workcraft.Framework;
 
 public class AlgebraExportDialog extends JDialog {
 
-    private JTextField filePath;
-    private JButton selectFileBtn, okButton, cancelButton;
-    private JRadioButton pasteRB, exportRB;
-    private JPanel optionPanel, okPanel, filePanel;
+    private final JTextField filePath;
+    private final JButton selectFileBtn, okButton, cancelButton;
+    private final JRadioButton pasteRB, exportRB;
+    private final JPanel optionPanel, okPanel, filePanel;
     private Boolean okClicked;
 
     public AlgebraExportDialog() {

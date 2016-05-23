@@ -43,14 +43,14 @@ public class ParallelSimDialog  extends JDialog {
 
     private static final long serialVersionUID = 1L;
 
-    private SON net;
+    private final SON net;
 
     boolean isRev = false;
-    private Color selectedColor = new Color(255, 228, 181);
-    private Step possibleFire, minFire;
-    private TransitionNode clickedEvent;
+    private static final Color selectedColor = new Color(255, 228, 181);
+    private final Step possibleFire, minFire;
+    private final TransitionNode clickedEvent;
 
-    private JPanel eventPanel, interfacePanel, buttonsPanel, eventInfoPanel;
+    private JPanel eventPanel, buttonsPanel, eventInfoPanel;
     private JButton runButton, cancelButton;
     protected JScrollPane infoPanel;
     private JList eventList;
@@ -58,15 +58,15 @@ public class ParallelSimDialog  extends JDialog {
 
     protected Dimension buttonSize = new Dimension(80, 25);
 
-    private HashSet<TransitionNode> selectedEvents = new HashSet<>();
+    private final HashSet<TransitionNode> selectedEvents = new HashSet<>();
 
     private int run = 0;
     private Window owner;
 
     class EventItem {
-        private String label;
+        private final String label;
         private boolean isSelected = false;
-        private TransitionNode event;
+        private final TransitionNode event;
 
         EventItem(String label, TransitionNode event, List<TransitionNode> postEvents) {
             this.label = label;
@@ -291,7 +291,7 @@ public class ParallelSimDialog  extends JDialog {
         createEventItemsPanel();
         createEventInfoPanel();
 
-        interfacePanel = new JPanel(new BorderLayout(10, 10));
+        JPanel interfacePanel = new JPanel(new BorderLayout(10, 10));
         interfacePanel.add(eventInfoPanel, BorderLayout.NORTH);
         interfacePanel.add(eventPanel, BorderLayout.CENTER);
         interfacePanel.add(buttonsPanel, BorderLayout.SOUTH);

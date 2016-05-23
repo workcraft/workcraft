@@ -22,9 +22,9 @@ import org.workcraft.workspace.Workspace;
 @SuppressWarnings("serial")
 public class WorkspaceChooser extends JPanel {
     private final Func<Path<String>, Boolean> filter;
-    private TreeWindow<Path<String>> tree;
-    private JTextField nameFilter;
-    private FilteredTreeSource<Path<String>> filteredSource;
+    private final TreeWindow<Path<String>> tree;
+    private final JTextField nameFilter;
+    private final FilteredTreeSource<Path<String>> filteredSource;
 
     public WorkspaceChooser(Workspace workspace, Func<Path<String>, Boolean> filter) {
         super();

@@ -45,8 +45,8 @@ import org.workcraft.util.LogUtils;
 public class OutputWindow extends JPanel {
     protected PrintStream systemOut;
     protected boolean streamCaptured = false;
-    private JScrollPane scrollStdOut;
-    private JTextArea txtStdOut;
+    private final JScrollPane scrollStdOut;
+    private final JTextArea txtStdOut;
 
     public OutputWindow() {
         txtStdOut = new JTextArea();
@@ -83,7 +83,7 @@ public class OutputWindow extends JPanel {
     }
 
     class OutputStreamView extends FilterOutputStream {
-        private JTextArea target;
+        private final JTextArea target;
         private String oldPrefix = null;
         private boolean needsNewLine = false;
 

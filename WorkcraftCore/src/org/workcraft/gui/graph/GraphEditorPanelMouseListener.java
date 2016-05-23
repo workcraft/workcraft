@@ -37,7 +37,7 @@ import org.workcraft.gui.graph.tools.ToolProvider;
 class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListener, MouseWheelListener {
     protected GraphEditor editor;
     protected boolean panDrag = false;
-    private ToolProvider toolProvider;
+    private final ToolProvider toolProvider;
 
     protected Point lastMouseCoords = new Point();
     private Point2D prevPosition = new Point2D.Double(0, 0);

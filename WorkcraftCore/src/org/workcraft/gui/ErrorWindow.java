@@ -49,8 +49,8 @@ import org.workcraft.plugins.shared.CommonLogSettings;
 public class ErrorWindow extends JPanel implements ComponentListener {
     protected PrintStream systemErr;
     protected boolean streamCaptured = false;
-    private JScrollPane scrollStdErr;
-    private JTextArea txtStdErr;
+    private final JScrollPane scrollStdErr;
+    private final JTextArea txtStdErr;
     private Color colorBack = null;
 
     public ErrorWindow() {
@@ -84,7 +84,7 @@ public class ErrorWindow extends JPanel implements ComponentListener {
         public void puts(String s) {
             SwingUtilities.invokeLater(new Runnable() {
                 public void run() {
-                    Container parent =     getParent().getParent().getParent();
+                    Container parent = getParent().getParent().getParent();
                     if (parent instanceof JTabbedPane) {
                         JTabbedPane tab = (JTabbedPane) parent;
                         for (int i = 0; i < tab.getTabCount(); i++) {
@@ -127,7 +127,7 @@ public class ErrorWindow extends JPanel implements ComponentListener {
             if (colorBack == null) {
                 return;
             }
-            Container parent =     getParent().getParent().getParent();
+            Container parent = getParent().getParent().getParent();
             if (parent instanceof JTabbedPane) {
                 JTabbedPane tab = (JTabbedPane) parent;
                 if (tab.getSelectedComponent() == getParent().getParent()) {
@@ -172,7 +172,7 @@ public class ErrorWindow extends JPanel implements ComponentListener {
             return;
         }
 
-        Container parent =     getParent().getParent().getParent();
+        Container parent = getParent().getParent().getParent();
         if (parent instanceof JTabbedPane) {
             JTabbedPane tab = (JTabbedPane) parent;
             for (int i = 0; i < tab.getComponentCount(); i++) {

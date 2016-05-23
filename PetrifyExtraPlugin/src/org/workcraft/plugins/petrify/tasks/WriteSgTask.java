@@ -16,13 +16,13 @@ import org.workcraft.util.DataAccumulator;
 import org.workcraft.util.ToolUtils;
 
 public class WriteSgTask implements Task<ExternalProcessResult>, ExternalProcessListener {
-    private String inputPath, outputPath;
+    private final String inputPath, outputPath;
     private final List<String> options;
 
     private ProgressMonitor<? super ExternalProcessResult> monitor;
 
-    private DataAccumulator stdoutAccum = new DataAccumulator();
-    private DataAccumulator stderrAccum = new DataAccumulator();
+    private final DataAccumulator stdoutAccum = new DataAccumulator();
+    private final DataAccumulator stderrAccum = new DataAccumulator();
 
     public WriteSgTask(String inputPath, String outputPath, List<String> options) {
         this.inputPath = inputPath;

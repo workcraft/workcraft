@@ -70,9 +70,9 @@ public class StructureVerifyDialog extends JDialog {
     }
 
     class ListItem {
-        private String label;
+        private final String label;
         private boolean isSelected = true;
-        private Object obj;
+        private final Object obj;
 
         ListItem(String label, Object obj) {
             this.label = label;

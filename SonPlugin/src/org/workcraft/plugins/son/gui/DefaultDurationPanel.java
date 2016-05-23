@@ -22,8 +22,8 @@ public class DefaultDurationPanel extends JPanel {
     private JTextField min, max;
     private boolean validDuration = true;
 
-    private int labelheight = 20;
-    private int labelwidth = 35;
+    private static final int labelheight = 20;
+    private static final int labelwidth = 35;
 
     protected Font font = new Font("Arial", Font.PLAIN, 12);
 

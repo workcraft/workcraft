@@ -51,8 +51,8 @@ public class WaggingGenerator {
 
     private final HashSet<VisualComponent> selectedComponents = new HashSet<>();
     private final HashSet<VisualConnection> selectedConnections = new HashSet<>();
-    private HashMap<VisualComponent, VisualComponent> replicaToOriginalMap = new HashMap<>();
-    private ArrayList<WaggingData> wagging = new ArrayList<>();
+    private final HashMap<VisualComponent, VisualComponent> replicaToOriginalMap = new HashMap<>();
+    private final ArrayList<WaggingData> wagging = new ArrayList<>();
 
     public WaggingGenerator(VisualDfs dfs, int count) {
         this.dfs = dfs;
@@ -182,7 +182,7 @@ public class WaggingGenerator {
                 }
             }
         }
-        return Pair.of(hasPred,  hasSucc);
+        return Pair.of(hasPred, hasSucc);
     }
 
     private void insertPushControl() {

@@ -34,7 +34,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class SatBasedSolver {
 
     private EncoderSettings settings;
-    private ScencoExecutionSupport cpogBuilder;
+    private final ScencoExecutionSupport cpogBuilder;
 
     // SETTING PARAMETERS FOR CALLING SCENCO
     private String scencoCommand;
@@ -43,8 +43,8 @@ public class SatBasedSolver {
     private String gatesLibrary;
     private String verbose = "";
     private String genMode = "";
-    private String modBitFlag = "";
-    private String modBit = "";
+    private static final String modBitFlag = "";
+    private static final String modBit = "";
     private String numSol = "";
     private String customFlag = "";
     private String customPath = "";
@@ -364,12 +364,12 @@ public class SatBasedSolver {
     private void instantiateParameters(int elements, int scenarios) {
         optEnc = new String[scenarios];
         optFormulaeVertices = new String[elements * elements];
-        truthTableVertices =  new String[elements * elements];
+        truthTableVertices = new String[elements * elements];
         optVertices = new String[elements];
         optSources = new String[elements * elements];
         optDests = new String[elements * elements];
         optFormulaeArcs = new String[elements * elements];
-        truthTableArcs =  new String[elements * elements];
+        truthTableArcs = new String[elements * elements];
         arcNames = new String[elements * elements];
         scencoCommand = ToolUtils.getAbsoluteCommandPath(CpogSettings.getScencoCommand());
         espressoCommand = ToolUtils.getAbsoluteCommandPath(CpogSettings.getEspressoCommand());

@@ -37,8 +37,7 @@ import org.workcraft.Framework;
 @SuppressWarnings("serial")
 public class JavaScriptWindow extends JPanel {
 
-    private JPanel panelInput = null;
-    private JEditTextArea txtScript = null;
+    private final JEditTextArea txtScript;
     private boolean isInitState;
 
     public JavaScriptWindow() {
@@ -70,7 +69,7 @@ public class JavaScriptWindow extends JPanel {
             }
         });
 
-        panelInput = new JPanel();
+        JPanel panelInput = new JPanel();
         panelInput.setLayout(new BorderLayout());
         panelInput.add(txtScript, BorderLayout.CENTER);
         panelInput.setMinimumSize(new Dimension(100, 100));

@@ -40,7 +40,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class TransformationTask implements Task<TransformationResult>, ExternalProcessListener {
     private static final String MESSAGE_EXPORT_FAILED = "Unable to export the model.";
-    private WorkspaceEntry we;
+    private final WorkspaceEntry we;
     String[] args;
 
     public TransformationTask(WorkspaceEntry we, String description, String[] args) {

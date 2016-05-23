@@ -57,7 +57,7 @@ import org.workcraft.util.Hierarchy;
 @CustomTools (XmasToolsProvider.class)
 public class VisualXmas extends AbstractVisualModel {
 
-    private Xmas circuit;
+    private final Xmas circuit;
 
     @Override
     public void validateConnection(Node first, Node second)    throws InvalidConnectionException {
@@ -121,7 +121,7 @@ public class VisualXmas extends AbstractVisualModel {
     }
 
     public Collection<Node> getNodes() {
-        ArrayList<Node> result =  new ArrayList<Node>();
+        ArrayList<Node> result = new ArrayList<Node>();
         for (Node node : Hierarchy.getDescendantsOfType(getRoot(), Node.class)) {
             if ((node instanceof VisualSourceComponent)
                     || (node instanceof VisualFunctionComponent)

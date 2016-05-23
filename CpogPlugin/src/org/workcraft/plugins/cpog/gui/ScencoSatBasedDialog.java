@@ -42,16 +42,16 @@ public class ScencoSatBasedDialog extends JDialog {
             optimiseLabel, abcLabel, circuitSizeLabel;
     private JCheckBox verboseModeCheck, abcCheck;
     private JComboBox<String> optimiseBox;
-    private JPanel generationPanel, buttonsPanel, content, standardPanel;
+    private JPanel generationPanel, buttonsPanel, standardPanel;
     private JButton saveButton, closeButton;
     private JTextField bitsText, circuitSizeText;
     JScrollPane scrollPane;
-    private TableLayout layout;
+    private final TableLayout layout;
     private int m, bits;
     // Core variables
     private SatBasedSolver encoder;
-    private EncoderSettings settings;
-    private WorkspaceEntry we;
+    private final EncoderSettings settings;
+    private final WorkspaceEntry we;
 
     // generationPanel.getPreferredSize().height
 
@@ -78,7 +78,7 @@ public class ScencoSatBasedDialog extends JDialog {
         layout.setHGap(3);
         layout.setVGap(3);
 
-        content = new JPanel(layout);
+        JPanel content = new JPanel(layout);
         content.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
 
         content.add(standardPanel, "0, 0");

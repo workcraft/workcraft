@@ -50,8 +50,8 @@ import org.xml.sax.SAXException;
 
 public class Workspace {
     public static final String EXTERNAL_PATH = "!External";
-    private LinkedTwoWayMap<Path<String>, WorkspaceEntry> openFiles = new LinkedTwoWayMap<>();
-    private List<WorkspaceListener> workspaceListeners = new ArrayList<>();
+    private final LinkedTwoWayMap<Path<String>, WorkspaceEntry> openFiles = new LinkedTwoWayMap<>();
+    private final List<WorkspaceListener> workspaceListeners = new ArrayList<>();
 
     private boolean temporary;
 
@@ -59,7 +59,7 @@ public class Workspace {
 
     private File workspaceFile;
     private final Map<Path<String>, File> mounts;
-    private Map<Path<String>, File> permanentMounts;
+    private final Map<Path<String>, File> permanentMounts;
 
     private final DependencyManager dependencyManager = new DependencyManager();
 

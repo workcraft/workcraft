@@ -24,8 +24,8 @@ package org.workcraft.observation;
 import org.workcraft.dom.Node;
 
 public class PropertyChangedEvent implements StateEvent {
-    private Node sender;
-    private String propertyName;
+    private final Node sender;
+    private final String propertyName;
 
     public PropertyChangedEvent(Node sender, String propertyName) {
         this.sender = sender;

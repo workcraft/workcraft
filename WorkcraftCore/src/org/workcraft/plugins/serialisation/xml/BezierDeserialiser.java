@@ -63,7 +63,7 @@ public class BezierDeserialiser implements CustomXMLDeserialiser {
             NodeInitialiser nodeInitialiser) throws DeserialisationException {
 
         Element cp1e = XmlUtil.getChildElement("cp1", element);
-        Element cp2e =  XmlUtil.getChildElement("cp2", element);
+        Element cp2e = XmlUtil.getChildElement("cp2", element);
 
         BezierControlPoint cp1 = (BezierControlPoint) nodeInitialiser.initInstance(cp1e);
         BezierControlPoint cp2 = (BezierControlPoint) nodeInitialiser.initInstance(cp2e);

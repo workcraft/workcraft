@@ -80,7 +80,7 @@ public class Console {
         System.out.println();
 
         //LogUtils.logMessageLine("Initialising framework...");
-        final Framework framework  = Framework.getInstance();
+        final Framework framework = Framework.getInstance();
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         // NOTE: JavaScript needs to be initilised before GUI
         framework.initJavaScript();

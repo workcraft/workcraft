@@ -33,7 +33,7 @@ import javax.swing.table.TableCellEditor;
 @SuppressWarnings("serial")
 public class BooleanCellEditor extends AbstractCellEditor implements TableCellEditor, ItemListener {
 
-    private JCheckBox checkBox;
+    private final JCheckBox checkBox;
 
     public BooleanCellEditor() {
         checkBox = new JCheckBox();

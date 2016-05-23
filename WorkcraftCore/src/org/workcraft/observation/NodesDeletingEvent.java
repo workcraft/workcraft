@@ -27,8 +27,8 @@ import java.util.Collection;
 import org.workcraft.dom.Node;
 
 public class NodesDeletingEvent implements HierarchyEvent {
-    private Node parentNode;
-    private Collection<Node> affectedNodes;
+    private final Node parentNode;
+    private final Collection<Node> affectedNodes;
 
     public NodesDeletingEvent(Node parentNode, Collection<Node> affectedNodes) {
         this.parentNode = parentNode;

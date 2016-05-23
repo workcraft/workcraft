@@ -35,7 +35,7 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 
 public class SelectionEventPropagator extends HierarchySupervisor implements StateObserver {
-    private LinkedList<SelectionObserver> selectionObservers = new LinkedList<>();
+    private final LinkedList<SelectionObserver> selectionObservers = new LinkedList<>();
 
     public SelectionEventPropagator(VisualModel model) {
         model.addObserver(this);

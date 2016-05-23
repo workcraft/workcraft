@@ -9,20 +9,20 @@ import org.workcraft.plugins.son.util.ScenarioRef;
 
 public class TimeConsistencySettings {
 
-    private boolean inconsistencyHighlight, unspecifyHighlight, causalConsistency, causalHighlight;
-    private ArrayList<ONGroup> selectedGroups;
-    private ScenarioRef seletedScenario;
-    private ArrayList<Node> seletedNodes;
-    private int tabIndex;
-    private Granularity granularity;
-    private Interval defaultDuration;
+    private final boolean inconsistencyHighlight, unspecifyHighlight, causalConsistency, causalHighlight;
+    private final ArrayList<ONGroup> selectedGroups;
+    private final ScenarioRef seletedScenario;
+    private final ArrayList<Node> seletedNodes;
+    private final int tabIndex;
+    private final Granularity granularity;
+    private final Interval defaultDuration;
 
     public TimeConsistencySettings(boolean inconsistencyHighlight,
             boolean unspecifyHighlight, ArrayList<ONGroup> selectedGroups,
             ScenarioRef seletedScenario, ArrayList<Node> seletedNodes, int tabIndex,
             Granularity granularity, boolean causalConsistency,
             Interval defaultDuration, boolean causalHighlight) {
-        this.inconsistencyHighlight =     inconsistencyHighlight;
+        this.inconsistencyHighlight = inconsistencyHighlight;
         this.unspecifyHighlight = unspecifyHighlight;
         this.selectedGroups = selectedGroups;
         this.seletedScenario = seletedScenario;
