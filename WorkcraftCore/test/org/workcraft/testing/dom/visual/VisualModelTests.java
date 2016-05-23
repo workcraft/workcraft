@@ -473,7 +473,7 @@ public class VisualModelTests {
     }
 
     class GroupNodeEqualityTest {
-        private VisualNode[] expected;
+        private final VisualNode[] expected;
 
         GroupNodeEqualityTest(VisualNode[] expected) {
             this.expected = expected;

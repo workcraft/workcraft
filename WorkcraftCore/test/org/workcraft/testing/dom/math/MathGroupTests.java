@@ -41,14 +41,12 @@ public class MathGroupTests {
     private boolean receivedRemoveNotification1 = false;
     private boolean receivedRemoveNotification2 = false;
 
-    private MockNode n1 = new MockNode();
-    private MockNode n2 = new MockNode();
-
-    private MathGroup group;
+    private final MockNode n1 = new MockNode();
+    private final MockNode n2 = new MockNode();
 
     @Test
     public void observationTest() {
-        group = new MathGroup();
+        MathGroup group = new MathGroup();
 
         group.addObserver(new HierarchyObserver() {
             public void notify(HierarchyEvent e) {
