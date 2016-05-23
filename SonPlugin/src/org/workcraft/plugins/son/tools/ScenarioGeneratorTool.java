@@ -56,7 +56,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
 
     protected ScenarioRef scenarioRef;
     protected ScenarioSaveList saveList;
-    private final Color greyoutColor = Color.LIGHT_GRAY;
+    private static final Color greyoutColor = Color.LIGHT_GRAY;
 
     public class SaveList extends ArrayList<ScenarioRef> {
         private static final long serialVersionUID = 1L;

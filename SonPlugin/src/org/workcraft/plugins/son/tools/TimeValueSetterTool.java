@@ -77,8 +77,8 @@ public class TimeValueSetterTool extends AbstractTool {
     private Node selection = null;
     private Node visualSelection = null;
     private boolean visibility;
-    private final Color selectedColor = Color.ORANGE;
-    private final Font font = new Font("Arial", Font.PLAIN, 12);
+    private static final Color selectedColor = Color.ORANGE;
+    private static final Font font = new Font("Arial", Font.PLAIN, 12);
     private static final String startLabel = "Start time interval: ";
     private static final String endLabel = "Finish time interval: ";
     private static final String durationLabel = "Duration interval: ";

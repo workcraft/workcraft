@@ -26,7 +26,7 @@ import javax.swing.JToolBar;
 public class OutputArea extends JFrame {
 
     private static final long serialVersionUID = 1L;
-    private final Font font = new Font("Calibri", Font.PLAIN, 15);
+    private static final Font font = new Font("Calibri", Font.PLAIN, 15);
 
     private final JTextArea textArea;
     private JMenuBar menu;
