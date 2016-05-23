@@ -142,13 +142,12 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
 
     private int counter = 0;
 
-    private final JScrollPane scroll;
     private final JPanel content;
 
     public TaskManagerWindow() {
 
         setLayout(new BorderLayout());
-        scroll = new JScrollPane();
+        JScrollPane scroll = new JScrollPane();
         add(scroll, BorderLayout.CENTER);
 
         content = new ScrollPaneWidthTrackingPanel();

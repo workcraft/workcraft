@@ -14,7 +14,6 @@ public class GranularityPanel extends JPanel {
     private static final long serialVersionUID = 1L;
 
     private JRadioButton yearYearButton, hourMinsButton;
-    private ButtonGroup granularityGroup;
 
     public GranularityPanel(Border border) {
         setLayout(new FlowLayout());
@@ -27,7 +26,7 @@ public class GranularityPanel extends JPanel {
         hourMinsButton = new JRadioButton();
         hourMinsButton.setText("T:24-hour D:mins");
 
-        granularityGroup = new ButtonGroup();
+        ButtonGroup granularityGroup = new ButtonGroup();
         granularityGroup.add(yearYearButton);
         granularityGroup.add(hourMinsButton);
 

@@ -152,13 +152,7 @@ public class MainWindow extends JFrame {
     private DefaultDockingPort rootDockingPort;
     private DockableWindow documentPlaceholder;
     private DockableWindow outputDockable;
-    private DockableWindow erroDockable;
-    private DockableWindow javaScriptDockable;
-    private DockableWindow tasksDockable;
-    private DockableWindow workspaceDockable;
     private DockableWindow propertyEditorDockable;
-    private DockableWindow toolControlsDockable;
-    private DockableWindow editorToolsDockable;
 
     private OutputWindow outputWindow;
     private ErrorWindow errorWindow;
@@ -390,28 +384,28 @@ public class MainWindow extends JFrame {
         outputDockable = createDockableWindow(outputWindow, TITLE_OUTPUT, DockableWindowContentPanel.CLOSE_BUTTON,
                 DockingManager.SOUTH_REGION, ySplit);
 
-        erroDockable = createDockableWindow(errorWindow, TITLE_PROBLEMS, outputDockable,
+        DockableWindow erroDockable = createDockableWindow(errorWindow, TITLE_PROBLEMS, outputDockable,
                 DockableWindowContentPanel.CLOSE_BUTTON);
 
-        javaScriptDockable = createDockableWindow(javaScriptWindow, TITLE_JAVASCRIPT, outputDockable,
+        DockableWindow javaScriptDockable = createDockableWindow(javaScriptWindow, TITLE_JAVASCRIPT, outputDockable,
                 DockableWindowContentPanel.CLOSE_BUTTON);
 
-        tasksDockable = createDockableWindow(new TaskManagerWindow(), TITLE_TASKS, outputDockable,
+        DockableWindow tasksDockable = createDockableWindow(new TaskManagerWindow(), TITLE_TASKS, outputDockable,
                 DockableWindowContentPanel.CLOSE_BUTTON);
 
-        workspaceDockable = createDockableWindow(workspaceWindow, TITLE_WORKSPACE,
+        DockableWindow workspaceDockable = createDockableWindow(workspaceWindow, TITLE_WORKSPACE,
                 DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.EAST_REGION,
                 xSplit);
 
-        propertyEditorDockable = createDockableWindow(propertyEditorWindow, TITLE_PROPERTY_EDITOR, workspaceDockable,
+        DockableWindow propertyEditorDockable = createDockableWindow(propertyEditorWindow, TITLE_PROPERTY_EDITOR, workspaceDockable,
                 DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
                 DockingManager.NORTH_REGION, ySplit);
 
-        toolControlsDockable = createDockableWindow(editorToolsWindow, TITLE_TOOL_CONTROLS, propertyEditorDockable,
+        DockableWindow toolControlsDockable = createDockableWindow(editorToolsWindow, TITLE_TOOL_CONTROLS, propertyEditorDockable,
                 DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
                 DockingManager.SOUTH_REGION, 0.4f);
 
-        editorToolsDockable = createDockableWindow(toolControlsWindow, TITLE_EDITOR_TOOLS, toolControlsDockable,
+        DockableWindow editorToolsDockable = createDockableWindow(toolControlsWindow, TITLE_EDITOR_TOOLS, toolControlsDockable,
                 DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
                 DockingManager.SOUTH_REGION, 0.795f);
 

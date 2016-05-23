@@ -23,10 +23,7 @@ import org.workcraft.plugins.shared.presets.PresetManager;
 @SuppressWarnings("serial")
 public class PresetManagerDialog<T> extends JDialog {
     private static final String DIALOG_DELETE_PRESET = "Delete preset";
-    private final JPanel content;
     private final JList list;
-    private final JButton okButton, deleteButton, renameButton;
-    private final JScrollPane listScroll;
     private final DefaultListModel listDataModel;
 
     public PresetManagerDialog(Window owner, final PresetManager<T> presetManager) {
@@ -41,13 +38,13 @@ public class PresetManagerDialog<T> extends JDialog {
         layout.setVGap(4);
         layout.setHGap(4);
 
-        content = new JPanel(layout);
+        JPanel content = new JPanel(layout);
         content.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
 
         this.setLayout(new BorderLayout());
         this.add(content, BorderLayout.CENTER);
 
-        okButton = new JButton("OK");
+        JButton okButton = new JButton("OK");
         okButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -55,7 +52,7 @@ public class PresetManagerDialog<T> extends JDialog {
             }
         });
 
-        deleteButton = new JButton("Delete");
+        JButton deleteButton = new JButton("Delete");
         deleteButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -76,7 +73,7 @@ public class PresetManagerDialog<T> extends JDialog {
             }
         });
 
-        renameButton = new JButton("Rename");
+        JButton renameButton = new JButton("Rename");
         renameButton.addActionListener(new ActionListener() {
             @SuppressWarnings("unchecked")
             @Override
@@ -101,7 +98,7 @@ public class PresetManagerDialog<T> extends JDialog {
             }
         }
 
-        listScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+        JScrollPane listScroll = new JScrollPane(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         list = new JList(listDataModel);
         listScroll.setViewportView(list);
 

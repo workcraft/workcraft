@@ -25,12 +25,10 @@ public class FileCellEditor extends AbstractCellEditor implements TableCellEdito
     protected static final String TAG_CLEAR = "clear";
 
     private final JPanel panel;
-    private final JButton chooseButton;
-    private final JButton clearButton;
     private File file;
 
     public FileCellEditor() {
-        chooseButton = new JButton();
+        JButton chooseButton = new JButton();
         chooseButton.setActionCommand(TAG_EDIT);
         chooseButton.addActionListener(this);
         chooseButton.setOpaque(true);
@@ -39,7 +37,7 @@ public class FileCellEditor extends AbstractCellEditor implements TableCellEdito
         chooseButton.setMargin(new Insets(1, 1, 1, 1));
         chooseButton.setHorizontalAlignment(SwingConstants.LEFT);
 
-        clearButton = new JButton("x");
+        JButton clearButton = new JButton("x");
         clearButton.setActionCommand(TAG_CLEAR);
         clearButton.addActionListener(this);
         clearButton.setFocusable(false);

@@ -22,12 +22,10 @@ import org.workcraft.util.GUI;
 @SuppressWarnings("serial")
 public class PresetManagerPanel<T> extends JPanel {
     private JComboBox presetCombo;
-    private JButton manageButton;
 
     private final PresetManager<T> presetManager;
     private final SettingsToControlsMapper<T> guiMapper;
     private JButton updatePresetButton;
-    private JButton saveAsButton;
     private final Window dialogOwner;
 
     @SuppressWarnings("unchecked")
@@ -72,7 +70,7 @@ public class PresetManagerPanel<T> extends JPanel {
             }
         });
 
-        manageButton = new JButton("Manage...");
+        JButton manageButton = new JButton("Manage...");
         manageButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -100,7 +98,7 @@ public class PresetManagerPanel<T> extends JPanel {
             }
         });
 
-        saveAsButton = new JButton("Save as...");
+        JButton saveAsButton = new JButton("Save as...");
         saveAsButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

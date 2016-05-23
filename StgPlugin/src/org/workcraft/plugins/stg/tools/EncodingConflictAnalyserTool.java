@@ -46,9 +46,6 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
     private CoreDensityMap density;
 
     private JPanel interfacePanel;
-    private JPanel controlPanel;
-    private JPanel infoPanel;
-    private JPanel statusPanel;
     private JRadioButton coresRadio;
     private JTable coresTable;
     private JRadioButton densityRadio;
@@ -56,7 +53,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
 
     @Override
     public void createInterfacePanel(final GraphEditor editor) {
-        controlPanel = new JPanel();
+        JPanel controlPanel = new JPanel();
 
         coresRadio = new JRadioButton("Show selected cores");
         coresRadio.addItemListener(new ItemListener() {
@@ -122,7 +119,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
         JScrollPane coresScroll = new JScrollPane();
         coresScroll.setViewportView(coresTable);
 
-        infoPanel = new JPanel(new BorderLayout());
+        JPanel infoPanel = new JPanel(new BorderLayout());
         infoPanel.add(coresRadio, BorderLayout.NORTH);
         infoPanel.add(coresScroll, BorderLayout.CENTER);
 
@@ -158,7 +155,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
             }
         });
 
-        statusPanel = new JPanel();
+        JPanel statusPanel = new JPanel();
         statusPanel.setLayout(new BorderLayout());
         statusPanel.add(densityRadio, BorderLayout.NORTH);
         statusPanel.add(densityTable, BorderLayout.SOUTH);

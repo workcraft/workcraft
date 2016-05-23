@@ -93,7 +93,6 @@ public abstract class SimulationTool extends AbstractTool implements ClipboardOw
 
     private JSlider speedSlider;
     private JButton randomButton, playButton, stopButton, backwardButton, forwardButton;
-    private JButton generateGraphButton, copyStateButton, pasteStateButton, mergeTraceButton, saveInitStateButton;
 
     // cache of "excited" containers (the ones containing the excited simulation elements)
     protected HashMap<Container, Boolean> excitedContainers = new HashMap<>();
@@ -130,11 +129,11 @@ public abstract class SimulationTool extends AbstractTool implements ClipboardOw
         speedSlider = new JSlider(-1000, 1000, 0);
         speedSlider.setToolTipText("Simulation playback speed");
 
-        generateGraphButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-graph.svg"), "Generate trace digram");
-        copyStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-copy.svg"), "Copy trace to clipboard");
-        pasteStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-paste.svg"), "Paste trace from clipboard");
-        mergeTraceButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-merge.svg"), "Merge branch into trace");
-        saveInitStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-marking-save.svg"), "Save current state as initial");
+        JButton generateGraphButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-graph.svg"), "Generate trace digram");
+        JButton copyStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-copy.svg"), "Copy trace to clipboard");
+        JButton pasteStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-paste.svg"), "Paste trace from clipboard");
+        JButton mergeTraceButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-merge.svg"), "Merge branch into trace");
+        JButton saveInitStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-marking-save.svg"), "Save current state as initial");
 
         FlowLayout flowLayout = new FlowLayout();
         int buttonWidth = (int) Math.round(playButton.getPreferredSize().getWidth() + flowLayout.getHgap());

@@ -21,9 +21,7 @@ public class PetriToCpogTask implements Task<PetriToCpogResult> {
     private final WorkspaceEntry we;
 
     // conversion-related variables
-    private VisualPetriNet petri;
     private final PetriToCpogSettings settings;
-    private VisualCpog cpog;
 
     public PetriToCpogTask(WorkspaceEntry we, PetriToCpogSettings settings) {
         this.we = we;
@@ -38,13 +36,13 @@ public class PetriToCpogTask implements Task<PetriToCpogResult> {
         Outcome outcome;
 
         // reading Petri net from workspace
-        petri = (VisualPetriNet) (we.getModelEntry().getVisualModel());
+        VisualPetriNet petri = (VisualPetriNet) (we.getModelEntry().getVisualModel());
 
         // instantiating converter
         PetriToCpogConverter converter = new PetriToCpogConverter(petri);
 
         // get the partial orders from the Petri net introduced
-        cpog = converter.run(settings);
+        VisualCpog cpog = converter.run(settings);
 
         // checking that conversion process terminated correctly
         if (cpog == null) {

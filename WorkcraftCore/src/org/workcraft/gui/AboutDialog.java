@@ -33,11 +33,6 @@ import org.workcraft.util.GUI;
 
 public class AboutDialog extends JDialog {
     private static final long serialVersionUID = 1L;
-    private final JPanel contentPane;
-    private final JLabel logoLabel;
-    private final JEditorPane infoPane;
-    private final JPanel buttonsPane;
-    private final JButton okButton;
 
     public AboutDialog(final MainWindow owner) {
         super(owner);
@@ -66,6 +61,7 @@ public class AboutDialog extends JDialog {
             logoImage = null;
         }
 
+        JLabel logoLabel;
         if (logoImage != null) {
             logoLabel = new JLabel(new ImageIcon(logoImage), SwingConstants.CENTER);
         } else {
@@ -75,7 +71,7 @@ public class AboutDialog extends JDialog {
         }
         logoLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
 
-        infoPane = new JEditorPane();
+        JEditorPane infoPane = new JEditorPane();
         infoPane.setFocusable(false);
 
         infoPane.setContentType("text/html");
@@ -102,7 +98,7 @@ public class AboutDialog extends JDialog {
             }
         });
 
-        okButton = new JButton();
+        JButton okButton = new JButton();
         okButton.setPreferredSize(new Dimension(100, 25));
         okButton.setText("OK");
         okButton.addActionListener(new ActionListener() {
@@ -111,10 +107,10 @@ public class AboutDialog extends JDialog {
             }
         });
 
-        buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         buttonsPane.add(okButton);
 
-        contentPane = new JPanel();
+        JPanel contentPane = new JPanel();
         contentPane.setLayout(new BorderLayout(10, 10));
         contentPane.add(logoLabel, BorderLayout.NORTH);
         contentPane.add(infoPane, BorderLayout.CENTER);

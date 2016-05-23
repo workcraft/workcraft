@@ -29,12 +29,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 @SuppressWarnings("serial")
 public class PetriToCpogDialog extends JDialog {
 
-    // labels
-    private JLabel reduceLabel;
-    private JLabel isomorphismLabel;
-    private JLabel significanceLabel;
-    private JLabel removeNodesLabel;
-
     // check boxes
     private JCheckBox reduceCheck;
     private JCheckBox isomorphismCheck;
@@ -42,8 +36,6 @@ public class PetriToCpogDialog extends JDialog {
 
     //other elements
     private JComboBox<String> significanceBox;
-    private JButton closeButton, runButton;
-    private final TableLayout layout;
     private JPanel buttonPanel, settingPanel;
     protected int modalResult;
 
@@ -59,7 +51,7 @@ public class PetriToCpogDialog extends JDialog {
                 {110, TableLayout.FILL},
         };
 
-        layout = new TableLayout(size);
+        TableLayout layout = new TableLayout(size);
         layout.setHGap(3);
         layout.setVGap(3);
 
@@ -90,7 +82,7 @@ public class PetriToCpogDialog extends JDialog {
 
         // reduction of maximal significant runs, check box
         reduceCheck = new JCheckBox("", true);
-        reduceLabel = new JLabel(PetriToCpogDialogSupport.textReduceLabel);
+        JLabel reduceLabel = new JLabel(PetriToCpogDialogSupport.textReduceLabel);
         reduceLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 reduceCheck.setSelected(reduceCheck.isSelected() ? false : true);
@@ -99,7 +91,7 @@ public class PetriToCpogDialog extends JDialog {
 
         // reduce isomorphic processes, check box
         isomorphismCheck = new JCheckBox("", true);
-        isomorphismLabel = new JLabel(PetriToCpogDialogSupport.textIsomorphismLabel);
+        JLabel isomorphismLabel = new JLabel(PetriToCpogDialogSupport.textIsomorphismLabel);
         isomorphismLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 isomorphismCheck.setSelected(isomorphismCheck.isSelected() ? false : true);
@@ -107,7 +99,7 @@ public class PetriToCpogDialog extends JDialog {
         });
 
         // algorithm for checking significance property of a run, combo box
-        significanceLabel = new JLabel(PetriToCpogDialogSupport.textSignificanceLabel);
+        JLabel significanceLabel = new JLabel(PetriToCpogDialogSupport.textSignificanceLabel);
         significanceBox = new JComboBox<String>();
         significanceBox.setEditable(false);
         significanceBox.setPreferredSize(PetriToCpogDialogSupport.significanceSize);
@@ -119,7 +111,7 @@ public class PetriToCpogDialog extends JDialog {
 
         // remove condition nodes check box
         removeNodesCheck = new JCheckBox("", false);
-        removeNodesLabel = new JLabel(PetriToCpogDialogSupport.textRemoveNodeLabel);
+        JLabel removeNodesLabel = new JLabel(PetriToCpogDialogSupport.textRemoveNodeLabel);
         removeNodesLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 removeNodesCheck.setSelected(removeNodesCheck.isSelected() ? false : true);
@@ -147,7 +139,7 @@ public class PetriToCpogDialog extends JDialog {
         buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
         // run the converter
-        runButton = new JButton("Run");
+        JButton runButton = new JButton("Run");
         runButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -163,7 +155,7 @@ public class PetriToCpogDialog extends JDialog {
         });
 
         // close the converter
-        closeButton = new JButton("Close");
+        JButton closeButton = new JButton("Close");
         closeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

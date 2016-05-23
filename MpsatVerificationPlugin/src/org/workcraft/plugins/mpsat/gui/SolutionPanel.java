@@ -21,8 +21,6 @@ import info.clearthought.layout.TableLayout;
 
 @SuppressWarnings("serial")
 public class SolutionPanel extends JPanel {
-    private final JPanel buttonsPanel;
-    private final JTextArea traceText;
 
     public SolutionPanel(final WorkspaceEntry we, final Solution solution, final ActionListener closeAction) {
         super(new TableLayout(new double[][]
@@ -30,7 +28,7 @@ public class SolutionPanel extends JPanel {
                 {TableLayout.FILL}, }
         ));
 
-        traceText = new JTextArea();
+        JTextArea traceText = new JTextArea();
         String solutionString = solution.toString();
         if (solutionString.isEmpty()) {
             traceText.setText("[empty trace]");
@@ -43,7 +41,7 @@ public class SolutionPanel extends JPanel {
         final JScrollPane scrollPane = new JScrollPane();
         scrollPane.setViewportView(traceText);
 
-        buttonsPanel = new JPanel();
+        JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.Y_AXIS));
 
         JButton playButton = new JButton("Play");

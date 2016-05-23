@@ -21,7 +21,6 @@ public class PGMinerImportDialog extends JDialog {
 
     private final JTextField filePath;
     private final JButton    selectFileBtn, importButton, cancelButton;
-    private final JPanel filePanel, optionPanel, btnPanel;
     private final JCheckBox extractConcurrencyCB, splitCB;
     private boolean canImport;
 
@@ -37,7 +36,7 @@ public class PGMinerImportDialog extends JDialog {
 
         addSelectFileBtnListener();
 
-        filePanel = new JPanel();
+        JPanel filePanel = new JPanel();
         filePanel.add(filePath);
         filePanel.add(selectFileBtn);
 
@@ -47,7 +46,7 @@ public class PGMinerImportDialog extends JDialog {
         splitCB.setEnabled(false);
         addCheckBoxListener();
 
-        optionPanel = new JPanel();
+        JPanel optionPanel = new JPanel();
         optionPanel.setLayout(new FlowLayout());
         optionPanel.add(extractConcurrencyCB);
         optionPanel.add(splitCB);
@@ -59,7 +58,7 @@ public class PGMinerImportDialog extends JDialog {
 
         addButtonListeners();
 
-        btnPanel = new JPanel();
+        JPanel btnPanel = new JPanel();
         btnPanel.add(importButton);
         btnPanel.add(cancelButton);
 

@@ -118,9 +118,6 @@ public class WorkspaceWindow extends JPanel {
         };
     }
 
-    private JScrollPane scrollPane = null;
-    private TreeWindow<Path<String>> workspaceTree = null;
-
     private String lastSavePath = null;
     private String lastOpenPath = null;
 
@@ -132,10 +129,10 @@ public class WorkspaceWindow extends JPanel {
     public void startup() {
         final Framework framework = Framework.getInstance();
         final Workspace workspace = framework.getWorkspace();
-        workspaceTree = TreeWindow.create(workspace.getTree(),
+        TreeWindow<Path<String>> workspaceTree = TreeWindow.create(workspace.getTree(),
                 new WorkspaceTreeDecorator(workspace),
                 new WorkspacePopupProvider(this));
-        scrollPane = new JScrollPane();
+        JScrollPane scrollPane = new JScrollPane();
         scrollPane.getVerticalScrollBar().setUnitIncrement(8);
 
         scrollPane.setViewportView(workspaceTree);

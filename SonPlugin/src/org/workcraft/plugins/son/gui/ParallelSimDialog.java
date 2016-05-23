@@ -51,9 +51,7 @@ public class ParallelSimDialog  extends JDialog {
     private final TransitionNode clickedEvent;
 
     private JPanel eventPanel, buttonsPanel, eventInfoPanel;
-    private JButton runButton, cancelButton;
     protected JScrollPane infoPanel;
-    private JList eventList;
     Collection<Path> sync;
 
     protected Dimension buttonSize = new Dimension(80, 25);
@@ -129,7 +127,7 @@ public class ParallelSimDialog  extends JDialog {
             listModel.addElement(item);
         }
 
-        eventList = new JList(listModel);
+        JList eventList = new JList(listModel);
         eventList.setCellRenderer(new CheckListRenderer());
         eventList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
@@ -211,7 +209,7 @@ public class ParallelSimDialog  extends JDialog {
     private void createButtonsPanel() {
         buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        runButton = new JButton("Run");
+        JButton runButton = new JButton("Run");
         runButton.setPreferredSize(buttonSize);
         runButton.addActionListener(new ActionListener() {
             @Override
@@ -222,7 +220,7 @@ public class ParallelSimDialog  extends JDialog {
             }
         });
 
-        cancelButton = new JButton("Cancel");
+        JButton cancelButton = new JButton("Cancel");
         cancelButton.setPreferredSize(buttonSize);
         cancelButton.addActionListener(new ActionListener() {
             @Override

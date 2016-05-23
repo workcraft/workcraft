@@ -21,15 +21,13 @@ import org.workcraft.plugins.petri.VisualPetriNet;
 public class PetriToCpogConverter {
 
     private final PetriNet pn;
-    private final Cpog cpog;
     private final VisualCpog visualCpog;
     private int xRightmostVertex;
 
     /** constructor **/
     public PetriToCpogConverter(VisualPetriNet vpn) {
         this.pn = vpn.getPetriNet();
-        this.cpog = new Cpog();
-        this.visualCpog = new VisualCpog(this.cpog);
+        this.visualCpog = new VisualCpog(new Cpog());
         this.xRightmostVertex = -1;
     }
 

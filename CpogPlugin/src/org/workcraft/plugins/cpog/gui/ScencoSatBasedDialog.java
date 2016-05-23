@@ -38,18 +38,13 @@ import org.workcraft.workspace.WorkspaceEntry;
 @SuppressWarnings("serial")
 public class ScencoSatBasedDialog extends JDialog {
 
-    private JLabel verboseModeLabel, bitsLabel,
-            optimiseLabel, abcLabel, circuitSizeLabel;
     private JCheckBox verboseModeCheck, abcCheck;
     private JComboBox<String> optimiseBox;
     private JPanel generationPanel, buttonsPanel, standardPanel;
-    private JButton saveButton, closeButton;
     private JTextField bitsText, circuitSizeText;
     JScrollPane scrollPane;
-    private final TableLayout layout;
     private int m, bits;
     // Core variables
-    private SatBasedSolver encoder;
     private final EncoderSettings settings;
     private final WorkspaceEntry we;
 
@@ -74,7 +69,7 @@ public class ScencoSatBasedDialog extends JDialog {
         double[][] size = new double[][] {{TableLayout.FILL },
                 {60, TableLayout.FILL, 39 }, };
 
-        layout = new TableLayout(size);
+        TableLayout layout = new TableLayout(size);
         layout.setHGap(3);
         layout.setVGap(3);
 
@@ -103,7 +98,7 @@ public class ScencoSatBasedDialog extends JDialog {
         standardPanel = new JPanel(new SimpleFlowLayout());
 
         // OPTIMISE FOR MICROCONTROLLER/CPOG SIZE
-        optimiseLabel = new JLabel(ScencoDialogSupport.textOptimiseForLabel);
+        JLabel optimiseLabel = new JLabel(ScencoDialogSupport.textOptimiseForLabel);
         //optimiseLabel.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForLabel);
         optimiseBox = new JComboBox<String>();
         optimiseBox.setEditable(false);
@@ -115,7 +110,7 @@ public class ScencoSatBasedDialog extends JDialog {
 
         // ABC TOOL DISABLE FLAG
         abcCheck = new JCheckBox("", settings.isAbcFlag());
-        abcLabel = new JLabel("Use ABC for logic synthesis");
+        JLabel abcLabel = new JLabel("Use ABC for logic synthesis");
         //abcLabel.setPreferredSize(ScencoDialogSupport.dimensionShortLabel);
         abcLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
@@ -124,7 +119,7 @@ public class ScencoSatBasedDialog extends JDialog {
         });
 
         // VERBOSE MODE INSTANTIATION
-        verboseModeLabel = new JLabel(ScencoDialogSupport.textVerboseMode);
+        JLabel verboseModeLabel = new JLabel(ScencoDialogSupport.textVerboseMode);
         //verboseModeLabel.setPreferredSize(ScencoDialogSupport.dimensionVerboseLabel);
         verboseModeCheck = new JCheckBox("", false);
         verboseModeLabel.addMouseListener(new MouseAdapter() {
@@ -154,9 +149,9 @@ public class ScencoSatBasedDialog extends JDialog {
         generationPanel.setBorder(BorderFactory
                 .createTitledBorder("Encoding parameters"));
 
-        bitsLabel = new JLabel(ScencoDialogSupport.textEncodingBitWidth);
+        JLabel bitsLabel = new JLabel(ScencoDialogSupport.textEncodingBitWidth);
         //bitsLabel.setPreferredSize(ScencoDialogSupport.dimensionBitEncodingWidthLabel);
-        circuitSizeLabel = new JLabel(ScencoDialogSupport.textCircuitSizeLabel);
+        JLabel circuitSizeLabel = new JLabel(ScencoDialogSupport.textCircuitSizeLabel);
         //circuitSizeLabel.setPreferredSize(ScencoDialogSupport.dimensionCircuitSizeLabel);
         int value = 2;
         while (value < m) {
@@ -187,7 +182,7 @@ public class ScencoSatBasedDialog extends JDialog {
     private void createButtonPanel() {
         buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        saveButton = new JButton("Run");
+        JButton saveButton = new JButton("Run");
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -227,14 +222,14 @@ public class ScencoSatBasedDialog extends JDialog {
                 settings.setCustomEncMode(false);
 
                 // Set them on encoder
-                encoder = new SatBasedSolver(settings);
+                SatBasedSolver encoder = new SatBasedSolver(settings);
 
                 // Execute scenco
                 encoder.run(we);
             }
         });
 
-        closeButton = new JButton("Close");
+        JButton closeButton = new JButton("Close");
         closeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
