@@ -22,8 +22,6 @@ import info.clearthought.layout.TableLayout;
 @SuppressWarnings("serial")
 public class ReachibilityDialog extends JDialog {
     private final JPanel contents;
-    private final JPanel solutionsPanel;
-    private final JPanel buttonsPanel;
 
     public ReachibilityDialog(WorkspaceEntry we, String title, String message, List<Solution> solutions) {
 
@@ -32,7 +30,7 @@ public class ReachibilityDialog extends JDialog {
                 {TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED },
         };
 
-        solutionsPanel = new JPanel();
+        JPanel solutionsPanel = new JPanel();
         solutionsPanel.setLayout(new BoxLayout(solutionsPanel, BoxLayout.Y_AXIS));
         for (Solution solution : solutions) {
             solutionsPanel.add(new SolutionPanel(we, solution, new ActionListener() {
@@ -43,7 +41,7 @@ public class ReachibilityDialog extends JDialog {
             }));
         }
 
-        buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton closeButton = new JButton("Close");
         getRootPane().setDefaultButton(closeButton);
 

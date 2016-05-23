@@ -13,7 +13,6 @@ import org.workcraft.plugins.mpsat.gui.Solution;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 
 public class MpsatResultParser {
-    private String mpsatOutput;
     private final LinkedList<Solution> solutions;
 
     private static final Pattern patternReachability0 =
@@ -29,6 +28,7 @@ public class MpsatResultParser {
             Pattern.compile("SOLUTION .+\n(.*)\ntriggers: .+\n", Pattern.UNIX_LINES);
 
     public MpsatResultParser(ExternalProcessResult result) {
+        String mpsatOutput;
         try {
             mpsatOutput = new String(result.getOutput(), "ISO-8859-1"); // iso-latin-1
         } catch (UnsupportedEncodingException e) {

@@ -49,7 +49,6 @@ import org.workcraft.plugins.shared.CommonLogSettings;
 public class ErrorWindow extends JPanel implements ComponentListener {
     protected PrintStream systemErr;
     protected boolean streamCaptured = false;
-    private final JScrollPane scrollStdErr;
     private final JTextArea txtStdErr;
     private Color colorBack = null;
 
@@ -64,7 +63,7 @@ public class ErrorWindow extends JPanel implements ComponentListener {
         DefaultCaret caret = (DefaultCaret) txtStdErr.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
-        scrollStdErr = new JScrollPane();
+        JScrollPane scrollStdErr = new JScrollPane();
         scrollStdErr.setViewportView(txtStdErr);
 
         setLayout(new BorderLayout(0, 0));

@@ -67,7 +67,7 @@ public class TimeValueSetterTool extends AbstractTool {
 
     private JPanel interfacePanel, timeInputPanel, timePropertyPanel, timeSetterPanel, buttonPanel;
     private GranularityPanel granularityPanel;
-    private JButton estimatorButton, clearButton;
+    private JButton estimatorButton;
 
     private static final int labelheight = 20;
     private static final int labelwidth = 40;
@@ -122,7 +122,7 @@ public class TimeValueSetterTool extends AbstractTool {
         estimatorButton.setPreferredSize(buttonSize);
         estimatorButton.setEnabled(false);
 
-        clearButton = new JButton("Clear");
+        JButton clearButton = new JButton("Clear");
         clearButton.setPreferredSize(buttonSize);
 
         buttonPanel = new JPanel();

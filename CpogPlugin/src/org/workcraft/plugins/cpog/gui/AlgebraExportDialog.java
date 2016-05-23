@@ -19,7 +19,6 @@ public class AlgebraExportDialog extends JDialog {
     private final JTextField filePath;
     private final JButton selectFileBtn, okButton, cancelButton;
     private final JRadioButton pasteRB, exportRB;
-    private final JPanel optionPanel, okPanel, filePanel;
     private Boolean okClicked;
 
     public AlgebraExportDialog() {
@@ -32,7 +31,7 @@ public class AlgebraExportDialog extends JDialog {
 
         addSelectFileBtnListener();
 
-        filePanel = new JPanel();
+        JPanel filePanel = new JPanel();
         filePanel.add(filePath);
         filePanel.add(selectFileBtn);
 
@@ -43,7 +42,7 @@ public class AlgebraExportDialog extends JDialog {
         exportRB = new JRadioButton("Export expression to file", false);
         addRadioButtonListener();
 
-        optionPanel = new JPanel();
+        JPanel optionPanel = new JPanel();
         optionPanel.add(pasteRB);
         optionPanel.add(exportRB);
 
@@ -52,7 +51,7 @@ public class AlgebraExportDialog extends JDialog {
         okButton.setPreferredSize(new Dimension(100, 25));
         cancelButton.setPreferredSize(new Dimension(100, 25));
 
-        okPanel = new JPanel();
+        JPanel okPanel = new JPanel();
         okPanel.add(okButton);
         okPanel.add(cancelButton);
         addButtonListeners();

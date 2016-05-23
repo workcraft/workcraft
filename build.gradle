@@ -97,7 +97,7 @@ subprojects {
     }
     pmdMain.exclude '**/jj/**'
 
-    task pmd(dependsOn: pmdMain)
+    task pmd(dependsOn: tasks.withType(Pmd))
 
     apply plugin: 'cpd'
 

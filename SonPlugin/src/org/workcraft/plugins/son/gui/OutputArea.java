@@ -30,16 +30,14 @@ public class OutputArea extends JFrame {
 
     private final JTextArea textArea;
     private JMenuBar menu;
-    private JMenu file;
-    private JMenuItem export, exit;
 
     JToolBar toolBar = new JToolBar();
 
     private void createMenu() {
         menu = new JMenuBar();
-        file = new JMenu(" File ");
-        export = new JMenuItem("Export result");
-        exit = new JMenuItem("Exit");
+        JMenu file = new JMenu(" File ");
+        JMenuItem export = new JMenuItem("Export result");
+        JMenuItem exit = new JMenuItem("Exit");
 
         menu.add(file);
         file.add(export);

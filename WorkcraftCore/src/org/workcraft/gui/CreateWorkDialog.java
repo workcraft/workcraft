@@ -58,14 +58,9 @@ import org.workcraft.util.GUI;
 public class CreateWorkDialog extends JDialog {
 
     private static final long serialVersionUID = 1L;
-    private JPanel contentPane;
-    private JPanel optionsPane;
-    private JPanel buttonsPane;
-    private JSplitPane splitPane;
     private JList modelList;
     private JButton okButton;
     private JButton cancelButton;
-    private JScrollPane modelScroll;
     private JCheckBox chkVisual;
     private JCheckBox chkOpen;
     private JTextField txtTitle;
@@ -101,10 +96,10 @@ public class CreateWorkDialog extends JDialog {
     }
 
     private void initComponents() {
-        contentPane = new JPanel(new BorderLayout());
+        JPanel contentPane = new JPanel(new BorderLayout());
         setContentPane(contentPane);
 
-        modelScroll = new JScrollPane();
+        JScrollPane modelScroll = new JScrollPane();
         DefaultListModel listModel = new DefaultListModel();
 
         modelList = new JList(listModel);
@@ -163,7 +158,7 @@ public class CreateWorkDialog extends JDialog {
         modelScroll.setMinimumSize(new Dimension(150, 0));
         modelScroll.setPreferredSize(new Dimension(250, 0));
 
-        optionsPane = new JPanel();
+        JPanel optionsPane = new JPanel();
         optionsPane.setBorder(BorderFactory.createTitledBorder("Creation options"));
         optionsPane.setLayout(new BoxLayout(optionsPane, BoxLayout.Y_AXIS));
         optionsPane.setMinimumSize(new Dimension(150, 0));
@@ -188,12 +183,12 @@ public class CreateWorkDialog extends JDialog {
         dummy.setMaximumSize(new Dimension(200, 1000));
         optionsPane.add(dummy);
 
-        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, optionsPane, modelScroll);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, optionsPane, modelScroll);
         splitPane.setOneTouchExpandable(true);
         splitPane.setDividerLocation(250);
         splitPane.setResizeWeight(0.1);
 
-        buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
         okButton = new JButton();
         okButton.setPreferredSize(new Dimension(100, 25));

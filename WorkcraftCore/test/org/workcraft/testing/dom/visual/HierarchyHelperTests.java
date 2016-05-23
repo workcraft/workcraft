@@ -31,7 +31,7 @@ import org.workcraft.util.Hierarchy;
 public class HierarchyHelperTests {
 
     static class MockHierarchyNode implements Node {
-        private Node parent;
+        private final Node parent;
         MockHierarchyNode(Node parent) {
             this.parent = parent;
         }

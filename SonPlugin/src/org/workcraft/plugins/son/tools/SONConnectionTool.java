@@ -22,9 +22,6 @@ public class SONConnectionTool extends ConnectionTool {
 
     protected JPanel interfacePanel;
 
-    private JRadioButton polyButton, asynButton, synButton, bhvButton;
-    private ButtonGroup buttonGroup;
-
     private Semantics semantic = Semantics.PNLINE;
 
     @Override
@@ -34,28 +31,28 @@ public class SONConnectionTool extends ConnectionTool {
         interfacePanel = new JPanel();
         interfacePanel.setLayout(new BoxLayout(interfacePanel, BoxLayout.Y_AXIS));
 
-        polyButton = new JRadioButton("Causal Connection");
+        JRadioButton polyButton = new JRadioButton("Causal Connection");
         polyButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 semantic = Semantics.PNLINE;
             }
         });
 
-        asynButton = new JRadioButton("A/Syn Communication");
+        JRadioButton asynButton = new JRadioButton("A/Syn Communication");
         asynButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 semantic = Semantics.ASYNLINE;
             }
         });
 
-        synButton = new JRadioButton("Synchronous Communication");
+        JRadioButton synButton = new JRadioButton("Synchronous Communication");
         synButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 semantic = Semantics.SYNCLINE;
             }
         });
 
-        bhvButton = new JRadioButton("Behavioural Abstraction");
+        JRadioButton bhvButton = new JRadioButton("Behavioural Abstraction");
         bhvButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 semantic = Semantics.BHVLINE;
@@ -64,9 +61,9 @@ public class SONConnectionTool extends ConnectionTool {
 
         polyButton.setSelected(true);
 
-        buttonGroup = new ButtonGroup();
-        this.buttonGroup.add(polyButton);
-        this.buttonGroup.add(bhvButton);
+        ButtonGroup buttonGroup = new ButtonGroup();
+        buttonGroup.add(polyButton);
+        buttonGroup.add(bhvButton);
 
         interfacePanel.add(polyButton);
         interfacePanel.add(bhvButton);

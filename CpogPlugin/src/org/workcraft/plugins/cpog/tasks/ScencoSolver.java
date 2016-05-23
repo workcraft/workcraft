@@ -61,18 +61,10 @@ public class ScencoSolver {
     private String disableFunction = "";
     private String oldSynt = "";
 
-    private String[] optEnc;
-    private String[] optFormulaeVertices;
-    private String[] optVertices;
-    private String[] optSources;
-    private String[] optDests;
-    private String[] optFormulaeArcs;
-    private String[] arcNames;
     private int v;
     private int a;
     private int n, m;
     private char[][][] constraints;
-    private int[][] graph;
     private ArrayList<VisualTransformableNode> scenarios;
     private HashMap<String, Integer> events;
     private ArrayList<Point2D> positions;
@@ -107,7 +99,7 @@ public class ScencoSolver {
 
         // construct constraints
         constraints = new char[m][n][n];
-        graph = new int[n][n];
+        int[][] graph = new int[n][n];
         check = cpogBuilder.constructConstraints(constraints, graph, m, n,
                 scenarios, events, positions, count);
         if (check.get(0).contains("ERROR")) {
@@ -244,13 +236,13 @@ public class ScencoSolver {
     }
 
     public void handleResult(String[] outputLines, String resultDirectoryPath) {
-        optEnc = new String[m];
-        optFormulaeVertices = new String[n * n];
-        optVertices = new String[n];
-        optSources = new String[n * n];
-        optDests = new String[n * n];
-        optFormulaeArcs = new String[n * n];
-        arcNames = new String[n * n];
+        String[] optEnc = new String[m];
+        String[] optFormulaeVertices = new String[n * n];
+        String[] optVertices = new String[n];
+        String[] optSources = new String[n * n];
+        String[] optDests = new String[n * n];
+        String[] optFormulaeArcs = new String[n * n];
+        String[] arcNames = new String[n * n];
 
         try {
             for (int i = 0; i < outputLines.length; i++) {

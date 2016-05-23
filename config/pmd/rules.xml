@@ -22,4 +22,5 @@
     <rule ref="rulesets/java/design.xml/IdempotentOperations"/>
     <rule ref="rulesets/java/design.xml/FinalFieldCouldBeStatic"/>
     <rule ref="rulesets/java/design.xml/ImmutableField"/>
+    <rule ref="rulesets/java/design.xml/SingularField"/>
 </ruleset>

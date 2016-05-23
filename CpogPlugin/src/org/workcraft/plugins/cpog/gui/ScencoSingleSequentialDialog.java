@@ -37,13 +37,10 @@ import org.workcraft.workspace.WorkspaceEntry;
 @SuppressWarnings("serial")
 public class ScencoSingleSequentialDialog extends JDialog {
 
-    private JLabel verboseModeLabel, optimiseLabel, abcLabel;
     private JCheckBox verboseModeCheck, abcCheck;
     private JComboBox<String> optimiseBox;
     private JPanel buttonsPanel, standardPanel;
-    private JButton saveButton, closeButton;
     JScrollPane scrollPane;
-    private final TableLayout layout;
     private int m, bits;
     private final EncoderSettings settings;
     private final WorkspaceEntry we;
@@ -63,7 +60,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
                 {60, TableLayout.FILL},
         };
 
-        layout = new TableLayout(size);
+        TableLayout layout = new TableLayout(size);
         layout.setHGap(3);
         layout.setVGap(3);
 
@@ -92,7 +89,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
         standardPanel = new JPanel(new SimpleFlowLayout());
 
         // OPTIMISE FOR MICROCONTROLLER/CPOG SIZE
-        optimiseLabel = new JLabel(ScencoDialogSupport.textOptimiseForLabel);
+        JLabel optimiseLabel = new JLabel(ScencoDialogSupport.textOptimiseForLabel);
         //optimiseLabel.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForLabel);
         optimiseBox = new JComboBox<String>();
         optimiseBox.setEditable(false);
@@ -104,7 +101,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
 
         // ABC TOOL DISABLE FLAG
         abcCheck = new JCheckBox("", settings.isAbcFlag());
-        abcLabel = new JLabel(ScencoDialogSupport.textAbcLabel);
+        JLabel abcLabel = new JLabel(ScencoDialogSupport.textAbcLabel);
         //abcLabel.setPreferredSize(ScencoDialogSupport.dimensionShortLabel);
         abcLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
@@ -113,7 +110,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
         });
 
         // VERBOSE MODE INSTANTIATION
-        verboseModeLabel = new JLabel(ScencoDialogSupport.textVerboseMode);
+        JLabel verboseModeLabel = new JLabel(ScencoDialogSupport.textVerboseMode);
         //verboseModeLabel.setPreferredSize(ScencoDialogSupport.dimensionVerboseLabel);
         verboseModeCheck = new JCheckBox("", false);
         verboseModeLabel.addMouseListener(new MouseAdapter() {
@@ -146,7 +143,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
 
         buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        saveButton = new JButton("Run");
+        JButton saveButton = new JButton("Run");
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -188,7 +185,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
             }
         });
 
-        closeButton = new JButton("Close");
+        JButton closeButton = new JButton("Close");
         closeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

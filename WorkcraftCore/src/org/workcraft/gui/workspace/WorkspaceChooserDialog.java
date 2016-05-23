@@ -19,9 +19,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 @SuppressWarnings("serial")
 public class WorkspaceChooserDialog extends JDialog {
-    private WorkspaceChooser chooser;
-    private JPanel buttonsPanel;
-    private JButton cancelButton;
     private final Workspace workspace;
     private final Func<Path<String>, Boolean> filter;
 
@@ -41,10 +38,8 @@ public class WorkspaceChooserDialog extends JDialog {
         };
 
         JPanel contents = new JPanel(new TableLayout(sizes));
-
-        chooser = new WorkspaceChooser(workspace, filter);
-
-        buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
+        WorkspaceChooser chooser = new WorkspaceChooser(workspace, filter);
+        JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
         JButton runButton = new JButton("OK");
         runButton.addActionListener(new ActionListener() {
@@ -55,7 +50,7 @@ public class WorkspaceChooserDialog extends JDialog {
             }
         });
 
-        cancelButton = new JButton("Cancel");
+        JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

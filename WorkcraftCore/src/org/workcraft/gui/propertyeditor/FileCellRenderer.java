@@ -20,7 +20,6 @@ public class FileCellRenderer extends JPanel implements TableCellRenderer {
     Border selectedBorder = null;
 
     private final JButton chooseButton;
-    private final JButton clearButton;
 
     public FileCellRenderer() {
         chooseButton = new JButton();
@@ -30,7 +29,7 @@ public class FileCellRenderer extends JPanel implements TableCellRenderer {
         chooseButton.setMargin(new Insets(1, 1, 1, 1));
         chooseButton.setHorizontalAlignment(SwingConstants.LEFT);
 
-        clearButton = new JButton("x");
+        JButton clearButton = new JButton("x");
         clearButton.setFocusable(false);
         clearButton.setMargin(new Insets(1, 1, 1, 1));
 

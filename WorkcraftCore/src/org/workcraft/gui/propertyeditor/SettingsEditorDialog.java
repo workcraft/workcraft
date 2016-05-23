@@ -62,13 +62,6 @@ import org.workcraft.plugins.PluginInfo;
 public class SettingsEditorDialog extends JDialog {
     private static final String DIALOG_RESTORE_SETTINGS = "Restore settings";
     private static final long serialVersionUID = 1L;
-    private JPanel contentPane;
-    private JScrollPane sectionPane;
-    private JScrollPane propertiesPane;
-    private JSplitPane splitPane;
-    private JPanel buttonsPane;
-    private JButton okButton;
-    private JButton cancelButton;
     private JButton restoreButton;
     private DefaultMutableTreeNode sectionRoot;
     private JTree sectionTree;
@@ -230,9 +223,9 @@ public class SettingsEditorDialog extends JDialog {
     }
 
     private void initComponents() {
-        contentPane = new JPanel(new BorderLayout());
+        JPanel contentPane = new JPanel(new BorderLayout());
         setContentPane(contentPane);
-        sectionPane = new JScrollPane();
+        JScrollPane sectionPane = new JScrollPane();
         sectionRoot = new DefaultMutableTreeNode("root");
 
         sectionTree = new JTree();
@@ -257,18 +250,18 @@ public class SettingsEditorDialog extends JDialog {
         sectionPane.setPreferredSize(new Dimension(250, 0));
         sectionPane.setBorder(BorderFactory.createTitledBorder("Section"));
 
-        propertiesPane = new JScrollPane();
+        JScrollPane propertiesPane = new JScrollPane();
         propertiesPane.setMinimumSize(new Dimension(250, 0));
         propertiesPane.setPreferredSize(new Dimension(450, 0));
         propertiesPane.setBorder(BorderFactory.createTitledBorder("Selection properties"));
         propertiesPane.setViewportView(propertiesTable);
 
-        splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sectionPane, propertiesPane);
+        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sectionPane, propertiesPane);
         splitPane.setOneTouchExpandable(true);
         splitPane.setDividerLocation(250);
         splitPane.setResizeWeight(0.1);
 
-        okButton = new JButton();
+        JButton okButton = new JButton();
         okButton.setPreferredSize(new Dimension(100, 25));
         okButton.setText("OK");
         okButton.addActionListener(new ActionListener() {
@@ -277,7 +270,7 @@ public class SettingsEditorDialog extends JDialog {
             }
         });
 
-        cancelButton = new JButton();
+        JButton cancelButton = new JButton();
         cancelButton.setPreferredSize(new Dimension(100, 25));
         cancelButton.setText("Cancel");
         cancelButton.addActionListener(new ActionListener() {
@@ -295,7 +288,7 @@ public class SettingsEditorDialog extends JDialog {
             }
         });
 
-        buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
         buttonsPane.add(okButton);
         buttonsPane.add(cancelButton);
         buttonsPane.add(restoreButton);

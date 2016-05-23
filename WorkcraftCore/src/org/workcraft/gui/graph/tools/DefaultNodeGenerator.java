@@ -33,14 +33,13 @@ import org.workcraft.util.GUI;
 public class DefaultNodeGenerator extends AbstractNodeGenerator {
 
     private final Class<?> cls;
-    private final Class<?> vcls;
     private final String displayName;
     private final int hk;
     private Icon icon = null;
 
     public DefaultNodeGenerator(Class<?> cls) {
         this.cls = cls;
-        this.vcls = Annotations.getVisualClass(cls);
+        Class<?> vcls = Annotations.getVisualClass(cls);
         this.displayName = Annotations.getDisplayName(vcls);
         this.hk = Annotations.getHotKeyCode(vcls);
 

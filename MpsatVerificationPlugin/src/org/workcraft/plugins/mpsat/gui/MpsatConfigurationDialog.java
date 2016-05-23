@@ -46,11 +46,10 @@ public class MpsatConfigurationDialog extends JDialog {
     private JPanel optionsPanel, predicatePanel, buttonsPanel;
     private PresetManagerPanel<MpsatSettings> presetPanel;
     private JComboBox<MpsatMode> modeCombo;
-    private JButton runButton, cancelButton, helpButton;
     private JTextField solutionLimitText;
     private JTextArea reachText;
     private JRadioButton allSolutionsRadioButton, firstSolutionRadioButton, cheapestSolutionRadioButton;
-    private JRadioButton satisfiebleRadioButton, unsatisfiebleRadioButton;
+    private JRadioButton unsatisfiebleRadioButton;
     private final MpsatPresetManager presetManager;
 
     private final TableLayout layout;
@@ -232,7 +231,7 @@ public class MpsatConfigurationDialog extends JDialog {
         });
         JScrollPane reachScrollPane = new JScrollPane(reachText);
 
-        satisfiebleRadioButton = new JRadioButton("satisfiable");
+        JRadioButton satisfiebleRadioButton = new JRadioButton("satisfiable");
         unsatisfiebleRadioButton = new JRadioButton("unsatisfiable");
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add(satisfiebleRadioButton);
@@ -288,7 +287,7 @@ public class MpsatConfigurationDialog extends JDialog {
     private void createButtonsPanel() {
         buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        runButton = new JButton("Run");
+        JButton runButton = new JButton("Run");
         runButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -297,7 +296,7 @@ public class MpsatConfigurationDialog extends JDialog {
             }
         });
 
-        cancelButton = new JButton("Cancel");
+        JButton cancelButton = new JButton("Cancel");
         cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -306,7 +305,7 @@ public class MpsatConfigurationDialog extends JDialog {
             }
         });
 
-        helpButton = new JButton("Help");
+        JButton helpButton = new JButton("Help");
         helpButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

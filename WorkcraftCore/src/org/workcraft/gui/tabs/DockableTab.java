@@ -37,7 +37,6 @@ import org.workcraft.gui.actions.ScriptedActionListener;
 
 @SuppressWarnings("serial")
 public class DockableTab extends JPanel {
-    private final JPanel buttonsPanel;
     private JLabel label;
 
     public DockableTab(DockableWindow dockableWindow, ScriptedActionListener actionListener) {
@@ -46,7 +45,7 @@ public class DockableTab extends JPanel {
         setLayout(new BorderLayout());
         setFocusable(false);
 
-        buttonsPanel = new JPanel();
+        JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.X_AXIS));
         buttonsPanel.setOpaque(false);
         buttonsPanel.setFocusable(false);

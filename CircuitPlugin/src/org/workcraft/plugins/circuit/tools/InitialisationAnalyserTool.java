@@ -38,7 +38,6 @@ import org.workcraft.util.Hierarchy;
 
 public class InitialisationAnalyserTool extends AbstractTool {
 
-    private Circuit circuit;
     private HashSet<Node> initHighSet;
     private HashSet<Node> initLowSet;
     private HashSet<Node> initErrorSet;
@@ -61,7 +60,7 @@ public class InitialisationAnalyserTool extends AbstractTool {
     @Override
     public void activated(final GraphEditor editor) {
         editor.getWorkspaceEntry().setCanModify(false);
-        circuit = (Circuit) editor.getModel().getMathModel();
+        Circuit circuit = (Circuit) editor.getModel().getMathModel();
         updateState(circuit);
         super.activated(editor);
     }

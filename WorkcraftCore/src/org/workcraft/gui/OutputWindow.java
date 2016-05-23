@@ -45,7 +45,6 @@ import org.workcraft.util.LogUtils;
 public class OutputWindow extends JPanel {
     protected PrintStream systemOut;
     protected boolean streamCaptured = false;
-    private final JScrollPane scrollStdOut;
     private final JTextArea txtStdOut;
 
     public OutputWindow() {
@@ -58,7 +57,7 @@ public class OutputWindow extends JPanel {
         DefaultCaret caret = (DefaultCaret) txtStdOut.getCaret();
         caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
 
-        scrollStdOut = new JScrollPane();
+        JScrollPane scrollStdOut = new JScrollPane();
         scrollStdOut.setViewportView(txtStdOut);
         setLayout(new BorderLayout(0, 0));
         this.add(scrollStdOut, BorderLayout.CENTER);
