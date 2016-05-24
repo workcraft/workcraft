@@ -135,7 +135,7 @@ public class StgSimulationTool extends PetriSimulationTool {
             setDropMode(DropMode.INSERT_ROWS);
             setTransferHandler(new StateTableRowTransferHandler(this));
             setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-            setRowHeight(FontHelper.getFontSizeInPixels(this.getFont()));
+            setRowHeight(FontHelper.getComponentHeightFromFont(this.getFont()));
             setDefaultRenderer(SignalData.class, new SignalDataRenderer());
             setDefaultRenderer(Boolean.class, new BooleanCellRenderer());
             setDefaultEditor(Boolean.class, new BooleanCellEditor());

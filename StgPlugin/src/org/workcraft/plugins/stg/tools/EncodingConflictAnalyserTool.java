@@ -74,7 +74,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
         coresTable = new JTable(new CoreTableModel());
         coresTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         coresTable.getColumnModel().getColumn(COLUMN_COLOR).setMaxWidth(50);
-        coresTable.setRowHeight(FontHelper.getFontSizeInPixels(coresTable.getFont()));
+        coresTable.setRowHeight(FontHelper.getComponentHeightFromFont(coresTable.getFont()));
         coresTable.setDefaultRenderer(Object.class, new CoreTableCellRendererImplementation());
         coresTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
         coresTable.addMouseListener(new MouseListener() {
@@ -126,7 +126,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
         densityRadio = new JRadioButton("Show core density map");
         densityTable = new JTable(new HeightmapTableModel());
         densityTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        densityTable.setRowHeight(FontHelper.getFontSizeInPixels(coresTable.getFont()));
+        densityTable.setRowHeight(FontHelper.getComponentHeightFromFont(coresTable.getFont()));
         densityTable.setDefaultRenderer(Object.class, new HeightmapTableCellRendererImplementation());
         densityTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         densityTable.setToolTipText("Core density colors");

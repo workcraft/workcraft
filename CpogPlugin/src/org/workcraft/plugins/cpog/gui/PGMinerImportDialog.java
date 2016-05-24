@@ -1,5 +1,6 @@
 package org.workcraft.plugins.cpog.gui;
 
+import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -7,6 +8,7 @@ import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
@@ -48,7 +50,7 @@ public class PGMinerImportDialog extends JDialog {
         addCheckBoxListener();
 
         JPanel optionPanel = new JPanel();
-        optionPanel.setLayout(new FlowLayout());
+        optionPanel.setLayout(new BoxLayout(optionPanel, BoxLayout.PAGE_AXIS));
         optionPanel.add(extractConcurrencyCB);
         optionPanel.add(splitCB);
 
