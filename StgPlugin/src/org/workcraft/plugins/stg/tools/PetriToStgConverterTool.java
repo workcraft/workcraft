@@ -4,6 +4,7 @@ import org.workcraft.ConversionTool;
 import org.workcraft.Framework;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.gui.workspace.Path;
+import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.stg.Stg;
@@ -23,7 +24,7 @@ public class PetriToStgConverterTool extends ConversionTool {
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         MathModel mathModel = we.getModelEntry().getMathModel();
-        return mathModel.getClass().equals(Stg.class);
+        return mathModel.getClass().equals(PetriNet.class);
     }
 
     @Override
