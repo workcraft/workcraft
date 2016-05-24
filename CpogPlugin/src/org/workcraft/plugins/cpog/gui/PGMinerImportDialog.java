@@ -66,14 +66,15 @@ public class PGMinerImportDialog extends JDialog {
         btnPanel.add(importButton);
         btnPanel.add(cancelButton);
 
-        setLayout(new GridLayout(3, 0));
-        add(filePanel);
-        add(optionPanel);
-        add(btnPanel);
+        JPanel content = new JPanel(new BorderLayout());
+        content.add(filePanel, BorderLayout.NORTH);
+        content.add(optionPanel);
+        content.add(btnPanel, BorderLayout.SOUTH);
+        
+        this.setContentPane(content);
 
-        this.setSize(550, 260);
+        this.setSize(550, 250);
         this.setLocationRelativeTo(Framework.getInstance().getMainWindow());
-        setResizable(false);
     }
 
     public boolean getExtractConcurrency() {
