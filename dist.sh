@@ -4,7 +4,7 @@ plugin_dirs="*Plugin/"
 core_dir="WorkcraftCore"
 dist_dir="dist"
 
-allplatforms="linux windows"
+allplatforms="windows linux osx"
 platforms="all"
 bname="$(basename $0)"
 tag="$(git describe --tags)"
@@ -87,7 +87,7 @@ for platform in $platforms; do
         windows)
             7z a -r ${dist_name}.zip $dist_rootdir >/dev/null
             ;;
-        linux)
+        linux | osx)
             tar -czf ${dist_name}.tar.gz $dist_rootdir
             ;;
     esac
