@@ -141,7 +141,7 @@ public class MethodParametersMatcherTests {
     }
 
     private Collection<TestMethodInfo> getMethods(Class<?> clasz) {
-        ArrayList<TestMethodInfo> result = new ArrayList<TestMethodInfo>();
+        ArrayList<TestMethodInfo> result = new ArrayList<>();
 
         for (Method method : clasz.getMethods()) {
             if (method.getName() == "qq") {

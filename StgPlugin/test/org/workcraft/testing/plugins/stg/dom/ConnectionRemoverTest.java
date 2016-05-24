@@ -50,8 +50,8 @@ public class ConnectionRemoverTest {
 
         VisualStg vstg = new VisualStg(stg);
 
-        LinkedList<Node> toDelete = new LinkedList<Node>();
-        LinkedList<Node> toDeleteThen = new LinkedList<Node>();
+        LinkedList<Node> toDelete = new LinkedList<>();
+        LinkedList<Node> toDeleteThen = new LinkedList<>();
 
         for (Node n : vstg.getRoot().getChildren()) {
             Dependent dn = (Dependent) n;

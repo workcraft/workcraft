@@ -329,7 +329,7 @@ public class ConsistencyAlg extends TimeAlg {
     }
 
     private Collection<Condition> getUpperConditions(Condition lc) {
-        Collection<Condition> result = new ArrayList<Condition>();
+        Collection<Condition> result = new ArrayList<>();
         for (SONConnection con : net.getOutputSONConnections(lc)) {
             if (con.getSemantics() == Semantics.BHVLINE && scenario.getConditions(net).contains(con.getSecond())) {
                 result.add((Condition) con.getSecond());

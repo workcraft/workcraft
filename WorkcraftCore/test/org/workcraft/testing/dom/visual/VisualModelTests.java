@@ -132,7 +132,7 @@ public class VisualModelTests {
 
         VisualNode[] diff = findMissing(old, newNode);
 
-        ArrayList<VisualNode> missingList = new ArrayList<VisualNode>();
+        ArrayList<VisualNode> missingList = new ArrayList<>();
 
         for (VisualNode node : diff) {
             missingList.add(node);
@@ -143,7 +143,7 @@ public class VisualModelTests {
             Assert.assertTrue(missingList.contains(node));
         }
 
-        ArrayList<VisualNode> oldList = new ArrayList<VisualNode>();
+        ArrayList<VisualNode> oldList = new ArrayList<>();
         for (VisualNode node : old) {
             oldList.add(node);
         }
@@ -152,7 +152,7 @@ public class VisualModelTests {
         Assert.assertFalse(oldList.contains(newGroup));
         Assert.assertTrue(newGroup instanceof VisualGroup);
 
-        ArrayList<Node> newNodeList = new ArrayList<Node>();
+        ArrayList<Node> newNodeList = new ArrayList<>();
         for (Node node : newGroup.getChildren()) {
             newNodeList.add(node);
         }

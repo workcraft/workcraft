@@ -121,7 +121,7 @@ public class VisualXmas extends AbstractVisualModel {
     }
 
     public Collection<Node> getNodes() {
-        ArrayList<Node> result = new ArrayList<Node>();
+        ArrayList<Node> result = new ArrayList<>();
         for (Node node : Hierarchy.getDescendantsOfType(getRoot(), Node.class)) {
             if ((node instanceof VisualSourceComponent)
                     || (node instanceof VisualFunctionComponent)

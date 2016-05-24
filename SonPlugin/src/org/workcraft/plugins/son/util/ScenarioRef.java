@@ -17,7 +17,7 @@ import org.workcraft.plugins.son.exception.IncompatibleScenarioException;
 public class ScenarioRef extends ArrayList<String> {
 
     public Collection<Node> getNodes(SON net) {
-        Collection<Node> result = new HashSet<Node>();
+        Collection<Node> result = new HashSet<>();
 
         for (String ref : this) {
             Node node = net.getNodeByReference(ref);
@@ -29,7 +29,7 @@ public class ScenarioRef extends ArrayList<String> {
     }
 
     public Collection<ChannelPlace> getChannelPlaces(SON net) {
-        Collection<ChannelPlace> result = new HashSet<ChannelPlace>();
+        Collection<ChannelPlace> result = new HashSet<>();
 
         for (String ref : this) {
             Node node = net.getNodeByReference(ref);
@@ -41,7 +41,7 @@ public class ScenarioRef extends ArrayList<String> {
     }
 
     public Collection<TransitionNode> getTransitionNodes(SON net) {
-        Collection<TransitionNode> result = new HashSet<TransitionNode>();
+        Collection<TransitionNode> result = new HashSet<>();
 
         for (String ref : this) {
             Node node = net.getNodeByReference(ref);
@@ -53,7 +53,7 @@ public class ScenarioRef extends ArrayList<String> {
     }
 
     public Collection<Condition> getConditions(SON net) {
-        Collection<Condition> result = new HashSet<Condition>();
+        Collection<Condition> result = new HashSet<>();
 
         for (String ref : this) {
             Node node = net.getNodeByReference(ref);

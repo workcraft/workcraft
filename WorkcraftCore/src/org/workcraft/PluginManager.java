@@ -46,7 +46,7 @@ import org.workcraft.util.XmlUtil;
 public class PluginManager implements PluginProvider {
     public static final String VERSION_STAMP = "d971444cbd86148695f3427118632aca";
 
-    private final ListMap<Class<?>, PluginInfo<?>> plugins = new ListMap<Class<?>, PluginInfo<?>>();
+    private final ListMap<Class<?>, PluginInfo<?>> plugins = new ListMap<>();
 
     public static class PluginInstanceHolder<T> implements PluginInfo<T> {
         private final Initialiser<? extends T> initialiser;
@@ -195,7 +195,7 @@ public class PluginManager implements PluginProvider {
 
         String[] classPathLocations = System.getProperty("java.class.path").split(System.getProperty("path.separator"));
 
-        List<Class<?>> classes = new ArrayList<Class<?>>();
+        List<Class<?>> classes = new ArrayList<>();
         ArrayList<LegacyPluginInfo> pluginInfos = new ArrayList<>();
 
         for (String s: classPathLocations) {

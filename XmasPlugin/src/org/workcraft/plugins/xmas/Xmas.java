@@ -80,7 +80,7 @@ public class Xmas extends AbstractMathModel {
     }
 
     public Collection<Node> getNodes() {
-        ArrayList<Node> result = new ArrayList<Node>();
+        ArrayList<Node> result = new ArrayList<>();
         for (Node node : Hierarchy.getDescendantsOfType(getRoot(), Node.class)) {
             if (node instanceof SourceComponent) {
                 result.add(node);

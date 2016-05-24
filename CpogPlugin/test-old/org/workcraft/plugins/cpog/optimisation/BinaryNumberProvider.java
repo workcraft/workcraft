@@ -123,7 +123,7 @@ public class BinaryNumberProvider implements
         Assert.assertEquals("((b1&((b0&0)|(!b0&z)))|(!b1&((b0&y)|(!b0&x))))", result.accept(new formulaToString()));
     }
 
-    List<BooleanFormula> constraints = new ArrayList<BooleanFormula>();
+    List<BooleanFormula> constraints = new ArrayList<>();
 
     @Override
     public BinaryIntBooleanFormula generate(String varPrefix, int range) {
@@ -137,7 +137,7 @@ public class BinaryNumberProvider implements
             varCount++;
         }
 
-        List<BooleanVariable> vars = new ArrayList<BooleanVariable>();
+        List<BooleanVariable> vars = new ArrayList<>();
         for(int i=0;i<varCount;i++)
             vars.add(new FreeVariable(varPrefix + "b"+i));
 

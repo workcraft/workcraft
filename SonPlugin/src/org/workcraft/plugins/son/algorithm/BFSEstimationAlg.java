@@ -36,9 +36,9 @@ public class BFSEstimationAlg extends DFSEstimationAlg {
     public void estimateFinish(Time n)
             throws TimeOutOfBoundsException, AlternativeStructureException, TimeEstimationException {
         // nearest right nodes of n with specified finish time intervals
-        Set<Time> rBoundary = new HashSet<Time>();
+        Set<Time> rBoundary = new HashSet<>();
         // nodes on paths from n to RBoundary nodes
-        Set<Time> rNeighbourhood = new HashSet<Time>();
+        Set<Time> rNeighbourhood = new HashSet<>();
         rNeighbourhood.add(n);
         initialize();
 
@@ -58,10 +58,10 @@ public class BFSEstimationAlg extends DFSEstimationAlg {
     private void findRightBoundary(Time n, Set<Time> boundary, Set<Time> neighbourhood) {
         Collection<Node> nodes = scenario.getNodes(net);
         // nodes used for forward boundary searching
-        Set<Time> working = new HashSet<Time>();
+        Set<Time> working = new HashSet<>();
         working.add(n);
         while (!working.isEmpty()) {
-            Set<Time> nextWorking = new HashSet<Time>();
+            Set<Time> nextWorking = new HashSet<>();
             for (Time t : working) {
                 Collection<Time> postset = getCausalPostset(t, nodes);
                 if (postset.isEmpty()) {
@@ -84,13 +84,13 @@ public class BFSEstimationAlg extends DFSEstimationAlg {
     private void backwardBFSTimes(Time n, Set<Time> boundary, Set<Time> neighbourhood)
             throws TimeOutOfBoundsException, TimeEstimationException {
         Collection<Node> nodes = scenario.getNodes(net);
-        Map<Time, Integer> visit = new HashMap<Time, Integer>();
-        List<Time> visit2 = new ArrayList<Time>();
+        Map<Time, Integer> visit = new HashMap<>();
+        List<Time> visit2 = new ArrayList<>();
         Set<Time> working = boundary;
 
         while ((working.size() != 1) || (!working.contains(n))) {
             // System.out.println("working"+net.toString(working));
-            Set<Time> nextWorking = new HashSet<Time>();
+            Set<Time> nextWorking = new HashSet<>();
             for (Time t : working) {
                 visit2.add(t);
 
@@ -98,7 +98,7 @@ public class BFSEstimationAlg extends DFSEstimationAlg {
                     t.setDuration(defaultDuration);
                     addModify(t, 2);
                 }
-                Collection<Time> intersection = new HashSet<Time>(neighbourhood);
+                Collection<Time> intersection = new HashSet<>(neighbourhood);
                 Collection<Time> preset = getCausalPreset(t, nodes);
                 intersection.retainAll(preset);
                 // System.out.println("intersection"+net.toString(intersection));
@@ -133,7 +133,7 @@ public class BFSEstimationAlg extends DFSEstimationAlg {
 
             }
 
-            Collection<Time> remove = new ArrayList<Time>();
+            Collection<Time> remove = new ArrayList<>();
             for (Time nd : nextWorking) {
                 Collection<Time> postset = getCausalPostset(nd, nodes);
                 if (visit.get(nd) != postset.size()) {
