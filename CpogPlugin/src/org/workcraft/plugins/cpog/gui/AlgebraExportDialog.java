@@ -1,10 +1,10 @@
 package org.workcraft.plugins.cpog.gui;
 
-import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -13,6 +13,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 import org.workcraft.Framework;
+import org.workcraft.util.GUI;
 
 public class AlgebraExportDialog extends JDialog {
 
@@ -27,7 +28,7 @@ public class AlgebraExportDialog extends JDialog {
         filePath = new JTextField(" ", 30);
         filePath.setEditable(true);
 
-        selectFileBtn = new JButton("Select export location");
+        selectFileBtn = GUI.createDialogButton("Select export location");
 
         addSelectFileBtnListener();
 
@@ -46,10 +47,8 @@ public class AlgebraExportDialog extends JDialog {
         optionPanel.add(pasteRB);
         optionPanel.add(exportRB);
 
-        okButton = new JButton("OK");
-        cancelButton = new JButton("Cancel");
-        okButton.setPreferredSize(new Dimension(100, 25));
-        cancelButton.setPreferredSize(new Dimension(100, 25));
+        okButton = GUI.createDialogButton("OK");
+        cancelButton = GUI.createDialogButton("Cancel");
 
         JPanel okPanel = new JPanel();
         okPanel.add(okButton);

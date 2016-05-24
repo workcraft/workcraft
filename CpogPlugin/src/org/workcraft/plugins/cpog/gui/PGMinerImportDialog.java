@@ -1,6 +1,5 @@
 package org.workcraft.plugins.cpog.gui;
 
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -15,7 +14,9 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+
 import org.workcraft.Framework;
+import org.workcraft.util.GUI;
 
 public class PGMinerImportDialog extends JDialog {
 
@@ -32,7 +33,7 @@ public class PGMinerImportDialog extends JDialog {
         filePath = new JTextField(" ", 30);
         filePath.setEditable(true);
 
-        selectFileBtn = new JButton("Browse for file");
+        selectFileBtn = GUI.createDialogButton("Browse for file");
 
         addSelectFileBtnListener();
 
@@ -51,10 +52,8 @@ public class PGMinerImportDialog extends JDialog {
         optionPanel.add(extractConcurrencyCB);
         optionPanel.add(splitCB);
 
-        importButton = new JButton("Import");
-        cancelButton = new JButton("Cancel");
-        importButton.setPreferredSize(new Dimension(100, 25));
-        cancelButton.setPreferredSize(new Dimension(100, 25));
+        importButton = GUI.createDialogButton("Import");
+        cancelButton = GUI.createDialogButton("Cancel");
 
         addButtonListeners();
 

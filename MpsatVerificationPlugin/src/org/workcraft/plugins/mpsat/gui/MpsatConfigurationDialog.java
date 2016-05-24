@@ -287,7 +287,7 @@ public class MpsatConfigurationDialog extends JDialog {
     private void createButtonsPanel() {
         buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        JButton runButton = new JButton("Run");
+        JButton runButton = GUI.createDialogButton("Run");
         runButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -296,7 +296,7 @@ public class MpsatConfigurationDialog extends JDialog {
             }
         });
 
-        JButton cancelButton = new JButton("Cancel");
+        JButton cancelButton = GUI.createDialogButton("Cancel");
         cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -305,7 +305,7 @@ public class MpsatConfigurationDialog extends JDialog {
             }
         });
 
-        JButton helpButton = new JButton("Help");
+        JButton helpButton = GUI.createDialogButton("Help");
         helpButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

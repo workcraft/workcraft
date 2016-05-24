@@ -32,6 +32,7 @@ import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.tasks.SatBasedSolver;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.plugins.shared.presets.PresetManager;
+import org.workcraft.util.GUI;
 import org.workcraft.util.IntDocument;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -182,7 +183,7 @@ public class ScencoSatBasedDialog extends JDialog {
     private void createButtonPanel() {
         buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        JButton saveButton = new JButton("Run");
+        JButton saveButton = GUI.createDialogButton("Run");
         saveButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -229,7 +230,7 @@ public class ScencoSatBasedDialog extends JDialog {
             }
         });
 
-        JButton closeButton = new JButton("Close");
+        JButton closeButton = GUI.createDialogButton("Close");
         closeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
