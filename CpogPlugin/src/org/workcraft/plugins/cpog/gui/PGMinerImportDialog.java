@@ -73,7 +73,7 @@ public class PGMinerImportDialog extends JDialog {
         
         this.setContentPane(content);
 
-        this.setSize(550, 250);
+        this.setSize(400, 220);
         this.setLocationRelativeTo(Framework.getInstance().getMainWindow());
     }
 
