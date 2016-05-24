@@ -35,10 +35,11 @@ You can run Workcraft directly after building it:
 Help and tutorial pages are available in the
 [workcraft-doc](https://github.com/tuura/workcraft-doc) repo.
 
-Templates for building Windows and Linux distributions of Workcraft are
-available in the [workcraft-dist-template](https://github.com/tuura/workcraft-dist-template)
-repo. This includes the binaries of backend tools, gate libraries and
-other platform-specific content.
+Templates for building Windows, Linux and OS X distributions
+of Workcraft are available in the [workcraft-dist-template]
+(https://github.com/tuura/workcraft-dist-template) repo.
+This includes the binaries of backend tools, gate libraries
+and other platform-specific content.
 
 If you would like to contribute to Workcraft development, then read
 through the [CONTRIBUTING.md](CONTRIBUTING.md) document.
