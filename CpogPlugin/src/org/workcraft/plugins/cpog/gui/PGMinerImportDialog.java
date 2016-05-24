@@ -32,7 +32,7 @@ public class PGMinerImportDialog extends JDialog {
 
         canImport = false;
 
-        filePath = new JTextField(" ", 30);
+        filePath = new JTextField("", 25);
         filePath.setEditable(true);
 
         selectFileBtn = GUI.createDialogButton("Browse for file");
@@ -40,8 +40,11 @@ public class PGMinerImportDialog extends JDialog {
         addSelectFileBtnListener();
 
         JPanel filePanel = new JPanel();
+        JPanel selPanel = new JPanel(new FlowLayout());
+        filePanel.setLayout(new BoxLayout(filePanel, BoxLayout.PAGE_AXIS));
         filePanel.add(filePath);
-        filePanel.add(selectFileBtn);
+        selPanel.add(selectFileBtn);
+        filePanel.add(selPanel);
 
         extractConcurrencyCB = new JCheckBox("Perform concurrency extraction", false);
         splitCB = new JCheckBox("Split traces into scenarios", false);
@@ -68,8 +71,9 @@ public class PGMinerImportDialog extends JDialog {
         add(optionPanel);
         add(btnPanel);
 
-        this.setSize(400, 220);
+        this.setSize(550, 260);
         this.setLocationRelativeTo(Framework.getInstance().getMainWindow());
+        setResizable(false);
     }
 
     public boolean getExtractConcurrency() {
