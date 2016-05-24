@@ -58,6 +58,7 @@ import org.workcraft.Framework;
 import org.workcraft.PluginManager;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.PluginInfo;
+import org.workcraft.util.GUI;
 
 public class SettingsEditorDialog extends JDialog {
     private static final String DIALOG_RESTORE_SETTINGS = "Restore settings";
@@ -261,18 +262,14 @@ public class SettingsEditorDialog extends JDialog {
         splitPane.setDividerLocation(250);
         splitPane.setResizeWeight(0.1);
 
-        JButton okButton = new JButton();
-        okButton.setPreferredSize(new Dimension(100, 25));
-        okButton.setText("OK");
+        JButton okButton = GUI.createDialogButton("OK");
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 ok();
             }
         });
 
-        JButton cancelButton = new JButton();
-        cancelButton.setPreferredSize(new Dimension(100, 25));
-        cancelButton.setText("Cancel");
+        JButton cancelButton = GUI.createDialogButton("Cancel");
         cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 cancel();

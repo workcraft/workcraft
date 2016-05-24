@@ -15,6 +15,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
+import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import info.clearthought.layout.TableLayout;
@@ -42,7 +43,7 @@ public class ReachibilityDialog extends JDialog {
         }
 
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton closeButton = new JButton("Close");
+        JButton closeButton = GUI.createDialogButton("Close");
         getRootPane().setDefaultButton(closeButton);
 
         closeButton.addActionListener(new ActionListener() {

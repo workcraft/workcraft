@@ -27,6 +27,7 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.gui.workspace.WorkspaceChooser;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.stg.StgWorkspaceFilter;
+import org.workcraft.util.GUI;
 
 @SuppressWarnings("serial")
 public class PcompDialog extends JDialog {
@@ -135,7 +136,7 @@ public class PcompDialog extends JDialog {
 
         content.add(options, "1 0");
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-        JButton runButton = new JButton("Run");
+        JButton runButton = GUI.createDialogButton("Run");
         runButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -143,7 +144,7 @@ public class PcompDialog extends JDialog {
             }
         });
 
-        JButton cancelButton = new JButton("Cancel");
+        JButton cancelButton = GUI.createDialogButton("Cancel");
         cancelButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

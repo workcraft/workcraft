@@ -190,19 +190,15 @@ public class CreateWorkDialog extends JDialog {
 
         JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
 
-        okButton = new JButton();
-        okButton.setPreferredSize(new Dimension(100, 25));
+        okButton = GUI.createDialogButton("OK");
         okButton.setEnabled(false);
-        okButton.setText("OK");
         okButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 ok();
             }
         });
 
-        cancelButton = new JButton();
-        cancelButton.setPreferredSize(new Dimension(100, 25));
-        cancelButton.setText("Cancel");
+        cancelButton = GUI.createDialogButton("Cancel");
         cancelButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 cancel();

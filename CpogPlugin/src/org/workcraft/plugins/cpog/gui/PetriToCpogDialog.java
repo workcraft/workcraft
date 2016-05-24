@@ -24,6 +24,7 @@ import javax.swing.KeyStroke;
 
 import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.PetriToCpogSettings;
+import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
 @SuppressWarnings("serial")
@@ -139,7 +140,7 @@ public class PetriToCpogDialog extends JDialog {
         buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
         // run the converter
-        JButton runButton = new JButton("Run");
+        JButton runButton = GUI.createDialogButton("Run");
         runButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -155,7 +156,7 @@ public class PetriToCpogDialog extends JDialog {
         });
 
         // close the converter
-        JButton closeButton = new JButton("Close");
+        JButton closeButton = GUI.createDialogButton("Close");
         closeButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
