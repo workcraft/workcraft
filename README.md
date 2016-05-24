@@ -1,5 +1,7 @@
 # ![Workcraft logo](logo.png)
-[![Build Status](https://travis-ci.org/tuura/workcraft.svg?branch=master)](https://travis-ci.org/tuura/workcraft) [![Coverage Status](https://coveralls.io/repos/github/tuura/workcraft/badge.svg?branch=master)](https://coveralls.io/github/tuura/workcraft?branch=master)
+
+[![Build Status](https://travis-ci.org/tuura/workcraft.svg?branch=master)](https://travis-ci.org/tuura/workcraft)
+[![Coverage Status](https://coveralls.io/repos/github/tuura/workcraft/badge.svg?branch=master)](https://coveralls.io/github/tuura/workcraft?branch=master)
 
 Workcraft is a cross-platform toolset to capture, simulate, synthesize
 and verify graph models. It supports a wide range of popular graph
@@ -13,9 +15,10 @@ Workcraft requires Java JDK 1.7 or newer for a successful build and
 is assembled via [Gradle](https://gradle.org/). It is tested with
 both [Open JDK](http://openjdk.java.net/) and [Oracle JDK]
 (http://www.oracle.com/technetwork/java/javase/downloads/index.html).
-These instructions use `gradlew`, a wrapper that downloads and runs
-version `2.12`. Alternatively a pre-installed version of `gradle` can
-be used.
+
+These instructions use `gradlew`, a wrapper that downloads and runs a
+relatively new version of `gradle`. Alternatively a pre-installed
+version can be used.
 
 Use the `assemble` task to build the core and all the plugins:
 
