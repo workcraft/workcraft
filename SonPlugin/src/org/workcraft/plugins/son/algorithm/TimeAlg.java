@@ -153,7 +153,7 @@ public class TimeAlg extends RelationAlgorithm {
     }
 
     protected Collection<ChannelPlace> getSyncCPs() {
-        Collection<ChannelPlace> result = new HashSet<ChannelPlace>();
+        Collection<ChannelPlace> result = new HashSet<>();
         HashSet<Node> nodes = new HashSet<>();
         nodes.addAll(net.getTransitionNodes());
         nodes.addAll(net.getChannelPlaces());

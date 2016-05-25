@@ -156,11 +156,11 @@ public class BFSEntireEstimationAlg extends DFSEstimationAlg {
     private void forwardBFSsonTimes(Time n) throws TimeOutOfBoundsException, TimeEstimationException {
         List<Time> working = new ArrayList<>();
         Collection<Node> nodes = scenario.getNodes(net);
-        Map<Time, Integer> visit = new HashMap<Time, Integer>();
+        Map<Time, Integer> visit = new HashMap<>();
         working.add(n);
 
         while (!working.isEmpty()) {
-            List<Time> nextWorking = new ArrayList<Time>();
+            List<Time> nextWorking = new ArrayList<>();
             for (Time m : working) {
                 for (Time nd : getCausalPostset(m, nodes)) {
                     nextWorking.add(nd);
@@ -186,7 +186,7 @@ public class BFSEntireEstimationAlg extends DFSEstimationAlg {
                 }
             }
 
-            Collection<Time> remove = new ArrayList<Time>();
+            Collection<Time> remove = new ArrayList<>();
             for (Time nd : nextWorking) {
                 Collection<Time> preset = getCausalPreset(nd, nodes);
                 if (visit.get(nd) == preset.size()) {
@@ -222,11 +222,11 @@ public class BFSEntireEstimationAlg extends DFSEstimationAlg {
     private void backwardBFSsonTimes(Time n) throws TimeOutOfBoundsException, TimeEstimationException {
         List<Time> working = new ArrayList<>();
         Collection<Node> nodes = scenario.getNodes(net);
-        Map<Time, Integer> visit = new HashMap<Time, Integer>();
+        Map<Time, Integer> visit = new HashMap<>();
         working.add(n);
 
         while (!working.isEmpty()) {
-            List<Time> nextWorking = new ArrayList<Time>();
+            List<Time> nextWorking = new ArrayList<>();
             for (Time m : working) {
                 for (Time nd : getCausalPreset(m, nodes)) {
                     nextWorking.add(nd);
@@ -253,7 +253,7 @@ public class BFSEntireEstimationAlg extends DFSEstimationAlg {
                 }
             }
 
-            Collection<Time> remove = new ArrayList<Time>();
+            Collection<Time> remove = new ArrayList<>();
             for (Time nd : nextWorking) {
                 Collection<Time> postset = getCausalPostset(nd, nodes);
                 if (visit.get(nd) == postset.size()) {

@@ -39,14 +39,14 @@ public class InstanceManagerTests {
 
     @Test
     public void testGetReferenceUnknown() {
-        Map<Node, String> expectedRequests = new HashMap<Node, String>();
+        Map<Node, String> expectedRequests = new HashMap<>();
         final InstanceManager mgr = make(expectedRequests);
         assertNull(mgr.getInstance(new DefaultNodeImpl(null)));
     }
 
     @Test
     public void testAssign() {
-        Map<Node, String> expectedRequests = new HashMap<Node, String>();
+        Map<Node, String> expectedRequests = new HashMap<>();
         Node o1 = new DefaultNodeImpl(null);
         Node o2 = new DefaultNodeImpl(null);
         Node o3 = new DefaultNodeImpl(null);
@@ -64,7 +64,7 @@ public class InstanceManagerTests {
 
     @Test
     public void testAssignAfterRemove() {
-        Map<Node, String> expectedRequests = new HashMap<Node, String>();
+        Map<Node, String> expectedRequests = new HashMap<>();
         Node o1 = new DefaultNodeImpl(null);
         Node o2 = new DefaultNodeImpl(null);
         Node o3 = new DefaultNodeImpl(null);
@@ -90,7 +90,7 @@ public class InstanceManagerTests {
 
     @Test
     public void testRemove() {
-        Map<Node, String> expectedRequests = new HashMap<Node, String>();
+        Map<Node, String> expectedRequests = new HashMap<>();
         Node o1 = new DefaultNodeImpl(null);
         Node o2 = new DefaultNodeImpl(null);
         expectedRequests.put(o1, "abc");
@@ -105,7 +105,7 @@ public class InstanceManagerTests {
 
     @Test(expected = ArgumentException.class)
     public void testDoubleAssign() {
-        Map<Node, String> expectedRequests = new HashMap<Node, String>();
+        Map<Node, String> expectedRequests = new HashMap<>();
         Node o1 = new DefaultNodeImpl(null);
         expectedRequests.put(o1, "abc");
         final InstanceManager mgr = make(expectedRequests);
@@ -115,7 +115,7 @@ public class InstanceManagerTests {
 
     @Test
     public void testAssignForced() {
-        Map<Node, String> expectedRequests = new HashMap<Node, String>();
+        Map<Node, String> expectedRequests = new HashMap<>();
         Node o1 = new DefaultNodeImpl(null);
         expectedRequests.put(o1, "abc");
         final InstanceManager mgr = make(expectedRequests);
@@ -125,7 +125,7 @@ public class InstanceManagerTests {
 
     @Test(expected = DuplicateIDException.class)
     public void testAssignForcedExistingId() {
-        Map<Node, String> expectedRequests = new HashMap<Node, String>();
+        Map<Node, String> expectedRequests = new HashMap<>();
         Node o1 = new DefaultNodeImpl(null);
         Node o2 = new DefaultNodeImpl(null);
         expectedRequests.put(o1, "abc");

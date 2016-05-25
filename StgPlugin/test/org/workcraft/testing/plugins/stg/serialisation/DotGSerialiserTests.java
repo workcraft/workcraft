@@ -55,7 +55,7 @@ public class DotGSerialiserTests {
 
             ArrayList<String> badIds = getSortedIds(bad, badTokenized);
 
-            HashSet<String> missing = new HashSet<String>(goodIds);
+            HashSet<String> missing = new HashSet<>(goodIds);
             missing.removeAll(badIds);
 
             print(missing);
@@ -70,7 +70,7 @@ public class DotGSerialiserTests {
     }
 
     private ArrayList<String> getSortedIds(Stg stg, Set<Place> goodTokenized) {
-        ArrayList<String> ids = new ArrayList<String>();
+        ArrayList<String> ids = new ArrayList<>();
         for (Place place : goodTokenized) {
             ids.add(stg.getNodeReference(place));
         }
@@ -79,7 +79,7 @@ public class DotGSerialiserTests {
     }
 
     private Set<Place> getTokenizedPlaces(Stg stg) {
-        HashSet<Place> places = new HashSet<Place>();
+        HashSet<Place> places = new HashSet<>();
         for (Place place : stg.getPlaces()) {
             if (place.getTokens() == 1) {
                 places.add(place);

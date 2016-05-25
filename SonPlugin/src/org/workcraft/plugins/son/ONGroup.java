@@ -66,7 +66,7 @@ public class ONGroup extends PageNode {
     }
 
     public Collection<Condition> getConditions() {
-        ArrayList<Condition> result = new ArrayList<Condition>();
+        ArrayList<Condition> result = new ArrayList<>();
         for (Node node : getComponents()) {
             if (node instanceof Condition) {
                 result.add((Condition) node);
@@ -77,7 +77,7 @@ public class ONGroup extends PageNode {
     }
 
     public Collection<Event> getEvents() {
-        ArrayList<Event> result = new ArrayList<Event>();
+        ArrayList<Event> result = new ArrayList<>();
         for (Node node : getComponents()) {
             if (node instanceof Event) {
                 result.add((Event) node);
@@ -88,7 +88,7 @@ public class ONGroup extends PageNode {
     }
 
     public Collection<TransitionNode> getTransitionNodes() {
-        ArrayList<TransitionNode> result = new ArrayList<TransitionNode>();
+        ArrayList<TransitionNode> result = new ArrayList<>();
         for (Node node : getComponents()) {
             if (node instanceof Event) {
                 result.add((Event) node);
