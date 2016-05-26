@@ -2,7 +2,6 @@ package org.workcraft.plugins.cpog.gui;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -70,7 +69,7 @@ public class PGMinerImportDialog extends JDialog {
         content.add(filePanel, BorderLayout.NORTH);
         content.add(optionPanel);
         content.add(btnPanel, BorderLayout.SOUTH);
-        
+
         this.setContentPane(content);
 
         this.setSize(400, 220);
