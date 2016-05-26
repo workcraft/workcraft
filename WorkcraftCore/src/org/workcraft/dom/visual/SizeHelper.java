@@ -5,18 +5,23 @@ import java.awt.Toolkit;
 
 public class SizeHelper {
     private static final double FONT_SIZE = 10.0;
-
-    public static int getDefaultFontSizeInPixels() {
-        int screenDpi = Toolkit.getDefaultToolkit().getScreenResolution();
-        return (int) Math.round(FONT_SIZE * screenDpi / 72.0);
-    }
+    private static final int SCREEN_DPI = Toolkit.getDefaultToolkit().getScreenResolution();
+    private static final int REF_SIZE = (int) Math.round(FONT_SIZE * SCREEN_DPI / 72.0);
 
     public static int getDefaultIconSize() {
-        return (int) Math.round(getDefaultFontSizeInPixels() * 2.0);
+        return (int) Math.round(REF_SIZE * 2.0);
     }
 
     public static int getDefaultRulerSize() {
-        return (int) Math.round(getDefaultFontSizeInPixels() * 1.1);
+        return (int) Math.round(REF_SIZE * 1.1);
+    }
+
+    public static int getLayoutVGap() {
+        return (int) Math.round(REF_SIZE * 0.5);
+    }
+
+    public static int getLayoutHGap() {
+        return (int) Math.round(REF_SIZE * 0.5);
     }
 
     public static int getComponentHeightFromFont(Font font) {

@@ -52,6 +52,7 @@ import javax.swing.ListSelectionModel;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.ModelDescriptor;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.util.GUI;
 
@@ -188,7 +189,7 @@ public class CreateWorkDialog extends JDialog {
         splitPane.setDividerLocation(250);
         splitPane.setResizeWeight(0.1);
 
-        JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
 
         okButton = GUI.createDialogButton("OK");
         okButton.setEnabled(false);

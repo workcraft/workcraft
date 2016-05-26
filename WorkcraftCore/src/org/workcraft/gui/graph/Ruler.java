@@ -68,7 +68,7 @@ public class Ruler implements GridListener {
         this.size = size;
         majorTickSize = (int) Math.round(size * 0.6);
         minorTickSize = (int) Math.round(size * 0.2);
-        font = new Font(Font.SANS_SERIF, 0, 10);
+        font = new Font(Font.SANS_SERIF, 0, (int) Math.round(0.6 * size));
     }
 
     public void draw(Graphics2D g) {

@@ -194,7 +194,8 @@ public class MpsatConfigurationDialog extends JDialog {
         predicatePanel.setBorder(BorderFactory.createTitledBorder(title));
 
         reachText = new JTextArea();
-        reachText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        Font font = reachText.getFont(); // Keep the default font size
+        reachText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, font.getSize()));
         reachText.setText("");
         reachText.addKeyListener(new KeyAdapter() {
             @Override

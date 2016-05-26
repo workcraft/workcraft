@@ -69,11 +69,11 @@ public class ReachibilityDialog extends JDialog {
         contents.add(solutionsPanel, "0 1");
         contents.add(buttonsPanel, "0 2");
 
-        this.setTitle(title);
-        this.setContentPane(contents);
-        setMinimumSize(new Dimension(350, 150));
-        setSize(new Dimension(500, 300));
-        this.setModal(true);
+        setTitle(title);
+        setContentPane(contents);
+        setMinimumSize(new Dimension(400, 200));
+        setModal(true);
+        pack();
     }
 
     private void close() {

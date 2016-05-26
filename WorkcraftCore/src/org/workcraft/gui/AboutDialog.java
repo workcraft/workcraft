@@ -1,7 +1,6 @@
 package org.workcraft.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -29,6 +28,7 @@ import javax.swing.event.HyperlinkEvent;
 import javax.swing.event.HyperlinkListener;
 
 import org.workcraft.Info;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.util.GUI;
 
 public class AboutDialog extends JDialog {
@@ -38,7 +38,6 @@ public class AboutDialog extends JDialog {
         super(owner);
 
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
-        setModal(true);
         setTitle("About");
         addWindowListener(new WindowAdapter() {
             @Override
@@ -46,13 +45,6 @@ public class AboutDialog extends JDialog {
                 ok();
             }
         });
-
-        Dimension parentSize = owner.getSize();
-        this.setSize(600, 320);
-        Dimension mySize = getSize();
-        this.setLocation(((parentSize.width - mySize.width) / 2) + 0, ((parentSize.height - mySize.height) / 2) + 0);
-
-        owner.getLocationOnScreen();
 
         BufferedImage logoImage = null;
         try {
@@ -69,7 +61,8 @@ public class AboutDialog extends JDialog {
             Font font = logoLabel.getFont();
             logoLabel.setFont(font.deriveFont(72.0f));
         }
-        logoLabel.setBorder(BorderFactory.createEmptyBorder(20, 0, 0, 0));
+        int borderSize = SizeHelper.getLayoutHGap() + SizeHelper.getLayoutVGap();
+        logoLabel.setBorder(BorderFactory.createEmptyBorder(borderSize, borderSize, borderSize, borderSize));
 
         JEditorPane infoPane = new JEditorPane();
         infoPane.setFocusable(false);
@@ -105,11 +98,11 @@ public class AboutDialog extends JDialog {
             }
         });
 
-        JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
         buttonsPane.add(okButton);
 
         JPanel contentPane = new JPanel();
-        contentPane.setLayout(new BorderLayout(10, 10));
+        contentPane.setLayout(new BorderLayout(SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
         contentPane.add(logoLabel, BorderLayout.NORTH);
         contentPane.add(infoPane, BorderLayout.CENTER);
         contentPane.add(buttonsPane, BorderLayout.SOUTH);
@@ -134,6 +127,9 @@ public class AboutDialog extends JDialog {
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
+        setModal(true);
+        setResizable(false);
+        pack();
     }
 
     private void ok() {

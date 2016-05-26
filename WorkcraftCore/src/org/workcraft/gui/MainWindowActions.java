@@ -8,6 +8,7 @@ import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.util.GUI;
 
 public class MainWindowActions {
     public static final Action CREATE_WORK_ACTION = new Action() {
@@ -476,10 +477,10 @@ public class MainWindowActions {
     public static final Action HELP_ABOUT_ACTION = new Action() {
         @Override
         public void run() {
-            final Framework f = Framework.getInstance();
-            AboutDialog about = new AboutDialog(f.getMainWindow());
-            about.setModal(true);
-            about.setResizable(false);
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            AboutDialog about = new AboutDialog(mainWindow);
+            GUI.centerToParent(about, mainWindow);
             about.setVisible(true);
         }
 

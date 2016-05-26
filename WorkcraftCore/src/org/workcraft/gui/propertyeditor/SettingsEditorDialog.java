@@ -56,6 +56,7 @@ import javax.swing.tree.TreeSelectionModel;
 import org.workcraft.Config;
 import org.workcraft.Framework;
 import org.workcraft.PluginManager;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.util.GUI;
@@ -270,16 +271,14 @@ public class SettingsEditorDialog extends JDialog {
             }
         });
 
-        restoreButton = new JButton();
-        restoreButton.setPreferredSize(new Dimension(170, 25));
-        restoreButton.setText("Restore defaults");
+        restoreButton = GUI.createDialogButton("Restore defaults");
         restoreButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 restore();
             }
         });
 
-        JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 10));
+        JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
         buttonsPane.add(okButton);
         buttonsPane.add(cancelButton);
         buttonsPane.add(restoreButton);
