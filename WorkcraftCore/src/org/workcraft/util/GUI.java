@@ -37,7 +37,7 @@ import org.workcraft.plugins.shared.CommonEditorSettings;
 
 public class GUI {
 
-    private static final int BUTTON_PREFERED_WIDTH = 110;
+    private static final int BUTTON_PREFERED_WIDTH = 100;
     private static final int BUTTON_PREFERED_HEIGHT = 25;
 
     public static JPanel createLabeledComponent(JComponent component, String labelText) {
@@ -182,7 +182,7 @@ public class GUI {
 
     public static JButton createDialogButton(String text) {
         JButton result = new JButton(text);
-        Dimension dimension = result.getSize();
+        Dimension dimension = result.getPreferredSize();
         int w = Math.max(dimension.width, BUTTON_PREFERED_WIDTH);
         int h = Math.max(dimension.height, BUTTON_PREFERED_HEIGHT);
         result.setPreferredSize(new Dimension(w, h));

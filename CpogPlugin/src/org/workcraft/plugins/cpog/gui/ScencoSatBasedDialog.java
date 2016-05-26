@@ -246,7 +246,7 @@ public class ScencoSatBasedDialog extends JDialog {
     private void sizeWindow(int width, int height, int row1, int row2) {
         setMinimumSize(new Dimension(width, height));
         setPreferredSize(new Dimension(width, height));
-        setResizable(false);
+        //setResizable(false);
         pack();
 
     }

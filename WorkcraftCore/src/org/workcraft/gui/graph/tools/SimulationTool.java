@@ -177,7 +177,7 @@ public abstract class SimulationTool extends AbstractTool implements ClipboardOw
         traceTable = new JTable(new TraceTableModel());
         traceTable.getTableHeader().setReorderingAllowed(false);
         traceTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        traceTable.setRowHeight(FontHelper.getFontSizeInPixels(traceTable.getFont()));
+        traceTable.setRowHeight(FontHelper.getComponentHeightFromFont(traceTable.getFont()));
         traceTable.setDefaultRenderer(Object.class, new TraceTableCellRendererImplementation());
 
         tracePane = new JScrollPane();

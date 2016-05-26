@@ -1,12 +1,13 @@
 package org.workcraft.plugins.cpog.gui;
 
+import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
@@ -30,7 +31,7 @@ public class PGMinerImportDialog extends JDialog {
 
         canImport = false;
 
-        filePath = new JTextField(" ", 30);
+        filePath = new JTextField("", 25);
         filePath.setEditable(true);
 
         selectFileBtn = GUI.createDialogButton("Browse for file");
@@ -38,8 +39,11 @@ public class PGMinerImportDialog extends JDialog {
         addSelectFileBtnListener();
 
         JPanel filePanel = new JPanel();
+        JPanel selPanel = new JPanel(new FlowLayout());
+        filePanel.setLayout(new BoxLayout(filePanel, BoxLayout.PAGE_AXIS));
         filePanel.add(filePath);
-        filePanel.add(selectFileBtn);
+        selPanel.add(selectFileBtn);
+        filePanel.add(selPanel);
 
         extractConcurrencyCB = new JCheckBox("Perform concurrency extraction", false);
         splitCB = new JCheckBox("Split traces into scenarios", false);
@@ -48,7 +52,7 @@ public class PGMinerImportDialog extends JDialog {
         addCheckBoxListener();
 
         JPanel optionPanel = new JPanel();
-        optionPanel.setLayout(new FlowLayout());
+        optionPanel.setLayout(new BoxLayout(optionPanel, BoxLayout.PAGE_AXIS));
         optionPanel.add(extractConcurrencyCB);
         optionPanel.add(splitCB);
 
@@ -61,10 +65,12 @@ public class PGMinerImportDialog extends JDialog {
         btnPanel.add(importButton);
         btnPanel.add(cancelButton);
 
-        setLayout(new GridLayout(3, 0));
-        add(filePanel);
-        add(optionPanel);
-        add(btnPanel);
+        JPanel content = new JPanel(new BorderLayout());
+        content.add(filePanel, BorderLayout.NORTH);
+        content.add(optionPanel);
+        content.add(btnPanel, BorderLayout.SOUTH);
+
+        this.setContentPane(content);
 
         this.setSize(400, 220);
         this.setLocationRelativeTo(Framework.getInstance().getMainWindow());
