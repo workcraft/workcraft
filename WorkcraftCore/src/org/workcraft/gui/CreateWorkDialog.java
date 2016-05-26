@@ -73,8 +73,8 @@ public class CreateWorkDialog extends JDialog {
         setModal(true);
         setTitle("New work");
 
-        GUI.centerAndSizeToParent(this, owner);
         initComponents();
+        setMinimumSize(new Dimension(300, 200));
     }
 
     static class ListElement implements Comparable<ListElement> {

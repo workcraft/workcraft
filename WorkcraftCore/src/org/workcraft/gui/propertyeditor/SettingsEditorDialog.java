@@ -106,12 +106,6 @@ public class SettingsEditorDialog extends JDialog {
 
         Dimension minSize = new Dimension(500, 200);
         setMinimumSize(minSize);
-        Dimension mySize = new Dimension(900, 600);
-        setSize(mySize);
-
-        Dimension parentSize = owner.getSize();
-        owner.getLocationOnScreen();
-        setLocation(((parentSize.width - mySize.width) / 2) + 0, ((parentSize.height - mySize.height) / 2) + 0);
 
         initComponents();
         loadSections();

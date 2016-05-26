@@ -27,6 +27,7 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 import org.workcraft.Config;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
@@ -70,7 +71,7 @@ public class CommonEditorSettings implements Settings {
     private static final boolean defaultLightGrid = true;
     private static final boolean defaultShowRulers = true;
     private static final boolean defaultShowHints = true;
-    private static final int defaultIconSize = 24;
+    private static final int defaultIconSize = SizeHelper.getDefaultIconSize();
     private static final int defaultRecentCount = 10;
     private static final TitleStyle defaultTitleStyle = TitleStyle.SHORT;
     private static final boolean defaultShowAbsolutePaths = false;

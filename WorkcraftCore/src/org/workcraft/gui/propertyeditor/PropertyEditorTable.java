@@ -41,7 +41,7 @@ import javax.swing.table.TableCellRenderer;
 
 import org.workcraft.Framework;
 import org.workcraft.PluginManager;
-import org.workcraft.dom.visual.FontHelper;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.PluginInfo;
 
 @SuppressWarnings("serial")
@@ -62,7 +62,7 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
 
         setTableHeader(null);
         setFocusable(false);
-        setRowHeight(FontHelper.getComponentHeightFromFont(getFont()));
+        setRowHeight(SizeHelper.getComponentHeightFromFont(getFont()));
 
         propertyClasses = new HashMap<Class<?>, PropertyClass>();
         propertyClasses.put(int.class, new IntegerProperty());

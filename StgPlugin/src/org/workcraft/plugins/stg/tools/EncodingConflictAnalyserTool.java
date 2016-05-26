@@ -26,7 +26,7 @@ import javax.swing.table.AbstractTableModel;
 import javax.swing.table.TableCellRenderer;
 
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.FontHelper;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.graph.tools.AbstractTool;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
@@ -74,7 +74,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
         coresTable = new JTable(new CoreTableModel());
         coresTable.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         coresTable.getColumnModel().getColumn(COLUMN_COLOR).setMaxWidth(50);
-        coresTable.setRowHeight(FontHelper.getComponentHeightFromFont(coresTable.getFont()));
+        coresTable.setRowHeight(SizeHelper.getComponentHeightFromFont(coresTable.getFont()));
         coresTable.setDefaultRenderer(Object.class, new CoreTableCellRendererImplementation());
         coresTable.setAutoResizeMode(JTable.AUTO_RESIZE_LAST_COLUMN);
         coresTable.addMouseListener(new MouseListener() {
@@ -126,7 +126,7 @@ public class EncodingConflictAnalyserTool extends AbstractTool {
         densityRadio = new JRadioButton("Show core density map");
         densityTable = new JTable(new HeightmapTableModel());
         densityTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        densityTable.setRowHeight(FontHelper.getComponentHeightFromFont(coresTable.getFont()));
+        densityTable.setRowHeight(SizeHelper.getComponentHeightFromFont(coresTable.getFont()));
         densityTable.setDefaultRenderer(Object.class, new HeightmapTableCellRendererImplementation());
         densityTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         densityTable.setToolTipText("Core density colors");

@@ -65,7 +65,7 @@ import org.workcraft.Trace;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
-import org.workcraft.dom.visual.FontHelper;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
@@ -177,7 +177,7 @@ public abstract class SimulationTool extends AbstractTool implements ClipboardOw
         traceTable = new JTable(new TraceTableModel());
         traceTable.getTableHeader().setReorderingAllowed(false);
         traceTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        traceTable.setRowHeight(FontHelper.getComponentHeightFromFont(traceTable.getFont()));
+        traceTable.setRowHeight(SizeHelper.getComponentHeightFromFont(traceTable.getFont()));
         traceTable.setDefaultRenderer(Object.class, new TraceTableCellRendererImplementation());
 
         tracePane = new JScrollPane();

@@ -34,7 +34,7 @@ import org.workcraft.Trace;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
-import org.workcraft.dom.visual.FontHelper;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.GraphEditor;
@@ -135,7 +135,7 @@ public class StgSimulationTool extends PetriSimulationTool {
             setDropMode(DropMode.INSERT_ROWS);
             setTransferHandler(new StateTableRowTransferHandler(this));
             setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-            setRowHeight(FontHelper.getComponentHeightFromFont(this.getFont()));
+            setRowHeight(SizeHelper.getComponentHeightFromFont(this.getFont()));
             setDefaultRenderer(SignalData.class, new SignalDataRenderer());
             setDefaultRenderer(Boolean.class, new BooleanCellRenderer());
             setDefaultEditor(Boolean.class, new BooleanCellEditor());

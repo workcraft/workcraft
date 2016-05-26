@@ -43,6 +43,7 @@ public class MpsatCustomPropertyChecker extends VerificationTool {
         final Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
         MpsatConfigurationDialog dialog = new MpsatConfigurationDialog(mainWindow, pmgr);
+        dialog.pack();
         GUI.centerToParent(dialog, mainWindow);
         dialog.setVisible(true);
         if (dialog.getModalResult() == 1) {

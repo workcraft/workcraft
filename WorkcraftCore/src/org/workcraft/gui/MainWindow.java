@@ -801,6 +801,7 @@ public class MainWindow extends JFrame {
     public void createWork(Path<String> path) throws OperationCancelledException {
         final Framework framework = Framework.getInstance();
         CreateWorkDialog dialog = new CreateWorkDialog(this);
+        GUI.centerAndSizeToParent(dialog, this);
         dialog.setVisible(true);
         if (dialog.getModalResult() == 1) {
             ModelDescriptor info = dialog.getSelectedModel();
@@ -1379,10 +1380,11 @@ public class MainWindow extends JFrame {
     }
 
     public void editSettings() {
-        SettingsEditorDialog dlg = new SettingsEditorDialog(this);
-        dlg.setModal(true);
-        dlg.setResizable(true);
-        dlg.setVisible(true);
+        SettingsEditorDialog dialog = new SettingsEditorDialog(this);
+        GUI.centerAndSizeToParent(dialog, this);
+        dialog.setModal(true);
+        dialog.setResizable(true);
+        dialog.setVisible(true);
         refreshWorkspaceEntryTitles();
     }
 
