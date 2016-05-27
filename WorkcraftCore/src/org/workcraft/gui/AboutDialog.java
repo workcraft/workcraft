@@ -47,16 +47,11 @@ public class AboutDialog extends JDialog {
         });
 
         BufferedImage logoImage = null;
+        JLabel logoLabel;
         try {
             logoImage = GUI.loadImageFromResource("images/logo.png");
-        } catch (IOException e) {
-            logoImage = null;
-        }
-
-        JLabel logoLabel;
-        if (logoImage != null) {
             logoLabel = new JLabel(new ImageIcon(logoImage), SwingConstants.CENTER);
-        } else {
+        } catch (IOException e) {
             logoLabel = new JLabel("Workcraft", SwingConstants.CENTER);
             Font font = logoLabel.getFont();
             logoLabel.setFont(font.deriveFont(72.0f));

@@ -100,7 +100,7 @@ public class ErrorWindow extends JPanel implements ComponentListener {
             });
             target.append(s);
             Font font = target.getFont(); // Keep the default font size
-            target.setFont(new Font(Font.MONOSPACED, Font.PLAIN, font.getSize())); //CommonLogSettings.getTextSize()));
+            target.setFont(new Font(Font.MONOSPACED, Font.PLAIN, font.getSize()));
         }
 
         @Override

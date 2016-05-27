@@ -1,7 +1,6 @@
 package org.workcraft.gui;
 
 import java.awt.Font;
-import java.awt.Toolkit;
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
@@ -12,10 +11,9 @@ import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.metal.OceanTheme;
 
-public class SilverOceanTheme extends OceanTheme {
+import org.workcraft.dom.visual.SizeHelper;
 
-    private static final double FONT_SIZE = 10.0;
-    private static final String FONT_NAME = Font.SANS_SERIF;
+public class SilverOceanTheme extends OceanTheme {
 
     public static void enable() {
         MetalLookAndFeel.setCurrentTheme(new SilverOceanTheme());
@@ -23,9 +21,7 @@ public class SilverOceanTheme extends OceanTheme {
 
     @Override
     public FontUIResource getControlTextFont() {
-        int screenDpi = Toolkit.getDefaultToolkit().getScreenResolution();
-        int fontSizeInPixels = (int) Math.round(FONT_SIZE * screenDpi / 72.0);
-        return new FontUIResource(FONT_NAME, Font.PLAIN, fontSizeInPixels);
+        return new FontUIResource(Font.SANS_SERIF, Font.PLAIN, SizeHelper.getBaseFontSize());
     }
 
     @Override

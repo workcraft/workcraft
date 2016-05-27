@@ -52,7 +52,7 @@ public class VisualPlace extends VisualComponent {
 
     public static final String PROPERTY_TOKEN_COLOR = "Token color";
 
-    protected static double singleTokenSize = CommonVisualSettings.getBaseSize() / 1.9;
+    protected static double singleTokenSize = CommonVisualSettings.getNodeSize() / 1.9;
     protected static double multipleTokenSeparation = CommonVisualSettings.getStrokeWidth() / 8;
     protected Color tokenColor = CommonVisualSettings.getBorderColor();
 
@@ -132,7 +132,7 @@ public class VisualPlace extends VisualComponent {
             Graphics2D g = r.getGraphics();
             Decoration d = r.getDecoration();
             String capacityString = Integer.toString(capacity);
-            Font superFont = g.getFont().deriveFont((float) CommonVisualSettings.getBaseSize() / 2);
+            Font superFont = g.getFont().deriveFont((float) CommonVisualSettings.getNodeSize() / 2);
             Rectangle2D rect = superFont.getStringBounds(capacityString, g.getFontRenderContext());
             g.setFont(superFont);
             g.setColor(Coloriser.colorise(getTokenColor(), d.getColorisation()));
@@ -188,7 +188,7 @@ public class VisualPlace extends VisualComponent {
                 }
             } else if (count > 7)    {
                 String tokenString = Integer.toString(count);
-                Font superFont = g.getFont().deriveFont((float) CommonVisualSettings.getBaseSize() / 2);
+                Font superFont = g.getFont().deriveFont((float) CommonVisualSettings.getNodeSize() / 2);
                 Rectangle2D rect = superFont.getStringBounds(tokenString, g.getFontRenderContext());
                 g.setFont(superFont);
                 g.setColor(Coloriser.colorise(color, d.getColorisation()));

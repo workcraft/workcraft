@@ -11,17 +11,7 @@
       <operations public="true" package="true" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="2" language="java" name="org.workcraft.plugins.shared.CommonEditorSettings" project="WorkcraftCore" 
-    file="/WorkcraftCore/src/org/workcraft/plugins/shared/CommonEditorSettings.java" binary="false" 
-    corner="BOTTOM_RIGHT">    
-    <position height="-1" width="-1" x="154" y="727"/>    
-    <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
-      visibility="true">      
-      <attributes public="true" package="true" protected="false" private="false" static="true"/>      
-      <operations public="true" package="true" protected="false" private="false" static="true"/>    
-    </display>  
-  </class>  
-  <class id="3" language="java" name="org.workcraft.plugins.shared.CommonVisualSettings" project="WorkcraftCore" 
+  <class id="2" language="java" name="org.workcraft.plugins.shared.CommonVisualSettings" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/plugins/shared/CommonVisualSettings.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="1043" y="392"/>    
@@ -31,7 +21,7 @@
       <operations public="true" package="true" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="4" language="java" name="org.workcraft.plugins.layout.RandomLayoutSettings" project="WorkcraftCore" 
+  <class id="3" language="java" name="org.workcraft.plugins.layout.RandomLayoutSettings" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/plugins/layout/RandomLayoutSettings.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="771" y="191"/>    
@@ -41,7 +31,7 @@
       <operations public="true" package="true" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="5" language="java" name="org.workcraft.plugins.layout.DotLayoutSettings" project="WorkcraftCore" 
+  <class id="4" language="java" name="org.workcraft.plugins.layout.DotLayoutSettings" project="WorkcraftCore" 
     file="/WorkcraftCore/src/org/workcraft/plugins/layout/DotLayoutSettings.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="494" y="151"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
@@ -50,7 +40,7 @@
       <operations public="true" package="true" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="6" language="java" name="org.workcraft.plugins.petrify.PetrifyUtilitySettings" project="PetrifyPlugin" 
+  <class id="5" language="java" name="org.workcraft.plugins.petrify.PetrifyUtilitySettings" project="PetrifyPlugin" 
     file="/PetrifyPlugin/src/org/workcraft/plugins/petrify/PetrifyUtilitySettings.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="768" y="724"/>    

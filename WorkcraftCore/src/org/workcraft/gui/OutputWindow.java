@@ -146,7 +146,7 @@ public class OutputWindow extends JPanel {
             Color textColor = CommonLogSettings.getTextColor();
             target.setForeground(textColor);
             Font font = target.getFont(); // Keep the default font size
-            target.setFont(new Font(Font.MONOSPACED, Font.PLAIN, font.getSize())); //CommonLogSettings.getTextSize()));
+            target.setFont(new Font(Font.MONOSPACED, Font.PLAIN, font.getSize()));
 
             if ((painter != null) && (toPos > fromPos)) {
                 try {

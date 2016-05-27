@@ -38,7 +38,7 @@ public class VisualPlaceNode extends VisualComponent {
 
     private String value = "";
 
-    protected static double singleTokenSize = CommonVisualSettings.getBaseSize() / 1.9;
+    protected static double singleTokenSize = CommonVisualSettings.getNodeSize() / 1.9;
     protected static double labelOffset = 0.5;
 
     public VisualPlaceNode(PlaceNode refNode) {

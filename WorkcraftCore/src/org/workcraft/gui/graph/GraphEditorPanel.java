@@ -141,7 +141,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     protected JToggleButton nameToggler;
     protected JToggleButton labelToggler;
     protected JToggleButton rulerToggler;
-    private static final int size = SizeHelper.getDefaultRulerSize();
+    private static final int size = SizeHelper.getRulerSize();
     protected Stroke borderStroke = new BasicStroke(2);
     private final Overlay overlay = new Overlay();
     private boolean firstPaint = true;

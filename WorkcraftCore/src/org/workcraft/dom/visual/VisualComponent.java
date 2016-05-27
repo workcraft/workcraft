@@ -59,7 +59,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
     public static final Font nameFont = new Font(Font.SANS_SERIF, Font.ITALIC, 1).deriveFont(0.5f);
 
     private MathNode refNode = null;
-    protected double size = CommonVisualSettings.getBaseSize();
+    protected double size = CommonVisualSettings.getNodeSize();
     protected double strokeWidth = CommonVisualSettings.getStrokeWidth();
     private Color foregroundColor = CommonVisualSettings.getBorderColor();
     private Color fillColor = CommonVisualSettings.getFillColor();

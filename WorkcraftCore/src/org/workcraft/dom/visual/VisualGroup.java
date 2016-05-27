@@ -49,7 +49,7 @@ import org.workcraft.util.Hierarchy;
 public class VisualGroup extends VisualTransformableNode implements Drawable, Collapsible, Container, ObservableHierarchy {
     public static final String PROPERTY_IS_COLLAPSED = "Is collapsed";
 
-    protected double size = CommonVisualSettings.getBaseSize();
+    protected double size = CommonVisualSettings.getNodeSize();
     protected static final double margin = 0.20;
 
     private boolean isCurrentLevelInside = false;

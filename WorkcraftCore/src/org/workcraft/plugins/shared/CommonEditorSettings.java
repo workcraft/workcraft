@@ -27,7 +27,6 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 import org.workcraft.Config;
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
@@ -60,7 +59,6 @@ public class CommonEditorSettings implements Settings {
     private static final String keyShowRulers = prefix + ".showRulers";
     private static final String keyShowHints = prefix + ".showHints";
     private static final String keyRecentCount = prefix + ".recentCount";
-    private static final String keyIconSize = prefix + ".iconSize";
     private static final String keyTitleStyle = prefix + ".titleStyle";
     private static final String keyShowAbsolutePaths = prefix + ".showAbsolutePaths";
     private static final String keyOpenNonvisual = prefix + ".openNonvisual";
@@ -71,7 +69,6 @@ public class CommonEditorSettings implements Settings {
     private static final boolean defaultLightGrid = true;
     private static final boolean defaultShowRulers = true;
     private static final boolean defaultShowHints = true;
-    private static final int defaultIconSize = SizeHelper.getDefaultIconSize();
     private static final int defaultRecentCount = 10;
     private static final TitleStyle defaultTitleStyle = TitleStyle.SHORT;
     private static final boolean defaultShowAbsolutePaths = false;
@@ -83,7 +80,6 @@ public class CommonEditorSettings implements Settings {
     private static boolean lightGrid = defaultLightGrid;
     private static boolean showRulers = defaultShowRulers;
     private static boolean showHints = defaultShowHints;
-    private static int iconSize = defaultIconSize;
     private static int recentCount = defaultRecentCount;
     private static TitleStyle titleStyle = defaultTitleStyle;
     private static boolean showAbsolutePaths = defaultShowAbsolutePaths;
@@ -138,16 +134,6 @@ public class CommonEditorSettings implements Settings {
             }
             protected Boolean getter(CommonEditorSettings object) {
                 return getShowHints();
-            }
-        });
-
-        properties.add(new PropertyDeclaration<CommonEditorSettings, Integer>(
-                this, "Icon width (pixels, 8-256)", Integer.class, true, false, false) {
-            protected void setter(CommonEditorSettings object, Integer value) {
-                setIconSize(value);
-            }
-            protected Integer getter(CommonEditorSettings object) {
-                return getIconSize();
             }
         });
 
@@ -235,7 +221,6 @@ public class CommonEditorSettings implements Settings {
         setLightGrid(config.getBoolean(keyLightGrid, defaultLightGrid));
         setShowRulers(config.getBoolean(keyShowRulers, defaultShowRulers));
         setShowHints(config.getBoolean(keyShowHints, defaultShowHints));
-        setIconSize(config.getInt(keyIconSize, defaultIconSize));
         setRecentCount(config.getInt(keyRecentCount, defaultRecentCount));
         setTitleStyle(config.getEnum(keyTitleStyle, TitleStyle.class, defaultTitleStyle));
         setShowAbsolutePaths(config.getBoolean(keyShowAbsolutePaths, defaultShowAbsolutePaths));
@@ -250,7 +235,6 @@ public class CommonEditorSettings implements Settings {
         config.setBoolean(keyLightGrid, getLightGrid());
         config.setBoolean(keyShowRulers, getShowRulers());
         config.setBoolean(keyShowHints, getShowHints());
-        config.setInt(keyIconSize, getIconSize());
         config.setInt(keyRecentCount, getRecentCount());
         config.setEnum(keyTitleStyle, TitleStyle.class, getTitleStyle());
         config.setBoolean(keyShowAbsolutePaths, getShowAbsolutePaths());
@@ -306,20 +290,6 @@ public class CommonEditorSettings implements Settings {
 
     public static Boolean getShowHints() {
         return showHints;
-    }
-
-    public static int getIconSize() {
-        return iconSize;
-    }
-
-    public static void setIconSize(int value) {
-        if (value < 8) {
-            value = 8;
-        }
-        if (value > 256) {
-            value = 256;
-        }
-        iconSize = value;
     }
 
     public static int getRecentCount() {
