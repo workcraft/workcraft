@@ -51,7 +51,12 @@ fi
 
 for platform in $platforms; do
 
-    dist_rootdir="workcraft"
+    if [ "$platform" = "osx" ]; then
+        dist_rootdir="Workcraft.app"
+    else
+        dist_rootdir="workcraft"
+    fi
+
     dist_name="workcraft-${tag}-${platform}"
     dist_path="$dist_dir/$platform/$dist_rootdir"
     template_dir="dist-template/$platform"
@@ -69,6 +74,16 @@ for platform in $platforms; do
     mkdir -p $dist_path
 
     cp -r $template_dir/* $dist_path/
+
+    # Set `Resources' as the distribution path on OS X
+    if [ "$platform" = "osx" ]; then
+        # Update Info.plist with version tag
+        sed -i '' "s/__VERSION__/$tag/" $dist_path/Contents/Info.plist
+
+        dist_path=$dist_path/Resources
+
+        mkdir -p $dist_path
+    fi
 
     cp $core_dir/build/libs/*.jar $dist_path/workcraft.jar
 
@@ -91,5 +106,6 @@ for platform in $platforms; do
             tar -czf ${dist_name}.tar.gz $dist_rootdir
             ;;
     esac
+
     cd ../..
 done
