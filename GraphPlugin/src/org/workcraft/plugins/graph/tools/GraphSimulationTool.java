@@ -82,6 +82,11 @@ public class GraphSimulationTool extends PetriSimulationTool {
     }
 
     @Override
+    public String getHintMessage() {
+        return "Click on a highlighted vertex to progress.";
+    }
+
+    @Override
     public Decorator getDecorator(final GraphEditor editor) {
         return new Decorator() {
             @Override

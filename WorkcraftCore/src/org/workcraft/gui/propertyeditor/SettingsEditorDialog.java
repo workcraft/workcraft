@@ -242,20 +242,18 @@ public class SettingsEditorDialog extends JDialog {
         });
 
         sectionPane.setViewportView(sectionTree);
-        sectionPane.setMinimumSize(new Dimension(50, 0));
-        sectionPane.setPreferredSize(new Dimension(250, 0));
+        sectionPane.setMinimumSize(new Dimension(100, 0));
         sectionPane.setBorder(BorderFactory.createTitledBorder("Section"));
 
         JScrollPane propertiesPane = new JScrollPane();
         propertiesPane.setMinimumSize(new Dimension(250, 0));
-        propertiesPane.setPreferredSize(new Dimension(450, 0));
         propertiesPane.setBorder(BorderFactory.createTitledBorder("Selection properties"));
         propertiesPane.setViewportView(propertiesTable);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sectionPane, propertiesPane);
         splitPane.setOneTouchExpandable(true);
         splitPane.setDividerLocation(250);
-        splitPane.setResizeWeight(0.1);
+        splitPane.setResizeWeight(0.3);
 
         JButton okButton = GUI.createDialogButton("OK");
         okButton.addActionListener(new ActionListener() {

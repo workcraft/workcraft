@@ -51,7 +51,6 @@ public class MpsatConfigurationDialog extends JDialog {
     private JRadioButton unsatisfiebleRadioButton;
     private final MpsatPresetManager presetManager;
 
-    private final TableLayout layout;
     private int modalResult = 0;
 
     public MpsatConfigurationDialog(Window owner, MpsatPresetManager presetManager) {
@@ -68,7 +67,7 @@ public class MpsatConfigurationDialog extends JDialog {
                 {TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL, buttonsPanel.getPreferredSize().height},
         };
 
-        layout = new TableLayout(size);
+        final TableLayout layout = new TableLayout(size);
         layout.setHGap(3);
         layout.setVGap(3);
 
