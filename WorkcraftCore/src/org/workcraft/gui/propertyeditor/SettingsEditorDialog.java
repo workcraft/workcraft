@@ -97,7 +97,8 @@ public class SettingsEditorDialog extends JDialog {
 
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setModal(true);
-        setTitle("Settings");
+        setResizable(true);
+        setTitle("Preferences");
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -107,6 +108,7 @@ public class SettingsEditorDialog extends JDialog {
 
         Dimension minSize = new Dimension(500, 200);
         setMinimumSize(minSize);
+        GUI.centerAndSizeToParent(this, owner);
 
         initComponents();
         loadSections();
@@ -252,8 +254,8 @@ public class SettingsEditorDialog extends JDialog {
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sectionPane, propertiesPane);
         splitPane.setOneTouchExpandable(true);
-        splitPane.setDividerLocation(250);
-        splitPane.setResizeWeight(0.3);
+        splitPane.setDividerLocation((int) Math.round(0.3 * getWidth()));
+        splitPane.setResizeWeight(0.1);
 
         JButton okButton = GUI.createDialogButton("OK");
         okButton.addActionListener(new ActionListener() {

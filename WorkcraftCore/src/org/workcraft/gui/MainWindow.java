@@ -1387,9 +1387,6 @@ public class MainWindow extends JFrame {
 
     public void editSettings() {
         SettingsEditorDialog dialog = new SettingsEditorDialog(this);
-        GUI.centerAndSizeToParent(dialog, this);
-        dialog.setModal(true);
-        dialog.setResizable(true);
         dialog.setVisible(true);
         refreshWorkspaceEntryTitles();
     }

@@ -94,7 +94,7 @@ public class CommonSatSettings implements Settings {
 
     @Override
     public String getSection() {
-        return "Common";
+        return "External tools";
     }
 
     @Override
