@@ -135,7 +135,8 @@ public class CpogSelectionTool extends SelectionTool {
         expressionText = new JTextArea();
         expressionText.setLineWrap(false);
         expressionText.setEditable(true);
-        expressionText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        Font font = expressionText.getFont(); // Keep the default font size
+        expressionText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, font.getSize()));
         JScrollPane expressionScroll = new JScrollPane(expressionText);
 
         JPanel buttonPanel = new JPanel();

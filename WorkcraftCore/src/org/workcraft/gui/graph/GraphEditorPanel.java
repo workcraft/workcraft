@@ -59,6 +59,7 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.Dependent;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
@@ -140,7 +141,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     protected JToggleButton nameToggler;
     protected JToggleButton labelToggler;
     protected JToggleButton rulerToggler;
-    private static final int size = 15;
+    private static final int size = SizeHelper.getRulerSize();
     protected Stroke borderStroke = new BasicStroke(2);
     private final Overlay overlay = new Overlay();
     private boolean firstPaint = true;

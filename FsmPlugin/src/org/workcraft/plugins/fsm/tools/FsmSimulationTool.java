@@ -118,6 +118,11 @@ public class FsmSimulationTool extends PetriSimulationTool {
     }
 
     @Override
+    public String getHintMessage() {
+        return "Click on a highlighted arc to trigger its event.";
+    }
+
+    @Override
     public Decorator getDecorator(final GraphEditor editor) {
         return new Decorator() {
             @Override

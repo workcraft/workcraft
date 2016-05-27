@@ -43,8 +43,6 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.DefaultCaret;
 
-import org.workcraft.plugins.shared.CommonLogSettings;
-
 @SuppressWarnings("serial")
 public class ErrorWindow extends JPanel implements ComponentListener {
     protected PrintStream systemErr;
@@ -101,7 +99,8 @@ public class ErrorWindow extends JPanel implements ComponentListener {
                 }
             });
             target.append(s);
-            target.setFont(new Font(Font.MONOSPACED, Font.PLAIN, CommonLogSettings.getTextSize()));
+            Font font = target.getFont(); // Keep the default font size
+            target.setFont(new Font(Font.MONOSPACED, Font.PLAIN, font.getSize()));
         }
 
         @Override

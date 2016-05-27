@@ -42,6 +42,7 @@ import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ActionMenuItem;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.trees.TreeWindow;
+import org.workcraft.util.GUI;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -216,19 +217,20 @@ public class WorkspaceWindow extends JPanel {
 
     public void addToWorkspace(Path<String> path) {
         JFileChooser fc;
+        final Framework framework = Framework.getInstance();
+        final MainWindow mainWindow = framework.getMainWindow();
         if (lastOpenPath != null) {
             fc = new JFileChooser(lastOpenPath);
         } else {
             fc = new JFileChooser();
         }
         fc.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-
         fc.setDialogTitle("Link to workspace");
         fc.setMultiSelectionEnabled(true);
         fc.addChoosableFileFilter(FileFilters.DOCUMENT_FILES);
         fc.setFileFilter(fc.getAcceptAllFileFilter());
+        GUI.sizeFileChooserToScreen(fc, mainWindow.getDisplayMode());
         if (fc.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-            final Framework framework = Framework.getInstance();
             for (File file : fc.getSelectedFiles()) {
                 Path<String> pathName = Path.append(path, file.getName());
                 framework.getWorkspace().addMount(pathName, file, false);
@@ -259,9 +261,8 @@ public class WorkspaceWindow extends JPanel {
         }
         fc.setDialogTitle(DIALOG_SAVE_WORKSPACE_AS);
         fc.setFileFilter(FileFilters.WORKSPACE_FILES);
-
+        GUI.sizeFileChooserToScreen(fc, mainWindow.getDisplayMode());
         File file;
-
         while (true) {
             if (fc.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION) {
                 String path = FileFilters.addExtension(fc.getSelectedFile().getPath(), FileFilters.WORKSPACE_EXTENSION);
@@ -320,6 +321,8 @@ public class WorkspaceWindow extends JPanel {
             return;
         }
 
+        final Framework framework = Framework.getInstance();
+        final MainWindow mainWindow = framework.getMainWindow();
         JFileChooser fc = new JFileChooser();
         fc.setDialogType(JFileChooser.OPEN_DIALOG);
         fc.setFileFilter(FileFilters.WORKSPACE_FILES);
@@ -330,9 +333,6 @@ public class WorkspaceWindow extends JPanel {
 
         fc.setMultiSelectionEnabled(false);
         fc.setDialogTitle(DIALOG_OPEN_WORKSPACE);
-
-        final Framework framework = Framework.getInstance();
-        final MainWindow mainWindow = framework.getMainWindow();
         if (fc.showDialog(mainWindow, "Open") == JFileChooser.APPROVE_OPTION) {
             try {
                 framework.loadWorkspace(fc.getSelectedFile());

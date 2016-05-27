@@ -1,9 +1,8 @@
 package org.workcraft.util;
 
-import info.clearthought.layout.TableLayout;
-
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.DisplayMode;
 import java.awt.FlowLayout;
 import java.awt.Graphics2D;
 import java.awt.Insets;
@@ -21,6 +20,7 @@ import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComponent;
+import javax.swing.JFileChooser;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
@@ -32,8 +32,10 @@ import org.apache.batik.bridge.UserAgentAdapter;
 import org.apache.batik.gvt.GraphicsNode;
 import org.apache.batik.util.XMLResourceDescriptor;
 import org.w3c.dom.Document;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.plugins.shared.CommonEditorSettings;
+
+import info.clearthought.layout.TableLayout;
 
 public class GUI {
 
@@ -70,6 +72,22 @@ public class GUI {
         Dimension parentSize = parent.getSize();
         frame.setSize(parentSize.width / 2, parentSize.height / 2);
         centerToParent(frame, parent);
+    }
+
+    public static void centerToParent(JComponent frame, Window parent) {
+        Dimension parentSize = parent.getSize();
+        Dimension mySize = frame.getSize();
+        Point q = parent.getLocationOnScreen();
+        frame.setLocation(((parentSize.width - mySize.width) / 2) + q.x, ((parentSize.height - mySize.height) / 2) + q.y);
+    }
+
+    public static void sizeFileChooserToScreen(JFileChooser fc, DisplayMode mode) {
+        int minWidth = (int) Math.round(0.2 * mode.getWidth());
+        int minHeight = (int) Math.round(0.2 * mode.getHeight());
+        fc.setMinimumSize(new Dimension(minWidth, minHeight));
+        int preferredWidth = (int) Math.round(0.5 * mode.getWidth());
+        int preferredHeight = (int) Math.round(0.5 * mode.getHeight());
+        fc.setPreferredSize(new Dimension(preferredWidth, preferredHeight));
     }
 
     public static BufferedImage loadImageFromResource(String path) throws IOException {
@@ -161,7 +179,7 @@ public class GUI {
     }
 
     public static ImageIcon createIconFromSVG(String path) {
-        int iconSize = CommonEditorSettings.getIconSize();
+        int iconSize = SizeHelper.getIconSize();
         return createIconFromSVG(path, iconSize, iconSize);
     }
 
@@ -173,7 +191,7 @@ public class GUI {
         JButton result = new JButton(icon);
         result.setToolTipText(toolTip);
         result.setMargin(new Insets(0, 0, 0, 0));
-        int iconSize = CommonEditorSettings.getIconSize();
+        int iconSize = SizeHelper.getIconSize();
         Insets insets = result.getInsets();
         int minSize = iconSize + Math.max(insets.left + insets.right, insets.top + insets.bottom);
         result.setPreferredSize(new Dimension(minSize, minSize));

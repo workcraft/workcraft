@@ -33,7 +33,6 @@ public class CommonLogSettings implements Settings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CommonLogSettings";
 
-    private static final String keyTextSize = prefix + ".textSize";
     private static final String keyTextColor = prefix + ".textColor";
     private static final String keyInfoBackground = prefix + ".infoBackground";
     private static final String keyWarningBackground = prefix + ".warningBackground";
@@ -41,7 +40,6 @@ public class CommonLogSettings implements Settings {
     private static final String keyStdoutBackground = prefix + ".stdoutBackground";
     private static final String keyStderrBackground = prefix + ".stderrBackground";
 
-    private static final int defaultTextSize = 12;
     private static final Color defaultTextColor = Color.BLACK;
     private static final Color defaultInfoBackground = new Color(0.7f, 1.0f, 0.7f);
     private static final Color defaultWarningBackground = new Color(1.0f, 0.8f, 0.0f);
@@ -49,7 +47,6 @@ public class CommonLogSettings implements Settings {
     private static final Color defaultStdoutBackground = new Color(0.9f, 0.9f, 0.9f);
     private static final Color defaultStderrBackground = new Color(1.0f, 0.9f, 0.9f);
 
-    private static int textSize = defaultTextSize;
     private static Color textColor = defaultTextColor;
     private static Color infoBackground = defaultInfoBackground;
     private static Color warningBackground = defaultWarningBackground;
@@ -58,16 +55,6 @@ public class CommonLogSettings implements Settings {
     private static Color stderrBackground = defaultStderrBackground;
 
     public CommonLogSettings() {
-        properties.add(new PropertyDeclaration<CommonLogSettings, Integer>(
-                this, "Text size", Integer.class, true, false, false) {
-            protected void setter(CommonLogSettings object, Integer value) {
-                setTextSize(value);
-            }
-            protected Integer getter(CommonLogSettings object) {
-                return getTextSize();
-            }
-        });
-
         properties.add(new PropertyDeclaration<CommonLogSettings, Color>(
                 this, "Text color", Color.class, true, false, false) {
             protected void setter(CommonLogSettings object, Color value) {
@@ -136,7 +123,6 @@ public class CommonLogSettings implements Settings {
 
     @Override
     public void load(Config config) {
-        setTextSize(config.getInt(keyTextSize, defaultTextSize));
         setTextColor(config.getColor(keyTextColor, defaultTextColor));
         setInfoBackground(config.getColor(keyInfoBackground, defaultInfoBackground));
         setWarningBackground(config.getColor(keyWarningBackground, defaultWarningBackground));
@@ -147,7 +133,6 @@ public class CommonLogSettings implements Settings {
 
     @Override
     public void save(Config config) {
-        config.setInt(keyTextSize, getTextSize());
         config.setColor(keyTextColor, getTextColor());
         config.setColor(keyInfoBackground, getInfoBackground());
         config.setColor(keyWarningBackground, getWarningBackground());
@@ -164,14 +149,6 @@ public class CommonLogSettings implements Settings {
     @Override
     public String getName() {
         return "Log";
-    }
-
-    public static int getTextSize() {
-        return textSize;
-    }
-
-    public static void setTextSize(int value) {
-        textSize = value;
     }
 
     public static Color getTextColor() {

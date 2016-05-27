@@ -218,6 +218,11 @@ public class DfsSimulationTool extends StgSimulationTool {
     }
 
     @Override
+    public String getHintMessage() {
+        return "Click on a highlighted node to progress.";
+    }
+
+    @Override
     public Decorator getDecorator(final GraphEditor editor) {
         return new Decorator() {
             @Override

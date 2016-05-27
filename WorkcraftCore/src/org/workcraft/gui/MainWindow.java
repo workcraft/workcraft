@@ -333,7 +333,7 @@ public class MainWindow extends JFrame {
 
     public void setWindowSize(boolean maximised, int width, int height) {
         if (maximised) {
-            DisplayMode mode = this.getGraphicsConfiguration().getDevice().getDisplayMode();
+            DisplayMode mode = getDisplayMode();
             Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(this.getGraphicsConfiguration());
             this.setMaximizedBounds(new Rectangle(mode.getWidth() - insets.right - insets.left,
                     mode.getHeight() - insets.top - insets.bottom));
@@ -712,7 +712,7 @@ public class MainWindow extends JFrame {
         boolean maximised = (maximisedStr == null) ? true : Boolean.parseBoolean(maximisedStr);
         this.setExtendedState(maximised ? JFrame.MAXIMIZED_BOTH : JFrame.NORMAL);
 
-        DisplayMode mode = this.getGraphicsConfiguration().getDevice().getDisplayMode();
+        DisplayMode mode = getDisplayMode();
         Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(this.getGraphicsConfiguration());
         int width = mode.getWidth() - insets.right - insets.left;
         int height = mode.getHeight() - insets.top - insets.bottom;
@@ -727,6 +727,10 @@ public class MainWindow extends JFrame {
             }
         }
         this.setSize(width, height);
+    }
+
+    public DisplayMode getDisplayMode() {
+        return getGraphicsConfiguration().getDevice().getDisplayMode();
     }
 
     public void saveWindowGeometryToConfig() {
@@ -801,6 +805,7 @@ public class MainWindow extends JFrame {
     public void createWork(Path<String> path) throws OperationCancelledException {
         final Framework framework = Framework.getInstance();
         CreateWorkDialog dialog = new CreateWorkDialog(this);
+        GUI.centerAndSizeToParent(dialog, this);
         dialog.setVisible(true);
         if (dialog.getModalResult() == 1) {
             ModelDescriptor info = dialog.getSelectedModel();
@@ -871,6 +876,7 @@ public class MainWindow extends JFrame {
         fc.setDialogType(JFileChooser.OPEN_DIALOG);
         fc.setMultiSelectionEnabled(multiSelection);
         fc.setDialogTitle(title);
+        GUI.sizeFileChooserToScreen(fc, getDisplayMode());
         // Set working directory
         if (lastOpenPath != null) {
             fc.setCurrentDirectory(new File(lastOpenPath));
@@ -893,6 +899,7 @@ public class MainWindow extends JFrame {
         JFileChooser fc = new JFileChooser();
         fc.setDialogType(JFileChooser.SAVE_DIALOG);
         fc.setDialogTitle(title);
+        GUI.sizeFileChooserToScreen(fc, getDisplayMode());
         // Set working directory
         fc.setSelectedFile(file);
         if (file.exists()) {
@@ -1379,10 +1386,11 @@ public class MainWindow extends JFrame {
     }
 
     public void editSettings() {
-        SettingsEditorDialog dlg = new SettingsEditorDialog(this);
-        dlg.setModal(true);
-        dlg.setResizable(true);
-        dlg.setVisible(true);
+        SettingsEditorDialog dialog = new SettingsEditorDialog(this);
+        GUI.centerAndSizeToParent(dialog, this);
+        dialog.setModal(true);
+        dialog.setResizable(true);
+        dialog.setVisible(true);
         refreshWorkspaceEntryTitles();
     }
 

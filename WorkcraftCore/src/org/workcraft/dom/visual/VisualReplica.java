@@ -43,7 +43,7 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
 
     public static final Font nameFont = new Font(Font.SANS_SERIF, Font.ITALIC, 1).deriveFont(0.5f);
 
-    protected double size = CommonVisualSettings.getBaseSize();
+    protected double size = CommonVisualSettings.getNodeSize();
     protected double strokeWidth = CommonVisualSettings.getStrokeWidth();
     private Color foregroundColor = CommonVisualSettings.getBorderColor();
     private Color fillColor = CommonVisualSettings.getFillColor();

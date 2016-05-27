@@ -42,10 +42,10 @@ public class Ruler implements GridListener {
     private String[] horizontalMajorCaptions;
     private int[] horizontalMajorTicks;
     private int[] horizontalMinorTicks;
-    private int majorTickSize = 10;
-    private int minorTickSize = 3;
+    private final int size;
+    private final int majorTickSize;
+    private final int minorTickSize;
     private final Rectangle shape;
-    private int size = 15;
     private String[] verticalMajorCaptions;
     private int[] verticalMajorTicks;
     private int[] verticalMinorTicks;
@@ -66,7 +66,9 @@ public class Ruler implements GridListener {
         verticalMinorTicks = new int[0];
         verticalMajorTicks = new int[0];
         this.size = size;
-        font = new Font(Font.SANS_SERIF, 0, 10);
+        majorTickSize = (int) Math.round(size * 0.6);
+        minorTickSize = (int) Math.round(size * 0.2);
+        font = new Font(Font.SANS_SERIF, 0, (int) Math.round(0.6 * size));
     }
 
     public void draw(Graphics2D g) {
@@ -74,19 +76,20 @@ public class Ruler implements GridListener {
         g.setColor(foreground);
         g.setBackground(background);
         g.setFont(font);
+        int d = (int) Math.round(0.2 * size);
 
         // horizontal ruler
         g.clearRect(shape.x + size, shape.y, shape.width -  size, size);
         g.drawLine(shape.x, size, shape.width, size);
         if (minorTickSize > 0) {
             for (int t : horizontalMinorTicks) {
-                g.drawLine(t + shape.x, size + shape.y, t + shape.x, size + shape.y    - minorTickSize);
+                g.drawLine(t + shape.x, size + shape.y, t + shape.x, size + shape.y - minorTickSize);
             }
         }
         for (int i = 0; i < horizontalMajorTicks.length; i++) {
             int t = horizontalMajorTicks[i];
             g.drawLine(t + shape.x, size + shape.y, t + shape.x, size + shape.y    - majorTickSize);
-            g.drawString(horizontalMajorCaptions[i], t + shape.x + 2, size + shape.y - 2);
+            g.drawString(horizontalMajorCaptions[i], t + shape.x + d, size + shape.y - d);
         }
 
         // vertical ruler
@@ -101,7 +104,7 @@ public class Ruler implements GridListener {
             int t = verticalMajorTicks[i];
             g.drawLine(shape.x + size, t + shape.y, shape.x + size - majorTickSize, t + shape.y);
             AffineTransform re = g.getTransform();
-            g.translate(shape.x + size - 2, shape.y + t - 2);
+            g.translate(shape.x + size - d, shape.y + t - d);
             g.rotate(-Math.PI / 2);
             g.drawString(verticalMajorCaptions[i], 0, 0);
             g.setTransform(re);
@@ -212,38 +215,8 @@ public class Ruler implements GridListener {
         this.foreground = foreground;
     }
 
-    /**
-     * Set the size, in pixels, of major ruler ticks. Set to 0 to hide the major
-     * ticks.
-     */
-    public void setMajorTickSize(int majorTickSize) {
-        this.majorTickSize = majorTickSize;
-    }
-
-    /**
-     * Set the size, in pixels, of major ruler ticks. Set to 0 to hide the minor
-     * ticks.
-     */
-    public void setMinorTickSize(int minorTickSize) {
-        this.minorTickSize = minorTickSize;
-    }
-
     public void setShape(int x, int y, int width, int height) {
         shape.setBounds(x, y, width, height);
     }
 
-    public void setShape(Rectangle shape) {
-        setShape(shape.x, shape.y, shape.width, shape.height);
-    }
-
-    /**
-     * Set the size, in pixels, of the painted ruler area. The sizes of vertical
-     * and horizontal rulers are the same.
-     *
-     * @param size
-     *            The new ruler size
-     */
-    public void setSize(int size) {
-        this.size = size;
-    }
 }

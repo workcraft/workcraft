@@ -16,6 +16,8 @@ import javax.swing.SwingConstants;
 import javax.swing.table.TableCellEditor;
 
 import org.workcraft.Framework;
+import org.workcraft.gui.MainWindow;
+import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
 @SuppressWarnings("serial")
@@ -52,6 +54,8 @@ public class FileCellEditor extends AbstractCellEditor implements TableCellEdito
     @Override
     public void actionPerformed(ActionEvent e) {
         if (TAG_EDIT.equals(e.getActionCommand())) {
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
             JFileChooser fc = new JFileChooser();
             fc.setDialogType(JFileChooser.OPEN_DIALOG);
             fc.setMultiSelectionEnabled(false);
@@ -69,8 +73,7 @@ public class FileCellEditor extends AbstractCellEditor implements TableCellEdito
                 }
             }
             if (!fcConfigured) {
-                Framework framework = Framework.getInstance();
-                WorkspaceEntry we = framework.getMainWindow().getCurrentWorkspaceEntry();
+                WorkspaceEntry we = mainWindow.getCurrentWorkspaceEntry();
                 File file = we.getFile();
                 File dir = file.exists() ? file.getParentFile() : null;
                 if ((dir != null) && dir.exists()) {
@@ -79,6 +82,7 @@ public class FileCellEditor extends AbstractCellEditor implements TableCellEdito
                 }
             }
             fc.setDialogTitle("Select file");
+            GUI.sizeFileChooserToScreen(fc, mainWindow.getDisplayMode());
             if (fc.showDialog(null, "Open") == JFileChooser.APPROVE_OPTION) {
                 file = fc.getSelectedFile();
             }

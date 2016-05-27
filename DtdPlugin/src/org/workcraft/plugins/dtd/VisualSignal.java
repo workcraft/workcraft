@@ -26,6 +26,7 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -87,21 +88,19 @@ public class VisualSignal extends VisualComponent {
     }
 
     public Shape getShape() {
-        Path2D shape = new Path2D.Double();
         double h = 0.2 * size;
-        double w2 = 0.05 * size;
+        double w = 0.1 * size;
+        double w2 = 0.5 * w;
         // One
+        Path2D shape = new Path2D.Double();
         shape.moveTo(-w2, -0.5 * size + w2);
         shape.lineTo(0.0, -0.5 * size);
         shape.lineTo(0.0, -0.5 * size + h);
         shape.moveTo(-w2, -0.5 * size + h);
         shape.lineTo(+w2, -0.5 * size + h);
         // Zero
-        shape.moveTo(-w2, 0.5 * size);
-        shape.lineTo(+w2, 0.5 * size);
-        shape.lineTo(+w2, 0.5 * size - h);
-        shape.lineTo(-w2, 0.5 * size - h);
-        shape.closePath();
+        Ellipse2D zeroShape = new Ellipse2D.Double(-w2, 0.5 * size - h, w, h);
+        shape.append(zeroShape, false);
         return shape;
     }
 

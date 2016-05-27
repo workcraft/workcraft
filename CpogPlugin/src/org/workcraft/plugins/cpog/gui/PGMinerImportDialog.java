@@ -1,6 +1,7 @@
 package org.workcraft.plugins.cpog.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -70,9 +71,9 @@ public class PGMinerImportDialog extends JDialog {
         content.add(optionPanel);
         content.add(btnPanel, BorderLayout.SOUTH);
 
-        this.setContentPane(content);
+        setContentPane(content);
 
-        this.setSize(400, 220);
+        setMinimumSize(new Dimension(300, 220));
         this.setLocationRelativeTo(Framework.getInstance().getMainWindow());
     }
 

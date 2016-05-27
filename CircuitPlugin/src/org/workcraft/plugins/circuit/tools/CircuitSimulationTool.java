@@ -215,7 +215,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
 
     @Override
     public String getHintMessage() {
-        return "Click on a highlighted contact to fire it.";
+        return "Click on a highlighted contact to toggle its signal state.";
     }
 
     @Override

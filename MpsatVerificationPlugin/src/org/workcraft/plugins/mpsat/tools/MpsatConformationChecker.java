@@ -60,7 +60,7 @@ public class MpsatConformationChecker extends VerificationTool {
             return;
         }
 
-        JFileChooser fc = framework.getMainWindow().createOpenDialog("Open environment file", false, null);
+        JFileChooser fc = mainWindow.createOpenDialog("Open environment file", false, null);
         if (fc.showDialog(null, "Open") == JFileChooser.APPROVE_OPTION) {
             File file = fc.getSelectedFile();
             if (framework.checkFile(file, null)) {

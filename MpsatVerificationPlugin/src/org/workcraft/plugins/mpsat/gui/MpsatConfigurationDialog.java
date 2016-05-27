@@ -28,7 +28,6 @@ import javax.swing.KeyStroke;
 
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.gui.DesktopApi;
-import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
 import org.workcraft.plugins.mpsat.MpsatSettings;
@@ -52,7 +51,6 @@ public class MpsatConfigurationDialog extends JDialog {
     private JRadioButton unsatisfiebleRadioButton;
     private final MpsatPresetManager presetManager;
 
-    private final TableLayout layout;
     private int modalResult = 0;
 
     public MpsatConfigurationDialog(Window owner, MpsatPresetManager presetManager) {
@@ -69,7 +67,7 @@ public class MpsatConfigurationDialog extends JDialog {
                 {TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL, buttonsPanel.getPreferredSize().height},
         };
 
-        layout = new TableLayout(size);
+        final TableLayout layout = new TableLayout(size);
         layout.setHGap(3);
         layout.setVGap(3);
 
@@ -94,6 +92,7 @@ public class MpsatConfigurationDialog extends JDialog {
                 },
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
+        setMinimumSize(new Dimension(420, 350));
     }
 
     private void createPresetPanel() {
@@ -133,41 +132,17 @@ public class MpsatConfigurationDialog extends JDialog {
     }
 
     private void createOptionsPanel() {
-        optionsPanel = new JPanel(new SimpleFlowLayout());
+        optionsPanel = new JPanel(new BorderLayout());
         optionsPanel.setBorder(BorderFactory.createTitledBorder("MPSat settings"));
 
         modeCombo = new JComboBox<MpsatMode>();
         modeCombo.setEditable(false);
-        Dimension modeComboDimention = modeCombo.getPreferredSize();
-        modeComboDimention.width = 318;
-        modeCombo.setPreferredSize(modeComboDimention);
         if (presetManager.isAllowStgPresets()) {
             modeCombo.addItem(MpsatMode.STG_REACHABILITY);
         }
         modeCombo.addItem(MpsatMode.REACHABILITY);
-        modeCombo.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                MpsatMode selectedMode = (MpsatMode) modeCombo.getSelectedItem();
-                if (selectedMode.hasReach()) {
-                    predicatePanel.setVisible(true);
-                    layout.setRow(2, TableLayout.FILL);
-                    Dimension dimension = new Dimension(465, 550);
-                    Dimension minDimension = new Dimension(dimension);
-                    minDimension.height = 350;
-                    MpsatConfigurationDialog.this.setMinimumSize(minDimension);
-                    MpsatConfigurationDialog.this.setSize(dimension);
-                } else {
-                    predicatePanel.setVisible(false);
-                    layout.setRow(2, 0);
-                    Dimension dimension = new Dimension(465, 260);
-                    MpsatConfigurationDialog.this.setMinimumSize(dimension);
-                    MpsatConfigurationDialog.this.setSize(dimension);
-                }
-            }
-        });
-        optionsPanel.add(GUI.createLabeledComponent(modeCombo, "Mode:      "));
-        optionsPanel.add(new SimpleFlowLayout.LineBreak());
+
+        optionsPanel.add(GUI.createWideLabeledComponent(modeCombo, "Mode:      "), BorderLayout.NORTH);
 
         JPanel solutionModePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
         solutionModePanel.add(new JLabel("Solution:"));
@@ -203,14 +178,13 @@ public class MpsatConfigurationDialog extends JDialog {
 
         solutionLimitText = new JTextField();
         Dimension dimension = solutionLimitText.getPreferredSize();
-        dimension.width = 38;
+        dimension.width = 3 * dimension.height;
         solutionLimitText.setPreferredSize(dimension);
         solutionLimitText.setToolTipText("Maximum number of solutions. Leave blank for no limit.");
         solutionLimitText.setDocument(new IntDocument(3));
         solutionLimitText.setEnabled(false);
         solutionModePanel.add(solutionLimitText);
-        optionsPanel.add(solutionModePanel);
-        optionsPanel.add(new SimpleFlowLayout.LineBreak());
+        optionsPanel.add(solutionModePanel, BorderLayout.SOUTH);
     }
 
     private void createReachPanel() {
@@ -219,7 +193,8 @@ public class MpsatConfigurationDialog extends JDialog {
         predicatePanel.setBorder(BorderFactory.createTitledBorder(title));
 
         reachText = new JTextArea();
-        reachText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, 12));
+        Font font = reachText.getFont(); // Keep the default font size
+        reachText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, font.getSize()));
         reachText.setText("");
         reachText.addKeyListener(new KeyAdapter() {
             @Override

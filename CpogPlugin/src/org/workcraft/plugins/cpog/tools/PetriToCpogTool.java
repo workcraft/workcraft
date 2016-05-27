@@ -31,7 +31,6 @@ public class PetriToCpogTool extends ConversionTool {
 
         PetriToCpogSettings settings = new PetriToCpogSettings();
         PetriToCpogDialog dialog = new PetriToCpogDialog(mainWindow, settings, we);
-
         GUI.centerToParent(dialog, mainWindow);
         dialog.setVisible(true);
         if (dialog.getModalResult() == 1) {

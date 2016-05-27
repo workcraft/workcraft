@@ -50,7 +50,7 @@ public class DtdUtils {
         double offset = 0.0;
         if (v2 instanceof VisualTransition) {
             Transition t = ((VisualTransition) v2).getReferencedTransition();
-            offset = CommonVisualSettings.getBaseSize() * ((t.getDirection() == Direction.MINUS) ? -0.5 : 0.5);
+            offset = CommonVisualSettings.getNodeSize() * ((t.getDirection() == Direction.MINUS) ? -0.5 : 0.5);
         }
         Point2D cp1 = new Point2D.Double(v1.getRootSpaceX(), v1.getRootSpaceY() + offset);
         Point2D cp2 = new Point2D.Double(v2.getRootSpaceX(), v2.getRootSpaceY() + offset);
