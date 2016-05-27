@@ -8,7 +8,7 @@ import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public final class PlaceMergerTool extends AbstractMergerTool {
+public final class MergePlaceTool extends AbstractMergerTool {
     @Override
     public String getDisplayName() {
         return "Merge selected places";

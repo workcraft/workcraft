@@ -18,12 +18,13 @@ import org.workcraft.plugins.stg.tools.DummyInserterTool;
 import org.workcraft.plugins.stg.tools.DummyToSignalTransitionConverterTool;
 import org.workcraft.plugins.stg.tools.MakePlacesExplicitTool;
 import org.workcraft.plugins.stg.tools.MakePlacesImplicitTool;
+import org.workcraft.plugins.stg.tools.MergeTransitionTool;
+import org.workcraft.plugins.stg.tools.MirrorSignalTool;
+import org.workcraft.plugins.stg.tools.MirrorTransitionTool;
 import org.workcraft.plugins.stg.tools.NamedTransitionContractorTool;
 import org.workcraft.plugins.stg.tools.PetriToStgConverterTool;
-import org.workcraft.plugins.stg.tools.SignalMirrorTool;
 import org.workcraft.plugins.stg.tools.SignalToDummyTransitionConverterTool;
 import org.workcraft.plugins.stg.tools.StgToPetriConverterTool;
-import org.workcraft.plugins.stg.tools.TransitionMergerTool;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
 import org.workcraft.serialisation.xml.XMLSerialiser;
@@ -55,7 +56,8 @@ public class StgModule implements Module {
         pm.registerClass(ModelSerialiser.class, DotGSerialiser.class);
         pm.registerClass(Settings.class, StgSettings.class);
 
-        pm.registerClass(Tool.class, SignalMirrorTool.class);
+        pm.registerClass(Tool.class, MirrorSignalTool.class);
+        pm.registerClass(Tool.class, MirrorTransitionTool.class);
         pm.registerClass(Tool.class, MakePlacesImplicitTool.class);
         pm.registerClass(Tool.class, MakePlacesExplicitTool.class);
         pm.registerClass(Tool.class, SignalToDummyTransitionConverterTool.class);
@@ -63,7 +65,7 @@ public class StgModule implements Module {
         pm.registerClass(Tool.class, NamedTransitionContractorTool.class);
         pm.registerClass(Tool.class, PetriToStgConverterTool.class);
         pm.registerClass(Tool.class, StgToPetriConverterTool.class);
-        pm.registerClass(Tool.class, TransitionMergerTool.class);
+        pm.registerClass(Tool.class, MergeTransitionTool.class);
         pm.registerClass(Tool.class, DummyInserterTool.class);
     }
 

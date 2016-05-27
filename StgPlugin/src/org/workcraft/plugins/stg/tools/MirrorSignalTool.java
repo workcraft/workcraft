@@ -12,7 +12,7 @@ import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class SignalMirrorTool extends TransformationTool implements NodeTransformer {
+public class MirrorSignalTool extends TransformationTool implements NodeTransformer {
 
     @Override
     public String getDisplayName() {

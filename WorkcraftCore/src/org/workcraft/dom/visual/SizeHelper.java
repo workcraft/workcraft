@@ -18,23 +18,35 @@ public class SizeHelper {
     }
 
     public static int getIconSize() {
-        return (int) Math.round(getBaseFontSize() * 2.0);
+        return (int) Math.round(2.0 * getBaseFontSize());
     }
 
     public static int getRulerSize() {
-        return (int) Math.round(getBaseFontSize() * 1.1);
-    }
-
-    public static int getLayoutVGap() {
-        return (int) Math.round(getBaseFontSize() * 0.5);
+        return (int) Math.round(1.1 * getBaseFontSize());
     }
 
     public static int getLayoutHGap() {
-        return (int) Math.round(getBaseFontSize() * 0.5);
+        return (int) Math.round(0.5 * getBaseFontSize());
+    }
+
+    public static int getLayoutVGap() {
+        return (int) Math.round(0.5 * getBaseFontSize());
+    }
+
+    public static int getCompactLayoutHGap() {
+        return (int) Math.round(0.2 * getBaseFontSize());
+    }
+
+    public static int getCompactLayoutVGap() {
+        return (int) Math.round(0.2 * getBaseFontSize());
+    }
+
+    public static int getMonospacedFontSize() {
+        return (int) Math.round(0.9 * getBaseFontSize());
     }
 
     public static int getComponentHeightFromFont(Font font) {
-        return (int) Math.round(font.getSize2D() * 1.4);
+        return (int) Math.round(1.4 * font.getSize2D());
     }
 
 }

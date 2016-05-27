@@ -165,6 +165,7 @@ public class CircuitUtils {
             for (Contact signal : Hierarchy.getDescendantsOfType(circuit.getRoot(), Contact.class)) {
                 if (signal.isPort() && signal.isOutput()) {
                     if (driver == CircuitUtils.findDriver(circuit, signal, transparentZeroDelayComponents)) {
+                        signal.setInitToOne(driver.getInitToOne());
                         result = signal;
                         break;
                     }

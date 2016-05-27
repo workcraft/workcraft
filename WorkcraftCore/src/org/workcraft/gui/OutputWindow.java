@@ -38,6 +38,7 @@ import javax.swing.text.DefaultCaret;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
 
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.shared.CommonLogSettings;
 import org.workcraft.util.LogUtils;
 
@@ -145,8 +146,7 @@ public class OutputWindow extends JPanel {
 
             Color textColor = CommonLogSettings.getTextColor();
             target.setForeground(textColor);
-            Font font = target.getFont(); // Keep the default font size
-            target.setFont(new Font(Font.MONOSPACED, Font.PLAIN, font.getSize()));
+            target.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
 
             if ((painter != null) && (toPos > fromPos)) {
                 try {

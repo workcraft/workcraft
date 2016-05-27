@@ -43,6 +43,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.HitMan;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
@@ -135,8 +136,7 @@ public class CpogSelectionTool extends SelectionTool {
         expressionText = new JTextArea();
         expressionText.setLineWrap(false);
         expressionText.setEditable(true);
-        Font font = expressionText.getFont(); // Keep the default font size
-        expressionText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, font.getSize()));
+        expressionText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
         JScrollPane expressionScroll = new JScrollPane(expressionText);
 
         JPanel buttonPanel = new JPanel();

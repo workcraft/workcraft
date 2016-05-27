@@ -80,6 +80,11 @@ public class Circuit extends AbstractMathModel {
         if (container instanceof CircuitComponent) {
             container = (Container) container.getParent();
         }
+        if ((first instanceof Contact) && (second instanceof Contact)) {
+            Contact firstContact = (Contact) first;
+            Contact secondContact = (Contact) second;
+            secondContact.setInitToOne(firstContact.getInitToOne());
+        }
         container.add(connection);
         return connection;
     }

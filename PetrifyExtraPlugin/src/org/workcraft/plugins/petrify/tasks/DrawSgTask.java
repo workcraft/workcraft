@@ -127,6 +127,7 @@ public class DrawSgTask implements Task<DrawSgResult> {
             File resultFile = new File(directory, RESULT_FILE_NAME);
             resultFile.deleteOnExit();
             ArrayList<String> drawAstgOptions = new ArrayList<>();
+            drawAstgOptions.add("-sg");
             if (binary) {
                 drawAstgOptions.add("-bin");
             }

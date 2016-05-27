@@ -60,6 +60,7 @@ public class AboutDialog extends JDialog {
         logoLabel.setBorder(BorderFactory.createEmptyBorder(borderSize, borderSize, borderSize, borderSize));
 
         JEditorPane infoPane = new JEditorPane();
+        infoPane.putClientProperty(JEditorPane.HONOR_DISPLAY_PROPERTIES, true);
         infoPane.setFocusable(false);
 
         infoPane.setContentType("text/html");
