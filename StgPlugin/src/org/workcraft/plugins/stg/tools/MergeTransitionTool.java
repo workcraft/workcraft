@@ -11,7 +11,7 @@ import org.workcraft.plugins.stg.VisualDummyTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public final class TransitionMergerTool extends AbstractMergerTool {
+public final class MergeTransitionTool extends AbstractMergerTool {
     @Override
     public String getDisplayName() {
         return "Merge selected transitions";
