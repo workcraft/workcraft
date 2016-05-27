@@ -43,6 +43,8 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.text.DefaultCaret;
 
+import org.workcraft.dom.visual.SizeHelper;
+
 @SuppressWarnings("serial")
 public class ErrorWindow extends JPanel implements ComponentListener {
     protected PrintStream systemErr;
@@ -99,8 +101,7 @@ public class ErrorWindow extends JPanel implements ComponentListener {
                 }
             });
             target.append(s);
-            Font font = target.getFont(); // Keep the default font size
-            target.setFont(new Font(Font.MONOSPACED, Font.PLAIN, font.getSize()));
+            target.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
         }
 
         @Override

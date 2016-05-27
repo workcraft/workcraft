@@ -27,6 +27,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 import org.workcraft.dom.hierarchy.NamespaceHelper;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
@@ -142,9 +143,9 @@ public class MpsatConfigurationDialog extends JDialog {
         }
         modeCombo.addItem(MpsatMode.REACHABILITY);
 
-        optionsPanel.add(GUI.createWideLabeledComponent(modeCombo, "Mode:      "), BorderLayout.NORTH);
+        optionsPanel.add(GUI.createWideLabeledComponent(modeCombo, "  Mode:      "), BorderLayout.NORTH);
 
-        JPanel solutionModePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
+        JPanel solutionModePanel = new JPanel(new FlowLayout(FlowLayout.LEFT, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
         solutionModePanel.add(new JLabel("Solution:"));
         cheapestSolutionRadioButton = new JRadioButton("minimise cost function");
         cheapestSolutionRadioButton.setSelected(true);
@@ -193,8 +194,7 @@ public class MpsatConfigurationDialog extends JDialog {
         predicatePanel.setBorder(BorderFactory.createTitledBorder(title));
 
         reachText = new JTextArea();
-        Font font = reachText.getFont(); // Keep the default font size
-        reachText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, font.getSize()));
+        reachText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
         reachText.setText("");
         reachText.addKeyListener(new KeyAdapter() {
             @Override
@@ -213,7 +213,8 @@ public class MpsatConfigurationDialog extends JDialog {
         buttonGroup.add(unsatisfiebleRadioButton);
         unsatisfiebleRadioButton.setSelected(true);
 
-        JPanel propertyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
+        JPanel propertyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT,
+                SizeHelper.getCompactLayoutHGap(), SizeHelper.getCompactLayoutVGap()));
         propertyPanel.add(new JLabel("Property holds if predicate is:"));
         propertyPanel.add(satisfiebleRadioButton);
         propertyPanel.add(unsatisfiebleRadioButton);
