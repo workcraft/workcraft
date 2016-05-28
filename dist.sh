@@ -80,9 +80,7 @@ for platform in $platforms; do
         # Update Info.plist with version tag
         sed -i "s/__VERSION__/$tag/" $dist_path/Contents/Info.plist
 
-        dist_path=$dist_path/Resources
-
-        mkdir -p $dist_path
+        dist_path=$dist_path/Contents/Resources
     fi
 
     cp $core_dir/build/libs/*.jar $dist_path/workcraft.jar
@@ -98,6 +96,7 @@ for platform in $platforms; do
     done
 
     cd $dist_dir/$platform
+
     case $platform in
         windows)
             7z a -r ${dist_name}.zip $dist_rootdir >/dev/null
