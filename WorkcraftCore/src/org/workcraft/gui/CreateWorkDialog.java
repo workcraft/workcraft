@@ -74,8 +74,10 @@ public class CreateWorkDialog extends JDialog {
         setModal(true);
         setTitle("New work");
 
-        initComponents();
         setMinimumSize(new Dimension(300, 200));
+        GUI.centerAndSizeToParent(this, owner);
+
+        initComponents();
     }
 
     static class ListElement implements Comparable<ListElement> {
@@ -186,7 +188,7 @@ public class CreateWorkDialog extends JDialog {
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, optionsPane, modelScroll);
         splitPane.setOneTouchExpandable(true);
-        splitPane.setDividerLocation(250);
+        splitPane.setDividerLocation((int) Math.round(0.3 * getWidth()));
         splitPane.setResizeWeight(0.1);
 
         JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));

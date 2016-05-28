@@ -805,7 +805,6 @@ public class MainWindow extends JFrame {
     public void createWork(Path<String> path) throws OperationCancelledException {
         final Framework framework = Framework.getInstance();
         CreateWorkDialog dialog = new CreateWorkDialog(this);
-        GUI.centerAndSizeToParent(dialog, this);
         dialog.setVisible(true);
         if (dialog.getModalResult() == 1) {
             ModelDescriptor info = dialog.getSelectedModel();
