@@ -43,6 +43,8 @@ import info.clearthought.layout.TableLayout;
 
 @SuppressWarnings("serial")
 public class MpsatConfigurationDialog extends JDialog {
+    private static final int DEFAULT_ALL_SOLUTION_LIMIT = 10;
+
     private JPanel optionsPanel, predicatePanel, buttonsPanel;
     private PresetManagerPanel<MpsatSettings> presetPanel;
     private JComboBox<MpsatMode> modeCombo;
@@ -229,23 +231,20 @@ public class MpsatConfigurationDialog extends JDialog {
         switch (settings.getSolutionMode()) {
         case MINIMUM_COST:
             cheapestSolutionRadioButton.setSelected(true);
+            solutionLimitText.setText(Integer.toString(DEFAULT_ALL_SOLUTION_LIMIT));
             solutionLimitText.setEnabled(false);
             break;
         case FIRST:
             firstSolutionRadioButton.setSelected(true);
+            solutionLimitText.setText(Integer.toString(DEFAULT_ALL_SOLUTION_LIMIT));
             solutionLimitText.setEnabled(false);
             break;
         case ALL:
             allSolutionsRadioButton.setSelected(true);
+            int n = settings.getSolutionNumberLimit();
+            solutionLimitText.setText((n > 0) ? Integer.toString(n) : "");
             solutionLimitText.setEnabled(true);
             break;
-        }
-
-        int n = settings.getSolutionNumberLimit();
-        if (n > 0) {
-            solutionLimitText.setText(Integer.toString(n));
-        } else {
-            solutionLimitText.setText("");
         }
 
         reachText.setText(settings.getReach());
