@@ -92,7 +92,9 @@ for platform in $platforms; do
     done
 
     for d in doc/*; do
-        cp -r $d $dist_path/
+        if [ "$d" != "doc/README.md" ]; then
+            cp -r $d $dist_path/
+        fi
     done
 
     cd $dist_dir/$platform
