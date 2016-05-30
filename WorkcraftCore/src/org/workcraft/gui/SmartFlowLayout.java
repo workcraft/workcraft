@@ -309,7 +309,7 @@ public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
      * of the fields we use now..
      */
     private void readObject(ObjectInputStream stream)
-    throws IOException, ClassNotFoundException {
+            throws IOException, ClassNotFoundException {
         stream.defaultReadObject();
 
         if (serialVersionOnStream < 1) {

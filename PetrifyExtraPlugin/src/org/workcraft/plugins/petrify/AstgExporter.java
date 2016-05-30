@@ -53,7 +53,7 @@ public class AstgExporter implements Exporter {
     private static final String STG_FILE_NAME = "model.g";
 
     public void export(Model model, OutputStream out) throws IOException,
-    ModelValidationException, SerialisationException {
+            ModelValidationException, SerialisationException {
 
         if (model == null) {
             throw new IllegalArgumentException("Model is null");

@@ -37,7 +37,7 @@ import org.workcraft.util.ConstructorParametersMatcher;
 public class NodeFactory {
 
     public static VisualConnection createVisualConnection(MathConnection connection)
-    throws NodeCreationException {
+            throws NodeCreationException {
 
         // Find the corresponding visual class
         VisualClass vcat = connection.getClass().getAnnotation(VisualClass.class);

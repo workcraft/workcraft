@@ -216,7 +216,7 @@ class DefaultNodeDeserialiser {
             ReferenceResolver internalReferenceResolver,
             ReferenceResolver externalReferenceResolver,
             Class<?> currentLevel)
-    throws DeserialisationException {
+            throws DeserialisationException {
         Element currentLevelElement = XmlUtil.getChildElement(currentLevel.getSimpleName(), element);
         if (currentLevelElement != null) {
             try {

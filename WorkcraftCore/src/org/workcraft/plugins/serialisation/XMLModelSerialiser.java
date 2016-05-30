@@ -68,7 +68,7 @@ public class XMLModelSerialiser implements ModelSerialiser {
     }
 
     public ReferenceProducer serialise(final Model model, OutputStream out, ReferenceProducer refs)
-    throws SerialisationException {
+            throws SerialisationException {
         try {
 
             ReferenceProducer internalRefs = new ReferenceProducer() {
