@@ -703,7 +703,7 @@ public final class Framework {
     }
 
     private void saveSelectionState(VisualModel visualModel, OutputStream os, ReferenceProducer visualRefs)
-        throws ParserConfigurationException, IOException {
+            throws ParserConfigurationException, IOException {
         Document stateDoc = XmlUtil.createDocument();
         Element stateRoot = stateDoc.createElement("workcraft-state");
         stateDoc.appendChild(stateRoot);
