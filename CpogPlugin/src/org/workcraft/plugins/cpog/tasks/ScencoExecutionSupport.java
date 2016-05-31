@@ -311,7 +311,7 @@ public class ScencoExecutionSupport {
                                         result += cond.charAt(i);
                                     }
                                 } else {
-                                    result += cond.charAt(i); ;
+                                    result += cond.charAt(i);
                                 }
                             }
 

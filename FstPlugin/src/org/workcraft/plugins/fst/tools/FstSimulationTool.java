@@ -10,7 +10,6 @@ import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualPage;
-import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
@@ -93,13 +92,9 @@ public class FstSimulationTool extends StgSimulationTool {
                 });
 
         Transition transition = null;
-        if (node instanceof VisualTransformableNode) {
-        }
-
         if (transition == null) {
             transition = getExcitedTransitionOfNode(node);
         }
-
         if (transition != null) {
             executeTransition(e.getEditor(), transition);
         }

@@ -167,7 +167,6 @@ public class TimeEstimatorDialog extends JDialog {
                 int row = scenarioTable.getSelectedRow();
 
                 ScenarioSaveList saveList = scenarioTable.getSaveList();
-                ;
 
                 if (column == 0 && row < saveList.size()) {
                     saveList.setPosition(row);

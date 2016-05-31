@@ -50,7 +50,7 @@ public class EMFExporter implements Exporter {
         DocumentLoader loader = new DocumentLoader(ua);
         try {
             BridgeContext bridgeContext = new BridgeContext(ua, loader);
-            try {
+            try { // NOPMD (remove once solved)
                 // FIXME: freehep SVG2EMF converter does not seem to produce good results
 //                Document svgDocument = loader.loadDocument("", svg);
 
