@@ -151,8 +151,7 @@ public class VerilogImporter implements Importer {
                 }
             }
             Module topModule = topModules.iterator().next();
-            Circuit circuit = createCircuit(topModule, modules);
-            return circuit;
+            return createCircuit(topModule, modules);
         } catch (FormatException e) {
             throw new DeserialisationException(e);
         } catch (org.workcraft.plugins.circuit.jj.verilog.ParseException e) {
@@ -758,8 +757,7 @@ public class VerilogImporter implements Importer {
         if (outputContacts.size() != 1) {
             throw new RuntimeException("Cannot determin the output of component '" + circuit.getName(component) + "'.");
         }
-        FunctionContact outputContact = (FunctionContact) outputContacts.iterator().next();
-        return outputContact;
+        return (FunctionContact) outputContacts.iterator().next();
     }
 
     private void connectMergedComponent(Circuit circuit, FunctionComponent newComponent,

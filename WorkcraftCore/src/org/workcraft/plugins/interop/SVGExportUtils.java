@@ -14,8 +14,7 @@ public class SVGExportUtils {
         SVGExporter svgExporter = new SVGExporter();
         ByteArrayOutputStream svgOut = new ByteArrayOutputStream();
         svgExporter.export(model, svgOut);
-        ByteArrayInputStream svgIn = new ByteArrayInputStream(svgOut.toByteArray());
-        return svgIn;
+        return new ByteArrayInputStream(svgOut.toByteArray());
     }
 
 }

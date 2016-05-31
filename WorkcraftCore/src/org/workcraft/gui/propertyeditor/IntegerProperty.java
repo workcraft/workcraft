@@ -29,8 +29,7 @@ import javax.swing.table.TableCellRenderer;
 public class IntegerProperty implements PropertyClass {
 
     public TableCellEditor getCellEditor() {
-        GenericCellEditor dce = new GenericCellEditor();
-        return dce;
+        return new GenericCellEditor();
     }
 
     public TableCellRenderer getCellRenderer() {

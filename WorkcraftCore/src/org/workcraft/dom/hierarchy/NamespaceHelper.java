@@ -125,8 +125,7 @@ public class NamespaceHelper {
 
         Matcher matcher = HIERARCHY_PATTERN.matcher(reference);
         if (matcher.find()) {
-            String tail = matcher.group(9);
-            return tail;
+            return matcher.group(9);
         }
         return null;
     }

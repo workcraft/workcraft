@@ -50,8 +50,7 @@ public class NodeFactory {
         try {
             Class<?> visualClass = vcat.value();
             Constructor<?> ctor = visualClass.getConstructor();
-            VisualConnection visual = (VisualConnection) ctor.newInstance();
-            return visual;
+            return (VisualConnection) ctor.newInstance();
 
         } catch (SecurityException | NoSuchMethodException | IllegalArgumentException |
                 InstantiationException | IllegalAccessException | InvocationTargetException e) {
@@ -111,8 +110,7 @@ public class NodeFactory {
                 types[i] = args[i].getClass();
             }
             Constructor<?> ctor = new ConstructorParametersMatcher().match(visualClass, types);
-            VisualComponent visual = (VisualComponent) ctor.newInstance(args);
-            return visual;
+            return (VisualComponent) ctor.newInstance(args);
 
         } catch (SecurityException | NoSuchMethodException | IllegalArgumentException |
                 InstantiationException | IllegalAccessException | InvocationTargetException e) {

@@ -56,8 +56,7 @@ public class DotGImporter implements Importer {
 
     public StgModel importSTG(InputStream in) throws DeserialisationException {
         try {
-            StgModel result = new DotGParser(in).parse();
-            return result;
+            return new DotGParser(in).parse();
         } catch (FormatException e) {
             throw new DeserialisationException(e);
         } catch (ParseException e) {

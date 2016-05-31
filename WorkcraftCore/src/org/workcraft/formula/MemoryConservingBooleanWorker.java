@@ -113,8 +113,7 @@ public class MemoryConservingBooleanWorker implements ReducedBooleanWorker {
     private IntPair getCodePair(BooleanFormula x, BooleanFormula y) {
         Integer xCode = getCode(x);
         Integer yCode = getCode(y);
-        IntPair pair = new IntPair(xCode, yCode);
-        return pair;
+        return new IntPair(xCode, yCode);
     }
 
     public BooleanFormula iff(BooleanFormula x, BooleanFormula y) {

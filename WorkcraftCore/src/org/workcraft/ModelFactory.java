@@ -36,8 +36,7 @@ public class ModelFactory {
         try {
             Class<?> modelClass = Class.forName(className);
             Constructor<?> ctor = modelClass.getConstructor();
-            Model model = (Model) ctor.newInstance();
-            return model;
+            return (Model) ctor.newInstance();
         } catch (IllegalArgumentException | SecurityException | InstantiationException |
                 IllegalAccessException | InvocationTargetException |
                 NoSuchMethodException | ClassNotFoundException e) {

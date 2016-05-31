@@ -109,8 +109,7 @@ public class WorkspaceTree implements TreeSource<Path<String>> {
                 res.put(name, mount.subDirs.get(name).path);
             }
         }
-        List<Path<String>> result = new ArrayList<>(res.values());
-        return result;
+        return new ArrayList<Path<String>>(res.values());
     }
 
     @Override

@@ -56,8 +56,7 @@ public class DotGImporter implements Importer {
 
     public Fst importSG(InputStream in) throws DeserialisationException {
         try {
-            Fst result = new DotGParser(in).parse();
-            return result;
+            return new DotGParser(in).parse();
         } catch (FormatException e) {
             throw new DeserialisationException(e);
         } catch (ParseException e) {

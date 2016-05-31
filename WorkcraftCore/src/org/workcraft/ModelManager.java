@@ -77,13 +77,11 @@ public class ModelManager {
     }
 
     public static boolean isValidModelClass(Class<?> cls) {
-        boolean ok = AbstractModel.class.isAssignableFrom(cls);
-        return ok;
+        return AbstractModel.class.isAssignableFrom(cls);
     }
 
     public static boolean isValidToolClass(Class<?> cls) {
-        boolean ok = false;
-        return ok;
+        return false;
     }
 
     public  UUID getModelUUID(Class<?> modelClass) {

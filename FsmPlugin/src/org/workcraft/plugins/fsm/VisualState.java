@@ -96,8 +96,7 @@ public class VisualState extends VisualComponent {
 
     private Shape getFinalMarkerShape() {
         double s = 2 * size / 3;
-        Shape shape = new Ellipse2D.Double(-s / 2, -s / 2, s, s);
-        return shape;
+        return new Ellipse2D.Double(-s / 2, -s / 2, s, s);
     }
 
     @Override

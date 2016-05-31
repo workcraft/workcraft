@@ -16,8 +16,7 @@ public class DefaultSolver<T> {
     }
 
     public OptimisationTask<? extends T> getTask(String[] scenarios, BooleanVariable[] variables, int derivedVars) {
-        OptimisationTask<? extends T> task = problemGenerator.getFormula(scenarios, variables, derivedVars);
-        return task;
+        return problemGenerator.getFormula(scenarios, variables, derivedVars);
     }
 
     public Encoding solve(String[] scenarios, BooleanVariable[] variables, int derivedVars) {

@@ -70,8 +70,7 @@ public class Geometry {
     }
 
     public static Point2D reduce(Point2D p) {
-        Point2D result = multiply(normalize(p), Math.pow(p.distanceSq(0, 0), 0.2));
-        return result;
+        return multiply(normalize(p), Math.pow(p.distanceSq(0, 0), 0.2));
     }
 
     public static double dotProduct(Point2D v1, Point2D v2) {
