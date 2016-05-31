@@ -30,6 +30,7 @@
     <rule ref="rulesets/java/design.xml/SingularField"/>
     <rule ref="rulesets/java/design.xml/UnnecessaryLocalBeforeReturn"/>
 
+    <rule ref="rulesets/java/strictexception.xml/AvoidRethrowingException"/>
     <rule ref="rulesets/java/strictexception.xml/DoNotExtendJavaLangError"/>
     <rule ref="rulesets/java/strictexception.xml/DoNotThrowExceptionInFinally"/>
 </ruleset>
