@@ -17,14 +17,23 @@ import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 public class ConnectionHelper {
     public static final double SAME_ANCHOR_POINT_THRESHOLD = 0.1;
 
+    public static boolean areDifferentAnchorPoints(Point2D p1, Point2D p2) {
+        return p1.distance(p2) > SAME_ANCHOR_POINT_THRESHOLD;
+    }
+
+    public static boolean canBeAnchorPoint(Point2D locationInRootSpace, VisualConnection connection) {
+        Point2D first = connection.getFirstCenter();
+        Point2D second = connection.getSecondCenter();
+        return areDifferentAnchorPoints(locationInRootSpace, first) && areDifferentAnchorPoints(locationInRootSpace, second);
+    }
+
     public static void addControlPoints(VisualConnection connection, List<Point2D> locationsInRootSpace) {
         if ((connection != null) && (connection.getGraphic() instanceof Polyline) && (locationsInRootSpace != null)) {
             Polyline polyline = (Polyline) connection.getGraphic();
             AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(connection);
-            for (Point2D location: locationsInRootSpace) {
-                if ((location.distance(connection.getFirstCenter()) > SAME_ANCHOR_POINT_THRESHOLD)
-                        && (location.distance(connection.getSecondCenter()) > SAME_ANCHOR_POINT_THRESHOLD)) {
-                    Point2D locationInLocalSpace = rootToLocalTransform.transform(location, null);
+            for (Point2D locationInRootSpace: locationsInRootSpace) {
+                if (canBeAnchorPoint(locationInRootSpace, connection)) {
+                    Point2D locationInLocalSpace = rootToLocalTransform.transform(locationInRootSpace, null);
                     polyline.addControlPoint(locationInLocalSpace);
                 }
             }
@@ -36,10 +45,9 @@ public class ConnectionHelper {
             Polyline polyline = (Polyline) connection.getGraphic();
             AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(connection);
             int segment = 0;
-            for (Point2D location: locationsInRootSpace) {
-                if ((location.distance(connection.getFirstCenter()) > SAME_ANCHOR_POINT_THRESHOLD)
-                        && (location.distance(connection.getSecondCenter()) > SAME_ANCHOR_POINT_THRESHOLD)) {
-                    Point2D locationInLocalSpace = rootToLocalTransform.transform(location, null);
+            for (Point2D locationInRootSpace: locationsInRootSpace) {
+                if (canBeAnchorPoint(locationInRootSpace, connection)) {
+                    Point2D locationInLocalSpace = rootToLocalTransform.transform(locationInRootSpace, null);
                     polyline.insertControlPointInSegment(locationInLocalSpace, segment++);
                 }
             }
@@ -71,10 +79,12 @@ public class ConnectionHelper {
             int index = -1;
             for (ControlPoint cp:  polyline.getControlPoints()) {
                 index++;
-                Point2D locationInLocalSpace = cp.getPosition();
-                if ((index <= splitIndex) && (splitPointInLocalSpace.distanceSq(locationInLocalSpace) > 0.01)) {
-                    Point2D locationInRootSpace = localToRootTransform.transform(locationInLocalSpace, null);
-                    locationsInRootSpace.add(locationInRootSpace);
+                if (index < splitIndex) {
+                    Point2D locationInLocalSpace = cp.getPosition();
+                    if ((index < splitIndex - 1) || areDifferentAnchorPoints(locationInLocalSpace, splitPointInLocalSpace)) {
+                        Point2D locationInRootSpace = localToRootTransform.transform(locationInLocalSpace, null);
+                        locationsInRootSpace.add(locationInRootSpace);
+                    }
                 }
             }
         }
@@ -90,10 +100,12 @@ public class ConnectionHelper {
             int index = -1;
             for (ControlPoint cp:  polyline.getControlPoints()) {
                 index++;
-                Point2D locationInLocalSpace = cp.getPosition();
-                if ((index >= splitIndex) && (splitPointInLocalSpace.distanceSq(locationInLocalSpace) > 0.01)) {
-                    Point2D locationInRootSpace = localToRootTransform.transform(locationInLocalSpace, null);
-                    locationsInRootSpace.add(locationInRootSpace);
+                if (index >= splitIndex) {
+                    Point2D locationInLocalSpace = cp.getPosition();
+                    if ((index > splitIndex) || areDifferentAnchorPoints(locationInLocalSpace, splitPointInLocalSpace)) {
+                        Point2D locationInRootSpace = localToRootTransform.transform(locationInLocalSpace, null);
+                        locationsInRootSpace.add(locationInRootSpace);
+                    }
                 }
             }
         }

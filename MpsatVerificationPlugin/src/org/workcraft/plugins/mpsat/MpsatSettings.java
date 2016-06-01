@@ -177,7 +177,7 @@ public class MpsatSettings {
             "    TDEV=tran sig (pre PDEV + post PDEV)\n" +
             "{\n" +
             "     // The device STG must have no dummies.\n" +
-            "    card (sig TDEV * DUMMY) != 0 ? fail \"Conformance can currently be checked only for device STGs without dummies\" :\n" +
+            "    card (sig TDEV * DUMMY) != 0 ? fail \"Conformation can currently be checked only for device STGs without dummies\" :\n" +
             "    exists t in TDEV s.t. is_output t {\n" +
             "         // Check if t is enabled in the device STG.\n" +
             "         // LIMITATION: The device STG must have no dummies (this limitation is checked above.)\n" +

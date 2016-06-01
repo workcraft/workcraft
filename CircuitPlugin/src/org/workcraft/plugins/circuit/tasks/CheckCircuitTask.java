@@ -44,7 +44,7 @@ public class CheckCircuitTask extends MpsatChainTask {
             MpsatMode.DEADLOCK, 0, MpsatUtilitySettings.getSolutionMode(),
             MpsatUtilitySettings.getSolutionCount());
 
-    private final MpsatSettings hazardSettings = new MpsatSettings("Output persistency",
+    private final MpsatSettings hazardSettings = new MpsatSettings("Hazard freeness",
             MpsatMode.STG_REACHABILITY, 0, MpsatUtilitySettings.getSolutionMode(),
             MpsatUtilitySettings.getSolutionCount(), MpsatSettings.REACH_OUTPUT_PERSISTENCY, true);
 
@@ -276,7 +276,7 @@ public class CheckCircuitTask extends MpsatChainTask {
                     System.out.println("\nReach expression for the interface conformation property:");
                     System.out.println(reachConformation);
                 }
-                MpsatSettings conformationSettings = new MpsatSettings("Interface conformance",
+                MpsatSettings conformationSettings = new MpsatSettings("Interface conformation",
                         MpsatMode.STG_REACHABILITY, 0, MpsatUtilitySettings.getSolutionMode(),
                         MpsatUtilitySettings.getSolutionCount(), reachConformation, true);
 
