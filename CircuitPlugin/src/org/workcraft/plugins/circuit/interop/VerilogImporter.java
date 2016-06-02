@@ -391,7 +391,7 @@ public class VerilogImporter implements Importer {
         } else {
             File libraryFile = new File(libraryFileName);
             final Framework framework = Framework.getInstance();
-            if (framework.checkFile(libraryFile, "Gate library access error")) {
+            if (framework.checkFileMessageLog(libraryFile, "Gate library access error")) {
                 try {
                     InputStream genlibInputStream = new FileInputStream(libraryFileName);
                     GenlibParser genlibParser = new GenlibParser(genlibInputStream);

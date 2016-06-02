@@ -90,7 +90,7 @@ public class CheckCircuitTask extends MpsatChainTask {
             // Environment STG
             Stg envStg = null;
             if (hasEnvironment) {
-                envStg = (Stg) framework.loadFile(envFile).getMathModel();
+                envStg = (Stg) framework.load(envFile).getMathModel();
                 // Make sure that input signals of the device STG are also inputs in the environment STG
                 Set<String> inputSignalNames = devStg.getSignalNames(Type.INPUT, null);
                 Set<String> outputSignalNames = devStg.getSignalNames(Type.OUTPUT, null);

@@ -37,11 +37,11 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -63,17 +63,20 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
+import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.serialisation.XMLModelDeserialiser;
 import org.workcraft.plugins.serialisation.XMLModelSerialiser;
 import org.workcraft.serialisation.DeserialisationResult;
+import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.serialisation.References;
@@ -84,6 +87,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.DataAccumulator;
+import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.Import;
 import org.workcraft.util.LogUtils;
@@ -195,6 +199,7 @@ public final class Framework {
     private boolean shutdownRequested = false;
     private boolean guiRestartRequested = false;
     private final ContextFactory contextFactory = new ContextFactory();
+    private File workingDirectory = null;
     private MainWindow mainWindow;
     public Memento clipboard;
 
@@ -416,7 +421,6 @@ public final class Framework {
     }
 
     public void execJSFile(String filePath) throws IOException {
-
         execJavaScript(FileUtils.readAllText(new File(filePath)), globalScope);
     }
 
@@ -521,7 +525,7 @@ public final class Framework {
         return workspace;
     }
 
-    public boolean isInGUIMode() {
+    public boolean isInGuiMode() {
         return inGUIMode;
     }
 
@@ -529,25 +533,6 @@ public final class Framework {
         SetArgs setargs = new SetArgs();
         setargs.setArgs(args.toArray());
         contextFactory.call(setargs);
-    }
-
-    public ModelEntry loadFile(File file) throws DeserialisationException {
-        try {
-            FileInputStream fis = new FileInputStream(file);
-            ByteArrayInputStream bis = compatibilityManager.process(fis);
-            return load(bis);
-        } catch (FileNotFoundException e) {
-            throw new DeserialisationException(e);
-        }
-    }
-
-    public ModelEntry importFile(File file) throws DeserialisationException {
-        try {
-            final Importer importer = Import.chooseBestImporter(getPluginManager(), file);
-            return Import.importFromFile(importer, file);
-        } catch (IOException e) {
-            throw new DeserialisationException(e);
-        }
     }
 
     private InputStream getUncompressedEntry(String name, InputStream zippedData) throws IOException {
@@ -627,6 +612,24 @@ public final class Framework {
         }
     }
 
+    public ModelEntry load(String path) throws DeserialisationException {
+        File file = getFileByAbsoluteOrRelativePath(path);
+        if (checkFileMessageLog(file, null)) {
+            return load(file);
+        }
+        return null;
+    }
+
+    public ModelEntry load(File file) throws DeserialisationException {
+        try {
+            FileInputStream fis = new FileInputStream(file);
+            ByteArrayInputStream bis = compatibilityManager.process(fis);
+            return load(bis);
+        } catch (FileNotFoundException e) {
+            throw new DeserialisationException(e);
+        }
+    }
+
     public ModelEntry load(InputStream is) throws DeserialisationException {
         try {
             // load meta data
@@ -691,11 +694,17 @@ public final class Framework {
         return me3;
     }
 
-    public void save(ModelEntry model, String path) throws SerialisationException {
-        File file = new File(path);
+    public void save(ModelEntry modelEntry, String path) throws SerialisationException {
+        if (modelEntry == null) return;
+        File file = getFileByAbsoluteOrRelativePath(path);
+        save(modelEntry, file);
+    }
+
+    public void save(ModelEntry modelEntry, File file) throws SerialisationException {
+        if (modelEntry == null) return;
         try {
             FileOutputStream stream = new FileOutputStream(file);
-            save(model, stream);
+            save(modelEntry, stream);
             stream.close();
         } catch (IOException e) {
             throw new SerialisationException(e);
@@ -780,13 +789,54 @@ public final class Framework {
     }
 
     public Memento save(ModelEntry modelEntry) {
-        ByteArrayOutputStream s = new ByteArrayOutputStream();
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
-            save(modelEntry, s);
+            save(modelEntry, os);
         } catch (SerialisationException e) {
             throw new RuntimeException(e);
         }
-        return new Memento(s.toByteArray());
+        return new Memento(os.toByteArray());
+    }
+
+    public ModelEntry importFile(String path) throws DeserialisationException {
+        File file = getFileByAbsoluteOrRelativePath(path);
+        return importFile(file);
+    }
+
+    public ModelEntry importFile(File file) throws DeserialisationException {
+        try {
+            final Importer importer = Import.chooseBestImporter(getPluginManager(), file);
+            return Import.importFromFile(importer, file);
+        } catch (IOException e) {
+            throw new DeserialisationException(e);
+        }
+    }
+
+    public void exportFile(ModelEntry modelEntry, String path, String format) throws SerialisationException {
+        if (modelEntry == null) return;
+        File file = getFileByAbsoluteOrRelativePath(path);
+        UUID uuid = Format.getUUID(format);
+        if (uuid == null) {
+            LogUtils.logErrorLine("'" + format + "' format is not supported.");
+        } else {
+            exportFile(modelEntry, file, uuid);
+        }
+    }
+
+    public void exportFile(ModelEntry modelEntry, File file, UUID uuid) throws SerialisationException {
+        if (modelEntry == null) return;
+        Exporter exporter = Export.chooseBestExporter(getPluginManager(), modelEntry.getMathModel(), uuid);
+        if (exporter == null) {
+            String modelName = modelEntry.getMathModel().getDisplayName();
+            String formatDescription = Format.getDescription(uuid);
+            LogUtils.logErrorLine("Cannot find exporter to " + formatDescription + " for " + modelName + ".");
+        } else {
+            try {
+                Export.exportToFile(exporter, modelEntry.getModel(), file);
+            } catch (IOException | ModelValidationException e) {
+                throw new SerialisationException(e);
+            }
+        }
     }
 
     public void initPlugins() {
@@ -814,35 +864,38 @@ public final class Framework {
         return config;
     }
 
-    public boolean checkFile(File f, String errorTitle) {
+    public boolean checkFileMessageLog(File file, String title) {
         boolean result = true;
-        if (errorTitle == null) {
-            errorTitle = "File access error";
+        if (title == null) {
+            title = "File access error";
         }
-        if (!f.exists()) {
-            JOptionPane.showMessageDialog(null,
-                    "The path  \"" + f.getPath() + "\" does not exisit.\n",
-                    errorTitle, JOptionPane.ERROR_MESSAGE);
+        if (!file.exists()) {
+            LogUtils.logErrorLine(title + ": The path  \"" + file.getPath() + "\" does not exisit.");
             result = false;
-        } else if (!f.isFile()) {
-            JOptionPane.showMessageDialog(null,
-                    "The path  \"" + f.getPath() + "\" is not a file.\n",
-                    errorTitle, JOptionPane.ERROR_MESSAGE);
+        } else if (!file.isFile()) {
+            LogUtils.logErrorLine(title + ": The path  \"" + file.getPath() + "\" is not a file.");
             result = false;
-        } else if (!f.canRead()) {
-            JOptionPane.showMessageDialog(null,
-                    "The file  \"" + f.getPath() + "\" cannot be read.\n",
-                    errorTitle, JOptionPane.ERROR_MESSAGE);
+        } else if (!file.canRead()) {
+            LogUtils.logErrorLine(title + ": The file  \"" + file.getPath() + "\" cannot be read.");
             result = false;
         }
         return result;
     }
 
-    public void openExternally(String fileName, String errorTitle) {
-        File file = new File(fileName);
-        if (checkFile(file, errorTitle)) {
-            DesktopApi.open(file);
+    public File getFileByAbsoluteOrRelativePath(String path) {
+        File file = new File(path);
+        if (!file.isAbsolute()) {
+            file = new File(getWorkingDirectory(), path);
         }
+        return file;
+    }
+
+    public void setWorkingDirectory(String path) {
+        workingDirectory = new File(path);
+    }
+
+    public File getWorkingDirectory() {
+        return workingDirectory;
     }
 
 }

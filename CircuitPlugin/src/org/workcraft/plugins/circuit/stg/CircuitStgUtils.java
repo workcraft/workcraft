@@ -82,7 +82,7 @@ public class CircuitStgUtils {
             File directory) throws DeserialisationException, IOException {
 
         Framework framework = Framework.getInstance();
-        ModelEntry modelEntry = framework.loadFile(envFile);
+        ModelEntry modelEntry = framework.load(envFile);
         Stg envStg = (Stg) modelEntry.getMathModel();
         CircuitStgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
         File envStgFile = exportStg(envStg, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.ASTG_FILE_EXT, directory);

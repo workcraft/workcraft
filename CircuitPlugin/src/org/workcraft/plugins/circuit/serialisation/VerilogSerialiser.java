@@ -288,7 +288,7 @@ public class VerilogSerialiser implements ModelSerialiser {
         if ((substitutionsFileName != null) && !substitutionsFileName.isEmpty()) {
             File libraryFile = new File(substitutionsFileName);
             final Framework framework = Framework.getInstance();
-            if (framework.checkFile(libraryFile, "Access error for the file of substitutions")) {
+            if (framework.checkFileMessageLog(libraryFile, "Access error for the file of substitutions")) {
                 try {
                     InputStream genlibInputStream = new FileInputStream(substitutionsFileName);
                     SubstitutionParser substitutionParser = new SubstitutionParser(genlibInputStream);

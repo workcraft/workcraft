@@ -1,7 +1,9 @@
 @echo off
 
+cd %~dp0
+
 if not exist "WorkcraftCore/build/libs/WorkcraftCore.jar" (
-    echo WorkcraftCore.jar not found. Build Workcraft with './gradlew assemble' first.
+    echo "WorkcraftCore.jar not found. Build Workcraft with './gradlew assemble' first."
     exit /b
 )
 
@@ -12,4 +14,4 @@ for /d %%d in (*) do (
     for %%f in (!libdir!\*.jar) do set cp=!cp!;%%f
 )
 
-java -cp "%cp%" org.workcraft.Console
+java -cp "%cp%" org.workcraft.Console %*
