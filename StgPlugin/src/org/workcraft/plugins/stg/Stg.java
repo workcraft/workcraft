@@ -356,8 +356,7 @@ public class Stg extends AbstractMathModel implements StgModel {
             Hierarchy.getNearestContainer(first, second).add(
                     Arrays.asList(new Node[] {p, con1, con2 }));
 
-            ComplexResult complexResult = new ComplexResult(p, con1, con2);
-            return complexResult;
+            return new ComplexResult(p, con1, con2);
         } else if (first instanceof Place && second instanceof Place) {
             throw new InvalidConnectionException("Connections between places are not valid");
         } else {

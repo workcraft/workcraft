@@ -357,7 +357,7 @@ public class TransitionContractorTool extends TransformationTool implements Node
                     }
                 }
             } catch (InvalidConnectionException e) {
-                LogUtils.logWarningLine(e.getMessage());;
+                LogUtils.logWarningLine(e.getMessage());
             }
             if ((newConnection != null) && (originalConnection instanceof VisualConnection)) {
                 productConnectionMap.put(newConnection, originalConnection);

@@ -114,8 +114,7 @@ public class TransformationResultHandler extends DummyProgressMonitor<Transforma
 
         NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(dstModel.getRoot());
         NameManager nameManagerer = refManager.getNameManager(namespaceProvider);
-        String name = nameManagerer.getDerivedName(null, candidateName);
-        return name;
+        return nameManagerer.getDerivedName(null, candidateName);
     }
 
 }

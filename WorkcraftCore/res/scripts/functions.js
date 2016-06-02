@@ -82,7 +82,7 @@ function quit() {
 
 function exit() {
 	framework.shutdown();
-}	
+}
 
 function shutdown() {
 	framework.shutdown();

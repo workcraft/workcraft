@@ -28,8 +28,8 @@ err() {
 }
 
 # Process parameters
-for param in $*; do
-    case $param in
+for param in "$@"; do
+    case "$param" in
         -h | --help)
             usage
             exit 0 ;;

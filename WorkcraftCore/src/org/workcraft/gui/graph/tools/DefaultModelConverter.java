@@ -34,8 +34,7 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
 
     @Override
     public Map<Class<? extends VisualReplica>, Class<? extends VisualReplica>> getReplicaClassMap() {
-        Map<Class<? extends VisualReplica>, Class<? extends VisualReplica>> result = new HashMap<>();
-        return result;
+        return new HashMap<Class<? extends VisualReplica>, Class<? extends VisualReplica>>();
     }
 
     @Override

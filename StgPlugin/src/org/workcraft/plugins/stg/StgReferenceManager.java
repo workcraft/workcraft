@@ -33,8 +33,7 @@ public class StgReferenceManager extends HierarchicalUniqueNameReferenceManager 
 
     private StgNameManager getNameManager(Node node) {
         NamespaceProvider namespaceProvider = getNamespaceProvider(node);
-        StgNameManager nameManager = (StgNameManager) getNameManager(namespaceProvider);
-        return nameManager;
+        return (StgNameManager) getNameManager(namespaceProvider);
     }
 
     public Pair<String, Integer> getNamePair(Node node) {

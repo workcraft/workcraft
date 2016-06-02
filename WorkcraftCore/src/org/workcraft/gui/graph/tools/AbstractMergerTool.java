@@ -38,8 +38,7 @@ public abstract class AbstractMergerTool extends TransformationTool {
     }
 
     public Set<Class<? extends VisualComponent>> getMergableClasses() {
-        Set<Class<? extends VisualComponent>> result = new HashSet<>();
-        return result;
+        return new HashSet<Class<? extends VisualComponent>>();
     }
 
     private void mergeSelection(VisualModel model) {

@@ -63,8 +63,7 @@ public abstract class AbstractModelConverter<TSrcModel extends VisualModel, TDst
     public Class<? extends VisualComponent> getVisualComponentClass(Class<? extends MathNode> mathNodeClass) {
         VisualClass visualClassAnnotation = mathNodeClass.getAnnotation(VisualClass.class);
         Class<?> visualClass = visualClassAnnotation.value();
-        Class<? extends VisualComponent> visualComponentClass = visualClass.asSubclass(VisualComponent.class);
-        return visualComponentClass;
+        return visualClass.asSubclass(VisualComponent.class);
     }
 
     private void convertPages() {

@@ -72,8 +72,6 @@ public class FileUtils {
         WritableByteChannel outChannel = Channels.newChannel(out);
         try {
             inChannel.transferTo(0, inChannel.size(), outChannel);
-        } catch (IOException e) {
-            throw e;
         } finally {
             if (is != null) is.close();
             if (inChannel != null) inChannel.close();

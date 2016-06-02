@@ -48,7 +48,7 @@ public class StgToFstConversionResultHandler extends DummyProgressMonitor<WriteS
             Fst model = result.getReturnValue().getConversionResult();
             final Workspace workspace = framework.getWorkspace();
             final Path<String> directory = path.getParent();
-            final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode())); ;
+            final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
             final ModelEntry me = new ModelEntry(new FstDescriptor(), model);
             boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
             workspace.add(directory, name, me, true, openInEditor);

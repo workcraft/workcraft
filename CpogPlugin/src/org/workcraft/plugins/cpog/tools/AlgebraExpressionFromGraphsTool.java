@@ -41,7 +41,7 @@ public class AlgebraExpressionFromGraphsTool implements Tool {
     public void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
-        final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();;
+        final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
         final ToolboxPanel toolbox = editor.getToolBox();
         final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
 

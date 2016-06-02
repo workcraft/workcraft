@@ -572,8 +572,7 @@ public final class Framework {
             throws InstantiationException, IllegalAccessException, ClassNotFoundException {
         Element descriptorElement = XmlUtil.getChildElement("descriptor", metaDoc.getDocumentElement());
         String descriptorClass = XmlUtil.readStringAttr(descriptorElement, "class");
-        ModelDescriptor descriptor = (ModelDescriptor) Class.forName(descriptorClass).newInstance();
-        return descriptor;
+        return (ModelDescriptor) Class.forName(descriptorClass).newInstance();
     }
 
     private Document loadMetaDoc(byte[] bufferedInput)
@@ -690,8 +689,7 @@ public final class Framework {
 
         // FIXME: Dirty hack to avoid any hanging observers (serialise and deserialise the model).
         Memento memo = save(me1);
-        ModelEntry me3 = load(memo);
-        return me3;
+        return load(memo);
     }
 
     public void save(ModelEntry modelEntry, String path) throws SerialisationException {

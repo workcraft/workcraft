@@ -58,7 +58,6 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
-import org.workcraft.observation.NodesAddedEvent;
 import org.workcraft.observation.NodesDeletingEvent;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
@@ -790,11 +789,6 @@ public class CpogSelectionTool extends SelectionTool {
                             }
                         }
 
-                    }
-                } else if (e instanceof NodesAddedEvent) {
-                    for (Node node : e.getAffectedNodes()) {
-                        if (node instanceof VisualArc) {
-                        }
                     }
                 }
 

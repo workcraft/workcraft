@@ -538,8 +538,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
             Properties nodeProperties = getNodeProperties(node);
             allProperties.addApplicable(nodeProperties.getDescriptors());
         }
-        ModelProperties combinedProperties = new ModelProperties(allProperties.getDescriptors());
-        return combinedProperties;
+        return new ModelProperties(allProperties.getDescriptors());
     }
 
     public void updatePropertyView() {
