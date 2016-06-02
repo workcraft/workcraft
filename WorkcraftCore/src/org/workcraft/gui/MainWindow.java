@@ -990,7 +990,7 @@ public class MainWindow extends JFrame {
     public WorkspaceEntry openWork(File f) {
         final Framework framework = Framework.getInstance();
         WorkspaceEntry we = null;
-        if (framework.checkFile(f, null)) {
+        if (checkFileMessageDialog(f, null)) {
             try {
                 we = framework.getWorkspace().open(f, false);
                 if (we.getModelEntry().isVisual()) {
@@ -1153,7 +1153,7 @@ public class MainWindow extends JFrame {
 
     public void importFrom(File f, Importer[] importers) {
         final Framework framework = Framework.getInstance();
-        if (framework.checkFile(f, null)) {
+        if (checkFileMessageDialog(f, null)) {
             for (Importer importer : importers) {
                 if (importer.accept(f)) {
                     try {
@@ -1209,6 +1209,37 @@ public class MainWindow extends JFrame {
             }
         }
         return prefix + we.getTitle() + suffix;
+    }
+
+    public boolean checkFileMessageDialog(File file, String title) {
+        boolean result = true;
+        if (title == null) {
+            title = "File access error";
+        }
+        if (!file.exists()) {
+            JOptionPane.showMessageDialog(this,
+                    "The path  \"" + file.getPath() + "\" does not exisit.\n",
+                    title, JOptionPane.ERROR_MESSAGE);
+            result = false;
+        } else if (!file.isFile()) {
+            JOptionPane.showMessageDialog(this,
+                    "The path  \"" + file.getPath() + "\" is not a file.\n",
+                    title, JOptionPane.ERROR_MESSAGE);
+            result = false;
+        } else if (!file.canRead()) {
+            JOptionPane.showMessageDialog(this,
+                    "The file  \"" + file.getPath() + "\" cannot be read.\n",
+                    title, JOptionPane.ERROR_MESSAGE);
+            result = false;
+        }
+        return result;
+    }
+
+    public void openExternally(String fileName, String errorTitle) {
+        File file = new File(fileName);
+        if (checkFileMessageDialog(file, errorTitle)) {
+            DesktopApi.open(file);
+        }
     }
 
     public void refreshWorkspaceEntryTitle(WorkspaceEntry we, boolean updateHeaders) {
@@ -1455,4 +1486,5 @@ public class MainWindow extends JFrame {
             return exporter.getDescription();
         }
     }
+
 }

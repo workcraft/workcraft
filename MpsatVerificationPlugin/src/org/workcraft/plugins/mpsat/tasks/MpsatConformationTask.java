@@ -82,7 +82,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             if (envFile.getName().endsWith(".g")) {
                 envStgFile = envFile;
             } else {
-                Stg envStg = (Stg) framework.loadFile(envFile).getMathModel();
+                Stg envStg = (Stg) framework.load(envFile).getMathModel();
                 Exporter envStgExporter = Export.chooseBestExporter(framework.getPluginManager(), envStg, Format.STG);
                 envStgFile = new File(directory, "env.g");
                 ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile.getAbsolutePath());

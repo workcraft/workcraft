@@ -158,7 +158,7 @@ public class XmasSettings implements Settings {
             Framework framework = Framework.getInstance();
             vxmTempDirectory = FileUtils.createTempDirectory("vxm-");
             File vxmFile = new File(getVxmCommand());
-            if (framework.checkFile(vxmFile, "VXM access error")) {
+            if (framework.checkFileMessageLog(vxmFile, "VXM access error")) {
                 File vxmDirectory = vxmFile.getParentFile();
                 File vsettingsFile = new File(vxmDirectory, VSETTINGS_FILE_NAME);
                 try {

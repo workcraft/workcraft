@@ -1,3 +1,3 @@
-// startup actions
+// Startup actions
 
 execResource("scripts/editor.js");

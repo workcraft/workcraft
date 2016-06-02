@@ -32,7 +32,6 @@ import org.mozilla.javascript.Context;
 import org.mozilla.javascript.WrappedException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.FileFilters;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.LogUtils;
 
@@ -62,15 +61,17 @@ public class Console {
             }
         }
 
+        //LogUtils.logMessageLine("Initialising framework...");
+        final Framework framework = Framework.getInstance();
         boolean startGUI = true;
-        String dir = null;
         for (String arg: args) {
             if (arg.equals(Info.OPTION_NOGUI)) {
                 startGUI = false;
                 arglist.remove(arg);
             }
             if (arg.startsWith(Info.OPTION_DIR)) {
-                dir = arg.substring(Info.OPTION_DIR.length());
+                String path = arg.substring(Info.OPTION_DIR.length());
+                framework.setWorkingDirectory(path);
                 arglist.remove(arg);
             }
         }
@@ -79,8 +80,6 @@ public class Console {
         System.out.println(Info.getCopyright());
         System.out.println();
 
-        //LogUtils.logMessageLine("Initialising framework...");
-        final Framework framework = Framework.getInstance();
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         // NOTE: JavaScript needs to be initilised before GUI
         framework.initJavaScript();
@@ -104,6 +103,15 @@ public class Console {
             LogUtils.logErrorLine("Startup script failed: " + e.getMessage());
         }
 
+        if (framework.isInGuiMode()) {
+            for (String arg: arglist) {
+                if (arg.endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+                    File file = framework.getFileByAbsoluteOrRelativePath(arg);
+                    framework.getMainWindow().openWork(file);
+                }
+            }
+        }
+
         for (String arg: args) {
             if (arg.startsWith(Info.OPTION_EXEC)) {
                 arglist.remove(arg);
@@ -120,16 +128,6 @@ public class Console {
                 } catch (org.mozilla.javascript.RhinoException e) {
                     LogUtils.logErrorLine(e.getMessage());
                     System.exit(1);
-                }
-            }
-        }
-
-        if (framework.isInGUIMode()) {
-            for (String arg: arglist) {
-                if (arg.endsWith(FileFilters.DOCUMENT_EXTENSION)) {
-                    File file = new File(dir, arg);
-                    MainWindow mainWindow = framework.getMainWindow();
-                    mainWindow.openWork(file);
                 }
             }
         }
@@ -160,7 +158,7 @@ public class Console {
                 System.exit(0);
             }
 
-            if (framework.isInGUIMode()) {
+            if (framework.isInGuiMode()) {
                 try {
                     Thread.sleep(100);
                 } catch (InterruptedException e1) {

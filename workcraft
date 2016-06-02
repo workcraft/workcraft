@@ -1,12 +1,18 @@
 #!/bin/sh
 
-err() {
-    echo "Error: $@" >&2
-    exit 1
-}
+# Remember the current working directory
+CURRENT_DIR="$PWD"
 
+# Change to Workcraft directory
+cd "$(dirname "$0")"
+
+# Check that Workcraft is built
 if [ ! -f WorkcraftCore/build/libs/WorkcraftCore.jar ]; then
-    err "run './gradlew assemble' first"
+    echo "WorkcraftCore.jar not found. Build Workcraft with './gradlew assemble' first." >&2
+    exit 1
 fi
 
-java -cp "$(ls -1 */build/libs/*.jar | tr '\n' ':')" org.workcraft.Console
+# Run Workcraft with classpath for all plugins
+export CLASSPATH="$(ls -1 */build/libs/*.jar | tr '\n' ':')"
+
+java org.workcraft.Console -dir:"$CURRENT_DIR" "$@"
