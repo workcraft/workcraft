@@ -49,6 +49,13 @@ public abstract class AbstractTool implements GraphEditorTool {
     }
 
     @Override
+    public void setup(final GraphEditor editor) {
+        editor.getWorkspaceEntry().setCanModify(true);
+        editor.getWorkspaceEntry().setCanSelect(true);
+        editor.getWorkspaceEntry().setCanCopy(true);
+    }
+
+    @Override
     public void createInterfacePanel(final GraphEditor editor) {
     }
 

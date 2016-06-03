@@ -1,6 +1,5 @@
 package org.workcraft.plugins.policy.tools;
 
-import org.workcraft.Framework;
 import org.workcraft.TransformationTool;
 import org.workcraft.plugins.policy.PolicyNet;
 import org.workcraft.plugins.policy.VisualPolicyNet;
@@ -25,8 +24,6 @@ public class TransitionBundlerTool extends TransformationTool {
 
     @Override
     public void run(WorkspaceEntry we) {
-        final Framework framework = Framework.getInstance();
-        framework.getMainWindow().getCurrentEditor().getToolBox().selectDefaultTool();
         we.saveMemento();
 
         final VisualPolicyNet visualModel = (VisualPolicyNet) we.getModelEntry().getVisualModel();

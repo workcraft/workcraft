@@ -179,7 +179,14 @@ public class CycleAnalyserTool extends AbstractTool {
             cycleCountLabel.setText("Cycle count (out of " + cycles.size() + "):");
         }
         super.activated(editor);
+    }
+
+    @Override
+    public void setup(final GraphEditor editor) {
+        super.setup(editor);
         editor.getWorkspaceEntry().setCanModify(false);
+        editor.getWorkspaceEntry().setCanSelect(false);
+        editor.getWorkspaceEntry().setCanCopy(false);
     }
 
     @Override

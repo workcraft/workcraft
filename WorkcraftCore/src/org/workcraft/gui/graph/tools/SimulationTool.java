@@ -387,7 +387,6 @@ public abstract class SimulationTool extends AbstractTool implements ClipboardOw
     @Override
     public void activated(final GraphEditor editor) {
         editor.getWorkspaceEntry().captureMemento();
-        editor.getWorkspaceEntry().setCanModify(false);
         generateUnderlyingModel(editor.getModel());
         initialState = readModelState();
         super.activated(editor);
@@ -407,6 +406,14 @@ public abstract class SimulationTool extends AbstractTool implements ClipboardOw
         applySavedState(editor);
         savedState = null;
         underlyingModel = null;
+    }
+
+    @Override
+    public void setup(final GraphEditor editor) {
+        super.setup(editor);
+        editor.getWorkspaceEntry().setCanModify(false);
+        editor.getWorkspaceEntry().setCanSelect(false);
+        editor.getWorkspaceEntry().setCanCopy(false);
     }
 
     public void generateUnderlyingModel(VisualModel model) {

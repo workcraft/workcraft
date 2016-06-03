@@ -97,6 +97,18 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
 
     private final GraphEditorPanel editor;
 
+    public ToolboxPanel(GraphEditorPanel editor) {
+        this.editor = editor;
+        this.setFocusable(false);
+
+        selectionTool = new SelectionTool();
+        labelTool = new CommentGeneratorTool();
+        connectionTool = new ConnectionTool();
+        selectedTool = null;
+
+        setToolsForModel(editor.getModel());
+    }
+
     public void addTool(final GraphEditorTool tool, boolean selected) {
         tools.add(tool);
         int hotKeyCode = tool.getHotKeyCode();
@@ -197,13 +209,10 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
 
         controlPanel.setTool(selectedTool, editor);
         setToolButtonSelected(selectedTool, true);
+        selectedTool.setup(editor);
         selectedTool.activated(editor);
         editor.updatePropertyView();
         editor.repaint();
-    }
-
-    public void selectDefaultTool() {
-        selectTool(selectedTool);
     }
 
     public void addCommonTools() {
@@ -248,18 +257,6 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
         }
         doLayout();
         this.repaint();
-    }
-
-    public ToolboxPanel(GraphEditorPanel editor) {
-        this.editor = editor;
-        this.setFocusable(false);
-
-        selectionTool = new SelectionTool();
-        labelTool = new CommentGeneratorTool();
-        connectionTool = new ConnectionTool();
-        selectedTool = null;
-
-        setToolsForModel(editor.getModel());
     }
 
     public GraphEditorTool getTool() {
