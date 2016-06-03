@@ -106,8 +106,7 @@ public class ConnectionTool extends AbstractTool {
         warningMessage = null;
         mouseLeftFirstNode = false;
         editor.getModel().selectNone();
-        editor.getWorkspaceEntry().setCanSelect(false);
-        editor.getWorkspaceEntry().setCanModify(true);
+        setup(editor);
     }
 
     protected void updateState(GraphEditor editor) {
@@ -151,6 +150,14 @@ public class ConnectionTool extends AbstractTool {
     @Override
     public void reactivated(final GraphEditor editor) {
         templateNode = null;
+    }
+
+    @Override
+    public void setup(final GraphEditor editor) {
+        super.setup(editor);
+        editor.getWorkspaceEntry().setCanModify(firstNode == null);
+        editor.getWorkspaceEntry().setCanSelect(false);
+        editor.getWorkspaceEntry().setCanCopy(false);
     }
 
     @Override

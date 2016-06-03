@@ -59,10 +59,17 @@ public class InitialisationAnalyserTool extends AbstractTool {
 
     @Override
     public void activated(final GraphEditor editor) {
-        editor.getWorkspaceEntry().setCanModify(false);
         Circuit circuit = (Circuit) editor.getModel().getMathModel();
         updateState(circuit);
         super.activated(editor);
+    }
+
+    @Override
+    public void setup(final GraphEditor editor) {
+        super.setup(editor);
+        editor.getWorkspaceEntry().setCanModify(false);
+        editor.getWorkspaceEntry().setCanSelect(false);
+        editor.getWorkspaceEntry().setCanCopy(false);
     }
 
     @Override

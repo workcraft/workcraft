@@ -22,8 +22,8 @@ public class DtdSelectionTool extends SelectionTool {
     }
 
     @Override
-    public void activated(GraphEditor editor) {
-        super.activated(editor);
+    public void setup(final GraphEditor editor) {
+        super.setup(editor);
         editor.getWorkspaceEntry().setCanCopy(false);
     }
 

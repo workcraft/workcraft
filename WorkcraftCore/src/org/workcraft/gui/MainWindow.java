@@ -87,6 +87,7 @@ import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.propertyeditor.SettingsEditorDialog;
 import org.workcraft.gui.tasks.TaskFailureNotifier;
 import org.workcraft.gui.tasks.TaskManagerWindow;
@@ -844,9 +845,15 @@ public class MainWindow extends JFrame {
         if (editorInFocus != sender) {
             editorInFocus = sender;
 
-            toolControlsWindow.setContent(sender.getToolBox());
-            editorToolsWindow.setContent(sender.getToolBox().getControlPanel());
-            mainMenu.setMenuForWorkspaceEntry(editorInFocus.getWorkspaceEntry());
+            WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
+            mainMenu.setMenuForWorkspaceEntry(we);
+
+            ToolboxPanel toolBox = sender.getToolBox();
+            toolControlsWindow.setContent(toolBox);
+            editorToolsWindow.setContent(toolBox.getControlPanel());
+
+            GraphEditorTool selectedTool = toolBox.getTool();
+            selectedTool.setup(editorInFocus);
             sender.updatePropertyView();
 
             final Framework framework = Framework.getInstance();

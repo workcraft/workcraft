@@ -30,6 +30,7 @@ public interface GraphEditorTool extends GraphEditorKeyListener, GraphEditorMous
     void activated(final GraphEditor editor);
     void deactivated(final GraphEditor editor);
     void reactivated(final GraphEditor editor);
+    void setup(final GraphEditor editor);
 
     void drawInUserSpace(final GraphEditor editor, Graphics2D g);
     void drawInScreenSpace(final GraphEditor editor, Graphics2D g);
