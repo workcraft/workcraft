@@ -82,31 +82,28 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
     }
 
     @NoAutoSerialisation
-    public void setType(SignalTransition.Type type) {
+    public void setType(Type type) {
         getReferencedTransition().setSignalType(type);
-//        updateRenderedText();
     }
 
     @NoAutoSerialisation
-    public SignalTransition.Type getType() {
+    public Type getType() {
         return getReferencedTransition().getSignalType();
     }
 
     @NoAutoSerialisation
-    public void setDirection(SignalTransition.Direction direction) {
+    public void setDirection(Direction direction) {
         getReferencedTransition().setDirection(direction);
-        updateRenderedText();
     }
 
     @NoAutoSerialisation
-    public SignalTransition.Direction getDirection() {
+    public Direction getDirection() {
         return getReferencedTransition().getDirection();
     }
 
     @NoAutoSerialisation
     public void setSignalName(String name) {
         getReferencedTransition().setSignalName(name);
-        updateRenderedText();
     }
 
     @NoAutoSerialisation
@@ -124,7 +121,7 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
 //    public void copyStyle(Stylable src) {
 //        super.copyStyle(src);
 //        if (src instanceof VisualSignalTransition) {
-//            VisualSignalTransition srcSignalTransition = (VisualSignalTransition)src;
+//            VisualSignalTransition srcSignalTransition = (VisualSignalTransition) src;
 //            setType(srcSignalTransition.getType());
 //            setDirection(srcSignalTransition.getDirection());
 //        }

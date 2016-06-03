@@ -70,6 +70,7 @@ public class Stg extends AbstractMathModel implements StgModel {
         super(root, new StgReferenceManager(refs));
         referenceManager = (StgReferenceManager) getReferenceManager();
         new SignalTypeConsistencySupervisor(this).attach(getRoot());
+        new TransitionNameConsistencySupervisor(this).attach(getRoot());
     }
 
     public final Place createPlace() {
