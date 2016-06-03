@@ -69,11 +69,11 @@ public class ConsistencyAlg extends TimeAlg {
         Integer tfu = end.getMax();
 
         // Condition 3
-        if (!(tsl <= tfl)) {
+        if (tsl > tfl) {
             result.add("Node inconsistency: minStart" + nodeStr(node) + timeStr(tsl.toString()) + " > minFinish"
                     + nodeStr(node) + timeStr(tfl.toString()) + ".");
         }
-        if (!(tsu <= tfu)) {
+        if (tsu > tfu) {
             result.add("Node inconsistency: maxStart" + nodeStr(node) + timeStr(tsu.toString()) + " > maxFinish"
                     + nodeStr(node) + timeStr(tfu.toString()) + ".");
         }
@@ -270,11 +270,11 @@ public class ConsistencyAlg extends TimeAlg {
             Integer hsu = v1.getStartTime().getMax();
 
             // Condition 18
-            if (!(gsl <= hsl)) {
+            if (gsl > hsl) {
                 subStr.add("Behavioural inconsistency: minStart" + nodeStr(v0) + timeStr(gsl.toString()) + " > "
                         + "minStart" + nodeStr(v1) + timeStr(hsl.toString()) + ".");
             }
-            if (!(gsu <= hsu)) {
+            if (gsu > hsu) {
                 subStr.add("Behavioural inconsistency: maxStart" + nodeStr(v0) + timeStr(gsu.toString()) + " > "
                         + "maxStart" + nodeStr(v1) + timeStr(hsu.toString()) + ".");
             }

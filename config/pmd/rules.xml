@@ -29,6 +29,7 @@
     <rule ref="rulesets/java/design.xml/ImmutableField"/>
     <rule ref="rulesets/java/design.xml/SingularField"/>
     <rule ref="rulesets/java/design.xml/UnnecessaryLocalBeforeReturn"/>
+    <rule ref="rulesets/java/design.xml/LogicInversion"/>
 
     <rule ref="rulesets/java/strictexception.xml/AvoidRethrowingException"/>
     <rule ref="rulesets/java/strictexception.xml/DoNotExtendJavaLangError"/>
