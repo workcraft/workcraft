@@ -222,7 +222,9 @@ public class StgNameManager extends UniqueNameManager {
             setPrefixCount(prefix, count);
             st.setSignalName(name);
             signalTransitions.put(name, st);
-            instancedNameManager.assign(st);
+            if (instancedNameManager.getInstance(st) == null) {
+                instancedNameManager.assign(st);
+            }
         }
     }
 
@@ -236,7 +238,9 @@ public class StgNameManager extends UniqueNameManager {
             } while (!isGoodDummyName(name));
             dt.setName(name);
             dummyTransitions.put(name, dt);
-            instancedNameManager.assign(dt);
+            if (instancedNameManager.getInstance(dt) == null) {
+                instancedNameManager.assign(dt);
+            }
         }
     }
 

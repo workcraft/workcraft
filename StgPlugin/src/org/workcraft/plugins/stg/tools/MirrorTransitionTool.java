@@ -66,7 +66,7 @@ public class MirrorTransitionTool extends TransformationTool implements NodeTran
 
     @Override
     public void transform(Model model, Node node) {
-        if (node instanceof VisualSignalTransition) {
+        if ((model instanceof VisualStg) && (node instanceof VisualSignalTransition)) {
             VisualSignalTransition signalTransition = (VisualSignalTransition) node;
             Direction direction = signalTransition.getDirection();
             if (direction == Direction.PLUS) {
