@@ -72,9 +72,9 @@ public class AlgebraExpressionFromGraphsTool implements Tool {
             }
             File file = new File(filePath);
             if (file.exists()) {
-                if (!(JOptionPane.showConfirmDialog(mainWindow,
+                if (JOptionPane.showConfirmDialog(mainWindow,
                             "The file '" + file.getName() + "' already exists.\n" + "Overwrite it?",
-                            DIALOG_SAVE_FILE, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION)) {
+                            DIALOG_SAVE_FILE, JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) {
                     return;
                 }
             }

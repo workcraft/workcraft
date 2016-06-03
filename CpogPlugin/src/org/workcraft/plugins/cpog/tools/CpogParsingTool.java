@@ -263,7 +263,7 @@ public class CpogParsingTool {
                             expression.add("+");
                         }
 
-                        if ((i.hasNext()) && !(expression.get(expression.size() - 1) == "+")) {
+                        if ((i.hasNext()) && expression.get(expression.size() - 1) != "+") {
                             expression.add("+");
                         }
                     }
@@ -321,7 +321,7 @@ public class CpogParsingTool {
                         expression.add("+");
                     }
 
-                    if ((i.hasNext()) && !(expression.get(expression.size() - 1) == "+")) {
+                    if (i.hasNext() && expression.get(expression.size() - 1) != "+") {
                         expression.add("+");
                     }
                 }
@@ -375,7 +375,7 @@ public class CpogParsingTool {
                 insert = "[" + formulaToString(arc.getCondition()) + "](";
             }
 
-            if (!(formulaToString(current.getCondition()).equals("1")) || !(formulaToString(current.getCondition()).compareTo(formulaToString(arc.getCondition())) == 0)) {
+            if (!(formulaToString(current.getCondition()).equals("1")) || formulaToString(current.getCondition()).compareTo(formulaToString(arc.getCondition())) != 0) {
                 insert = insert + "[" + formulaToString(current.getCondition()) + "]";
             }
 
