@@ -1,25 +1,40 @@
 package org.workcraft.plugins.cpog.tasks;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
+import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.workspace.Path;
+import org.workcraft.plugins.circuit.Circuit;
+import org.workcraft.plugins.circuit.CircuitDescriptor;
+import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.circuit.interop.VerilogImporter;
+import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.FileUtils;
+import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.Workspace;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
-
     public static final String INTERNAL_ERROR_MSG = "Internal error. Contact developers at www.workcraft.org/";
 
     private ScencoExternalToolTask scenco;
     private final ScencoSolver solver;
+    private final WorkspaceEntry we;
 
     public ScencoResultHandler(ScencoExternalToolTask scencoTask) {
         this.scenco = scencoTask;
         this.solver = scencoTask.getSolver();
+        this.we = scencoTask.getWorkspaceEntry();
     }
 
     @Override
@@ -28,25 +43,58 @@ public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
             String[] stdoutLines = result.getReturnValue().getStdout().split("\n");
             String resultDirectory = result.getReturnValue().getResultDirectory();
             solver.handleResult(stdoutLines, resultDirectory);
-        } else if (result.getOutcome() == Outcome.FAILED) {
-            String errorMessage = getErrorMessage(result.getReturnValue().getStdout());
-            final Framework framework = Framework.getInstance();
 
-            // In case of an internal error, activate automatically verbose mode
-            if (errorMessage.equals(INTERNAL_ERROR_MSG)) {
-                String[] sentence = result.getReturnValue().getStdout().split("\n");
-                for (int i = 0; i < sentence.length; i++) {
-                    System.out.println(sentence[i]);
+            // import verilog file into circuit
+            if (solver.isVerilog()) {
+                try {
+                    byte[] verilogBytes = solver.getVerilog();
+                    ByteArrayInputStream in = new ByteArrayInputStream(verilogBytes);
+                    VerilogImporter verilogImporter = new VerilogImporter(false);
+                    final Circuit circuit = verilogImporter.importCircuit(in);
+                    Path<String> path = we.getWorkspacePath();
+                    final Path<String> directory = path.getParent();
+                    final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
+                    final ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
+                    boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
+    
+                    final Framework framework = Framework.getInstance();
+                    final MainWindow mainWindow = framework.getMainWindow();
+                    final Workspace workspace = framework.getWorkspace();
+                    final WorkspaceEntry newWorkspaceEntry = workspace.add(directory, name, me, true, openInEditor);
+                    VisualModel visualModel = newWorkspaceEntry.getModelEntry().getVisualModel();
+                    if (visualModel instanceof VisualCircuit) {
+                        VisualCircuit visualCircuit = (VisualCircuit) visualModel;
+                        String title = we.getModelEntry().getModel().getTitle();
+                        visualCircuit.setTitle(title);
+                        SwingUtilities.invokeLater(new Runnable() {
+                            @Override
+                            public void run() {
+                                mainWindow.getCurrentEditor().updatePropertyView();
+                            }
+                        });
+                    }
+                } catch (DeserialisationException e) {
+                    throw new RuntimeException(e);
                 }
             }
+        } else if (result.getOutcome() == Outcome.FAILED) {
+                String errorMessage = getErrorMessage(result.getReturnValue().getStdout());
+                final Framework framework = Framework.getInstance();
 
-            //Removing temporary files
-            File dir = solver.getDirectory();
-            FileUtils.deleteOnExitRecursively(dir);
+                // In case of an internal error, activate automatically verbose mode
+                if (errorMessage.equals(INTERNAL_ERROR_MSG)) {
+                    String[] sentence = result.getReturnValue().getStdout().split("\n");
+                    for (int i = 0; i < sentence.length; i++) {
+                        System.out.println(sentence[i]);
+                    }
+                }
 
-            //Display the error
-            JOptionPane.showMessageDialog(framework.getMainWindow(), errorMessage, "SCENCO error", JOptionPane.ERROR_MESSAGE);
+                //Removing temporary files
+                File dir = solver.getDirectory();
+                FileUtils.deleteOnExitRecursively(dir);
 
+                //Display the error
+                JOptionPane.showMessageDialog(framework.getMainWindow(), errorMessage, "SCENCO error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -54,7 +102,7 @@ public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
     private String getErrorMessage(String msg) {
 
         // SCENCO accessing error
-        if (msg.equals(solver.ACCESS_SCENCO_ERROR)) {
+        if (msg.equals(ScencoSolver.ACCESS_SCENCO_ERROR)) {
             return solver.getScencoArguments().get(1);
         }
 

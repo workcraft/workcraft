@@ -86,4 +86,7 @@ public class ScencoExternalToolTask implements Task<ScencoResult>, ExternalProce
         return solver;
     }
 
+    public WorkspaceEntry getWorkspaceEntry() {
+        return we;
+    }
 }

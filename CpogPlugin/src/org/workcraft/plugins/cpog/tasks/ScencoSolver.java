@@ -2,6 +2,9 @@ package org.workcraft.plugins.cpog.tasks;
 
 import java.awt.geom.Point2D;
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.StringTokenizer;
@@ -10,6 +13,7 @@ import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.encoding.Encoding;
 import org.workcraft.formula.jj.ParseException;
+import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.cpog.CpogSettings;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
@@ -35,6 +39,7 @@ public class ScencoSolver {
     public static final String MSG_ABC_NOT_PRESENT = "Find out more information on " +
                                                      "\"http://www.eecs.berkeley.edu/~alanmi/abc/\" or try to " +
                                                      "set path of the folder containing Abc inside Workcraft settings.";
+    private static final String VERILOG_TMP_NAME = "micro.v";
 
     private final EncoderSettings settings;
     private final WorkspaceEntry we;
@@ -60,6 +65,7 @@ public class ScencoSolver {
     private String cpogSize = "";
     private String disableFunction = "";
     private String oldSynt = "";
+    private String verilogFlag = "";
 
     private int v;
     private int a;
@@ -70,6 +76,7 @@ public class ScencoSolver {
     private ArrayList<Point2D> positions;
     private ArrayList<Integer> count;
     private File directory;
+    private File verilogFile;
 
     public ScencoSolver(EncoderSettings settings, WorkspaceEntry we) {
         this.settings = settings;
@@ -111,6 +118,7 @@ public class ScencoSolver {
         File scenarioFile = new File(directory, "scenarios.cpog");
         File encodingFile = new File(directory, "custom.enc");
         File resultDirectory = new File(directory, "result");
+        verilogFile = new File(directory, VERILOG_TMP_NAME);
         resultDirectory.mkdir();
         if ((cpogBuilder.writeCpogIntoFile(m, scenarios, scenarioFile, encodingFile, settings)) != 0) {
             FileUtils.deleteOnExitRecursively(directory);
@@ -133,13 +141,17 @@ public class ScencoSolver {
             } else {
                 abcFlag = "-a";
                 gateLibFlag = "-lib";
-                f = new File(abcFolder + gatesLibrary);
+                f = new File(/*abcFolder + */gatesLibrary);
                 if (!f.exists() || f.isDirectory()) {
                     FileUtils.deleteOnExitRecursively(directory);
                     args.add("ERROR");
                     args.add(MSG_GATE_LIB_NOT_PRESENT);
                     args.add(ACCESS_SCENCO_ERROR);
                     return args;
+                } else {
+                    if (!settings.isCpogSize()) {
+                        verilogFlag = "-ver";
+                    }
                 }
             }
         } else {
@@ -230,6 +242,10 @@ public class ScencoSolver {
         if ((resultDirectory.getAbsolutePath() != null) && !resultDirectory.getAbsolutePath().isEmpty()) args.add(resultDirectory.getAbsolutePath());
         if (modBitFlag != null && !modBitFlag.isEmpty()) args.add(modBitFlag);
         if (modBit != null && !modBit.isEmpty()) args.add(modBit);
+        if (verilogFlag != null && !verilogFlag.isEmpty()) {
+            args.add(verilogFlag);
+            args.add(verilogFile.getAbsolutePath());
+        }
 
         // final return
         return args;
@@ -405,12 +421,28 @@ public class ScencoSolver {
         scencoCommand = ToolUtils.getAbsoluteCommandPath(CpogSettings.getScencoCommand());
         espressoCommand = ToolUtils.getAbsoluteCommandPath(CpogSettings.getEspressoCommand());
         abcFolder = CpogSettings.getAbcFolder();
-        gatesLibrary = CpogSettings.getGatesLibrary();
+        File f = new File(CircuitSettings.getGateLibrary());
+        gatesLibrary = f.getAbsolutePath();
         espressoFlag = "-e";
     }
 
     public File getDirectory() {
         return directory;
+    }
+
+    public Boolean isVerilog() {
+        return (!verilogFlag.isEmpty());
+    }
+
+    public byte[] getVerilog() {
+        byte[] verilogBytes = null;
+        try {
+            verilogBytes = Files.readAllBytes(Paths.get(verilogFile.getAbsolutePath()));
+            
+        } catch (IOException io) {
+            FileUtils.deleteOnExitRecursively(directory);
+        }
+        return verilogBytes;
     }
 
 }
