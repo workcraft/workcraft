@@ -431,14 +431,13 @@ public class ScencoSolver {
     }
 
     public Boolean isVerilog() {
-        return (!verilogFlag.isEmpty());
+        return !verilogFlag.isEmpty();
     }
 
     public byte[] getVerilog() {
         byte[] verilogBytes = null;
         try {
             verilogBytes = Files.readAllBytes(Paths.get(verilogFile.getAbsolutePath()));
-            
         } catch (IOException io) {
             FileUtils.deleteOnExitRecursively(directory);
         }

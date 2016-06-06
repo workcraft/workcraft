@@ -56,7 +56,7 @@ public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
                     final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
                     final ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
                     boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
-    
+
                     final Framework framework = Framework.getInstance();
                     final MainWindow mainWindow = framework.getMainWindow();
                     final Workspace workspace = framework.getWorkspace();
@@ -78,23 +78,23 @@ public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
                 }
             }
         } else if (result.getOutcome() == Outcome.FAILED) {
-                String errorMessage = getErrorMessage(result.getReturnValue().getStdout());
-                final Framework framework = Framework.getInstance();
+            String errorMessage = getErrorMessage(result.getReturnValue().getStdout());
+            final Framework framework = Framework.getInstance();
 
-                // In case of an internal error, activate automatically verbose mode
-                if (errorMessage.equals(INTERNAL_ERROR_MSG)) {
-                    String[] sentence = result.getReturnValue().getStdout().split("\n");
-                    for (int i = 0; i < sentence.length; i++) {
-                        System.out.println(sentence[i]);
-                    }
+            // In case of an internal error, activate automatically verbose mode
+            if (errorMessage.equals(INTERNAL_ERROR_MSG)) {
+                String[] sentence = result.getReturnValue().getStdout().split("\n");
+                for (int i = 0; i < sentence.length; i++) {
+                    System.out.println(sentence[i]);
                 }
+            }
 
-                //Removing temporary files
-                File dir = solver.getDirectory();
-                FileUtils.deleteOnExitRecursively(dir);
+            //Removing temporary files
+            File dir = solver.getDirectory();
+            FileUtils.deleteOnExitRecursively(dir);
 
-                //Display the error
-                JOptionPane.showMessageDialog(framework.getMainWindow(), errorMessage, "SCENCO error", JOptionPane.ERROR_MESSAGE);
+            //Display the error
+            JOptionPane.showMessageDialog(framework.getMainWindow(), errorMessage, "SCENCO error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
