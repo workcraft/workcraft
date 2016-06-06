@@ -398,8 +398,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
         }
         updateState(editor);
         editor.requestFocus();
-        editor.forceRedraw();
-        editor.getModel().setTemplateNode(null);
+        super.activated(editor);
     }
 
     protected void initialise() {
@@ -421,8 +420,13 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
     }
 
     @Override
-    public void deactivated(GraphEditor editor) {
+    public void deactivated(final GraphEditor editor) {
         super.deactivated(editor);
+        if (timer != null) {
+            timer.stop();
+            timer = null;
+        }
+        editor.getWorkspaceEntry().cancelMemento();
         mainTrace.clear();
         branchTrace.clear();
         isRev = false;

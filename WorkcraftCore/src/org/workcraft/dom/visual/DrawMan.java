@@ -23,6 +23,7 @@ package org.workcraft.dom.visual;
 
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.util.ArrayList;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -105,14 +106,16 @@ final class DrawMan {
         boolean isCollapsed = (node instanceof Collapsible) && ((Collapsible) node).getIsCollapsed();
         boolean isInsideCollapsed = isCollapsed && ((Collapsible) node).isCurrentLevelInside();
         if (isInsideCollapsed || !isCollapsed) {
+            // Copy the collection of children nodes before drawing in order to avoid concurrent modification exception
+            ArrayList<Node> children = new ArrayList<>(node.getChildren());
             // First draw nodes
-            for (Node childNode : node.getChildren()) {
+            for (Node childNode : children) {
                 if (!(childNode instanceof VisualConnection)) {
                     draw(decoration, childNode);
                 }
             }
             // Then draw connections
-            for (Node childNode : node.getChildren()) {
+            for (Node childNode : children) {
                 if (childNode instanceof VisualConnection) {
                     draw(decoration, childNode);
                 }
