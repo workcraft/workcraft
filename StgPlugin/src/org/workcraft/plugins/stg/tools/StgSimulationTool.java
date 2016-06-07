@@ -500,17 +500,17 @@ public class StgSimulationTool extends PetriSimulationTool {
     private LinkedList<Pair<String, Color>> getOrderedTraceSignals(Stg stg, Trace trace) {
         LinkedList<Pair<String, Color>> result = new LinkedList<>();
         HashSet<String> traceSignals = new HashSet<>();
-        for (String transitionName: trace) {
-            Node node = stg.getNodeByReference(transitionName);
+        for (String transitionRef: trace) {
+            Node node = stg.getNodeByReference(transitionRef);
             if (node instanceof SignalTransition) {
                 SignalTransition transition = (SignalTransition) node;
-                String signalName = transition.getSignalName();
-                traceSignals.add(signalName);
+                String signalRef = stg.getSignalReference(transition);
+                traceSignals.add(signalRef);
             }
         }
-        for (String signalName: signals) {
-            if (traceSignals.contains(signalName)) {
-                SignalData signalData = signalDataMap.get(signalName);
+        for (String signalRef: signals) {
+            if (traceSignals.contains(signalRef)) {
+                SignalData signalData = signalDataMap.get(signalRef);
                 if ((signalData != null) && signalData.visible) {
                     result.add(new Pair<String, Color>(signalData.name, signalData.color));
                 }
@@ -541,7 +541,7 @@ public class StgSimulationTool extends PetriSimulationTool {
             Set<String> typedSignals = stg.getSignalReferences(type);
             allSignals.addAll(typedSignals);
             for (String signal: typedSignals) {
-                SignalData signalData = new SignalData(signal, stg.getSignalType(signal));
+                SignalData signalData = new SignalData(signal, type);
                 signalData.copy(signalDataMap.get(signal));
                 signalData.visible = type != Type.INTERNAL;
                 newStateMap.put(signal, signalData);

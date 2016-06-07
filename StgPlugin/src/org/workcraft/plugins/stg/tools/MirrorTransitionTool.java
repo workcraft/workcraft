@@ -6,6 +6,7 @@ import org.workcraft.NodeTransformer;
 import org.workcraft.TransformationTool;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
+import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualSignalTransition;
@@ -67,12 +68,15 @@ public class MirrorTransitionTool extends TransformationTool implements NodeTran
     @Override
     public void transform(Model model, Node node) {
         if ((model instanceof VisualStg) && (node instanceof VisualSignalTransition)) {
-            VisualSignalTransition signalTransition = (VisualSignalTransition) node;
-            Direction direction = signalTransition.getDirection();
+            VisualStg visualStg = (VisualStg) model;
+            Stg stg = (Stg) visualStg.getMathModel();
+            VisualSignalTransition visualTransition = (VisualSignalTransition) node;
+            SignalTransition transition = visualTransition.getReferencedTransition();
+            Direction direction = visualTransition.getDirection();
             if (direction == Direction.PLUS) {
-                signalTransition.setDirection(Direction.MINUS);
+                stg.setDirection(transition, Direction.MINUS);
             } else if (direction == Direction.MINUS) {
-                signalTransition.setDirection(Direction.PLUS);
+                stg.setDirection(transition, Direction.PLUS);
             }
         }
     }

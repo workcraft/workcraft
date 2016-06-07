@@ -96,6 +96,8 @@ public class SignalTransition extends NamedTransition {
         return direction;
     }
 
+    // FIXME: As direction is part of the node reference use Stg.setDirection(Node) instead!
+    // This method is only to be used from StgNameManager.
     public void setDirection(Direction direction) {
         if (this.direction != direction) {
             this.direction = direction;
@@ -109,6 +111,8 @@ public class SignalTransition extends NamedTransition {
     }
 
     @NoAutoSerialisation
+    // FIXME: As signal name is part of the node reference use Stg.setName(Node, String) instead!
+    // This method is only to be used from StgNameManager.
     public void setSignalName(String signalName) {
         this.signalName = signalName;
         sendNotification(new PropertyChangedEvent(this, PROPERTY_SIGNAL_NAME));

@@ -65,6 +65,11 @@ public class VisualModelTests {
         public <T extends MathNode> T createNode(String name, Container container, Class<T> type) {
             return null;
         }
+
+        @Override
+        public <T extends MathNode> T createNode(Collection<MathNode> srcNodes, Container container, Class<T> type) {
+            return null;
+        }
     }
 
     private class MockConcreteVisualModel extends AbstractVisualModel {
@@ -74,7 +79,7 @@ public class VisualModelTests {
         }
 
         @Override
-        public void validateConnection(Node first, Node second)    throws InvalidConnectionException {
+        public void validateConnection(Node first, Node second) throws InvalidConnectionException {
             // TODO Auto-generated method stub
 
         }

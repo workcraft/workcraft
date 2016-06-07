@@ -4,11 +4,10 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.workcraft.plugins.petri.PetriNetModel;
-import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 
 public interface StgModel extends PetriNetModel {
-    Collection<Transition> getDummyTransitions();
+    Collection<DummyTransition> getDummyTransitions();
     Collection<SignalTransition> getSignalTransitions();
     Collection<SignalTransition> getSignalTransitions(Type type);
 

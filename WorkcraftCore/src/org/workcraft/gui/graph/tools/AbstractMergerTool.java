@@ -12,6 +12,7 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
+import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.Undirected;
 import org.workcraft.dom.visual.VisualComponent;
@@ -68,15 +69,18 @@ public abstract class AbstractMergerTool extends TransformationTool {
         if (components != null) {
             double x = 0.0;
             double y = 0.0;
+            ArrayList<MathNode> nodes = new ArrayList<>();
             for (VisualComponent component: components) {
                 x += component.getRootSpaceX();
                 y += component.getRootSpaceY();
+                nodes.add(component.getReferencedComponent());
             }
             if (!components.isEmpty()) {
                 Container vContainer = Hierarchy.getNearestContainer(new ArrayList<Node>(components));
                 Container mContainer = NamespaceHelper.getMathContainer(model, vContainer);
                 Class<? extends MathNode> mathNodeClass = components.iterator().next().getReferencedComponent().getClass();
-                MathNode mathNode = model.getMathModel().createNode(null, mContainer, mathNodeClass);
+                MathModel mathModel = model.getMathModel();
+                MathNode mathNode = mathModel.createNode(nodes, mContainer, mathNodeClass);
                 result = model.createVisualComponent(mathNode, vContainer, type);
                 int n = components.size();
                 result.setRootSpacePosition(new Point2D.Double(x / n, y / n));

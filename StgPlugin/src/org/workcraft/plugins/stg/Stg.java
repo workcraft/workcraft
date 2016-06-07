@@ -70,7 +70,6 @@ public class Stg extends AbstractMathModel implements StgModel {
         super(root, new StgReferenceManager(refs));
         referenceManager = (StgReferenceManager) getReferenceManager();
         new SignalTypeConsistencySupervisor(this).attach(getRoot());
-        new TransitionNameConsistencySupervisor(this).attach(getRoot());
     }
 
     public final Place createPlace() {
@@ -144,14 +143,8 @@ public class Stg extends AbstractMathModel implements StgModel {
     }
 
     @Override
-    public Collection<Transition> getDummyTransitions() {
-        return Hierarchy.getDescendantsOfType(getRoot(), Transition.class,
-                new Func<Transition, Boolean>() {
-                    @Override
-                    public Boolean eval(Transition arg) {
-                        return !(arg instanceof SignalTransition);
-                    }
-                });
+    public Collection<DummyTransition> getDummyTransitions() {
+        return Hierarchy.getDescendantsOfType(getRoot(), DummyTransition.class);
     }
 
     @Override
@@ -226,17 +219,23 @@ public class Stg extends AbstractMathModel implements StgModel {
     @Override
     public Set<String> getDummyReferences() {
         Set<String> result = new HashSet<>();
-        for (Transition t : getDummyTransitions()) {
-            result.add(referenceManager.getNamePair(t).getFirst());
+        for (DummyTransition t : getDummyTransitions()) {
+            result.add(getDummyReference(t));
         }
         return result;
+    }
+
+    public String getDummyReference(DummyTransition t) {
+        String reference = referenceManager.getNodeReference(null, t);
+        String path = NamespaceHelper.getReferencePath(reference);
+        return path + t.getName();
     }
 
     @Override
     public Set<String> getSignalReferences() {
         Set<String> result = new HashSet<>();
-        for (SignalTransition st : getSignalTransitions()) {
-            result.add(getSignalReference(st));
+        for (SignalTransition t : getSignalTransitions()) {
+            result.add(getSignalReference(t));
         }
         return result;
     }
@@ -244,16 +243,16 @@ public class Stg extends AbstractMathModel implements StgModel {
     @Override
     public Set<String> getSignalReferences(Type type) {
         Set<String> result = new HashSet<>();
-        for (SignalTransition st : getSignalTransitions(type)) {
-            result.add(getSignalReference(st));
+        for (SignalTransition t : getSignalTransitions(type)) {
+            result.add(getSignalReference(t));
         }
         return result;
     }
 
-    public String getSignalReference(SignalTransition st) {
-        String reference = referenceManager.getNodeReference(null, st);
+    public String getSignalReference(SignalTransition t) {
+        String reference = referenceManager.getNodeReference(null, t);
         String path = NamespaceHelper.getReferencePath(reference);
-        return path + st.getSignalName();
+        return path + t.getSignalName();
     }
 
     public int getInstanceNumber(Node st) {
@@ -273,7 +272,7 @@ public class Stg extends AbstractMathModel implements StgModel {
         return result;
     }
 
-    public void setDirectionWithAutoInstance(Node t, Direction direction) {
+    public void setDirection(Node t, Direction direction) {
         String name = referenceManager.getName(t);
         Triple<String, Direction, Integer> old = LabelParser.parseSignalTransition(name);
         referenceManager.setName(t, old.getFirst() + direction.toString());
@@ -306,7 +305,11 @@ public class Stg extends AbstractMathModel implements StgModel {
     }
 
     public Collection<SignalTransition> getSignalTransitions(String signalReference) {
-        return referenceManager.getSignalTransitions(signalReference);
+        String parentReference = NamespaceHelper.getParentReference(signalReference);
+        Node parent = getNodeByReference(null, parentReference);
+        Container container = (parent instanceof Container) ? (Container) parent : null;
+        String signalName = NamespaceHelper.getReferenceName(signalReference);
+        return getSignalTransitions(signalName, container);
     }
 
     public Type getSignalType(String signalReference) {
@@ -414,6 +417,60 @@ public class Stg extends AbstractMathModel implements StgModel {
     public void makeExplicit(StgPlace implicitPlace) {
         implicitPlace.setImplicit(false);
         referenceManager.setDefaultNameIfUnnamed(implicitPlace);
+    }
+
+    @Override
+    public <T extends MathNode> T createNode(Collection<MathNode> srcNodes, Container container, Class<T> type) {
+        T result = super.createNode(srcNodes, container, type);
+        if (result instanceof SignalTransition) {
+            SignalTransition signalTransition = (SignalTransition) result;
+            // Type priority: OUTPUT > INPUT > INTERNAL
+            boolean foundOutput = false;
+            boolean foundInput = false;
+            boolean foundInternal = false;
+            // Direction priority: TOGGLE > PLUS == MINUS
+            boolean foundToggle = false;
+            boolean foundPlus = false;
+            boolean foundMinus = false;
+            for (MathNode srcNode: srcNodes) {
+                if (srcNode instanceof SignalTransition) {
+                    SignalTransition srcSignalTransition = (SignalTransition) srcNode;
+                    if (srcSignalTransition.getSignalType() == Type.OUTPUT) {
+                        foundOutput = true;
+                    }
+                    if (srcSignalTransition.getSignalType() == Type.INPUT) {
+                        foundInput = true;
+                    }
+                    if (srcSignalTransition.getSignalType() == Type.INTERNAL) {
+                        foundInternal = true;
+                    }
+                    if (srcSignalTransition.getDirection() == Direction.TOGGLE) {
+                        foundToggle = true;
+                    }
+                    if (srcSignalTransition.getDirection() == Direction.PLUS) {
+                        foundPlus = true;
+                    }
+                    if (srcSignalTransition.getDirection() == Direction.MINUS) {
+                        foundMinus = true;
+                    }
+                }
+            }
+            if (foundOutput) {
+                signalTransition.setSignalType(Type.OUTPUT);
+            } else if (foundInput) {
+                signalTransition.setSignalType(Type.INPUT);
+            } else if (foundInternal) {
+                signalTransition.setSignalType(Type.INTERNAL);
+            }
+            if (foundToggle || (foundPlus && foundMinus)) {
+                setDirection(signalTransition, Direction.TOGGLE);
+            } else if (foundPlus) {
+                setDirection(signalTransition, Direction.PLUS);
+            } else if (foundMinus) {
+                setDirection(signalTransition, Direction.MINUS);
+            }
+        }
+        return result;
     }
 
     @Override
