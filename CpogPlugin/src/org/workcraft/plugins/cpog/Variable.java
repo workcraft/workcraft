@@ -31,6 +31,7 @@ import org.workcraft.observation.PropertyChangedEvent;
 public class Variable extends MathNode implements Comparable<Variable>, BooleanVariable {
 
     public static final String PROPERTY_STATE = "State";
+    public static final String PROPERTY_LABEL = "Label";
 
     private VariableState state = VariableState.UNDEFINED;
 
@@ -52,6 +53,7 @@ public class Variable extends MathNode implements Comparable<Variable>, BooleanV
 
     public void setLabel(String label) {
         this.label = label;
+        sendNotification(new PropertyChangedEvent(this, PROPERTY_LABEL));
     }
 
     public String getLabel() {

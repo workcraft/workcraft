@@ -31,8 +31,11 @@ public final class ConditionConsistencySupervisor extends HierarchySupervisor {
     }
 
     private void removeVariableFromConditions(final Variable var) {
-        for (Vertex v: new ArrayList<Vertex>(cpog.getVertices())) {
+        for (Vertex v: new ArrayList<>(cpog.getVertices())) {
             v.setCondition(BooleanUtils.cleverReplace(v.getCondition(), var, Zero.instance()));
+        }
+        for (Arc a: new ArrayList<>(cpog.getArcs())) {
+            a.setCondition(BooleanUtils.cleverReplace(a.getCondition(), var, Zero.instance()));
         }
     }
 

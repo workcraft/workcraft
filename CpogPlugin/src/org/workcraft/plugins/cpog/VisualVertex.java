@@ -180,6 +180,14 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
         }
     }
 
+    public Rectangle2D getConditionBoundingBox() {
+        if ((conditionRenderedFormula != null) && !conditionRenderedFormula.isEmpty()) {
+            return conditionRenderedFormula.getBoundingBox();
+        } else {
+            return null;
+        }
+    }
+
     public Vertex getMathVertex() {
         return (Vertex) getReferencedComponent();
     }
@@ -221,7 +229,7 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
         Shape shape = getShape();
         if (getRenderType() == RenderType.LABEL) {
             cacheLabelRenderedText(getLabel(), labelFont, getLabelPositioning(), getLabelOffset());
-            shape = getLabelBoundingBox();
+            shape = BoundingBoxHelper.union(getLabelBoundingBox(), getConditionBoundingBox());
         }
         return shape.contains(pointInLocalSpace);
     }
@@ -235,6 +243,14 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
             this.renderType = renderType;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_RENDER_TYPE));
         }
+    }
+
+    @Override
+    public boolean getLabelVisibility() {
+        if (getRenderType() == RenderType.LABEL) {
+            return true;
+        }
+        return super.getLabelVisibility();
     }
 
     @Override

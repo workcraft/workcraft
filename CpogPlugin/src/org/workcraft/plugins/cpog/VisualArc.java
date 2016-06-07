@@ -43,8 +43,8 @@ import org.workcraft.formula.Zero;
 import org.workcraft.formula.utils.FormulaRenderingResult;
 import org.workcraft.formula.utils.FormulaToGraphics;
 import org.workcraft.gui.Coloriser;
-import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.cpog.formula.PrettifyBooleanReplacer;
+import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Geometry;
 
 public class VisualArc extends VisualConnection {
@@ -77,8 +77,14 @@ public class VisualArc extends VisualConnection {
         this.mathConnection = mathConnection;
     }
 
+    @NoAutoSerialisation
     public BooleanFormula getCondition() {
         return mathConnection.getCondition();
+    }
+
+    @NoAutoSerialisation
+    public void setCondition(BooleanFormula condition) {
+        mathConnection.setCondition(condition);
     }
 
     @Override
@@ -110,11 +116,6 @@ public class VisualArc extends VisualConnection {
         condition = BooleanOperations.and(condition, ((VisualVertex) getSecond()).evaluate());
 
         return condition.accept(new PrettifyBooleanReplacer());
-    }
-
-    public void setCondition(BooleanFormula condition) {
-        mathConnection.setCondition(condition);
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_CONDITION));
     }
 
     @Override
