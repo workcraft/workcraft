@@ -72,6 +72,10 @@ public class Cpog extends AbstractMathModel {
         return Hierarchy.getChildrenOfType(getRoot(), Vertex.class);
     }
 
+    public Collection<Arc> getArcs() {
+        return Hierarchy.getChildrenOfType(getRoot(), Arc.class);
+    }
+
     @Override
     public ModelProperties getProperties(Node node) {
         ModelProperties properties = super.getProperties(node);

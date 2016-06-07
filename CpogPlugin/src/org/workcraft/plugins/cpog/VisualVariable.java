@@ -43,14 +43,12 @@ import org.workcraft.formula.One;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @Hotkey(KeyEvent.VK_X)
 @DisplayName("Variable")
 @SVGIcon("images/icons/svg/variable.svg")
 public class VisualVariable extends VisualComponent {
-    public static final String PROPERTY_LABEL = "Label";
     private static Font variableFont;
     private static Font valueFont;
 
@@ -153,9 +151,13 @@ public class VisualVariable extends VisualComponent {
 
     @NoAutoSerialisation
     @Override
-    public void setLabel(String label)    {
+    public void setLabel(String label) {
         getMathVariable().setLabel(label);
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_LABEL));
+    }
+
+    @Override
+    public boolean getLabelVisibility() {
+        return true;
     }
 
     @Override
