@@ -51,7 +51,7 @@ public class DirectionPropertyDescriptor implements PropertyDescriptor {
 
     @Override
     public void setValue(Object value) throws InvocationTargetException {
-        stg.setDirectionWithAutoInstance(st, (Direction) value);
+        stg.setDirection(st, (Direction) value);
     }
 
     @Override

@@ -69,6 +69,10 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
         return (T) node;
     }
 
+    public <T extends MathNode> T createNode(Collection<MathNode> srcNodes, Container container, Class<T> type) {
+        return createNode((String) null, container, type);
+    }
+
     private void setNamespaceRecursively(HierarchicalUniqueNameReferenceManager dstRefManager, Container dstContainer,
             Model srcModel, Container srcRoot, Collection<Node> srcChildren) {
 

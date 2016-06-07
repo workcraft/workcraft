@@ -8,6 +8,7 @@ import java.util.LinkedList;
 
 import org.workcraft.Trace;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.dtd.Dtd;
 import org.workcraft.plugins.dtd.Signal.Type;
@@ -63,14 +64,15 @@ public class StgToDtdConverter {
     private HashMap<String, VisualSignal> createSignals(LinkedList<Pair<String, Color>> signals) {
         HashMap<String, VisualSignal> result = new HashMap<>();
         for (Pair<String, Color> signalData: signals) {
-            String name = signalData.getFirst();
+            String ref = signalData.getFirst();
             Color color = signalData.getSecond();
-            VisualSignal signal = dtd.createVisualSignal(name);
+            String flatName = NamespaceHelper.hierarchicalToFlatName(ref);
+            VisualSignal signal = dtd.createVisualSignal(flatName);
             signal.setPosition(new Point2D.Double(0.0, SIGNAL_OFFSET * result.size()));
-            Type type = convertSignalType((signalData == null) ? null : stg.getSignalType(name));
+            Type type = convertSignalType(stg.getSignalType(ref));
             signal.setType(type);
             signal.setForegroundColor(color);
-            result.put(name, signal);
+            result.put(ref, signal);
         }
         return result;
     }
@@ -79,13 +81,13 @@ public class StgToDtdConverter {
         HashMap<SignalEvent, SignalTransition> result = new HashMap<>();
         HashMap<Node, HashSet<SignalEvent>> causeMap = new HashMap<>();
         double x = 0.0;
-        for (String transitionName: trace) {
-            Node node = stg.getNodeByReference(transitionName);
+        for (String transitionRef: trace) {
+            Node node = stg.getNodeByReference(transitionRef);
             boolean skip = true;
             if (node instanceof SignalTransition) {
                 SignalTransition transition = (SignalTransition) node;
-                String signalName = transition.getSignalName();
-                skip = !signalMap.containsKey(signalName);
+                String signalRef = stg.getSignalReference(transition);
+                skip = !signalMap.containsKey(signalRef);
             }
             if (skip) {
                 HashSet<SignalEvent> propagatedCauses = new HashSet<>();
@@ -101,8 +103,8 @@ public class StgToDtdConverter {
                 }
             } else if (node instanceof SignalTransition) {
                 SignalTransition transition = (SignalTransition) node;
-                String signalName = transition.getSignalName();
-                VisualSignal signal = signalMap.get(signalName);
+                String signalRef = stg.getSignalReference(transition);
+                VisualSignal signal = signalMap.get(signalRef);
                 Direction direction = getDirection(transition.getDirection());
                 SignalEvent curEvent = dtd.appendSignalEvent(signal, direction);
                 result.put(curEvent, transition);

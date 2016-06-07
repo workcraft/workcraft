@@ -1,7 +1,5 @@
 package org.workcraft.plugins.stg;
 
-import java.util.Collection;
-
 import org.workcraft.dom.Node;
 import org.workcraft.dom.references.UniqueNameManager;
 import org.workcraft.exceptions.ArgumentException;
@@ -23,14 +21,6 @@ public class StgNameManager extends UniqueNameManager {
 
     public void setInstanceNumber(Node node, int number) {
         instancedNameManager.assign(node, number);
-    }
-
-    public Collection<SignalTransition> getSignalTransitions(String signalName) {
-        return signalTransitions.get(signalName);
-    }
-
-    public Collection<DummyTransition> getDummyTransitions(String name) {
-        return dummyTransitions.get(name);
     }
 
     private void renameSignalTransition(SignalTransition t, String signalName) {
@@ -59,7 +49,7 @@ public class StgNameManager extends UniqueNameManager {
         } else {
             throw new ArgumentException("Name '" + name + "' is not a valid signal transition label.");
         }
-        if (isUnusedName(signalName) || !getSignalTransitions(signalName).isEmpty()) {
+        if (isUnusedName(signalName) || !signalTransitions.get(signalName).isEmpty()) {
             instancedNameManager.assign(st, Pair.of(signalName + direction, instance), forceInstance);
             st.setDirection(direction);
             renameSignalTransition(st, signalName);
@@ -72,7 +62,7 @@ public class StgNameManager extends UniqueNameManager {
         final Pair<String, Integer> r = LabelParser.parseDummyTransition(name);
         if (r != null) {
             String dummyName = r.getFirst();
-            if (isUnusedName(dummyName) || !getDummyTransitions(dummyName).isEmpty()) {
+            if (isUnusedName(dummyName) || !dummyTransitions.get(dummyName).isEmpty()) {
                 instancedNameManager.assign(dt, r, forceInstance);
                 renameDummyTransition(dt, dummyName);
             } else {
@@ -167,18 +157,18 @@ public class StgNameManager extends UniqueNameManager {
     }
 
     private SignalTransition.Type getSignalType(String signalName) {
-        for (SignalTransition st : getSignalTransitions(signalName)) {
+        for (SignalTransition st : signalTransitions.get(signalName)) {
             return st.getSignalType();
         }
         return null;
     }
 
     private boolean isSignalName(String name) {
-        return !getSignalTransitions(name).isEmpty();
+        return !signalTransitions.get(name).isEmpty();
     }
 
     private boolean isDummyName(String name) {
-        return !getDummyTransitions(name).isEmpty();
+        return !dummyTransitions.get(name).isEmpty();
     }
 
     private boolean isGoodSignalName(String name, SignalTransition.Type type) {

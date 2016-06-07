@@ -11,7 +11,7 @@ import org.workcraft.observation.NodesAddedEvent;
 import org.workcraft.plugins.stg.StgReferenceManager;
 import org.workcraft.plugins.stg.SignalTransition;
 
-public class STGReferenceManagerTests {
+public class StgReferenceManagerTests {
 
     @Test
     public void testGenerateSignalName() {

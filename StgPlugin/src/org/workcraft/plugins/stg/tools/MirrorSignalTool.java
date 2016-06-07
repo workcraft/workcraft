@@ -6,10 +6,11 @@ import org.workcraft.NodeTransformer;
 import org.workcraft.TransformationTool;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
-import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Type;
-import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualSignalTransition;
+import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class MirrorSignalTool extends TransformationTool implements NodeTransformer {
@@ -51,19 +52,21 @@ public class MirrorSignalTool extends TransformationTool implements NodeTransfor
 
     @Override
     public void run(WorkspaceEntry we) {
-        final VisualStg model = (VisualStg) we.getModelEntry().getVisualModel();
-        HashSet<VisualSignalTransition> signalTransitions = new HashSet<>(model.getVisualSignalTransitions());
-        if (!model.getSelection().isEmpty()) {
-            signalTransitions.retainAll(model.getSelection());
+        final VisualStg visualStg = (VisualStg) we.getModelEntry().getVisualModel();
+        HashSet<VisualSignalTransition> signalTransitions = new HashSet<>(visualStg.getVisualSignalTransitions());
+        if (!visualStg.getSelection().isEmpty()) {
+            signalTransitions.retainAll(visualStg.getSelection());
         }
         if (!signalTransitions.isEmpty()) {
             we.saveMemento();
             HashSet<String> processedSignals = new HashSet<>();
-            for (VisualSignalTransition signalTransition: signalTransitions) {
-                String signalName = signalTransition.getSignalName();
-                if (!processedSignals.contains(signalName)) {
-                    transform(model, signalTransition);
-                    processedSignals.add(signalName);
+            Stg stg = (Stg) visualStg.getMathModel();
+            for (VisualSignalTransition visualTransition: signalTransitions) {
+                SignalTransition transition = visualTransition.getReferencedTransition();
+                String signalRef = stg.getSignalReference(transition);
+                if (!processedSignals.contains(signalRef)) {
+                    transform(visualStg, visualTransition);
+                    processedSignals.add(signalRef);
                 }
             }
         }
@@ -72,15 +75,12 @@ public class MirrorSignalTool extends TransformationTool implements NodeTransfor
     @Override
     public void transform(Model model, Node node) {
         if ((model instanceof VisualStg) && (node instanceof VisualSignalTransition)) {
-            VisualStg visualStg = (VisualStg) model;
-            Stg mathStg = (Stg) visualStg.getMathModel();
-            VisualSignalTransition signalTransition = (VisualSignalTransition) node;
-            String signalName = signalTransition.getSignalName();
+            SignalTransition signalTransition = ((VisualSignalTransition) node).getReferencedTransition();
             Type signalType = signalTransition.getSignalType();
             if (signalType == Type.INPUT) {
-                mathStg.setSignalType(signalName, Type.OUTPUT);
+                signalTransition.setSignalType(Type.OUTPUT);
             } else if (signalType == Type.OUTPUT) {
-                mathStg.setSignalType(signalName, Type.INPUT);
+                signalTransition.setSignalType(Type.INPUT);
             }
         }
     }

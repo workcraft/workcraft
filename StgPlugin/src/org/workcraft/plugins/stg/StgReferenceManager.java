@@ -1,9 +1,6 @@
 package org.workcraft.plugins.stg;
 
-import java.util.Collection;
-
 import org.workcraft.dom.Node;
-import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.serialisation.References;
@@ -57,13 +54,6 @@ public class StgReferenceManager extends HierarchicalUniqueNameReferenceManager 
     public void setInstanceNumber(Node node, int number) {
         StgNameManager mgr = getNameManager(node);
         mgr.setInstanceNumber(node, number);
-    }
-
-    public Collection<SignalTransition> getSignalTransitions(String signalReference) {
-        String parentReference = NamespaceHelper.getParentReference(signalReference);
-        Node parent = getNodeByReference(null, parentReference);
-        String signalName = NamespaceHelper.getReferenceName(signalReference);
-        return getNameManager(parent).getSignalTransitions(signalName);
     }
 
     public void setDefaultNameIfUnnamed(Node node) {

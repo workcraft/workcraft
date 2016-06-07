@@ -35,7 +35,7 @@ import org.workcraft.util.DataAccumulator;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class STGSerialisationTests {
+public class StgSerialisationTests {
 
     @Test
     public void simpleVisualSaveLoadWithImplicitArcs() throws Exception {

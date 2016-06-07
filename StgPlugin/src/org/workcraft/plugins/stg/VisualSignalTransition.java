@@ -27,7 +27,6 @@ import java.awt.event.KeyEvent;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
-import org.workcraft.dom.visual.Stylable;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.shared.CommonSignalSettings;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
@@ -68,7 +67,7 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
 
     @Override
     public Color getColor() {
-        switch (getType()) {
+        switch (getSignalType()) {
         case INPUT:    return CommonSignalSettings.getInputColor();
         case OUTPUT:   return CommonSignalSettings.getOutputColor();
         case INTERNAL: return CommonSignalSettings.getInternalColor();
@@ -82,28 +81,8 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
     }
 
     @NoAutoSerialisation
-    public void setType(Type type) {
-        getReferencedTransition().setSignalType(type);
-    }
-
-    @NoAutoSerialisation
-    public Type getType() {
+    public Type getSignalType() {
         return getReferencedTransition().getSignalType();
-    }
-
-    @NoAutoSerialisation
-    public void setDirection(Direction direction) {
-        getReferencedTransition().setDirection(direction);
-    }
-
-    @NoAutoSerialisation
-    public Direction getDirection() {
-        return getReferencedTransition().getDirection();
-    }
-
-    @NoAutoSerialisation
-    public void setSignalName(String name) {
-        getReferencedTransition().setSignalName(name);
     }
 
     @NoAutoSerialisation
@@ -112,8 +91,8 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
     }
 
     @NoAutoSerialisation
-    public Type getSignalType() {
-        return getReferencedTransition().getSignalType();
+    public Direction getDirection() {
+        return getReferencedTransition().getDirection();
     }
 
 // FIXME: type, direction and name of the signal cannot be copied as it breaks template functionality
@@ -126,55 +105,5 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
 //            setDirection(srcSignalTransition.getDirection());
 //        }
 //    }
-
-    @Override
-    public void mixStyle(Stylable... srcs) {
-        super.mixStyle(srcs);
-        // Type priority: OUTPUT > INPUT > INTERNAL
-        boolean foundOutput = false;
-        boolean foundInput = false;
-        boolean foundInternal = false;
-        // Direction priority: TOGGLE > PLUS == MINUS
-        boolean foundToggle = false;
-        boolean foundPlus = false;
-        boolean foundMinus = false;
-        for (Stylable src: srcs) {
-            if (src instanceof VisualSignalTransition) {
-                VisualSignalTransition srcSignalTransition = (VisualSignalTransition) src;
-                if (srcSignalTransition.getType() == Type.OUTPUT) {
-                    foundOutput = true;
-                }
-                if (srcSignalTransition.getType() == Type.INPUT) {
-                    foundInput = true;
-                }
-                if (srcSignalTransition.getType() == Type.INTERNAL) {
-                    foundInternal = true;
-                }
-                if (srcSignalTransition.getDirection() == Direction.TOGGLE) {
-                    foundToggle = true;
-                }
-                if (srcSignalTransition.getDirection() == Direction.PLUS) {
-                    foundPlus = true;
-                }
-                if (srcSignalTransition.getDirection() == Direction.MINUS) {
-                    foundMinus = true;
-                }
-            }
-        }
-        if (foundOutput) {
-            setType(Type.OUTPUT);
-        } else if (foundInput) {
-            setType(Type.INPUT);
-        } else if (foundInternal) {
-            setType(Type.INTERNAL);
-        }
-        if (foundToggle || (foundPlus && foundMinus)) {
-            setDirection(Direction.TOGGLE);
-        } else if (foundPlus) {
-            setDirection(Direction.PLUS);
-        } else if (foundMinus) {
-            setDirection(Direction.MINUS);
-        }
-    }
 
 }
