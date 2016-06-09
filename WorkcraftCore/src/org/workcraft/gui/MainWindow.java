@@ -815,6 +815,7 @@ public class MainWindow extends JFrame {
                 if (!title.isEmpty()) {
                     mathModel.setTitle(title);
                 }
+                WorkspaceEntry we = null;
                 if (dialog.createVisualSelected()) {
                     VisualModelDescriptor v = info.getVisualModelDescriptor();
                     if (v == null) {
@@ -823,10 +824,13 @@ public class MainWindow extends JFrame {
                     }
                     VisualModel visualModel = v.create(mathModel);
                     ModelEntry me = new ModelEntry(info, visualModel);
-                    framework.getWorkspace().add(path, title, me, false, dialog.openInEditorSelected());
+                    we = framework.getWorkspace().add(path, title, me, false, dialog.openInEditorSelected());
                 } else {
                     ModelEntry me = new ModelEntry(info, mathModel);
-                    framework.getWorkspace().add(path, title, me, false, false);
+                    we = framework.getWorkspace().add(path, title, me, false, false);
+                }
+                if (we != null) {
+                    we.setChanged(false);
                 }
             } catch (VisualModelInstantiationException e) {
                 e.printStackTrace();
