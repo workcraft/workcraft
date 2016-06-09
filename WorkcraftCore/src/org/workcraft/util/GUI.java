@@ -179,7 +179,7 @@ public class GUI {
     }
 
     public static ImageIcon createIconFromSVG(String path) {
-        int iconSize = SizeHelper.getIconSize();
+        int iconSize = SizeHelper.getToolIconSize();
         return createIconFromSVG(path, iconSize, iconSize);
     }
 
@@ -191,7 +191,7 @@ public class GUI {
         JButton result = new JButton(icon);
         result.setToolTipText(toolTip);
         result.setMargin(new Insets(0, 0, 0, 0));
-        int iconSize = SizeHelper.getIconSize();
+        int iconSize = SizeHelper.getToolIconSize();
         Insets insets = result.getInsets();
         int minSize = iconSize + Math.max(insets.left + insets.right, insets.top + insets.bottom);
         result.setPreferredSize(new Dimension(minSize, minSize));

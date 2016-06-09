@@ -168,7 +168,6 @@ public class CreateWorkDialog extends JDialog {
         optionsPane.setPreferredSize(new Dimension(250, 0));
 
         chkVisual = new JCheckBox("create visual model");
-
         chkVisual.setSelected(true);
 
         chkOpen = new JCheckBox("open in editor");

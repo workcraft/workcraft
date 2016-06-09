@@ -137,7 +137,7 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
         button.setMargin(new Insets(0, 0, 0, 0));
 
         Insets insets = button.getInsets();
-        int iconSize = SizeHelper.getIconSize();
+        int iconSize = SizeHelper.getToolIconSize();
         int minSize = iconSize + Math.max(insets.left + insets.right, insets.top + insets.bottom);
 
         Icon icon = tool.getIcon();
