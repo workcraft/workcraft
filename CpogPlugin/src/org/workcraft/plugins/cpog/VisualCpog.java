@@ -134,9 +134,6 @@ public class VisualCpog extends AbstractVisualModel {
 
     @Override
     public void validateConnection(Node first, Node second) throws InvalidConnectionException {
-        if (first == second) {
-            throw new InvalidConnectionException("Self loops are not allowed.");
-        }
         if (first instanceof VisualVariable && !getPreset(first).isEmpty()) {
             throw new InvalidConnectionException("Variables do not support multiple connections.");
         }
