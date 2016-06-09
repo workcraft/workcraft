@@ -174,9 +174,17 @@ public class SilverOceanTheme extends OceanTheme {
     public void addCustomEntriesToTable(UIDefaults table) {
         super.addCustomEntriesToTable(table);
         List<Serializable> buttonGradient = Arrays.asList(1.0, 0.0, getSecondary3(), getSecondary2(), getSecondary2());
-        Icon minimizeIcon = UIManager.getIcon("InternalFrame.minimizeIcon");
-        Icon maximizeIcon = UIManager.getIcon("InternalFrame.maximizeIcon");
-        Icon closeIcon = UIManager.getIcon("InternalFrame.closeIcon");
+
+        Icon internalFrameIcon = UIManager.getIcon("InternalFrame.icon");
+        Icon internalFrameMinimizeIcon = UIManager.getIcon("InternalFrame.minimizeIcon");
+        Icon internalFrameMaximizeIcon = UIManager.getIcon("InternalFrame.maximizeIcon");
+        Icon internalFrameCloseIcon = UIManager.getIcon("InternalFrame.closeIcon");
+
+        Icon fileViewComputerIcon = UIManager.getIcon("FileView.computerIcon");
+        Icon fileViewDirectoryIcon = UIManager.getIcon("FileView.directoryIcon");
+        Icon fileViewFileIcon = UIManager.getIcon("FileView.fileIcon");
+        Icon fileViewFloppyDriveIcon = UIManager.getIcon("FileView.floppyDriveIcon");
+        Icon fileViewHardDriveIcon = UIManager.getIcon("FileView.hardDriveIcon");
 
         Object[] uiDefaults = {
                 "Button.gradient", buttonGradient,
@@ -198,9 +206,17 @@ public class SilverOceanTheme extends OceanTheme {
                 "RadioButton.icon", new RadioButtonIcon(),
 
                 "ScrollBar.width", SizeHelper.getScrollbarWidth(),
-                "InternalFrame.minimizeIcon", SizeHelper.scaleFrameIcon(minimizeIcon),
-                "InternalFrame.maximizeIcon", SizeHelper.scaleFrameIcon(maximizeIcon),
-                "InternalFrame.closeIcon", SizeHelper.scaleFrameIcon(closeIcon),
+
+                "InternalFrame.icon", SizeHelper.scaleFrameIcon(internalFrameIcon),
+                "InternalFrame.minimizeIcon", SizeHelper.scaleFrameIcon(internalFrameMinimizeIcon),
+                "InternalFrame.maximizeIcon", SizeHelper.scaleFrameIcon(internalFrameMaximizeIcon),
+                "InternalFrame.closeIcon", SizeHelper.scaleFrameIcon(internalFrameCloseIcon),
+
+                "FileView.computerIcon", SizeHelper.scaleFrameIcon(fileViewComputerIcon),
+                "FileView.directoryIcon", SizeHelper.scaleFrameIcon(fileViewDirectoryIcon),
+                "FileView.fileIcon", SizeHelper.scaleFrameIcon(fileViewFileIcon),
+                "FileView.floppyDriveIcon", SizeHelper.scaleFrameIcon(fileViewFloppyDriveIcon),
+                "FileView.hardDriveIcon", SizeHelper.scaleFrameIcon(fileViewHardDriveIcon),
         };
         table.putDefaults(uiDefaults);
     }
