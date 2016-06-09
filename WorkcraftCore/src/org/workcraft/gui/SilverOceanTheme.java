@@ -15,6 +15,7 @@ import javax.swing.AbstractButton;
 import javax.swing.ButtonModel;
 import javax.swing.Icon;
 import javax.swing.UIDefaults;
+import javax.swing.UIManager;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.plaf.metal.MetalLookAndFeel;
@@ -48,7 +49,7 @@ public class SilverOceanTheme extends OceanTheme {
                         RenderingHints.VALUE_ANTIALIAS_ON);
                 g2.setRenderingHints(rh);
                 float s = SizeHelper.getMinimalStrockWidth();
-                g2.setStroke(new BasicStroke(1.0f));
+                g2.setStroke(new BasicStroke(s));
             }
             g.setColor(Color.WHITE);
             g.fillRect(x, y, w, h);
@@ -173,6 +174,9 @@ public class SilverOceanTheme extends OceanTheme {
     public void addCustomEntriesToTable(UIDefaults table) {
         super.addCustomEntriesToTable(table);
         List<Serializable> buttonGradient = Arrays.asList(1.0, 0.0, getSecondary3(), getSecondary2(), getSecondary2());
+        Icon minimizeIcon = UIManager.getIcon("InternalFrame.minimizeIcon");
+        Icon maximizeIcon = UIManager.getIcon("InternalFrame.maximizeIcon");
+        Icon closeIcon = UIManager.getIcon("InternalFrame.closeIcon");
 
         Object[] uiDefaults = {
                 "Button.gradient", buttonGradient,
@@ -194,6 +198,9 @@ public class SilverOceanTheme extends OceanTheme {
                 "RadioButton.icon", new RadioButtonIcon(),
 
                 "ScrollBar.width", SizeHelper.getScrollbarWidth(),
+                "InternalFrame.minimizeIcon", SizeHelper.scaleFrameIcon(minimizeIcon),
+                "InternalFrame.maximizeIcon", SizeHelper.scaleFrameIcon(maximizeIcon),
+                "InternalFrame.closeIcon", SizeHelper.scaleFrameIcon(closeIcon),
         };
         table.putDefaults(uiDefaults);
     }

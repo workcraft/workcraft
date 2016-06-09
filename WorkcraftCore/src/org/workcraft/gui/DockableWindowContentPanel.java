@@ -121,33 +121,33 @@ public class DockableWindowContentPanel extends JPanel {
                 add(buttonPanel, BorderLayout.EAST);
             }
 
-            int icons = 0;
+            int iconCount = 0;
             if ((options & MINIMIZE_BUTTON) != 0) {
                 btnMin = createHeaderButton(UIManager.getIcon("InternalFrame.minimizeIcon"),
                         new ViewAction(id, ViewAction.MINIMIZE_ACTION), mainWindow.getDefaultActionListener());
                 btnMin.setToolTipText("Toggle minimized");
                 buttonPanel.add(btnMin);
-                icons++;
+                iconCount++;
             }
 
             if ((options & MAXIMIZE_BUTTON) != 0) {
                 btnMax = createHeaderButton(UIManager.getIcon("InternalFrame.maximizeIcon"),
                         new ViewAction(id, ViewAction.MAXIMIZE_ACTION), mainWindow.getDefaultActionListener());
                 buttonPanel.add(btnMax);
-                icons++;
+                iconCount++;
             }
 
             if ((options & CLOSE_BUTTON) != 0) {
-                //System.out.println(UIManager.getColor("InternalFrame.activeTitleGradient"));
                 btnClose = createHeaderButton(UIManager.getIcon("InternalFrame.closeIcon"),
                         new ViewAction(id, ViewAction.CLOSE_ACTION), mainWindow.getDefaultActionListener());
                 btnClose.setToolTipText("Close window");
                 buttonPanel.add(btnClose);
-                icons++;
+                iconCount++;
             }
 
-            if (icons != 0) {
-                buttonPanel.setPreferredSize(new Dimension((UIManager.getIcon("InternalFrame.closeIcon").getIconWidth() + 4) * icons, UIManager.getIcon("InternalFrame.closeIcon").getIconHeight() + 4));
+            if (iconCount != 0) {
+                Icon icon = UIManager.getIcon("InternalFrame.closeIcon");
+                buttonPanel.setPreferredSize(new Dimension((icon.getIconWidth() + 4) * iconCount, icon.getIconHeight() + 4));
             }
 
             titleLabel = new JLabel(title);
@@ -272,4 +272,5 @@ public class DockableWindowContentPanel extends JPanel {
     public int getOptions() {
         return options;
     }
+
 }
