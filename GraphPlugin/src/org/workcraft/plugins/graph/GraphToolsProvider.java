@@ -19,7 +19,7 @@ public class GraphToolsProvider implements CustomToolsProvider {
 
         result.add(new SelectionTool(true, false, true, true));
         result.add(new CommentGeneratorTool());
-        result.add(new ConnectionTool());
+        result.add(new ConnectionTool(false, true, true));
         result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Vertex.class)));
         result.add(new GraphSimulationTool());
         return result;

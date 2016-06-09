@@ -59,10 +59,6 @@ public class VisualGraph extends AbstractVisualModel {
 
     @Override
     public void validateConnection(Node first, Node second) throws InvalidConnectionException {
-        if (first == second) {
-            throw new InvalidConnectionException("Self loops are not allowed.");
-        }
-
         if ((first instanceof VisualVertex) && (second instanceof VisualVertex)) return;
 
         throw new InvalidConnectionException("Invalid connection.");

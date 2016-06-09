@@ -103,7 +103,7 @@ public class VisualDtd extends VisualGraph {
     @Override
     public void validateConnection(Node first, Node second) throws InvalidConnectionException {
         if (first == second) {
-            throw new InvalidConnectionException("Self loops are not allowed.");
+            throw new InvalidConnectionException("Self-loops are not allowed.");
         }
 
         if (getConnection(first, second) != null) {
