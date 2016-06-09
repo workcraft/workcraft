@@ -28,12 +28,14 @@ public class SilverOceanTheme extends OceanTheme {
     private final class CheckBoxIcon implements Icon {
         @Override
         public int getIconWidth() {
-            return SizeHelper.getCheckBoxIconSize();
+            // For symmetry the icon is better to have odd width
+            return (SizeHelper.getCheckBoxIconSize() / 2) * 2 + 1;
         }
 
         @Override
         public int getIconHeight() {
-            return SizeHelper.getCheckBoxIconSize();
+            // For symmetry the icon is better to have odd height
+            return (SizeHelper.getCheckBoxIconSize() / 2) * 2 + 1;
         }
 
         @Override
@@ -67,12 +69,16 @@ public class SilverOceanTheme extends OceanTheme {
     }
 
     private final class RadioButtonIcon implements Icon {
+        @Override
         public int getIconWidth() {
-            return SizeHelper.getRadioBurronIconSize();
+            // For symmetry the icon is better to have odd width
+            return (SizeHelper.getRadioBurronIconSize() / 2) * 2 + 1;
         }
 
+        @Override
         public int getIconHeight() {
-            return SizeHelper.getRadioBurronIconSize();
+            // For symmetry the icon is better to have odd height
+            return (SizeHelper.getRadioBurronIconSize() / 2) * 2 + 1;
         }
 
         @Override
@@ -186,6 +192,12 @@ public class SilverOceanTheme extends OceanTheme {
         Icon fileViewFloppyDriveIcon = UIManager.getIcon("FileView.floppyDriveIcon");
         Icon fileViewHardDriveIcon = UIManager.getIcon("FileView.hardDriveIcon");
 
+        Icon fileChooserDetailsViewIcon = UIManager.getIcon("FileChooser.detailsViewIcon");
+        Icon fileChooserHomeFolderIcon = UIManager.getIcon("FileChooser.homeFolderIcon");
+        Icon fileChooserListViewIcon = UIManager.getIcon("FileChooser.listViewIcon");
+        Icon fileChooserNewFolderIcon = UIManager.getIcon("FileChooser.newFolderIcon");
+        Icon fileChooserUpFolderIcon = UIManager.getIcon("FileChooser.upFolderIcon");
+
         Object[] uiDefaults = {
                 "Button.gradient", buttonGradient,
                 "CheckBox.gradient", buttonGradient,
@@ -212,11 +224,17 @@ public class SilverOceanTheme extends OceanTheme {
                 "InternalFrame.maximizeIcon", SizeHelper.scaleFrameIcon(internalFrameMaximizeIcon),
                 "InternalFrame.closeIcon", SizeHelper.scaleFrameIcon(internalFrameCloseIcon),
 
-                "FileView.computerIcon", SizeHelper.scaleFrameIcon(fileViewComputerIcon),
-                "FileView.directoryIcon", SizeHelper.scaleFrameIcon(fileViewDirectoryIcon),
-                "FileView.fileIcon", SizeHelper.scaleFrameIcon(fileViewFileIcon),
-                "FileView.floppyDriveIcon", SizeHelper.scaleFrameIcon(fileViewFloppyDriveIcon),
-                "FileView.hardDriveIcon", SizeHelper.scaleFrameIcon(fileViewHardDriveIcon),
+                "FileView.computerIcon", SizeHelper.scaleFileViewIcon(fileViewComputerIcon),
+                "FileView.directoryIcon", SizeHelper.scaleFileViewIcon(fileViewDirectoryIcon),
+                "FileView.fileIcon", SizeHelper.scaleFileViewIcon(fileViewFileIcon),
+                "FileView.floppyDriveIcon", SizeHelper.scaleFileViewIcon(fileViewFloppyDriveIcon),
+                "FileView.hardDriveIcon", SizeHelper.scaleFileViewIcon(fileViewHardDriveIcon),
+
+                "FileChooser.detailsViewIcon", SizeHelper.scaleFileChooserIcon(fileChooserDetailsViewIcon),
+                "FileChooser.homeFolderIcon", SizeHelper.scaleFileChooserIcon(fileChooserHomeFolderIcon),
+                "FileChooser.listViewIcon", SizeHelper.scaleFileChooserIcon(fileChooserListViewIcon),
+                "FileChooser.newFolderIcon", SizeHelper.scaleFileChooserIcon(fileChooserNewFolderIcon),
+                "FileChooser.upFolderIcon", SizeHelper.scaleFileChooserIcon(fileChooserUpFolderIcon),
         };
         table.putDefaults(uiDefaults);
     }
