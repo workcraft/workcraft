@@ -18,6 +18,7 @@ import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.sat.CleverCnfGenerator;
 import org.workcraft.formula.sat.DefaultSolver;
 import org.workcraft.formula.sat.Optimiser;
+import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.cpog.CpogSettings;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.Variable;
@@ -215,7 +216,7 @@ public class SatBasedSolver {
                 if (pr > 0) {
                     we.cancelMemento();
                     FileUtils.deleteOnExitRecursively(directory);
-                    JOptionPane.showMessageDialog(null, "Exhaustive search option is not able to solve the CPOG with conditions, try other options.",
+                    JOptionPane.showMessageDialog(null, "SAT-based encoding search cannot handle POs with conditions, try other options.",
                             "Encoding result", JOptionPane.ERROR_MESSAGE);
                     return;
                 }
@@ -374,7 +375,7 @@ public class SatBasedSolver {
         scencoCommand = ToolUtils.getAbsoluteCommandPath(CpogSettings.getScencoCommand());
         espressoCommand = ToolUtils.getAbsoluteCommandPath(CpogSettings.getEspressoCommand());
         abcFolder = CpogSettings.getAbcFolder();
-        gatesLibrary = CpogSettings.getGatesLibrary();
+        gatesLibrary = CircuitSettings.getGateLibrary();
         espressoFlag = "-e";
         v = 0;
         a = 0;

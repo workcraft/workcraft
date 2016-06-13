@@ -17,19 +17,16 @@ public class CpogSettings implements Settings {
     private static final String keyScencoCommand = prefix + ".scencoCommand";
     private static final String keyEspressoCommand = prefix + ".espressoCommand";
     private static final String keyAbcFolder = prefix + ".abcFolder";
-    private static final String keyGatesLibrary = prefix + ".gatesLibrary";
     private static final String keyPGMinerCommand = prefix + ".PGMinerCommand";
 
     private static final String defaultScencoCommand = DesktopApi.getOs().isWindows() ? "tools\\ScEnco\\scenco.exe" : "tools/ScEnco/scenco";
     private static final String defaultEspressoCommand = DesktopApi.getOs().isWindows() ? "tools\\Espresso\\espresso.exe" : "tools/Espresso/espresso";
     private static final String defaultAbcFolder = "abc/";
-    private static final String defaultGatesLibrary = "90nm.genlib";
     private static final String defaultPgminerCommand = DesktopApi.getOs().isWindows() ? "tools\\PGMiner\\pgminer.exe" : "tools/PGMiner/pgminer";
 
     private static String scencoCommand = defaultScencoCommand;
     private static String espressoCommand = defaultEspressoCommand;
     private static String abcFolder = defaultAbcFolder;
-    private static String gatesLibrary = defaultGatesLibrary;
     private static String pgminerCommand = defaultPgminerCommand;
 
     public CpogSettings() {
@@ -64,16 +61,6 @@ public class CpogSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<CpogSettings, String>(
-                this, "Gate library (genlib format) inside abc folder", String.class, true, false, false) {
-            protected void setter(CpogSettings object, String value) {
-                setGatesLibrary(value);
-            }
-            protected String getter(CpogSettings object) {
-                return getGatesLibrary();
-            }
-        });
-
-        properties.add(new PropertyDeclaration<CpogSettings, String>(
                 this, "PG miner command", String.class, true, false, false) {
             protected void setter(CpogSettings object, String value) {
                 setPgminerCommand(value);
@@ -89,7 +76,6 @@ public class CpogSettings implements Settings {
         setScencoCommand(config.getString(keyScencoCommand, defaultScencoCommand));
         setEspressoCommand(config.getString(keyEspressoCommand, defaultEspressoCommand));
         setAbcFolder(config.getString(keyAbcFolder, defaultAbcFolder));
-        setGatesLibrary(config.getString(keyGatesLibrary, defaultGatesLibrary));
         setPgminerCommand(config.getString(keyPGMinerCommand, defaultPgminerCommand));
     }
 
@@ -98,7 +84,6 @@ public class CpogSettings implements Settings {
         config.set(keyScencoCommand, getScencoCommand());
         config.set(keyEspressoCommand, getEspressoCommand());
         config.set(keyAbcFolder, getAbcFolder());
-        config.set(keyGatesLibrary, getGatesLibrary());
         config.set(keyPGMinerCommand, getPgminerCommand());
     }
 
@@ -139,14 +124,6 @@ public class CpogSettings implements Settings {
 
     public static void setAbcFolder(String value) {
         abcFolder = value;
-    }
-
-    public static String getGatesLibrary() {
-        return gatesLibrary;
-    }
-
-    public static void setGatesLibrary(String value) {
-        gatesLibrary = value;
     }
 
     public static void setPgminerCommand(String value) {
