@@ -66,7 +66,7 @@ public class FileCellEditor extends AbstractCellEditor implements TableCellEdito
                     fcConfigured = true;
                 } else {
                     File dir = file.getParentFile();
-                    if (dir.exists()) {
+                    if ((dir != null) && dir.exists()) {
                         fc.setCurrentDirectory(dir);
                         fcConfigured = true;
                     }
