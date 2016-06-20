@@ -21,6 +21,7 @@
 
 package org.workcraft.serialisation.xml;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.w3c.dom.Element;
@@ -66,7 +67,9 @@ public class XMLSerialisationManager implements SerialiserFactory, NodeSerialise
         nodeSerialiser.serialise(element, object, state.internalReferences, state.externalReferences);
 
         if (object instanceof Container) {
-            for (Node child : ((Container) object).getChildren()) {
+            Container container = (Container) object;
+            ArrayList<Node> children = new ArrayList<>(container.getChildren());
+            for (Node child : children) {
                 Element childElement = XmlUtil.createChildElement("node", element);
                 serialise(childElement, child);
             }

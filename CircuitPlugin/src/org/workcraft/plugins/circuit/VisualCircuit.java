@@ -316,26 +316,27 @@ public class VisualCircuit extends AbstractVisualModel {
 
     @NoAutoSerialisation
     public void setEnvironmentFile(File value) {
-        boolean envChanged = false;
-        getWorkspaceEntry().captureMemento();
-
-        for (Environment env: getEnvironments()) {
-            remove(env);
-            envChanged = true;
+        Collection<Environment> environments = getEnvironments();
+        File file = null;
+        if (environments.size() == 1) {
+            Environment env = environments.iterator().next();
+            file = env.getFile();
         }
-
-        if (value != null) {
-            Environment env = new Environment();
-            env.setFile(value);
-            File base = getWorkspaceEntry().getFile().getParentFile();
-            env.setBase(base);
-            add(env);
-            envChanged = true;
-        }
-
+        boolean envChanged = ((file == null) && (value != null)) || ((file != null) && !file.equals(value));
         if (envChanged) {
-            getWorkspaceEntry().setChanged(true);
-            getWorkspaceEntry().saveMemento();
+            WorkspaceEntry we = getWorkspaceEntry();
+            we.saveMemento();
+            we.setChanged(true);
+            for (Environment env: environments) {
+                remove(env);
+            }
+            if (value != null) {
+                Environment env = new Environment();
+                env.setFile(value);
+                File base = we.getFile().getParentFile();
+                env.setBase(base);
+                add(env);
+            }
         }
     }
 

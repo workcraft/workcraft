@@ -272,7 +272,22 @@ public abstract class VisualComponent extends VisualTransformableNode implements
     }
 
     public Alignment getLabelAlignment() {
-        return Alignment.LEFT;
+        switch (getLabelPositioning()) {
+        case TOP_LEFT:
+        case LEFT:
+        case BOTTOM_LEFT:
+            return Alignment.LEFT;
+        case TOP:
+        case CENTER:
+        case BOTTOM:
+            return Alignment.CENTER;
+        case TOP_RIGHT:
+        case RIGHT:
+        case BOTTOM_RIGHT:
+            return Alignment.RIGHT;
+        default:
+            return Alignment.LEFT;
+        }
     }
 
     public void cacheLabelRenderedText(DrawRequest r) {
