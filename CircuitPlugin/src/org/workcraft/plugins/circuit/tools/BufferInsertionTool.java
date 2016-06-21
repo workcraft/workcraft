@@ -60,7 +60,7 @@ public class BufferInsertionTool extends TransformationTool implements NodeTrans
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.canHas(we, VisualCircuit.class);
+        return WorkspaceUtils.isApplicable(we, VisualCircuit.class);
     }
 
     @Override

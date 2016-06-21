@@ -63,7 +63,7 @@ public class ComponentContractionTool extends TransformationTool implements Node
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.canHas(we, VisualCircuit.class);
+        return WorkspaceUtils.isApplicable(we, VisualCircuit.class);
     }
 
     @Override

@@ -52,7 +52,7 @@ public class StraightenConnectionsTool extends TransformationTool implements Nod
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.canHas(we, VisualModel.class);
+        return WorkspaceUtils.isApplicable(we, VisualModel.class);
     }
 
     @Override

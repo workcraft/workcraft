@@ -22,6 +22,7 @@ import org.workcraft.plugins.circuit.tools.CheckCircuitHazardTool;
 import org.workcraft.plugins.circuit.tools.CheckCircuitTool;
 import org.workcraft.plugins.circuit.tools.CircuitLayoutTool;
 import org.workcraft.plugins.circuit.tools.ComponentContractionTool;
+import org.workcraft.plugins.circuit.tools.CustomCheckCircuitTool;
 import org.workcraft.plugins.circuit.tools.JointContractionTool;
 import org.workcraft.plugins.circuit.tools.JointSplitTool;
 import org.workcraft.plugins.circuit.tools.StgGeneratorTool;
@@ -51,6 +52,7 @@ public class CircuitModule implements Module {
         pm.registerClass(Tool.class, CheckCircuitDeadlockTool.class);
         pm.registerClass(Tool.class, CheckCircuitHazardTool.class);
         pm.registerClass(Tool.class, CheckCircuitTool.class);
+        pm.registerClass(Tool.class, CustomCheckCircuitTool.class);
 
         pm.registerClass(Tool.class, JointContractionTool.class);
         pm.registerClass(Tool.class, JointSplitTool.class);

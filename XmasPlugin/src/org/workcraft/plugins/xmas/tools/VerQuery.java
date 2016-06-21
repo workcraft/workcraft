@@ -413,7 +413,7 @@ public class VerQuery extends AbstractTool implements Tool {
     }
 
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.canHas(we, Xmas.class);
+        return WorkspaceUtils.isApplicable(we, Xmas.class);
     }
 
     GraphEditorPanel editor1;

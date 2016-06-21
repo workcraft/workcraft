@@ -16,7 +16,7 @@ public class StgToFstConverterTool extends ConversionTool {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.canHas(we, Stg.class);
+        return WorkspaceUtils.isApplicable(we, Stg.class);
     }
 
     @Override

@@ -16,7 +16,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class StructurePropertyChecker implements Tool {
 
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.canHas(we, SON.class);
+        return WorkspaceUtils.isApplicable(we, SON.class);
     }
 
     public String getSection() {

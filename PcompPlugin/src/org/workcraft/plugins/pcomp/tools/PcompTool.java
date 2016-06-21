@@ -32,7 +32,7 @@ public class PcompTool implements Tool {
     }
 
     public final boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.canHas(we, StgModel.class);
+        return WorkspaceUtils.isApplicable(we, StgModel.class);
     }
 
     @Override

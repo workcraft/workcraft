@@ -59,7 +59,7 @@ public class BubbleToggleTool extends TransformationTool implements NodeTransfor
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.canHas(we, VisualCircuit.class);
+        return WorkspaceUtils.isApplicable(we, VisualCircuit.class);
     }
 
     @Override

@@ -41,7 +41,7 @@ public class CopyLablesTool extends TransformationTool {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.canHas(we, VisualModel.class);
+        return WorkspaceUtils.isApplicable(we, VisualModel.class);
     }
 
     @Override

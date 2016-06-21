@@ -12,7 +12,7 @@ public class PetriToFsmConverterTool extends ConversionTool {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.canHas(we, PetriNet.class);
+        return WorkspaceUtils.isApplicable(we, PetriNet.class);
     }
 
     @Override

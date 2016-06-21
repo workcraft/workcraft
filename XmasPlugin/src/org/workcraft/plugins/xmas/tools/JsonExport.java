@@ -46,7 +46,7 @@ public class JsonExport implements Tool {
     }
 
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.canHas(we, Xmas.class);
+        return WorkspaceUtils.isApplicable(we, Xmas.class);
     }
 
     //public Collection<String> srcNodes;

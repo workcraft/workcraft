@@ -39,7 +39,7 @@ public class TestTool extends AbstractTool implements Tool {
     private String message = "";
 
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.canHas(we, SON.class);
+        return WorkspaceUtils.isApplicable(we, SON.class);
 
     }
 

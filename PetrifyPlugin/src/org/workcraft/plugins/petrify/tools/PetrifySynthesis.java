@@ -12,7 +12,7 @@ public abstract class PetrifySynthesis extends SynthesisTool {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.canHas(we, StgModel.class);
+        return WorkspaceUtils.isApplicable(we, StgModel.class);
     }
 
     @Override

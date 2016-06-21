@@ -17,7 +17,7 @@ public class TimeConsistencyChecker implements Tool {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.canHas(we, SON.class);
+        return WorkspaceUtils.isApplicable(we, SON.class);
     }
 
     @Override
