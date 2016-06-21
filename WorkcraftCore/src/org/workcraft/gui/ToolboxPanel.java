@@ -171,6 +171,11 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
     @SuppressWarnings("unchecked")
     public <T extends GraphEditorTool> T getToolInstance(Class<T> cls) {
         for (GraphEditorTool tool : tools) {
+            if (cls == tool.getClass()) {
+                return (T) tool;
+            }
+        }
+        for (GraphEditorTool tool : tools) {
             if (cls.isInstance(tool)) {
                 return (T) tool;
             }
