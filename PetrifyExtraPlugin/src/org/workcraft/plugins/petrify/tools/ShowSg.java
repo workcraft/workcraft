@@ -25,7 +25,7 @@ public class ShowSg implements Tool {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.canHas(we, PetriNetModel.class);
+        return WorkspaceUtils.isApplicable(we, PetriNetModel.class);
     }
 
     @Override

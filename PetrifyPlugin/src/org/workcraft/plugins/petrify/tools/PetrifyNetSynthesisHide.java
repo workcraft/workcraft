@@ -25,7 +25,7 @@ public class PetrifyNetSynthesisHide extends PetrifyNetSynthesis {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.canHas(we, PetriNetModel.class);
+        return WorkspaceUtils.isApplicable(we, PetriNetModel.class);
     }
 
     @Override
@@ -62,7 +62,7 @@ public class PetrifyNetSynthesisHide extends PetrifyNetSynthesis {
         }
         final TransformationTask task = new TransformationTask(we, "Net synthesis", args.toArray(new String[args.size()]));
         final Framework framework = Framework.getInstance();
-        boolean hasSignals = WorkspaceUtils.canHas(we, StgModel.class);
+        boolean hasSignals = WorkspaceUtils.isApplicable(we, StgModel.class);
         TransformationResultHandler monitor = new TransformationResultHandler(we, hasSignals);
         framework.getTaskManager().queue(task, "Petrify net synthesis", monitor);
     }

@@ -23,8 +23,8 @@ import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.punf.PunfUtilitySettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
-import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -68,7 +68,6 @@ public class CheckCircuitTask extends MpsatChainTask {
         File directory = FileUtils.createTempDirectory(prefix);
         try {
             // Common variables
-            monitor.progressUpdate(0.05);
             VisualCircuit visualCircuit = (VisualCircuit) we.getModelEntry().getVisualModel();
             File envFile = visualCircuit.getEnvironmentFile();
             boolean hasEnvironment = (envFile != null) && envFile.exists();
@@ -209,7 +208,6 @@ public class CheckCircuitTask extends MpsatChainTask {
                         return new Result<MpsatChainResult>(Outcome.FAILED,
                                 new MpsatChainResult(devExportResult, pcompModResult, punfModResult, null, toolchainPreparationSettings));
                     }
-                    monitor.progressUpdate(0.40);
                 }
             }
             monitor.progressUpdate(0.40);

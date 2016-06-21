@@ -17,7 +17,7 @@ public class PetrifyUntoggle extends ConversionTool {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.canHas(we, StgModel.class);
+        return WorkspaceUtils.isApplicable(we, StgModel.class);
     }
 
     @Override

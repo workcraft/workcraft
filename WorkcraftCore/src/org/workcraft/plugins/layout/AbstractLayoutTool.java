@@ -17,7 +17,7 @@ public abstract class AbstractLayoutTool implements Tool {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.canHas(we, VisualModel.class);
+        return WorkspaceUtils.isApplicable(we, VisualModel.class);
     }
 
     @Override

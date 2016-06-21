@@ -121,7 +121,7 @@ public class PNetGen implements Tool {
     }
 
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.canHas(we, Xmas.class);
+        return WorkspaceUtils.isApplicable(we, Xmas.class);
     }
 
     private static String searchList(String id) {
