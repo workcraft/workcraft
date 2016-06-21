@@ -39,7 +39,7 @@ public class MpsatSettings {
     private final int verbosity;
     private final SolutionMode solutionMode;
     private final int solutionNumberLimit;
-    private final String reach;
+    private final String expression;
     // Relation between the predicate and the property:
     //   true - property holds when predicate is unsatisfiable
     //   false - property holds when predicate is satisfiable
@@ -212,13 +212,13 @@ public class MpsatSettings {
     }
 
     public MpsatSettings(String name, MpsatMode mode, int verbosity, SolutionMode solutionMode, int solutionNumberLimit,
-            String reach, boolean inversePredicate) {
+            String expression, boolean inversePredicate) {
         this.name = name;
         this.mode = mode;
         this.verbosity = verbosity;
         this.solutionMode = solutionMode;
         this.solutionNumberLimit = solutionNumberLimit;
-        this.reach = reach;
+        this.expression = expression;
         this.inversePredicate = inversePredicate;
     }
 
@@ -242,8 +242,8 @@ public class MpsatSettings {
         return solutionNumberLimit;
     }
 
-    public String getReach() {
-        return reach;
+    public String getExpression() {
+        return expression;
     }
 
     public boolean getInversePredicate() {
@@ -256,7 +256,7 @@ public class MpsatSettings {
             args.add(option);
         }
 
-        if (getMode().hasReach()) {
+        if (getMode().hasExpression()) {
             try {
                 File reachFile = null;
                 if (workingDirectory == null) {
@@ -266,7 +266,7 @@ public class MpsatSettings {
                     String prefix = name == null ? PROPERTY_FILE_PREFIX : PROPERTY_FILE_PREFIX + "-" + name.replaceAll("\\s", "_");
                     reachFile = new File(workingDirectory, prefix + PROPERTY_FILE_EXTENTION);
                 }
-                String reachExpression = getReach();
+                String reachExpression = getExpression();
                 FileUtils.dumpString(reachFile, reachExpression);
                 if (MpsatUtilitySettings.getDebugReach()) {
                     LogUtils.logInfoLine("Reach expression to check");
@@ -341,15 +341,20 @@ public class MpsatSettings {
                 SolutionMode.ALL, -1 /* unlimited */, null, true);
     }
 
+    public static MpsatSettings getUscSettings() {
+        return new MpsatSettings("Unique state coding", MpsatMode.USC_CONFLICT_DETECTION, 0,
+                SolutionMode.ALL, -1 /* unlimited */, null, true);
+    }
+
     public static MpsatSettings getNormalcySettings() {
         return new MpsatSettings("Normalcy", MpsatMode.NORMALCY, 0,
                 MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
                 null, true);
     }
 
-    public static MpsatSettings getUscSettings() {
-        return new MpsatSettings("Unique state coding", MpsatMode.USC_CONFLICT_DETECTION, 0,
-                SolutionMode.ALL, -1 /* unlimited */, null, true);
+    public static MpsatSettings getEmptySvaSettings() {
+        return new MpsatSettings("Empty SVA invariant", MpsatMode.SVA_INVARIANT, 0,
+                SolutionMode.MINIMUM_COST, 0, "", true);
     }
 
 }

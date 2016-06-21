@@ -14,6 +14,7 @@ import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.shared.presets.Preset;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.plugins.shared.presets.SettingsToControlsMapper;
@@ -112,7 +113,7 @@ public class PresetManagerPanel<T> extends JPanel {
         buttonsPanel.add(manageButton);
 
         setBorder(BorderFactory.createTitledBorder("Presets"));
-        setLayout(new BorderLayout());
+        setLayout(new BorderLayout(SizeHelper.getCompactLayoutHGap(), SizeHelper.getCompactLayoutVGap()));
         add(presetCombo, BorderLayout.CENTER);
         add(buttonsPanel, BorderLayout.SOUTH);
     }

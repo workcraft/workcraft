@@ -16,13 +16,14 @@ import org.workcraft.plugins.circuit.serialisation.FunctionDeserialiser;
 import org.workcraft.plugins.circuit.serialisation.FunctionSerialiser;
 import org.workcraft.plugins.circuit.tools.BubbleToggleTool;
 import org.workcraft.plugins.circuit.tools.BufferInsertionTool;
-import org.workcraft.plugins.circuit.tools.CheckCircuitConformationTool;
-import org.workcraft.plugins.circuit.tools.CheckCircuitDeadlockTool;
-import org.workcraft.plugins.circuit.tools.CheckCircuitHazardTool;
-import org.workcraft.plugins.circuit.tools.CheckCircuitTool;
+import org.workcraft.plugins.circuit.tools.CircuitConformationChecker;
+import org.workcraft.plugins.circuit.tools.CircuitDeadlockChecker;
+import org.workcraft.plugins.circuit.tools.CircuitHazardChecker;
+import org.workcraft.plugins.circuit.tools.CircuitChecker;
 import org.workcraft.plugins.circuit.tools.CircuitLayoutTool;
 import org.workcraft.plugins.circuit.tools.ComponentContractionTool;
-import org.workcraft.plugins.circuit.tools.CustomCheckCircuitTool;
+import org.workcraft.plugins.circuit.tools.CircuitReachPropertyChecker;
+import org.workcraft.plugins.circuit.tools.CircuitSvaPropertyChecker;
 import org.workcraft.plugins.circuit.tools.JointContractionTool;
 import org.workcraft.plugins.circuit.tools.JointSplitTool;
 import org.workcraft.plugins.circuit.tools.StgGeneratorTool;
@@ -48,11 +49,12 @@ public class CircuitModule implements Module {
         pm.registerClass(Tool.class, CircuitLayoutTool.class);
         pm.registerClass(Tool.class, StgGeneratorTool.class);
 
-        pm.registerClass(Tool.class, CheckCircuitConformationTool.class);
-        pm.registerClass(Tool.class, CheckCircuitDeadlockTool.class);
-        pm.registerClass(Tool.class, CheckCircuitHazardTool.class);
-        pm.registerClass(Tool.class, CheckCircuitTool.class);
-        pm.registerClass(Tool.class, CustomCheckCircuitTool.class);
+        pm.registerClass(Tool.class, CircuitConformationChecker.class);
+        pm.registerClass(Tool.class, CircuitDeadlockChecker.class);
+        pm.registerClass(Tool.class, CircuitHazardChecker.class);
+        pm.registerClass(Tool.class, CircuitChecker.class);
+        pm.registerClass(Tool.class, CircuitReachPropertyChecker.class);
+        pm.registerClass(Tool.class, CircuitSvaPropertyChecker.class);
 
         pm.registerClass(Tool.class, JointContractionTool.class);
         pm.registerClass(Tool.class, JointSplitTool.class);

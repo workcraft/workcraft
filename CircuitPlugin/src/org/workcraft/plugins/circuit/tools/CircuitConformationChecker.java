@@ -1,6 +1,6 @@
 package org.workcraft.plugins.circuit.tools;
 
-public class CheckCircuitConformationTool extends CheckCircuitTool {
+public class CircuitConformationChecker extends CircuitChecker {
     @Override
     public Position getPosition() {
         return Position.TOP;

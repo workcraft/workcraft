@@ -30,7 +30,7 @@ public class MpsatSettingsSerialiser implements SettingsSerialiser<MpsatSettings
         e.setAttribute("solutionNumberLimit", Integer.toString(settings.getSolutionNumberLimit()));
 
         Element reach = parent.getOwnerDocument().createElement("reach");
-        reach.setTextContent(settings.getReach());
+        reach.setTextContent(settings.getExpression());
         e.appendChild(reach);
 
         e.setAttribute("inversePredicate", Boolean.toString(settings.getInversePredicate()));

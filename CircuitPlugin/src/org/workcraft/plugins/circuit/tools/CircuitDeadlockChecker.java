@@ -1,6 +1,6 @@
 package org.workcraft.plugins.circuit.tools;
 
-public class CheckCircuitDeadlockTool extends CheckCircuitTool {
+public class CircuitDeadlockChecker extends CircuitChecker {
     @Override
     public Position getPosition() {
         return Position.TOP;

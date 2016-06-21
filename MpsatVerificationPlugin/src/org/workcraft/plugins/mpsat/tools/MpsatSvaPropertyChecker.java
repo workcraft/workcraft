@@ -3,46 +3,38 @@ package org.workcraft.plugins.mpsat.tools;
 import java.io.File;
 
 import org.workcraft.Framework;
-import org.workcraft.VerificationTool;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
 import org.workcraft.plugins.mpsat.MpsatSettingsSerialiser;
-import org.workcraft.plugins.mpsat.gui.MpsatConfigurationDialog;
+import org.workcraft.plugins.mpsat.gui.MpsatSvaPropertyDialog;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
-import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class MpsatCustomPropertyChecker extends VerificationTool {
+public class MpsatSvaPropertyChecker extends MpsatPropertyChecker {
 
-    public static final String MPSAT_PRESETS_FILE = "mpsat_presets.xml";
+    public static final String MPSAT_SVA_PRESETS_FILE = "mpsat-sva-presets.xml";
 
     @Override
     public String getDisplayName() {
-        return "Custom properties [MPSat]...";
+        return "Custom SVA properties [MPSat]...";
     }
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, PetriNetModel.class);
-    }
-
-    @Override
-    public Position getPosition() {
-        return Position.BOTTOM;
+        return WorkspaceUtils.isApplicable(we, StgModel.class);
     }
 
     @Override
     public void run(WorkspaceEntry we) {
-        File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, MPSAT_PRESETS_FILE);
-        boolean allowStgPresets = WorkspaceUtils.isApplicable(we, StgModel.class);
-        MpsatPresetManager pmgr = new MpsatPresetManager(presetFile, new MpsatSettingsSerialiser(), allowStgPresets);
+        File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, MPSAT_SVA_PRESETS_FILE);
+        MpsatPresetManager pmgr = new MpsatPresetManager(presetFile, new MpsatSettingsSerialiser(), true);
         final Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
-        MpsatConfigurationDialog dialog = new MpsatConfigurationDialog(mainWindow, pmgr);
+        MpsatSvaPropertyDialog dialog = new MpsatSvaPropertyDialog(mainWindow, pmgr);
         dialog.pack();
         GUI.centerToParent(dialog, mainWindow);
         dialog.setVisible(true);
