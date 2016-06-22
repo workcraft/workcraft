@@ -81,6 +81,7 @@ public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatC
             case REACHABILITY:
             case STG_REACHABILITY:
             case NORMALCY:
+            case SVA_INVARIANT:
                 SwingUtilities.invokeLater(new MpsatReachabilityResultHandler(we, violationMpsatResult, violationMpsatSettings));
                 break;
             case CSC_CONFLICT_DETECTION:
@@ -97,7 +98,7 @@ public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatC
                 MainWindow mainWindow = Framework.getInstance().getMainWindow();
                 String modeString = violationMpsatSettings.getMode().getArgument();
                 JOptionPane.showMessageDialog(mainWindow,
-                        "Warning: MPSat mode '" + modeString + "' is not (yet) supported.",
+                        "Warning: MPSat verification mode '" + modeString + "' is not (yet) supported.",
                         TITLE, JOptionPane.ERROR_MESSAGE);
                 break;
             }
