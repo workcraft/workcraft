@@ -2,7 +2,9 @@ package org.workcraft.plugins.cpog.tasks;
 
 import java.awt.geom.Point2D;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -34,6 +36,7 @@ public class ScencoSolver {
     public static final String MSG_NOT_ENOUGH_SCENARIOS = "Not enough scenarios. Select at least two scenarios.";
     public static final String MSG_TOO_MANY_SCENARIOS = "Too many scenarios selected.";
     public static final String MSG_SELECTION_MODE_UNDEFINED = "Selection mode undefined.";
+    public static final String MSG_SAT_BASED_ERROR = "SAT-Based encoding cannot handle the graphs selected";
     public static final String MSG_GATE_LIB_NOT_PRESENT = "Gate library not present. Please insert this " +
                                                           "(genlib format) inside ABC folder.";
     public static final String MSG_ABC_NOT_PRESENT = "Find out more information on " +
@@ -77,6 +80,12 @@ public class ScencoSolver {
     private ArrayList<Integer> count;
     private File directory;
     private File verilogFile;
+    private HashMap<String, BooleanFormula> formulaeName;
+    private String[] optEnc;
+    private int freeVariables;
+    private int pr;
+    private Variable[] vars;
+    private VisualVariable[] predicatives;
 
     public ScencoSolver(EncoderSettings settings, WorkspaceEntry we) {
         this.settings = settings;
@@ -87,6 +96,7 @@ public class ScencoSolver {
     public ArrayList<String> getScencoArguments() {
         ArrayList<String> args = new ArrayList<>();
         ArrayList<String> check;
+        HashMap<String, Integer> task;
 
         cpog = (VisualCpog) (we.getModelEntry().getVisualModel());
         scenarios = CpogParsingTool.getScenarios(cpog);
@@ -111,6 +121,34 @@ public class ScencoSolver {
                 scenarios, events, positions, count);
         if (check.get(0).contains("ERROR")) {
             return check;
+        }
+
+        // group similar constraints
+        optEnc = new String[m];
+        task = new HashMap<>();
+        formulaeName = new HashMap<>();
+        cpogBuilder.groupConstraints(n, m, constraints, task);
+
+        char[][] matrix = new char[m][task.size()];
+        String[] instance = new String[m];
+        for (String s : task.keySet()) {
+            for (int i = 0; i < m; i++) matrix[i][task.get(s)] = s.charAt(i);
+        }
+
+        for (int i = 0; i < m; i++) instance[i] = new String(matrix[i]);
+
+        // GET PREDICATES FROM WORKCRAFT ENVIRONMENT
+        predicatives = new VisualVariable[n];
+        pr = 0;
+        for (VisualVariable variable : Hierarchy.getChildrenOfType(cpog.getRoot(), VisualVariable.class)) {
+            predicatives[pr++] = variable;
+        }
+
+        if (settings.getGenMode() != GenerationMode.OLD_SYNT) {
+            freeVariables = settings.getBits();
+            vars = new Variable[freeVariables + pr];
+            for (int i = 0; i < freeVariables; i++) vars[i] = cpog.createVisualVariable().getMathVariable();
+            for (int i = 0; i < pr; i++) vars[freeVariables + i] = predicatives[i].getMathVariable();
         }
 
         String prefix = FileUtils.getTempPrefix(we.getTitle());
@@ -141,7 +179,7 @@ public class ScencoSolver {
             } else {
                 abcFlag = "-a";
                 gateLibFlag = "-lib";
-                f = new File(/*abcFolder + */gatesLibrary);
+                f = new File(gatesLibrary);
                 if (!f.exists() || f.isDirectory()) {
                     FileUtils.deleteOnExitRecursively(directory);
                     args.add("ERROR");
@@ -159,6 +197,39 @@ public class ScencoSolver {
             abcFolder = "";
             gateLibFlag = "";
             gatesLibrary = "";
+        }
+
+        // SAT-based encoding
+        if (settings.getGenMode() == GenerationMode.SCENCO) {
+            Encoding solution = null;
+
+            solution = cpogBuilder.satBasedRun(pr, vars, instance, settings.getCircuitSize());
+            if (solution == null) {
+                FileUtils.deleteOnExitRecursively(directory);
+                we.cancelMemento();
+                args.add("ERROR");
+                args.add(MSG_SAT_BASED_ERROR);
+                args.add(ACCESS_SCENCO_ERROR);
+                return args;
+            }
+
+            boolean[][] encoding = solution.getEncoding();
+            PrintStream output = null;
+            try {
+                output = new PrintStream(encodingFile);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            for (int i = 0; i < m; i++) {
+                for (int j = 0; j < settings.getBits(); j++) {
+                    char c = (encoding[i][j] == true) ? '1' : '0';
+                    output.print(c);
+                }
+                output.println();
+            }
+            output.println(settings.getBits());
+            output.close();
         }
 
         // FILL IN PARAMETERS FOR CALLING PROGRAMER PROPERLY
@@ -252,7 +323,6 @@ public class ScencoSolver {
     }
 
     public void handleResult(String[] outputLines, String resultDirectoryPath) {
-        String[] optEnc = new String[m];
         String[] optFormulaeVertices = new String[n * n];
         String[] optVertices = new String[n];
         String[] optSources = new String[n * n];
@@ -314,41 +384,14 @@ public class ScencoSolver {
                 }
             }
 
-            // Print controller
-            cpogBuilder.printController(m, resultDirectoryPath, optEnc);
-
-            // group similar constraints
-            HashMap<String, BooleanFormula> formulaeName = new HashMap<>();
-            HashMap<String, Integer> task = new HashMap<>();
-
-            cpogBuilder.groupConstraints(n, m, constraints, task);
-
-            char[][] matrix = new char[m][task.size()];
-            String[] instance = new String[m];
-            for (String s : task.keySet()) {
-                for (int i = 0; i < m; i++) matrix[i][task.get(s)] = s.charAt(i);
-            }
-
-            for (int i = 0; i < m; i++) instance[i] = new String(matrix[i]);
-
-            int freeVariables;
             if (settings.getGenMode() != GenerationMode.SCENCO) {
                 freeVariables = optEnc[0].length();
             } else {
                 freeVariables = settings.getBits();
             }
-            settings.getCircuitSize();
 
-            // GET PREDICATES FROM WORKCRAFT ENVIRONMENT
-            VisualVariable[] predicatives = new VisualVariable[n];
-            int pr = 0;
-            for (VisualVariable variable : Hierarchy.getChildrenOfType(cpog.getRoot(), VisualVariable.class)) {
-                predicatives[pr++] = variable;
-            }
-
-            Variable[] vars = new Variable[freeVariables + pr];
-            for (int i = 0; i < freeVariables; i++) vars[i] = cpog.createVisualVariable().getMathVariable();
-            for (int i = 0; i < pr; i++) vars[freeVariables + i] = predicatives[i].getMathVariable();
+            // Print controller
+            cpogBuilder.printController(m, resultDirectoryPath, optEnc);
 
             Encoding solution = null;
 
@@ -367,8 +410,13 @@ public class ScencoSolver {
             }
 
             solution = new Encoding(null, null);
-            //BooleanFormula[][] encodingVars = optTask.getEncodingVars();
             BooleanFormula[] formule = new BooleanFormula[v + a];
+
+            if (settings.getGenMode() == GenerationMode.OLD_SYNT) {
+                vars = new Variable[freeVariables + pr];
+                for (int i = 0; i < freeVariables; i++) vars[i] = cpog.createVisualVariable().getMathVariable();
+                for (int i = 0; i < pr; i++) vars[freeVariables + i] = predicatives[i].getMathVariable();
+            }
 
             // Set optimal formulae to graphs
             try {

@@ -35,7 +35,6 @@ import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.VisualCpog;
-import org.workcraft.plugins.cpog.tasks.SatBasedSolver;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.util.GUI;
@@ -58,7 +57,6 @@ public class ScencoConstrainedSearchDialog extends JDialog {
     private JRadioButton normal, fast;
 
     // Core variables
-    private SatBasedSolver encoder;
     private final EncoderSettings settings;
     private int modalResult;
 
@@ -403,9 +401,6 @@ public class ScencoConstrainedSearchDialog extends JDialog {
                     settings.setCustomEncMode(false);
                 }
 
-                // Set them on encoder
-                encoder = new SatBasedSolver(settings);
-
                 // execute scenco
                 modalResult = 1;
             }
@@ -439,7 +434,4 @@ public class ScencoConstrainedSearchDialog extends JDialog {
         return modalResult;
     }
 
-    public SatBasedSolver getEncoder() {
-        return encoder;
-    }
 }

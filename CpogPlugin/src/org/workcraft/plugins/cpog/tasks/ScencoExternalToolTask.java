@@ -30,7 +30,7 @@ public class ScencoExternalToolTask implements Task<ScencoResult>, ExternalProce
         // Error handling
         if (args.get(0).contains("ERROR")) {
             we.cancelMemento();
-            ScencoResult result = new ScencoResult(args.get(2), resultDirectoryPath);
+            ScencoResult result = new ScencoResult(args.get(1), args.get(2), resultDirectoryPath);
             return new Result<ScencoResult>(Outcome.FAILED, result);
         }
 

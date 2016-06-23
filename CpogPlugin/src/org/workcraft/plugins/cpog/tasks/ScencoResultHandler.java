@@ -78,7 +78,7 @@ public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
                 }
             }
         } else if (result.getOutcome() == Outcome.FAILED) {
-            String errorMessage = getErrorMessage(result.getReturnValue().getStdout());
+            String errorMessage = getErrorMessage(result.getReturnValue());
             final Framework framework = Framework.getInstance();
 
             // In case of an internal error, activate automatically verbose mode
@@ -99,15 +99,15 @@ public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
     }
 
     // Get the error from the STDOUT of SCENCO
-    private String getErrorMessage(String msg) {
+    private String getErrorMessage(ScencoResult scencoResult) {
 
         // SCENCO accessing error
-        if (msg.equals(ScencoSolver.ACCESS_SCENCO_ERROR)) {
-            return solver.getScencoArguments().get(1);
+        if (scencoResult.getStdout().equals(ScencoSolver.ACCESS_SCENCO_ERROR)) {
+            return scencoResult.getError();
         }
 
         // SCENCO known error
-        String[] sentence = msg.split("\n");
+        String[] sentence = scencoResult.getStdout().split("\n");
         int i = 0;
         for (i = 0; i < sentence.length; i++) {
             if (sentence[i].contains(".error")) {

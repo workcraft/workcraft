@@ -29,7 +29,6 @@ import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.VisualCpog;
-import org.workcraft.plugins.cpog.tasks.SatBasedSolver;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.util.GUI;
@@ -48,6 +47,7 @@ public class ScencoSatBasedDialog extends JDialog {
     // Core variables
     private final EncoderSettings settings;
     private final WorkspaceEntry we;
+    private int modalResult;
 
     // generationPanel.getPreferredSize().height
 
@@ -62,6 +62,7 @@ public class ScencoSatBasedDialog extends JDialog {
                 ModalityType.APPLICATION_MODAL);
         this.settings = settings;
         this.we = we;
+        modalResult = 0;
 
         createStandardPanel();
         createGenerationPanel();
@@ -220,13 +221,9 @@ public class ScencoSatBasedDialog extends JDialog {
 
                 // custom encodings
                 settings.setNumPO(m);
-                settings.setCustomEncMode(false);
+                settings.setCustomEncMode(true);
 
-                // Set them on encoder
-                SatBasedSolver encoder = new SatBasedSolver(settings);
-
-                // Execute scenco
-                encoder.run(we);
+                modalResult = 1;
             }
         });
 
@@ -246,6 +243,10 @@ public class ScencoSatBasedDialog extends JDialog {
     private void sizeWindow(int width, int height, int row1, int row2) {
         setMinimumSize(new Dimension(width, height));
         pack();
+    }
+
+    public int getModalResult() {
+        return modalResult;
     }
 
 }
