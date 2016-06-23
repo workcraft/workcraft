@@ -10,7 +10,8 @@ import org.workcraft.plugins.mpsat.tools.MpsatCombinedChecker;
 import org.workcraft.plugins.mpsat.tools.MpsatConformationChecker;
 import org.workcraft.plugins.mpsat.tools.MpsatConsistencyChecker;
 import org.workcraft.plugins.mpsat.tools.MpsatCscChecker;
-import org.workcraft.plugins.mpsat.tools.MpsatCustomPropertyChecker;
+import org.workcraft.plugins.mpsat.tools.MpsatPropertyChecker;
+import org.workcraft.plugins.mpsat.tools.MpsatAssertionChecker;
 import org.workcraft.plugins.mpsat.tools.MpsatDeadlockChecker;
 import org.workcraft.plugins.mpsat.tools.MpsatDiInterfaceChecker;
 import org.workcraft.plugins.mpsat.tools.MpsatInputPropernessChecker;
@@ -36,7 +37,8 @@ public class MpsatModule implements Module {
         pm.registerClass(Tool.class, MpsatUscChecker.class);
         pm.registerClass(Tool.class, MpsatConformationChecker.class);
         pm.registerClass(Tool.class, MpsatCombinedChecker.class);
-        pm.registerClass(Tool.class, MpsatCustomPropertyChecker.class);
+        pm.registerClass(Tool.class, MpsatPropertyChecker.class);
+        pm.registerClass(Tool.class, MpsatAssertionChecker.class);
         pm.registerClass(Settings.class, MpsatUtilitySettings.class);
     }
 

@@ -13,4 +13,5 @@ public class CommentGeneratorTool extends NodeGeneratorTool {
     public String getHintMessage() {
         return "Click to create a text label.";
     }
+
 }

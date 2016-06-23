@@ -13,7 +13,7 @@ import org.workcraft.plugins.circuit.tasks.CheckCircuitTask;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class CheckCircuitTool extends VerificationTool {
+public class CircuitChecker extends VerificationTool {
 
     private static final String TITLE_VERIFICATION = "Circuit verification";
 

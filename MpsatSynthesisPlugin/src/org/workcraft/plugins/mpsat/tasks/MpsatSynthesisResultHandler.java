@@ -76,7 +76,7 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
         default:
             MainWindow mainWindow = Framework.getInstance().getMainWindow();
             JOptionPane.showMessageDialog(mainWindow,
-                    "Warning: MPSat mode \'" + mpsatMode.getArgument() + "\' is not (yet) supported.",
+                    "Warning: MPSat synthesis mode \'" + mpsatMode.getArgument() + "\' is not (yet) supported.",
                     TITLE, JOptionPane.WARNING_MESSAGE);
             break;
         }

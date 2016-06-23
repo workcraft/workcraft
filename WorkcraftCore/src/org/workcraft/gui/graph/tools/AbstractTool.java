@@ -22,6 +22,7 @@
 package org.workcraft.gui.graph.tools;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Graphics2D;
 
 import javax.swing.Icon;
@@ -29,6 +30,7 @@ import javax.swing.JPanel;
 
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.util.GUI;
 
@@ -53,6 +55,10 @@ public abstract class AbstractTool implements GraphEditorTool {
         editor.getWorkspaceEntry().setCanModify(true);
         editor.getWorkspaceEntry().setCanSelect(true);
         editor.getWorkspaceEntry().setCanCopy(true);
+        if (editor instanceof GraphEditorPanel) {
+            GraphEditorPanel panel = (GraphEditorPanel) editor;
+            panel.setCursor(getCursor());
+        }
     }
 
     @Override
@@ -66,6 +72,11 @@ public abstract class AbstractTool implements GraphEditorTool {
 
     @Override
     public String getHintMessage() {
+        return null;
+    }
+
+    @Override
+    public Cursor getCursor() {
         return null;
     }
 

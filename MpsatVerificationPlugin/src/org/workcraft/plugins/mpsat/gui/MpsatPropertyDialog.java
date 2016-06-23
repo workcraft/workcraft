@@ -9,6 +9,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
 
@@ -42,40 +44,43 @@ import org.workcraft.util.IntDocument;
 import info.clearthought.layout.TableLayout;
 
 @SuppressWarnings("serial")
-public class MpsatConfigurationDialog extends JDialog {
+public class MpsatPropertyDialog extends JDialog {
     private static final int DEFAULT_ALL_SOLUTION_LIMIT = 10;
 
     private JPanel optionsPanel, predicatePanel, buttonsPanel;
     private PresetManagerPanel<MpsatSettings> presetPanel;
     private JComboBox<MpsatMode> modeCombo;
     private JTextField solutionLimitText;
-    private JTextArea reachText;
+    private JTextArea propertyText;
     private JRadioButton allSolutionsRadioButton, firstSolutionRadioButton, cheapestSolutionRadioButton;
     private JRadioButton unsatisfiebleRadioButton;
     private final MpsatPresetManager presetManager;
 
     private int modalResult = 0;
 
-    public MpsatConfigurationDialog(Window owner, MpsatPresetManager presetManager) {
-        super(owner, "Custom property definition", ModalityType.APPLICATION_MODAL);
+    public MpsatPropertyDialog(Window owner, MpsatPresetManager presetManager) {
+        super(owner, "Custom property", ModalityType.APPLICATION_MODAL);
         this.presetManager = presetManager;
 
         createPresetPanel();
         createOptionsPanel();
-        createReachPanel();
+        createPropertyPanel();
         createButtonsPanel();
 
+        int buttonPanelHeight = buttonsPanel.getPreferredSize().height;
+        int hGap = SizeHelper.getCompactLayoutHGap();
+        int vGap = SizeHelper.getCompactLayoutVGap();
         double[][] size = new double[][] {
                 {TableLayout.FILL},
-                {TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL, buttonsPanel.getPreferredSize().height},
+                {TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL, buttonPanelHeight},
         };
 
         final TableLayout layout = new TableLayout(size);
-        layout.setHGap(3);
-        layout.setVGap(3);
+        layout.setHGap(hGap);
+        layout.setVGap(vGap);
 
         JPanel contentPanel = new JPanel(layout);
-        contentPanel.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+        contentPanel.setBorder(BorderFactory.createEmptyBorder(hGap, vGap, hGap, vGap));
 
         contentPanel.add(presetPanel, "0 0");
         contentPanel.add(optionsPanel, "0 1");
@@ -95,6 +100,12 @@ public class MpsatConfigurationDialog extends JDialog {
                 },
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
+
+        addWindowListener(new WindowAdapter() {
+            public void windowOpened(WindowEvent e) {
+                propertyText.requestFocus();
+            }
+        });
         setMinimumSize(new Dimension(420, 350));
     }
 
@@ -121,12 +132,12 @@ public class MpsatConfigurationDialog extends JDialog {
         SettingsToControlsMapper<MpsatSettings> guiMapper = new SettingsToControlsMapper<MpsatSettings>() {
             @Override
             public void applySettingsToControls(MpsatSettings settings) {
-                MpsatConfigurationDialog.this.applySettingsToControls(settings);
+                MpsatPropertyDialog.this.applySettingsToControls(settings);
             }
 
             @Override
             public MpsatSettings getSettingsFromControls() {
-                MpsatSettings settings = MpsatConfigurationDialog.this.getSettingsFromControls();
+                MpsatSettings settings = MpsatPropertyDialog.this.getSettingsFromControls();
                 return settings;
             }
         };
@@ -190,15 +201,15 @@ public class MpsatConfigurationDialog extends JDialog {
         optionsPanel.add(solutionModePanel, BorderLayout.SOUTH);
     }
 
-    private void createReachPanel() {
+    private void createPropertyPanel() {
         predicatePanel = new JPanel(new BorderLayout());
         String title = "Reach predicate (use '" + NamespaceHelper.getFlatNameSeparator() + "' as hierarchy separator)";
         predicatePanel.setBorder(BorderFactory.createTitledBorder(title));
 
-        reachText = new JTextArea();
-        reachText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
-        reachText.setText("");
-        reachText.addKeyListener(new KeyAdapter() {
+        propertyText = new JTextArea();
+        propertyText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
+        propertyText.setText("");
+        propertyText.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
                 if (e.getKeyChar() > 127) {
@@ -206,7 +217,7 @@ public class MpsatConfigurationDialog extends JDialog {
                 }
             }
         });
-        JScrollPane reachScrollPane = new JScrollPane(reachText);
+        JScrollPane propertyScrollPane = new JScrollPane(propertyText);
 
         JRadioButton satisfiebleRadioButton = new JRadioButton("satisfiable");
         unsatisfiebleRadioButton = new JRadioButton("unsatisfiable");
@@ -221,42 +232,8 @@ public class MpsatConfigurationDialog extends JDialog {
         propertyPanel.add(satisfiebleRadioButton);
         propertyPanel.add(unsatisfiebleRadioButton);
 
-        predicatePanel.add(reachScrollPane, BorderLayout.CENTER);
+        predicatePanel.add(propertyScrollPane, BorderLayout.CENTER);
         predicatePanel.add(propertyPanel, BorderLayout.SOUTH);
-    }
-
-    private void applySettingsToControls(MpsatSettings settings) {
-        modeCombo.setSelectedItem(settings.getMode());
-
-        switch (settings.getSolutionMode()) {
-        case MINIMUM_COST:
-            cheapestSolutionRadioButton.setSelected(true);
-            solutionLimitText.setText(Integer.toString(DEFAULT_ALL_SOLUTION_LIMIT));
-            solutionLimitText.setEnabled(false);
-            break;
-        case FIRST:
-            firstSolutionRadioButton.setSelected(true);
-            solutionLimitText.setText(Integer.toString(DEFAULT_ALL_SOLUTION_LIMIT));
-            solutionLimitText.setEnabled(false);
-            break;
-        case ALL:
-            allSolutionsRadioButton.setSelected(true);
-            int n = settings.getSolutionNumberLimit();
-            solutionLimitText.setText((n > 0) ? Integer.toString(n) : "");
-            solutionLimitText.setEnabled(true);
-            break;
-        }
-
-        reachText.setText(settings.getReach());
-        String propertyName = settings.getName();
-        if (propertyName == null) {
-            propertyName = "";
-        }
-        unsatisfiebleRadioButton.setSelected(settings.getInversePredicate());
-    }
-
-    public MpsatSettings getSettings() {
-        return getSettingsFromControls();
     }
 
     private void createButtonsPanel() {
@@ -293,6 +270,40 @@ public class MpsatConfigurationDialog extends JDialog {
         buttonsPanel.add(helpButton);
     }
 
+    public int getModalResult() {
+        return modalResult;
+    }
+
+    public MpsatSettings getSettings() {
+        return getSettingsFromControls();
+    }
+
+    private void applySettingsToControls(MpsatSettings settings) {
+        modeCombo.setSelectedItem(settings.getMode());
+
+        switch (settings.getSolutionMode()) {
+        case MINIMUM_COST:
+            cheapestSolutionRadioButton.setSelected(true);
+            solutionLimitText.setText(Integer.toString(DEFAULT_ALL_SOLUTION_LIMIT));
+            solutionLimitText.setEnabled(false);
+            break;
+        case FIRST:
+            firstSolutionRadioButton.setSelected(true);
+            solutionLimitText.setText(Integer.toString(DEFAULT_ALL_SOLUTION_LIMIT));
+            solutionLimitText.setEnabled(false);
+            break;
+        case ALL:
+            allSolutionsRadioButton.setSelected(true);
+            int n = settings.getSolutionNumberLimit();
+            solutionLimitText.setText((n > 0) ? Integer.toString(n) : "");
+            solutionLimitText.setEnabled(true);
+            break;
+        }
+
+        propertyText.setText(settings.getExpression());
+        unsatisfiebleRadioButton.setSelected(settings.getInversePredicate());
+    }
+
     private MpsatSettings getSettingsFromControls() {
         SolutionMode solutionMode;
         if (firstSolutionRadioButton.isSelected()) {
@@ -314,12 +325,9 @@ public class MpsatConfigurationDialog extends JDialog {
         }
 
         MpsatSettings settings = new MpsatSettings(null, (MpsatMode) modeCombo.getSelectedItem(),
-                0, solutionMode, solutionLimin, reachText.getText(), unsatisfiebleRadioButton.isSelected());
+                0, solutionMode, solutionLimin, propertyText.getText(), unsatisfiebleRadioButton.isSelected());
 
         return settings;
     }
 
-    public int getModalResult() {
-        return modalResult;
-    }
 }

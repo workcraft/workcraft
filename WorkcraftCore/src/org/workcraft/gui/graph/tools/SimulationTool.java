@@ -24,6 +24,7 @@ package org.workcraft.gui.graph.tools;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics;
@@ -778,6 +779,11 @@ public abstract class SimulationTool extends AbstractTool implements ClipboardOw
     @Override
     public Icon getIcon() {
         return GUI.createIconFromSVG("images/icons/svg/tool-simulation.svg");
+    }
+
+    @Override
+    public Cursor getCursor() {
+        return Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
     }
 
     @Override

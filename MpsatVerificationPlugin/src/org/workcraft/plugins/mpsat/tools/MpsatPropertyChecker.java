@@ -8,7 +8,7 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
 import org.workcraft.plugins.mpsat.MpsatSettingsSerialiser;
-import org.workcraft.plugins.mpsat.gui.MpsatConfigurationDialog;
+import org.workcraft.plugins.mpsat.gui.MpsatPropertyDialog;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.stg.StgModel;
@@ -16,13 +16,13 @@ import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class MpsatCustomPropertyChecker extends VerificationTool {
+public class MpsatPropertyChecker extends VerificationTool {
 
-    public static final String MPSAT_PRESETS_FILE = "mpsat_presets.xml";
+    public static final String MPSAT_PROPERTY_PRESETS_FILE = "mpsat-property-presets.xml";
 
     @Override
     public String getDisplayName() {
-        return "Custom properties [MPSat]...";
+        return "Custom property [MPSat]...";
     }
 
     @Override
@@ -37,12 +37,12 @@ public class MpsatCustomPropertyChecker extends VerificationTool {
 
     @Override
     public void run(WorkspaceEntry we) {
-        File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, MPSAT_PRESETS_FILE);
+        File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, MPSAT_PROPERTY_PRESETS_FILE);
         boolean allowStgPresets = WorkspaceUtils.isApplicable(we, StgModel.class);
         MpsatPresetManager pmgr = new MpsatPresetManager(presetFile, new MpsatSettingsSerialiser(), allowStgPresets);
         final Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
-        MpsatConfigurationDialog dialog = new MpsatConfigurationDialog(mainWindow, pmgr);
+        MpsatPropertyDialog dialog = new MpsatPropertyDialog(mainWindow, pmgr);
         dialog.pack();
         GUI.centerToParent(dialog, mainWindow);
         dialog.setVisible(true);

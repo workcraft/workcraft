@@ -15,18 +15,19 @@ public enum MpsatMode {
     COMPLEX_GATE_IMPLEMENTATION("-E", "Derive complex-gate implementation", false, true),
     GENERALISED_CELEMENT_IMPLEMENTATION("-G", "Derive gC-elements implementation", false, true),
     STANDARD_CELEMENT_IMPLEMENTATION("-S", "Derive standard-C implementation", false, true),
-    TECH_MAPPING("-T", "Logic decomposition and technology mapping (not finished yet)", false, false);
+    TECH_MAPPING("-T", "Logic decomposition and technology mapping (not finished yet)", false, false),
+    ASSERTION("-Fa", "Check asynchronous assertion", true, true);
 
     private String argument;
     private String description;
-    private boolean reach;
-    private boolean pnml;
+    private boolean hasExpression;
+    private boolean canPnml;
 
-    MpsatMode(String argument, String description, boolean reach, boolean pnml) {
+    MpsatMode(String argument, String description, boolean hasExpression, boolean canPnml) {
         this.argument = argument;
         this.description = description;
-        this.reach = reach;
-        this.pnml = pnml;
+        this.hasExpression = hasExpression;
+        this.canPnml = canPnml;
     }
 
     public static MpsatMode getModeByArgument(String arg) {
@@ -50,12 +51,12 @@ public enum MpsatMode {
         return argument;
     }
 
-    public boolean hasReach() {
-        return reach;
+    public boolean hasExpression() {
+        return hasExpression;
     }
 
     public boolean canPnml() {
-        return pnml;
+        return canPnml;
     }
 
 }
