@@ -22,8 +22,8 @@ import org.workcraft.plugins.circuit.tools.CircuitHazardChecker;
 import org.workcraft.plugins.circuit.tools.CircuitChecker;
 import org.workcraft.plugins.circuit.tools.CircuitLayoutTool;
 import org.workcraft.plugins.circuit.tools.ComponentContractionTool;
-import org.workcraft.plugins.circuit.tools.CircuitReachPropertyChecker;
-import org.workcraft.plugins.circuit.tools.CircuitSvaPropertyChecker;
+import org.workcraft.plugins.circuit.tools.CircuitPropertyChecker;
+import org.workcraft.plugins.circuit.tools.CircuitAssertionChecker;
 import org.workcraft.plugins.circuit.tools.JointContractionTool;
 import org.workcraft.plugins.circuit.tools.JointSplitTool;
 import org.workcraft.plugins.circuit.tools.StgGeneratorTool;
@@ -53,8 +53,8 @@ public class CircuitModule implements Module {
         pm.registerClass(Tool.class, CircuitDeadlockChecker.class);
         pm.registerClass(Tool.class, CircuitHazardChecker.class);
         pm.registerClass(Tool.class, CircuitChecker.class);
-        pm.registerClass(Tool.class, CircuitReachPropertyChecker.class);
-        pm.registerClass(Tool.class, CircuitSvaPropertyChecker.class);
+        pm.registerClass(Tool.class, CircuitPropertyChecker.class);
+        pm.registerClass(Tool.class, CircuitAssertionChecker.class);
 
         pm.registerClass(Tool.class, JointContractionTool.class);
         pm.registerClass(Tool.class, JointSplitTool.class);

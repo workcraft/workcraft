@@ -44,27 +44,27 @@ import org.workcraft.util.IntDocument;
 import info.clearthought.layout.TableLayout;
 
 @SuppressWarnings("serial")
-public class MpsatReachPropertyDialog extends JDialog {
+public class MpsatPropertyDialog extends JDialog {
     private static final int DEFAULT_ALL_SOLUTION_LIMIT = 10;
 
     private JPanel optionsPanel, predicatePanel, buttonsPanel;
     private PresetManagerPanel<MpsatSettings> presetPanel;
     private JComboBox<MpsatMode> modeCombo;
     private JTextField solutionLimitText;
-    private JTextArea reachText;
+    private JTextArea propertyText;
     private JRadioButton allSolutionsRadioButton, firstSolutionRadioButton, cheapestSolutionRadioButton;
     private JRadioButton unsatisfiebleRadioButton;
     private final MpsatPresetManager presetManager;
 
     private int modalResult = 0;
 
-    public MpsatReachPropertyDialog(Window owner, MpsatPresetManager presetManager) {
-        super(owner, "Custom Reach property", ModalityType.APPLICATION_MODAL);
+    public MpsatPropertyDialog(Window owner, MpsatPresetManager presetManager) {
+        super(owner, "Custom property", ModalityType.APPLICATION_MODAL);
         this.presetManager = presetManager;
 
         createPresetPanel();
         createOptionsPanel();
-        createReachPanel();
+        createPropertyPanel();
         createButtonsPanel();
 
         int buttonPanelHeight = buttonsPanel.getPreferredSize().height;
@@ -103,7 +103,7 @@ public class MpsatReachPropertyDialog extends JDialog {
 
         addWindowListener(new WindowAdapter() {
             public void windowOpened(WindowEvent e) {
-                reachText.requestFocus();
+                propertyText.requestFocus();
             }
         });
         setMinimumSize(new Dimension(420, 350));
@@ -132,12 +132,12 @@ public class MpsatReachPropertyDialog extends JDialog {
         SettingsToControlsMapper<MpsatSettings> guiMapper = new SettingsToControlsMapper<MpsatSettings>() {
             @Override
             public void applySettingsToControls(MpsatSettings settings) {
-                MpsatReachPropertyDialog.this.applySettingsToControls(settings);
+                MpsatPropertyDialog.this.applySettingsToControls(settings);
             }
 
             @Override
             public MpsatSettings getSettingsFromControls() {
-                MpsatSettings settings = MpsatReachPropertyDialog.this.getSettingsFromControls();
+                MpsatSettings settings = MpsatPropertyDialog.this.getSettingsFromControls();
                 return settings;
             }
         };
@@ -201,15 +201,15 @@ public class MpsatReachPropertyDialog extends JDialog {
         optionsPanel.add(solutionModePanel, BorderLayout.SOUTH);
     }
 
-    private void createReachPanel() {
+    private void createPropertyPanel() {
         predicatePanel = new JPanel(new BorderLayout());
         String title = "Reach predicate (use '" + NamespaceHelper.getFlatNameSeparator() + "' as hierarchy separator)";
         predicatePanel.setBorder(BorderFactory.createTitledBorder(title));
 
-        reachText = new JTextArea();
-        reachText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
-        reachText.setText("");
-        reachText.addKeyListener(new KeyAdapter() {
+        propertyText = new JTextArea();
+        propertyText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
+        propertyText.setText("");
+        propertyText.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
                 if (e.getKeyChar() > 127) {
@@ -217,7 +217,7 @@ public class MpsatReachPropertyDialog extends JDialog {
                 }
             }
         });
-        JScrollPane reachScrollPane = new JScrollPane(reachText);
+        JScrollPane propertyScrollPane = new JScrollPane(propertyText);
 
         JRadioButton satisfiebleRadioButton = new JRadioButton("satisfiable");
         unsatisfiebleRadioButton = new JRadioButton("unsatisfiable");
@@ -232,7 +232,7 @@ public class MpsatReachPropertyDialog extends JDialog {
         propertyPanel.add(satisfiebleRadioButton);
         propertyPanel.add(unsatisfiebleRadioButton);
 
-        predicatePanel.add(reachScrollPane, BorderLayout.CENTER);
+        predicatePanel.add(propertyScrollPane, BorderLayout.CENTER);
         predicatePanel.add(propertyPanel, BorderLayout.SOUTH);
     }
 
@@ -300,7 +300,7 @@ public class MpsatReachPropertyDialog extends JDialog {
             break;
         }
 
-        reachText.setText(settings.getExpression());
+        propertyText.setText(settings.getExpression());
         unsatisfiebleRadioButton.setSelected(settings.getInversePredicate());
     }
 
@@ -325,7 +325,7 @@ public class MpsatReachPropertyDialog extends JDialog {
         }
 
         MpsatSettings settings = new MpsatSettings(null, (MpsatMode) modeCombo.getSelectedItem(),
-                0, solutionMode, solutionLimin, reachText.getText(), unsatisfiebleRadioButton.isSelected());
+                0, solutionMode, solutionLimin, propertyText.getText(), unsatisfiebleRadioButton.isSelected());
 
         return settings;
     }

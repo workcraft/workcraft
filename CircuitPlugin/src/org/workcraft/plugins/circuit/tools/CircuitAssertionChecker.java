@@ -5,6 +5,7 @@ import java.io.File;
 import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
+import org.workcraft.VerificationTool;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.VisualCircuit;
@@ -12,18 +13,28 @@ import org.workcraft.plugins.circuit.tasks.CustomCheckCircuitTask;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
 import org.workcraft.plugins.mpsat.MpsatSettingsSerialiser;
-import org.workcraft.plugins.mpsat.gui.MpsatSvaPropertyDialog;
-import org.workcraft.plugins.mpsat.tools.MpsatSvaPropertyChecker;
+import org.workcraft.plugins.mpsat.gui.MpsatAssertionDialog;
+import org.workcraft.plugins.mpsat.tools.MpsatAssertionChecker;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class CircuitSvaPropertyChecker extends CircuitPropertyChecker {
+public class CircuitAssertionChecker extends VerificationTool {
 
     private static final String TITLE_VERIFICATION = "Circuit verification";
 
     @Override
     public String getDisplayName() {
-        return "Custom SVA properties [MPSat]...";
+        return "Custom assertion [MPSat]...";
+    }
+
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return we.getModelEntry().getMathModel() instanceof Circuit;
+    }
+
+    @Override
+    public Position getPosition() {
+        return Position.BOTTOM;
     }
 
     @Override
@@ -46,9 +57,9 @@ public class CircuitSvaPropertyChecker extends CircuitPropertyChecker {
                     TITLE_VERIFICATION, JOptionPane.WARNING_MESSAGE);
         }
 
-        File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, MpsatSvaPropertyChecker.MPSAT_SVA_PRESETS_FILE);
+        File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, MpsatAssertionChecker.MPSAT_ASSERTION_PRESETS_FILE);
         MpsatPresetManager pmgr = new MpsatPresetManager(presetFile, new MpsatSettingsSerialiser(), true);
-        MpsatSvaPropertyDialog dialog = new MpsatSvaPropertyDialog(mainWindow, pmgr);
+        MpsatAssertionDialog dialog = new MpsatAssertionDialog(mainWindow, pmgr);
         dialog.pack();
         GUI.centerToParent(dialog, mainWindow);
         dialog.setVisible(true);

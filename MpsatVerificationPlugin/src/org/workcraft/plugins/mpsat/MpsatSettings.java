@@ -352,8 +352,8 @@ public class MpsatSettings {
                 null, true);
     }
 
-    public static MpsatSettings getEmptySvaSettings() {
-        return new MpsatSettings("Empty SVA invariant", MpsatMode.SVA_INVARIANT, 0,
+    public static MpsatSettings getEmptyAssertionSettings() {
+        return new MpsatSettings("Empty assertion", MpsatMode.ASSERTION, 0,
                 SolutionMode.MINIMUM_COST, 0, "", true);
     }
 

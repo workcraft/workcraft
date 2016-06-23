@@ -16,7 +16,7 @@ public enum MpsatMode {
     GENERALISED_CELEMENT_IMPLEMENTATION("-G", "Derive gC-elements implementation", false, true),
     STANDARD_CELEMENT_IMPLEMENTATION("-S", "Derive standard-C implementation", false, true),
     TECH_MAPPING("-T", "Logic decomposition and technology mapping (not finished yet)", false, false),
-    SVA_INVARIANT("-Fa", "SVA invariant checking", true, true);
+    ASSERTION("-Fa", "Check asynchronous assertion", true, true);
 
     private String argument;
     private String description;

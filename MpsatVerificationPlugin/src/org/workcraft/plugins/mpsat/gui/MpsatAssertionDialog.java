@@ -38,20 +38,20 @@ import org.workcraft.util.GUI;
 import info.clearthought.layout.TableLayout;
 
 @SuppressWarnings("serial")
-public class MpsatSvaPropertyDialog extends JDialog {
+public class MpsatAssertionDialog extends JDialog {
     private JPanel predicatePanel, buttonsPanel;
     private PresetManagerPanel<MpsatSettings> presetPanel;
-    private JTextArea svaText;
+    private JTextArea assertionText;
     private final MpsatPresetManager presetManager;
 
     private int modalResult = 0;
 
-    public MpsatSvaPropertyDialog(Window owner, MpsatPresetManager presetManager) {
-        super(owner, "Custom SVA property", ModalityType.APPLICATION_MODAL);
+    public MpsatAssertionDialog(Window owner, MpsatPresetManager presetManager) {
+        super(owner, "Custom assertion", ModalityType.APPLICATION_MODAL);
         this.presetManager = presetManager;
 
         createPresetPanel();
-        createSvaPanel();
+        createAssertionPanel();
         createButtonsPanel();
 
         int buttonPanelHeight = buttonsPanel.getPreferredSize().height;
@@ -89,7 +89,7 @@ public class MpsatSvaPropertyDialog extends JDialog {
 
         addWindowListener(new WindowAdapter() {
             public void windowOpened(WindowEvent e) {
-                svaText.requestFocus();
+                assertionText.requestFocus();
             }
         });
         setMinimumSize(new Dimension(420, 350));
@@ -98,17 +98,17 @@ public class MpsatSvaPropertyDialog extends JDialog {
     private void createPresetPanel() {
         ArrayList<Preset<MpsatSettings>> builtInPresets = new ArrayList<>();
 
-        builtInPresets.add(new Preset<>("", MpsatSettings.getEmptySvaSettings(), false));
+        builtInPresets.add(new Preset<>("", MpsatSettings.getEmptyAssertionSettings(), false));
 
         SettingsToControlsMapper<MpsatSettings> guiMapper = new SettingsToControlsMapper<MpsatSettings>() {
             @Override
             public void applySettingsToControls(MpsatSettings settings) {
-                MpsatSvaPropertyDialog.this.applySettingsToControls(settings);
+                MpsatAssertionDialog.this.applySettingsToControls(settings);
             }
 
             @Override
             public MpsatSettings getSettingsFromControls() {
-                MpsatSettings settings = MpsatSvaPropertyDialog.this.getSettingsFromControls();
+                MpsatSettings settings = MpsatAssertionDialog.this.getSettingsFromControls();
                 return settings;
             }
         };
@@ -116,15 +116,15 @@ public class MpsatSvaPropertyDialog extends JDialog {
         presetPanel = new PresetManagerPanel<MpsatSettings>(presetManager, builtInPresets, guiMapper, this);
     }
 
-    private void createSvaPanel() {
+    private void createAssertionPanel() {
         predicatePanel = new JPanel(new BorderLayout());
-        String title = "SVA invariant (use '" + NamespaceHelper.getFlatNameSeparator() + "' as hierarchy separator)";
+        String title = "Assertion (use '" + NamespaceHelper.getFlatNameSeparator() + "' as hierarchy separator)";
         predicatePanel.setBorder(BorderFactory.createTitledBorder(title));
 
-        svaText = new JTextArea();
-        svaText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
-        svaText.setText("");
-        svaText.addKeyListener(new KeyAdapter() {
+        assertionText = new JTextArea();
+        assertionText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
+        assertionText.setText("");
+        assertionText.addKeyListener(new KeyAdapter() {
             @Override
             public void keyTyped(KeyEvent e) {
                 if (e.getKeyChar() > 127) {
@@ -132,12 +132,12 @@ public class MpsatSvaPropertyDialog extends JDialog {
                 }
             }
         });
-        JScrollPane svaScrollPane = new JScrollPane(svaText);
+        JScrollPane assertionScrollPane = new JScrollPane(assertionText);
 
         JPanel propertyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT,
                 SizeHelper.getCompactLayoutHGap(), SizeHelper.getCompactLayoutVGap()));
 
-        predicatePanel.add(svaScrollPane, BorderLayout.CENTER);
+        predicatePanel.add(assertionScrollPane, BorderLayout.CENTER);
         predicatePanel.add(propertyPanel, BorderLayout.SOUTH);
     }
 
@@ -170,7 +170,7 @@ public class MpsatSvaPropertyDialog extends JDialog {
         helpButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                DesktopApi.open(new File("help/reach.html"));
+                DesktopApi.open(new File("help/assertion.html"));
             }
         });
 
@@ -184,12 +184,12 @@ public class MpsatSvaPropertyDialog extends JDialog {
     }
 
     private void applySettingsToControls(MpsatSettings settings) {
-        svaText.setText(settings.getExpression());
+        assertionText.setText(settings.getExpression());
     }
 
     private MpsatSettings getSettingsFromControls() {
-        return new MpsatSettings(null, MpsatMode.SVA_INVARIANT,
-                0, SolutionMode.MINIMUM_COST, 0, svaText.getText(), true);
+        return new MpsatSettings(null, MpsatMode.ASSERTION,
+                0, SolutionMode.MINIMUM_COST, 0, assertionText.getText(), true);
     }
 
 }
