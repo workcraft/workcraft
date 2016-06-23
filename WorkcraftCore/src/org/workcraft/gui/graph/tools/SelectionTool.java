@@ -449,6 +449,11 @@ public class SelectionTool extends AbstractTool {
                 notClick3 = false;
             }
         }
+//        GraphEditor editor = e.getEditor();
+//        if (editor instanceof GraphEditorPanel) {
+//            GraphEditorPanel panel = (GraphEditorPanel) editor;
+//            panel.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
+//        }
     }
 
     @Override
@@ -540,7 +545,11 @@ public class SelectionTool extends AbstractTool {
 
     @Override
     public void mouseReleased(GraphEditorMouseEvent e) {
-        // do nothing
+//        GraphEditor editor = e.getEditor();
+//        if (editor instanceof GraphEditorPanel) {
+//            GraphEditorPanel panel = (GraphEditorPanel) editor;
+//            panel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+//        }
     }
 
     @Override

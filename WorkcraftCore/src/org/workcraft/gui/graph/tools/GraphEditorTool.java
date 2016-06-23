@@ -21,6 +21,7 @@
 
 package org.workcraft.gui.graph.tools;
 
+import java.awt.Cursor;
 import java.awt.Graphics2D;
 
 import javax.swing.Icon;
@@ -43,6 +44,7 @@ public interface GraphEditorTool extends GraphEditorKeyListener, GraphEditorMous
     Icon getIcon();
     int getHotKeyCode();
     String getHintMessage();
+    Cursor getCursor();
     boolean requiresButton();
 
 }

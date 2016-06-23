@@ -23,6 +23,7 @@ package org.workcraft.gui.graph.tools;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Graphics2D;
 import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
@@ -96,6 +97,11 @@ public class ConnectionTool extends AbstractTool {
     @Override
     public int getHotKeyCode() {
         return KeyEvent.VK_C;
+    }
+
+    @Override
+    public Cursor getCursor() {
+        return Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
     }
 
     private void resetState(GraphEditor editor) {

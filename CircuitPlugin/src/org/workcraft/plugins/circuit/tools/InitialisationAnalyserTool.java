@@ -1,6 +1,7 @@
 package org.workcraft.plugins.circuit.tools;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.HashSet;
@@ -55,6 +56,11 @@ public class InitialisationAnalyserTool extends AbstractTool {
     @Override
     public Icon getIcon() {
         return GUI.createIconFromSVG("images/icons/svg/tool-initialisation_analysis.svg");
+    }
+
+    @Override
+    public Cursor getCursor() {
+        return Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
     }
 
     @Override
