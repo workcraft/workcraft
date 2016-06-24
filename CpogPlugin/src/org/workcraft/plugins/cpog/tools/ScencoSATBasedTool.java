@@ -12,6 +12,8 @@ import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
 import org.workcraft.plugins.cpog.EncoderSettingsSerialiser;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.gui.ScencoSatBasedDialog;
+import org.workcraft.plugins.cpog.tasks.ScencoExternalToolTask;
+import org.workcraft.plugins.cpog.tasks.ScencoResultHandler;
 import org.workcraft.plugins.cpog.tasks.ScencoSolver;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.util.GUI;
@@ -59,8 +61,15 @@ public class ScencoSATBasedTool implements Tool {
             GUI.centerToParent(dialog, mainWindow);
             dialog.setVisible(true);
             // TASK INSERTION
-            /*final ScencoChainTask scencoTask = new ScencoChainTask(we, dialog.getSettings(), framework);
-            framework.getTaskManager().queue(scencoTask, "Scenco tool chain", new ScencoChainResultHandler(scencoTask)); */
+            if (dialog.getModalResult() == 1) {
+                // Instantiate Solver
+                ScencoSolver solver = new ScencoSolver(dialog.getSettings(), we);
+                final ScencoExternalToolTask scencoTask = new ScencoExternalToolTask(we, solver);
+                // Instantiate object for handling solution
+                ScencoResultHandler resultScenco = new ScencoResultHandler(scencoTask);
+                //Run both
+                framework.getTaskManager().queue(scencoTask, "SAT-Based encoding execution", resultScenco);
+            }
         }
     }
 

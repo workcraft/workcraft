@@ -29,7 +29,6 @@ import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
 import org.workcraft.plugins.cpog.VisualCpog;
-import org.workcraft.plugins.cpog.tasks.SatBasedSolver;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.util.GUI;
@@ -178,8 +177,6 @@ public class ScencoSingleSequentialDialog extends JDialog {
                     settings.setBits(bits + 1);
                     settings.setCustomEncMode(false);
                 }
-
-                new SatBasedSolver(settings);
 
                 // Execute scenco
                 modalResult = 1;

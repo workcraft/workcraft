@@ -23,8 +23,14 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
+import org.workcraft.formula.encoding.Encoding;
+import org.workcraft.formula.encoding.onehot.OneHotIntBooleanFormula;
+import org.workcraft.formula.encoding.onehot.OneHotNumberProvider;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
+import org.workcraft.formula.sat.CleverCnfGenerator;
+import org.workcraft.formula.sat.DefaultSolver;
+import org.workcraft.formula.sat.Optimiser;
 import org.workcraft.formula.utils.FormulaToString;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
@@ -393,7 +399,7 @@ public class ScencoExecutionSupport {
             Double currArea, WorkspaceEntry we, int it, boolean continuous, String[] optEnc,
             String[] optFormulaeVertices, String[] truthTableVertices, String[] optVertices,
             String[] optSources, String[] optDests, String[] optFormulaeArcs, String[] truthTableArcs,
-            String[] arcNames, SatBasedSolver satSolver) throws IOException {
+            String[] arcNames) throws IOException {
         int a = 0;
         int v = 0;
         //Debug Printing: launching executable
@@ -471,9 +477,6 @@ public class ScencoExecutionSupport {
 
             }
         }
-
-        satSolver.setA(a);
-        satSolver.setV(v);
 
         process.destroy();
         is.close();
@@ -611,6 +614,27 @@ public class ScencoExecutionSupport {
                 }
             }
         }
+    }
+
+    protected Encoding satBasedRun(int predicates, Variable[] vars, String[] instance, int derivedVariables) {
+        Optimiser<OneHotIntBooleanFormula> oneHot = new Optimiser<>(new OneHotNumberProvider());
+        DefaultSolver<BooleanFormula> solverCnf = new DefaultSolver<>(oneHot, new CleverCnfGenerator());
+        Encoding solution = null;
+
+        try {
+            if (predicates > 0) {
+                System.out.println("INFORMATION: SAT-Based encoding cannot handle graphs with internal CPOGs.");
+                return solution;
+            }
+
+            solution = solverCnf.solve(instance, vars, derivedVariables);
+
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, e.getMessage(), "Encoding result", JOptionPane.ERROR_MESSAGE);
+            System.out.println("INFORMATION: Scenco cannot solve the CPOG.");
+        }
+
+        return solution;
     }
 
 }
