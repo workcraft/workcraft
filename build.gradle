@@ -103,7 +103,7 @@ subprojects {
 
     cpd {
         toolVersion = pmdVersion
-        minimumTokenCount = 2000
+        minimumTokenCount = 1400
     }
 
     cpdCheck {
