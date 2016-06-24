@@ -179,8 +179,64 @@ public class SilverOceanTheme extends OceanTheme {
     @Override
     public void addCustomEntriesToTable(UIDefaults table) {
         super.addCustomEntriesToTable(table);
+        Object[] buttonTable = getCustomButtonTable(table);
+        Object[] gradientTable = getCustomGradientTable(table);
+        Object[] iconTable = {};
+        if (!DesktopApi.getOs().isMac()) {
+            // FIXME: In OSX file/folder icons get corrupted and coloured close/min/max icons do not look right.
+            iconTable = getCustomIconTable(table);
+        }
+        Object[] uiFullTable = mergeTables(buttonTable, gradientTable, iconTable);
+        table.putDefaults(uiFullTable);
+    }
+
+    private Object[] mergeTables(Object[]... tables) {
+        int length = 0;
+        for (Object[] table: tables) {
+            length += table.length;
+        }
+        Object[] result = new Object[length];
+        int pos = 0;
+        for (Object[] table: tables) {
+            System.arraycopy(table, 0, result, pos, table.length);
+            pos += table.length;
+        }
+        return result;
+    }
+
+    private Object[] getCustomButtonTable(UIDefaults table) {
+        Object[] result = {
+                "TabbedPane.selected", getPrimary2(),
+                "TabbedPane.contentAreaColor", getPrimary2(),
+
+                "CheckBox.icon", new CheckBoxIcon(),
+                "CheckBoxMenuItem.checkIcon", new CheckBoxIcon(),
+                "RadioButton.icon", new RadioButtonIcon(),
+
+                "ScrollBar.width", SizeHelper.getScrollbarWidth(),
+        };
+        return result;
+    }
+
+    private Object[] getCustomGradientTable(UIDefaults table) {
         List<Serializable> buttonGradient = Arrays.asList(1.0, 0.0, getSecondary3(), getSecondary2(), getSecondary2());
 
+        Object[] result = {
+                "Button.gradient", buttonGradient,
+                "CheckBox.gradient", buttonGradient,
+                "CheckBoxMenuItem.gradient", buttonGradient,
+                "InternalFrame.activeTitleGradient", buttonGradient,
+                "RadioButton.gradient", buttonGradient,
+                "RadioButtonMenuItem.gradient", buttonGradient,
+                "ScrollBar.gradient", buttonGradient,
+                "Slider.focusGradient", buttonGradient,
+                "Slider.gradient", buttonGradient,
+                "ToggleButton.gradient", buttonGradient,
+        };
+        return result;
+    }
+
+    private Object[] getCustomIconTable(UIDefaults table) {
         Icon internalFrameIcon = UIManager.getIcon("InternalFrame.icon");
         Icon internalFrameMinimizeIcon = UIManager.getIcon("InternalFrame.minimizeIcon");
         Icon internalFrameMaximizeIcon = UIManager.getIcon("InternalFrame.maximizeIcon");
@@ -198,27 +254,7 @@ public class SilverOceanTheme extends OceanTheme {
         Icon fileChooserNewFolderIcon = UIManager.getIcon("FileChooser.newFolderIcon");
         Icon fileChooserUpFolderIcon = UIManager.getIcon("FileChooser.upFolderIcon");
 
-        Object[] uiDefaults = {
-                "Button.gradient", buttonGradient,
-                "CheckBox.gradient", buttonGradient,
-                "CheckBoxMenuItem.gradient", buttonGradient,
-                "InternalFrame.activeTitleGradient", buttonGradient,
-                "RadioButton.gradient", buttonGradient,
-                "RadioButtonMenuItem.gradient", buttonGradient,
-                "ScrollBar.gradient", buttonGradient,
-                "Slider.focusGradient", buttonGradient,
-                "Slider.gradient", buttonGradient,
-                "ToggleButton.gradient", buttonGradient,
-
-                "TabbedPane.selected", getPrimary2(),
-                "TabbedPane.contentAreaColor", getPrimary2(),
-
-                "CheckBox.icon", new CheckBoxIcon(),
-                "CheckBoxMenuItem.checkIcon", new CheckBoxIcon(),
-                "RadioButton.icon", new RadioButtonIcon(),
-
-                "ScrollBar.width", SizeHelper.getScrollbarWidth(),
-
+        Object[] result = {
                 "InternalFrame.icon", SizeHelper.scaleFrameIcon(internalFrameIcon),
                 "InternalFrame.minimizeIcon", SizeHelper.scaleFrameIcon(internalFrameMinimizeIcon),
                 "InternalFrame.maximizeIcon", SizeHelper.scaleFrameIcon(internalFrameMaximizeIcon),
@@ -236,7 +272,7 @@ public class SilverOceanTheme extends OceanTheme {
                 "FileChooser.newFolderIcon", SizeHelper.scaleFileChooserIcon(fileChooserNewFolderIcon),
                 "FileChooser.upFolderIcon", SizeHelper.scaleFileChooserIcon(fileChooserUpFolderIcon),
         };
-        table.putDefaults(uiDefaults);
+        return result;
     }
 
 }
