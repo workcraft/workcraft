@@ -74,7 +74,7 @@ subprojects {
         compile fileTree(dir: '../ThirdParty', include: ['*.jar'])
         compile fileTree(dir: '../ThirdParty/batik', include: ['*.jar'])
 
-        testCompile 'junit:junit:4.5'
+        testCompile 'junit:junit:4.12'
     }
 
     apply plugin: 'checkstyle'
