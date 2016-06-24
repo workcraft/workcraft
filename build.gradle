@@ -4,7 +4,7 @@ buildscript {
     }
     dependencies {
         classpath 'ca.coglinc:javacc-gradle-plugin:2.3.1'
-        classpath 'de.aaschmid.gradle.plugins:gradle-cpd-plugin:0.5'
+        classpath 'de.aaschmid:gradle-cpd-plugin:1.0'
         classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.6.3'
     }
 }
@@ -16,7 +16,7 @@ repositories {
 ext {
     checkstyleVersion = '6.19'
     pmdVersion = '5.4.2'
-    jacocoVersion = '0.7.6.201602180812'
+    jacocoVersion = '0.7.7.201606060606'
 }
 
 subprojects {
@@ -74,7 +74,7 @@ subprojects {
         compile fileTree(dir: '../ThirdParty', include: ['*.jar'])
         compile fileTree(dir: '../ThirdParty/batik', include: ['*.jar'])
 
-        testCompile 'junit:junit:4.5'
+        testCompile 'junit:junit:4.12'
     }
 
     apply plugin: 'checkstyle'
@@ -103,7 +103,7 @@ subprojects {
 
     cpd {
         toolVersion = pmdVersion
-        minimumTokenCount = 2000
+        minimumTokenCount = 1400
     }
 
     cpdCheck {
