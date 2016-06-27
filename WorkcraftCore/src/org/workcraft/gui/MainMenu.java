@@ -32,6 +32,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.AbstractAction;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -210,6 +212,15 @@ public class MainMenu extends JMenuBar {
         ActionMenuItem miDelete = new ActionMenuItem(MainWindowActions.EDIT_DELETE_ACTION);
         miDelete.setMnemonic(KeyEvent.VK_D);
         miDelete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
+        miDelete.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW).put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0), "backspaceDelete");
+        miDelete.getActionMap().put("backspaceDelete", new AbstractAction() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                MainWindowActions.EDIT_DELETE_ACTION.run();
+            }
+
+        });
         miDelete.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
         ActionMenuItem miSelectAll = new ActionMenuItem(MainWindowActions.EDIT_SELECT_ALL_ACTION);
