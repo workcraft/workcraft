@@ -65,7 +65,7 @@ public class CircuitComponent extends MathGroup implements Container, Observable
     }
 
     public boolean isMapped() {
-        return (module == null) || module.isEmpty();
+        return (module != null) && !module.isEmpty();
     }
 
     public void setIsEnvironment(boolean value) {

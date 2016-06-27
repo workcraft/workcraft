@@ -21,19 +21,13 @@
 
 package org.workcraft.plugins.circuit.serialisation;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.UUID;
 
-import org.workcraft.Framework;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.exceptions.ArgumentException;
@@ -45,15 +39,12 @@ import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.formula.utils.FormulaToString;
 import org.workcraft.formula.utils.FormulaToString.Style;
 import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
-import org.workcraft.plugins.circuit.jj.substitution.ParseException;
-import org.workcraft.plugins.circuit.jj.substitution.SubstitutionParser;
 import org.workcraft.plugins.circuit.verilog.SubstitutionRule;
-import org.workcraft.plugins.shared.CommonDebugSettings;
+import org.workcraft.plugins.circuit.verilog.SubstitutionUtils;
 import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
@@ -153,11 +144,11 @@ public class VerilogSerialiser implements ModelSerialiser {
     }
 
     private void writeInstances(PrintWriter out, Circuit circuit) {
-        HashMap<String, SubstitutionRule> substitutionRules = readSubsritutionRules();
+        HashMap<String, SubstitutionRule> substitutionRules = SubstitutionUtils.readSubsritutionRules();
         // Write out assign statements
         boolean hasAssignments = false;
         for (FunctionComponent component: Hierarchy.getDescendantsOfType(circuit.getRoot(), FunctionComponent.class)) {
-            if (component.isMapped()) {
+            if (!component.isMapped()) {
                 if (writeAssigns(out, circuit, component)) {
                     hasAssignments = true;
                 } else {
@@ -171,7 +162,7 @@ public class VerilogSerialiser implements ModelSerialiser {
         }
         // Write out mapped components
         for (FunctionComponent component: Hierarchy.getDescendantsOfType(circuit.getRoot(), FunctionComponent.class)) {
-            if (!component.isMapped()) {
+            if (component.isMapped()) {
                 writeInstance(out, circuit, component, substitutionRules);
             }
         }
@@ -264,51 +255,16 @@ public class VerilogSerialiser implements ModelSerialiser {
             } else {
                 out.print(", ");
             }
-            String contactName = contact.getName();
             String wireName = CircuitUtils.getWireName(circuit, contact);
             if ((wireName == null) || wireName.isEmpty()) {
+                String contactName = contact.getName();
                 LogUtils.logWarningLine("In component '" + instanceFlatName + "' contact '" + contactName + "' is disconnected.");
                 wireName = "";
             }
-            if (substitutionRule != null) {
-                String newContactName = substitutionRule.substitutions.get(contactName);
-                if (newContactName != null) {
-                    LogUtils.logInfoLine("In component '" + instanceFlatName + "' renaming contact '" + contactName + "' to '" + newContactName + "'.");
-                    contactName = newContactName;
-                }
-            }
+            String contactName = SubstitutionUtils.getContactSubstitutionName(contact, substitutionRule, instanceFlatName);
             out.print("." + contactName + "(" + wireName + ")");
         }
         out.print(");\n");
-    }
-
-    private HashMap<String, SubstitutionRule> readSubsritutionRules() {
-        HashMap<String, SubstitutionRule> result = new HashMap<>();
-        String substitutionsFileName = CircuitSettings.getSubstitutionLibrary();
-        if ((substitutionsFileName != null) && !substitutionsFileName.isEmpty()) {
-            File libraryFile = new File(substitutionsFileName);
-            final Framework framework = Framework.getInstance();
-            if (framework.checkFileMessageLog(libraryFile, "Access error for the file of substitutions")) {
-                try {
-                    InputStream genlibInputStream = new FileInputStream(substitutionsFileName);
-                    SubstitutionParser substitutionParser = new SubstitutionParser(genlibInputStream);
-                    if (CommonDebugSettings.getParserTracing()) {
-                        substitutionParser.enable_tracing();
-                    } else {
-                        substitutionParser.disable_tracing();
-                    }
-                    List<SubstitutionRule> rules = substitutionParser.parseSubstitutionRules();
-                    for (SubstitutionRule rule: rules) {
-                        result.put(rule.oldName, rule);
-                    }
-                    LogUtils.logInfoLine("Renaming gates and pins using the file of substitutions '" + substitutionsFileName + "'.");
-                } catch (FileNotFoundException e) {
-                } catch (ParseException e) {
-                    LogUtils.logWarningLine("Could not parse the file of substitutions '" + substitutionsFileName + "'.");
-                }
-            }
-        }
-        return result;
     }
 
     private void writeInitialState(PrintWriter out, Circuit circuit) {
