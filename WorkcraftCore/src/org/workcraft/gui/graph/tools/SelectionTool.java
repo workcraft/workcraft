@@ -74,6 +74,7 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
 import org.workcraft.exceptions.ArgumentException;
+import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.actions.ActionMenuItem;
 import org.workcraft.gui.actions.PopupToolAction;
@@ -167,7 +168,7 @@ public class SelectionTool extends AbstractTool {
 
         if (enableGroupping) {
             JButton groupButton = GUI.createIconButton(GUI.createIconFromSVG(
-                    "images/icons/svg/selection-group.svg"), "Group selection (Ctrl+G)");
+                    "images/icons/svg/selection-group.svg"), "Group selection (" + DesktopApi.getMenuKeyMaskName() + "+G)");
             groupButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -193,7 +194,7 @@ public class SelectionTool extends AbstractTool {
 
         if (enableGroupping || enablePaging) {
             JButton ungroupButton = GUI.createIconButton(GUI.createIconFromSVG(
-                    "images/icons/svg/selection-ungroup.svg"), "Ungroup selection (Ctrl+Shift+G)");
+                    "images/icons/svg/selection-ungroup.svg"), "Ungroup selection (" + DesktopApi.getMenuKeyMaskName() + "+Shift+G)");
             ungroupButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -355,7 +356,14 @@ public class SelectionTool extends AbstractTool {
                         model.addToSelection(node);
                         break;
                     case MouseEvent.CTRL_DOWN_MASK:
-                        model.removeFromSelection(node);
+                        if (DesktopApi.getMenuKeyMouseMask() == MouseEvent.CTRL_DOWN_MASK) {
+                            model.removeFromSelection(node);
+                        }
+                        break;
+                    case MouseEvent.META_DOWN_MASK:
+                        if (DesktopApi.getMenuKeyMouseMask() == MouseEvent.META_DOWN_MASK) {
+                            model.removeFromSelection(node);
+                        }
                         break;
                     }
                 }
@@ -471,7 +479,14 @@ public class SelectionTool extends AbstractTool {
                     selectionMode = SelectionMode.REPLACE;
                     break;
                 case MouseEvent.CTRL_DOWN_MASK:
-                    selectionMode = SelectionMode.REMOVE;
+                    if (DesktopApi.getMenuKeyMouseMask() == MouseEvent.CTRL_DOWN_MASK) {
+                        selectionMode = SelectionMode.REMOVE;
+                    }
+                    break;
+                case MouseEvent.META_DOWN_MASK:
+                    if (DesktopApi.getMenuKeyMouseMask() == MouseEvent.META_DOWN_MASK)  {
+                        selectionMode = SelectionMode.REMOVE;
+                    }
                     break;
                 case MouseEvent.SHIFT_DOWN_MASK:
                     selectionMode = SelectionMode.ADD;
@@ -571,7 +586,7 @@ public class SelectionTool extends AbstractTool {
             break;
         }
 
-        if (!e.isCtrlDown() && !e.isShiftDown()) {
+        if (!e.isMenuKeyDown() && !e.isShiftDown()) {
             switch (e.getKeyCode()) {
             case KeyEvent.VK_LEFT:
                 selectionOffset(e.getEditor(), -1, 0);
@@ -588,7 +603,7 @@ public class SelectionTool extends AbstractTool {
             }
         }
 
-        if (enablePaging && e.isAltDown() && !e.isCtrlDown()) {
+        if (enablePaging && e.isAltDown() && !e.isMenuKeyDown()) {
             switch (e.getKeyCode()) {
             case KeyEvent.VK_G:
                 if (e.isShiftDown()) {
@@ -600,7 +615,7 @@ public class SelectionTool extends AbstractTool {
             }
         }
 
-        if (enableGroupping && e.isCtrlDown() && !e.isAltDown()) {
+        if (enableGroupping && e.isMenuKeyDown() && !e.isAltDown()) {
             switch (e.getKeyCode()) {
             case KeyEvent.VK_G:
                 if (e.isShiftDown()) {

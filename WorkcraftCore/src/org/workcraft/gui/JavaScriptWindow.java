@@ -26,6 +26,7 @@ import java.awt.Dimension;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 
 import javax.swing.JPanel;
 
@@ -46,7 +47,7 @@ public class JavaScriptWindow extends JPanel {
         txtScript.addKeyListener(new java.awt.event.KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                if ((e.getKeyCode() == KeyEvent.VK_ENTER) && (e.isControlDown() == true)) {
+                if ((e.getKeyCode() == KeyEvent.VK_ENTER) && (DesktopApi.isMenuKeyDown(e))) {
                     execScript();
                 }
             }
@@ -103,7 +104,7 @@ public class JavaScriptWindow extends JPanel {
 
     private void resetScript() {
         isInitState = true;
-        txtScript.setText("// Write a script and press Ctrl-Enter to execute it.");
+        txtScript.setText("// Write a script and press " + DesktopApi.getMenuKeyMaskName() + "-Enter to execute it.");
     }
 
 }

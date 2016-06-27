@@ -15,6 +15,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
@@ -37,7 +38,7 @@ public class PolicySelectionTool extends SelectionTool {
         JPanel bundlePanel = new JPanel();
         controlPanel.add(bundlePanel);
         JButton bundleButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/icons/svg/selection-bundle.svg"), "Bundle selected transitions (Ctrl+B)");
+                "images/icons/svg/selection-bundle.svg"), "Bundle selected transitions (" + DesktopApi.getMenuKeyMaskName()+ "+B)");
         bundleButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -46,7 +47,7 @@ public class PolicySelectionTool extends SelectionTool {
         });
         bundlePanel.add(bundleButton);
         JButton unbundleButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/icons/svg/selection-unbundle.svg"), "Unbundle selected transitions (Ctrl+Shift+B)");
+                "images/icons/svg/selection-unbundle.svg"), "Unbundle selected transitions (" + DesktopApi.getMenuKeyMaskName() + "+Shift+B)");
         unbundleButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -91,7 +92,7 @@ public class PolicySelectionTool extends SelectionTool {
     public void keyPressed(GraphEditorKeyEvent e) {
         super.keyPressed(e);
 
-        if (e.isCtrlDown()) {
+        if (e.isMenuKeyDown()) {
             switch (e.getKeyCode()) {
             case KeyEvent.VK_B:
                 if (e.isShiftDown()) {

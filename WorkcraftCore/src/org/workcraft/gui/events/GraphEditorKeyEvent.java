@@ -21,10 +21,12 @@
 
 package org.workcraft.gui.events;
 
+import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
 import java.awt.event.KeyEvent;
 
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.graph.tools.GraphEditor;
 
 public class GraphEditorKeyEvent {
@@ -63,6 +65,10 @@ public class GraphEditorKeyEvent {
     public boolean isAltDown() {
         return isMaskHit(InputEvent.ALT_DOWN_MASK);
     }
+    
+    public boolean isMetaDown() {
+        return isMaskHit(InputEvent.META_DOWN_MASK);
+    }
 
     public int getModifiers() {
         return modifiers;
@@ -74,5 +80,12 @@ public class GraphEditorKeyEvent {
 
     public VisualModel getModel() {
         return editor.getModel();
+    }
+
+    public boolean isMenuKeyDown() {
+        if (DesktopApi.getMenuKeyMask() == ActionEvent.META_MASK) {
+            return isMetaDown();
+        }
+        return isCtrlDown();
     }
 }

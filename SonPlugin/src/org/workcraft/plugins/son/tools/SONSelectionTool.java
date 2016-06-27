@@ -16,6 +16,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
@@ -57,7 +58,7 @@ public class SONSelectionTool extends SelectionTool {
 
         //Create groupButton
         final JButton groupButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/icons/svg/selection-group.svg"), "Group selection (Ctrl+G)");
+                "images/icons/svg/selection-group.svg"), "Group selection (" + DesktopApi.getMenuKeyMaskName() + "+G)");
         groupButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -92,7 +93,7 @@ public class SONSelectionTool extends SelectionTool {
 
         //Create ungroupButton
         JButton ungroupButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/icons/svg/selection-ungroup.svg"), "Ungroup selection (Ctrl+Shift+G)");
+                "images/icons/svg/selection-ungroup.svg"), "Ungroup selection (" + DesktopApi.getMenuKeyMaskName() + "+Shift+G)");
         ungroupButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -127,7 +128,7 @@ public class SONSelectionTool extends SelectionTool {
         JPanel flipPanel = new JPanel(new FlowLayout());
         controlPanel.add(flipPanel);
         JButton flipHorizontalButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/icons/svg/selection-flip_horizontal.svg"), "Flip horizontal (Ctrl+F)");
+                "images/icons/svg/selection-flip_horizontal.svg"), "Flip horizontal (" + DesktopApi.getMenuKeyMaskName() + "+F)");
         flipHorizontalButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -136,7 +137,7 @@ public class SONSelectionTool extends SelectionTool {
         });
         flipPanel.add(flipHorizontalButton);
         JButton flipVerticalButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/icons/svg/selection-flip_vertical.svg"), "Flip vertical (Ctrl+Shift+F)");
+                "images/icons/svg/selection-flip_vertical.svg"), "Flip vertical (" + DesktopApi.getMenuKeyMaskName() + "+Shift+F)");
         flipVerticalButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -148,7 +149,7 @@ public class SONSelectionTool extends SelectionTool {
         JPanel rotatePanel = new JPanel(new FlowLayout());
         controlPanel.add(rotatePanel);
         JButton rotateClockwiseButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/icons/svg/selection-rotate_clockwise.svg"), "Rotate clockwise (Ctrl+R)");
+                "images/icons/svg/selection-rotate_clockwise.svg"), "Rotate clockwise (" + DesktopApi.getMenuKeyMaskName() + "+R)");
         rotateClockwiseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -157,7 +158,7 @@ public class SONSelectionTool extends SelectionTool {
         });
         rotatePanel.add(rotateClockwiseButton);
         JButton rotateCounterclockwiseButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/icons/svg/selection-rotate_counterclockwise.svg"), "Rotate counterclockwise (Ctrl+Shift+R)");
+                "images/icons/svg/selection-rotate_counterclockwise.svg"), "Rotate counterclockwise (" + DesktopApi.getMenuKeyMaskName() + "+Shift+R)");
         rotateCounterclockwiseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -246,7 +247,7 @@ public class SONSelectionTool extends SelectionTool {
     public void keyPressed(GraphEditorKeyEvent e) {
         super.keyPressed(e);
 
-        if (e.isAltDown() && !e.isCtrlDown() && !e.isShiftDown()) {
+        if (e.isAltDown() && !e.isMenuKeyDown() && !e.isShiftDown()) {
             switch (e.getKeyCode()) {
             case KeyEvent.VK_B:
                 selectionBlock(e.getEditor());

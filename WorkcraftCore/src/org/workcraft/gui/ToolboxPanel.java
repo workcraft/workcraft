@@ -269,7 +269,7 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
     }
 
     public void keyPressed(GraphEditorKeyEvent event) {
-        if (!event.isAltDown() && !event.isCtrlDown() && !event.isShiftDown()) {
+        if (!event.isAltDown() && !event.isMenuKeyDown() && !event.isShiftDown()) {
             int keyCode = event.getKeyCode();
             ToolTracker tracker = hotkeyMap.get(keyCode);
             if (tracker != null) {

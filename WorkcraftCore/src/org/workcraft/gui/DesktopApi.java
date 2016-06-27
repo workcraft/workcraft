@@ -7,6 +7,10 @@
 package org.workcraft.gui;
 
 import java.awt.Desktop;
+import java.awt.Event;
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
@@ -183,6 +187,34 @@ public class DesktopApi {
             result = "";
         }
         return result;
+    }
+
+    public static int getMenuKeyMask() {
+        if (getOs().isMac()) {
+            return ActionEvent.META_MASK;
+        }
+        return ActionEvent.CTRL_MASK;
+    }
+    
+    public static String getMenuKeyMaskName() {
+        if (getMenuKeyMask() == ActionEvent.META_MASK) {
+            return "Cmd";
+        }
+        return "Ctrl";
+    }
+    
+    public static int getMenuKeyMouseMask() {
+        if (getOs().isMac()) {
+            return MouseEvent.META_DOWN_MASK;
+        }
+        return MouseEvent.CTRL_DOWN_MASK;
+    }
+    
+    public static boolean isMenuKeyDown(InputEvent e) {
+        if (getOs().isMac()) {
+            return e.isMetaDown();
+        }
+        return e.isControlDown();
     }
 
 }

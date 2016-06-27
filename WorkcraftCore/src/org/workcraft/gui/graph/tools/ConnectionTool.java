@@ -48,6 +48,7 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.util.GUI;
@@ -240,7 +241,7 @@ public class ConnectionTool extends AbstractTool {
                 } else {
                     editor.getWorkspaceEntry().saveMemento();
                     finishConnection(e);
-                    if ((e.getModifiers() & MouseEvent.CTRL_DOWN_MASK) != 0) {
+                    if ((e.getModifiers() & DesktopApi.getMenuKeyMouseMask()) != 0) {
                         startConnection(e);
                     } else {
                         resetState(editor);
@@ -343,7 +344,7 @@ public class ConnectionTool extends AbstractTool {
     }
 
     public String getSecondHintMessage() {
-        return "Click on a second component or create a polyline segment. Hold Ctrl to connect continuously.";
+        return "Click on a second component or create a polyline segment. Hold " + DesktopApi.getMenuKeyMaskName() + " to connect continuously.";
     }
 
     @Override

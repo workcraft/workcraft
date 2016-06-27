@@ -25,6 +25,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.graph.tools.GraphEditor;
 
 public class GraphEditorMouseEvent {
@@ -114,7 +115,7 @@ public class GraphEditorMouseEvent {
     }
 
     public int getKeyModifiers() {
-        return event.getModifiersEx() & (MouseEvent.SHIFT_DOWN_MASK | MouseEvent.CTRL_DOWN_MASK | MouseEvent.ALT_DOWN_MASK);
+        return event.getModifiersEx() & (MouseEvent.SHIFT_DOWN_MASK | DesktopApi.getMenuKeyMouseMask() | MouseEvent.ALT_DOWN_MASK);
     }
 
     public int getButtonModifiers() {
