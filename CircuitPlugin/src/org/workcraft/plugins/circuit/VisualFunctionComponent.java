@@ -30,9 +30,9 @@ import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.circuit.renderers.GateRenderer;
 
-@DisplayName("Function")
+@DisplayName("Function Component")
 @Hotkey(KeyEvent.VK_F)
-@SVGIcon("images/icons/svg/circuit-formula.svg")
+@SVGIcon("images/node-function.svg")
 public class VisualFunctionComponent extends VisualCircuitComponent {
     private RenderType renderType = RenderType.GATE;
     private ComponentRenderingResult renderingResult = null;

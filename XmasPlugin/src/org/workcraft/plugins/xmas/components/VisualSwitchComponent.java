@@ -38,7 +38,7 @@ import org.workcraft.plugins.xmas.components.SwitchComponent.Type;
 import org.workcraft.plugins.xmas.components.SwitchComponent.Val;
 
 @DisplayName("Switch")
-@SVGIcon("images/icons/svg/xmas-switch.svg")
+@SVGIcon("images/node-switch.svg")
 public class VisualSwitchComponent extends VisualXmasComponent {
 
     public final double pointerSize = 0.20 * size;

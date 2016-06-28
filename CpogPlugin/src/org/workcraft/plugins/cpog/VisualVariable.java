@@ -47,7 +47,7 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @Hotkey(KeyEvent.VK_X)
 @DisplayName("Variable")
-@SVGIcon("images/icons/svg/variable.svg")
+@SVGIcon("images/node-variable.svg")
 public class VisualVariable extends VisualComponent {
     private static Font variableFont;
     private static Font valueFont;

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg id="svg1307" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="48px" width="48px" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
+ <metadata id="metadata1312">
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title>Media Playback Start</dc:title>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Lapo Calamandrei</dc:title>
+     </cc:Agent>
+    </dc:creator>
+    <cc:license rdf:resource="http://creativecommons.org/licenses/publicdomain/"/>
+    <dc:subject>
+     <rdf:Bag>
+      <rdf:li>play</rdf:li>
+      <rdf:li>media</rdf:li>
+      <rdf:li>music</rdf:li>
+      <rdf:li>video</rdf:li>
+      <rdf:li>player</rdf:li>
+     </rdf:Bag>
+    </dc:subject>
+    <dc:contributor>
+     <cc:Agent>
+      <dc:title>Jakub Steiner</dc:title>
+     </cc:Agent>
+    </dc:contributor>
+   </cc:Work>
+   <cc:License rdf:about="http://creativecommons.org/licenses/publicdomain/">
+    <cc:permits rdf:resource="http://creativecommons.org/ns#Reproduction"/>
+    <cc:permits rdf:resource="http://creativecommons.org/ns#Distribution"/>
+    <cc:permits rdf:resource="http://creativecommons.org/ns#DerivativeWorks"/>
+   </cc:License>
+  </rdf:RDF>
+ </metadata>
+ <g id="layer1">
+  <g id="g3889" transform="translate(.84225 .83713)">
+   <path id="path3793" d="m35.314 6.4107 7.248 22.097-37.124-0.354" transform="translate(-.84225 -.83713)" stroke="#000" stroke-width="1px" fill="none"/>
+   <path id="path3042-22" d="m14.849 8.1369c0 2.0014-1.6225 3.6239-3.6239 3.6239s-3.6239-1.6225-3.6239-3.6239 1.6225-3.6239 3.6239-3.6239 3.6239 1.6225 3.6239 3.6239z" transform="matrix(1.3058 0 0 1.3058 27.061 17.045)" stroke-dashoffset="2.4" stroke="#000" stroke-linecap="round" stroke-width="2" fill="#d4d4d4"/>
+   <path id="path3885" d="m23.335 40.752-18.739-13.435 7.16-21.478 22.715-0.2654-11.136 35.178" stroke="#b90000" stroke-width="1px" fill="none"/>
+   <path id="path3042" d="m14.849 8.1369c0 2.0014-1.6225 3.6239-3.6239 3.6239s-3.6239-1.6225-3.6239-3.6239 1.6225-3.6239 3.6239-3.6239 3.6239 1.6225 3.6239 3.6239z" transform="matrix(1.3058 0 0 1.3058 -2.9029 -4.7867)" stroke-dashoffset="2.4" stroke="#8c0000" stroke-linecap="round" stroke-width="2" fill="#d4d4d4"/>
+   <path id="path3042-5" d="m14.849 8.1369c0 2.0014-1.6225 3.6239-3.6239 3.6239s-3.6239-1.6225-3.6239-3.6239 1.6225-3.6239 3.6239-3.6239 3.6239 1.6225 3.6239 3.6239z" transform="matrix(1.3058 0 0 1.3058 20.385 -5.0051)" stroke-dashoffset="2.4" stroke="#8c0000" stroke-linecap="round" stroke-width="2" fill="#d4d4d4"/>
+   <path id="path3042-4" d="m14.849 8.1369c0 2.0014-1.6225 3.6239-3.6239 3.6239s-3.6239-1.6225-3.6239-3.6239 1.6225-3.6239 3.6239-3.6239 3.6239 1.6225 3.6239 3.6239z" transform="matrix(1.3058 0 0 1.3058 8.806 30.439)" stroke-dashoffset="2.4" stroke="#8c0000" stroke-linecap="round" stroke-width="2" fill="#d4d4d4"/>
+   <path id="path3042-2" d="m14.849 8.1369c0 2.0014-1.6225 3.6239-3.6239 3.6239s-3.6239-1.6225-3.6239-3.6239 1.6225-3.6239 3.6239-3.6239 3.6239 1.6225 3.6239 3.6239z" transform="matrix(1.3058 0 0 1.3058 -10.021 16.562)" stroke-dashoffset="2.4" stroke="#8c0000" stroke-linecap="round" stroke-width="2" fill="#d4d4d4"/>
+  </g>
+ </g>
+</svg>

@@ -448,7 +448,7 @@ public class MainWindow extends JFrame {
                 FontRenderContext frc = new FontRenderContext(new AffineTransform(), true, true);
                 font.createGlyphVector(frc, TITLE_PLACEHOLDER);
                 // Force SVG rendering classes to load.
-                GUI.createIconFromSVG("images/icons/svg/place.svg");
+                GUI.createIconFromSVG("images/icon.svg");
             }
         }).start();
 

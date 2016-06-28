@@ -17,7 +17,7 @@ import org.workcraft.plugins.shared.CommonCommentSettings;
 
 @Hotkey(KeyEvent.VK_N)
 @DisplayName("Text Note")
-@SVGIcon("images/icons/svg/note.svg")
+@SVGIcon("images/node-comment.svg")
 public class VisualComment extends VisualComponent {
     public static final String PROPERTY_TEXT_ALIGNMENT = "Text alignment";
 

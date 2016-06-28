@@ -29,7 +29,7 @@ import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.Positioning;
 
 @DisplayName("Sync")
-@SVGIcon("images/icons/svg/xmas-sync.svg")
+@SVGIcon("images/node-sync.svg")
 public class VisualSyncComponent extends VisualXmasComponent {
 
     public int xOffset = 0;

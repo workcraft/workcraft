@@ -55,7 +55,7 @@ public class InitialisationAnalyserTool extends AbstractTool {
 
     @Override
     public Icon getIcon() {
-        return GUI.createIconFromSVG("images/icons/svg/tool-initialisation_analysis.svg");
+        return GUI.createIconFromSVG("images/tool-initialisation_analysis.svg");
     }
 
     @Override

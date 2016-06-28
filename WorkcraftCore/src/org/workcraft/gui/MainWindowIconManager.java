@@ -15,22 +15,22 @@ public class MainWindowIconManager {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                final Image active = GUI.createIconFromSVG("images/icons/svg/place.svg", 32, 32, Color.WHITE).getImage();
-                final Image inactive = GUI.createIconFromSVG("images/icons/svg/place_empty.svg", 32, 32, Color.WHITE).getImage();
+                final Image activeIcon = GUI.createIconFromSVG("images/icon.svg", 32, 32, Color.WHITE).getImage();
+                final Image inactiveIcon = GUI.createIconFromSVG("images/icon-inactive.svg", 32, 32, Color.WHITE).getImage();
 
                 try {
                     SwingUtilities.invokeAndWait(new Runnable() {
                         @Override
                         public void run() {
-                            window.setIconImage(window.isActive() ? active : inactive);
+                            window.setIconImage(window.isActive() ? activeIcon : inactiveIcon);
                             window.addWindowListener(new WindowAdapter() {
                                 @Override
                                 public void windowDeactivated(WindowEvent e) {
-                                    window.setIconImage(inactive);
+                                    window.setIconImage(inactiveIcon);
                                 }
                                 @Override
                                 public void windowActivated(WindowEvent e) {
-                                    window.setIconImage(active);
+                                    window.setIconImage(activeIcon);
                                 }
                             });
                         }

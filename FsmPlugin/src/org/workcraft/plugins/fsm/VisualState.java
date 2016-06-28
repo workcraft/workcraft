@@ -22,7 +22,7 @@ import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 
 @Hotkey(KeyEvent.VK_T)
 @DisplayName("State")
-@SVGIcon("images/icons/svg/vertex.svg")
+@SVGIcon("images/node-vertex.svg")
 public class VisualState extends VisualComponent {
     private static double size = 1.0;
     private static float strokeWidth = 0.1f;

@@ -2,14 +2,10 @@ package org.workcraft.dom.visual;
 
 import java.awt.BasicStroke;
 import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 
-import org.workcraft.annotations.DisplayName;
-import org.workcraft.annotations.Hotkey;
-import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
@@ -25,9 +21,6 @@ import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.observation.TransformChangingEvent;
 import org.workcraft.util.Hierarchy;
 
-@Hotkey(KeyEvent.VK_P)
-@DisplayName("Page")
-@SVGIcon("images/icons/svg/selection-page.svg")
 public class VisualPage extends VisualComponent implements Collapsible, Container, ObservableHierarchy {
     public static final String PROPERTY_IS_COLLAPSED = "Is collapsed";
     public static final String PROPERTY_REFERENCED_MODEL = "Referenced model";

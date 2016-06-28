@@ -146,7 +146,7 @@ public class SelectionTool extends AbstractTool {
 
     @Override
     public Icon getIcon() {
-        return GUI.createIconFromSVG("images/icons/svg/select.svg");
+        return GUI.createIconFromSVG("images/tool-selection.svg");
     }
 
     @Override
@@ -168,7 +168,7 @@ public class SelectionTool extends AbstractTool {
 
         if (enableGroupping) {
             JButton groupButton = GUI.createIconButton(GUI.createIconFromSVG(
-                    "images/icons/svg/selection-group.svg"), "Group selection (" + DesktopApi.getMenuKeyMaskName() + "+G)");
+                    "images/selection-group.svg"), "Group selection (" + DesktopApi.getMenuKeyMaskName() + "+G)");
             groupButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -181,7 +181,7 @@ public class SelectionTool extends AbstractTool {
 
         if (enablePaging) {
             JButton groupPageButton = GUI.createIconButton(GUI.createIconFromSVG(
-                    "images/icons/svg/selection-page.svg"), "Combine selection into a page (Alt+G)");
+                    "images/selection-page.svg"), "Combine selection into a page (Alt+G)");
             groupPageButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -194,7 +194,7 @@ public class SelectionTool extends AbstractTool {
 
         if (enableGroupping || enablePaging) {
             JButton ungroupButton = GUI.createIconButton(GUI.createIconFromSVG(
-                    "images/icons/svg/selection-ungroup.svg"), "Ungroup selection (" + DesktopApi.getMenuKeyMaskName() + "+Shift+G)");
+                    "images/selection-ungroup.svg"), "Ungroup selection (" + DesktopApi.getMenuKeyMaskName() + "+Shift+G)");
             ungroupButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -207,7 +207,7 @@ public class SelectionTool extends AbstractTool {
             JPanel levelPanel = new JPanel(new FlowLayout());
             controlPanel.add(levelPanel);
             JButton levelUpButton = GUI.createIconButton(GUI.createIconFromSVG(
-                    "images/icons/svg/selection-level_up.svg"), "Level up (PageUp)");
+                    "images/selection-level_up.svg"), "Level up (PageUp)");
             levelUpButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -217,7 +217,7 @@ public class SelectionTool extends AbstractTool {
             });
             levelPanel.add(levelUpButton);
             JButton levelDownButton = GUI.createIconButton(GUI.createIconFromSVG(
-                    "images/icons/svg/selection-level_down.svg"), "Level down (PageDown)");
+                    "images/selection-level_down.svg"), "Level down (PageDown)");
             levelDownButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -232,7 +232,7 @@ public class SelectionTool extends AbstractTool {
             JPanel flipPanel = new JPanel(new FlowLayout());
             controlPanel.add(flipPanel);
             JButton flipHorizontalButton = GUI.createIconButton(GUI.createIconFromSVG(
-                    "images/icons/svg/selection-flip_horizontal.svg"), "Flip horizontal");
+                    "images/selection-flip_horizontal.svg"), "Flip horizontal");
             flipHorizontalButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -242,7 +242,7 @@ public class SelectionTool extends AbstractTool {
             });
             flipPanel.add(flipHorizontalButton);
             JButton flipVerticalButton = GUI.createIconButton(GUI.createIconFromSVG(
-                    "images/icons/svg/selection-flip_vertical.svg"), "Flip vertical");
+                    "images/selection-flip_vertical.svg"), "Flip vertical");
             flipVerticalButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -257,7 +257,7 @@ public class SelectionTool extends AbstractTool {
             JPanel rotatePanel = new JPanel(new FlowLayout());
             controlPanel.add(rotatePanel);
             JButton rotateClockwiseButton = GUI.createIconButton(GUI.createIconFromSVG(
-                    "images/icons/svg/selection-rotate_clockwise.svg"), "Rotate clockwise");
+                    "images/selection-rotate_clockwise.svg"), "Rotate clockwise");
             rotateClockwiseButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -267,7 +267,7 @@ public class SelectionTool extends AbstractTool {
             });
             rotatePanel.add(rotateClockwiseButton);
             JButton rotateCounterclockwiseButton = GUI.createIconButton(GUI.createIconFromSVG(
-                    "images/icons/svg/selection-rotate_counterclockwise.svg"), "Rotate counterclockwise");
+                    "images/selection-rotate_counterclockwise.svg"), "Rotate counterclockwise");
             rotateCounterclockwiseButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {

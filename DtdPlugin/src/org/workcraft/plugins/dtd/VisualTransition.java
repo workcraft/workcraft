@@ -39,7 +39,7 @@ import org.workcraft.plugins.graph.VisualVertex;
 
 @Hotkey(KeyEvent.VK_T)
 @DisplayName("Transition")
-@SVGIcon("images/icons/svg/transition.svg")
+@SVGIcon("images/node-transition.svg")
 public class VisualTransition extends VisualVertex {
 
     public VisualTransition(Transition transition) {
