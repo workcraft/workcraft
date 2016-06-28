@@ -29,6 +29,7 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.Point2D;
 
+import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
@@ -53,7 +54,7 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
     }
 
     private boolean isPanCombo(MouseEvent e) {
-        return (e.getButton() == MouseEvent.BUTTON2) || (e.isControlDown() && e.getButton() == MouseEvent.BUTTON3);
+        return (e.getButton() == MouseEvent.BUTTON2) || (DesktopApi.isMenuKeyDown(e) && e.getButton() == MouseEvent.BUTTON3);
     }
 
     public void mouseDragged(MouseEvent e) {

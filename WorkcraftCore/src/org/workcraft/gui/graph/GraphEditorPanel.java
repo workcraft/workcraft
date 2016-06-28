@@ -23,7 +23,6 @@ package org.workcraft.gui.graph;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
-import java.awt.Event;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
@@ -69,6 +68,7 @@ import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
+import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Overlay;
 import org.workcraft.gui.PropertyEditorWindow;
@@ -267,10 +267,10 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         updatePropertyTimer.start();
 
         // This is a hack to prevent editor panel from loosing focus on Ctrl-UP key combination
-        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, Event.CTRL_MASK), "doNothing");
-        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, Event.CTRL_MASK), "doNothing");
-        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, Event.CTRL_MASK), "doNothing");
-        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, Event.CTRL_MASK), "doNothing");
+        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, DesktopApi.getMenuKeyMask()), "doNothing");
+        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, DesktopApi.getMenuKeyMask()), "doNothing");
+        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, DesktopApi.getMenuKeyMask()), "doNothing");
+        this.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, DesktopApi.getMenuKeyMask()), "doNothing");
         this.getActionMap().put("doNothing", new AbstractAction() {
             public void actionPerformed(ActionEvent e) {
                 //do nothing

@@ -46,7 +46,7 @@ public class JavaScriptWindow extends JPanel {
         txtScript.addKeyListener(new java.awt.event.KeyAdapter() {
             @Override
             public void keyReleased(KeyEvent e) {
-                if ((e.getKeyCode() == KeyEvent.VK_ENTER) && (e.isControlDown() == true)) {
+                if ((e.getKeyCode() == KeyEvent.VK_ENTER) && (DesktopApi.isMenuKeyDown(e))) {
                     execScript();
                 }
             }
@@ -103,7 +103,7 @@ public class JavaScriptWindow extends JPanel {
 
     private void resetScript() {
         isInitState = true;
-        txtScript.setText("// Write a script and press Ctrl-Enter to execute it.");
+        txtScript.setText("// Write a script and press " + DesktopApi.getMenuKeyMaskName() + "-Enter to execute it.");
     }
 
 }

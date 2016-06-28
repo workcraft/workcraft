@@ -231,8 +231,7 @@ public class CpogSelectionTool extends SelectionTool {
                         for (int k = 0; k < c.length; k++) {
                             if (c[k] instanceof JButton) {
                                 JButton b = (JButton) c[k];
-                                System.out.println(b.getText());
-                                if (b.getToolTipText() != null && b.getToolTipText() == "Group selection (Ctrl+G)") {
+                                if (b.getToolTipText() != null && b.getToolTipText().startsWith("Group selection (")) {
                                     groupPanel = pan;
                                 }
                             }

@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import javax.swing.InputMap;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
@@ -51,7 +52,13 @@ public class LookAndFeelHelper {
 
     public static void setDefaultLookAndFeel() {
         String laf = UIManager.getCrossPlatformLookAndFeelClassName();
+        InputMap textFieldInputMap = (InputMap) UIManager.get("TextField.focusInputMap");
+        InputMap textAreaInputMap = (InputMap) UIManager.get("TextArea.focusInputMap");
         setLookAndFeel(laf);
+        if (DesktopApi.getOs().isMac()) {
+            UIManager.put("TextField.focusInputMap", textFieldInputMap);
+            UIManager.put("TextArea.focusInputMap", textAreaInputMap);
+        }
     }
 
     public static void setLookAndFeel(String laf) {

@@ -41,7 +41,7 @@ public final class LogAreaMouseListener implements MouseListener {
                 // Copy
                 JMenuItem miCopy = new JMenuItem(new DefaultEditorKit.CopyAction());
                 miCopy.setText("Copy");
-                miCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+                miCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, DesktopApi.getMenuKeyMask()));
                 miCopy.setMnemonic(KeyEvent.VK_C);
                 popup.add(miCopy);
 
@@ -54,7 +54,7 @@ public final class LogAreaMouseListener implements MouseListener {
                     }
                 });
                 miSelect.setText("Select All");
-                miSelect.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
+                miSelect.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, DesktopApi.getMenuKeyMask()));
                 miCopy.setMnemonic(KeyEvent.VK_A);
                 popup.add(miSelect);
 

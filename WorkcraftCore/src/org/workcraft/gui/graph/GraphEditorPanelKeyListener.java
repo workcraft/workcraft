@@ -24,6 +24,7 @@ package org.workcraft.gui.graph;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 
+import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.graph.tools.GraphEditorKeyListener;
 
@@ -37,7 +38,7 @@ class GraphEditorPanelKeyListener implements KeyListener {
     }
 
     public void keyPressed(KeyEvent e) {
-        if (e.isControlDown()) {
+        if (DesktopApi.isMenuKeyDown(e)) {
             switch (e.getKeyCode()) {
             case KeyEvent.VK_LEFT:
                 editor.panLeft();

@@ -188,6 +188,7 @@ public class SilverOceanTheme extends OceanTheme {
         }
         Object[] uiFullTable = mergeTables(buttonTable, gradientTable, iconTable);
         table.putDefaults(uiFullTable);
+
     }
 
     private Object[] mergeTables(Object[]... tables) {

@@ -32,6 +32,9 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.swing.AbstractAction;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
@@ -65,6 +68,7 @@ public class MainMenu extends JMenuBar {
     private final HashMap<Integer, ActionCheckBoxMenuItem> windowItems = new HashMap<>();
     private final LinkedList<JMenu> mnToolsList = new LinkedList<>();
     private final JMenu mnHelp = new JMenu("Help");
+    private final int menuKeyMask = DesktopApi.getMenuKeyMask();
 
     MainMenu(final MainWindow mainWindow) {
         this.mainWindow = mainWindow;
@@ -79,12 +83,12 @@ public class MainMenu extends JMenuBar {
 
         ActionMenuItem miNewModel = new ActionMenuItem(MainWindowActions.CREATE_WORK_ACTION);
         miNewModel.setMnemonic(KeyEvent.VK_N);
-        miNewModel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, ActionEvent.CTRL_MASK));
+        miNewModel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_N, menuKeyMask));
         miNewModel.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
         ActionMenuItem miOpenModel = new ActionMenuItem(MainWindowActions.OPEN_WORK_ACTION);
         miOpenModel.setMnemonic(KeyEvent.VK_O);
-        miOpenModel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, ActionEvent.CTRL_MASK));
+        miOpenModel.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_O, menuKeyMask));
         miOpenModel.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
         ActionMenuItem miMergeModel = new ActionMenuItem(MainWindowActions.MERGE_WORK_ACTION);
@@ -93,7 +97,7 @@ public class MainMenu extends JMenuBar {
 
         ActionMenuItem miSaveWork = new ActionMenuItem(MainWindowActions.SAVE_WORK_ACTION);
         miSaveWork.setMnemonic(KeyEvent.VK_S);
-        miSaveWork.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, ActionEvent.CTRL_MASK));
+        miSaveWork.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_S, menuKeyMask));
         miSaveWork.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
         ActionMenuItem miSaveWorkAs = new ActionMenuItem(MainWindowActions.SAVE_WORK_AS_ACTION);
@@ -184,42 +188,53 @@ public class MainMenu extends JMenuBar {
 
         ActionMenuItem miUndo = new ActionMenuItem(MainWindowActions.EDIT_UNDO_ACTION);
         miUndo.setMnemonic(KeyEvent.VK_U);
-        miUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
+        miUndo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, menuKeyMask));
         miUndo.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
         ActionMenuItem miRedo = new ActionMenuItem(MainWindowActions.EDIT_REDO_ACTION);
         miRedo.setMnemonic(KeyEvent.VK_R);
-        miRedo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK | ActionEvent.SHIFT_MASK));
+        miRedo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, menuKeyMask | ActionEvent.SHIFT_MASK));
         miRedo.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
         ActionMenuItem miCut = new ActionMenuItem(MainWindowActions.EDIT_CUT_ACTION);
         miCut.setMnemonic(KeyEvent.VK_T);
-        miCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
+        miCut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, menuKeyMask));
         miCut.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
         ActionMenuItem miCopy = new ActionMenuItem(MainWindowActions.EDIT_COPY_ACTION);
         miCopy.setMnemonic(KeyEvent.VK_C);
-        miCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
+        miCopy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, menuKeyMask));
         miCopy.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
         ActionMenuItem miPaste = new ActionMenuItem(MainWindowActions.EDIT_PASTE_ACTION);
         miPaste.setMnemonic(KeyEvent.VK_P);
-        miPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
+        miPaste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, menuKeyMask));
         miPaste.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
         ActionMenuItem miDelete = new ActionMenuItem(MainWindowActions.EDIT_DELETE_ACTION);
         miDelete.setMnemonic(KeyEvent.VK_D);
         miDelete.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0));
+
+        InputMap deleteInputMap = miDelete.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+        KeyStroke backspace = KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0);
+        deleteInputMap.put(backspace, MainWindowActions.EDIT_DELETE_ACTION);
+        miDelete.getActionMap().put(MainWindowActions.EDIT_DELETE_ACTION, new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                MainWindowActions.EDIT_DELETE_ACTION.run();
+            }
+        });
+
         miDelete.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
         ActionMenuItem miSelectAll = new ActionMenuItem(MainWindowActions.EDIT_SELECT_ALL_ACTION);
         miSelectAll.setMnemonic(KeyEvent.VK_A);
-        miSelectAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, ActionEvent.CTRL_MASK));
+        miSelectAll.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, menuKeyMask));
         miSelectAll.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
         ActionMenuItem miSelectInverse = new ActionMenuItem(MainWindowActions.EDIT_SELECT_INVERSE_ACTION);
         miSelectInverse.setMnemonic(KeyEvent.VK_V);
-        miSelectInverse.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, ActionEvent.CTRL_MASK));
+        miSelectInverse.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_I, menuKeyMask));
         miSelectInverse.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
         ActionMenuItem miSelectNone = new ActionMenuItem(MainWindowActions.EDIT_SELECT_NONE_ACTION);
@@ -250,39 +265,39 @@ public class MainMenu extends JMenuBar {
         JMenu mnView = new JMenu("View");
 
         ActionMenuItem miZoomIn = new ActionMenuItem(MainWindowActions.VIEW_ZOOM_IN);
-        miZoomIn.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, ActionEvent.CTRL_MASK));
+        miZoomIn.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, menuKeyMask));
         miZoomIn.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
         ActionMenuItem miZoomOut = new ActionMenuItem(MainWindowActions.VIEW_ZOOM_OUT);
-        miZoomOut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, ActionEvent.CTRL_MASK));
+        miZoomOut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, menuKeyMask));
         miZoomOut.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
         ActionMenuItem miZoomDefault = new ActionMenuItem(MainWindowActions.VIEW_ZOOM_DEFAULT);
-        miZoomDefault.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_0, ActionEvent.CTRL_MASK));
+        miZoomDefault.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_0, menuKeyMask));
         miZoomDefault.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
         ActionMenuItem miZoomFit = new ActionMenuItem(MainWindowActions.VIEW_ZOOM_FIT);
-        miZoomFit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, ActionEvent.CTRL_MASK));
+        miZoomFit.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F, menuKeyMask));
         miZoomFit.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
         ActionMenuItem miPanLeft = new ActionMenuItem(MainWindowActions.VIEW_PAN_LEFT);
-        miPanLeft.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, ActionEvent.CTRL_MASK));
+        miPanLeft.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, menuKeyMask));
         miPanLeft.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
         ActionMenuItem miPanUp = new ActionMenuItem(MainWindowActions.VIEW_PAN_UP);
-        miPanUp.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_UP, ActionEvent.CTRL_MASK));
+        miPanUp.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_UP, menuKeyMask));
         miPanUp.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
         ActionMenuItem miPanRight = new ActionMenuItem(MainWindowActions.VIEW_PAN_RIGHT);
-        miPanRight.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, ActionEvent.CTRL_MASK));
+        miPanRight.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, menuKeyMask));
         miPanRight.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
         ActionMenuItem miPanDown = new ActionMenuItem(MainWindowActions.VIEW_PAN_DOWN);
-        miPanDown.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, ActionEvent.CTRL_MASK));
+        miPanDown.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, menuKeyMask));
         miPanDown.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
         ActionMenuItem miPanCenter = new ActionMenuItem(MainWindowActions.VIEW_PAN_CENTER);
-        miPanCenter.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, ActionEvent.CTRL_MASK));
+        miPanCenter.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, menuKeyMask));
         miPanCenter.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
 // FIXME: Only the default Look and Feel works good, the others cause some problems.

@@ -18,6 +18,7 @@ import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.ArgumentException;
+import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
@@ -43,7 +44,7 @@ public class StgSelectionTool extends SelectionTool {
                     toggleToken(place, editor);
                     processed = true;
                 } else if (node instanceof VisualImplicitPlaceArc) {
-                    if (e.getKeyModifiers() == MouseEvent.CTRL_DOWN_MASK) {
+                    if (e.getKeyModifiers() == DesktopApi.getMenuKeyMouseMask()) {
                         Place place = ((VisualImplicitPlaceArc) node).getImplicitPlace();
                         toggleToken(place, editor);
                         processed = true;
