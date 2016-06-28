@@ -118,4 +118,13 @@ public class Circuit extends AbstractMathModel {
         });
     }
 
+    public Collection<Contact> getDrivers() {
+        return Hierarchy.getDescendantsOfType(getRoot(), Contact.class, new Func<Contact, Boolean>() {
+            @Override
+            public Boolean eval(Contact arg) {
+                return arg.isDriver();
+            }
+        });
+    }
+
 }

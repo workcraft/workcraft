@@ -179,24 +179,20 @@ public class VisualCircuit extends AbstractVisualModel {
             LinkedList<Point2D> prefixLocationsInRootSpace = ConnectionHelper.getPrefixControlPoints(connection, splitPoint);
             LinkedList<Point2D> suffixLocationsInRootSpace = ConnectionHelper.getSuffixControlPoints(connection, splitPoint);
 
-            Container vContainer = (Container) connection.getParent();
-            Container mParent = (Container) (connection.getReferencedConnection().getParent());
-            Joint mJoint = new Joint();
-            mParent.add(mJoint);
-            VisualJoint vJoint = new VisualJoint(mJoint);
-            vContainer.add(vJoint);
-            vJoint.setPosition(splitPoint);
+            Container container = (Container) connection.getParent();
+            VisualJoint joint = createJoint(container);
+            joint.setPosition(splitPoint);
             remove(connection);
 
-            VisualConnection predConnection = connect(connection.getFirst(), vJoint);
+            VisualConnection predConnection = connect(connection.getFirst(), joint);
             predConnection.copyStyle(connection);
             ConnectionHelper.addControlPoints(predConnection, prefixLocationsInRootSpace);
 
-            VisualConnection succConnection = connect(vJoint, connection.getSecond());
+            VisualConnection succConnection = connect(joint, connection.getSecond());
             ConnectionHelper.addControlPoints(succConnection, suffixLocationsInRootSpace);
             succConnection.copyStyle(connection);
 
-            first = vJoint;
+            first = joint;
         }
 
         VisualCircuitConnection vConnection = null;
@@ -276,6 +272,35 @@ public class VisualCircuit extends AbstractVisualModel {
         }
         vc.setPosition(new Point2D.Double(0.0, 0.0));
         return vc;
+    }
+
+    public VisualJoint createJoint(Container container) {
+        if (container == null) {
+            container = getRoot();
+        }
+        VisualJoint joint = new VisualJoint(new Joint());
+        Container mathContainer = NamespaceHelper.getMathContainer(this, container);
+        mathContainer.add(joint.getReferencedComponent());
+        container.add(joint);
+        return joint;
+    }
+
+    public Collection<VisualContact> getVisualPorts() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualContact.class, new Func<VisualContact, Boolean>() {
+            @Override
+            public Boolean eval(VisualContact arg) {
+                return arg.isPort();
+            }
+        });
+    }
+
+    public Collection<VisualContact> getVisualDrivers() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualContact.class, new Func<VisualContact, Boolean>() {
+            @Override
+            public Boolean eval(VisualContact arg) {
+                return arg.isDriver();
+            }
+        });
     }
 
     public Collection<Environment> getEnvironments() {

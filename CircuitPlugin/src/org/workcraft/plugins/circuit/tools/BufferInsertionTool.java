@@ -75,7 +75,7 @@ public class BufferInsertionTool extends TransformationTool implements NodeTrans
 
     @Override
     public Position getPosition() {
-        return Position.BOTTOM;
+        return Position.TOP;
     }
 
     @Override

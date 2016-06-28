@@ -26,6 +26,7 @@ import org.workcraft.plugins.circuit.tools.ComponentContractionTool;
 import org.workcraft.plugins.circuit.tools.CircuitPropertyChecker;
 import org.workcraft.plugins.circuit.tools.CircuitAssertionChecker;
 import org.workcraft.plugins.circuit.tools.JointContractionTool;
+import org.workcraft.plugins.circuit.tools.JointDetachTool;
 import org.workcraft.plugins.circuit.tools.JointSplitTool;
 import org.workcraft.plugins.circuit.tools.StgGeneratorTool;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
@@ -59,6 +60,7 @@ public class CircuitModule implements Module {
 
         pm.registerClass(Tool.class, JointContractionTool.class);
         pm.registerClass(Tool.class, JointSplitTool.class);
+        pm.registerClass(Tool.class, JointDetachTool.class);
         pm.registerClass(Tool.class, ComponentContractionTool.class);
         pm.registerClass(Tool.class, BufferInsertionTool.class);
         pm.registerClass(Tool.class, BubbleToggleTool.class);

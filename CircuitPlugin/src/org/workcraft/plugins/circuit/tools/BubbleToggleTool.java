@@ -109,7 +109,7 @@ public class BubbleToggleTool extends TransformationTool implements NodeTransfor
 
     @Override
     public Position getPosition() {
-        return Position.BOTTOM;
+        return Position.TOP;
     }
 
     @Override

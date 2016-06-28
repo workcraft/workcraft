@@ -34,7 +34,6 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
@@ -48,7 +47,7 @@ public class JointSplitTool extends TransformationTool implements NodeTransforme
 
     @Override
     public String getDisplayName() {
-        return "Split joint (selected or all)";
+        return "Split joints (selected or all)";
     }
 
     @Override
@@ -80,7 +79,7 @@ public class JointSplitTool extends TransformationTool implements NodeTransforme
 
     @Override
     public Position getPosition() {
-        return Position.BOTTOM;
+        return Position.MIDDLE;
     }
 
     @Override
@@ -90,9 +89,9 @@ public class JointSplitTool extends TransformationTool implements NodeTransforme
             Collection<VisualJoint> joints = Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualJoint.class);
             Collection<Node> selection = visualModel.getSelection();
             if (!selection.isEmpty()) {
-                HashSet<Node> selectedConnections = new HashSet<>(selection);
-                selectedConnections.retainAll(joints);
-                if (!selectedConnections.isEmpty()) {
+                HashSet<Node> selectedJoints = new HashSet<>(selection);
+                selectedJoints.retainAll(joints);
+                if (!selectedJoints.isEmpty()) {
                     joints.retainAll(selection);
                 }
             }
@@ -130,7 +129,7 @@ public class JointSplitTool extends TransformationTool implements NodeTransforme
                         Node fromNode = predConnection instanceof VisualCircuitConnection ? predConnection.getFirst() : null;
                         Node toNode = succConnection instanceof VisualCircuitConnection ? succConnection.getSecond() : null;
                         try {
-                            VisualConnection newConnection = (VisualCircuitConnection) circuit.connect(fromNode, toNode);
+                            VisualCircuitConnection newConnection = (VisualCircuitConnection) circuit.connect(fromNode, toNode);
                             newConnection.mixStyle(predConnection, succConnection);
                             ConnectionHelper.addControlPoints(newConnection, locations);
                         } catch (InvalidConnectionException e) {
