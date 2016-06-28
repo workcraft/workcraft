@@ -54,8 +54,6 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
     }
 
     private boolean isPanCombo(MouseEvent e) {
-        System.out.println("Button: " + (e.getButton() == MouseEvent.BUTTON3));
-        System.out.println("Down : " + DesktopApi.isMenuKeyDown(e));
         return (e.getButton() == MouseEvent.BUTTON2) || (DesktopApi.isMenuKeyDown(e) && e.getButton() == MouseEvent.BUTTON3);
     }
 

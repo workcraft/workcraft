@@ -65,7 +65,7 @@ public class GraphEditorKeyEvent {
     public boolean isAltDown() {
         return isMaskHit(InputEvent.ALT_DOWN_MASK);
     }
-    
+
     public boolean isMetaDown() {
         return isMaskHit(InputEvent.META_DOWN_MASK);
     }

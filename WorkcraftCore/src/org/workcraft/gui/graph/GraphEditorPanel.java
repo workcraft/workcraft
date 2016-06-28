@@ -23,7 +23,6 @@ package org.workcraft.gui.graph;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
-import java.awt.Event;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
