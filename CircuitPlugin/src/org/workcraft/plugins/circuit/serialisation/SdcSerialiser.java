@@ -118,7 +118,7 @@ public class SdcSerialiser implements ModelSerialiser {
         for (Contact outputContact: component.getOutputs()) {
             String outputName = null;
             for (Contact inputContact: component.getInputs()) {
-                if (inputContact.getBreakPath()) {
+                if (inputContact.getPathBreaker()) {
                     if (outputName == null) {
                         outputName = SubstitutionUtils.getContactSubstitutionName(outputContact, substitutionRule, instanceFlatName);
                     }

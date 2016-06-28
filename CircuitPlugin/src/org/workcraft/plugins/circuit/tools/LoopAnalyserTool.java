@@ -6,6 +6,8 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import javax.swing.Icon;
 
@@ -27,6 +29,7 @@ import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
+import org.workcraft.plugins.circuit.VisualCircuitComponent;
 import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.util.GUI;
 
@@ -81,27 +84,37 @@ public class LoopAnalyserTool extends AbstractTool {
 
     private void updateState(Circuit circuit) {
         loopSet = new HashSet<>();
-        HashMap<MathNode, HashSet<CircuitComponent>> componentPresets = new HashMap<>();
+        HashMap<MathNode, HashSet<CircuitComponent>> presets = new HashMap<>();
         for (FunctionComponent component: circuit.getFunctionComponents()) {
+            if (component.getPathBreaker()) continue;
             HashSet<CircuitComponent> componentPreset = new HashSet<>();
             for (Contact contact: component.getInputs()) {
-                if (!contact.getBreakPath()) {
+                if (!contact.getPathBreaker()) {
                     HashSet<CircuitComponent> contactPreset = CircuitUtils.getComponentPreset(circuit, contact);
                     componentPreset.addAll(contactPreset);
-                    componentPresets.put(contact, contactPreset);
+                    presets.put(contact, contactPreset);
                 }
             }
-            componentPresets.put(component, componentPreset);
+            presets.put(component, componentPreset);
         }
         for (FunctionComponent component: circuit.getFunctionComponents()) {
             for (Contact contact: component.getInputs()) {
-                HashSet<CircuitComponent> contactPreset = componentPresets.get(contact);
+                HashSet<CircuitComponent> contactPreset = presets.get(contact);
                 if (contactPreset == null) continue;
-                for (CircuitComponent predComponent: contactPreset) {
-                    HashSet<CircuitComponent> predPreset = componentPresets.get(predComponent);
-                    if ((predPreset != null) && predPreset.contains(component)) {
+                HashSet<CircuitComponent> visited = new HashSet<>();
+                Queue<CircuitComponent> queue = new LinkedList<>(contactPreset);
+                while (!queue.isEmpty()) {
+                    CircuitComponent predComponent = queue.remove();
+                    if (visited.contains(predComponent)) continue;
+                    visited.add(predComponent);
+                    if (predComponent == component) {
                         loopSet.add(component);
                         loopSet.add(contact);
+                        break;
+                    }
+                    HashSet<CircuitComponent> componentPreset = presets.get(predComponent);
+                    if (componentPreset != null) {
+                        queue.addAll(componentPreset);
                     }
                 }
             }
@@ -119,15 +132,19 @@ public class LoopAnalyserTool extends AbstractTool {
                 Contact contact = ((VisualContact) node).getReferencedContact();
                 if (contact.isDriven()) {
                     editor.getWorkspaceEntry().saveMemento();
-                    contact.setBreakPath(!contact.getBreakPath());
-                    Circuit circuit = (Circuit) editor.getModel().getMathModel();
-                    updateState(circuit);
+                    contact.setPathBreaker(!contact.getPathBreaker());
                     processed = true;
                 }
+            } else if (node instanceof VisualCircuitComponent) {
+                CircuitComponent component = ((VisualCircuitComponent) node).getReferencedCircuitComponent();
+                component.setPathBreaker(!component.getPathBreaker());
+                processed = true;
             }
         }
-
-        if (!processed) {
+        if (processed) {
+            Circuit circuit = (Circuit) editor.getModel().getMathModel();
+            updateState(circuit);
+        } else {
             super.mouseClicked(e);
         }
     }
@@ -158,7 +175,7 @@ public class LoopAnalyserTool extends AbstractTool {
     }
 
     private Decoration getContactDecoration(Contact contact) {
-        final Color color = contact.getBreakPath() ? CircuitSettings.getInitialisedGateColor()
+        final Color color = contact.getPathBreaker() ? CircuitSettings.getInitialisedGateColor()
                 : loopSet.contains(contact) ? CircuitSettings.getConflictGateColor() : null;
 
         return new Decoration() {
@@ -174,7 +191,8 @@ public class LoopAnalyserTool extends AbstractTool {
     }
 
     private Decoration getComponentDecoration(FunctionComponent component) {
-        final Color color = loopSet.contains(component) ? CircuitSettings.getConflictGateColor() : null;
+        final Color color = component.getPathBreaker() ? CircuitSettings.getInitialisedGateColor()
+                : loopSet.contains(component) ? CircuitSettings.getConflictGateColor() : null;
 
         return new Decoration() {
             @Override
