@@ -83,7 +83,7 @@ public class ComponentContractionTool extends TransformationTool implements Node
 
     @Override
     public Position getPosition() {
-        return Position.BOTTOM;
+        return Position.TOP;
     }
 
     @Override

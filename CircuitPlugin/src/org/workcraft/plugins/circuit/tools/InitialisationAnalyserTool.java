@@ -64,6 +64,11 @@ public class InitialisationAnalyserTool extends AbstractTool {
     }
 
     @Override
+    public String getHintMessage() {
+        return "Click on a driver contact to toggle its force initialisation state.";
+    }
+
+    @Override
     public void activated(final GraphEditor editor) {
         Circuit circuit = (Circuit) editor.getModel().getMathModel();
         updateState(circuit);
@@ -223,11 +228,6 @@ public class InitialisationAnalyserTool extends AbstractTool {
                 return (mathNode instanceof Contact) ? StateDecoration.Empty.INSTANCE : null;
             }
         };
-    }
-
-    @Override
-    public String getHintMessage() {
-        return "Click on a driver contact to toggle its force initialisation state.";
     }
 
     private Decoration getComponentDecoration(FunctionComponent component) {

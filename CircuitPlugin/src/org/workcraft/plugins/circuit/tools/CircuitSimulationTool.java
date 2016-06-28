@@ -226,11 +226,14 @@ public class CircuitSimulationTool extends StgSimulationTool {
                 if (converter == null) return null;
                 if (node instanceof VisualContact) {
                     return getContactDecoration((VisualContact) node);
-                } else if (node instanceof VisualCircuitConnection) {
+                }
+                if (node instanceof VisualCircuitConnection) {
                     return getConnectionOrJointDecoration((VisualCircuitConnection) node);
-                } else if (node instanceof VisualJoint) {
+                }
+                if (node instanceof VisualJoint) {
                     return getConnectionOrJointDecoration((VisualJoint) node);
-                } else if (node instanceof VisualPage || node instanceof VisualGroup) {
+                }
+                if (node instanceof VisualPage || node instanceof VisualGroup) {
                     return getContainerDecoration((Container) node);
                 }
                 return null;

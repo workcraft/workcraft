@@ -40,11 +40,13 @@ public class CircuitComponent extends MathGroup implements Container, Observable
 
     public static final String PROPERTY_MODULE = "Module";
     public static final String PROPERTY_IS_ENVIRONMENT = "Treat as environment";
+    public static final String PROPERTY_PATH_BREAKER = "Path breaker";
 
     DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
     private String name = "";
     private String module = "";
-    private boolean isEnvironment;
+    private boolean isEnvironment = false;
+    private boolean pathBreaker = false;
 
     public void setName(String name) {
         this.name = name;
@@ -65,7 +67,7 @@ public class CircuitComponent extends MathGroup implements Container, Observable
     }
 
     public boolean isMapped() {
-        return (module == null) || module.isEmpty();
+        return (module != null) && !module.isEmpty();
     }
 
     public void setIsEnvironment(boolean value) {
@@ -75,6 +77,17 @@ public class CircuitComponent extends MathGroup implements Container, Observable
 
     public boolean getIsEnvironment() {
         return isEnvironment;
+    }
+
+    public boolean getPathBreaker() {
+        return pathBreaker;
+    }
+
+    public void setPathBreaker(boolean value) {
+        if (this.pathBreaker != value) {
+            this.pathBreaker = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_PATH_BREAKER));
+        }
     }
 
     @Override

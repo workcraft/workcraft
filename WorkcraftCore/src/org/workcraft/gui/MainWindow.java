@@ -348,16 +348,16 @@ public class MainWindow extends JFrame {
     public void startup() {
         MainWindowIconManager.apply(this);
 
+        SilverOceanTheme.enable();
+        LookAndFeelHelper.setDefaultLookAndFeel();
+        SwingUtilities.updateComponentTreeUI(this);
+
         JDialog.setDefaultLookAndFeelDecorated(true);
         UIManager.put(SubstanceLookAndFeel.TABBED_PANE_CONTENT_BORDER_KIND, TabContentPaneBorderKind.SINGLE_FULL);
 
         setTitle(TITLE_WORKCRAFT);
         mainMenu = new MainMenu(this);
         setJMenuBar(mainMenu);
-
-        SilverOceanTheme.enable();
-        LookAndFeelHelper.setDefaultLookAndFeel();
-        SwingUtilities.updateComponentTreeUI(this);
 
         content = new JPanel(new BorderLayout(0, 0));
         setContentPane(content);

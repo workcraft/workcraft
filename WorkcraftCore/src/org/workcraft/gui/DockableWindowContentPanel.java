@@ -123,31 +123,30 @@ public class DockableWindowContentPanel extends JPanel {
 
             int iconCount = 0;
             if ((options & MINIMIZE_BUTTON) != 0) {
-                btnMin = createHeaderButton(UIManager.getIcon("InternalFrame.minimizeIcon"),
-                        new ViewAction(id, ViewAction.MINIMIZE_ACTION), mainWindow.getDefaultActionListener());
+                Icon minIcon = UIManager.getIcon("InternalFrame.minimizeIcon");
+                btnMin = createHeaderButton(minIcon, new ViewAction(id, ViewAction.MINIMIZE_ACTION), mainWindow.getDefaultActionListener());
                 btnMin.setToolTipText("Toggle minimized");
                 buttonPanel.add(btnMin);
                 iconCount++;
             }
 
             if ((options & MAXIMIZE_BUTTON) != 0) {
-                btnMax = createHeaderButton(UIManager.getIcon("InternalFrame.maximizeIcon"),
-                        new ViewAction(id, ViewAction.MAXIMIZE_ACTION), mainWindow.getDefaultActionListener());
+                Icon maxIcon = UIManager.getIcon("InternalFrame.maximizeIcon");
+                btnMax = createHeaderButton(maxIcon, new ViewAction(id, ViewAction.MAXIMIZE_ACTION), mainWindow.getDefaultActionListener());
                 buttonPanel.add(btnMax);
                 iconCount++;
             }
 
+            Icon closeIcon = UIManager.getIcon("InternalFrame.closeIcon");
             if ((options & CLOSE_BUTTON) != 0) {
-                btnClose = createHeaderButton(UIManager.getIcon("InternalFrame.closeIcon"),
-                        new ViewAction(id, ViewAction.CLOSE_ACTION), mainWindow.getDefaultActionListener());
+                btnClose = createHeaderButton(closeIcon, new ViewAction(id, ViewAction.CLOSE_ACTION), mainWindow.getDefaultActionListener());
                 btnClose.setToolTipText("Close window");
                 buttonPanel.add(btnClose);
                 iconCount++;
             }
 
             if (iconCount != 0) {
-                Icon icon = UIManager.getIcon("InternalFrame.closeIcon");
-                buttonPanel.setPreferredSize(new Dimension((icon.getIconWidth() + 4) * iconCount, icon.getIconHeight() + 4));
+                buttonPanel.setPreferredSize(new Dimension((closeIcon.getIconWidth() + 4) * iconCount, closeIcon.getIconHeight() + 4));
             }
 
             titleLabel = new JLabel(title);

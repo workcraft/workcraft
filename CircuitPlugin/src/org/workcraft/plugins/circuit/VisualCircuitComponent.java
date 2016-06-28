@@ -102,9 +102,18 @@ public class VisualCircuitComponent extends VisualComponent implements
             protected void setter(VisualCircuitComponent object, Boolean value) {
                 object.setIsEnvironment(value);
             }
-
             protected Boolean getter(VisualCircuitComponent object) {
                 return object.getIsEnvironment();
+            }
+        });
+
+        addPropertyDeclaration(new PropertyDeclaration<VisualCircuitComponent, Boolean>(
+                this, Contact.PROPERTY_PATH_BREAKER, Boolean.class, true, true, true) {
+            protected void setter(VisualCircuitComponent object, Boolean value) {
+                object.getReferencedCircuitComponent().setPathBreaker(value);
+            }
+            protected Boolean getter(VisualCircuitComponent object) {
+                return object.getReferencedCircuitComponent().getPathBreaker();
             }
         });
 // TODO: Rename label to module name (?)

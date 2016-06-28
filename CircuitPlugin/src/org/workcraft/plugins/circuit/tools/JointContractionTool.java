@@ -80,7 +80,7 @@ public class JointContractionTool extends TransformationTool implements NodeTran
 
     @Override
     public Position getPosition() {
-        return Position.BOTTOM;
+        return Position.MIDDLE;
     }
 
     @Override
