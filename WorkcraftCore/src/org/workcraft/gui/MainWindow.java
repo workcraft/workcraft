@@ -53,6 +53,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.plaf.MenuBarUI;
 
 import org.flexdock.docking.Dockable;
 import org.flexdock.docking.DockingConstants;
@@ -355,11 +356,11 @@ public class MainWindow extends JFrame {
         mainMenu = new MainMenu(this);
 
         setJMenuBar(mainMenu);
-
+        MenuBarUI menuUI = mainMenu.getUI();
         SilverOceanTheme.enable();
         LookAndFeelHelper.setDefaultLookAndFeel();
         SwingUtilities.updateComponentTreeUI(this);
-        if (DesktopApi.getOs().isMac()) mainMenu.setMacFeel();
+        if (DesktopApi.getOs().isMac()) mainMenu.setUI(menuUI);
 
         content = new JPanel(new BorderLayout(0, 0));
         setContentPane(content);

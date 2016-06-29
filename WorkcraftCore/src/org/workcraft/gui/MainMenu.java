@@ -57,8 +57,6 @@ import org.workcraft.plugins.PluginInfo;
 import org.workcraft.util.Tools;
 import org.workcraft.workspace.WorkspaceEntry;
 
-import com.apple.laf.AquaMenuBarUI;
-
 @SuppressWarnings("serial")
 public class MainMenu extends JMenuBar {
     private static final String MENU_SECTION_PROMOTED_PREFIX = "!";
@@ -578,10 +576,5 @@ public class MainMenu extends JMenuBar {
         we.updateActionState();
         createToolsMenu(we);
         setExportMenu(we);
-    }
-
-    public void setMacFeel() {
-        AquaMenuBarUI a = new AquaMenuBarUI();
-        setUI(a);
     }
 }
