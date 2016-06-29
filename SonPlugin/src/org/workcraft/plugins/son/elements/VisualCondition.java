@@ -25,7 +25,7 @@ import org.workcraft.plugins.son.SONSettings;
 
 @DisplayName("Condition")
 @Hotkey(KeyEvent.VK_B)
-@SVGIcon("images/icons/svg/place_empty.svg")
+@SVGIcon("images/node-condition.svg")
 public class VisualCondition extends VisualPlaceNode {
 
     private static double size = 1.0;

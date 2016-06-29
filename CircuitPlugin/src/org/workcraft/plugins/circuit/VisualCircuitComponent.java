@@ -71,7 +71,7 @@ import org.workcraft.util.Hierarchy;
 
 @DisplayName("Abstract Component")
 @Hotkey(KeyEvent.VK_A)
-@SVGIcon("images/icons/svg/circuit-component.svg")
+@SVGIcon("images/node-component.svg")
 public class VisualCircuitComponent extends VisualComponent implements
         Container, CustomTouchable, StateObserver, ObservableHierarchy {
     public static final String PROPERTY_RENDER_TYPE = "Render type";

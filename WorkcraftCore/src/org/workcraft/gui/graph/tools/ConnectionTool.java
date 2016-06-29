@@ -87,7 +87,7 @@ public class ConnectionTool extends AbstractTool {
 
     @Override
     public Icon getIcon() {
-        return GUI.createIconFromSVG("images/icons/svg/tool-connection.svg");
+        return GUI.createIconFromSVG("images/tool-connection.svg");
     }
 
     @Override

@@ -14,7 +14,7 @@ import org.workcraft.gui.graph.tools.Decoration;
 
 @DisplayName("ChannelPlace")
 //@Hotkey(KeyEvent.VK_P)
-@SVGIcon("images/icons/svg/son-channel-place.svg")
+@SVGIcon("images/node-channel_place.svg")
 public class VisualChannelPlace extends VisualPlaceNode {
 
     private static float strokeWidth = 0.2f;

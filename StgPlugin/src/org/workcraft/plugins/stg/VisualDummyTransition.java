@@ -33,7 +33,7 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @Hotkey(KeyEvent.VK_D)
 @DisplayName("Dummy Transition")
-@SVGIcon("images/icons/svg/transition.svg")
+@SVGIcon("images/node-dummy_transition.svg")
 public class VisualDummyTransition extends VisualNamedTransition implements StateObserver {
 
     public VisualDummyTransition(DummyTransition dummyTransition) {

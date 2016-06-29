@@ -44,7 +44,7 @@ import org.workcraft.plugins.xmas.components.SourceComponent.Type;
 
 @DisplayName("Source")
 @Hotkey(KeyEvent.VK_I)
-@SVGIcon("images/icons/svg/xmas-source.svg")
+@SVGIcon("images/node-source.svg")
 public class VisualSourceComponent extends VisualXmasComponent {
     public static final String PROPERTY_FOREGROUND_COLOR = "Foreground color";
 

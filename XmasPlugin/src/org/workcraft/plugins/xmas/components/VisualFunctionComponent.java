@@ -35,7 +35,7 @@ import org.workcraft.plugins.xmas.components.FunctionComponent.Type;
 
 @DisplayName("Function")
 @Hotkey(KeyEvent.VK_F)
-@SVGIcon("images/icons/svg/xmas-function.svg")
+@SVGIcon("images/node-function.svg")
 public class VisualFunctionComponent extends VisualXmasComponent {
 
     public VisualFunctionComponent(FunctionComponent component) {

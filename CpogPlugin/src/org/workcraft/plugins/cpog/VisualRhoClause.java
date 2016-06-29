@@ -47,7 +47,7 @@ import org.workcraft.plugins.cpog.formula.PrettifyBooleanReplacer;
 
 @Hotkey(KeyEvent.VK_R)
 @DisplayName("RhoClause")
-@SVGIcon("images/icons/svg/rho.svg")
+@SVGIcon("images/node-rho.svg")
 public class VisualRhoClause extends VisualComponent {
     private static float strokeWidth = 0.038f;
 

@@ -37,7 +37,7 @@ public class ReadArcConnectionTool extends ConnectionTool {
 
     @Override
     public Icon getIcon() {
-        return GUI.createIconFromSVG("images/icons/svg/tool-readarc.svg");
+        return GUI.createIconFromSVG("images/tool-readarc.svg");
     }
 
     @Override

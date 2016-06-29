@@ -19,7 +19,7 @@ import org.workcraft.plugins.dfs.decorations.LogicDecoration;
 
 @Hotkey(KeyEvent.VK_L)
 @DisplayName ("Logic")
-@SVGIcon("images/icons/svg/dfs-logic.svg")
+@SVGIcon("images/node-logic.svg")
 public class VisualLogic extends VisualDelayComponent {
 
     public VisualLogic(Logic logic) {

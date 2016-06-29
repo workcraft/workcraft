@@ -20,7 +20,7 @@ import org.workcraft.plugins.dfs.decorations.CounterflowLogicDecoration;
 
 @Hotkey(KeyEvent.VK_K)
 @DisplayName ("Counterflow logic")
-@SVGIcon("images/icons/svg/dfs-counterflow_logic.svg")
+@SVGIcon("images/node-counterflow_logic.svg")
 public class VisualCounterflowLogic extends VisualDelayComponent {
 
     public VisualCounterflowLogic(CounterflowLogic logic) {

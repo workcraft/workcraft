@@ -41,7 +41,7 @@ import org.workcraft.plugins.dfs.decorations.RegisterDecoration;
 
 @Hotkey(KeyEvent.VK_R)
 @DisplayName ("Register")
-@SVGIcon("images/icons/svg/dfs-register.svg")
+@SVGIcon("images/node-register.svg")
 public class VisualRegister extends VisualAbstractRegister {
 
     public VisualRegister(Register register) {

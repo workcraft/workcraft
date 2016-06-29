@@ -121,7 +121,7 @@ public class StgSelectionTool extends SelectionTool {
                 if (!cancelInPlaceEdit) {
                     try {
                         editor.getWorkspaceEntry().saveMemento();
-                        model.setName(transition.getReferencedComponent(), newName, true);
+                        model.setName(transition.getReferencedComponent(), newName);
                     } catch (ArgumentException e) {
                         JOptionPane.showMessageDialog(null, e.getMessage());
                         editNameInPlace(editor, transition, newName);
