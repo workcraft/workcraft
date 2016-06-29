@@ -353,11 +353,13 @@ public class MainWindow extends JFrame {
 
         setTitle(TITLE_WORKCRAFT);
         mainMenu = new MainMenu(this);
+
         setJMenuBar(mainMenu);
 
         SilverOceanTheme.enable();
         LookAndFeelHelper.setDefaultLookAndFeel();
         SwingUtilities.updateComponentTreeUI(this);
+        if (DesktopApi.getOs().isMac()) mainMenu.setMacFeel();
 
         content = new JPanel(new BorderLayout(0, 0));
         setContentPane(content);

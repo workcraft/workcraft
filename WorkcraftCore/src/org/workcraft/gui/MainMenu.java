@@ -57,6 +57,8 @@ import org.workcraft.plugins.PluginInfo;
 import org.workcraft.util.Tools;
 import org.workcraft.workspace.WorkspaceEntry;
 
+import com.apple.laf.AquaMenuBarUI;
+
 @SuppressWarnings("serial")
 public class MainMenu extends JMenuBar {
     private static final String MENU_SECTION_PROMOTED_PREFIX = "!";
@@ -152,13 +154,13 @@ public class MainMenu extends JMenuBar {
         mnFile.add(miImport);
         mnFile.add(mnExport);
 
-// FIXME: Workspace functionality is not working yet.
-//        mnFile.addSeparator();
-//        mnFile.add(miNewWorkspace);
-//        mnFile.add(miOpenWorkspace);
-//        mnFile.add(miAddFiles);
-//        mnFile.add(miSaveWorkspace);
-//        mnFile.add(miSaveWorkspaceAs);
+        // FIXME: Workspace functionality is not working yet.
+        // mnFile.addSeparator();
+        // mnFile.add(miNewWorkspace);
+        // mnFile.add(miOpenWorkspace);
+        // mnFile.add(miAddFiles);
+        // mnFile.add(miSaveWorkspace);
+        // mnFile.add(miSaveWorkspaceAs);
 
         mnFile.addSeparator();
         mnFile.add(miReconfigure);
@@ -167,6 +169,7 @@ public class MainMenu extends JMenuBar {
         mnFile.add(miExit);
 
         add(mnFile);
+
     }
 
     private void addExportSeparator(String text) {
@@ -259,6 +262,7 @@ public class MainMenu extends JMenuBar {
         mnEdit.add(miProperties);
 
         add(mnEdit);
+
     }
 
     private void addViewMenu(final MainWindow mainWindow) {
@@ -300,28 +304,32 @@ public class MainMenu extends JMenuBar {
         miPanCenter.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, menuKeyMask));
         miPanCenter.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-// FIXME: Only the default Look and Feel works good, the others cause some problems.
-//        JMenu mnLookAndFeel = new JMenu("Look and Feel");
-//        for (final Entry<String, String> laf: LookAndFeelHelper.getLafMap().entrySet()) {
-//            JMenuItem miLAFItem = new JMenuItem();
-//            miLAFItem.setText(laf.getKey());
-//            miLAFItem.addActionListener(new ActionListener() {
-//                public void actionPerformed(ActionEvent e) {
-//                    try {
-//                        mainWindow.setLookAndFeel(laf.getValue());
-//                    } catch (OperationCancelledException e1) {
-//                    }
-//                }
-//            });
-//            mnLookAndFeel.add(miLAFItem);
-//        }
+        // FIXME: Only the default Look and Feel works good, the others cause
+        // some problems.
+        // JMenu mnLookAndFeel = new JMenu("Look and Feel");
+        // for (final Entry<String, String> laf:
+        // LookAndFeelHelper.getLafMap().entrySet()) {
+        // JMenuItem miLAFItem = new JMenuItem();
+        // miLAFItem.setText(laf.getKey());
+        // miLAFItem.addActionListener(new ActionListener() {
+        // public void actionPerformed(ActionEvent e) {
+        // try {
+        // mainWindow.setLookAndFeel(laf.getValue());
+        // } catch (OperationCancelledException e1) {
+        // }
+        // }
+        // });
+        // mnLookAndFeel.add(miLAFItem);
+        // }
 
-// FIXME: Save-load of the layout is not functional yet.
-//      ScriptedActionMenuItem miSaveLayout = new ScriptedActionMenuItem(MainWindow.Actions.SAVE_UI_LAYOUT);
-//        miSaveLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
-//
-//        ScriptedActionMenuItem miLoadLayout = new ScriptedActionMenuItem(MainWindow.Actions.LOAD_UI_LAYOUT);
-//        miLoadLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        // FIXME: Save-load of the layout is not functional yet.
+        // ScriptedActionMenuItem miSaveLayout = new
+        // ScriptedActionMenuItem(MainWindow.Actions.SAVE_UI_LAYOUT);
+        // miSaveLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        //
+        // ScriptedActionMenuItem miLoadLayout = new
+        // ScriptedActionMenuItem(MainWindow.Actions.LOAD_UI_LAYOUT);
+        // miLoadLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
         ActionMenuItem miResetLayout = new ActionMenuItem(MainWindowActions.RESET_GUI_ACTION);
         miResetLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
@@ -338,17 +346,18 @@ public class MainMenu extends JMenuBar {
         mnView.add(miPanDown);
         mnView.addSeparator();
         mnView.add(mnWindows);
-//        mnView.add(mnLookAndFeel);
-//        mnView.addSeparator();
+        // mnView.add(mnLookAndFeel);
+        // mnView.addSeparator();
         mnView.add(miResetLayout);
-//        mnView.add(miSaveLayout);
-//        mnView.add(miLoadLayout);
+        // mnView.add(miSaveLayout);
+        // mnView.add(miLoadLayout);
 
         add(mnView);
+
     }
 
     private void addHelpMenu(final MainWindow mainWindow) {
-        //JMenu mnHelp = new JMenu();
+        // JMenu mnHelp = new JMenu();
         mnHelp.setText("Help");
 
         ActionMenuItem miOverview = new ActionMenuItem(MainWindowActions.HELP_OVERVIEW_ACTION);
@@ -379,8 +388,9 @@ public class MainMenu extends JMenuBar {
         mnHelp.addSeparator();
         mnHelp.add(miAbout);
 
-        //add(Box.createHorizontalGlue());
+        // add(Box.createHorizontalGlue());
         add(mnHelp);
+
     }
 
     private void setExportMenu(final WorkspaceEntry we) {
@@ -435,7 +445,7 @@ public class MainMenu extends JMenuBar {
         mnRecent.setEnabled(false);
         int index = 0;
         Collections.reverse(entries);
-        for (final String entry: entries) {
+        for (final String entry : entries) {
             if (entry != null) {
                 JMenuItem miFile = new JMenuItem();
                 if (index > 9) {
@@ -508,7 +518,7 @@ public class MainMenu extends JMenuBar {
             sectionToolsPartitions.add(Tools.getPositionedTools(sectionTools, Position.MIDDLE));
             sectionToolsPartitions.add(Tools.getPositionedTools(sectionTools, Position.BOTTOM));
             boolean needSeparator = false;
-            for (List<Tool> sectionToolsPartition: sectionToolsPartitions) {
+            for (List<Tool> sectionToolsPartition : sectionToolsPartitions) {
                 boolean isFirstItem = true;
                 for (Tool tool : sectionToolsPartition) {
                     if (needSeparator && isFirstItem) {
@@ -543,7 +553,7 @@ public class MainMenu extends JMenuBar {
     }
 
     private void addToolsMenu() {
-        for (JMenu mnTools: mnToolsList) {
+        for (JMenu mnTools : mnToolsList) {
             add(mnTools);
         }
         remove(mnHelp);
@@ -552,14 +562,14 @@ public class MainMenu extends JMenuBar {
     }
 
     public void removeToolsMenu() {
-        for (JMenu mnTools: mnToolsList) {
+        for (JMenu mnTools : mnToolsList) {
             remove(mnTools);
         }
         revalidate();
     }
 
     public void updateToolsMenuState(boolean enable) {
-        for (JMenu mnTool: mnToolsList) {
+        for (JMenu mnTool : mnToolsList) {
             mnTool.setEnabled(enable);
         }
     }
@@ -570,4 +580,8 @@ public class MainMenu extends JMenuBar {
         setExportMenu(we);
     }
 
+    public void setMacFeel() {
+        AquaMenuBarUI a = new AquaMenuBarUI();
+        setUI(a);
+    }
 }
