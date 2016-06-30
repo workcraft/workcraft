@@ -47,7 +47,7 @@ public class AlgebraExpressionFromGraphsTool implements Tool {
 
         VisualCpog visualCpog = (VisualCpog) editor.getWorkspaceEntry().getModelEntry().getVisualModel();
 
-        String exp = tool.getParsingTool().getExpressionFromGraph(visualCpog);
+        String exp = CpogParsingTool.getExpressionFromGraph(visualCpog);
 
         AlgebraExportDialog dialog = new AlgebraExportDialog();
 

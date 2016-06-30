@@ -15,6 +15,7 @@ import javax.swing.JTextField;
 import org.workcraft.Framework;
 import org.workcraft.util.GUI;
 
+@SuppressWarnings("serial")
 public class AlgebraExportDialog extends JDialog {
 
     private final JTextField filePath;
@@ -60,7 +61,7 @@ public class AlgebraExportDialog extends JDialog {
         add(filePanel);
         add(okPanel);
 
-        this.setSize(400, 220);
+        pack();
         this.setLocationRelativeTo(Framework.getInstance().getMainWindow());
     }
 
