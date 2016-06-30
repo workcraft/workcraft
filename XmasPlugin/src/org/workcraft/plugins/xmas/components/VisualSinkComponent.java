@@ -39,7 +39,7 @@ import org.workcraft.plugins.xmas.XmasSettings;
 
 @DisplayName("Sink")
 @Hotkey(KeyEvent.VK_O)
-@SVGIcon("images/icons/svg/xmas-sink.svg")
+@SVGIcon("images/node-sink.svg")
 public class VisualSinkComponent extends VisualXmasComponent {
 
     public final double tokenSize = 0.18 * size;

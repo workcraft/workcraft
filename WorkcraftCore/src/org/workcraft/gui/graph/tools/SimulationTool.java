@@ -121,20 +121,20 @@ public abstract class SimulationTool extends AbstractTool implements ClipboardOw
     public void createInterfacePanel(final GraphEditor editor) {
         super.createInterfacePanel(editor);
 
-        playButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-play.svg"), "Automatic trace playback");
-        stopButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-stop.svg"), "Reset trace playback");
-        backwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-backward.svg"), "Step backward");
-        forwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-forward.svg"), "Step forward");
-        randomButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-random_play.svg"), "Random playback");
+        playButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-play.svg"), "Automatic trace playback");
+        stopButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-stop.svg"), "Reset trace playback");
+        backwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-backward.svg"), "Step backward");
+        forwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-forward.svg"), "Step forward");
+        randomButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-random_play.svg"), "Random playback");
 
         speedSlider = new JSlider(-1000, 1000, 0);
         speedSlider.setToolTipText("Simulation playback speed");
 
-        JButton generateGraphButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-graph.svg"), "Generate trace digram");
-        JButton copyStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-copy.svg"), "Copy trace to clipboard");
-        JButton pasteStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-paste.svg"), "Paste trace from clipboard");
-        JButton mergeTraceButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-trace-merge.svg"), "Merge branch into trace");
-        JButton saveInitStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/icons/svg/simulation-marking-save.svg"), "Save current state as initial");
+        JButton generateGraphButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-trace-graph.svg"), "Generate trace digram");
+        JButton copyStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-trace-copy.svg"), "Copy trace to clipboard");
+        JButton pasteStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-trace-paste.svg"), "Paste trace from clipboard");
+        JButton mergeTraceButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-trace-merge.svg"), "Merge branch into trace");
+        JButton saveInitStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-marking-save.svg"), "Save current state as initial");
 
         FlowLayout flowLayout = new FlowLayout();
         int buttonWidth = (int) Math.round(playButton.getPreferredSize().getWidth() + flowLayout.getHgap());
@@ -435,20 +435,20 @@ public abstract class SimulationTool extends AbstractTool implements ClipboardOw
 
     public void updateState(final GraphEditor editor) {
         if (timer == null) {
-            playButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-play.svg"));
-            randomButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-random_play.svg"));
+            playButton.setIcon(GUI.createIconFromSVG("images/simulation-play.svg"));
+            randomButton.setIcon(GUI.createIconFromSVG("images/simulation-random_play.svg"));
         } else {
             if (random) {
-                playButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-play.svg"));
-                randomButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-random_pause.svg"));
+                playButton.setIcon(GUI.createIconFromSVG("images/simulation-play.svg"));
+                randomButton.setIcon(GUI.createIconFromSVG("images/simulation-random_pause.svg"));
                 timer.setDelay(getAnimationDelay());
             } else if (branchTrace.canProgress() || (branchTrace.isEmpty() && mainTrace.canProgress())) {
-                playButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-pause.svg"));
-                randomButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-random_play.svg"));
+                playButton.setIcon(GUI.createIconFromSVG("images/simulation-pause.svg"));
+                randomButton.setIcon(GUI.createIconFromSVG("images/simulation-random_play.svg"));
                 timer.setDelay(getAnimationDelay());
             } else {
-                playButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-play.svg"));
-                randomButton.setIcon(GUI.createIconFromSVG("images/icons/svg/simulation-random_play.svg"));
+                playButton.setIcon(GUI.createIconFromSVG("images/simulation-play.svg"));
+                randomButton.setIcon(GUI.createIconFromSVG("images/simulation-random_play.svg"));
                 timer.stop();
                 timer = null;
             }
@@ -778,7 +778,7 @@ public abstract class SimulationTool extends AbstractTool implements ClipboardOw
 
     @Override
     public Icon getIcon() {
-        return GUI.createIconFromSVG("images/icons/svg/tool-simulation.svg");
+        return GUI.createIconFromSVG("images/tool-simulation.svg");
     }
 
     @Override

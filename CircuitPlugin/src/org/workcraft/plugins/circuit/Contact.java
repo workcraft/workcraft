@@ -34,6 +34,7 @@ public class Contact extends MathNode implements BooleanVariable {
     public static final String PROPERTY_IO_TYPE = "I/O type";
     public static final String PROPERTY_INIT_TO_ONE = "Init to one";
     public static final String PROPERTY_FORCED_INIT = "Forced init";
+    public static final String PROPERTY_PATH_BREAKER = "Path breaker";
 
     public enum IOType {
         INPUT("Input"),
@@ -55,6 +56,7 @@ public class Contact extends MathNode implements BooleanVariable {
     private IOType type = IOType.OUTPUT;
     private boolean initToOne = false;
     private boolean forcedInit = false;
+    private boolean pathBreaker = false;
 
     public Contact() {
     }
@@ -109,6 +111,17 @@ public class Contact extends MathNode implements BooleanVariable {
         }
     }
 
+    public boolean getPathBreaker() {
+        return pathBreaker;
+    }
+
+    public void setPathBreaker(boolean value) {
+        if (this.pathBreaker != value) {
+            this.pathBreaker = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_PATH_BREAKER));
+        }
+    }
+
     @Override
     public <T> T accept(BooleanVisitor<T> visitor) {
         return visitor.visit(this);
@@ -132,7 +145,7 @@ public class Contact extends MathNode implements BooleanVariable {
     }
 
     public boolean isDriver() {
-        return isOutput() != isPort();
+        return isInput() == isPort();
     }
 
     public boolean isDriven() {

@@ -239,6 +239,7 @@ public class SilverOceanTheme extends OceanTheme {
 
     private Object[] getCustomIconTable(UIDefaults table) {
         Icon internalFrameIcon = UIManager.getIcon("InternalFrame.icon");
+        Icon internalFrameIconifyIcon = UIManager.getIcon("InternalFrame.iconifyIcon");
         Icon internalFrameMinimizeIcon = UIManager.getIcon("InternalFrame.minimizeIcon");
         Icon internalFrameMaximizeIcon = UIManager.getIcon("InternalFrame.maximizeIcon");
         Icon internalFrameCloseIcon = UIManager.getIcon("InternalFrame.closeIcon");
@@ -257,6 +258,7 @@ public class SilverOceanTheme extends OceanTheme {
 
         Object[] result = {
                 "InternalFrame.icon", SizeHelper.scaleFrameIcon(internalFrameIcon),
+                "InternalFrame.iconifyIcon", SizeHelper.scaleFrameIcon(internalFrameIconifyIcon),
                 "InternalFrame.minimizeIcon", SizeHelper.scaleFrameIcon(internalFrameMinimizeIcon),
                 "InternalFrame.maximizeIcon", SizeHelper.scaleFrameIcon(internalFrameMaximizeIcon),
                 "InternalFrame.closeIcon", SizeHelper.scaleFrameIcon(internalFrameCloseIcon),

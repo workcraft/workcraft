@@ -55,12 +55,17 @@ public class InitialisationAnalyserTool extends AbstractTool {
 
     @Override
     public Icon getIcon() {
-        return GUI.createIconFromSVG("images/icons/svg/tool-initialisation_analysis.svg");
+        return GUI.createIconFromSVG("images/tool-initialisation_analysis.svg");
     }
 
     @Override
     public Cursor getCursor() {
         return Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
+    }
+
+    @Override
+    public String getHintMessage() {
+        return "Click on a driver contact to toggle its force initialisation state.";
     }
 
     @Override
@@ -223,11 +228,6 @@ public class InitialisationAnalyserTool extends AbstractTool {
                 return (mathNode instanceof Contact) ? StateDecoration.Empty.INSTANCE : null;
             }
         };
-    }
-
-    @Override
-    public String getHintMessage() {
-        return "Click on a driver contact to toggle its force initialisation state.";
     }
 
     private Decoration getComponentDecoration(FunctionComponent component) {

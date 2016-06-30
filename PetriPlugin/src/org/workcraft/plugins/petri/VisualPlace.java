@@ -47,7 +47,7 @@ import org.workcraft.plugins.shared.CommonVisualSettings;
 
 @DisplayName("Place")
 @Hotkey(KeyEvent.VK_P)
-@SVGIcon("images/icons/svg/place.svg")
+@SVGIcon("images/node-place.svg")
 public class VisualPlace extends VisualComponent {
 
     public static final String PROPERTY_TOKEN_COLOR = "Token color";

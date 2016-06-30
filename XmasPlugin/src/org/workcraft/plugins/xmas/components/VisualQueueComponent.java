@@ -44,7 +44,7 @@ import org.workcraft.plugins.shared.CommonSimulationSettings;
 
 @DisplayName("Queue")
 @Hotkey(KeyEvent.VK_Q)
-@SVGIcon("images/icons/svg/xmas-queue.svg")
+@SVGIcon("images/node-queue.svg")
 public class VisualQueueComponent extends VisualXmasComponent {
 
     public static final String PROPERTY_FOREGROUND_COLOR = "Foreground color";

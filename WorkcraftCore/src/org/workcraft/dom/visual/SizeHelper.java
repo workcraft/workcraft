@@ -41,7 +41,7 @@ public class SizeHelper {
     }
 
     public static int getFrameButtonIconSize() {
-        return (int) Math.round(getBaseSize());
+        return (int) Math.round(1.2 * getBaseSize());
     }
 
     public static int getFileViewIconSize() {
@@ -49,7 +49,7 @@ public class SizeHelper {
     }
 
     public static int getFileChooserIconSize() {
-        return (int) Math.round(1.2 * getBaseSize());
+        return (int) Math.round(1.3 * getBaseSize());
     }
 
     public static int getScrollbarWidth() {

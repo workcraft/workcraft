@@ -40,7 +40,7 @@ import org.workcraft.plugins.dfs.decorations.BinaryRegisterDecoration;
 
 @Hotkey(KeyEvent.VK_U)
 @DisplayName ("Push register")
-@SVGIcon("images/icons/svg/dfs-push_register.svg")
+@SVGIcon("images/node-push_register.svg")
 public class VisualPushRegister extends VisualBinaryRegister {
 
     public VisualPushRegister(PushRegister register) {

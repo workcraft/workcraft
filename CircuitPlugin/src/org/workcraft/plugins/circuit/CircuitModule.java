@@ -10,6 +10,7 @@ import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.circuit.interop.GenlibImporter;
+import org.workcraft.plugins.circuit.interop.SdcExporter;
 import org.workcraft.plugins.circuit.interop.VerilogExporter;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.serialisation.FunctionDeserialiser;
@@ -25,6 +26,7 @@ import org.workcraft.plugins.circuit.tools.ComponentContractionTool;
 import org.workcraft.plugins.circuit.tools.CircuitPropertyChecker;
 import org.workcraft.plugins.circuit.tools.CircuitAssertionChecker;
 import org.workcraft.plugins.circuit.tools.JointContractionTool;
+import org.workcraft.plugins.circuit.tools.JointDetachTool;
 import org.workcraft.plugins.circuit.tools.JointSplitTool;
 import org.workcraft.plugins.circuit.tools.StgGeneratorTool;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
@@ -58,6 +60,7 @@ public class CircuitModule implements Module {
 
         pm.registerClass(Tool.class, JointContractionTool.class);
         pm.registerClass(Tool.class, JointSplitTool.class);
+        pm.registerClass(Tool.class, JointDetachTool.class);
         pm.registerClass(Tool.class, ComponentContractionTool.class);
         pm.registerClass(Tool.class, BufferInsertionTool.class);
         pm.registerClass(Tool.class, BubbleToggleTool.class);
@@ -69,6 +72,7 @@ public class CircuitModule implements Module {
         pm.registerClass(Exporter.class, VerilogExporter.class);
         pm.registerClass(Importer.class, VerilogImporter.class);
         pm.registerClass(Importer.class, GenlibImporter.class);
+        pm.registerClass(Exporter.class, SdcExporter.class);
     }
 
     private void initCompatibilityManager() {

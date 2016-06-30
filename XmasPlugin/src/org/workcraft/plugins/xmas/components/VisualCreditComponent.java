@@ -33,7 +33,7 @@ import org.workcraft.dom.visual.Stylable;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 
 @DisplayName("Credit")
-@SVGIcon("images/icons/svg/xmas-credit.svg")
+@SVGIcon("images/node-credit.svg")
 public class VisualCreditComponent extends VisualXmasComponent {
     public Color color = new Color(0, 0, 0, 255);
 

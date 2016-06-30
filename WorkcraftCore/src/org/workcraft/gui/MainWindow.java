@@ -349,6 +349,10 @@ public class MainWindow extends JFrame {
     public void startup() {
         MainWindowIconManager.apply(this);
 
+        SilverOceanTheme.enable();
+        LookAndFeelHelper.setDefaultLookAndFeel();
+        SwingUtilities.updateComponentTreeUI(this);
+
         JDialog.setDefaultLookAndFeelDecorated(true);
         UIManager.put(SubstanceLookAndFeel.TABBED_PANE_CONTENT_BORDER_KIND, TabContentPaneBorderKind.SINGLE_FULL);
 
@@ -357,9 +361,11 @@ public class MainWindow extends JFrame {
 
         setJMenuBar(mainMenu);
         MenuBarUI menuUI = mainMenu.getUI();
+        
         SilverOceanTheme.enable();
         LookAndFeelHelper.setDefaultLookAndFeel();
         SwingUtilities.updateComponentTreeUI(this);
+        
         if (DesktopApi.getOs().isMac()) mainMenu.setUI(menuUI);
 
         content = new JPanel(new BorderLayout(0, 0));
@@ -451,7 +457,7 @@ public class MainWindow extends JFrame {
                 FontRenderContext frc = new FontRenderContext(new AffineTransform(), true, true);
                 font.createGlyphVector(frc, TITLE_PLACEHOLDER);
                 // Force SVG rendering classes to load.
-                GUI.createIconFromSVG("images/icons/svg/place.svg");
+                GUI.createIconFromSVG("images/icon.svg");
             }
         }).start();
 

@@ -24,7 +24,7 @@ import org.workcraft.plugins.son.util.Interval;
 
 @Hotkey(KeyEvent.VK_E)
 @DisplayName ("Event")
-@SVGIcon("images/icons/svg/transition.svg")
+@SVGIcon("images/node-event.svg")
 
 public class VisualEvent extends VisualComponent implements VisualTransitionNode {
     //private boolean displayName = false;

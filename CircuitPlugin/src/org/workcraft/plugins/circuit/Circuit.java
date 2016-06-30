@@ -36,6 +36,7 @@ import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.references.CircuitReferenceManager;
 import org.workcraft.serialisation.References;
+import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
 public class Circuit extends AbstractMathModel {
@@ -106,6 +107,24 @@ public class Circuit extends AbstractMathModel {
             }
         }
         return properties;
+    }
+
+    public Collection<Contact> getPorts() {
+        return Hierarchy.getDescendantsOfType(getRoot(), Contact.class, new Func<Contact, Boolean>() {
+            @Override
+            public Boolean eval(Contact arg) {
+                return arg.isPort();
+            }
+        });
+    }
+
+    public Collection<Contact> getDrivers() {
+        return Hierarchy.getDescendantsOfType(getRoot(), Contact.class, new Func<Contact, Boolean>() {
+            @Override
+            public Boolean eval(Contact arg) {
+                return arg.isDriver();
+            }
+        });
     }
 
 }
