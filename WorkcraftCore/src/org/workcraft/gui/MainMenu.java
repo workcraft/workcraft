@@ -151,7 +151,7 @@ public class MainMenu extends JMenuBar {
         mnFile.addSeparator();
         mnFile.add(miImport);
         mnFile.add(mnExport);
-        
+
 // FIXME: Workspace functionality is not working yet.
 //        mnFile.addSeparator();
 //        mnFile.add(miNewWorkspace);
@@ -299,7 +299,7 @@ public class MainMenu extends JMenuBar {
         ActionMenuItem miPanCenter = new ActionMenuItem(MainWindowActions.VIEW_PAN_CENTER);
         miPanCenter.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, menuKeyMask));
         miPanCenter.addScriptedActionListener(mainWindow.getDefaultActionListener());
-        
+
 // FIXME: Only the default Look and Feel works good, the others cause some problems.
 //        JMenu mnLookAndFeel = new JMenu("Look and Feel");
 //        for (final Entry<String, String> laf: LookAndFeelHelper.getLafMap().entrySet()) {

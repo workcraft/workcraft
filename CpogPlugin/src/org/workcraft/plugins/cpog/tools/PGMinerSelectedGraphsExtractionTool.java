@@ -38,6 +38,8 @@ public class PGMinerSelectedGraphsExtractionTool implements Tool {
             ArrayList<String> tempGraphs = new ArrayList<>();
             ArrayList<String> graphs = new ArrayList<>();
 
+            if (allGraphs == "") throw new ArrayIndexOutOfBoundsException();
+
             int i = allGraphs.indexOf(" + ");
             while (i > -1) {
                 allGraphs = allGraphs.substring(0, i) + "\n" + allGraphs.substring(i + 2);
