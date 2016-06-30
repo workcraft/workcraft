@@ -345,6 +345,7 @@ public class MainMenu extends JMenuBar {
 //        mnView.add(miLoadLayout);
 
         add(mnView);
+
     }
 
     private void addHelpMenu(final MainWindow mainWindow) {
@@ -381,6 +382,7 @@ public class MainMenu extends JMenuBar {
 
         //add(Box.createHorizontalGlue());
         add(mnHelp);
+
     }
 
     private void setExportMenu(final WorkspaceEntry we) {
@@ -435,7 +437,7 @@ public class MainMenu extends JMenuBar {
         mnRecent.setEnabled(false);
         int index = 0;
         Collections.reverse(entries);
-        for (final String entry: entries) {
+        for (final String entry : entries) {
             if (entry != null) {
                 JMenuItem miFile = new JMenuItem();
                 if (index > 9) {
@@ -508,7 +510,7 @@ public class MainMenu extends JMenuBar {
             sectionToolsPartitions.add(Tools.getPositionedTools(sectionTools, Position.MIDDLE));
             sectionToolsPartitions.add(Tools.getPositionedTools(sectionTools, Position.BOTTOM));
             boolean needSeparator = false;
-            for (List<Tool> sectionToolsPartition: sectionToolsPartitions) {
+            for (List<Tool> sectionToolsPartition : sectionToolsPartitions) {
                 boolean isFirstItem = true;
                 for (Tool tool : sectionToolsPartition) {
                     if (needSeparator && isFirstItem) {
@@ -543,7 +545,7 @@ public class MainMenu extends JMenuBar {
     }
 
     private void addToolsMenu() {
-        for (JMenu mnTools: mnToolsList) {
+        for (JMenu mnTools : mnToolsList) {
             add(mnTools);
         }
         remove(mnHelp);
@@ -552,14 +554,14 @@ public class MainMenu extends JMenuBar {
     }
 
     public void removeToolsMenu() {
-        for (JMenu mnTools: mnToolsList) {
+        for (JMenu mnTools : mnToolsList) {
             remove(mnTools);
         }
         revalidate();
     }
 
     public void updateToolsMenuState(boolean enable) {
-        for (JMenu mnTool: mnToolsList) {
+        for (JMenu mnTool : mnToolsList) {
             mnTool.setEnabled(enable);
         }
     }
@@ -569,5 +571,4 @@ public class MainMenu extends JMenuBar {
         createToolsMenu(we);
         setExportMenu(we);
     }
-
 }

@@ -31,6 +31,7 @@ import java.util.LinkedList;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.WrappedException;
 import org.workcraft.exceptions.OperationCancelledException;
+import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.FileFilters;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.LogUtils;
@@ -41,6 +42,10 @@ public class Console {
         // TODO: Remove again when switching to Java 8
         if (System.getProperty("java.version").startsWith("1.7")) {
             System.setProperty("java.util.Arrays.useLegacyMergeSort", "true");
+        }
+        //Allows menu bar of OS X to be used instead of being in the Workcraft main window.
+        if (DesktopApi.getOs().isMac()) {
+            System.setProperty("apple.laf.useScreenMenuBar", "true");
         }
     }
 
