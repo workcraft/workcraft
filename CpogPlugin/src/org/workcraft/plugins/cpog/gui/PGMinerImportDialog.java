@@ -1,7 +1,6 @@
 package org.workcraft.plugins.cpog.gui;
 
 import java.awt.BorderLayout;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,6 +19,7 @@ import javax.swing.JTextField;
 import org.workcraft.Framework;
 import org.workcraft.util.GUI;
 
+@SuppressWarnings("serial")
 public class PGMinerImportDialog extends JDialog {
 
     private final JTextField filePath;

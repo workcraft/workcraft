@@ -10,8 +10,6 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
@@ -27,7 +25,6 @@ import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 
 import org.workcraft.dom.visual.VisualTransformableNode;
-import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
 import org.workcraft.plugins.cpog.VisualCpog;
@@ -66,12 +63,6 @@ public class ScencoSingleSequentialDialog extends JDialog {
         layout.setHGap(3);
         layout.setVGap(3);
 
-//        JPanel content = new JPanel(layout);
-//        content.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
-//
-//        content.add(standardPanel, "0, 0");
-//        content.add(buttonsPanel, "0 1");
-        
         JPanel content = new JPanel(new BorderLayout());
         content.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
 

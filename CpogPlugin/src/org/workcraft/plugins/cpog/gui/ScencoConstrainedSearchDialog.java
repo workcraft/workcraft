@@ -31,6 +31,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.EncoderSettings;
@@ -236,6 +237,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
         encodingTable.setDefaultRenderer(Object.class, renderer);
         encodingTable.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
         encodingTable.setAutoscrolls(true);
+        encodingTable.setRowHeight(SizeHelper.getComponentHeightFromFont(encodingTable.getFont()));
         encodingTable.setFillsViewportHeight(true);
         encodingTable.setEnabled(false);
         encodingTable.setBackground(Color.LIGHT_GRAY);

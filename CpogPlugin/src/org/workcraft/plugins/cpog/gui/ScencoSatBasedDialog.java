@@ -2,6 +2,7 @@ package org.workcraft.plugins.cpog.gui;
 
 import info.clearthought.layout.TableLayout;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -9,11 +10,10 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -75,12 +75,11 @@ public class ScencoSatBasedDialog extends JDialog {
         layout.setHGap(3);
         layout.setVGap(3);
 
-        JPanel content = new JPanel(layout);
-        content.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+        JPanel content = new JPanel(new BorderLayout());
 
-        content.add(standardPanel, "0, 0");
-        content.add(generationPanel, "0 1");
-        content.add(buttonsPanel, "0 2");
+        content.add(standardPanel, BorderLayout.NORTH);
+        content.add(generationPanel);
+        content.add(buttonsPanel, BorderLayout.SOUTH);
 
         setContentPane(content);
 
@@ -92,16 +91,16 @@ public class ScencoSatBasedDialog extends JDialog {
         }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-        sizeWindow(395, 240, 200, 100);
+        pack();
     }
 
     private void createStandardPanel() {
 
-        standardPanel = new JPanel(new SimpleFlowLayout());
+        standardPanel = new JPanel();
+        standardPanel.setLayout(new BoxLayout(standardPanel, BoxLayout.PAGE_AXIS));
 
         // OPTIMISE FOR MICROCONTROLLER/CPOG SIZE
         JLabel optimiseLabel = new JLabel(ScencoDialogSupport.textOptimiseForLabel);
-        //optimiseLabel.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForLabel);
         optimiseBox = new JComboBox<String>();
         optimiseBox.setEditable(false);
         optimiseBox.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForBox);
@@ -110,36 +109,23 @@ public class ScencoSatBasedDialog extends JDialog {
         optimiseBox.setSelectedIndex(settings.isCpogSize() ? 0 : 1);
         optimiseBox.setBackground(Color.WHITE);
 
+        JPanel optimisePanel = new JPanel();
+        optimisePanel.add(optimiseLabel);
+        optimisePanel.add(optimiseBox);
+
         // ABC TOOL DISABLE FLAG
-        abcCheck = new JCheckBox("", settings.isAbcFlag());
-        JLabel abcLabel = new JLabel("Use ABC for logic synthesis");
-        //abcLabel.setPreferredSize(ScencoDialogSupport.dimensionShortLabel);
-        abcLabel.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                abcCheck.setSelected(abcCheck.isSelected() ? false : true);
-            }
-        });
+        abcCheck = new JCheckBox("Use ABC for logic synthesis", settings.isAbcFlag());
 
         // VERBOSE MODE INSTANTIATION
-        JLabel verboseModeLabel = new JLabel(ScencoDialogSupport.textVerboseMode);
-        //verboseModeLabel.setPreferredSize(ScencoDialogSupport.dimensionVerboseLabel);
-        verboseModeCheck = new JCheckBox("", false);
-        verboseModeLabel.addMouseListener(new MouseAdapter() {
-            public void mouseClicked(MouseEvent e) {
-                verboseModeCheck.setSelected(verboseModeCheck.isSelected() ? false
-                        : true);
-            }
-        });
+        verboseModeCheck = new JCheckBox(ScencoDialogSupport.textVerboseMode, false);
+
+        JPanel checkPanel = new JPanel();
+        checkPanel.add(abcCheck);
+        checkPanel.add(verboseModeCheck);
 
         // ADD EVERYTHING INTO THE PANEL
-        standardPanel.add(optimiseLabel);
-        standardPanel.add(optimiseBox);
-        standardPanel.add(new SimpleFlowLayout.LineBreak());
-        standardPanel.add(abcCheck);
-        standardPanel.add(abcLabel);
-        standardPanel.add(verboseModeCheck);
-        standardPanel.add(verboseModeLabel);
-        standardPanel.add(new SimpleFlowLayout.LineBreak());
+        standardPanel.add(optimisePanel);
+        standardPanel.add(checkPanel);
     }
 
     private void createGenerationPanel() {
