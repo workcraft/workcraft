@@ -33,8 +33,6 @@ import java.awt.event.WindowEvent;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.AffineTransform;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -68,7 +66,6 @@ import org.flexdock.perspective.Perspective;
 import org.flexdock.perspective.PerspectiveManager;
 import org.flexdock.perspective.persist.FilePersistenceHandler;
 import org.flexdock.perspective.persist.PersistenceHandler;
-import org.flexdock.perspective.persist.PerspectiveModel;
 import org.flexdock.perspective.persist.xml.XMLPersister;
 import org.flexdock.plaf.common.border.ShadowBorder;
 import org.jvnet.substance.SubstanceLookAndFeel;
@@ -182,7 +179,11 @@ public class MainWindow extends JFrame {
         workspaceWindow.setVisible(true);
 
         outputWindow = new OutputWindow();
+        outputWindow.captureStream();
+
         errorWindow = new ErrorWindow();
+        errorWindow.captureStream();
+
         javaScriptWindow = new JavaScriptWindow();
 
         propertyEditorWindow = new PropertyEditorWindow();
@@ -366,82 +367,19 @@ public class MainWindow extends JFrame {
 
         content = new JPanel(new BorderLayout(0, 0));
         setContentPane(content);
-
-        PerspectiveManager pm = (PerspectiveManager) DockingManager.getLayoutManager();
-        pm.add(new Perspective(FLEXDOCK_WORKSPACE, FLEXDOCK_WORKSPACE));
-        pm.setCurrentPerspective(FLEXDOCK_WORKSPACE, true);
-
-        PropertyManager.getDockingPortRoot().setTabPlacement(SwingConstants.TOP);
-
         rootDockingPort = new DefaultDockingPort(FLEXDOCK_DOCKING_PORT);
         content.add(rootDockingPort, BorderLayout.CENTER);
-
-        createWindows();
-
-        outputWindow.captureStream();
-        errorWindow.captureStream();
-
         StandardBorderManager borderManager = new StandardBorderManager(new ShadowBorder());
         rootDockingPort.setBorderManager(borderManager);
 
-        float xSplit = 0.888f;
-        float ySplit = 0.8f;
-
-        outputDockable = createDockableWindow(outputWindow, TITLE_OUTPUT, DockableWindowContentPanel.CLOSE_BUTTON,
-                DockingManager.SOUTH_REGION, ySplit);
-
-        DockableWindow erroDockable = createDockableWindow(errorWindow, TITLE_PROBLEMS, outputDockable,
-                DockableWindowContentPanel.CLOSE_BUTTON);
-
-        DockableWindow javaScriptDockable = createDockableWindow(javaScriptWindow, TITLE_JAVASCRIPT, outputDockable,
-                DockableWindowContentPanel.CLOSE_BUTTON);
-
-        DockableWindow tasksDockable = createDockableWindow(new TaskManagerWindow(), TITLE_TASKS, outputDockable,
-                DockableWindowContentPanel.CLOSE_BUTTON);
-
-        DockableWindow workspaceDockable = createDockableWindow(workspaceWindow, TITLE_WORKSPACE,
-                DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.EAST_REGION,
-                xSplit);
-
-        DockableWindow propertyEditorDockable = createDockableWindow(propertyEditorWindow, TITLE_PROPERTY_EDITOR, workspaceDockable,
-                DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
-                DockingManager.NORTH_REGION, ySplit);
-
-        DockableWindow toolControlsDockable = createDockableWindow(editorToolsWindow, TITLE_TOOL_CONTROLS, propertyEditorDockable,
-                DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
-                DockingManager.SOUTH_REGION, 0.4f);
-
-        DockableWindow editorToolsDockable = createDockableWindow(toolControlsWindow, TITLE_EDITOR_TOOLS, toolControlsDockable,
-                DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
-                DockingManager.SOUTH_REGION, 0.795f);
-
-        documentPlaceholder = createDockableWindow(new DocumentPlaceholder(), TITLE_PLACEHOLDER, null, outputDockable,
-                0, DockingManager.NORTH_REGION, ySplit, "DocumentPlaceholder");
-
-        DockingManager.setAutoPersist(true);
-        EffectsManager.setPreview(new GhostPreview());
-        //EffectsManager.setPreview(new XORPreview());
-        //EffectsManager.setPreview(new AlphaPreview(Color.BLACK, Color.GRAY, 0.5f));
-
+        createWindows();
+        createDockingLayout();
         loadRecentFilesFromConfig();
         loadWindowGeometryFromConfig();
-        // FIXME: Restoring the layout does not work well for FlexDock.
-        //loadDockingLayout();
 
-        DockingManager.display(outputDockable);
         setVisible(true);
-
         DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
-
-        registerUtilityWindow(outputDockable);
-        registerUtilityWindow(erroDockable);
-        registerUtilityWindow(javaScriptDockable);
-        registerUtilityWindow(tasksDockable);
-        registerUtilityWindow(propertyEditorDockable);
-        registerUtilityWindow(editorToolsDockable);
-        registerUtilityWindow(toolControlsDockable);
-        registerUtilityWindow(workspaceDockable);
-
+        DockingManager.display(outputDockable);
         utilityWindows.add(documentPlaceholder);
 
         new Thread(new Runnable() {
@@ -619,64 +557,69 @@ public class MainWindow extends JFrame {
         }
     }
 
-    public void saveDockingLayout1() {
+    public void createDockingLayout() {
         PerspectiveManager pm = (PerspectiveManager) DockingManager.getLayoutManager();
-        pm.getCurrentPerspective().cacheLayoutState(rootDockingPort);
-        // pm.forceDockableUpdate();
-        PerspectiveModel pmodel = new PerspectiveModel(pm.getDefaultPerspective().getPersistentId(),
-                pm.getCurrentPerspectiveName(), pm.getPerspectives());
-        XMLPersister pers = new XMLPersister();
-        try {
-            File file = new File(Framework.UILAYOUT_FILE_PATH);
-            LogUtils.logMessageLine("Saving UI layout to " + file.getAbsolutePath());
-            File parentDir = file.getParentFile();
-            if ((parentDir != null) && !parentDir.exists()) {
-                parentDir.mkdirs();
-            }
-            FileOutputStream os = new FileOutputStream(file);
-            pers.store(os, pmodel);
-            os.close();
-        } catch (IOException | PersistenceException e) {
-            e.printStackTrace();
-        }
-    }
+        pm.add(new Perspective(FLEXDOCK_WORKSPACE, FLEXDOCK_WORKSPACE));
+        pm.setCurrentPerspective(FLEXDOCK_WORKSPACE, true);
+        PropertyManager.getDockingPortRoot().setTabPlacement(SwingConstants.TOP);
 
-    public void saveDockingLayout() {
-    }
 
-    public void loadDockingLayout1() {
-        PerspectiveManager pm = (PerspectiveManager) DockingManager.getLayoutManager();
-        XMLPersister pers = new XMLPersister();
-        try {
-            File file = new File(Framework.UILAYOUT_FILE_PATH);
-            if (file.exists()) {
-                LogUtils.logMessageLine("Loading UI layout from " + file.getAbsolutePath());
-                FileInputStream is = new FileInputStream(file);
-                PerspectiveModel pmodel = pers.load(is);
-                pm.remove(FLEXDOCK_WORKSPACE);
-                pm.setCurrentPerspective(FLEXDOCK_WORKSPACE);
-                for (Perspective p : pmodel.getPerspectives()) {
-                    pm.add(p, false);
-                }
-                // pm.reload(rootDockingPort);
-                DockingManager.restoreLayout();
-                is.close();
-                DockingManager.display(outputDockable);
-            }
-        } catch (IOException | PersistenceException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void loadDockingLayout() {
         File file = new File(Framework.UILAYOUT_FILE_PATH);
         PersistenceHandler persister = new FilePersistenceHandler(file, XMLPersister.newDefaultInstance());
         PerspectiveManager.setPersistenceHandler(persister);
+        PerspectiveManager.setRestoreFloatingOnLoad(true);
+
         try {
-            DockingManager.restoreLayout(true);
+            DockingManager.loadLayoutModel();
         } catch (IOException | PersistenceException e) {
-            e.printStackTrace();
+            LogUtils.logWarningLine("Window layout could not be loaded from '" + file.getAbsolutePath() + "'.");
         }
+        DockingManager.setFloatingEnabled(true);
+        DockingManager.setAutoPersist(true);
+        EffectsManager.setPreview(new GhostPreview());
+
+        float xSplit = 0.888f;
+        float ySplit = 0.8f;
+
+        outputDockable = createDockableWindow(outputWindow, TITLE_OUTPUT, DockableWindowContentPanel.CLOSE_BUTTON,
+                DockingManager.SOUTH_REGION, ySplit);
+
+        DockableWindow erroDockable = createDockableWindow(errorWindow, TITLE_PROBLEMS, outputDockable,
+                DockableWindowContentPanel.CLOSE_BUTTON);
+
+        DockableWindow javaScriptDockable = createDockableWindow(javaScriptWindow, TITLE_JAVASCRIPT, outputDockable,
+                DockableWindowContentPanel.CLOSE_BUTTON);
+
+        DockableWindow tasksDockable = createDockableWindow(new TaskManagerWindow(), TITLE_TASKS, outputDockable,
+                DockableWindowContentPanel.CLOSE_BUTTON);
+
+        DockableWindow workspaceDockable = createDockableWindow(workspaceWindow, TITLE_WORKSPACE,
+                DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.EAST_REGION,
+                xSplit);
+
+        DockableWindow propertyEditorDockable = createDockableWindow(propertyEditorWindow, TITLE_PROPERTY_EDITOR, workspaceDockable,
+                DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
+                DockingManager.NORTH_REGION, ySplit);
+
+        DockableWindow toolControlsDockable = createDockableWindow(editorToolsWindow, TITLE_TOOL_CONTROLS, propertyEditorDockable,
+                DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
+                DockingManager.SOUTH_REGION, 0.4f);
+
+        DockableWindow editorToolsDockable = createDockableWindow(toolControlsWindow, TITLE_EDITOR_TOOLS, toolControlsDockable,
+                DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
+                DockingManager.SOUTH_REGION, 0.795f);
+
+        documentPlaceholder = createDockableWindow(new DocumentPlaceholder(), TITLE_PLACEHOLDER, null, outputDockable,
+                0, DockingManager.NORTH_REGION, ySplit, "DocumentPlaceholder");
+
+        registerUtilityWindow(outputDockable);
+        registerUtilityWindow(erroDockable);
+        registerUtilityWindow(javaScriptDockable);
+        registerUtilityWindow(tasksDockable);
+        registerUtilityWindow(propertyEditorDockable);
+        registerUtilityWindow(editorToolsDockable);
+        registerUtilityWindow(toolControlsDockable);
+        registerUtilityWindow(workspaceDockable);
     }
 
     public void shutdown() throws OperationCancelledException {
@@ -698,7 +641,6 @@ public class MainWindow extends JFrame {
                 throw new OperationCancelledException("Operation cancelled by user.");
             }
         }
-        saveDockingLayout();
         saveWindowGeometryToConfig();
         saveRecentFilesToConfig();
 
