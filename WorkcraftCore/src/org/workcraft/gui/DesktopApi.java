@@ -9,6 +9,7 @@ package org.workcraft.gui;
 import java.awt.Desktop;
 import java.awt.event.ActionEvent;
 import java.awt.event.InputEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.io.IOException;
@@ -214,6 +215,13 @@ public class DesktopApi {
             return e.isMetaDown();
         }
         return e.isControlDown();
+    }
+
+    public static int getMenuKeyCode() {
+        if (getOs().isMac()) {
+            return KeyEvent.VK_META;
+        }
+        return KeyEvent.VK_CONTROL;
     }
 
 }
