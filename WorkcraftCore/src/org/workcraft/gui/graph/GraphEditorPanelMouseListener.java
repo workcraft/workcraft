@@ -124,7 +124,7 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
     }
 
     public void mouseReleased(MouseEvent e) {
-        if (isPanCombo(e)) {
+        if (isPanCombo(e) || (e.getButton() == MouseEvent.BUTTON3 && panDrag)) {
             panDrag = false;
         } else {
             GraphEditorTool tool = toolProvider.getTool();
