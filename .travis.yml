@@ -2,11 +2,11 @@ language: java
 
 matrix:
   include:
-    - jdk: openjdk7
+    - jdk: oraclejdk8
       env: TARGET=checkstyle
-    - jdk: openjdk7
+    - jdk: oraclejdk8
       env: TARGET=pmd
-    - jdk: openjdk7
+    - jdk: oraclejdk8
       env: TARGET=cpd
     - jdk: openjdk7
       env: TARGET=test
@@ -22,4 +22,4 @@ script:
   - ./gradlew $TARGET
 
 after_success:
-  - if [ $TARGET == test -a $TRAVIS_JDK_VERSION == openjdk7 ]; then ./gradlew coveralls; fi
+  - if [ $TARGET == test -a $TRAVIS_JDK_VERSION == oraclejdk8 ]; then ./gradlew coveralls; fi
