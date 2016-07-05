@@ -121,6 +121,7 @@ public class SelectionTool extends AbstractTool {
     private boolean enablePaging = true;
     private boolean enableFlipping = true;
     private boolean enableRotating = true;
+    private boolean isPanMode = false;
 
     public SelectionTool() {
         this(true, true, true, true);
@@ -283,6 +284,7 @@ public class SelectionTool extends AbstractTool {
     public void activated(final GraphEditor editor) {
         super.activated(editor);
         currentNode = null;
+        isPanMode = false;
     }
 
     @Override
@@ -626,6 +628,19 @@ public class SelectionTool extends AbstractTool {
                 break;
             }
         }
+
+        if (e.getKeyCode() == DesktopApi.getMenuKeyCode()) {
+            isPanMode = true;
+            e.getEditor().forceRedraw();
+        }
+    }
+
+    @Override
+    public void keyReleased(GraphEditorKeyEvent e) {
+        if (e.getKeyCode() == DesktopApi.getMenuKeyCode()) {
+            isPanMode = false;
+            e.getEditor().forceRedraw();
+        }
     }
 
     @Override
@@ -749,7 +764,7 @@ public class SelectionTool extends AbstractTool {
             }
 
             @Override
-            public void keyReleased(KeyEvent arg0) {
+            public void keyReleased(KeyEvent e) {
             }
 
             @Override
@@ -928,6 +943,10 @@ public class SelectionTool extends AbstractTool {
         editor.getWorkspaceEntry().saveMemento();
         // Redraw the editor window to recalculate all the bounding boxes
         editor.forceRedraw();
+    }
+
+    public String getHintMessage() {
+        return isPanMode ? "Use " + DesktopApi.getMenuKeyMaskName() + "+RMB to drag and move the editor" : null;
     }
 
 }
