@@ -6,7 +6,7 @@ in="integration-tests/vme-tm.circuit.work"
 got="integration-tests/vme-tm.v.got"
 want="integration-tests/vme-tm.v"
 
-./workcraft -nogui -exec:<(echo "export(load('$in'), '$got', 'VERILOG'); exit();")
+./workcraft -nogui -exec:<(echo "export(load('$in'), '$got', 'VERILOG'); exit();") >/dev/null
 
 [[ -f $got ]] || err "expected output file $got not found"
 

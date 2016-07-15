@@ -6,7 +6,7 @@ in="integration-tests/vme.stg.work"
 got="integration-tests/vme.g.got"
 want="integration-tests/vme.g"
 
-./workcraft -nogui -exec:<(echo "export(load('$in'), '$got', 'STG'); exit();")
+./workcraft -nogui -exec:<(echo "export(load('$in'), '$got', 'STG'); exit();") >/dev/null
 
 [[ -f $got ]] || err "expected output file $got not found"
 
