@@ -10,8 +10,8 @@ want="integration-tests/vme-tm.v"
 
 [[ -f $got ]] || err "expected output file $got not found"
 
-# size in bytes
-size() { stat --printf="%s" $1; }
+# size in bytes, don't use stat as it's not portable
+size() { wc -c < $1; }
 
 wantsize=$(size $want)
 gotsize=$(size $got)
