@@ -2,7 +2,7 @@
 
 err() { echo >&2 "$@"; exit 1; }
 
-./dist.sh linux >/dev/null || err "dist.sh did not succeed"
+./dist.sh -f linux >/dev/null || err "dist.sh did not succeed"
 
 cd dist/linux/workcraft
 
