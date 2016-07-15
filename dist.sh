@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/bash -e
 
 plugin_dirs="*Plugin/"
 core_dir="WorkcraftCore"
@@ -87,7 +87,7 @@ for platform in $platforms; do
     # Set `Resources' as the distribution path on OS X
     if [ "$platform" = "osx" ]; then
         # Update Info.plist with version tag
-        sed -i "s/__VERSION__/$tag/" $dist_path/Contents/Info.plist
+        sed -i.bk "s/__VERSION__/$tag/" $dist_path/Contents/Info.plist
 
         dist_path=$dist_path/Contents/Resources
     fi
