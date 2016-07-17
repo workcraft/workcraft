@@ -1,4 +1,4 @@
-#!/bin/sh -e
+#!/bin/bash -e
 
 plugin_dirs="*Plugin/"
 core_dir="WorkcraftCore"
@@ -18,6 +18,7 @@ Usage: $bname [platforms] [-t TAG] [-h]
   platforms:     distribution platforms to build
                  $allplatforms all (default: all)
   -t, --tag TAG: user-defined tag (git tag is used by default)
+  -f, --force:   force removal of output dir
   -h, --help:    print this help
 EOF
 }
@@ -28,11 +29,15 @@ err() {
 }
 
 # Process parameters
+force=false
 for param in "$@"; do
     case "$param" in
         -h | --help)
             usage
             exit 0 ;;
+        -f | --force)
+            force=true
+            shift ;;
         -t | --tag)
             tag="$2"
             shift 2 ;;
@@ -68,7 +73,11 @@ for platform in $platforms; do
     fi
 
     if [ -e "$dist_path" ]; then
-        err "Distribution directory already exists: $dist_path"
+        if $force; then
+            rm -rf "$dist_path"
+        else
+            err "Distribution directory already exists: $dist_path"
+        fi
     fi
 
     mkdir -p $dist_path
@@ -78,7 +87,7 @@ for platform in $platforms; do
     # Set `Resources' as the distribution path on OS X
     if [ "$platform" = "osx" ]; then
         # Update Info.plist with version tag
-        sed -i "s/__VERSION__/$tag/" $dist_path/Contents/Info.plist
+        sed -i.bk "s/__VERSION__/$tag/" $dist_path/Contents/Info.plist
 
         dist_path=$dist_path/Contents/Resources
     fi

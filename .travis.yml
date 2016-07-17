@@ -14,12 +14,16 @@ matrix:
       env: TARGET=test
     - jdk: oraclejdk8
       env: TARGET=test
+    - os: osx
+      osx_image: xcode7.3
+      env: TARGET=test
 
 install:
   - ./gradlew assemble
 
 script:
   - ./gradlew $TARGET
+  - if [ $TARGET == test ]; then ./integration-tests/run.sh; fi
 
 after_success:
   - if [ $TARGET == test -a $TRAVIS_JDK_VERSION == oraclejdk8 ]; then ./gradlew coveralls; fi
