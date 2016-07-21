@@ -171,12 +171,35 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 
     @Override
     public Rectangle2D getInternalBoundingBoxInLocalSpace() {
-        ComponentRenderingResult res = getRenderingResult();
-        if (res == null) {
+        ComponentRenderingResult renderingResult = getRenderingResult();
+        if (renderingResult == null) {
             return super.getInternalBoundingBoxInLocalSpace();
         } else {
-            return res.boundingBox();
+            Rectangle2D boundingBox = renderingResult.boundingBox();
+            AffineTransform at = getMainContactRotateTransform(false);
+            return at.createTransformedShape(boundingBox).getBounds2D();
         }
+    }
+
+    private AffineTransform getMainContactRotateTransform(boolean reverse) {
+        AffineTransform at = new AffineTransform();
+        VisualContact contact = getMainContact();
+        if (contact != null) {
+            switch (contact.getDirection()) {
+            case NORTH:
+                at.quadrantRotate(reverse ? 1 : 3);
+                break;
+            case SOUTH:
+                at.quadrantRotate(reverse ? 3 : 1);
+                break;
+            case WEST:
+                at.quadrantRotate(2);
+                break;
+            case EAST:
+                break;
+            }
+        }
+        return at;
     }
 
     @Override
@@ -355,27 +378,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
             cacheRenderedText(r); // needed to better estimate the bounding box
 
             // Determine rotation by the direction of the main contact (usually the only output)
-            VisualContact contact = getMainContact();
-            AffineTransform at = new AffineTransform();
-            AffineTransform bt = new AffineTransform();
-            if (contact != null) {
-                switch (contact.getDirection()) {
-                case NORTH:
-                    at.quadrantRotate(3);
-                    bt.quadrantRotate(1);
-                    break;
-                case SOUTH:
-                    at.quadrantRotate(1);
-                    bt.quadrantRotate(3);
-                    break;
-                case WEST:
-                    at.quadrantRotate(2);
-                    bt.quadrantRotate(2);
-                    break;
-                case EAST:
-                    break;
-                }
-            }
+            AffineTransform at = getMainContactRotateTransform(false);
 
             // Draw the component in its coordinates
             g.transform(at);
@@ -390,6 +393,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
             GateRenderer.foreground = Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation());
             GateRenderer.background = Coloriser.colorise(getFillColor(), r.getDecoration().getBackground());
             rr.draw(g);
+            AffineTransform bt = getMainContactRotateTransform(true);
             g.transform(bt);
 
             if ((isBuffer() || isInverter()) && getIsZeroDelay()) {
