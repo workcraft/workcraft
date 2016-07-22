@@ -314,10 +314,10 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 //        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
         g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
-        getModel().draw(g2d, toolboxPanel.getTool().getDecorator(this));
+        getModel().draw(g2d, toolboxPanel.getSelectedTool().getDecorator(this));
 
         if (hasFocus()) {
-            toolboxPanel.getTool().drawInUserSpace(this, g2d);
+            toolboxPanel.getSelectedTool().drawInUserSpace(this, g2d);
         }
         g2d.setTransform(screenTransform);
 
@@ -326,7 +326,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         }
 
         if (hasFocus()) {
-            toolboxPanel.getTool().drawInScreenSpace(this, g2d);
+            toolboxPanel.getSelectedTool().drawInScreenSpace(this, g2d);
             g2d.setTransform(screenTransform);
 
             g2d.setStroke(borderStroke);

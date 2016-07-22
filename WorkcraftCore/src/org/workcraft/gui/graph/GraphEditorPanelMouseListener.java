@@ -73,7 +73,7 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
                     currentMouseCoords.y - lastMouseCoords.y);
             editor.repaint();
         } else {
-            GraphEditorTool tool = toolProvider.getTool();
+            GraphEditorTool tool = toolProvider.getSelectedTool();
             if (tool != null) {
                 if (!tool.isDragging() && startPosition != null) {
                     tool.startDrag(adaptEvent(e));
@@ -93,14 +93,14 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
             mainWindow.requestFocus(editor);
         }
         if (!isPanCombo(e)) {
-            toolProvider.getTool().mouseClicked(adaptEvent(e));
+            toolProvider.getSelectedTool().mouseClicked(adaptEvent(e));
         }
     }
 
     @Override
     public void mouseEntered(MouseEvent e) {
         if (editor.hasFocus()) {
-            GraphEditorTool tool = toolProvider.getTool();
+            GraphEditorTool tool = toolProvider.getSelectedTool();
             if (tool != null) {
                 tool.mouseEntered(adaptEvent(e));
             }
@@ -110,7 +110,7 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
     @Override
     public void mouseExited(MouseEvent e) {
         if (editor.hasFocus()) {
-            toolProvider.getTool().mouseExited(adaptEvent(e));
+            toolProvider.getSelectedTool().mouseExited(adaptEvent(e));
         }
     }
 
@@ -125,7 +125,7 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
             panDrag = true;
             editor.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
         } else {
-            GraphEditorTool tool = toolProvider.getTool();
+            GraphEditorTool tool = toolProvider.getSelectedTool();
             Viewport viewport = editor.getViewport();
             Point point = e.getPoint();
             if (tool != null) {
@@ -143,10 +143,10 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
     public void mouseReleased(MouseEvent e) {
         if (isPanCombo(e) || (e.getButton() == MouseEvent.BUTTON3 && panDrag)) {
             panDrag = false;
-            GraphEditorTool tool = toolProvider.getTool();
+            GraphEditorTool tool = toolProvider.getSelectedTool();
             editor.setCursor(tool.getCursor());
         } else {
-            GraphEditorTool tool = toolProvider.getTool();
+            GraphEditorTool tool = toolProvider.getSelectedTool();
             if (tool != null) {
                 if (tool.isDragging()) {
                     tool.finishDrag(adaptEvent(e));

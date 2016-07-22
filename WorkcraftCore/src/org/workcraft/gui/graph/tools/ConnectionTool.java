@@ -318,11 +318,13 @@ public class ConnectionTool extends AbstractTool {
     }
 
     @Override
-    public void keyPressed(GraphEditorKeyEvent e) {
-        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+    public boolean keyPressed(GraphEditorKeyEvent e) {
+        if ((firstPoint != null) && (e.getKeyCode() == KeyEvent.VK_ESCAPE)) {
             resetState(e.getEditor());
             e.getEditor().repaint();
+            return true;
         }
+        return super.keyPressed(e);
     }
 
     @Override

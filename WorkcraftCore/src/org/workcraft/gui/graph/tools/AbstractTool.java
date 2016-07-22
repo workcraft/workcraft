@@ -92,15 +92,18 @@ public abstract class AbstractTool implements GraphEditorTool {
     }
 
     @Override
-    public void keyPressed(GraphEditorKeyEvent event) {
+    public boolean keyPressed(GraphEditorKeyEvent event) {
+        return false;
     }
 
     @Override
-    public void keyReleased(GraphEditorKeyEvent event) {
+    public boolean keyReleased(GraphEditorKeyEvent event) {
+        return false;
     }
 
     @Override
-    public void keyTyped(GraphEditorKeyEvent event) {
+    public boolean keyTyped(GraphEditorKeyEvent event) {
+        return false;
     }
 
     @Override

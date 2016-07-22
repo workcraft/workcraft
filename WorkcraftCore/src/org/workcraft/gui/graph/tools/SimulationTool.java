@@ -66,8 +66,8 @@ import org.workcraft.Trace;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
-import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.HitMan;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
@@ -705,13 +705,16 @@ public abstract class SimulationTool extends AbstractTool implements ClipboardOw
     }
 
     @Override
-    public void keyPressed(GraphEditorKeyEvent e) {
+    public boolean keyPressed(GraphEditorKeyEvent e) {
         if (e.getKeyCode() == KeyEvent.VK_OPEN_BRACKET) {
             stepBack(e.getEditor());
+            return true;
         }
         if (e.getKeyCode() == KeyEvent.VK_CLOSE_BRACKET) {
             step(e.getEditor());
+            return true;
         }
+        return super.keyPressed(e);
     }
 
     public void executeTransition(final GraphEditor editor, Node candidate) {

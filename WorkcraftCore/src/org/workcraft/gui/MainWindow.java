@@ -803,7 +803,7 @@ public class MainWindow extends JFrame {
             toolControlsWindow.setContent(toolBox);
             editorToolsWindow.setContent(toolBox.getControlPanel());
 
-            GraphEditorTool selectedTool = toolBox.getTool();
+            GraphEditorTool selectedTool = toolBox.getSelectedTool();
             selectedTool.setup(editorInFocus);
             sender.updatePropertyView();
 

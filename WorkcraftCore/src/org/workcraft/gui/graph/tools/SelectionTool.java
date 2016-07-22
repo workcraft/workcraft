@@ -558,7 +558,7 @@ public class SelectionTool extends AbstractTool {
     }
 
     @Override
-    public void keyPressed(GraphEditorKeyEvent e) {
+    public boolean keyPressed(GraphEditorKeyEvent e) {
         GraphEditor editor = e.getEditor();
         switch (e.getKeyCode()) {
         case KeyEvent.VK_ESCAPE:
@@ -567,29 +567,29 @@ public class SelectionTool extends AbstractTool {
             } else {
                 cancelSelection(editor);
             }
-            break;
+            return true;
         case KeyEvent.VK_PAGE_UP:
             changeLevelUp(editor);
-            break;
+            return true;
         case KeyEvent.VK_PAGE_DOWN:
             changeLevelDown(editor);
-            break;
+            return true;
         }
 
         if (!e.isMenuKeyDown() && !e.isShiftDown()) {
             switch (e.getKeyCode()) {
             case KeyEvent.VK_LEFT:
                 offsetSelection(editor, -1, 0);
-                break;
+                return true;
             case KeyEvent.VK_RIGHT:
                 offsetSelection(editor, 1, 0);
-                break;
+                return true;
             case KeyEvent.VK_UP:
                 offsetSelection(editor, 0, -1);
-                break;
+                return true;
             case KeyEvent.VK_DOWN:
                 offsetSelection(editor, 0, 1);
-                break;
+                return true;
             }
         }
 
@@ -601,7 +601,7 @@ public class SelectionTool extends AbstractTool {
                 } else {
                     pageSelection(editor);
                 }
-                break;
+                return true;
             }
         }
 
@@ -613,22 +613,27 @@ public class SelectionTool extends AbstractTool {
                 } else {
                     groupSelection(editor);
                 }
-                break;
+                return true;
             }
         }
 
         if (e.getKeyCode() == DesktopApi.getMenuKeyCode()) {
             isPanMode = true;
             editor.forceRedraw();
+            return true;
         }
+
+        return super.keyPressed(e);
     }
 
     @Override
-    public void keyReleased(GraphEditorKeyEvent e) {
+    public boolean keyReleased(GraphEditorKeyEvent e) {
         if (e.getKeyCode() == DesktopApi.getMenuKeyCode()) {
             isPanMode = false;
             e.getEditor().forceRedraw();
+            return true;
         }
+        return super.keyReleased(e);
     }
 
     @Override

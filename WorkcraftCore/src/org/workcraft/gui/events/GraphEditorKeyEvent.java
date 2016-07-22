@@ -34,6 +34,7 @@ public class GraphEditorKeyEvent {
     char keyChar;
     int keyCode;
     int modifiers;
+
     public GraphEditorKeyEvent(GraphEditor editor, KeyEvent event) {
         this.editor = editor;
 
