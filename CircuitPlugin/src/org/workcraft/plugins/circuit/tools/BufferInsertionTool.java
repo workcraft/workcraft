@@ -128,6 +128,8 @@ public class BufferInsertionTool extends TransformationTool implements NodeTrans
             } catch (InvalidConnectionException e) {
                 LogUtils.logWarningLine(e.getMessage());
             }
+            boolean initToOne = inputContact.getReferencedFunctionContact().getInitToOne();
+            outputContact.getReferencedFunctionContact().setInitToOne(initToOne);
         }
     }
 

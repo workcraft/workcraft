@@ -124,6 +124,7 @@ public class SelectionTool extends AbstractTool {
     private boolean enableFlipping = true;
     private boolean enableRotating = true;
     private boolean isPanMode = false;
+    private boolean isTextMode = false;
 
     public SelectionTool() {
         this(true, true, true, true);
@@ -287,6 +288,7 @@ public class SelectionTool extends AbstractTool {
         super.activated(editor);
         currentNode = null;
         isPanMode = false;
+        isTextMode = false;
     }
 
     @Override
@@ -712,12 +714,12 @@ public class SelectionTool extends AbstractTool {
         };
     }
 
-    private void editLabelInPlace(final GraphEditor editor, final VisualComponent component, String initialText) {
+    public void editLabelInPlace(final GraphEditor editor, final VisualComponent component, String initialText) {
         // Create a text pane without wrapping
         final JTextPane textPane = new JTextPane() {
             @Override
             public boolean getScrollableTracksViewportWidth() {
-                return getUI().getPreferredSize(this).width    <= getParent().getSize().width;
+                return getUI().getPreferredSize(this).width <= getParent().getSize().width;
             }
         };
         textPane.setText(initialText.replace("|", "\n"));
@@ -754,6 +756,10 @@ public class SelectionTool extends AbstractTool {
                     cancelInPlaceEdit = true;
                     editor.requestFocus();
                 }
+                if ((arg0.getModifiers() == DesktopApi.getMenuKeyMask()) && (arg0.getKeyCode() == KeyEvent.VK_ENTER)) {
+                    cancelInPlaceEdit = false;
+                    editor.requestFocus();
+                }
             }
 
             @Override
@@ -770,6 +776,7 @@ public class SelectionTool extends AbstractTool {
             public void focusGained(FocusEvent arg0) {
                 editor.getWorkspaceEntry().setCanModify(false);
                 cancelInPlaceEdit = false;
+                isTextMode = true;
             }
 
             @Override
@@ -785,6 +792,7 @@ public class SelectionTool extends AbstractTool {
                         editLabelInPlace(editor, component, newText);
                     }
                 }
+                isTextMode = false;
                 editor.getWorkspaceEntry().setCanModify(true);
                 editor.repaint();
             }
@@ -940,8 +948,14 @@ public class SelectionTool extends AbstractTool {
         editor.forceRedraw();
     }
 
+    @Override
     public String getHintMessage() {
-        return isPanMode ? "Use " + DesktopApi.getMenuKeyMaskName() + "+RMB to drag and move the editor" : null;
+        if (isPanMode) {
+            return "Use " + DesktopApi.getMenuKeyMaskName() + " + RMB to pan the view.";
+        } else if (isTextMode) {
+            return "Use " + DesktopApi.getMenuKeyMaskName() + " + Enter to finish text editing.";
+        }
+        return super.getHintMessage();
     }
 
 }
