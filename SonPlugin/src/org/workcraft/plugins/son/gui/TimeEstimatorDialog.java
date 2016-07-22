@@ -21,7 +21,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.table.AbstractTableModel;
 
+import org.workcraft.Framework;
 import org.workcraft.dom.Node;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.TimeEstimatorSettings;
@@ -58,7 +60,7 @@ public class TimeEstimatorDialog extends JDialog {
     protected int run = 0;
 
     public TimeEstimatorDialog(GraphEditor editor, TimeEstimatorSettings settings, Node selection, Granularity g) {
-        super(editor.getMainWindow(), "Estimator Setting", ModalityType.TOOLKIT_MODAL);
+        super(Framework.getInstance().getMainWindow(), "Estimator Setting", ModalityType.TOOLKIT_MODAL);
         net = (SON) editor.getModel().getMathModel();
         this.editor = editor;
         this.settings = settings;
@@ -153,8 +155,7 @@ public class TimeEstimatorDialog extends JDialog {
     }
 
     protected void createScenarioTable() {
-
-        ScenarioSaveList saveList = saveListFilter(net.importScenarios(editor.getMainWindow()), selection);
+        ScenarioSaveList saveList = saveListFilter(net.importScenarios(), selection);
         scenarioTable = new ScenarioTable(saveList, editor, new ScenarioListTableModel(), selection);
 
         tabelPanel = new JScrollPane(scenarioTable);
@@ -222,7 +223,8 @@ public class TimeEstimatorDialog extends JDialog {
                 setParameters();
                 if (defaultDurationPanel.isValidDuration()) {
                     run = 1;
-
+                    final Framework framework = Framework.getInstance();
+                    final MainWindow mainWindow = framework.getMainWindow();
                     if (entireEst.isSelected()) {
                         // boolean isNarrow = narrow.isSelected() &&
                         // narrow.isEnabled();
@@ -236,13 +238,13 @@ public class TimeEstimatorDialog extends JDialog {
                             alg1.estimateEntire();
                             alg1.finalize();
                         } catch (AlternativeStructureException e2) {
-                            JOptionPane.showMessageDialog(editor.getMainWindow(), e2.getMessage(),
+                            JOptionPane.showMessageDialog(mainWindow, e2.getMessage(),
                                     "Scenario selection error", JOptionPane.ERROR_MESSAGE);
                         } catch (TimeEstimationException | TimeOutOfBoundsException e1) {
-                            JOptionPane.showMessageDialog(editor.getMainWindow(), e1.getMessage(), "",
+                            JOptionPane.showMessageDialog(mainWindow, e1.getMessage(), "",
                                     JOptionPane.ERROR_MESSAGE);
                         } catch (SyncCycleException e1) {
-                            JOptionPane.showMessageDialog(editor.getMainWindow(), e1.getMessage(),
+                            JOptionPane.showMessageDialog(mainWindow, e1.getMessage(),
                                     "Synchronous cycle error", JOptionPane.ERROR_MESSAGE);
                         }
 
@@ -332,7 +334,9 @@ public class TimeEstimatorDialog extends JDialog {
     }
 
     protected void errMsg(String msg) {
-        JOptionPane.showMessageDialog(editor.getMainWindow(), msg, "Time estimation error", JOptionPane.ERROR_MESSAGE);
+        final Framework framework = Framework.getInstance();
+        final MainWindow mainWindow = framework.getMainWindow();
+        JOptionPane.showMessageDialog(mainWindow, msg, "Time estimation error", JOptionPane.ERROR_MESSAGE);
     }
 
     protected void setParameters() {

@@ -21,9 +21,11 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.text.AbstractDocument;
 
+import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.AbstractTool;
 import org.workcraft.gui.graph.tools.Decoration;
@@ -139,7 +141,9 @@ public class TimeValueSetterTool extends AbstractTool {
                 Granularity g = granularityPanel.getSelection();
                 TimeEstimatorDialog estimator = new TimeEstimatorDialog(editor, settings, selection, g);
                 visualNet.setForegroundColor(selection, selectedColor);
-                GUI.centerToParent(estimator, editor.getMainWindow());
+                final Framework framework = Framework.getInstance();
+                final MainWindow mainWindow = framework.getMainWindow();
+                GUI.centerToParent(estimator, mainWindow);
                 estimator.setVisible(true);
                 if (estimator.getRun() == 1) {
                     updateTimePanel(editor, visualSelection);

@@ -34,7 +34,6 @@ public class TimeConsistencyChecker implements Tool {
     public void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
-
         VisualSON visualNet = (VisualSON) we.getModelEntry().getVisualModel();
         SON net = (SON) we.getModelEntry().getMathModel();
 

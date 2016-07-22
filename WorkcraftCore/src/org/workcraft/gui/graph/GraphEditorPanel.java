@@ -54,6 +54,7 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
+import org.workcraft.Framework;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.BoundingBoxHelper;
@@ -129,7 +130,6 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
     public WorkspaceEntry workspaceEntry;
 
-    protected final MainWindow mainWindow;
     protected final ToolboxPanel toolboxPanel;
 
     protected Viewport view;
@@ -148,9 +148,8 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     private boolean updateEditorPanelRequested = true;
     private boolean updatePropertyViewRequested = true;
 
-    public GraphEditorPanel(MainWindow mainWindow, WorkspaceEntry workspaceEntry) {
+    public GraphEditorPanel(WorkspaceEntry workspaceEntry) {
         super(new BorderLayout());
-        this.mainWindow = mainWindow;
         this.workspaceEntry = workspaceEntry;
 
         workspaceEntry.addObserver(this);
@@ -441,11 +440,6 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         return workspaceEntry;
     }
 
-    @Override
-    public MainWindow getMainWindow() {
-        return mainWindow;
-    }
-
     private Properties propertiesWrapper(final ModelProperties mix) {
         return new Properties() {
             @Override
@@ -569,6 +563,8 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
             }
         }
 
+        final Framework framework = Framework.getInstance();
+        final MainWindow mainWindow = framework.getMainWindow();
         final PropertyEditorWindow propertyEditorWindow = mainWindow.getPropertyView();
         if (properties.getDescriptors().isEmpty()) {
             propertyEditorWindow.clearObject();

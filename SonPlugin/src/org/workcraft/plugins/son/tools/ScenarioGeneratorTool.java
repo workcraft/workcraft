@@ -112,7 +112,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
         //controlPanel.add(Box.createRigidArea(new Dimension(5, 0)));
         controlPanel.add(removeButton);
 
-        saveList = net.importScenarios(editor.getMainWindow());
+        saveList = net.importScenarios();
         scenarioTable = new ScenarioTable(saveList, editor);
 
         tabelPanel = new JScrollPane(scenarioTable);

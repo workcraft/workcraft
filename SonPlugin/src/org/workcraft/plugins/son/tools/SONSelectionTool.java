@@ -17,8 +17,10 @@ import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.DesktopApi;
+import org.workcraft.gui.ToolboxPanel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.SelectionTool;
@@ -62,7 +64,7 @@ public class SONSelectionTool extends SelectionTool {
         groupButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                selectionGroup(editor);
+                groupSelection(editor);
             }
         });
         groupPanel.add(groupButton);
@@ -85,7 +87,7 @@ public class SONSelectionTool extends SelectionTool {
         groupPageButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                selectionPageGroup(editor);
+                pageSelection(editor);
             }
         });
 
@@ -97,7 +99,7 @@ public class SONSelectionTool extends SelectionTool {
         ungroupButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                selectionUngroup(editor);
+                ungroupSelection(editor);
             }
         });
 
@@ -132,7 +134,7 @@ public class SONSelectionTool extends SelectionTool {
         flipHorizontalButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                selectionFlipHorizontal(editor);
+                flipSelectionHorizontal(editor);
             }
         });
         flipPanel.add(flipHorizontalButton);
@@ -141,7 +143,7 @@ public class SONSelectionTool extends SelectionTool {
         flipVerticalButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                selectionFlipVertical(editor);
+                flipSelectionVertical(editor);
             }
         });
         flipPanel.add(flipVerticalButton);
@@ -153,7 +155,7 @@ public class SONSelectionTool extends SelectionTool {
         rotateClockwiseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                selectionRotateClockwise(editor);
+                rotateSelectionClockwise(editor);
             }
         });
         rotatePanel.add(rotateClockwiseButton);
@@ -162,7 +164,7 @@ public class SONSelectionTool extends SelectionTool {
         rotateCounterclockwiseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                selectionRotateCounterclockwise(editor);
+                rotateSelectionCounterclockwise(editor);
             }
         });
         rotatePanel.add(rotateCounterclockwiseButton);
@@ -297,7 +299,10 @@ public class SONSelectionTool extends SelectionTool {
     }
 
     private void setChannelPlaceToolState(final GraphEditor editor, boolean state) {
-        editor.getMainWindow().getCurrentEditor().getToolBox().setToolButtonState(channelPlaceTool, state);
+        if (editor instanceof GraphEditorPanel) {
+            ToolboxPanel toolbox = ((GraphEditorPanel) editor).getToolBox();
+            toolbox.setToolButtonState(channelPlaceTool, state);
+        }
     }
 
 }

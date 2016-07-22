@@ -56,6 +56,7 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
+import org.workcraft.Framework;
 import org.workcraft.NodeTransformer;
 import org.workcraft.Tool;
 import org.workcraft.dom.Container;
@@ -80,6 +81,7 @@ import org.workcraft.gui.actions.ActionMenuItem;
 import org.workcraft.gui.actions.PopupToolAction;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.gui.graph.Viewport;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.util.GUI;
 import org.workcraft.util.Hierarchy;
@@ -103,8 +105,8 @@ public class SelectionTool extends AbstractTool {
     protected JPanel statusPanel;
 
     private DrugState dragState = DrugState.NONE;
-    private boolean notClick1 = false;
-    private boolean notClick3 = false;
+    private boolean ignoreMouseButton1 = false;
+    private boolean ignoreMouseButton3 = false;
 
     private Point2D offset;
     private Set<Point2D> snaps = new HashSet<>();
@@ -168,12 +170,12 @@ public class SelectionTool extends AbstractTool {
         controlPanel.add(groupPanel);
 
         if (enableGroupping) {
-            JButton groupButton = GUI.createIconButton(GUI.createIconFromSVG(
-                    "images/selection-group.svg"), "Group selection (" + DesktopApi.getMenuKeyMaskName() + "+G)");
+            JButton groupButton = GUI.createIconButton(GUI.createIconFromSVG("images/selection-group.svg"),
+                    "Group selection (" + DesktopApi.getMenuKeyMaskName() + "+G)");
             groupButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    selectionGroup(editor);
+                    groupSelection(editor);
                     editor.requestFocus();
                 }
             });
@@ -181,12 +183,12 @@ public class SelectionTool extends AbstractTool {
         }
 
         if (enablePaging) {
-            JButton groupPageButton = GUI.createIconButton(GUI.createIconFromSVG(
-                    "images/selection-page.svg"), "Combine selection into a page (Alt+G)");
+            JButton groupPageButton = GUI.createIconButton(GUI.createIconFromSVG("images/selection-page.svg"),
+                    "Combine selection into a page (Alt+G)");
             groupPageButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    selectionPageGroup(editor);
+                    pageSelection(editor);
                     editor.requestFocus();
                 }
             });
@@ -194,12 +196,12 @@ public class SelectionTool extends AbstractTool {
         }
 
         if (enableGroupping || enablePaging) {
-            JButton ungroupButton = GUI.createIconButton(GUI.createIconFromSVG(
-                    "images/selection-ungroup.svg"), "Ungroup selection (" + DesktopApi.getMenuKeyMaskName() + "+Shift+G)");
+            JButton ungroupButton = GUI.createIconButton(GUI.createIconFromSVG("images/selection-ungroup.svg"),
+                    "Ungroup selection (" + DesktopApi.getMenuKeyMaskName() + "+Shift+G)");
             ungroupButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    selectionUngroup(editor);
+                    ungroupSelection(editor);
                     editor.requestFocus();
                 }
             });
@@ -207,8 +209,8 @@ public class SelectionTool extends AbstractTool {
 
             JPanel levelPanel = new JPanel(new FlowLayout());
             controlPanel.add(levelPanel);
-            JButton levelUpButton = GUI.createIconButton(GUI.createIconFromSVG(
-                    "images/selection-level_up.svg"), "Level up (PageUp)");
+            JButton levelUpButton = GUI.createIconButton(GUI.createIconFromSVG("images/selection-level_up.svg"),
+                    "Level up (PageUp)");
             levelUpButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -217,8 +219,8 @@ public class SelectionTool extends AbstractTool {
                 }
             });
             levelPanel.add(levelUpButton);
-            JButton levelDownButton = GUI.createIconButton(GUI.createIconFromSVG(
-                    "images/selection-level_down.svg"), "Level down (PageDown)");
+            JButton levelDownButton = GUI.createIconButton(GUI.createIconFromSVG("images/selection-level_down.svg"),
+                    "Level down (PageDown)");
             levelDownButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -232,22 +234,22 @@ public class SelectionTool extends AbstractTool {
         if (enableFlipping) {
             JPanel flipPanel = new JPanel(new FlowLayout());
             controlPanel.add(flipPanel);
-            JButton flipHorizontalButton = GUI.createIconButton(GUI.createIconFromSVG(
-                    "images/selection-flip_horizontal.svg"), "Flip horizontal");
+            JButton flipHorizontalButton = GUI.createIconButton(GUI.createIconFromSVG("images/selection-flip_horizontal.svg"),
+                    "Flip horizontal");
             flipHorizontalButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    selectionFlipHorizontal(editor);
+                    flipSelectionHorizontal(editor);
                     editor.requestFocus();
                 }
             });
             flipPanel.add(flipHorizontalButton);
-            JButton flipVerticalButton = GUI.createIconButton(GUI.createIconFromSVG(
-                    "images/selection-flip_vertical.svg"), "Flip vertical");
+            JButton flipVerticalButton = GUI.createIconButton(GUI.createIconFromSVG("images/selection-flip_vertical.svg"),
+                    "Flip vertical");
             flipVerticalButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    selectionFlipVertical(editor);
+                    flipSelectionVertical(editor);
                     editor.requestFocus();
                 }
             });
@@ -257,22 +259,22 @@ public class SelectionTool extends AbstractTool {
         if (enableRotating) {
             JPanel rotatePanel = new JPanel(new FlowLayout());
             controlPanel.add(rotatePanel);
-            JButton rotateClockwiseButton = GUI.createIconButton(GUI.createIconFromSVG(
-                    "images/selection-rotate_clockwise.svg"), "Rotate clockwise");
+            JButton rotateClockwiseButton = GUI.createIconButton(GUI.createIconFromSVG("images/selection-rotate_clockwise.svg"),
+                    "Rotate clockwise");
             rotateClockwiseButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    selectionRotateClockwise(editor);
+                    rotateSelectionClockwise(editor);
                     editor.requestFocus();
                 }
             });
             rotatePanel.add(rotateClockwiseButton);
-            JButton rotateCounterclockwiseButton = GUI.createIconButton(GUI.createIconFromSVG(
-                    "images/selection-rotate_counterclockwise.svg"), "Rotate counterclockwise");
+            JButton rotateCounterclockwiseButton = GUI.createIconButton(GUI.createIconFromSVG("images/selection-rotate_counterclockwise.svg"),
+                    "Rotate counterclockwise");
             rotateCounterclockwiseButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
-                    selectionRotateCounterclockwise(editor);
+                    rotateSelectionCounterclockwise(editor);
                     editor.requestFocus();
                 }
             });
@@ -300,10 +302,10 @@ public class SelectionTool extends AbstractTool {
 
     @Override
     public void mouseClicked(GraphEditorMouseEvent e) {
-        if (notClick1 && e.getButton() == MouseEvent.BUTTON1) {
+        if (ignoreMouseButton1 && (e.getButton() == MouseEvent.BUTTON1)) {
             return;
         }
-        if (notClick3 && e.getButton() == MouseEvent.BUTTON3) {
+        if (ignoreMouseButton3 && (e.getButton() == MouseEvent.BUTTON3)) {
             return;
         }
 
@@ -407,7 +409,8 @@ public class SelectionTool extends AbstractTool {
         if (!applicableTools.isEmpty()) {
             popup = new JPopupMenu();
             popup.setFocusable(false);
-            MainWindow mainWindow = editor.getMainWindow();
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
             for (Tool tool: applicableTools) {
                 PopupToolAction toolAction = new PopupToolAction(tool);
                 ActionMenuItem miTool = new ActionMenuItem(toolAction);
@@ -434,7 +437,7 @@ public class SelectionTool extends AbstractTool {
         } else if (dragState == DrugState.SELECT) {
             selected.clear();
             selected.addAll(model.boxHitTest(e.getStartPosition(), e.getPosition()));
-            selectionBox = selectionRect(e.getStartPosition(), e.getPosition());
+            selectionBox = getSelectionRect(e.getStartPosition(), e.getPosition());
             editor.repaint();
         } else {
             VisualNode node = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
@@ -448,22 +451,13 @@ public class SelectionTool extends AbstractTool {
     @Override
     public void mousePressed(GraphEditorMouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
-            notClick1 = false;
+            ignoreMouseButton1 = false;
         } else if (e.getButton() == MouseEvent.BUTTON3) {
+            ignoreMouseButton3 = false;
             if (isDragging()) {
                 cancelDrag(e.getEditor());
-                e.getEditor().repaint();
-                notClick1 = true;
-                notClick3 = true;
-            } else {
-                notClick3 = false;
             }
         }
-//        GraphEditor editor = e.getEditor();
-//        if (editor instanceof GraphEditorPanel) {
-//            GraphEditorPanel panel = (GraphEditorPanel) editor;
-//            panel.setCursor(Cursor.getPredefinedCursor(Cursor.MOVE_CURSOR));
-//        }
     }
 
     @Override
@@ -558,49 +552,43 @@ public class SelectionTool extends AbstractTool {
             selectionBox = null;
         }
         dragState = DrugState.NONE;
-    }
-
-    @Override
-    public void mouseReleased(GraphEditorMouseEvent e) {
-//        GraphEditor editor = e.getEditor();
-//        if (editor instanceof GraphEditorPanel) {
-//            GraphEditorPanel panel = (GraphEditorPanel) editor;
-//            panel.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
-//        }
+        ignoreMouseButton1 = true;
+        ignoreMouseButton3 = true;
+        editor.repaint();
     }
 
     @Override
     public void keyPressed(GraphEditorKeyEvent e) {
+        GraphEditor editor = e.getEditor();
         switch (e.getKeyCode()) {
         case KeyEvent.VK_ESCAPE:
             if (isDragging()) {
-                cancelDrag(e.getEditor());
-                notClick1 = true;
+                cancelDrag(editor);
             } else {
-                selectionCancel(e.getEditor());
+                cancelSelection(editor);
             }
             break;
         case KeyEvent.VK_PAGE_UP:
-            changeLevelUp(e.getEditor());
+            changeLevelUp(editor);
             break;
         case KeyEvent.VK_PAGE_DOWN:
-            changeLevelDown(e.getEditor());
+            changeLevelDown(editor);
             break;
         }
 
         if (!e.isMenuKeyDown() && !e.isShiftDown()) {
             switch (e.getKeyCode()) {
             case KeyEvent.VK_LEFT:
-                selectionOffset(e.getEditor(), -1, 0);
+                offsetSelection(editor, -1, 0);
                 break;
             case KeyEvent.VK_RIGHT:
-                selectionOffset(e.getEditor(), 1, 0);
+                offsetSelection(editor, 1, 0);
                 break;
             case KeyEvent.VK_UP:
-                selectionOffset(e.getEditor(), 0, -1);
+                offsetSelection(editor, 0, -1);
                 break;
             case KeyEvent.VK_DOWN:
-                selectionOffset(e.getEditor(), 0, 1);
+                offsetSelection(editor, 0, 1);
                 break;
             }
         }
@@ -609,9 +597,9 @@ public class SelectionTool extends AbstractTool {
             switch (e.getKeyCode()) {
             case KeyEvent.VK_G:
                 if (e.isShiftDown()) {
-                    selectionUngroup(e.getEditor());
+                    ungroupSelection(editor);
                 } else {
-                    selectionPageGroup(e.getEditor());
+                    pageSelection(editor);
                 }
                 break;
             }
@@ -621,9 +609,9 @@ public class SelectionTool extends AbstractTool {
             switch (e.getKeyCode()) {
             case KeyEvent.VK_G:
                 if (e.isShiftDown()) {
-                    selectionUngroup(e.getEditor());
+                    ungroupSelection(editor);
                 } else {
-                    selectionGroup(e.getEditor());
+                    groupSelection(editor);
                 }
                 break;
             }
@@ -631,7 +619,7 @@ public class SelectionTool extends AbstractTool {
 
         if (e.getKeyCode() == DesktopApi.getMenuKeyCode()) {
             isPanMode = true;
-            e.getEditor().forceRedraw();
+            editor.forceRedraw();
         }
     }
 
@@ -646,8 +634,8 @@ public class SelectionTool extends AbstractTool {
     @Override
     public void drawInUserSpace(GraphEditor editor, Graphics2D g) {
         if ((dragState == DrugState.SELECT) && (selectionBox != null)) {
-            g.setStroke(new BasicStroke((float) editor.getViewport().pixelSizeInUserSpace().getX()));
-
+            Viewport viewport = editor.getViewport();
+            g.setStroke(new BasicStroke((float) viewport.pixelSizeInUserSpace().getX()));
             g.setColor(selectionFillColor);
             g.fill(selectionBox);
             g.setColor(selectionBorderColor);
@@ -823,7 +811,7 @@ public class SelectionTool extends AbstractTool {
         }
     }
 
-    private Rectangle2D selectionRect(Point2D startPosition, Point2D currentPosition) {
+    private Rectangle2D getSelectionRect(Point2D startPosition, Point2D currentPosition) {
         return new Rectangle2D.Double(
                 Math.min(startPosition.getX(), currentPosition.getX()),
                 Math.min(startPosition.getY(), currentPosition.getY()),
@@ -832,16 +820,18 @@ public class SelectionTool extends AbstractTool {
         );
     }
 
-    protected void selectionCancel(final GraphEditor editor) {
+    protected void cancelSelection(final GraphEditor editor) {
         VisualModel model = editor.getModel();
         if (!model.getSelection().isEmpty()) {
-            editor.getMainWindow().selectNone();
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            mainWindow.selectNone();
             editor.forceRedraw();
         }
         editor.requestFocus();
     }
 
-    private void selectionOffset(final GraphEditor editor, double dx, double dy) {
+    private void offsetSelection(final GraphEditor editor, double dx, double dy) {
         VisualModel model = editor.getModel();
         if (!model.getSelection().isEmpty()) {
             beforeSelectionModification(editor);
@@ -850,7 +840,7 @@ public class SelectionTool extends AbstractTool {
         }
     }
 
-    protected void selectionGroup(final GraphEditor editor) {
+    protected void groupSelection(final GraphEditor editor) {
         VisualModel model = editor.getModel();
         if (!model.getSelection().isEmpty()) {
             beforeSelectionModification(editor);
@@ -859,7 +849,7 @@ public class SelectionTool extends AbstractTool {
         }
     }
 
-    protected void selectionUngroup(final GraphEditor editor) {
+    protected void ungroupSelection(final GraphEditor editor) {
         VisualModel model = editor.getModel();
         if (!model.getSelection().isEmpty()) {
             beforeSelectionModification(editor);
@@ -868,7 +858,7 @@ public class SelectionTool extends AbstractTool {
         }
     }
 
-    protected void selectionPageGroup(final GraphEditor editor) {
+    protected void pageSelection(final GraphEditor editor) {
         VisualModel model = editor.getModel();
         if (!model.getSelection().isEmpty()) {
             beforeSelectionModification(editor);
@@ -877,7 +867,7 @@ public class SelectionTool extends AbstractTool {
         }
     }
 
-    protected void selectionRotateClockwise(final GraphEditor editor) {
+    protected void rotateSelectionClockwise(final GraphEditor editor) {
         VisualModel model = editor.getModel();
         if (!model.getSelection().isEmpty()) {
             beforeSelectionModification(editor);
@@ -891,7 +881,7 @@ public class SelectionTool extends AbstractTool {
         }
     }
 
-    protected void selectionRotateCounterclockwise(final GraphEditor editor) {
+    protected void rotateSelectionCounterclockwise(final GraphEditor editor) {
         VisualModel model = editor.getModel();
         if (!model.getSelection().isEmpty()) {
             beforeSelectionModification(editor);
@@ -905,7 +895,7 @@ public class SelectionTool extends AbstractTool {
         }
     }
 
-    protected void selectionFlipHorizontal(final GraphEditor editor) {
+    protected void flipSelectionHorizontal(final GraphEditor editor) {
         VisualModel model = editor.getModel();
         if (!model.getSelection().isEmpty()) {
             beforeSelectionModification(editor);
@@ -919,7 +909,7 @@ public class SelectionTool extends AbstractTool {
         }
     }
 
-    protected void selectionFlipVertical(final GraphEditor editor) {
+    protected void flipSelectionVertical(final GraphEditor editor) {
         VisualModel model = editor.getModel();
         if (!model.getSelection().isEmpty()) {
             beforeSelectionModification(editor);

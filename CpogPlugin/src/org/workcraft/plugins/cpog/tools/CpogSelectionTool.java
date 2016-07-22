@@ -684,7 +684,7 @@ public class CpogSelectionTool extends SelectionTool {
                 }
                 prevSelection.removeAll(pageVerts);
                 includeArcsInPage(visualCpog);
-                selectionPageGroup(editor);
+                pageSelection(editor);
                 if (visualCpog.getSelection().size() == 1) {
                     for (Node n1 : visualCpog.getSelection()) {
                         if (n1 instanceof VisualPage) {
