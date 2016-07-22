@@ -682,7 +682,7 @@ public class VisualCircuitComponent extends VisualComponent implements
     }
 
     @Override
-    public Node customHitTest(Point2D point) {
+    public Node hitCustom(Point2D point) {
         Point2D pointInLocalSpace = getParentToLocalTransform().transform(point, null);
         for (Node node : getChildren()) {
             if (node instanceof VisualNode) {

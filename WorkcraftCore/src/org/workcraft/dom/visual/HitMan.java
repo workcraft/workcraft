@@ -115,7 +115,7 @@ public class HitMan {
 
     private static Node hitBranch(Point2D point, Node node) {
         if (node instanceof CustomTouchable) {
-            return ((CustomTouchable) node).customHitTest(point);
+            return ((CustomTouchable) node).hitCustom(point);
         }
         return isBranchHit(point, node) ? node : null;
     }
