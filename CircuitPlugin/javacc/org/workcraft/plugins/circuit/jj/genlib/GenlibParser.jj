@@ -166,7 +166,11 @@ Function parseFunction() :
 {
     nameToken = <PIN_NAME> formulaToken = <FORMULA>
     {
-        String formula = formulaToken.image.replaceAll("^=", "").replaceAll(";$", "");
+        String formula = formulaToken.image
+        	.replaceAll("^=", "")          // Remove leading "=" symbol.
+        	.replaceAll(";$", "")          // Remove trailing ";" symbol.
+        	.replaceAll("CONST1", "1")     // Replace constant 1.
+        	.replaceAll("CONST0", "0");    // Replace constant 0.
         return new Function(nameToken.image, formula);
     }
 }
