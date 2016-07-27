@@ -1,13 +1,13 @@
 package org.workcraft.plugins.son;
 
 import java.awt.Color;
-import java.awt.Window;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
 import javax.swing.JOptionPane;
 
+import org.workcraft.Framework;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
@@ -31,10 +31,10 @@ import org.workcraft.plugins.son.elements.PlaceNode;
 import org.workcraft.plugins.son.elements.Time;
 import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.exception.IncompatibleScenarioException;
-import org.workcraft.plugins.son.propertydescriptors.EndTimePropertyDescriptor;
-import org.workcraft.plugins.son.propertydescriptors.StartTimePropertyDescriptor;
 import org.workcraft.plugins.son.propertydescriptors.ConnectionTimePropertyDescriptor;
 import org.workcraft.plugins.son.propertydescriptors.DurationPropertyDescriptor;
+import org.workcraft.plugins.son.propertydescriptors.EndTimePropertyDescriptor;
+import org.workcraft.plugins.son.propertydescriptors.StartTimePropertyDescriptor;
 import org.workcraft.plugins.son.util.Scenario;
 import org.workcraft.plugins.son.util.ScenarioRef;
 import org.workcraft.plugins.son.util.ScenarioSaveList;
@@ -331,7 +331,7 @@ public class SON extends AbstractMathModel {
         return Hierarchy.getDescendantsOfType(getRoot(), Scenario.class);
     }
 
-    public ScenarioSaveList importScenarios(Window window) {
+    public ScenarioSaveList importScenarios() {
         ScenarioSaveList result = new ScenarioSaveList();
         ArrayList<Scenario> removeList = new ArrayList<>();
 
@@ -349,7 +349,7 @@ public class SON extends AbstractMathModel {
         }
 
         if (!removeList.isEmpty()) {
-            JOptionPane.showMessageDialog(window,
+            JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(),
                     "Elements in saved scenarios are incompatible with current model. "
                     + "Erroneous scenarios have been removed from the list",
                     "Incompatible scenario", JOptionPane.ERROR_MESSAGE);

@@ -54,6 +54,7 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
+import org.workcraft.Framework;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.BoundingBoxHelper;
@@ -129,7 +130,6 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
     public WorkspaceEntry workspaceEntry;
 
-    protected final MainWindow mainWindow;
     protected final ToolboxPanel toolboxPanel;
 
     protected Viewport view;
@@ -148,9 +148,8 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     private boolean updateEditorPanelRequested = true;
     private boolean updatePropertyViewRequested = true;
 
-    public GraphEditorPanel(MainWindow mainWindow, WorkspaceEntry workspaceEntry) {
+    public GraphEditorPanel(WorkspaceEntry workspaceEntry) {
         super(new BorderLayout());
-        this.mainWindow = mainWindow;
         this.workspaceEntry = workspaceEntry;
 
         workspaceEntry.addObserver(this);
@@ -315,10 +314,10 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 //        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
         g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
-        getModel().draw(g2d, toolboxPanel.getTool().getDecorator(this));
+        getModel().draw(g2d, toolboxPanel.getSelectedTool().getDecorator(this));
 
         if (hasFocus()) {
-            toolboxPanel.getTool().drawInUserSpace(this, g2d);
+            toolboxPanel.getSelectedTool().drawInUserSpace(this, g2d);
         }
         g2d.setTransform(screenTransform);
 
@@ -327,7 +326,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         }
 
         if (hasFocus()) {
-            toolboxPanel.getTool().drawInScreenSpace(this, g2d);
+            toolboxPanel.getSelectedTool().drawInScreenSpace(this, g2d);
             g2d.setTransform(screenTransform);
 
             g2d.setStroke(borderStroke);
@@ -439,11 +438,6 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     @Override
     public WorkspaceEntry getWorkspaceEntry() {
         return workspaceEntry;
-    }
-
-    @Override
-    public MainWindow getMainWindow() {
-        return mainWindow;
     }
 
     private Properties propertiesWrapper(final ModelProperties mix) {
@@ -569,6 +563,8 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
             }
         }
 
+        final Framework framework = Framework.getInstance();
+        final MainWindow mainWindow = framework.getMainWindow();
         final PropertyEditorWindow propertyEditorWindow = mainWindow.getPropertyView();
         if (properties.getDescriptors().isEmpty()) {
             propertyEditorWindow.clearObject();

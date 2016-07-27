@@ -5,5 +5,5 @@ import java.awt.geom.Point2D;
 import org.workcraft.dom.Node;
 
 public interface CustomTouchable {
-    Node customHitTest(Point2D point);
+    Node hitCustom(Point2D point);
 }

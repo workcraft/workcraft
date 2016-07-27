@@ -24,7 +24,7 @@ package org.workcraft.gui.graph.tools;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 
 public interface GraphEditorKeyListener {
-    void keyTyped(GraphEditorKeyEvent event);
-    void keyPressed(GraphEditorKeyEvent event);
-    void keyReleased(GraphEditorKeyEvent event);
+    boolean keyTyped(GraphEditorKeyEvent event);
+    boolean keyPressed(GraphEditorKeyEvent event);
+    boolean keyReleased(GraphEditorKeyEvent event);
 }

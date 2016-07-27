@@ -288,7 +288,7 @@ public class MainWindow extends JFrame {
             }
         }
 
-        final GraphEditorPanel editor = new GraphEditorPanel(this, we);
+        final GraphEditorPanel editor = new GraphEditorPanel(we);
         String title = getTitle(we);
         final DockableWindow editorWindow;
         if (editorWindows.isEmpty()) {
@@ -803,7 +803,7 @@ public class MainWindow extends JFrame {
             toolControlsWindow.setContent(toolBox);
             editorToolsWindow.setContent(toolBox.getControlPanel());
 
-            GraphEditorTool selectedTool = toolBox.getTool();
+            GraphEditorTool selectedTool = toolBox.getSelectedTool();
             selectedTool.setup(editorInFocus);
             sender.updatePropertyView();
 

@@ -89,9 +89,7 @@ public class PolicySelectionTool extends SelectionTool {
     }
 
     @Override
-    public void keyPressed(GraphEditorKeyEvent e) {
-        super.keyPressed(e);
-
+    public boolean keyPressed(GraphEditorKeyEvent e) {
         if (e.isMenuKeyDown()) {
             switch (e.getKeyCode()) {
             case KeyEvent.VK_B:
@@ -100,10 +98,11 @@ public class PolicySelectionTool extends SelectionTool {
                 } else {
                     selectionBundle(e.getEditor());
                 }
-                break;
+                e.getEditor().repaint();
+                return true;
             }
         }
-        e.getEditor().repaint();
+        return super.keyPressed(e);
     }
 
     protected Collection<VisualBundledTransition> getSelectedTransitions(final GraphEditor editor) {

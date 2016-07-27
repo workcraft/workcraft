@@ -1,6 +1,7 @@
 package org.workcraft.plugins.circuit.tools;
 
 import java.awt.Color;
+import java.util.Collection;
 import java.util.HashSet;
 
 import org.workcraft.Trace;
@@ -24,6 +25,7 @@ import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.circuit.VisualCircuitComponent;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
@@ -174,12 +176,25 @@ public class CircuitSimulationTool extends StgSimulationTool {
                 new Func<Node, Boolean>() {
                     @Override
                     public Boolean eval(Node node) {
-                        return node instanceof VisualContact;
+                        return (node instanceof VisualFunctionComponent) || (node instanceof VisualContact);
                     }
                 });
 
-        if (node instanceof VisualContact) {
-            HashSet<SignalTransition> transitions = getContactExcitedTransitions((VisualContact) node);
+        VisualContact contact = null;
+        if (node instanceof VisualCircuitComponent) {
+            VisualFunctionComponent component = (VisualFunctionComponent) node;
+            if (!component.getIsZeroDelay()) {
+                Collection<VisualContact> outputContacts = component.getVisualOutputs();
+                if (outputContacts.size() == 1) {
+                    contact = outputContacts.iterator().next();
+                }
+            }
+        } else if (node instanceof VisualContact) {
+            contact = (VisualContact) node;
+        }
+
+        if (contact != null) {
+            HashSet<SignalTransition> transitions = getContactExcitedTransitions(contact);
             SignalTransition transition = null;
             Node traceCurrentNode = getTraceCurrentNode();
             if (transitions.contains(traceCurrentNode)) {
@@ -224,6 +239,9 @@ public class CircuitSimulationTool extends StgSimulationTool {
             @Override
             public Decoration getDecoration(Node node) {
                 if (converter == null) return null;
+                if (node instanceof VisualFunctionComponent) {
+                    return getFunctionComponentDecoration((VisualFunctionComponent) node);
+                }
                 if (node instanceof VisualContact) {
                     return getContactDecoration((VisualContact) node);
                 }
@@ -235,6 +253,46 @@ public class CircuitSimulationTool extends StgSimulationTool {
                 }
                 if (node instanceof VisualPage || node instanceof VisualGroup) {
                     return getContainerDecoration((Container) node);
+                }
+                return null;
+            }
+        };
+    }
+
+    protected Decoration getFunctionComponentDecoration(VisualFunctionComponent component) {
+        Collection<VisualContact> outputContacts = component.getVisualOutputs();
+        if (component.getIsZeroDelay() || (outputContacts.size() != 1)) {
+            return null;
+        }
+        VisualContact contact = outputContacts.iterator().next();
+        Pair<SignalStg, Boolean> signalStgAndInversion = converter.getSignalStgAndInvertion(contact);
+        if (signalStgAndInversion == null) {
+            return null;
+        }
+        Node traceCurrentNode = getTraceCurrentNode();
+        SignalStg signalStg = signalStgAndInversion.getFirst();
+        final boolean isExcited = !getContactExcitedTransitions(contact).isEmpty();
+        final boolean isInTrace = signalStg.contains(traceCurrentNode);
+        return new Decoration() {
+            @Override
+            public Color getColorisation() {
+                if (isExcited) {
+                    if (isInTrace) {
+                        return CommonSimulationSettings.getEnabledBackgroundColor();
+                    } else {
+                        return CommonSimulationSettings.getEnabledForegroundColor();
+                    }
+                }
+                return null;
+            }
+            @Override
+            public Color getBackground() {
+                if (isExcited) {
+                    if (isInTrace) {
+                        return CommonSimulationSettings.getEnabledForegroundColor();
+                    } else {
+                        return CommonSimulationSettings.getEnabledBackgroundColor();
+                    }
                 }
                 return null;
             }

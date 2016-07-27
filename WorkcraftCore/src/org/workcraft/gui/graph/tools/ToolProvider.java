@@ -22,5 +22,6 @@
 package org.workcraft.gui.graph.tools;
 
 public interface ToolProvider {
-    GraphEditorTool getTool();
+    GraphEditorTool getDefaultTool();
+    GraphEditorTool getSelectedTool();
 }

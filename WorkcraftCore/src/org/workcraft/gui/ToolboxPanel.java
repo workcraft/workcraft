@@ -25,6 +25,7 @@ import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,14 +42,11 @@ import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.graph.GraphEditorPanel;
-import org.workcraft.gui.graph.tools.CommentGeneratorTool;
-import org.workcraft.gui.graph.tools.ConnectionTool;
 import org.workcraft.gui.graph.tools.CustomToolsProvider;
 import org.workcraft.gui.graph.tools.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.GraphEditorKeyListener;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
-import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.gui.graph.tools.ToolProvider;
 
 @SuppressWarnings("serial")
@@ -85,11 +83,8 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
         }
     }
 
-    private final SelectionTool selectionTool;
-    private final CommentGeneratorTool labelTool;
-    private final ConnectionTool connectionTool;
-
-    private GraphEditorTool selectedTool;
+    private GraphEditorTool defaultTool = null;
+    private GraphEditorTool selectedTool = null;
 
     private final HashSet<GraphEditorTool> tools = new HashSet<>();
     private final HashMap<GraphEditorTool, JToggleButton> buttons = new HashMap<>();
@@ -100,18 +95,28 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
     public ToolboxPanel(GraphEditorPanel editor) {
         this.editor = editor;
         this.setFocusable(false);
-
-        selectionTool = new SelectionTool();
-        labelTool = new CommentGeneratorTool();
-        connectionTool = new ConnectionTool();
         selectedTool = null;
-
         setToolsForModel(editor.getModel());
     }
 
-    public void addTool(final GraphEditorTool tool, boolean selected) {
+    public void addTool(final GraphEditorTool tool) {
+        addTool(tool, false);
+    }
+
+    public void addTool(final GraphEditorTool tool, boolean isDefault) {
         tools.add(tool);
-        int hotKeyCode = tool.getHotKeyCode();
+        if (tool.requiresButton()) {
+            JToggleButton button = createToolButton(tool);
+            buttons.put(tool, button);
+        }
+        assignToolHotKey(tool, tool.getHotKeyCode());
+        if (isDefault) {
+            defaultTool = tool;
+            selectTool(tool);
+        }
+    }
+
+    private void assignToolHotKey(final GraphEditorTool tool, int hotKeyCode) {
         if (hotKeyCode != -1) {
             ToolTracker tracker = hotkeyMap.get(hotKeyCode);
             if (tracker == null) {
@@ -119,13 +124,6 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
                 hotkeyMap.put(hotKeyCode, tracker);
             }
             tracker.addTool(tool);
-        }
-        if (tool.requiresButton()) {
-            JToggleButton button = createToolButton(tool);
-            buttons.put(tool, button);
-        }
-        if (selected) {
-            selectTool(tool);
         }
     }
 
@@ -220,20 +218,12 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
         editor.repaint();
     }
 
-    public void addCommonTools() {
-        addTool(selectionTool, true);
-        addTool(labelTool, false);
-        addTool(connectionTool, false);
-    }
-
     private void setToolsForModel(VisualModel model) {
         setLayout(new SimpleFlowLayout(5, 5));
 
         Class<? extends CustomToolsProvider> customTools = Annotations.getCustomToolsProvider(model.getClass());
-        if (customTools == null) {
-            addCommonTools();
-        } else {
-            boolean selected = true;
+        if (customTools != null) {
+            boolean isDefault = true;
             CustomToolsProvider provider = null;
             try {
                 provider = customTools.getConstructor().newInstance();
@@ -242,20 +232,20 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
             }
             if (provider != null) {
                 for (GraphEditorTool tool : provider.getTools()) {
-                    addTool(tool, selected);
-                    selected = false;
+                    addTool(tool, isDefault);
+                    isDefault = false;
                 }
             }
         }
 
         for (Class<?> cls : Annotations.getDefaultCreateButtons(model.getClass())) {
             NodeGeneratorTool tool = new NodeGeneratorTool(new DefaultNodeGenerator(cls));
-            addTool(tool, false);
+            addTool(tool);
         }
 
         for (Class<? extends GraphEditorTool>  tool : Annotations.getCustomTools(model.getClass())) {
             try {
-                addTool(tool.newInstance(), false);
+                addTool(tool.newInstance());
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
@@ -264,30 +254,45 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
         this.repaint();
     }
 
-    public GraphEditorTool getTool() {
+    @Override
+    public GraphEditorTool getDefaultTool() {
+        return defaultTool;
+    }
+
+    @Override
+    public GraphEditorTool getSelectedTool() {
         return selectedTool;
     }
 
-    public void keyPressed(GraphEditorKeyEvent event) {
+    @Override
+    public boolean keyPressed(GraphEditorKeyEvent event) {
+        if (selectedTool.keyPressed(event)) {
+            return true;
+        }
+        int keyCode = event.getKeyCode();
+        if (keyCode == KeyEvent.VK_ESCAPE) {
+            selectTool(defaultTool);
+            return true;
+        }
         if (!event.isAltDown() && !event.isMenuKeyDown() && !event.isShiftDown()) {
-            int keyCode = event.getKeyCode();
             ToolTracker tracker = hotkeyMap.get(keyCode);
             if (tracker != null) {
-                selectTool(tracker.getNextTool());
-            } else {
-                selectedTool.keyPressed(event);
+                GraphEditorTool tool = tracker.getNextTool();
+                selectTool(tool);
+                return true;
             }
-        } else {
-            selectedTool.keyPressed(event);
         }
+        return false;
     }
 
-    public void keyReleased(GraphEditorKeyEvent event) {
-        selectedTool.keyReleased(event);
+    @Override
+    public boolean keyReleased(GraphEditorKeyEvent event) {
+        return selectedTool.keyReleased(event);
     }
 
-    public void keyTyped(GraphEditorKeyEvent event) {
-        selectedTool.keyTyped(event);
+    @Override
+    public boolean keyTyped(GraphEditorKeyEvent event) {
+        return selectedTool.keyTyped(event);
     }
 
     ToolInterfaceWindow controlPanel = new ToolInterfaceWindow();
@@ -309,4 +314,5 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
             button.setSelected(state);
         }
     }
+
 }

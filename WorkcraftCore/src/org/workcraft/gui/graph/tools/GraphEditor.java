@@ -26,14 +26,12 @@ import java.util.Set;
 
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.EditorOverlay;
 import org.workcraft.gui.graph.Viewport;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public interface GraphEditor {
     Viewport getViewport();
-    MainWindow getMainWindow();
     EditorOverlay getOverlay();
     WorkspaceEntry getWorkspaceEntry();
     VisualModel getModel();

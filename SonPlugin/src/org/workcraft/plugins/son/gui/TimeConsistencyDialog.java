@@ -85,7 +85,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
     protected void createScenarioItemPanel() {
 
         scenarioItemPanel = new JPanel();
-        ArrayList<ScenarioRef> scenarioSavelist = net.importScenarios(owner);
+        ArrayList<ScenarioRef> scenarioSavelist = net.importScenarios();
         DefaultListModel<ListItem> listModel = new DefaultListModel<>();
 
         for (int i = 0; i < scenarioSavelist.size(); i++) {

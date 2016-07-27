@@ -30,7 +30,9 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.BoundingBoxHelper;
+import org.workcraft.dom.visual.CustomTouchable;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.Stylable;
@@ -48,7 +50,7 @@ import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderTy
 import org.workcraft.plugins.circuit.tools.StateDecoration;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
-public class VisualContact extends VisualComponent implements StateObserver {
+public class VisualContact extends VisualComponent implements StateObserver, CustomTouchable {
 
     public static final String PROPERTY_DIRECTION = "Direction";
 
@@ -361,36 +363,50 @@ public class VisualContact extends VisualComponent implements StateObserver {
 
     @Override
     public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
-        Point2D p2 = new Point2D.Double();
-        p2.setLocation(pointInLocalSpace);
-        if (!(getParent() instanceof VisualCircuitComponent)) {
-            AffineTransform rotateTransform = new AffineTransform();
-            // rotate in the direction opposite to Direction.getDirectionTransform
-            switch (getDirection()) {
-            case WEST:
-                rotateTransform.quadrantRotate(2);
-                break;
-            case NORTH:
-                rotateTransform.quadrantRotate(1);
-                break;
-            case EAST:
-                rotateTransform.setToIdentity();
-                break;
-            case SOUTH:
-                rotateTransform.quadrantRotate(3);
-                break;
-            }
-            if (isInput()) {
-                rotateTransform.quadrantRotate(2);
-            }
-            rotateTransform.transform(pointInLocalSpace, p2);
-        }
         Shape shape = getShape();
         if (shape != null) {
+            Point2D p2 = new Point2D.Double();
+            p2.setLocation(pointInLocalSpace);
+            if (!(getParent() instanceof VisualCircuitComponent)) {
+                AffineTransform rotateTransform = new AffineTransform();
+                // Rotate in the direction opposite to Direction.getDirectionTransform
+                switch (getDirection()) {
+                case WEST:
+                    rotateTransform.quadrantRotate(2);
+                    break;
+                case NORTH:
+                    rotateTransform.quadrantRotate(1);
+                    break;
+                case EAST:
+                    rotateTransform.setToIdentity();
+                    break;
+                case SOUTH:
+                    rotateTransform.quadrantRotate(3);
+                    break;
+                }
+                if (isInput()) {
+                    rotateTransform.quadrantRotate(2);
+                }
+                rotateTransform.transform(pointInLocalSpace, p2);
+            }
             return shape.contains(p2);
-        } else {
-            return false;
         }
+        return false;
+    }
+
+    @Override
+    public Node hitCustom(Point2D point) {
+        Point2D pointInLocalSpace = getParentToLocalTransform().transform(point, null);
+        Rectangle2D bb = getNameBoundingBox();
+        if (bb != null) {
+            if (bb.contains(pointInLocalSpace)) {
+                return this;
+            }
+        }
+        if (hitTestInLocalSpace(pointInLocalSpace)) {
+            return this;
+        }
+        return null;
     }
 
     public void setDirection(Direction value) {
