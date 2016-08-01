@@ -21,6 +21,7 @@
 
 package org.workcraft.util;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -49,6 +50,13 @@ public class Import {
             }
         }
         return null;
+    }
+
+    public static ModelEntry importFromByteArray(Importer importer, byte[] array) throws IOException, DeserialisationException {
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(array);
+        ModelEntry model = importer.importFrom(inputStream);
+        inputStream.close();
+        return model;
     }
 
 }
