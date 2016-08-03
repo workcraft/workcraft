@@ -17,6 +17,7 @@ import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.Import;
+import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 
 public class ConceptsResultHandler extends DummyProgressMonitor<ExternalProcessResult> {
@@ -38,7 +39,7 @@ public class ConceptsResultHandler extends DummyProgressMonitor<ExternalProcessR
                     try {
                         if (result.getOutcome() == Outcome.FAILED) {
                             String errors = new String(result.getReturnValue().getErrors());
-                            System.out.println(errors);
+                            System.out.println(LogUtils.PREFIX_STDERR + errors);
                             if (errors.contains("<no location info>")) {
                                 JOptionPane.showMessageDialog(mainWindow, "Concepts code could not be found. \n"
                                         + "Download it from https://github.com/tuura/concepts. \n"
@@ -62,7 +63,7 @@ public class ConceptsResultHandler extends DummyProgressMonitor<ExternalProcessR
                             } else {
                                 JOptionPane.showMessageDialog(mainWindow, "Concepts could not be translated."
                                         + "\nSee console window for error information", "Concept translation failed", JOptionPane.ERROR_MESSAGE);
-                                System.out.println(output);
+                                System.out.println(LogUtils.PREFIX_STDERR + output);
                             }
                         }
                     } catch (IOException e) {
