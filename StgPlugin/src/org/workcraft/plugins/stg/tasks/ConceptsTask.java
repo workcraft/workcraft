@@ -3,7 +3,6 @@ package org.workcraft.plugins.stg.tasks;
 import java.io.File;
 import java.util.ArrayList;
 
-
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
@@ -12,9 +11,9 @@ import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.Result.Outcome;
 
-public class ConceptsTask implements Task<ExternalProcessResult>{
+public class ConceptsTask implements Task<ExternalProcessResult> {
 
-    private File inputFile;
+    private final File inputFile;
 
     public ConceptsTask(File inputFile) {
         this.inputFile = inputFile;
@@ -25,8 +24,8 @@ public class ConceptsTask implements Task<ExternalProcessResult>{
         try {
             ArrayList<String> command = new ArrayList<>();
 
-            command.add("./runghc");
-            command.add("tools/concepts/translate/Main.hs");//TODO: Make translate file location a setting
+            command.add("runghc");
+            command.add("tools/concepts/translate/Main.hs"); //TODO: Make concepts folder location a setting
             command.add(inputFile.getAbsolutePath());
 
             ExternalProcessTask task = new ExternalProcessTask(command, new File("."));
@@ -47,7 +46,6 @@ public class ConceptsTask implements Task<ExternalProcessResult>{
         } catch (NullPointerException e) {
             //Open window dialog was cancelled, do nothing
         }
-
         return null;
     }
 

@@ -363,8 +363,9 @@ public class MainWindow extends JFrame {
         LookAndFeelHelper.setDefaultLookAndFeel();
         SwingUtilities.updateComponentTreeUI(this);
 
-        if (DesktopApi.getOs().isMac())
+        if (DesktopApi.getOs().isMac()) {
             mainMenu.setUI(menuUI);
+        }
 
         content = new JPanel(new BorderLayout(0, 0));
         setContentPane(content);

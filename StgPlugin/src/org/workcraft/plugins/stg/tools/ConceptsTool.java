@@ -2,7 +2,6 @@ package org.workcraft.plugins.stg.tools;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.util.Scanner;
 
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -61,9 +60,9 @@ public class ConceptsTool implements Tool {
 
         ConceptsTask task = new ConceptsTask(inputFile);
 
-        ConceptsResultHandler result = new ConceptsResultHandler(we, inputFile.getName());
+        ConceptsResultHandler result = new ConceptsResultHandler(inputFile.getName());
 
-        Framework.getInstance().getTaskManager().queue(task, "PGMiner", result);
+        Framework.getInstance().getTaskManager().queue(task, "Translating concepts", result);
     }
 
 }
