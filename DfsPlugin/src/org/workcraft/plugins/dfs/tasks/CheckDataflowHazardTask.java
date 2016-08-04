@@ -6,10 +6,8 @@ import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.plugins.dfs.stg.StgGenerator;
-import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.MpsatSettings;
-import org.workcraft.plugins.mpsat.MpsatUtilitySettings;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
@@ -34,9 +32,7 @@ public class CheckDataflowHazardTask extends MpsatChainTask {
     public CheckDataflowHazardTask(WorkspaceEntry we) {
         super(we, null);
         this.we = we;
-        this.settings = new MpsatSettings("Output persistency", MpsatMode.STG_REACHABILITY, 0,
-                MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
-                MpsatSettings.REACH_OUTPUT_PERSISTENCY, true);
+        this.settings = MpsatSettings.getHazardSettings();
     }
 
     @Override

@@ -45,10 +45,10 @@ public class MpsatSettings {
     //   false - property holds when predicate is satisfiable
     private final boolean inversePredicate;
 
-    public static final String REACH_DEADLOCK =
+    private static final String REACH_DEADLOCK =
             "forall t in TRANSITIONS { ~@t }\n";
 
-    public static final String REACH_CONSISTENCY =
+    private static final String REACH_CONSISTENCY =
             "// Checks whether the STG is consistent, i.e. rising and falling transitions of every signal alternate in all traces\n" +
             "exists s in SIGNALS \\ DUMMY {\n" +
             "    let Es = ev s {\n" +
@@ -58,7 +58,7 @@ public class MpsatSettings {
             "    }\n" +
             "}\n";
 
-    public static final String REACH_OUTPUT_PERSISTENCY =
+    private static final String REACH_OUTPUT_PERSISTENCY =
             "// Checks whether the STG is output persistent, i.e. no local signal can be disabled by any other signal.\n" +
             "card DUMMY != 0 ? fail \"Output persistency can be checked only for STGs without dummies\" :\n" +
             "let\n" +
@@ -84,7 +84,7 @@ public class MpsatSettings {
             "    }\n" +
             "}\n";
 
-    public static final String REACH_DI_INTERFACE =
+    private static final String REACH_DI_INTERFACE =
             "// Checks whether the STG's interface is delay insensitive, i.e. an input transition cannot trigger another input transition\n" +
             "card DUMMY != 0 ? fail \"Delay insensitivity can currently be checked only for STGs without dummies\" :\n" +
             "let TRINP = tran INPUTS * tran EVENTS {\n" +
@@ -102,7 +102,7 @@ public class MpsatSettings {
             "    }\n" +
             "}\n";
 
-    public static final String REACH_INPUT_PROPERNESS =
+    private static final String REACH_INPUT_PROPERNESS =
             "// Checks whether the STG is input proper, i.e. no input can be triggered by an internal signal or disabled by a local signal.\n" +
             "card DUMMY != 0 ? fail \"Input properness can currently be checked only for STGs without dummies\" :\n" +
             "let\n" +
@@ -313,13 +313,18 @@ public class MpsatSettings {
     }
 
     public static MpsatSettings getDeadlockSettings() {
-        MpsatSettings deadlockSettings = new MpsatSettings("Deadlock freeness", MpsatMode.DEADLOCK, 0,
+        return new MpsatSettings("Deadlock freeness", MpsatMode.DEADLOCK, 0,
                 MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount());
-        return deadlockSettings;
     }
 
     public static MpsatSettings getOutputPersistencySettings() {
         return new MpsatSettings("Output persistency", MpsatMode.STG_REACHABILITY, 0,
+                MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
+                MpsatSettings.REACH_OUTPUT_PERSISTENCY, true);
+    }
+
+    public static MpsatSettings getHazardSettings() {
+        return new MpsatSettings("Hazard freeness", MpsatMode.STG_REACHABILITY, 0,
                 MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
                 MpsatSettings.REACH_OUTPUT_PERSISTENCY, true);
     }
