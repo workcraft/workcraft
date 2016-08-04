@@ -60,7 +60,7 @@ public class ConceptsTool implements Tool {
 
         ConceptsTask task = new ConceptsTask(inputFile);
 
-        ConceptsResultHandler result = new ConceptsResultHandler(inputFile.getName());
+        ConceptsResultHandler result = new ConceptsResultHandler(inputFile.getName(), we);
 
         Framework.getInstance().getTaskManager().queue(task, "Translating concepts", result);
     }
