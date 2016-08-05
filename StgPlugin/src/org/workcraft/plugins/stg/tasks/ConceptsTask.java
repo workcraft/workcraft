@@ -34,11 +34,9 @@ public class ConceptsTask implements Task<ExternalProcessResult> {
             ExternalProcessTask task = new ExternalProcessTask(command, new File("."));
             SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
             Result<? extends ExternalProcessResult> result = task.run(mon);
-
             if (result.getOutcome() != Outcome.FINISHED) {
                 return result;
             }
-
             ExternalProcessResult retVal = result.getReturnValue();
             ExternalProcessResult finalResult = new ExternalProcessResult(retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), null);
             if (retVal.getReturnCode() == 0) {

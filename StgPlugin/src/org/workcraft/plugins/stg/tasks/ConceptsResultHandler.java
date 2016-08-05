@@ -4,36 +4,45 @@ import java.awt.Container;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.DockableWindowContentPanel;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.DockableWindowContentPanel.ViewAction;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.plugins.stg.interop.ConceptsImporter;
 import org.workcraft.plugins.stg.interop.DotGImporter;
+import org.workcraft.plugins.stg.tools.ConceptsTool;
+import org.workcraft.plugins.stg.tools.ConceptsToolException;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.Import;
-import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class ConceptsResultHandler extends DummyProgressMonitor<ExternalProcessResult> {
 
     private final String name;
+    private final Object sender;
     private final WorkspaceEntry we;
 
-    public ConceptsResultHandler(String inputName, WorkspaceEntry we) {
+    public ConceptsResultHandler(Object sender, String inputName, WorkspaceEntry we) {
+        this.sender = sender;
         name = inputName;
         this.we = we;
+    }
+
+    public ConceptsResultHandler(Object sender) {
+        this.sender = sender;
+        name = null;
+        we = null;
     }
 
     public void finished(final Result<? extends ExternalProcessResult> result, String description) {
@@ -42,49 +51,38 @@ public class ConceptsResultHandler extends DummyProgressMonitor<ExternalProcessR
 
                 @Override
                 public void run() {
-                    final Framework framework = Framework.getInstance();
-                    MainWindow mainWindow = framework.getMainWindow();
-                    GraphEditorPanel editor = mainWindow.getEditor(we);
+
                     try {
-                        if (result.getOutcome() == Outcome.FAILED) {
-                            String errors = new String(result.getReturnValue().getErrors());
-                            System.out.println(LogUtils.PREFIX_STDERR + errors);
-                            if (errors.contains("<no location info>")) {
-                                JOptionPane.showMessageDialog(mainWindow, "Concepts code could not be found. \n"
-                                        + "Download it from https://github.com/tuura/concepts. \n"
-                                        + "Ensure that the preferences menu points to the correct location of the concepts folder", "Concept translation failed", JOptionPane.ERROR_MESSAGE);
-                            } else if (errors.contains("Could not find module")) {
-                                String pkg = "tools/concepts"; //TODO: Use setting for concepts location
-                                JOptionPane.showMessageDialog(mainWindow, "Concepts could not be run. \n"
-                                        + "The " + pkg + " package needs to be installed via Cabal using the command \"cabal install " + pkg + "\"\n",
-                                        "Concept translation failed", JOptionPane.ERROR_MESSAGE);
-                            } else {
-                                JOptionPane.showMessageDialog(mainWindow, "Concepts could not be translated", "Concept translation failed", JOptionPane.ERROR_MESSAGE);
+                        String output = new String(result.getReturnValue().getOutput());
+                        if ((result.getOutcome() == Outcome.FINISHED) && (output.startsWith(".model out"))) {
+                            if (!(sender instanceof ConceptsImporter)) {
+                                final Framework framework = Framework.getInstance();
+                                MainWindow mainWindow = framework.getMainWindow();
+                                GraphEditorPanel editor = mainWindow.getEditor(we);
+                                if (output.startsWith(".model out")) {
+                                    ModelEntry me = Import.importFromByteArray(new DotGImporter(), result.getReturnValue().getOutput());
+                                    if (sender instanceof ConceptsTool) {
+                                        if (isCurrentWorkEmpty(editor)) {
+                                            closeEmptyWork(editor);
+                                        }
+                                    }
+                                    String title = "Concepts - ";
+                                    me.getModel().setTitle(title + name);
+                                    boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
+                                    framework.getWorkspace().add(Path.<String>empty(), title + name, me, false, openInEditor);
+                                }
                             }
                         } else {
-                            String output = new String(result.getReturnValue().getOutput());
-                            if (output.startsWith(".model out")) {
-                                ModelEntry me = Import.importFromByteArray(new DotGImporter(), result.getReturnValue().getOutput());
-                                if (isCurrentWorkEmpty(editor)) {
-                                    closeEmptyWork(editor);
-                                }
-                                String title = "Concepts - ";
-                                me.getModel().setTitle(title + name);
-                                boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
-                                framework.getWorkspace().add(Path.<String>empty(), title + name, me, false, openInEditor);
-
-                            } else {
-                                JOptionPane.showMessageDialog(mainWindow, "Concepts could not be translated."
-                                        + "\nSee console window for error information", "Concept translation failed", JOptionPane.ERROR_MESSAGE);
-                                System.out.println(LogUtils.PREFIX_STDERR + output);
-                            }
+                            throw new ConceptsToolException(result);
                         }
                     } catch (IOException e) {
                         e.printStackTrace();
                     } catch (DeserialisationException e) {
                         e.printStackTrace();
                     } catch (NullPointerException e) {
-                        JOptionPane.showMessageDialog(mainWindow, "runghc could not run, please install Haskell", "GHC not installed", JOptionPane.ERROR_MESSAGE);
+                        new ConceptsToolException(result).handleConceptsError();
+                    } catch (ConceptsToolException e) {
+                        e.handleConceptsError();
                     }
                 }
             });

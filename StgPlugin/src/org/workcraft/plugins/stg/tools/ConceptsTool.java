@@ -10,6 +10,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.tasks.ConceptsResultHandler;
 import org.workcraft.plugins.stg.tasks.ConceptsTask;
+import org.workcraft.util.FileUtils;
 import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -60,7 +61,7 @@ public class ConceptsTool implements Tool {
 
         ConceptsTask task = new ConceptsTask(inputFile);
 
-        ConceptsResultHandler result = new ConceptsResultHandler(inputFile.getName(), we);
+        ConceptsResultHandler result = new ConceptsResultHandler(this, FileUtils.getFileNameWithoutExtension(inputFile), we);
 
         Framework.getInstance().getTaskManager().queue(task, "Translating concepts", result);
     }
