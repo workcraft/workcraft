@@ -363,7 +363,9 @@ public class MainWindow extends JFrame {
         LookAndFeelHelper.setDefaultLookAndFeel();
         SwingUtilities.updateComponentTreeUI(this);
 
-        if (DesktopApi.getOs().isMac()) mainMenu.setUI(menuUI);
+        if (DesktopApi.getOs().isMac()) {
+            mainMenu.setUI(menuUI);
+        }
 
         content = new JPanel(new BorderLayout(0, 0));
         setContentPane(content);
@@ -563,7 +565,6 @@ public class MainWindow extends JFrame {
         pm.setCurrentPerspective(FLEXDOCK_WORKSPACE, true);
         PropertyManager.getDockingPortRoot().setTabPlacement(SwingConstants.TOP);
 
-
         File file = new File(Framework.UILAYOUT_FILE_PATH);
         PersistenceHandler persister = new FilePersistenceHandler(file, XMLPersister.newDefaultInstance());
         PerspectiveManager.setPersistenceHandler(persister);
@@ -597,16 +598,16 @@ public class MainWindow extends JFrame {
                 DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.EAST_REGION,
                 xSplit);
 
-        DockableWindow propertyEditorDockable = createDockableWindow(propertyEditorWindow, TITLE_PROPERTY_EDITOR, workspaceDockable,
-                DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
+        DockableWindow propertyEditorDockable = createDockableWindow(propertyEditorWindow, TITLE_PROPERTY_EDITOR,
+                workspaceDockable, DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
                 DockingManager.NORTH_REGION, ySplit);
 
-        DockableWindow toolControlsDockable = createDockableWindow(editorToolsWindow, TITLE_TOOL_CONTROLS, propertyEditorDockable,
-                DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
+        DockableWindow toolControlsDockable = createDockableWindow(editorToolsWindow, TITLE_TOOL_CONTROLS,
+                propertyEditorDockable, DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
                 DockingManager.SOUTH_REGION, 0.4f);
 
-        DockableWindow editorToolsDockable = createDockableWindow(toolControlsWindow, TITLE_EDITOR_TOOLS, toolControlsDockable,
-                DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
+        DockableWindow editorToolsDockable = createDockableWindow(toolControlsWindow, TITLE_EDITOR_TOOLS,
+                toolControlsDockable, DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
                 DockingManager.SOUTH_REGION, 0.795f);
 
         documentPlaceholder = createDockableWindow(new DocumentPlaceholder(), TITLE_PLACEHOLDER, null, outputDockable,
@@ -628,8 +629,8 @@ public class MainWindow extends JFrame {
         final Framework framework = Framework.getInstance();
         if (framework.getWorkspace().isChanged() && !framework.getWorkspace().isTemporary()) {
             int result = JOptionPane.showConfirmDialog(this,
-                    "Current workspace has unsaved changes.\n" + "Save before closing?",
-                    DIALOG_CLOSE_WORK, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    "Current workspace has unsaved changes.\n" + "Save before closing?", DIALOG_CLOSE_WORK,
+                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
             switch (result) {
             case JOptionPane.YES_OPTION:
@@ -895,8 +896,8 @@ public class MainWindow extends JFrame {
                     break;
                 }
                 if (JOptionPane.showConfirmDialog(this,
-                        "The file '" + f.getName() + "' already exists.\n" + "Overwrite it?",
-                        DIALOG_SAVE_WORK, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                        "The file '" + f.getName() + "' already exists.\n" + "Overwrite it?", DIALOG_SAVE_WORK,
+                        JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                     break;
                 }
             } else {
@@ -1175,19 +1176,16 @@ public class MainWindow extends JFrame {
             title = "File access error";
         }
         if (!file.exists()) {
-            JOptionPane.showMessageDialog(this,
-                    "The path  \"" + file.getPath() + "\" does not exisit.\n",
-                    title, JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "The path  \"" + file.getPath() + "\" does not exisit.\n", title,
+                    JOptionPane.ERROR_MESSAGE);
             result = false;
         } else if (!file.isFile()) {
-            JOptionPane.showMessageDialog(this,
-                    "The path  \"" + file.getPath() + "\" is not a file.\n",
-                    title, JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "The path  \"" + file.getPath() + "\" is not a file.\n", title,
+                    JOptionPane.ERROR_MESSAGE);
             result = false;
         } else if (!file.canRead()) {
-            JOptionPane.showMessageDialog(this,
-                    "The file  \"" + file.getPath() + "\" cannot be read.\n",
-                    title, JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "The file  \"" + file.getPath() + "\" cannot be read.\n", title,
+                    JOptionPane.ERROR_MESSAGE);
             result = false;
         }
         return result;
@@ -1202,8 +1200,8 @@ public class MainWindow extends JFrame {
 
     public void refreshWorkspaceEntryTitle(WorkspaceEntry we, boolean updateHeaders) {
         for (DockableWindow w : editorWindows.get(we)) {
-//            final GraphEditorPanel editor = getCurrentEditor();
-//            String title = getTitle(we, editor.getModel());
+            // final GraphEditorPanel editor = getCurrentEditor();
+            // String title = getTitle(we, editor.getModel());
             String title = getTitle(we);
             w.setTitle(title);
         }
@@ -1384,8 +1382,8 @@ public class MainWindow extends JFrame {
                 "This will reset the GUI to the default layout.\n" + "Are you sure you want to do this?",
                 DIALOG_RESET_LAYOUT, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
             if (JOptionPane.showConfirmDialog(this,
-                    "This action requires GUI restart.\n\n" + "Close all editor windows?",
-                    DIALOG_RESET_LAYOUT, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    "This action requires GUI restart.\n\n" + "Close all editor windows?", DIALOG_RESET_LAYOUT,
+                    JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
                 try {
                     final Framework framework = Framework.getInstance();
                     framework.shutdownGUI();

@@ -27,6 +27,7 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 import org.workcraft.Config;
+import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
@@ -38,14 +39,17 @@ public class StgSettings implements Settings {
     private static final String keyDensityMapLevelLimit = prefix + ".densityMapLevelLimit";
     private static final String keyLowLevelSuffix = prefix + ".lowLevelSuffix";
     private static final String keyHighLevelSuffix = prefix + ".highLevelSuffix";
+    private static final String keyConceptsFolderLocation = prefix + ".conceptsFolderLocation";
 
     private static final Integer defaultDensityMapLevelLimit = 5;
     private static final String defaultLowLevelSuffix = "_LOW";
     private static final String defaultHighLevelSuffix = "_HIGH";
+    private static final String defaultConceptsFolderLocation = DesktopApi.getOs().isWindows() ? "tools\\concepts\\" : "tools/concepts/";
 
     private static Integer densityMapLevelLimit = defaultDensityMapLevelLimit;
     private static String lowLevelSuffix = defaultLowLevelSuffix;
     private static String highLevelSuffix = defaultHighLevelSuffix;
+    private static String conceptsFolderLocation = defaultConceptsFolderLocation;
 
     public StgSettings() {
         properties.add(new PropertyDeclaration<StgSettings, Integer>(
@@ -91,6 +95,16 @@ public class StgSettings implements Settings {
                 return getHighLevelSuffix();
             }
         });
+
+        properties.add(new PropertyDeclaration<StgSettings, String>(
+                this, "Concepts folder location", String.class, true, false, false) {
+            protected void setter(StgSettings object, String value) {
+                setConceptsFolderLocation(value);
+            }
+            protected String getter(StgSettings object) {
+                return getConceptsFolderLocation();
+            }
+        });
     }
 
     private boolean checkSignalLevelSuffix(String value) {
@@ -128,6 +142,7 @@ public class StgSettings implements Settings {
         setDensityMapLevelLimit(config.getInt(keyDensityMapLevelLimit, defaultDensityMapLevelLimit));
         setLowLevelSuffix(config.getString(keyLowLevelSuffix, defaultLowLevelSuffix));
         setHighLevelSuffix(config.getString(keyHighLevelSuffix, defaultHighLevelSuffix));
+        setConceptsFolderLocation(config.getString(keyConceptsFolderLocation, defaultConceptsFolderLocation));
     }
 
     @Override
@@ -135,6 +150,7 @@ public class StgSettings implements Settings {
         config.setInt(keyDensityMapLevelLimit, getDensityMapLevelLimit());
         config.set(keyLowLevelSuffix, getLowLevelSuffix());
         config.set(keyHighLevelSuffix, getHighLevelSuffix());
+        config.set(keyConceptsFolderLocation, getConceptsFolderLocation());
     }
 
     @Override
@@ -173,6 +189,14 @@ public class StgSettings implements Settings {
         if (value.length() > 0) {
             highLevelSuffix = value;
         }
+    }
+
+    public static String getConceptsFolderLocation() {
+        return conceptsFolderLocation;
+    }
+
+    public static void setConceptsFolderLocation(String value) {
+        conceptsFolderLocation = value;
     }
 
 }

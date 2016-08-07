@@ -9,11 +9,13 @@ import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
+import org.workcraft.plugins.stg.interop.ConceptsImporter;
 import org.workcraft.plugins.stg.interop.DotGExporter;
 import org.workcraft.plugins.stg.interop.DotGImporter;
 import org.workcraft.plugins.stg.serialisation.DotGSerialiser;
 import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcDeserialiser;
 import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcSerialiser;
+import org.workcraft.plugins.stg.tools.ConceptsTool;
 import org.workcraft.plugins.stg.tools.DummyInserterTool;
 import org.workcraft.plugins.stg.tools.DummyToSignalTransitionConverterTool;
 import org.workcraft.plugins.stg.tools.MakePlacesExplicitTool;
@@ -52,6 +54,7 @@ public class StgModule implements Module {
 
         pm.registerClass(Exporter.class, DotGExporter.class);
         pm.registerClass(Importer.class, DotGImporter.class);
+        pm.registerClass(Importer.class, ConceptsImporter.class);
 
         pm.registerClass(ModelSerialiser.class, DotGSerialiser.class);
         pm.registerClass(Settings.class, StgSettings.class);
@@ -67,6 +70,7 @@ public class StgModule implements Module {
         pm.registerClass(Tool.class, StgToPetriConverterTool.class);
         pm.registerClass(Tool.class, MergeTransitionTool.class);
         pm.registerClass(Tool.class, DummyInserterTool.class);
+        pm.registerClass(Tool.class, ConceptsTool.class);
     }
 
     private void initCompatibilityManager() {
