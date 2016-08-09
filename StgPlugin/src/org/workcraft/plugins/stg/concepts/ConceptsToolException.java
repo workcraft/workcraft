@@ -1,4 +1,4 @@
-package org.workcraft.plugins.stg.tools;
+package org.workcraft.plugins.stg.concepts;
 
 import javax.swing.JOptionPane;
 

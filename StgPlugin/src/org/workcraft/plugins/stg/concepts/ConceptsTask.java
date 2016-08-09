@@ -1,4 +1,4 @@
-package org.workcraft.plugins.stg.tasks;
+package org.workcraft.plugins.stg.concepts;
 
 import java.io.File;
 import java.util.ArrayList;

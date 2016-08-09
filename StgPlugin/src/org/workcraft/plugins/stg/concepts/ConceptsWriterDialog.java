@@ -1,4 +1,4 @@
-package org.workcraft.plugins.stg.gui;
+package org.workcraft.plugins.stg.concepts;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -274,7 +274,6 @@ public class ConceptsWriterDialog extends JDialog {
                 lastFileUsed = File.createTempFile("concepts", ".hs");
                 PrintWriter p = new PrintWriter(lastFileUsed);
                 p.print(conceptsText.getText());
-                System.out.println("CONCEPTS: \n" + conceptsText.getText());
                 p.close();
             } catch (IOException e) {
                 // TODO Auto-generated catch block

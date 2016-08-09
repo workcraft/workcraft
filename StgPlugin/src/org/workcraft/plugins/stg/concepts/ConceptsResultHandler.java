@@ -1,4 +1,4 @@
-package org.workcraft.plugins.stg.tasks;
+package org.workcraft.plugins.stg.concepts;
 
 import java.awt.Container;
 import java.awt.geom.Point2D;
@@ -28,9 +28,6 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.interop.ConceptsImporter;
 import org.workcraft.plugins.stg.interop.DotGImporter;
-import org.workcraft.plugins.stg.tools.ConceptsTool;
-import org.workcraft.plugins.stg.tools.ConceptsToolException;
-import org.workcraft.plugins.stg.tools.ConceptsWritingTool;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -83,7 +80,6 @@ public class ConceptsResultHandler extends DummyProgressMonitor<ExternalProcessR
                                         newVisualStg.selectAll();
                                         VisualPage page = newVisualStg.groupPageSelection();
                                         Point2D.Double position = getPosition(visualStg, page);
-                                        System.out.println("Final position: " + position);
                                         page.setLabel(name);
                                         page.setPosition(position);
                                         newWe.copy();
@@ -150,16 +146,12 @@ public class ConceptsResultHandler extends DummyProgressMonitor<ExternalProcessR
     private Point2D.Double getPosition(VisualStg visualStg, VisualPage page) {
         Collection<Node> nodes = findAllNodes((VisualTransformableNode) visualStg.getRoot());
         Point2D.Double rightmost = null;
-        System.out.println(nodes);
         for (Node n : nodes) {
             VisualComponent v = (VisualComponent) n;
             if (rightmost == null || v.getRootSpacePosition().getX() > rightmost.getX()) {
-                System.out.println("PREV: " + rightmost);
                 rightmost = (Double) v.getRootSpacePosition();
-                System.out.println("NEW:  " + rightmost);
             }
         }
-        System.out.println("Width: " + page.getBoundingBox().getWidth() / 2);
         return rightmost == null ? new Point2D.Double(0, 0) : new Point2D.Double(rightmost.getX() + 2 + (page.getBoundingBox().getWidth() / 2), rightmost.getY());
     }
 

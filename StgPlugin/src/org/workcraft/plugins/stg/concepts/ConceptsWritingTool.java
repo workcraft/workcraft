@@ -1,13 +1,10 @@
-package org.workcraft.plugins.stg.tools;
+package org.workcraft.plugins.stg.concepts;
 
 import java.io.File;
 
 import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.plugins.stg.VisualStg;
-import org.workcraft.plugins.stg.gui.ConceptsWriterDialog;
-import org.workcraft.plugins.stg.tasks.ConceptsResultHandler;
-import org.workcraft.plugins.stg.tasks.ConceptsTask;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
