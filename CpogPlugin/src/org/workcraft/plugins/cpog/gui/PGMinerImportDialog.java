@@ -26,7 +26,7 @@ import org.workcraft.util.GUI;
 public class PGMinerImportDialog extends JDialog {
 
     private final JTextField filePath;
-    private final JButton    selectFileBtn, importButton, cancelButton;
+    private final JButton selectFileBtn, importButton, cancelButton;
     private final JCheckBox extractConcurrencyCB, splitCB;
     private boolean canImport;
 

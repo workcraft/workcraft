@@ -1,4 +1,4 @@
-package org.workcraft.plugins.stg.tools;
+package org.workcraft.plugins.stg.concepts;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,8 +8,6 @@ import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.workcraft.plugins.stg.VisualStg;
-import org.workcraft.plugins.stg.tasks.ConceptsResultHandler;
-import org.workcraft.plugins.stg.tasks.ConceptsTask;
 import org.workcraft.util.FileUtils;
 import org.workcraft.Framework;
 import org.workcraft.Tool;
