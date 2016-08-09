@@ -16,6 +16,7 @@ import org.workcraft.plugins.stg.serialisation.DotGSerialiser;
 import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcDeserialiser;
 import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcSerialiser;
 import org.workcraft.plugins.stg.tools.ConceptsTool;
+import org.workcraft.plugins.stg.tools.ConceptsWritingTool;
 import org.workcraft.plugins.stg.tools.DummyInserterTool;
 import org.workcraft.plugins.stg.tools.DummyToSignalTransitionConverterTool;
 import org.workcraft.plugins.stg.tools.MakePlacesExplicitTool;
@@ -71,6 +72,7 @@ public class StgModule implements Module {
         pm.registerClass(Tool.class, MergeTransitionTool.class);
         pm.registerClass(Tool.class, DummyInserterTool.class);
         pm.registerClass(Tool.class, ConceptsTool.class);
+        pm.registerClass(Tool.class, ConceptsWritingTool.class);
     }
 
     private void initCompatibilityManager() {
