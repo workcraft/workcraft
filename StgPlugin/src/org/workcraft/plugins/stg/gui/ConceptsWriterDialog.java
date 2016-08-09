@@ -41,7 +41,7 @@ public class ConceptsWriterDialog extends JDialog {
 
     public ConceptsWriterDialog() {
         super(Framework.getInstance().getMainWindow(), "Write and translate Concepts", ModalityType.APPLICATION_MODAL);
-        updateLastDirUsed();
+        //updateLastDirUsed();
 
         content = new JPanel();
         content.setLayout(new BorderLayout());
@@ -136,6 +136,7 @@ public class ConceptsWriterDialog extends JDialog {
                         }
 
                         conceptsText.setText(readFile(f));
+                        updateLastDirUsed();
                     } catch (FileNotFoundException e1) {
                         // TODO Auto-generated catch block
                         JOptionPane.showMessageDialog(null, e1.getMessage(),
@@ -156,6 +157,9 @@ public class ConceptsWriterDialog extends JDialog {
                 chooser.setCurrentDirectory(lastDirUsed);
                 if (chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
                     File f = chooser.getSelectedFile();
+                    if (!f.getName().endsWith(".hs")) {
+                        f = new File(f.getAbsolutePath() + ".hs");
+                    }
                     PrintStream concepts;
                     try {
                         concepts = new PrintStream(f);
@@ -253,7 +257,7 @@ public class ConceptsWriterDialog extends JDialog {
 
             lastFileUsed = f;
             changed = false;
-            updateLastDirUsed();
+            //updateLastDirUsed();
         }
         return fileText == "" ? "" : fileText;
     }
@@ -267,9 +271,11 @@ public class ConceptsWriterDialog extends JDialog {
             return lastFileUsed;
         } else {
             try {
-                lastFileUsed = File.createTempFile("concepts", "hs");
+                lastFileUsed = File.createTempFile("concepts", ".hs");
                 PrintWriter p = new PrintWriter(lastFileUsed);
                 p.print(conceptsText.getText());
+                System.out.println("CONCEPTS: \n" + conceptsText.getText());
+                p.close();
             } catch (IOException e) {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
