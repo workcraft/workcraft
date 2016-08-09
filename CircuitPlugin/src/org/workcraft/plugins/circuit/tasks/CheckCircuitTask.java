@@ -16,7 +16,6 @@ import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.MpsatSettings;
-import org.workcraft.plugins.mpsat.MpsatUtilitySettings;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
@@ -211,7 +210,7 @@ public class CheckCircuitTask extends MpsatChainTask {
             // Check for deadlock (if requested)
             if (checkDeadlock) {
                 MpsatTask mpsatDeadlockTask = new MpsatTask(deadlockSettings.getMpsatArguments(directory),
-                        unfoldingFile.getAbsolutePath(), directory, true);
+                        unfoldingFile, directory);
                 SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
                 Result<? extends ExternalProcessResult> mpsatDeadlockResult = framework.getTaskManager().execute(
                         mpsatDeadlockTask, "Running deadlock check [MPSat]", mpsatMonitor);
@@ -237,7 +236,7 @@ public class CheckCircuitTask extends MpsatChainTask {
             // Check for hazards (if requested)
             if (checkHazard) {
                 MpsatTask mpsatHazardTask = new MpsatTask(hazardSettings.getMpsatArguments(directory),
-                        unfoldingFile.getAbsolutePath(), directory, true);
+                        unfoldingFile, directory, true, sysStgFile);
                 SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
                 Result<? extends ExternalProcessResult>  mpsatHazardResult = framework.getTaskManager().execute(
                         mpsatHazardTask, "Running hazard check [MPSat]", mpsatMonitor);
@@ -265,17 +264,9 @@ public class CheckCircuitTask extends MpsatChainTask {
                 Set<String> devOutputNames = devStg.getSignalFlatNames(Type.OUTPUT);
                 byte[] placesList = FileUtils.readAllBytes(placesModFile);
                 Set<String> devPlaceNames = parsePlaceNames(placesList, 0);
-                String reachConformation = MpsatSettings.genReachConformation(devOutputNames, devPlaceNames);
-                if (MpsatUtilitySettings.getDebugReach()) {
-                    System.out.println("\nReach expression for the interface conformation property:");
-                    System.out.println(reachConformation);
-                }
-                MpsatSettings conformationSettings = new MpsatSettings("Interface conformation",
-                        MpsatMode.STG_REACHABILITY, 0, MpsatUtilitySettings.getSolutionMode(),
-                        MpsatUtilitySettings.getSolutionCount(), reachConformation, true);
-
+                MpsatSettings conformationSettings = MpsatSettings.getConformationSettings(devOutputNames, devPlaceNames);
                 MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
-                        unfoldingModFile.getAbsolutePath(), directory, true);
+                        unfoldingModFile, directory);
                 SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
                 Result<? extends ExternalProcessResult>  mpsatConformationResult = framework.getTaskManager().execute(
                         mpsatConformationTask, "Running conformation check [MPSat]", mpsatMonitor);

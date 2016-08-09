@@ -75,7 +75,7 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 
             // Run MPSat on the generated unfolding
             MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory),
-                    unfoldingFile.getAbsolutePath(), directory, tryPnml);
+                    unfoldingFile, directory, tryPnml);
             Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
                     mpsatTask, "Running verification [MPSat]", subtaskMonitor);
 

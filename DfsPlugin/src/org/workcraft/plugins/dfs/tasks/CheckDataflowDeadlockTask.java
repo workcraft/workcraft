@@ -83,7 +83,7 @@ public class CheckDataflowDeadlockTask extends MpsatChainTask {
             monitor.progressUpdate(0.70);
 
             MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory),
-                    unfoldingFile.getAbsolutePath(), directory, true);
+                    unfoldingFile, directory);
             Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
                     mpsatTask, "Running deadlock checking [MPSat]", mon);
 

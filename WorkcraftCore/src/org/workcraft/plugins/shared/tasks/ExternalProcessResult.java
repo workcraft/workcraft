@@ -7,17 +7,17 @@ public class ExternalProcessResult {
     private final byte[] output;
     private final byte[] errors;
     private final int returnCode;
-    private final Map<String, byte[]> outputFiles;
+    private final Map<String, byte[]> fileContentMap;
 
     public ExternalProcessResult(int returnCode, byte[] output, byte[] errors) {
         this(returnCode, output, errors, new HashMap<String, byte[]>());
     }
 
-    public ExternalProcessResult(int returnCode, byte[] output, byte[] errors, Map<String, byte[]> outputFiles) {
+    public ExternalProcessResult(int returnCode, byte[] output, byte[] errors, Map<String, byte[]> fileContentMap) {
         this.output = output;
         this.errors = errors;
         this.returnCode = returnCode;
-        this.outputFiles = outputFiles;
+        this.fileContentMap = fileContentMap;
     }
 
     public byte[] getOutput() {
@@ -32,7 +32,7 @@ public class ExternalProcessResult {
         return returnCode;
     }
 
-    public byte[] getOutputFile(String name) {
-        return outputFiles.get(name);
+    public byte[] getFileContent(String name) {
+        return fileContentMap.get(name);
     }
 }

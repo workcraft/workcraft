@@ -83,7 +83,7 @@ public class CheckDataflowTask extends MpsatChainTask {
             monitor.progressUpdate(0.40);
 
             MpsatTask mpsatTask = new MpsatTask(deadlockSettings.getMpsatArguments(directory),
-                    unfoldingFile.getAbsolutePath(), directory, true);
+                    unfoldingFile, directory);
             Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
                     mpsatTask, "Running deadlock checking [MPSat]", mon);
 
@@ -104,7 +104,7 @@ public class CheckDataflowTask extends MpsatChainTask {
             monitor.progressUpdate(0.70);
 
             mpsatTask = new MpsatTask(hazardSettings.getMpsatArguments(directory),
-                    unfoldingFile.getAbsolutePath(), directory, true);
+                    unfoldingFile, directory);
             mpsatResult = framework.getTaskManager().execute(mpsatTask, "Running semimodularity checking [MPSat]", mon);
             if (mpsatResult.getOutcome() != Outcome.FINISHED) {
                 if (mpsatResult.getOutcome() == Outcome.CANCELLED) {

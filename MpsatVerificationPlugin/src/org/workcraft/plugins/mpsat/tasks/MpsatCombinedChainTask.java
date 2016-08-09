@@ -82,7 +82,7 @@ public class MpsatCombinedChainTask implements Task<MpsatCombinedChainResult> {
             ArrayList<Result<? extends ExternalProcessResult>> mpsatResultList = new ArrayList<>(settingsList.size());
             for (MpsatSettings settings: settingsList) {
                 MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory),
-                        unfoldingFile.getAbsolutePath(), directory, tryPnml);
+                        unfoldingFile, directory, tryPnml);
                 Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
                         mpsatTask, "Running verification [MPSat]", subtaskMonitor);
                 mpsatResultList.add(mpsatResult);

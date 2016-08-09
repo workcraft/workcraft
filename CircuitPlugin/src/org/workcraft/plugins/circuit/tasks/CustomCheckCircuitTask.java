@@ -122,8 +122,7 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
 
             // Check custom property (if requested)
             MpsatSettings settings = getSettings();
-            MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory),
-                    unfoldingFile.getAbsolutePath(), directory, true);
+            MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory), unfoldingFile, directory);
             SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
             Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
                     mpsatTask, "Running custom property check [MPSat]", mpsatMonitor);

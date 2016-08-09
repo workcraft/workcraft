@@ -22,22 +22,33 @@ import org.workcraft.util.FileUtils;
 import org.workcraft.util.ToolUtils;
 
 public class MpsatTask implements Task<ExternalProcessResult> {
-    public static final String FILE_MPSAT_G = "mpsat.g";
+    public static final String FILE_MPSAT_G_INPUT = "input.g";
+    public static final String FILE_MPSAT_G_OUTPUT = "output.g";
 
     private final String[] args;
-    private final String inputFileName;
+    private final File unfoldingFile;
     private final File directory;
     private final boolean tryPnml;
+    private final File netFile;
 
-    public MpsatTask(String[] args, String inputFileName, File directory, boolean tryPnml) {
+    public MpsatTask(String[] args, File unfoldingFile, File directory) {
+        this(args, unfoldingFile, directory, true, null);
+    }
+
+    public MpsatTask(String[] args, File unfoldingFile, File directory, boolean tryPnml) {
+        this(args, unfoldingFile, directory, tryPnml, null);
+    }
+
+    public MpsatTask(String[] args, File unfoldingFile, File directory, boolean tryPnml, File netFile) {
         this.args = args;
-        this.inputFileName = inputFileName;
+        this.unfoldingFile = unfoldingFile;
         if (directory == null) {
             // Prefix must be at least 3 symbols long.
             directory = FileUtils.createTempDirectory("mpsat-");
         }
         this.directory = directory;
         this.tryPnml = tryPnml;
+        this.netFile = netFile;
     }
 
     @Override
@@ -72,25 +83,32 @@ public class MpsatTask implements Task<ExternalProcessResult> {
         }
 
         // Input file
-        command.add(inputFileName);
+        if (unfoldingFile != null) {
+            command.add(unfoldingFile.getAbsolutePath());
+        }
 
         boolean printStdout = MpsatUtilitySettings.getPrintStdout();
         boolean printStderr = MpsatUtilitySettings.getPrintStderr();
         ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
         Result<? extends ExternalProcessResult> res = task.run(monitor);
         if (res.getOutcome() == Outcome.FINISHED) {
-            Map<String, byte[]> outputFiles = new HashMap<>();
+            Map<String, byte[]> fileContentMap = new HashMap<>();
             try {
-                File outFile = new File(directory, FILE_MPSAT_G);
+                if (netFile != null) {
+                    if (netFile.exists()) {
+                        fileContentMap.put(FILE_MPSAT_G_INPUT, FileUtils.readAllBytes(netFile));
+                    }
+                }
+                File outFile = new File(directory, FILE_MPSAT_G_OUTPUT);
                 if (outFile.exists()) {
-                    outputFiles.put(FILE_MPSAT_G, FileUtils.readAllBytes(outFile));
+                    fileContentMap.put(FILE_MPSAT_G_OUTPUT, FileUtils.readAllBytes(outFile));
                 }
             } catch (IOException e) {
                 return new Result<ExternalProcessResult>(e);
             }
 
             ExternalProcessResult retVal = res.getReturnValue();
-            ExternalProcessResult result = new ExternalProcessResult(retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), outputFiles);
+            ExternalProcessResult result = new ExternalProcessResult(retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), fileContentMap);
             if (retVal.getReturnCode() < 2) {
                 return Result.finished(result);
             } else {

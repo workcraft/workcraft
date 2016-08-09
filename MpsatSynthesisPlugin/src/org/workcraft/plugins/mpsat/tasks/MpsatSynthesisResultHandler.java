@@ -88,13 +88,13 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
             System.out.println(log);
             System.out.println();
         }
-        byte[] eqnOutput = mpsatResult.getOutputFile(MpsatSynthesisTask.EQN_FILE_NAME);
+        byte[] eqnOutput = mpsatResult.getFileContent(MpsatSynthesisTask.EQN_FILE_NAME);
         if (eqnOutput != null) {
             LogUtils.logInfoLine("MPSat synthesis result in EQN format:");
             System.out.println(new String(eqnOutput));
             System.out.println();
         }
-        byte[] verilogOutput = mpsatResult.getOutputFile(MpsatSynthesisTask.VERILOG_FILE_NAME);
+        byte[] verilogOutput = mpsatResult.getFileContent(MpsatSynthesisTask.VERILOG_FILE_NAME);
         if (verilogOutput != null) {
             LogUtils.logInfoLine("MPSat synthesis result in Verilog format:");
             System.out.println(new String(verilogOutput));

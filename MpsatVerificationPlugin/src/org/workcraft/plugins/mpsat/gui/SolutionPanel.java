@@ -4,13 +4,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import org.workcraft.Framework;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.ToolboxPanel;
 import org.workcraft.gui.graph.GraphEditorPanel;
@@ -23,12 +26,23 @@ import info.clearthought.layout.TableLayout;
 public class SolutionPanel extends JPanel {
 
     public SolutionPanel(final WorkspaceEntry we, final Solution solution, final ActionListener closeAction) {
-        super(new TableLayout(new double[][]
-                {{TableLayout.FILL, TableLayout.PREFERRED },
-                {TableLayout.FILL}, }
-        ));
+        double[][] sizes = new double[][] {
+                {TableLayout.FILL, TableLayout.PREFERRED},
+                {TableLayout.PREFERRED, TableLayout.FILL},
+        };
+        TableLayout layout = new TableLayout(sizes);
+        int hGap = SizeHelper.getCompactLayoutHGap();
+        int vGap = SizeHelper.getCompactLayoutVGap();
+        layout.setHGap(hGap);
+        layout.setVGap(vGap);
+        setLayout(layout);
 
+        JLabel commentLabel = new JLabel();
+        if (solution.getComment() != null) {
+            commentLabel.setText(solution.getComment());
+        }
         JTextArea traceText = new JTextArea();
+        traceText.setBorder(BorderFactory.createEmptyBorder(hGap, vGap, hGap, vGap));
         String solutionString = solution.toString();
         if (solutionString.isEmpty()) {
             traceText.setText("[empty trace]");
@@ -70,8 +84,9 @@ public class SolutionPanel extends JPanel {
 
         buttonsPanel.add(playButton);
 
-        add(scrollPane, "0 0");
-        add(buttonsPanel, "1 0");
+        add(commentLabel, "0 0");
+        add(scrollPane, "0 1");
+        add(buttonsPanel, "1 1");
     }
 
 }
