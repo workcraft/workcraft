@@ -7,7 +7,7 @@ import org.workcraft.Trace;
 public class Solution {
     private final Trace mainTrace;
     private final Trace branchTrace;
-    private final String comment;
+    private String comment;
 
     public Solution(Trace mainTrace, Trace branchTrace) {
         this(mainTrace, branchTrace, null);
@@ -25,6 +25,10 @@ public class Solution {
 
     public Trace getBranchTrace() {
         return branchTrace;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
     }
 
     public String getComment() {

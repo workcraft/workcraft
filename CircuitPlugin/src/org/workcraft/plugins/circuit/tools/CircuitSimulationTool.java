@@ -40,6 +40,7 @@ import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.generator.SignalStg;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
 import org.workcraft.util.Func;
+import org.workcraft.util.LogUtils;
 import org.workcraft.util.Pair;
 
 public class CircuitSimulationTool extends StgSimulationTool {
@@ -56,15 +57,15 @@ public class CircuitSimulationTool extends StgSimulationTool {
     public void setTrace(Trace mainTrace, Trace branchTrace, GraphEditor editor) {
         Trace circuitMainTrace = convertStgTraceToCircuitTrace(mainTrace);
         if (circuitMainTrace != null) {
-            System.out.println("Main trace conversion:");
-            System.out.println("  original: " + mainTrace);
-            System.out.println("  circuit:  " + circuitMainTrace);
+            LogUtils.logMessageLine("Main trace conversion:");
+            LogUtils.logMessageLine("  original: " + mainTrace);
+            LogUtils.logMessageLine("  circuit:  " + circuitMainTrace);
         }
         Trace circuitBranchTrace = convertStgTraceToCircuitTrace(branchTrace);
         if (circuitBranchTrace != null) {
-            System.out.println("Branch trace conversion:");
-            System.out.println("  original: " + branchTrace);
-            System.out.println("  circuit:  " + circuitBranchTrace);
+            LogUtils.logMessageLine("Branch trace conversion:");
+            LogUtils.logMessageLine("  original: " + branchTrace);
+            LogUtils.logMessageLine("  circuit:  " + circuitBranchTrace);
         }
         super.setTrace(circuitMainTrace, circuitBranchTrace, editor);
     }

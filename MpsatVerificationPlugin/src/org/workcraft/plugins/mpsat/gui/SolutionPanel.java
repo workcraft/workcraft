@@ -18,6 +18,7 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.ToolboxPanel;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.tools.SimulationTool;
+import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import info.clearthought.layout.TableLayout;
@@ -78,6 +79,11 @@ public class SolutionPanel extends JPanel {
                 final SimulationTool tool = toolbox.getToolInstance(SimulationTool.class);
                 toolbox.selectTool(tool);
                 tool.setTrace(solution.getMainTrace(), solution.getBranchTrace(), currentEditor);
+                String comment = solution.getComment();
+                if ((comment != null) && !comment.isEmpty()) {
+                    comment = comment.replaceAll("\\<.*?>", "");
+                    LogUtils.logWarningLine(comment);
+                }
                 closeAction.actionPerformed(null);
             }
         });
