@@ -92,8 +92,8 @@ final class MpsatReachabilityResultHandler implements Runnable {
     }
 
     private void setOutputPersistencyComment(Solution solution) {
-        if (solution != null) {
-            StgModel stg = getInputStg();
+        StgModel stg = getInputStg();
+        if ((solution != null) && (stg != null)) {
             fireTrace(stg, solution.getMainTrace());
             HashSet<String> enabledSignals = getEnabledOutputSignals(stg);
             HashSet<String> nonpersistentSignals = new HashSet<>();

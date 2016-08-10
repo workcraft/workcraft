@@ -79,7 +79,7 @@ public class CheckDataflowHazardTask extends MpsatChainTask {
             monitor.progressUpdate(0.40);
 
             MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory),
-                    unfoldingFile, directory);
+                    unfoldingFile, directory, true, netFile);
             Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
                     mpsatTask, "Running semimodularity checking [MPSat]", mon);
 
