@@ -14,6 +14,8 @@ import org.workcraft.plugins.petrify.tools.PetrifyNetSynthesis;
 import org.workcraft.plugins.petrify.tools.PetrifyNetSynthesisHide;
 import org.workcraft.plugins.petrify.tools.PetrifySynthesisComplexGate;
 import org.workcraft.plugins.petrify.tools.PetrifySynthesisGeneralisedCelement;
+import org.workcraft.plugins.petrify.tools.PetrifySynthesisMonotonousCovers;
+import org.workcraft.plugins.petrify.tools.PetrifySynthesisStandardCelement;
 import org.workcraft.plugins.petrify.tools.PetrifySynthesisTechnologyMapping;
 import org.workcraft.plugins.petrify.tools.PetrifyUntoggle;
 
@@ -58,6 +60,8 @@ public class PetrifyModule implements Module {
         pm.registerClass(Tool.class, PetrifyCscConflictResolution.class);
         pm.registerClass(Tool.class, PetrifySynthesisComplexGate.class);
         pm.registerClass(Tool.class, PetrifySynthesisGeneralisedCelement.class);
+        pm.registerClass(Tool.class, PetrifySynthesisStandardCelement.class);
+        pm.registerClass(Tool.class, PetrifySynthesisMonotonousCovers.class);
         pm.registerClass(Tool.class, PetrifySynthesisTechnologyMapping.class);
         pm.registerClass(Tool.class, PetrifyDummyContraction.class);
         pm.registerClass(Tool.class, PetrifyNetSynthesis.class);
