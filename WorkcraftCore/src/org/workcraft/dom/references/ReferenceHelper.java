@@ -40,7 +40,7 @@ public class ReferenceHelper {
         return refs;
     }
 
-    public static String getReferencesAsString(ArrayList<String> refs) {
+    public static String getReferencesAsString(Collection<String> refs) {
         String str = "";
         for (String ref: refs) {
             if (!str.isEmpty()) {

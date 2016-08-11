@@ -14,14 +14,13 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.MpsatSettings;
-import org.workcraft.plugins.mpsat.MpsatUtilitySettings;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.punf.PunfUtilitySettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
-import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -140,13 +139,9 @@ public class MpsatConformationTask extends MpsatChainTask {
             Set<String> devOutputNames = devStg.getSignalFlatNames(Type.OUTPUT);
             byte[] palcesList = FileUtils.readAllBytes(placesFile);
             Set<String> devPlaceNames = parsePlaceNames(palcesList, 0);
-            String reachConformation = MpsatSettings.genReachConformation(devOutputNames, devPlaceNames);
-            MpsatSettings conformationSettings = new MpsatSettings("Interface conformation",
-                    MpsatMode.STG_REACHABILITY, 0, MpsatUtilitySettings.getSolutionMode(),
-                    MpsatUtilitySettings.getSolutionCount(), reachConformation, true);
-
+            MpsatSettings conformationSettings = MpsatSettings.getConformationSettings(devOutputNames, devPlaceNames);
             MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
-                    unfoldingFile.getAbsolutePath(), directory, true);
+                    unfoldingFile, directory);
             Result<? extends ExternalProcessResult>  mpsatConformationResult = framework.getTaskManager().execute(
                     mpsatConformationTask, "Running conformation check [MPSat]", subtaskMonitor);
 

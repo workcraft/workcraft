@@ -52,7 +52,8 @@ public class MpsatResultParser {
             Trace mainTrace = getTrace(matcherRreachability2.group(1));
             Trace branchTrace = getTrace(matcherRreachability2.group(2));
             String signalName = matcherRreachability2.group(4);
-            Solution solution = new Solution(mainTrace, branchTrace, signalName);
+            Solution solution = new Solution(mainTrace, branchTrace);
+            solution.setComment(signalName);
             solutions.add(solution);
         }
         Matcher matcherNormalcy = patternNormalcy1.matcher(mpsatOutput);

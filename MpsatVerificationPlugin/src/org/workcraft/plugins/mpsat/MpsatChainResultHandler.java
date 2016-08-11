@@ -55,6 +55,7 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
             break;
         case REACHABILITY:
         case STG_REACHABILITY:
+        case STG_REACHABILITY_OUTPUT_PERSISTENCY:
         case NORMALCY:
         case ASSERTION:
             SwingUtilities.invokeLater(new MpsatReachabilityResultHandler(we, mpsatResult, mpsatSettings));

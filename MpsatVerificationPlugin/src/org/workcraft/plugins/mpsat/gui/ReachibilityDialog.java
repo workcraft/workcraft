@@ -1,24 +1,26 @@
 package org.workcraft.plugins.mpsat.gui;
 
+import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.List;
 
-import javax.swing.BoxLayout;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
-
-import info.clearthought.layout.TableLayout;
 
 @SuppressWarnings("serial")
 public class ReachibilityDialog extends JDialog {
@@ -26,13 +28,10 @@ public class ReachibilityDialog extends JDialog {
 
     public ReachibilityDialog(WorkspaceEntry we, String title, String message, List<Solution> solutions) {
 
-        double[][] sizes = {
-                {TableLayout.FILL },
-                {TableLayout.PREFERRED, TableLayout.FILL, TableLayout.PREFERRED },
-        };
-
-        JPanel solutionsPanel = new JPanel();
-        solutionsPanel.setLayout(new BoxLayout(solutionsPanel, BoxLayout.Y_AXIS));
+        int hGap = SizeHelper.getLayoutHGap();
+        int vGap = SizeHelper.getLayoutVGap();
+        JPanel solutionsPanel = new JPanel(new GridLayout(solutions.size(), 1, hGap, vGap));
+        solutionsPanel.setBorder(BorderFactory.createEmptyBorder(hGap, vGap, hGap, vGap));
         for (Solution solution : solutions) {
             solutionsPanel.add(new SolutionPanel(we, solution, new ActionListener() {
                 @Override
@@ -41,6 +40,8 @@ public class ReachibilityDialog extends JDialog {
                 }
             }));
         }
+        final JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setViewportView(solutionsPanel);
 
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton closeButton = GUI.createDialogButton("Close");
@@ -64,10 +65,10 @@ public class ReachibilityDialog extends JDialog {
 
         buttonsPanel.add(closeButton);
 
-        contents = new JPanel(new TableLayout(sizes));
-        contents.add(new JLabel(message), "0 0");
-        contents.add(solutionsPanel, "0 1");
-        contents.add(buttonsPanel, "0 2");
+        contents = new JPanel(new BorderLayout(hGap, vGap));
+        contents.add(new JLabel(message), BorderLayout.NORTH);
+        contents.add(scrollPane, BorderLayout.CENTER);
+        contents.add(buttonsPanel, BorderLayout.SOUTH);
 
         setTitle(title);
         setContentPane(contents);

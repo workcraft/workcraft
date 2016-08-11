@@ -63,4 +63,5 @@ public class Result<T> {
     public static <R> Result<R> failed(R res) {
         return new Result<R>(Outcome.FAILED, res);
     }
+
 }

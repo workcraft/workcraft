@@ -36,7 +36,7 @@ public class SizeHelper {
         return (int) Math.round(0.9 * getBaseSize());
     }
 
-    public static int getRadioBurronIconSize() {
+    public static int getRadioButtonIconSize() {
         return (int) Math.round(0.9 * getBaseSize());
     }
 

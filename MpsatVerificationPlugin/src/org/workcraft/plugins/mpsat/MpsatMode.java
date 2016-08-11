@@ -8,6 +8,7 @@ public enum MpsatMode {
     DEADLOCK("-D", "Deadlock checking", false, true),
     REACHABILITY("-F", "Reachability analysis", true, true),
     STG_REACHABILITY("-Fs", "STG reachability analysis", true, true),
+    STG_REACHABILITY_OUTPUT_PERSISTENCY("-Fs", "STG reachability analysis for output persistency", true, true),
     CSC_CONFLICT_DETECTION("-C", "CSC conflict detection", false, true),
     NORMALCY("-N", "Normalcy property checking", false, true),
     RESOLVE_ENCODING_CONFLICTS("-R -$1 -p0 -cl", "Resolve encoding conflicts", false, false),
@@ -15,7 +16,7 @@ public enum MpsatMode {
     COMPLEX_GATE_IMPLEMENTATION("-E", "Derive complex-gate implementation", false, true),
     GENERALISED_CELEMENT_IMPLEMENTATION("-G", "Derive gC-elements implementation", false, true),
     STANDARD_CELEMENT_IMPLEMENTATION("-S", "Derive standard-C implementation", false, true),
-    TECH_MAPPING("-T", "Logic decomposition and technology mapping (not finished yet)", false, false),
+    TECH_MAPPING("-T", "Logic decomposition and technology mapping (not finished yet)", false, true),
     ASSERTION("-Fa", "Check asynchronous assertion", true, true);
 
     private String argument;

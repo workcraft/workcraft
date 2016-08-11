@@ -44,4 +44,5 @@ final class MpsatDeadlockResultHandler implements Runnable {
             solutionsDialog.setVisible(true);
         }
     }
+
 }

@@ -6,10 +6,8 @@ import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.plugins.dfs.stg.StgGenerator;
-import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.MpsatSettings;
-import org.workcraft.plugins.mpsat.MpsatUtilitySettings;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
@@ -36,12 +34,9 @@ public class CheckDataflowTask extends MpsatChainTask {
         super(we, null);
         this.we = we;
 
-        this.deadlockSettings = new MpsatSettings("Deadlock freeness", MpsatMode.DEADLOCK, 0,
-                MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount());
+        this.deadlockSettings = MpsatSettings.getDeadlockSettings();
 
-        this.hazardSettings = new MpsatSettings("Output persistency", MpsatMode.STG_REACHABILITY, 0,
-                MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
-                MpsatSettings.REACH_OUTPUT_PERSISTENCY, true);
+        this.hazardSettings = MpsatSettings.getHazardSettings();
     }
 
     @Override
@@ -88,7 +83,7 @@ public class CheckDataflowTask extends MpsatChainTask {
             monitor.progressUpdate(0.40);
 
             MpsatTask mpsatTask = new MpsatTask(deadlockSettings.getMpsatArguments(directory),
-                    unfoldingFile.getAbsolutePath(), directory, true);
+                    unfoldingFile, directory);
             Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
                     mpsatTask, "Running deadlock checking [MPSat]", mon);
 
@@ -109,7 +104,7 @@ public class CheckDataflowTask extends MpsatChainTask {
             monitor.progressUpdate(0.70);
 
             mpsatTask = new MpsatTask(hazardSettings.getMpsatArguments(directory),
-                    unfoldingFile.getAbsolutePath(), directory, true);
+                    unfoldingFile, directory, true, netFile);
             mpsatResult = framework.getTaskManager().execute(mpsatTask, "Running semimodularity checking [MPSat]", mon);
             if (mpsatResult.getOutcome() != Outcome.FINISHED) {
                 if (mpsatResult.getOutcome() == Outcome.CANCELLED) {
