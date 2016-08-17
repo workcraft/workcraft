@@ -27,7 +27,7 @@ public class ConceptsToolException extends Exception {
                 System.out.println(LogUtils.PREFIX_STDERR + errors);
                 if (errors.contains("<no location info>")) {
                     conceptsCodeNotFound();
-                } else if (errors.contains("Could not find module")) {
+                } else if (errors.contains("Could not find module") || errors.contains("Failed to load interface")) {
                     conceptsNotInstalled();
                 } else {
                     defaultError();
