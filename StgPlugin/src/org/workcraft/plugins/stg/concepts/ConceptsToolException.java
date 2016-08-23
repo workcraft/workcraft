@@ -35,7 +35,7 @@ public class ConceptsToolException extends Exception {
             } else {
                 String output = new String(result.getReturnValue().getOutput());
                 if (!output.startsWith(".model out")) {
-                    if (output.contains("following signals have not been declared as a type")) {
+                    if (output.contains("Error. The following signals are not declared")) {
                         signalTypeNotDeclared(output);
                     } else {
                         cannotTranslateConceptsError(output);

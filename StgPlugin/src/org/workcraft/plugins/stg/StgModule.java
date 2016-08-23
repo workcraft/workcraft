@@ -71,7 +71,6 @@ public class StgModule implements Module {
         pm.registerClass(Tool.class, StgToPetriConverterTool.class);
         pm.registerClass(Tool.class, MergeTransitionTool.class);
         pm.registerClass(Tool.class, DummyInserterTool.class);
-        pm.registerClass(Tool.class, ConceptsTool.class);
         pm.registerClass(Tool.class, ConceptsWritingTool.class);
     }
 

@@ -22,7 +22,7 @@ public class PetrifyNetSynthesis extends ConversionTool {
 
     @Override
     public Position getPosition() {
-        return Position.BOTTOM;
+        return Position.MIDDLE;
     }
 
     @Override
