@@ -35,7 +35,11 @@ public class ConceptsToolException extends Exception {
             } else {
                 String output = new String(result.getReturnValue().getOutput());
                 if (!output.startsWith(".model out")) {
-                    cannotTranslateConceptsError(output);
+                    if (output.contains("following signals have not been declared as a type")) {
+                        signalTypeNotDeclared(output);
+                    } else {
+                        cannotTranslateConceptsError(output);
+                    }
                 }
             }
         } catch (NullPointerException e) {
@@ -71,4 +75,16 @@ public class ConceptsToolException extends Exception {
         JOptionPane.showMessageDialog(mainWindow, "Concepts could not be translated."
                 + "\nSee console window for error information", "Concept translation failed", JOptionPane.ERROR_MESSAGE);
     }
+
+    private void signalTypeNotDeclared(String output) {
+
+        System.out.println(LogUtils.PREFIX_STDERR + output);
+
+        JOptionPane.showMessageDialog(mainWindow, ""
+                + "One or more signals have not had their type declared. A list of these can be found in the console window.\n"
+                + "This can be done by including one of the concepts: \"input\", \"output\" or \"internal\""
+                + "\nalong with the list of signals of those types."
+                + "\nE.g input [a, b] <> output [c] <> internal [x]", "Concept translation failed", JOptionPane.ERROR_MESSAGE);
+    }
+
 }
