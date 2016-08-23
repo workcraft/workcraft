@@ -9,7 +9,6 @@ import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
-import org.workcraft.plugins.stg.concepts.ConceptsTool;
 import org.workcraft.plugins.stg.concepts.ConceptsWritingTool;
 import org.workcraft.plugins.stg.interop.ConceptsImporter;
 import org.workcraft.plugins.stg.interop.DotGExporter;

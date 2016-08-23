@@ -111,8 +111,6 @@ public class ConceptsWriterDialog extends JDialog {
     }
 
     private void createFileBtnPanel() {
-        JLabel fileLabel = new JLabel("File options: ");
-
         JButton openFileBtn = GUI.createDialogButton("Open file");
         JButton saveFileBtn = GUI.createDialogButton("Save to file");
         JButton resetBtn = GUI.createDialogButton("Reset to default");
@@ -189,7 +187,6 @@ public class ConceptsWriterDialog extends JDialog {
 
         });
 
-        btnPanel.add(fileLabel, BorderLayout.NORTH);
         btnPanel.add(fileBtnPanel, BorderLayout.WEST);
     }
 
