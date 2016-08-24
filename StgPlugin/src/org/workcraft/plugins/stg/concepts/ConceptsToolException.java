@@ -35,8 +35,17 @@ public class ConceptsToolException extends Exception {
             } else {
                 String output = new String(result.getReturnValue().getOutput());
                 if (!output.startsWith(".model out")) {
-                    if (output.contains("Error. The following signals are not declared")) {
-                        signalTypeNotDeclared(output);
+                    if (output.contains("Error.")) {
+                        System.out.println(LogUtils.PREFIX_STDERR + output);
+                        if (output.contains("The following signals are not declared as input, output or internal")) {
+                            signalTypeNotDeclared();
+                        }
+                        if (output.contains("The following signals have inconsistent inital states")) {
+                            inconsistentStates();
+                        }
+                        if (output.contains("The following signals have undefined initial states")) {
+                            undefinedStates();
+                        }
                     } else {
                         cannotTranslateConceptsError(output);
                     }
@@ -76,15 +85,29 @@ public class ConceptsToolException extends Exception {
                 + "\nSee console window for error information", "Concept translation failed", JOptionPane.ERROR_MESSAGE);
     }
 
-    private void signalTypeNotDeclared(String output) {
-
-        System.out.println(LogUtils.PREFIX_STDERR + output);
-
+    private void signalTypeNotDeclared() {
         JOptionPane.showMessageDialog(mainWindow, ""
-                + "One or more signals have not had their type declared. A list of these can be found in the console window.\n"
+                + "One or more signals have not had their type declared. \n"
+                + "A list of these can be found in the console window.\n"
                 + "This can be done by including one of the concepts: \"input\", \"output\" or \"internal\""
                 + "\nalong with the list of signals of those types."
                 + "\nE.g input [a, b] <> output [c] <> internal [x]", "Concept translation failed", JOptionPane.ERROR_MESSAGE);
     }
 
+    private void inconsistentStates() {
+        JOptionPane.showMessageDialog(mainWindow, ""
+                + "One or more signals has inconsistent initial states.\n"
+                + "A list of these signals can be found in the console window.\n"
+                + "This occurs when a signal has their initial state declared both high (1) and low (0).",
+                "Concept translation failed", JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void undefinedStates() {
+        JOptionPane.showMessageDialog(mainWindow, ""
+                + "One or more signals has undefined initial states.\n"
+                + "A list of these signals can be found in the console window.\n"
+                + "These signals have no initial state declared. Initial states can be set using any of the following concepts:\n"
+                + "\"initialise a False <> initialise b True <> initials [x, y, z] True <> initials [p, q] False",
+                "Concept translation failed", JOptionPane.ERROR_MESSAGE);
+    }
 }
