@@ -107,7 +107,7 @@ public class ConceptsToolException extends Exception {
                 + "One or more signals has undefined initial states.\n"
                 + "A list of these signals can be found in the console window.\n"
                 + "These signals have no initial state declared. Initial states can be set using any of the following concepts:\n"
-                + "\"initialise a False <> initialise b True <> initials [x, y, z] True <> initials [p, q] False",
+                + "\"initialise a False <> initialise b True <> initialise0 [x, y, z] <> initialise1 [p, q]",
                 "Concept translation failed", JOptionPane.ERROR_MESSAGE);
     }
 }
