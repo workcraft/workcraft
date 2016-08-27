@@ -10,7 +10,7 @@ import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.graph.tools.AbstractContractorTool;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.dfs.tools.CheckDataflowDeadlockTool;
-import org.workcraft.plugins.dfs.tools.CheckDataflowHazardTool;
+import org.workcraft.plugins.dfs.tools.CheckDataflowPersisitencyTool;
 import org.workcraft.plugins.dfs.tools.CheckDataflowTool;
 import org.workcraft.plugins.dfs.tools.ComponentMergerTool;
 import org.workcraft.plugins.dfs.tools.StgGeneratorTool;
@@ -81,7 +81,7 @@ public class DfsModule implements Module {
 
         pm.registerClass(Tool.class, WaggingGeneratorTool.class);
         pm.registerClass(Tool.class, CheckDataflowDeadlockTool.class);
-        pm.registerClass(Tool.class, CheckDataflowHazardTool.class);
+        pm.registerClass(Tool.class, CheckDataflowPersisitencyTool.class);
         pm.registerClass(Tool.class, CheckDataflowTool.class);
         pm.registerClass(Tool.class, ComponentMergerTool.class);
 

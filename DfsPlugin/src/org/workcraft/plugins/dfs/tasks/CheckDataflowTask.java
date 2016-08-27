@@ -27,7 +27,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class CheckDataflowTask extends MpsatChainTask {
     private final MpsatSettings deadlockSettings;
-    private final MpsatSettings hazardSettings;
+    private final MpsatSettings persistencySettings;
     private final WorkspaceEntry we;
 
     public CheckDataflowTask(WorkspaceEntry we) {
@@ -36,7 +36,7 @@ public class CheckDataflowTask extends MpsatChainTask {
 
         this.deadlockSettings = MpsatSettings.getDeadlockSettings();
 
-        this.hazardSettings = MpsatSettings.getHazardSettings();
+        this.persistencySettings = MpsatSettings.getOutputPersistencySettings();
     }
 
     @Override
@@ -103,7 +103,7 @@ public class CheckDataflowTask extends MpsatChainTask {
             }
             monitor.progressUpdate(0.70);
 
-            mpsatTask = new MpsatTask(hazardSettings.getMpsatArguments(directory),
+            mpsatTask = new MpsatTask(persistencySettings.getMpsatArguments(directory),
                     unfoldingFile, directory, true, netFile);
             mpsatResult = framework.getTaskManager().execute(mpsatTask, "Running semimodularity checking [MPSat]", mon);
             if (mpsatResult.getOutcome() != Outcome.FINISHED) {
@@ -111,19 +111,19 @@ public class CheckDataflowTask extends MpsatChainTask {
                     return new Result<MpsatChainResult>(Outcome.CANCELLED);
                 }
                 return new Result<MpsatChainResult>(Outcome.FAILED,
-                        new MpsatChainResult(exportResult, null, punfResult, mpsatResult, hazardSettings));
+                        new MpsatChainResult(exportResult, null, punfResult, mpsatResult, persistencySettings));
             }
             monitor.progressUpdate(0.90);
 
             mdp = new MpsatResultParser(mpsatResult.getReturnValue());
             if (!mdp.getSolutions().isEmpty()) {
                 return new Result<MpsatChainResult>(Outcome.FINISHED,
-                        new MpsatChainResult(exportResult, null, punfResult, mpsatResult, hazardSettings, "Dataflow has hazard(s)"));
+                        new MpsatChainResult(exportResult, null, punfResult, mpsatResult, persistencySettings, "Dataflow is not output persistent"));
             }
             monitor.progressUpdate(1.0);
 
             return new Result<MpsatChainResult>(Outcome.FINISHED,
-                    new MpsatChainResult(exportResult, null, punfResult, mpsatResult, hazardSettings, "Dataflow is deadlock-free and hazard-free"));
+                    new MpsatChainResult(exportResult, null, punfResult, mpsatResult, persistencySettings, "Dataflow is deadlock-free and output persistent"));
 
         } catch (Throwable e) {
             return new Result<MpsatChainResult>(e);

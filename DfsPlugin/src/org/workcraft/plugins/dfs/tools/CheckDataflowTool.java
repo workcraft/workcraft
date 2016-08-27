@@ -10,7 +10,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class CheckDataflowTool extends VerificationTool {
 
     public String getDisplayName() {
-        return "Deadlock and hazard (reuse unfolding) [MPSat]";
+        return "Deadlock and output persistency (reuse unfolding) [MPSat]";
     }
 
     @Override

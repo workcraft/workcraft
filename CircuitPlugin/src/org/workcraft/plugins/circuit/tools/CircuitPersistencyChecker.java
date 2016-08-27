@@ -1,6 +1,6 @@
 package org.workcraft.plugins.circuit.tools;
 
-public class CircuitHazardChecker extends CircuitChecker {
+public class CircuitPersistencyChecker extends CircuitChecker {
     @Override
     public Position getPosition() {
         return Position.TOP;
@@ -8,7 +8,7 @@ public class CircuitHazardChecker extends CircuitChecker {
 
     @Override
     public String getDisplayName() {
-        return "Hazard [MPSat]";
+        return "Output persistency [MPSat]";
     }
 
     @Override

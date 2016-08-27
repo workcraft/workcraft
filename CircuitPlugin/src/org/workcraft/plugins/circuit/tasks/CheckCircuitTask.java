@@ -41,19 +41,19 @@ public class CheckCircuitTask extends MpsatChainTask {
 
     private final MpsatSettings deadlockSettings = MpsatSettings.getDeadlockSettings();
 
-    private final MpsatSettings hazardSettings = MpsatSettings.getHazardSettings();
+    private final MpsatSettings persistencySettings = MpsatSettings.getOutputPersistencySettings();
 
     private final WorkspaceEntry we;
     private final boolean checkConformation;
     private final boolean checkDeadlock;
-    private final boolean checkHazard;
+    private final boolean checkPersistency;
 
-    public CheckCircuitTask(WorkspaceEntry we, boolean checkConformation, boolean checkDeadlock, boolean checkHazard) {
+    public CheckCircuitTask(WorkspaceEntry we, boolean checkConformation, boolean checkDeadlock, boolean checkPersistency) {
         super(we, null);
         this.we = we;
         this.checkConformation = checkConformation;
         this.checkDeadlock = checkDeadlock;
-        this.checkHazard = checkHazard;
+        this.checkPersistency = checkPersistency;
     }
 
     @Override
@@ -91,11 +91,11 @@ public class CheckCircuitTask extends MpsatChainTask {
                 CircuitStgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
             }
 
-            // Generating system .g for deadlock and hazard checks (only if needed)
+            // Generating system .g for deadlock and persistency checks (only if needed)
             File sysStgFile = null;
             File placesFile = null;
             Result<? extends ExternalProcessResult>  pcompResult = null;
-            if (checkDeadlock || checkHazard) {
+            if (checkDeadlock || checkPersistency) {
                 if (envStg == null) {
                     sysStgFile = devStgFile;
                 } else {
@@ -166,11 +166,11 @@ public class CheckCircuitTask extends MpsatChainTask {
             }
             monitor.progressUpdate(0.30);
 
-            // Generate unfolding for deadlock and hazard checks (only if needed)
+            // Generate unfolding for deadlock and output persistency checks (only if needed)
             File unfoldingFile = null;
             PunfTask punfTask = null;
             Result<? extends ExternalProcessResult> punfResult = null;
-            if (checkDeadlock || checkHazard) {
+            if (checkDeadlock || checkPersistency) {
                 unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + PunfUtilitySettings.getUnfoldingExtension(true));
                 punfTask = new PunfTask(sysStgFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
                 SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<>(monitor);
@@ -233,28 +233,28 @@ public class CheckCircuitTask extends MpsatChainTask {
             }
             monitor.progressUpdate(0.60);
 
-            // Check for hazards (if requested)
-            if (checkHazard) {
-                MpsatTask mpsatHazardTask = new MpsatTask(hazardSettings.getMpsatArguments(directory),
+            // Check for persistency (if requested)
+            if (checkPersistency) {
+                MpsatTask mpsatPersistencyTask = new MpsatTask(persistencySettings.getMpsatArguments(directory),
                         unfoldingFile, directory, true, sysStgFile);
                 SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
-                Result<? extends ExternalProcessResult>  mpsatHazardResult = framework.getTaskManager().execute(
-                        mpsatHazardTask, "Running hazard check [MPSat]", mpsatMonitor);
+                Result<? extends ExternalProcessResult>  mpsatPersistencyResult = framework.getTaskManager().execute(
+                        mpsatPersistencyTask, "Running output persistency check [MPSat]", mpsatMonitor);
 
-                if (mpsatHazardResult.getOutcome() != Outcome.FINISHED) {
-                    if (mpsatHazardResult.getOutcome() == Outcome.CANCELLED) {
+                if (mpsatPersistencyResult.getOutcome() != Outcome.FINISHED) {
+                    if (mpsatPersistencyResult.getOutcome() == Outcome.CANCELLED) {
                         return new Result<MpsatChainResult>(Outcome.CANCELLED);
                     }
                     return new Result<MpsatChainResult>(Outcome.FAILED,
-                            new MpsatChainResult(devExportResult, pcompResult, punfResult, mpsatHazardResult, hazardSettings));
+                            new MpsatChainResult(devExportResult, pcompResult, punfResult, mpsatPersistencyResult, persistencySettings));
                 }
                 monitor.progressUpdate(0.70);
 
-                MpsatResultParser mpsatHazardParser = new MpsatResultParser(mpsatHazardResult.getReturnValue());
-                if (!mpsatHazardParser.getSolutions().isEmpty()) {
+                MpsatResultParser mpsatPersistencyParser = new MpsatResultParser(mpsatPersistencyResult.getReturnValue());
+                if (!mpsatPersistencyParser.getSolutions().isEmpty()) {
                     return new Result<MpsatChainResult>(Outcome.FINISHED,
-                            new MpsatChainResult(devExportResult, pcompResult, punfResult, mpsatHazardResult, hazardSettings,
-                                    "Circuit has a hazard after the following trace(s):"));
+                            new MpsatChainResult(devExportResult, pcompResult, punfResult, mpsatPersistencyResult, persistencySettings,
+                                    "Circuit is not output persistent after the following trace(s):"));
                 }
             }
             monitor.progressUpdate(0.80);
@@ -336,8 +336,8 @@ public class CheckCircuitTask extends MpsatChainTask {
         if (checkDeadlock) {
             message += "  * deadlock-free\n";
         }
-        if (checkHazard) {
-            message += "  * hazard-free\n";
+        if (checkPersistency) {
+            message += "  * output persistent\n";
         }
         return message;
     }

@@ -18,7 +18,7 @@ public class CircuitChecker extends VerificationTool {
     private static final String TITLE_VERIFICATION = "Circuit verification";
 
     public String getDisplayName() {
-        return "Conformation, deadlock and hazard (reuse unfolding) [MPSat]";
+        return "Conformation, deadlock and output persistency (reuse unfolding) [MPSat]";
     }
 
     @Override
@@ -45,13 +45,13 @@ public class CircuitChecker extends VerificationTool {
 
         boolean checkConformation = checkConformation();
         boolean checkDeadlock = checkDeadlock();
-        boolean checkHazard = checkHazard();
+        boolean checkPersistency = checkPersistency();
 
         VisualCircuit visualCircuit = (VisualCircuit) we.getModelEntry().getVisualModel();
         File envFile = visualCircuit.getEnvironmentFile();
         if ((envFile == null) || !envFile.exists()) {
             if (checkConformation) {
-                if (checkDeadlock || checkHazard) {
+                if (checkDeadlock || checkPersistency) {
                     int answer = JOptionPane.showConfirmDialog(mainWindow,
                             "The circuit conformation cannot be checked without environment STG.\n"
                             + "Proceed with verification of the other properties?",
@@ -59,7 +59,7 @@ public class CircuitChecker extends VerificationTool {
 
                     boolean proceed = answer == JOptionPane.YES_OPTION;
                     checkDeadlock &= proceed;
-                    checkHazard &= proceed;
+                    checkPersistency &= proceed;
                 } else {
                     JOptionPane.showMessageDialog(mainWindow,
                             "Error: the circuit conformation cannot be checked without environment STG.",
@@ -73,8 +73,8 @@ public class CircuitChecker extends VerificationTool {
             }
         }
 
-        if (checkConformation || checkDeadlock || checkHazard) {
-            final CheckCircuitTask task = new CheckCircuitTask(we, checkConformation, checkDeadlock, checkHazard);
+        if (checkConformation || checkDeadlock || checkPersistency) {
+            final CheckCircuitTask task = new CheckCircuitTask(we, checkConformation, checkDeadlock, checkPersistency);
             String description = "MPSat tool chain";
             String title = we.getTitle();
             if (!title.isEmpty()) {
@@ -92,7 +92,7 @@ public class CircuitChecker extends VerificationTool {
         return true;
     }
 
-    public boolean checkHazard() {
+    public boolean checkPersistency() {
         return true;
     }
 

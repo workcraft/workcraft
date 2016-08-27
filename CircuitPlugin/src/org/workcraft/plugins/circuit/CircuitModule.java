@@ -19,7 +19,7 @@ import org.workcraft.plugins.circuit.tools.BubbleToggleTool;
 import org.workcraft.plugins.circuit.tools.BufferInsertionTool;
 import org.workcraft.plugins.circuit.tools.CircuitConformationChecker;
 import org.workcraft.plugins.circuit.tools.CircuitDeadlockChecker;
-import org.workcraft.plugins.circuit.tools.CircuitHazardChecker;
+import org.workcraft.plugins.circuit.tools.CircuitPersistencyChecker;
 import org.workcraft.plugins.circuit.tools.CircuitChecker;
 import org.workcraft.plugins.circuit.tools.CircuitLayoutTool;
 import org.workcraft.plugins.circuit.tools.ComponentContractionTool;
@@ -53,7 +53,7 @@ public class CircuitModule implements Module {
 
         pm.registerClass(Tool.class, CircuitConformationChecker.class);
         pm.registerClass(Tool.class, CircuitDeadlockChecker.class);
-        pm.registerClass(Tool.class, CircuitHazardChecker.class);
+        pm.registerClass(Tool.class, CircuitPersistencyChecker.class);
         pm.registerClass(Tool.class, CircuitChecker.class);
         pm.registerClass(Tool.class, CircuitPropertyChecker.class);
         pm.registerClass(Tool.class, CircuitAssertionChecker.class);

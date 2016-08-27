@@ -200,12 +200,6 @@ public class MpsatSettings {
                 MpsatSettings.REACH_OUTPUT_PERSISTENCY, true);
     }
 
-    public static MpsatSettings getHazardSettings() {
-        return new MpsatSettings("Hazard freeness", MpsatMode.STG_REACHABILITY_OUTPUT_PERSISTENCY, 0,
-                MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
-                MpsatSettings.REACH_OUTPUT_PERSISTENCY, true);
-    }
-
     private static final String REACH_DI_INTERFACE =
             "// Checks whether the STG's interface is delay insensitive, i.e. an input transition cannot trigger another input transition\n" +
             "card DUMMY != 0 ? fail \"Delay insensitivity can currently be checked only for STGs without dummies\" :\n" +
