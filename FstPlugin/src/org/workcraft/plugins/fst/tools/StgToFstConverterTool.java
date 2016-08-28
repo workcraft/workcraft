@@ -19,6 +19,10 @@ public class StgToFstConverterTool extends ConversionTool {
         return WorkspaceUtils.isApplicable(we, Stg.class);
     }
 
+    public Position getPosition() {
+        return Position.TOP;
+    }
+
     @Override
     public String getDisplayName() {
         return isBinary() ? "Finate State Transducer (binary-encoded) [Petrify]" : "Finate State Transducer (basic) [Petrify]";

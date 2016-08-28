@@ -2,15 +2,14 @@ package org.workcraft.plugins.stg.concepts;
 
 import java.io.File;
 
+import org.workcraft.ConversionTool;
 import org.workcraft.Framework;
-import org.workcraft.Tool;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class ConceptsWritingTool implements Tool {
+public class ConceptsWritingTool extends ConversionTool {
 
-    @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         if (we.getModelEntry() == null) return false;
         if (we.getModelEntry().getVisualModel() instanceof VisualStg) return true;
@@ -18,16 +17,14 @@ public class ConceptsWritingTool implements Tool {
     }
 
     @Override
-    public String getSection() {
-        return "! Concepts";
+    public Position getPosition() {
+        return Position.BOTTOM;
     }
 
-    @Override
     public String getDisplayName() {
-        return "Write concepts...";
+        return "Translate concepts...";
     }
 
-    @Override
     public void run(WorkspaceEntry we) {
         ConceptsWriterDialog dialog = new ConceptsWriterDialog();
         dialog.setVisible(true);

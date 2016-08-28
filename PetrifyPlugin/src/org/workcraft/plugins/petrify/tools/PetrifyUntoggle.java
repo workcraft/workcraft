@@ -15,6 +15,10 @@ public class PetrifyUntoggle extends ConversionTool {
         return "Untoggle signal transitions [Petrify]";
     }
 
+    public Position getPosition() {
+        return Position.TOP;
+    }
+
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.isApplicable(we, StgModel.class);

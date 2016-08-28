@@ -15,6 +15,10 @@ public class PetrifyDummyContraction extends ConversionTool {
         return "Dummy contraction [Petrify]";
     }
 
+    public Position getPosition() {
+        return Position.TOP;
+    }
+
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.isApplicable(we, StgModel.class);
