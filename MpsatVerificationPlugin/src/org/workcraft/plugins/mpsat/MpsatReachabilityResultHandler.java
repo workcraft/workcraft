@@ -91,24 +91,26 @@ final class MpsatReachabilityResultHandler implements Runnable {
         return result;
     }
 
-    private void setOutputPersistencyComment(Solution solution) {
+    private void improveOutputPersistencySolution(Solution solution) {
         StgModel stg = getInputStg();
         if ((solution != null) && (stg != null)) {
-            fireTrace(stg, solution.getMainTrace());
+            Trace mainTrace = solution.getMainTrace();
+            fireTrace(stg, mainTrace);
             HashSet<String> enabledSignals = getEnabledOutputSignals(stg);
-            HashSet<String> nonpersistentSignals = new HashSet<>();
             for (SignalTransition transition: getEnabledSignalTransitions(stg)) {
                 stg.fire(transition);
-                HashSet<String> signals = new HashSet<>(enabledSignals);
-                signals.remove(transition.getSignalName());
-                signals.removeAll(getEnabledOutputSignals(stg));
-                nonpersistentSignals.addAll(signals);
-            }
-            if (!nonpersistentSignals.isEmpty()) {
-                String comment = "<html>Non-persistent signal(s) <b>" +
-                        ReferenceHelper.getReferencesAsString(nonpersistentSignals) +
-                        "</b></html>";
-                solution.setComment(comment);
+                HashSet<String> nonpersistentSignals = new HashSet<>(enabledSignals);
+                nonpersistentSignals.remove(transition.getSignalName());
+                nonpersistentSignals.removeAll(getEnabledOutputSignals(stg));
+                if (!nonpersistentSignals.isEmpty()) {
+                    String comment = "<html>Non-persistent signal(s) <b>" +
+                            ReferenceHelper.getReferencesAsString(nonpersistentSignals) +
+                            "</b></html>";
+                    solution.setComment(comment);
+                    mainTrace.add(stg.getNodeReference(transition));
+                    break;
+                }
+                stg.unFire(transition);
             }
         }
     }
@@ -120,7 +122,7 @@ final class MpsatReachabilityResultHandler implements Runnable {
         boolean isOutputPersistency = settings.getMode() == MpsatMode.STG_REACHABILITY_OUTPUT_PERSISTENCY;
         if (isOutputPersistency) {
             for (Solution solution: solutions) {
-                setOutputPersistencyComment(solution);
+                improveOutputPersistencySolution(solution);
             }
         }
         String title = "Verification results";
