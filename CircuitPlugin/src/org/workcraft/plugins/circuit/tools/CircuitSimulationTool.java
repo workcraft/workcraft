@@ -15,6 +15,7 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
+import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
@@ -278,22 +279,14 @@ public class CircuitSimulationTool extends StgSimulationTool {
             @Override
             public Color getColorisation() {
                 if (isExcited) {
-                    if (isInTrace) {
-                        return CommonSimulationSettings.getEnabledBackgroundColor();
-                    } else {
-                        return CommonSimulationSettings.getEnabledForegroundColor();
-                    }
+                    return CommonSimulationSettings.getEnabledForegroundColor();
                 }
                 return null;
             }
             @Override
             public Color getBackground() {
-                if (isExcited) {
-                    if (isInTrace) {
-                        return CommonSimulationSettings.getEnabledForegroundColor();
-                    } else {
-                        return CommonSimulationSettings.getEnabledBackgroundColor();
-                    }
+                if (isExcited && isInTrace) {
+                    return CommonSimulationSettings.getEnabledForegroundColor();
                 }
                 return null;
             }
@@ -321,29 +314,21 @@ public class CircuitSimulationTool extends StgSimulationTool {
             @Override
             public Color getColorisation() {
                 if (isExcited) {
-                    if (isInTrace) {
-                        return CommonSimulationSettings.getEnabledBackgroundColor();
-                    } else {
-                        return CommonSimulationSettings.getEnabledForegroundColor();
-                    }
+                    return CommonSimulationSettings.getEnabledForegroundColor();
                 }
                 return null;
             }
             @Override
             public Color getBackground() {
-                if (isExcited) {
-                    if (isInTrace) {
-                        return CommonSimulationSettings.getEnabledForegroundColor();
-                    } else {
-                        return CommonSimulationSettings.getEnabledBackgroundColor();
-                    }
-                } else {
-                    if (isOne && !isZero) {
-                        return CircuitSettings.getActiveWireColor();
-                    }
-                    if (!isOne && isZero) {
-                        return CircuitSettings.getInactiveWireColor();
-                    }
+                Color  colorisation = null;
+                if (isExcited && isInTrace) {
+                    colorisation = CommonSimulationSettings.getEnabledForegroundColor();
+                }
+                if (isOne && !isZero) {
+                    return Coloriser.colorise(CircuitSettings.getActiveWireColor(), colorisation);
+                }
+                if (!isOne && isZero) {
+                    return Coloriser.colorise(CircuitSettings.getInactiveWireColor(), colorisation);
                 }
                 return null;
             }
