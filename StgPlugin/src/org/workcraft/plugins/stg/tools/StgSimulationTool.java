@@ -472,18 +472,12 @@ public class StgSimulationTool extends PetriSimulationTool {
     public void generateTraceGraph(final GraphEditor editor) {
         Framework framework = Framework.getInstance();
         Stg stg = getUnderlyingStg();
-        Trace trace = mainTrace;
+        Trace trace = getCombinedTrace();
         if (trace.isEmpty()) {
-            int answer = JOptionPane.showConfirmDialog(framework.getMainWindow(),
-                    "<html>The main <b>Trace</b> is empty.<br>Proceed with the <b>Branch</b> instead?</html>",
-                    "Generation of Timing Diagram", JOptionPane.YES_NO_CANCEL_OPTION);
-            if (answer == JOptionPane.YES_OPTION) {
-                trace = branchTrace;
-            } else if (answer == JOptionPane.CANCEL_OPTION) {
-                trace = null;
-            }
-        }
-        if (trace != null) {
+            JOptionPane.showMessageDialog(framework.getMainWindow(),
+                    "Cannot generate a timing diagram for an empty trace.",
+                    "Generation of Timing Diagram", JOptionPane.WARNING_MESSAGE);
+        } else {
             LinkedList<Pair<String, Color>> orderedTraceSignals = getOrderedTraceSignals(stg, trace);
             StgToDtdConverter converter = new StgToDtdConverter(stg, trace, orderedTraceSignals);
             VisualDtd dtd = converter.getVisualDtd();
