@@ -91,22 +91,18 @@ public class PolicySimulationTool extends PetriSimulationTool {
             public Decoration getDecoration(Node node) {
                 Node transition = getTraceCurrentNode();
                 final boolean isExcited = getExcitedTransitionOfNode(node) != null;
-                final boolean isHighlighted = generator.isRelated(node, transition);
+                final boolean isSuggested = isExcited && generator.isRelated(node, transition);
 
                 if (node instanceof VisualBundledTransition) {
                     return new Decoration() {
                         @Override
                         public Color getColorisation() {
-                            if (isHighlighted) return CommonSimulationSettings.getEnabledBackgroundColor();
-                            if (isExcited) return CommonSimulationSettings.getEnabledForegroundColor();
-                            return null;
+                            return isExcited ? CommonSimulationSettings.getExcitedComponentColor() : null;
                         }
 
                         @Override
                         public Color getBackground() {
-                            if (isHighlighted) return CommonSimulationSettings.getEnabledForegroundColor();
-                            if (isExcited) return CommonSimulationSettings.getEnabledBackgroundColor();
-                            return null;
+                            return isSuggested ? CommonSimulationSettings.getSuggestedComponentColor() : null;
                         }
                     };
                 }

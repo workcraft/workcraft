@@ -127,9 +127,15 @@ public class FsmToPetriConverter {
     public boolean isRelated(Node highLevelNode, Node node) {
         boolean result = false;
         if (highLevelNode instanceof VisualEvent) {
-            result = node == getRelatedTransition((VisualEvent) highLevelNode);
+            VisualTransition relatedTransition = getRelatedTransition((VisualEvent) highLevelNode);
+            if (relatedTransition != null) {
+                result = (node == relatedTransition) || (node == relatedTransition.getReferencedComponent());
+            }
         } else if (highLevelNode instanceof VisualState) {
-            result = node == getRelatedPlace((VisualState) highLevelNode);
+            VisualPlace relatedPlace = getRelatedPlace((VisualState) highLevelNode);
+            if (relatedPlace != null) {
+                result = (node == relatedPlace) || (node == relatedPlace.getReferencedComponent());
+            }
         }
         return result;
     }

@@ -392,7 +392,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
         if (startButton.isSelected()) {
             setColors(net.getNodes(), greyoutColor);
             for (TransitionNode e : enabled) {
-                e.setForegroundColor(CommonSimulationSettings.getEnabledForegroundColor());
+                e.setForegroundColor(CommonSimulationSettings.getExcitedComponentColor());
             }
         }
     }

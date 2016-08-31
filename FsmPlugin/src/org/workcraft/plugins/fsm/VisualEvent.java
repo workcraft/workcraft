@@ -18,6 +18,7 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.Geometry;
 
@@ -114,6 +115,12 @@ public class VisualEvent extends VisualConnection {
             AffineTransform oldTransform = g.getTransform();
             AffineTransform transform = getLabelTransform();
             g.transform(transform);
+            Color background = d.getBackground();
+            if (background != null) {
+                g.setColor(Coloriser.colorise(CommonEditorSettings.getBackgroundColor(), background));
+                Rectangle2D box = BoundingBoxHelper.expand(labelRenderedText.getBoundingBox(), 0.2, 0.0);
+                g.fill(box);
+            }
             g.setColor(Coloriser.colorise(getLabelColor(), d.getColorisation()));
             labelRenderedText.draw(g);
             g.setTransform(oldTransform);

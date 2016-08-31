@@ -274,21 +274,15 @@ public class CircuitSimulationTool extends StgSimulationTool {
         Node traceCurrentNode = getTraceCurrentNode();
         SignalStg signalStg = signalStgAndInversion.getFirst();
         final boolean isExcited = !getContactExcitedTransitions(contact).isEmpty();
-        final boolean isInTrace = signalStg.contains(traceCurrentNode);
+        final boolean isSuggested = isExcited && signalStg.contains(traceCurrentNode);
         return new Decoration() {
             @Override
             public Color getColorisation() {
-                if (isExcited) {
-                    return CommonSimulationSettings.getEnabledForegroundColor();
-                }
-                return null;
+                return isExcited ? CommonSimulationSettings.getExcitedComponentColor() : null;
             }
             @Override
             public Color getBackground() {
-                if (isExcited && isInTrace) {
-                    return CommonSimulationSettings.getEnabledForegroundColor();
-                }
-                return null;
+                return isSuggested ? CommonSimulationSettings.getSuggestedComponentColor() : null;
             }
         };
     }
@@ -309,28 +303,22 @@ public class CircuitSimulationTool extends StgSimulationTool {
         final boolean isOne = (signalStg.one.getReferencedPlace().getTokens() == 1) != isInverting;
         final boolean isZero = (signalStg.zero.getReferencedPlace().getTokens() == 1) != isInverting;
         final boolean isExcited = !getContactExcitedTransitions(contact).isEmpty() && !isZeroDelay;
-        final boolean isInTrace = signalStg.contains(traceCurrentNode) && !isZeroDelay;
+        final boolean isSuggested = isExcited && signalStg.contains(traceCurrentNode) && !isZeroDelay;
         return new StateDecoration() {
             @Override
             public Color getColorisation() {
-                if (isExcited) {
-                    return CommonSimulationSettings.getEnabledForegroundColor();
-                }
-                return null;
+                return isExcited ? CommonSimulationSettings.getExcitedComponentColor() : null;
             }
             @Override
             public Color getBackground() {
-                Color  colorisation = null;
-                if (isExcited && isInTrace) {
-                    colorisation = CommonSimulationSettings.getEnabledForegroundColor();
-                }
+                Color  colorisation = isSuggested ? CommonSimulationSettings.getExcitedComponentColor() : null;
                 if (isOne && !isZero) {
                     return Coloriser.colorise(CircuitSettings.getActiveWireColor(), colorisation);
                 }
                 if (!isOne && isZero) {
                     return Coloriser.colorise(CircuitSettings.getInactiveWireColor(), colorisation);
                 }
-                return null;
+                return colorisation;
             }
             @Override
             public boolean showForcedInit() {

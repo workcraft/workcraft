@@ -853,73 +853,52 @@ public abstract class SimulationTool extends AbstractTool implements ClipboardOw
     }
 
     public Decoration getContainerDecoration(Container container) {
-        final boolean ret = isContainerExcited(container);
+        final boolean isExcited = isContainerExcited(container);
         return new ContainerDecoration() {
-
             @Override
             public Color getColorisation() {
                 return null;
             }
-
             @Override
             public Color getBackground() {
                 return null;
             }
-
             @Override
             public boolean isContainerExcited() {
-                return ret;
+                return isExcited;
             }
         };
     }
 
     public Decoration getConnectionDecoration(VisualConnection connection) {
-        if (isConnectionExcited(connection)) {
-            return new Decoration() {
-
-                @Override
-                public Color getColorisation() {
-                    return CommonSimulationSettings.getEnabledForegroundColor();
-                }
-
-                @Override
-                public Color getBackground() {
-                    return CommonSimulationSettings.getEnabledBackgroundColor();
-                }
-            };
-        }
-        return null;
+        final boolean isExcited = isConnectionExcited(connection);
+        return new Decoration() {
+            @Override
+            public Color getColorisation() {
+                return isExcited ? CommonSimulationSettings.getExcitedComponentColor() : null;
+            }
+            @Override
+            public Color getBackground() {
+                return null;
+            }
+        };
     }
 
     public Decoration getComponentDecoration(VisualComponent component) {
         Node node = component.getReferencedComponent();
         Node currentTraceNode = getTraceCurrentNode();
-        if (node == currentTraceNode) {
-            return new Decoration() {
-                @Override
-                public Color getColorisation() {
-                    return CommonSimulationSettings.getEnabledBackgroundColor();
-                }
-                @Override
-                public Color getBackground() {
-                    return CommonSimulationSettings.getEnabledForegroundColor();
-                }
-            };
-        }
-        if (isEnabledNode(node)) {
-            return new Decoration() {
-                @Override
-                public Color getColorisation() {
-                    return CommonSimulationSettings.getEnabledForegroundColor();
-                }
-                @Override
-                public Color getBackground() {
-                    return CommonSimulationSettings.getEnabledBackgroundColor();
-                }
-            };
-        }
-
-        return null;
+        final boolean isExcited = isEnabledNode(node);
+        final boolean isSuggested = isExcited && (node == currentTraceNode);
+        return new Decoration() {
+            @Override
+            public Color getColorisation() {
+                return isExcited ? CommonSimulationSettings.getExcitedComponentColor() : null;
+            }
+            @Override
+            public Color getBackground() {
+                return isSuggested ? CommonSimulationSettings.getSuggestedComponentColor() : null;
+            }
+        };
     }
 
     public boolean isContainerExcited(Container container) {
