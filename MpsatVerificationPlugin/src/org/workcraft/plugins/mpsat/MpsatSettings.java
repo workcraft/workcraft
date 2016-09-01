@@ -322,7 +322,7 @@ public class MpsatSettings {
             System.out.println("\nReach expression for the interface conformation property:");
             System.out.println(reachConformation);
         }
-        return new MpsatSettings("Interface conformation", MpsatMode.STG_REACHABILITY, 0,
+        return new MpsatSettings("Interface conformation", MpsatMode.STG_REACHABILITY_CONFORMATION, 0,
                 MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount(),
                 reachConformation, true);
     }

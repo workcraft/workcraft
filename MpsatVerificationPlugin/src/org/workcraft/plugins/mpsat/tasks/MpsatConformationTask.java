@@ -21,6 +21,7 @@ import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -61,7 +62,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
 
             // Generating .g for the model
-            File devStgFile = new File(directory, "dev.g");
+            File devStgFile = new File(directory, StgUtils.DEVICE_FILE_NAME + StgUtils.ASTG_FILE_EXT);
             ExportTask devExportTask = new ExportTask(devStgExporter, devStg, devStgFile.getAbsolutePath());
             Result<? extends Object> devExportResult = framework.getTaskManager().execute(
                     devExportTask, "Exporting circuit .g", subtaskMonitor);
@@ -83,7 +84,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             } else {
                 Stg envStg = (Stg) framework.load(envFile).getMathModel();
                 Exporter envStgExporter = Export.chooseBestExporter(framework.getPluginManager(), envStg, Format.STG);
-                envStgFile = new File(directory, "env.g");
+                envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.ASTG_FILE_EXT);
                 ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile.getAbsolutePath());
                 Result<? extends Object> envExportResult = framework.getTaskManager().execute(
                         envExportTask, "Exporting environment .g", subtaskMonitor);
@@ -99,8 +100,8 @@ public class MpsatConformationTask extends MpsatChainTask {
             monitor.progressUpdate(0.40);
 
             // Generating .g for the whole system (model and environment)
-            File placesFile = new File(directory, "places.list");
-            File stgFile = new File(directory, "system.g");
+            File placesFile = new File(directory, StgUtils.PLACES_FILE_NAME + StgUtils.LIST_FILE_EXT);
+            File stgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + StgUtils.ASTG_FILE_EXT);
             stgFile.deleteOnExit();
             PcompTask pcompTask = new PcompTask(new File[]{devStgFile, envStgFile}, stgFile, placesFile,
                     ConversionMode.OUTPUT, true, false, directory);
@@ -121,7 +122,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             monitor.progressUpdate(0.50);
 
             // Generate unfolding
-            File unfoldingFile = new File(directory, "system" + PunfUtilitySettings.getUnfoldingExtension(true));
+            File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + PunfUtilitySettings.getUnfoldingExtension(true));
             PunfTask punfTask = new PunfTask(stgFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
             Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
                     punfTask, "Unfolding .g", subtaskMonitor);
@@ -141,7 +142,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             Set<String> devPlaceNames = parsePlaceNames(palcesList, 0);
             MpsatSettings conformationSettings = MpsatSettings.getConformationSettings(devOutputNames, devPlaceNames);
             MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
-                    unfoldingFile, directory);
+                    unfoldingFile, directory, true, stgFile, placesFile);
             Result<? extends ExternalProcessResult>  mpsatConformationResult = framework.getTaskManager().execute(
                     mpsatConformationTask, "Running conformation check [MPSat]", subtaskMonitor);
 

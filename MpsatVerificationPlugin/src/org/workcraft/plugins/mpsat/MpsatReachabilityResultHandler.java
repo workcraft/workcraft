@@ -1,6 +1,10 @@
 package org.workcraft.plugins.mpsat;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.List;
 
@@ -20,6 +24,7 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.plugins.stg.interop.DotGImporter;
 import org.workcraft.tasks.Result;
 import org.workcraft.util.GUI;
@@ -59,6 +64,29 @@ final class MpsatReachabilityResultHandler implements Runnable {
         }
     }
 
+    private HashSet<StgPlace> getDevPlaces(StgModel stg) {
+        HashSet<StgPlace> devPlaces = new HashSet<>();
+        final byte[] content = result.getReturnValue().getFileData(MpsatTask.FILE_MPSAT_LIST_PLACES);
+        if (content != null) {
+            InputStream is = new ByteArrayInputStream(content);
+            BufferedReader br = new BufferedReader(new InputStreamReader(is));
+            String line = null;
+            try {
+                // First line is for device places, second - for environment places.
+                line = br.readLine();
+                for (String ref: line.trim().split("\\s")) {
+                    Node node = stg.getNodeByReference(ref);
+                    if (node instanceof StgPlace) {
+                        devPlaces.add((StgPlace) node);
+                    }
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return devPlaces;
+    }
+
     private void fireTrace(StgModel stg, Trace trace) {
         for (String reference: trace) {
             Node node = stg.getNodeByReference(reference);
@@ -81,10 +109,20 @@ final class MpsatReachabilityResultHandler implements Runnable {
         return result;
     }
 
+    private HashSet<String> getEnabledLocalSignals(StgModel stg) {
+        HashSet<String> result = new HashSet<>();
+        for (SignalTransition transition: getEnabledSignalTransitions(stg)) {
+            if ((transition.getSignalType() == Type.OUTPUT) || (transition.getSignalType() == Type.INTERNAL)) {
+                result.add(transition.getSignalName());
+            }
+        }
+        return result;
+    }
+
     private HashSet<String> getEnabledOutputSignals(StgModel stg) {
         HashSet<String> result = new HashSet<>();
         for (SignalTransition transition: getEnabledSignalTransitions(stg)) {
-            if (transition.getSignalType() != Type.INPUT) {
+            if (transition.getSignalType() == Type.OUTPUT) {
                 result.add(transition.getSignalName());
             }
         }
@@ -96,21 +134,50 @@ final class MpsatReachabilityResultHandler implements Runnable {
         if ((solution != null) && (stg != null)) {
             Trace mainTrace = solution.getMainTrace();
             fireTrace(stg, mainTrace);
-            HashSet<String> enabledSignals = getEnabledOutputSignals(stg);
+            HashSet<String> enabledLocalSignals = getEnabledLocalSignals(stg);
             for (SignalTransition transition: getEnabledSignalTransitions(stg)) {
                 stg.fire(transition);
-                HashSet<String> nonpersistentSignals = new HashSet<>(enabledSignals);
-                nonpersistentSignals.remove(transition.getSignalName());
-                nonpersistentSignals.removeAll(getEnabledOutputSignals(stg));
-                if (!nonpersistentSignals.isEmpty()) {
-                    String comment = "<html>Non-persistent signal(s) <b>" +
-                            ReferenceHelper.getReferencesAsString(nonpersistentSignals) +
-                            "</b></html>";
-                    solution.setComment(comment);
+                HashSet<String> nonpersistentLocalSignals = new HashSet<>(enabledLocalSignals);
+                nonpersistentLocalSignals.remove(transition.getSignalName());
+                nonpersistentLocalSignals.removeAll(getEnabledLocalSignals(stg));
+                if (!nonpersistentLocalSignals.isEmpty()) {
+                    String signalList = ReferenceHelper.getReferencesAsString(nonpersistentLocalSignals);
+                    if (nonpersistentLocalSignals.size() > 1) {
+                        solution.setComment("Non-persistent signals " + signalList);
+                    } else {
+                        solution.setComment("Non-persistent signal " + signalList);
+                    }
                     mainTrace.add(stg.getNodeReference(transition));
                     break;
                 }
                 stg.unFire(transition);
+            }
+        }
+    }
+
+    private void improveConformationSolution(Solution solution) {
+        StgModel stg = getInputStg();
+        HashSet<StgPlace> devPlaces = getDevPlaces(stg);
+        if ((solution != null) && (stg != null)) {
+            Trace mainTrace = solution.getMainTrace();
+            fireTrace(stg, mainTrace);
+            for (SignalTransition transition: stg.getSignalTransitions(Type.OUTPUT)) {
+                boolean isDevEnabled = true;
+                for (Node predNode: stg.getPreset(transition)) {
+                    if (predNode instanceof StgPlace) {
+                        StgPlace predPlace = (StgPlace) predNode;
+                        if ((predPlace.getTokens() == 0) && (devPlaces.contains(predPlace))) {
+                            isDevEnabled = false;
+                            break;
+                        }
+                    }
+                }
+                if (isDevEnabled) {
+                    String signal = transition.getSignalName();
+                    solution.setComment("Unexpected change of output " + signal);
+                    mainTrace.add(stg.getNodeReference(transition));
+                    break;
+                }
             }
         }
     }
@@ -120,9 +187,14 @@ final class MpsatReachabilityResultHandler implements Runnable {
         MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue());
         List<Solution> solutions = mdp.getSolutions();
         boolean isOutputPersistency = settings.getMode() == MpsatMode.STG_REACHABILITY_OUTPUT_PERSISTENCY;
+        boolean isConformation = settings.getMode() == MpsatMode.STG_REACHABILITY_CONFORMATION;
         if (isOutputPersistency) {
             for (Solution solution: solutions) {
                 improveOutputPersistencySolution(solution);
+            }
+        } else if (isConformation) {
+            for (Solution solution: solutions) {
+                improveConformationSolution(solution);
             }
         }
         String title = "Verification results";

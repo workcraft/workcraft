@@ -151,9 +151,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 
                     // Generating .g for the whole system (circuit and environment) without internal signals
                     sysModStgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + fileSuffix + StgUtils.ASTG_FILE_EXT);
-                    sysModStgFile.deleteOnExit();
                     placesModFile = new File(directory, StgUtils.PLACES_FILE_NAME + fileSuffix + StgUtils.LIST_FILE_EXT);
-                    placesModFile.deleteOnExit();
                     pcompModResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envModStgFile, sysModStgFile, placesModFile, directory, monitor);
                     if (pcompModResult.getOutcome() != Outcome.FINISHED) {
                         if (pcompModResult.getOutcome() == Outcome.CANCELLED) {
@@ -266,7 +264,7 @@ public class CheckCircuitTask extends MpsatChainTask {
                 Set<String> devPlaceNames = parsePlaceNames(placesList, 0);
                 MpsatSettings conformationSettings = MpsatSettings.getConformationSettings(devOutputNames, devPlaceNames);
                 MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
-                        unfoldingModFile, directory);
+                        unfoldingModFile, directory, true, sysModStgFile, placesModFile);
                 SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
                 Result<? extends ExternalProcessResult>  mpsatConformationResult = framework.getTaskManager().execute(
                         mpsatConformationTask, "Running conformation check [MPSat]", mpsatMonitor);
