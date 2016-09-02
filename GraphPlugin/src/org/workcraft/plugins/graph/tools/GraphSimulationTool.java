@@ -11,7 +11,6 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
@@ -107,55 +106,32 @@ public class GraphSimulationTool extends PetriSimulationTool {
 
     private Decoration getVertexDecoration(VisualVertex vertex) {
         Node transition = getTraceCurrentNode();
-        final boolean isHighlighted = generator.isRelated(vertex, transition);
         final boolean isExcited = isVertexExcited(vertex);
+        final boolean isSuggested = isExcited && generator.isRelated(vertex, transition);
         return new Decoration() {
             @Override
             public Color getColorisation() {
-                if (isHighlighted) return CommonSimulationSettings.getEnabledBackgroundColor();
-                if (isExcited) return CommonSimulationSettings.getEnabledForegroundColor();
-                return null;
+                return isExcited ? CommonSimulationSettings.getExcitedComponentColor() : null;
             }
 
             @Override
             public Color getBackground() {
-                if (isHighlighted) return CommonSimulationSettings.getEnabledForegroundColor();
-                if (isExcited) return CommonSimulationSettings.getEnabledBackgroundColor();
-                return null;
+                return isSuggested ? CommonSimulationSettings.getSuggestedComponentColor() : null;
             }
         };
     }
 
-    protected Decoration getConnectionDecorator(VisualConnection node) {
-        if (!isConnectionExcited((VisualConnection) node)) return null;
+    protected Decoration getConnectionDecorator(VisualConnection connection) {
+        final boolean isExcited = isConnectionExcited(connection);
         return new Decoration() {
             @Override
             public Color getColorisation() {
-                return CommonSimulationSettings.getEnabledForegroundColor();
+                return isExcited ? CommonSimulationSettings.getExcitedComponentColor() : null;
             }
 
             @Override
             public Color getBackground() {
-                return CommonSimulationSettings.getEnabledBackgroundColor();
-            }
-        };
-    }
-
-    @Override
-    public Decoration getContainerDecoration(Container container) {
-        final boolean isExcited = isContainerExcited(container);
-        return new ContainerDecoration() {
-            @Override
-            public Color getColorisation() {
                 return null;
-            }
-            @Override
-            public Color getBackground() {
-                return null;
-            }
-            @Override
-            public boolean isContainerExcited() {
-                return isExcited;
             }
         };
     }

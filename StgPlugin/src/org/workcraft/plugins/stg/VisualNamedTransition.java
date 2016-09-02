@@ -36,6 +36,7 @@ import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.petri.VisualTransition;
+import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.stg.tools.CoreDecoration;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
@@ -93,7 +94,7 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
         } else {
             Color background = d.getBackground();
             if (background != null) {
-                g.setColor(background);
+                g.setColor(Coloriser.colorise(CommonEditorSettings.getBackgroundColor(), background));
                 Rectangle2D expandedShape = BoundingBoxHelper.expand(getBoundingBoxInLocalSpace(), 0.5, 0.5);
                 g.fill(expandedShape);
             }

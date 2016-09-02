@@ -12,6 +12,7 @@ import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualTransformableNode;
+import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
@@ -159,218 +160,175 @@ public class XmasSimulationTool extends StgSimulationTool {
         return new Decorator() {
             @Override
             public Decoration getDecoration(Node node) {
-                final Node traceCurrentNode = getTraceCurrentNode();
                 if (node instanceof VisualXmasContact) {
-                    final VisualXmasContact contact = (VisualXmasContact) node;
-                    final ContactStg contactStg = generator.getContactStg(contact);
-                    final boolean isExcited = getExcitedTransition(contactStg.rdy.getAllTransitions()) != null;
-                    final boolean isInTrace = generator.isRelated(node, traceCurrentNode);
-                    final boolean isReady = contactStg.rdy.zero.getReferencedPlace().getTokens() == 0;
-
-                    return new Decoration() {
-                        @Override
-                        public Color getColorisation() {
-                            if (isExcited) {
-                                if (isInTrace) {
-                                    return CommonSimulationSettings.getEnabledBackgroundColor();
-                                } else {
-                                    return CommonSimulationSettings.getEnabledForegroundColor();
-                                }
-                            }
-                            return null;
-                        }
-
-                        @Override
-                        public Color getBackground() {
-                            if (isExcited) {
-                                if (isInTrace) {
-                                    return CommonSimulationSettings.getEnabledForegroundColor();
-                                } else {
-                                    return CommonSimulationSettings.getEnabledBackgroundColor();
-                                }
-                            } else {
-                                if (isReady) {
-                                    if (contact.isInput()) {
-                                        return COLOR_CONTACT_TRDY;
-                                    } else {
-                                        return COLOR_CONTACT_IRDY;
-                                    }
-                                }
-                                return COLOR_CONTACT_NOT_READY;
-                            }
-                        }
-                    };
-                } else if (node instanceof VisualXmasConnection) {
-                    final VisualXmasConnection connection = (VisualXmasConnection) node;
-                    final VisualXmasContact firstContact = (VisualXmasContact) connection.getFirst();
-                    final VisualXmasContact secondContact = (VisualXmasContact) connection.getSecond();
-                    final ContactStg firstStg = generator.getContactStg(firstContact);
-                    final ContactStg secondStg = generator.getContactStg(secondContact);
-                    final boolean firstReady = firstStg.rdy.zero.getReferencedPlace().getTokens() == 0;
-                    final boolean secondReady = secondStg.rdy.zero.getReferencedPlace().getTokens() == 0;
-
-                    return new Decoration() {
-                        @Override
-                        public Color getColorisation() {
-                            if (firstReady && secondReady) {
-                                return COLOR_BOTH_READY;
-                            }
-                            if (firstReady) {
-                                return COLOR_IRDY;
-                            }
-                            if (secondReady) {
-                                return COLOR_TRDY;
-                            }
-                            return COLOR_NONE_READY;
-                        }
-
-                        @Override
-                        public Color getBackground() {
-                            return null;
-                        }
-                    };
-                } else if (node instanceof VisualSourceComponent) {
-                    final SourceStg sourceStg = generator.getSourceStg((VisualSourceComponent) node);
-                    final boolean isExcited = getExcitedTransition(sourceStg.oracle.getAllTransitions()) != null;
-                    final boolean isInTrace = generator.isRelated(node, traceCurrentNode);
-                    final boolean isActive = sourceStg.oracle.one.getReferencedPlace().getTokens() != 0;
-
-                    return new StateDecoration() {
-                        @Override
-                        public boolean getState() {
-                            return isActive;
-                        }
-
-                        @Override
-                        public Color getColorisation() {
-                            if (isExcited) {
-                                if (isInTrace) {
-                                    return CommonSimulationSettings.getEnabledBackgroundColor();
-                                } else {
-                                    return CommonSimulationSettings.getEnabledForegroundColor();
-                                }
-                            }
-                            return null;
-                        }
-
-                        @Override
-                        public Color getBackground() {
-                            if (isExcited) {
-                                if (isInTrace) {
-                                    return CommonSimulationSettings.getEnabledForegroundColor();
-                                } else {
-                                    return CommonSimulationSettings.getEnabledBackgroundColor();
-                                }
-                            }
-                            return null;
-                        }
-                    };
-                } else if (node instanceof VisualSinkComponent) {
-                    final SinkStg sinkStg = generator.getSinkStg((VisualSinkComponent) node);
-                    final boolean isExcited = getExcitedTransition(sinkStg.oracle.getAllTransitions()) != null;
-                    final boolean isInTrace = generator.isRelated(node, traceCurrentNode);
-                    final boolean isActive = sinkStg.oracle.one.getReferencedPlace().getTokens() != 0;
-
-                    return new StateDecoration() {
-                        @Override
-                        public boolean getState() {
-                            return isActive;
-                        }
-
-                        @Override
-                        public Color getColorisation() {
-                            if (isExcited) {
-                                if (isInTrace) {
-                                    return CommonSimulationSettings.getEnabledBackgroundColor();
-                                } else {
-                                    return CommonSimulationSettings.getEnabledForegroundColor();
-                                }
-                            }
-                            return null;
-                        }
-
-                        @Override
-                        public Color getBackground() {
-                            if (isExcited) {
-                                if (isInTrace) {
-                                    return CommonSimulationSettings.getEnabledForegroundColor();
-                                } else {
-                                    return CommonSimulationSettings.getEnabledBackgroundColor();
-                                }
-                            }
-                            return null;
-                        }
-                    };
-                } else if (node instanceof VisualSwitchComponent) {
-                    final SwitchStg switchStg = generator.getSwitchStg((VisualSwitchComponent) node);
-                    final boolean isExcited = getExcitedTransition(switchStg.oracle.getAllTransitions()) != null;
-                    final boolean isInTrace = generator.isRelated(node, traceCurrentNode);
-                    final boolean isActive = switchStg.oracle.one.getReferencedPlace().getTokens() != 0;
-
-                    return new StateDecoration() {
-                        @Override
-                        public boolean getState() {
-                            return isActive;
-                        }
-
-                        @Override
-                        public Color getColorisation() {
-                            if (isExcited) {
-                                if (isInTrace) {
-                                    return CommonSimulationSettings.getEnabledBackgroundColor();
-                                } else {
-                                    return CommonSimulationSettings.getEnabledForegroundColor();
-                                }
-                            }
-                            return null;
-                        }
-
-                        @Override
-                        public Color getBackground() {
-                            if (isExcited) {
-                                if (isInTrace) {
-                                    return CommonSimulationSettings.getEnabledForegroundColor();
-                                } else {
-                                    return CommonSimulationSettings.getEnabledBackgroundColor();
-                                }
-                            }
-                            return null;
-                        }
-                    };
-                } else if (node instanceof VisualQueueComponent) {
-                    final VisualQueueComponent queue = (VisualQueueComponent) node;
-                    final QueueStg queueStg = generator.getQueueStg(queue);
-
-                    return new QueueDecoration() {
-                        @Override
-                        public SlotState getSlotState(int i) {
-                            SlotState result = null;
-                            int capacity = queue.getReferencedQueueComponent().getCapacity();
-                            if ((i >= 0) && (i < capacity)) {
-                                SlotStg slot = queueStg.slotList.get(i);
-                                boolean isFull = slot.mem.one.getReferencedPlace().getTokens() != 0;
-                                boolean isHead = slot.hd.rdy.one.getReferencedPlace().getTokens() != 0;
-                                boolean isTail = slot.tl.rdy.one.getReferencedPlace().getTokens() != 0;
-                                boolean isMemExcited = getExcitedTransition(slot.mem.getAllTransitions()) != null;
-                                boolean isHeadExcited = getExcitedTransition(slot.hd.rdy.getAllTransitions()) != null;
-                                boolean isTailExcited = getExcitedTransition(slot.tl.rdy.getAllTransitions()) != null;
-                                result = new SlotState(isFull, isHead, isTail, isMemExcited, isHeadExcited, isTailExcited);
-                            }
-                            return result;
-                        }
-
-                        @Override
-                        public Color getColorisation() {
-                            return null;
-                        }
-
-                        @Override
-                        public Color getBackground() {
-                            return null;
-                        }
-                    };
+                    return getContactDecoration((VisualXmasContact) node);
                 }
+                if (node instanceof VisualXmasConnection) {
+                    return getConnectionDecoration((VisualXmasConnection) node);
+                }
+                if (node instanceof VisualSourceComponent) {
+                    return getSourceDecoration((VisualSourceComponent) node);
+                }
+                if (node instanceof VisualSinkComponent) {
+                    return getSinkDecoration((VisualSinkComponent) node);
+                }
+                if (node instanceof VisualSwitchComponent) {
+                    return getSwitchDecoration((VisualSwitchComponent) node);
+                }
+                if (node instanceof VisualQueueComponent) {
+                    return getQueueComponent((VisualQueueComponent) node);
+                }
+                return null;
+            }
+        };
+    }
 
+    private Decoration getContactDecoration(VisualXmasContact contact) {
+        final Node traceCurrentNode = getTraceCurrentNode();
+        final ContactStg contactStg = generator.getContactStg(contact);
+        final boolean isExcited = getExcitedTransition(contactStg.rdy.getAllTransitions()) != null;
+        final boolean isSuggested = isExcited && generator.isRelated(contact, traceCurrentNode);
+        final boolean isReady = contactStg.rdy.zero.getReferencedPlace().getTokens() == 0;
+        final boolean isInput = contact.isInput();
+
+        return new Decoration() {
+            @Override
+            public Color getColorisation() {
+                return isExcited ? CommonSimulationSettings.getExcitedComponentColor() : null;
+            }
+            @Override
+            public Color getBackground() {
+                Color  colorisation = isSuggested ? CommonSimulationSettings.getExcitedComponentColor() : null;
+                Color contactColor = isReady ? (isInput ? COLOR_CONTACT_TRDY : COLOR_CONTACT_IRDY) : COLOR_CONTACT_NOT_READY;
+                return Coloriser.colorise(contactColor, colorisation);
+            }
+        };
+    }
+
+    private Decoration getConnectionDecoration(final VisualXmasConnection connection) {
+        final VisualXmasContact firstContact = (VisualXmasContact) connection.getFirst();
+        final VisualXmasContact secondContact = (VisualXmasContact) connection.getSecond();
+        final ContactStg firstStg = generator.getContactStg(firstContact);
+        final ContactStg secondStg = generator.getContactStg(secondContact);
+        final boolean firstReady = firstStg.rdy.zero.getReferencedPlace().getTokens() == 0;
+        final boolean secondReady = secondStg.rdy.zero.getReferencedPlace().getTokens() == 0;
+
+        return new Decoration() {
+            @Override
+            public Color getColorisation() {
+                if (firstReady && secondReady) {
+                    return COLOR_BOTH_READY;
+                }
+                if (firstReady) {
+                    return COLOR_IRDY;
+                }
+                if (secondReady) {
+                    return COLOR_TRDY;
+                }
+                return COLOR_NONE_READY;
+            }
+            @Override
+            public Color getBackground() {
+                return null;
+            }
+        };
+    }
+
+    private Decoration getSourceDecoration(VisualSourceComponent sourceComponent) {
+        final Node traceCurrentNode = getTraceCurrentNode();
+        final SourceStg sourceStg = generator.getSourceStg(sourceComponent);
+        final boolean isExcited = getExcitedTransition(sourceStg.oracle.getAllTransitions()) != null;
+        final boolean isSuggested = isExcited && generator.isRelated(sourceComponent, traceCurrentNode);
+        final boolean isActive = sourceStg.oracle.one.getReferencedPlace().getTokens() != 0;
+
+        return new StateDecoration() {
+            @Override
+            public boolean getState() {
+                return isActive;
+            }
+            @Override
+            public Color getColorisation() {
+                return isExcited ? CommonSimulationSettings.getExcitedComponentColor() : null;
+            }
+            @Override
+            public Color getBackground() {
+                return isSuggested ? CommonSimulationSettings.getSuggestedComponentColor() : null;
+            }
+        };
+    }
+
+    private Decoration getSinkDecoration(VisualSinkComponent sinkComponent) {
+        final Node traceCurrentNode = getTraceCurrentNode();
+        final SinkStg sinkStg = generator.getSinkStg(sinkComponent);
+        final boolean isExcited = getExcitedTransition(sinkStg.oracle.getAllTransitions()) != null;
+        final boolean isSuggested = isExcited && generator.isRelated(sinkComponent, traceCurrentNode);
+        final boolean isActive = sinkStg.oracle.one.getReferencedPlace().getTokens() != 0;
+
+        return new StateDecoration() {
+            @Override
+            public boolean getState() {
+                return isActive;
+            }
+            @Override
+            public Color getColorisation() {
+                return isExcited ? CommonSimulationSettings.getExcitedComponentColor() : null;
+            }
+            @Override
+            public Color getBackground() {
+                return isSuggested ? CommonSimulationSettings.getSuggestedComponentColor() : null;
+            }
+        };
+    }
+
+    private Decoration getSwitchDecoration(VisualSwitchComponent switchComponent) {
+        final Node traceCurrentNode = getTraceCurrentNode();
+        final SwitchStg switchStg = generator.getSwitchStg(switchComponent);
+        final boolean isExcited = getExcitedTransition(switchStg.oracle.getAllTransitions()) != null;
+        final boolean isSuggested = isExcited && generator.isRelated(switchComponent, traceCurrentNode);
+        final boolean isActive = switchStg.oracle.one.getReferencedPlace().getTokens() != 0;
+
+        return new StateDecoration() {
+            @Override
+            public boolean getState() {
+                return isActive;
+            }
+            @Override
+            public Color getColorisation() {
+                return isExcited ? CommonSimulationSettings.getExcitedComponentColor() : null;
+            }
+            @Override
+            public Color getBackground() {
+                return isSuggested ? CommonSimulationSettings.getSuggestedComponentColor() : null;
+            }
+        };
+    }
+
+    private Decoration getQueueComponent(final VisualQueueComponent queue) {
+        final QueueStg queueStg = generator.getQueueStg(queue);
+
+        return new QueueDecoration() {
+            @Override
+            public SlotState getSlotState(int i) {
+                SlotState result = null;
+                int capacity = queue.getReferencedQueueComponent().getCapacity();
+                if ((i >= 0) && (i < capacity)) {
+                    SlotStg slot = queueStg.slotList.get(i);
+                    boolean isFull = slot.mem.one.getReferencedPlace().getTokens() != 0;
+                    boolean isHead = slot.hd.rdy.one.getReferencedPlace().getTokens() != 0;
+                    boolean isTail = slot.tl.rdy.one.getReferencedPlace().getTokens() != 0;
+                    boolean isMemExcited = getExcitedTransition(slot.mem.getAllTransitions()) != null;
+                    boolean isHeadExcited = getExcitedTransition(slot.hd.rdy.getAllTransitions()) != null;
+                    boolean isTailExcited = getExcitedTransition(slot.tl.rdy.getAllTransitions()) != null;
+                    result = new SlotState(isFull, isHead, isTail, isMemExcited, isHeadExcited, isTailExcited);
+                }
+                return result;
+            }
+            @Override
+            public Color getColorisation() {
+                return null;
+            }
+            @Override
+            public Color getBackground() {
                 return null;
             }
         };

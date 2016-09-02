@@ -17,7 +17,7 @@ public class CircuitConformationChecker extends CircuitChecker {
     }
 
     @Override
-    public boolean checkHazard() {
+    public boolean checkPersistency() {
         return false;
     }
 }

@@ -298,11 +298,15 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
                 showForcedInit = ((StateDecoration) d).showForcedInit();
             }
             Shape shape = showForcedInit ? getInitShape() : getShape();
-            g.setStroke(new BasicStroke((float) CircuitSettings.getWireWidth()));
+            float width = (float) CircuitSettings.getBorderWidth();
+            g.setStroke(new BasicStroke(width));
             g.setColor(fillColor);
             g.fill(shape);
-            g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-            g.draw(shape);
+            boolean outlineContact = (d.getColorisation() != null) || (d.getBackground() == null);
+            if (outlineContact) {
+                g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+                g.draw(shape);
+            }
         } else if (r.getModel().getConnections(this).size() > 1) {
             g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
             g.fill(VisualJoint.shape);

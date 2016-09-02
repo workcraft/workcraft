@@ -11,7 +11,6 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
@@ -127,63 +126,49 @@ public class FstSimulationTool extends StgSimulationTool {
         return new Decorator() {
             @Override
             public Decoration getDecoration(Node node) {
-                Node transition = getTraceCurrentNode();
-                final boolean isExcited = getExcitedTransitionOfNode(node) != null;
-                final boolean isHighlighted = generator.isRelated(node, transition);
-
-                if (node instanceof VisualEvent) {
-                    return new Decoration() {
-                        @Override
-                        public Color getColorisation() {
-                            if (isHighlighted) return CommonSimulationSettings.getEnabledBackgroundColor();
-                            if (isExcited) return CommonSimulationSettings.getEnabledForegroundColor();
-                            return null;
-                        }
-
-                        @Override
-                        public Color getBackground() {
-                            if (isHighlighted) return CommonSimulationSettings.getEnabledForegroundColor();
-                            if (isExcited) return CommonSimulationSettings.getEnabledBackgroundColor();
-                            return null;
-                        }
-                    };
-                }
-
+                if (generator == null) return null;
                 if (node instanceof VisualState) {
-                    final VisualPlace p = generator.getRelatedPlace((VisualState) node);
-                    return new Decoration() {
-                        @Override
-                        public Color getColorisation() {
-                            return null;
-                        }
-                        @Override
-                        public Color getBackground() {
-                            if (p.getReferencedPlace().getTokens() > 0) return CommonSimulationSettings.getEnabledForegroundColor();
-                            return null;
-                        }
-                    };
+                    return getStateDecoration((VisualState) node);
+                } else if (node instanceof VisualEvent) {
+                    return getEventDecoration((VisualEvent) node);
+                } else if (node instanceof VisualPage || node instanceof VisualGroup) {
+                    return getContainerDecoration((Container) node);
                 }
+                return null;
+            }
+        };
+    }
 
-                if (node instanceof VisualPage || node instanceof VisualGroup) {
-                    if (node.getParent() == null) return null; // do not work with the root node
-                    final boolean ret = isContainerExcited((Container) node);
-                    return new ContainerDecoration() {
-                        @Override
-                        public Color getColorisation() {
-                            return null;
-                        }
-                        @Override
-                        public Color getBackground() {
-                            return null;
-                        }
-                        @Override
-                        public boolean isContainerExcited() {
-                            return ret;
-                        }
-                    };
+    public Decoration getEventDecoration(VisualEvent event) {
+        Node transition = getTraceCurrentNode();
+        final boolean isExcited = getExcitedTransitionOfNode(event) != null;
+        final boolean isSuggested = isExcited && generator.isRelated(event, transition);
+        return new Decoration() {
+            @Override
+            public Color getColorisation() {
+                return isExcited ? CommonSimulationSettings.getExcitedComponentColor() : null;
+            }
 
-                }
+            @Override
+            public Color getBackground() {
+                return isSuggested ? CommonSimulationSettings.getSuggestedComponentColor() : null;
+            }
+        };
+    }
 
+    public Decoration getStateDecoration(VisualState state) {
+        VisualPlace p = generator.getRelatedPlace(state);
+        if (p == null) {
+            return null;
+        }
+        final boolean isMarkedPlace = p.getReferencedPlace().getTokens() > 0;
+        return new Decoration() {
+            @Override
+            public Color getColorisation() {
+                return isMarkedPlace ? CommonSimulationSettings.getExcitedComponentColor() : null;
+            }
+            @Override
+            public Color getBackground() {
                 return null;
             }
         };

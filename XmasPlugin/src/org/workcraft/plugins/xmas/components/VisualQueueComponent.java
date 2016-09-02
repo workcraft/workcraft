@@ -216,7 +216,7 @@ public class VisualQueueComponent extends VisualXmasComponent {
                 }
             }
             // Excited elements
-            g.setColor(Coloriser.colorise(getForegroundColor(), CommonSimulationSettings.getEnabledForegroundColor()));
+            g.setColor(Coloriser.colorise(getForegroundColor(), CommonSimulationSettings.getExcitedComponentColor()));
             for (int i = 0; i < capacity; i++) {
                 SlotState slot = ((QueueDecoration) d).getSlotState(i);
                 if (slot.isMemExcited) {

@@ -898,7 +898,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
 
         for (TransitionNode e : enabled) {
             //e.setFillColor(CommonSimulationSettings.getEnabledForegroundColor());
-            e.setForegroundColor(CommonSimulationSettings.getEnabledForegroundColor());
+            e.setForegroundColor(CommonSimulationSettings.getExcitedComponentColor());
         }
 
         StepRef refStep = null;

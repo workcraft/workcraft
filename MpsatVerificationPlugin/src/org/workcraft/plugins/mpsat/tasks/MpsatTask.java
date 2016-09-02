@@ -24,22 +24,28 @@ import org.workcraft.util.ToolUtils;
 public class MpsatTask implements Task<ExternalProcessResult> {
     public static final String FILE_MPSAT_G_INPUT = "input.g";
     public static final String FILE_MPSAT_G_OUTPUT = "output.g";
+    public static final String FILE_MPSAT_LIST_PLACES = "places.list";
 
     private final String[] args;
     private final File unfoldingFile;
     private final File directory;
     private final boolean tryPnml;
     private final File netFile;
+    private final File placesFile;
 
     public MpsatTask(String[] args, File unfoldingFile, File directory) {
-        this(args, unfoldingFile, directory, true, null);
+        this(args, unfoldingFile, directory, true, null, null);
     }
 
     public MpsatTask(String[] args, File unfoldingFile, File directory, boolean tryPnml) {
-        this(args, unfoldingFile, directory, tryPnml, null);
+        this(args, unfoldingFile, directory, tryPnml, null, null);
     }
 
     public MpsatTask(String[] args, File unfoldingFile, File directory, boolean tryPnml, File netFile) {
+        this(args, unfoldingFile, directory, tryPnml, netFile, null);
+    }
+
+    public MpsatTask(String[] args, File unfoldingFile, File directory, boolean tryPnml, File netFile, File placesFile) {
         this.args = args;
         this.unfoldingFile = unfoldingFile;
         if (directory == null) {
@@ -49,6 +55,7 @@ public class MpsatTask implements Task<ExternalProcessResult> {
         this.directory = directory;
         this.tryPnml = tryPnml;
         this.netFile = netFile;
+        this.placesFile = placesFile;
     }
 
     @Override
@@ -94,10 +101,11 @@ public class MpsatTask implements Task<ExternalProcessResult> {
         if (res.getOutcome() == Outcome.FINISHED) {
             Map<String, byte[]> fileContentMap = new HashMap<>();
             try {
-                if (netFile != null) {
-                    if (netFile.exists()) {
-                        fileContentMap.put(FILE_MPSAT_G_INPUT, FileUtils.readAllBytes(netFile));
-                    }
+                if ((netFile != null) && netFile.exists()) {
+                    fileContentMap.put(FILE_MPSAT_G_INPUT, FileUtils.readAllBytes(netFile));
+                }
+                if ((placesFile != null) && placesFile.exists()) {
+                    fileContentMap.put(FILE_MPSAT_LIST_PLACES, FileUtils.readAllBytes(placesFile));
                 }
                 File outFile = new File(directory, FILE_MPSAT_G_OUTPUT);
                 if (outFile.exists()) {

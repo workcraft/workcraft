@@ -25,14 +25,14 @@ import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class CheckDataflowHazardTask extends MpsatChainTask {
+public class CheckDataflowPersistencydTask extends MpsatChainTask {
     private final MpsatSettings settings;
     private final WorkspaceEntry we;
 
-    public CheckDataflowHazardTask(WorkspaceEntry we) {
+    public CheckDataflowPersistencydTask(WorkspaceEntry we) {
         super(we, null);
         this.we = we;
-        this.settings = MpsatSettings.getHazardSettings();
+        this.settings = MpsatSettings.getOutputPersistencySettings();
     }
 
     @Override
@@ -95,12 +95,12 @@ public class CheckDataflowHazardTask extends MpsatChainTask {
             MpsatResultParser mdp = new MpsatResultParser(mpsatResult.getReturnValue());
             if (!mdp.getSolutions().isEmpty()) {
                 return new Result<MpsatChainResult>(Outcome.FINISHED,
-                        new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings, "Dataflow has hazard(s)"));
+                        new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings, "Dataflow is not output persistent"));
             }
             monitor.progressUpdate(1.0);
 
             return new Result<MpsatChainResult>(Outcome.FINISHED,
-                    new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings, "Dataflow is hazard-free"));
+                    new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings, "Dataflow is output persistent"));
 
         } catch (Throwable e) {
             return new Result<MpsatChainResult>(e);

@@ -204,14 +204,17 @@ public class PetriNetGenerator {
     public boolean isRelated(Node highLevelNode, Node node) {
         boolean result = false;
         if (highLevelNode instanceof VisualBundledTransition) {
-            for (VisualTransition t: getRelatedTransitions((VisualBundledTransition) highLevelNode)) {
-                if (t == node) {
+            for (VisualTransition relatedTransition: getRelatedTransitions((VisualBundledTransition) highLevelNode)) {
+                if ((node == relatedTransition) || (node == relatedTransition.getReferencedComponent())) {
                     result = true;
                     break;
                 }
             }
         } else if (highLevelNode instanceof VisualPlace) {
-            result = node == getRelatedPlace((VisualPlace) highLevelNode);
+            VisualPlace relatedPlace = getRelatedPlace((VisualPlace) highLevelNode);
+            if (relatedPlace != null) {
+                result = (node == relatedPlace) || (node == relatedPlace.getReferencedComponent());
+            }
         }
         return result;
     }

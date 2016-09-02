@@ -3,14 +3,14 @@ package org.workcraft.plugins.dfs.tools;
 import org.workcraft.Framework;
 import org.workcraft.VerificationTool;
 import org.workcraft.plugins.dfs.Dfs;
-import org.workcraft.plugins.dfs.tasks.CheckDataflowHazardTask;
+import org.workcraft.plugins.dfs.tasks.CheckDataflowPersistencydTask;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class CheckDataflowHazardTool extends VerificationTool {
+public class CheckDataflowPersisitencyTool extends VerificationTool {
 
     public String getDisplayName() {
-        return "Hazard [MPSat]";
+        return "Output persistency [MPSat]";
     }
 
     @Override
@@ -20,7 +20,7 @@ public class CheckDataflowHazardTool extends VerificationTool {
 
     @Override
     public void run(WorkspaceEntry we) {
-        final CheckDataflowHazardTask task = new CheckDataflowHazardTask(we);
+        final CheckDataflowPersistencydTask task = new CheckDataflowPersistencydTask(we);
         String description = "MPSat tool chain";
         String title = we.getTitle();
         if (!title.isEmpty()) {
