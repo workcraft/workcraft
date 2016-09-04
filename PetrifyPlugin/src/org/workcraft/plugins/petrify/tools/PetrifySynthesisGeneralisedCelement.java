@@ -29,4 +29,9 @@ public class PetrifySynthesisGeneralisedCelement extends PetrifySynthesis {
         return true;
     }
 
+    @Override
+    public boolean sequentialAssign() {
+        return true;
+    }
+
 }

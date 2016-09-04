@@ -252,10 +252,11 @@ public class VerilogImporter implements Importer {
     private FunctionComponent createAssignGate(Circuit circuit, Assign assign, HashMap<String, Wire> wires) {
         final FunctionComponent component = new FunctionComponent();
         circuit.add(component);
+        String componentName = getAssignComponentName(assign.name);
         try {
-            circuit.setName(component, ASSIGN_GATE_PREFIX + assign.name);
+            circuit.setName(component, componentName);
         } catch (ArgumentException e) {
-            LogUtils.logWarningLine("Cannot set name '" + assign.name + "' for component '" + circuit.getName(component) + "'.");
+            LogUtils.logWarningLine("Cannot set name '" + componentName + "' for component '" + circuit.getName(component) + "'.");
         }
 
         AssignGate assignGate = null;
@@ -297,6 +298,14 @@ public class VerilogImporter implements Importer {
             }
         }
         return component;
+    }
+
+    private String getAssignComponentName(String name) {
+        return ASSIGN_GATE_PREFIX + removeLeadingAndTrailingSymbol(name, '_');
+    }
+
+    private String removeLeadingAndTrailingSymbol(String s, char c) {
+        return s.replaceAll("^" + c + "+", "").replaceAll(c + "+$", "");
     }
 
     private boolean isSequentialAssign(Assign assign) {

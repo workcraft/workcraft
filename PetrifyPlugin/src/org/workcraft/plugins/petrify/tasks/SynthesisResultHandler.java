@@ -33,11 +33,14 @@ public class SynthesisResultHandler extends DummyProgressMonitor<SynthesisResult
     private final WorkspaceEntry we;
     private final boolean boxSequentialComponents;
     private final boolean boxCombinationalComponents;
+    private final boolean sequentialAssign;
 
-    public SynthesisResultHandler(WorkspaceEntry we, boolean boxSequentialComponents, boolean boxCombinationalComponents) {
+    public SynthesisResultHandler(WorkspaceEntry we, boolean boxSequentialComponents,
+            boolean boxCombinationalComponents, boolean sequentialAssign) {
         this.we = we;
         this.boxSequentialComponents = boxSequentialComponents;
         this.boxCombinationalComponents = boxCombinationalComponents;
+        this.sequentialAssign = sequentialAssign;
     }
 
     @Override
@@ -73,7 +76,7 @@ public class SynthesisResultHandler extends DummyProgressMonitor<SynthesisResult
             System.out.println(verilog);
             try {
                 ByteArrayInputStream in = new ByteArrayInputStream(verilog.getBytes());
-                VerilogImporter verilogImporter = new VerilogImporter();
+                VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
                 final Circuit circuit = verilogImporter.importCircuit(in);
                 Path<String> path = we.getWorkspacePath();
                 final Path<String> directory = path.getParent();
