@@ -37,7 +37,7 @@ public class CommonSimulationSettings implements Settings {
     private static final String keySuggestedComponentColor = prefix + ".suggestedComponetColor";
 
     private static final Color deafultExcitedComponentColor = new Color(1.0f, 0.5f, 0.0f);
-    private static final Color deafultSuggestedComponentColor = new Color(1.0f, 0.0f, 1.0f);
+    private static final Color deafultSuggestedComponentColor = new Color(0.0f, 1.0f, 0.0f);
 
     private static Color excitedComponentColor = deafultExcitedComponentColor;
     private static Color suggestedComponentColor = deafultSuggestedComponentColor;

@@ -311,7 +311,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
             }
             @Override
             public Color getBackground() {
-                Color  colorisation = isSuggested ? CommonSimulationSettings.getExcitedComponentColor() : null;
+                Color  colorisation = isSuggested ? CommonSimulationSettings.getSuggestedComponentColor() : null;
                 if (isOne && !isZero) {
                     return Coloriser.colorise(CircuitSettings.getActiveWireColor(), colorisation);
                 }
