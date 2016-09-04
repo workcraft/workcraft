@@ -33,11 +33,16 @@ public class PetrifySynthesisStandardCelement extends PetrifySynthesis {
 
     @Override
     public boolean boxSequentialComponents() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean boxCombinationalComponents() {
+        return false;
+    }
+
+    @Override
+    public boolean sequentialAssign() {
         return true;
     }
 
