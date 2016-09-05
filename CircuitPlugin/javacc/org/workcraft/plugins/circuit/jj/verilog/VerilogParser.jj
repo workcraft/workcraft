@@ -78,7 +78,8 @@ TOKEN:
 |   <PETRIFY_UNMAPPED : "// Functions not mapped into library gates:"  <WS> <NL>>
 |   <PETRIFY_ZERO_DELAY : "// This inverter should have a short delay" <WS> <NL>>
 |   <MPSAT_ZERO_DELAY : "// #PRAGMA: zero delay" <WS> <NL>>
-|   <PETRIFY_INIT_STATE : "// signal values at the initial state:" <WS> <NL> <WS> "//">
+|   <PETRIFY50_INIT_STATE : "// signal values at the initial state:" <WS> <NL> <WS> "//">
+|   <PETRIFY51_INIT_STATE : "// Initial state:" <WS> <NL> <WS> "//">
 |   <MPSAT_INIT_STATE : "// initial values of the signals" <WS> <NL> <WS> "//">
 |    <#WS: ([" ", "\t"])*>
 |    <#NL: (["\n", "\r"])+>
@@ -154,7 +155,7 @@ Module parseModule():
             }
         )*
     ]
-    [ (<PETRIFY_INIT_STATE> | <MPSAT_INIT_STATE>)
+    [ (<PETRIFY50_INIT_STATE> | <PETRIFY51_INIT_STATE> | <MPSAT_INIT_STATE>)
         signalStates = parseInitialState()
     ]
     <ENDMODULE>
