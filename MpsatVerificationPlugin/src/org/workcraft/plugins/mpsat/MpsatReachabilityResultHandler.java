@@ -13,6 +13,7 @@ import javax.swing.JOptionPane;
 import org.workcraft.Framework;
 import org.workcraft.Trace;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
@@ -28,6 +29,7 @@ import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.plugins.stg.interop.DotGImporter;
 import org.workcraft.tasks.Result;
 import org.workcraft.util.GUI;
+import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 final class MpsatReachabilityResultHandler implements Runnable {
@@ -87,16 +89,24 @@ final class MpsatReachabilityResultHandler implements Runnable {
         return devPlaces;
     }
 
-    private void fireTrace(StgModel stg, Trace trace) {
-        for (String reference: trace) {
-            Node node = stg.getNodeByReference(reference);
+    private boolean fireTrace(StgModel stg, Trace trace) {
+        for (String ref: trace) {
+            String flatRef = NamespaceHelper.hierarchicalToFlatName(ref);
+            Node node = stg.getNodeByReference(flatRef);
             if (node instanceof Transition) {
                 Transition transition = (Transition) node;
                 if (stg.isEnabled(transition)) {
                     stg.fire(transition);
+                } else {
+                    LogUtils.logErrorLine("Trace transition '" + flatRef + "' is not enabled.");
+                    return false;
                 }
+            } else {
+                LogUtils.logErrorLine("Trace transition '" + flatRef + "' cannot be found.");
+                return false;
             }
         }
+        return true;
     }
 
     private HashSet<SignalTransition> getEnabledSignalTransitions(StgModel stg) {
@@ -133,25 +143,29 @@ final class MpsatReachabilityResultHandler implements Runnable {
         StgModel stg = getInputStg();
         if ((solution != null) && (stg != null)) {
             Trace mainTrace = solution.getMainTrace();
-            fireTrace(stg, mainTrace);
-            HashSet<String> enabledLocalSignals = getEnabledLocalSignals(stg);
-            for (SignalTransition transition: getEnabledSignalTransitions(stg)) {
-                stg.fire(transition);
-                HashSet<String> nonpersistentLocalSignals = new HashSet<>(enabledLocalSignals);
-                nonpersistentLocalSignals.remove(transition.getSignalName());
-                nonpersistentLocalSignals.removeAll(getEnabledLocalSignals(stg));
-                if (!nonpersistentLocalSignals.isEmpty()) {
-                    String signalList = ReferenceHelper.getReferencesAsString(nonpersistentLocalSignals);
-                    if (nonpersistentLocalSignals.size() > 1) {
-                        solution.setComment("Non-persistent signals " + signalList);
-                    } else {
-                        solution.setComment("Non-persistent signal " + signalList);
+            LogUtils.logMessageLine("Extending output persistency violation trace: ");
+            LogUtils.logMessageLine("  original:" + mainTrace);
+            if (fireTrace(stg, mainTrace)) {
+                HashSet<String> enabledLocalSignals = getEnabledLocalSignals(stg);
+                for (SignalTransition transition: getEnabledSignalTransitions(stg)) {
+                    stg.fire(transition);
+                    HashSet<String> nonpersistentLocalSignals = new HashSet<>(enabledLocalSignals);
+                    nonpersistentLocalSignals.remove(transition.getSignalName());
+                    nonpersistentLocalSignals.removeAll(getEnabledLocalSignals(stg));
+                    if (!nonpersistentLocalSignals.isEmpty()) {
+                        String signalList = ReferenceHelper.getReferencesAsString(nonpersistentLocalSignals);
+                        if (nonpersistentLocalSignals.size() > 1) {
+                            solution.setComment("Non-persistent signals " + signalList);
+                        } else {
+                            solution.setComment("Non-persistent signal " + signalList);
+                        }
+                        mainTrace.add(stg.getNodeReference(transition));
+                        break;
                     }
-                    mainTrace.add(stg.getNodeReference(transition));
-                    break;
+                    stg.unFire(transition);
                 }
-                stg.unFire(transition);
             }
+            LogUtils.logMessageLine("  extended:" + mainTrace);
         }
     }
 
@@ -160,25 +174,29 @@ final class MpsatReachabilityResultHandler implements Runnable {
         HashSet<StgPlace> devPlaces = getDevPlaces(stg);
         if ((solution != null) && (stg != null)) {
             Trace mainTrace = solution.getMainTrace();
-            fireTrace(stg, mainTrace);
-            for (SignalTransition transition: stg.getSignalTransitions(Type.OUTPUT)) {
-                boolean isDevEnabled = true;
-                for (Node predNode: stg.getPreset(transition)) {
-                    if (predNode instanceof StgPlace) {
-                        StgPlace predPlace = (StgPlace) predNode;
-                        if ((predPlace.getTokens() == 0) && (devPlaces.contains(predPlace))) {
-                            isDevEnabled = false;
-                            break;
+            LogUtils.logMessageLine("Extending conformation violation trace: ");
+            LogUtils.logMessageLine("  original:" + mainTrace);
+            if (fireTrace(stg, mainTrace)) {
+                for (SignalTransition transition: stg.getSignalTransitions(Type.OUTPUT)) {
+                    boolean isDevEnabled = true;
+                    for (Node predNode: stg.getPreset(transition)) {
+                        if (predNode instanceof StgPlace) {
+                            StgPlace predPlace = (StgPlace) predNode;
+                            if ((predPlace.getTokens() == 0) && (devPlaces.contains(predPlace))) {
+                                isDevEnabled = false;
+                                break;
+                            }
                         }
                     }
-                }
-                if (isDevEnabled) {
-                    String signal = transition.getSignalName();
-                    solution.setComment("Unexpected change of output " + signal);
-                    mainTrace.add(stg.getNodeReference(transition));
-                    break;
+                    if (isDevEnabled) {
+                        String signal = transition.getSignalName();
+                        solution.setComment("Unexpected change of output " + signal);
+                        mainTrace.add(stg.getNodeReference(transition));
+                        break;
+                    }
                 }
             }
+            LogUtils.logMessageLine("  extended:" + mainTrace);
         }
     }
 
