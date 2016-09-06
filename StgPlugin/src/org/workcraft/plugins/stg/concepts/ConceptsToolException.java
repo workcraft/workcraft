@@ -30,7 +30,7 @@ public class ConceptsToolException extends Exception {
                 } else if (errors.contains("Could not find module") || errors.contains("Failed to load interface")) {
                     conceptsNotInstalled();
                 } else {
-                    defaultError();
+                    cannotTranslateConceptsError(errors);
                 }
             } else {
                 String output = new String(result.getReturnValue().getOutput());
@@ -57,7 +57,8 @@ public class ConceptsToolException extends Exception {
     }
 
     private void ghcNotFound() {
-        JOptionPane.showMessageDialog(mainWindow, "runghc could not run, please install Haskell", "GHC not installed", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(mainWindow, "Stack could not run, please download and install Stack from:\n"
+                + "https://www.haskell.org/downloads#stack", "GHC not installed", JOptionPane.ERROR_MESSAGE);
     }
 
     private void conceptsCodeNotFound() {
@@ -69,12 +70,13 @@ public class ConceptsToolException extends Exception {
     private void conceptsNotInstalled() {
         String pkg = StgSettings.getConceptsFolderLocation();
         JOptionPane.showMessageDialog(mainWindow, "Concepts could not be run. \n"
-                + "The " + pkg + " package needs to be installed via Cabal using the command \"cabal install " + pkg + "\"\n",
+                + "The " + pkg + " package needs to be installed via stack. To do this: \n"
+                + "1. Make sure stack is installed (https://www.haskell.org/downloads#stack).\n"
+                + "2. In the terminal navigate to the concepts folder, found in \"" + pkg + "\" within the Workcraft directory.\n"
+                + "3. Run the command \"stack setup\".\n"
+                + "4. Run the command \"stack build\".\n"
+                + "Then, rerun the concepts translation.",
                 "Concept translation failed", JOptionPane.ERROR_MESSAGE);
-    }
-
-    private void defaultError() {
-        JOptionPane.showMessageDialog(mainWindow, "Concepts could not be translated", "Concept translation failed", JOptionPane.ERROR_MESSAGE);
     }
 
     private void cannotTranslateConceptsError(String output) {

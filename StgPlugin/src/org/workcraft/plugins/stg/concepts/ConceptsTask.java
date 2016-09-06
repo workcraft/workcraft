@@ -26,10 +26,14 @@ public class ConceptsTask implements Task<ExternalProcessResult> {
         try {
             ArrayList<String> command = new ArrayList<>();
 
+//            String stackLocation = StgSettings.getConceptsFolderLocation() + "stack";
+            command.add("stack");
             command.add("runghc");
             String translateLocation = DesktopApi.getOs().isWindows() ? "translate\\Main.hs" : "translate/Main.hs";
             command.add(StgSettings.getConceptsFolderLocation() + translateLocation); //TODO: Make concepts folder location a setting
             command.add(inputFile.getAbsolutePath());
+            String stackYamlCommand = "--stack-yaml=" + StgSettings.getConceptsFolderLocation() + "stack.yaml";
+            command.add(stackYamlCommand);
 
             ExternalProcessTask task = new ExternalProcessTask(command, new File("."));
             SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
