@@ -235,10 +235,10 @@ public class ConceptsWriterDialog extends JDialog {
     private String getDefaultText() {
         return "module Concept where\n"
                 + "\n"
-                + "import Tuura.ConceptConcat\n"
+                + "import Tuura.Concept.STG\n"
                 + "\n"
-                + "circuit :: (Eq a) => a -> a -> a -> CircuitConcept a \n"
-                + "circuit a b c = \n";
+                + "circuit a b c = \n"
+                + "  where";
     }
 
     private String readFile(File f) throws FileNotFoundException {
