@@ -55,7 +55,7 @@ final class MpsatReachabilityResultHandler implements Runnable {
     }
 
     private StgModel getInputStg() {
-        final byte[] content = result.getReturnValue().getFileData(MpsatTask.FILE_MPSAT_G_INPUT);
+        final byte[] content = result.getReturnValue().getFileData(MpsatTask.FILE_NET_G);
         if (content == null) {
             return null;
         }
@@ -68,7 +68,7 @@ final class MpsatReachabilityResultHandler implements Runnable {
 
     private HashSet<StgPlace> getDevPlaces(StgModel stg) {
         HashSet<StgPlace> devPlaces = new HashSet<>();
-        final byte[] content = result.getReturnValue().getFileData(MpsatTask.FILE_MPSAT_LIST_PLACES);
+        final byte[] content = result.getReturnValue().getFileData(MpsatTask.FILE_PLACES);
         if (content != null) {
             InputStream is = new ByteArrayInputStream(content);
             BufferedReader br = new BufferedReader(new InputStreamReader(is));

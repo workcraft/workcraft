@@ -22,9 +22,10 @@ import org.workcraft.util.FileUtils;
 import org.workcraft.util.ToolUtils;
 
 public class MpsatTask implements Task<ExternalProcessResult> {
-    public static final String FILE_MPSAT_G_INPUT = "input.g";
-    public static final String FILE_MPSAT_G_OUTPUT = "output.g";
-    public static final String FILE_MPSAT_LIST_PLACES = "places.list";
+    public static final String FILE_NET_G = "net.g";
+    // IMPORTANT: The name of output file must be mpsat.g -- this is not configurable on MPSat side.
+    public static final String FILE_MPSAT_G = "mpsat.g";
+    public static final String FILE_PLACES = "places.list";
 
     private final String[] args;
     private final File unfoldingFile;
@@ -102,14 +103,14 @@ public class MpsatTask implements Task<ExternalProcessResult> {
             Map<String, byte[]> fileContentMap = new HashMap<>();
             try {
                 if ((netFile != null) && netFile.exists()) {
-                    fileContentMap.put(FILE_MPSAT_G_INPUT, FileUtils.readAllBytes(netFile));
+                    fileContentMap.put(FILE_NET_G, FileUtils.readAllBytes(netFile));
                 }
                 if ((placesFile != null) && placesFile.exists()) {
-                    fileContentMap.put(FILE_MPSAT_LIST_PLACES, FileUtils.readAllBytes(placesFile));
+                    fileContentMap.put(FILE_PLACES, FileUtils.readAllBytes(placesFile));
                 }
-                File outFile = new File(directory, FILE_MPSAT_G_OUTPUT);
+                File outFile = new File(directory, FILE_MPSAT_G);
                 if (outFile.exists()) {
-                    fileContentMap.put(FILE_MPSAT_G_OUTPUT, FileUtils.readAllBytes(outFile));
+                    fileContentMap.put(FILE_MPSAT_G, FileUtils.readAllBytes(outFile));
                 }
             } catch (IOException e) {
                 return new Result<ExternalProcessResult>(e);
