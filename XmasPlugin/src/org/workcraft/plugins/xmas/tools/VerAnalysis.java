@@ -498,7 +498,8 @@ public class VerAnalysis extends AbstractTool implements Tool {
                         vxmCommand.add(XmasSettings.getTempVxmCommandFile().getAbsolutePath());
                         vxmCommand.addAll(processArg(XmasSettings.getTempVxmVsettingsFile().getAbsolutePath(), index));
                         ExternalProcessTask.printCommandLine(vxmCommand);
-                        Process vxmProcess = Runtime.getRuntime().exec(vxmCommand.toArray(new String[vxmCommand.size()]));
+                        String[] cmdArray = vxmCommand.toArray(new String[vxmCommand.size()]);
+                        Process vxmProcess = Runtime.getRuntime().exec(cmdArray, null, XmasSettings.getTempVxmDirectory());
 
                         String s, str = "";
                         InputStreamReader inputStreamReader = new InputStreamReader(vxmProcess.getInputStream());

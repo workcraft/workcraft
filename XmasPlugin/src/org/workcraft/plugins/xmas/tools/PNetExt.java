@@ -10,6 +10,7 @@ import java.util.Scanner;
 
 import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.plugins.xmas.components.FunctionComponent;
+import org.workcraft.plugins.xmas.components.SinkComponent;
 import org.workcraft.plugins.xmas.components.SourceComponent;
 import org.workcraft.plugins.xmas.components.SwitchComponent;
 import org.workcraft.util.LogUtils;
@@ -59,15 +60,17 @@ public class PNetExt {
     }
 
     static List<Source> sourcelist = new ArrayList<>();
+    static List<Fun> funlist = new ArrayList<>();
     static List<Switch> switchlist = new ArrayList<>();
     static List<Merge> mergelist = new ArrayList<>();
-    static List<Fun> funlist = new ArrayList<>();
+    static List<Source> sinklist = new ArrayList<>();
 
     private static void initlist() {
-        funlist.clear();
         sourcelist.clear();
+        funlist.clear();
         switchlist.clear();
         mergelist.clear();
+        sinklist.clear();
     }
 
     private static void readFile(String file, int syncflag) {
@@ -79,29 +82,35 @@ public class PNetExt {
         }
         String name;
         while (sc.hasNextLine()) {
-            Scanner line = new Scanner(sc.nextLine());
-            Scanner nxt = new Scanner(line.next());
-            String check = nxt.next();
+            Scanner lineScanner = new Scanner(sc.nextLine());
+            String check = getToken(lineScanner);
             if (check.startsWith("//gen")) {
                 if (check.startsWith("//gensource")) {
-                    nxt = new Scanner(line.next());
-                    name = nxt.next();
+                    name = getToken(lineScanner);
                     sourcelist.add(new Source(name, name));
                 } else if (check.startsWith("//genfunction")) {
-                    nxt = new Scanner(line.next());
-                    name = nxt.next();
+                    name = getToken(lineScanner);
                     funlist.add(new Fun(name));
                 } else if (check.startsWith("//genmerge")) {
-                    nxt = new Scanner(line.next());
-                    name = nxt.next();
+                    name = getToken(lineScanner);
                     mergelist.add(new Merge(name, name));
                 } else if (check.startsWith("//genswitch")) {
-                    nxt = new Scanner(line.next());
-                    name = nxt.next();
+                    name = getToken(lineScanner);
                     switchlist.add(new Switch(name, name));
+                } else if (check.startsWith("//gensink")) {
+                    name = getToken(lineScanner);
+                    sinklist.add(new Source(name, name));
                 }
             }
+            lineScanner.close();
         }
+    }
+
+    private static String getToken(Scanner line) {
+        Scanner scanner = new Scanner(line.next());
+        String name = scanner.next();
+        scanner.close();
+        return name;
     }
 
     private static void writeNet(PrintWriter writer, Collection<SourceComponent> srcNodes, Collection<FunctionComponent> funNodes, Collection<SwitchComponent> swNodes) {
@@ -149,7 +158,8 @@ public class PNetExt {
         System.out.print("Output written to CPNFile");
     }
 
-    public PNetExt(Collection<SourceComponent> srcNodes, Collection<FunctionComponent> funNodes, Collection<SwitchComponent> swNodes, int syncflag) {
+    public PNetExt(Collection<SourceComponent> srcNodes, Collection<FunctionComponent> funNodes,
+            Collection<SwitchComponent> swNodes, Collection<SinkComponent> snkNodes, int syncflag) {
         initlist();
         File pncFile = XmasSettings.getTempVxmPncFile();
         PrintWriter writer = null;
