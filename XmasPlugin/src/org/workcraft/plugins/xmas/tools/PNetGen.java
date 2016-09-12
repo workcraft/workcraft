@@ -1,11 +1,11 @@
 package org.workcraft.plugins.xmas.tools;
 
 import java.io.File;
-import java.io.PrintWriter;
 import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collection;
+import java.util.List;
 import java.util.Scanner;
 
 import org.codehaus.jackson.JsonFactory;
@@ -15,16 +15,18 @@ import org.codehaus.jackson.JsonToken;
 import org.codehaus.jackson.map.MappingJsonFactory;
 import org.workcraft.Tool;
 import org.workcraft.plugins.xmas.Xmas;
+import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.plugins.xmas.components.FunctionComponent;
+import org.workcraft.plugins.xmas.components.SinkComponent;
 import org.workcraft.plugins.xmas.components.SourceComponent;
 import org.workcraft.plugins.xmas.components.SwitchComponent;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.plugins.xmas.XmasSettings;
 
 public class PNetGen implements Tool {
 
+    private static int syncflag = 0;
     private static int dl = 1;
     private static boolean printoutput = true;
 
@@ -972,6 +974,7 @@ public class PNetGen implements Tool {
     public Collection<SourceComponent> srcNodes;
     public Collection<FunctionComponent> funNodes;
     public Collection<SwitchComponent> swNodes;
+    public Collection<SinkComponent> snkNodes;
 
     public void run(WorkspaceEntry we) {
         System.out.println("");
@@ -982,6 +985,7 @@ public class PNetGen implements Tool {
         //funNodes = Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualFunctionComponent.class);
         funNodes = cnet.getFunctionComponents();
         swNodes = cnet.getSwitchComponents();
+        snkNodes = cnet.getSinkComponents();
 
         JsonFactory f = new MappingJsonFactory();
         File cpnFile = XmasSettings.getTempVxmCpnFile();
@@ -997,7 +1001,6 @@ public class PNetGen implements Tool {
             //createSlsto();
 
             writer = new PrintWriter(cpnFile);
-            //writer_s = new PrintWriter(syncFile);
             JsonParser jp = f.createJsonParser(jsonFile);
             JsonToken current;
 
@@ -1039,8 +1042,6 @@ public class PNetGen implements Tool {
                             String idNamep2 = "";
                             String fieldsize = "";
                             String fieldgpf = "";
-                            //String fieldgpf1 = "";
-                            //String styp = "";
                             int fieldinit = 0;
                             int fieldgr = 0;
                             String typeName = node.get("type").getValueAsText();
@@ -1104,12 +1105,6 @@ public class PNetGen implements Tool {
                                     if (y2.get(i).has("gpf1")) {
                                         fieldgpf = y2.get(i).get("gpf1").getValueAsText();
                                     }
-                                    //if (y2.get(i).has("gpf2")) {
-                                    //    fieldgpf1 = y2.get(i).get("gpf2").getValueAsText();
-                                    //}
-                                    //if (y2.get(i).has("typ")) {
-                                    //    styp = y2.get(i).get("typ").getValueAsText();
-                                    //}
                                 }
                             }
 
@@ -1130,7 +1125,6 @@ public class PNetGen implements Tool {
                                 }
                             }
                             if (typeName.equals("sink")) gensink(idName, fieldgr, writer);
-                            //if (typeName.equals("sync")) sync_inf(idName, idName1, idName2, fieldgpf, fieldgpf1, styp, writer_s);
                         }
                     } else {
                         LogUtils.logErrorLine("Records should be an array: skipping.");
@@ -1147,12 +1141,8 @@ public class PNetGen implements Tool {
             if (writer != null) {
                 writer.close();
                 System.out.println("Control CPNs created");
-                //PNetExt pnconv = new PNetExt(srcNodes, funNodes, swNodes, syncflag);
-                //printlst();
+                new PNetExt(srcNodes, funNodes, swNodes, snkNodes, syncflag);
             }
-            /*if (writer_s != null) {
-              writer_s.close();
-              }*/
         }
         System.out.println("");
     }

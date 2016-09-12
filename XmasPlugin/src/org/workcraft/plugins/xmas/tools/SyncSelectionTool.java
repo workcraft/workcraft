@@ -45,13 +45,6 @@ public class SyncSelectionTool extends SelectionTool {
                 }
             });
             popup.add(addInputMenuItem);
-            JMenuItem removeInputMenuItem = new JMenuItem("Remove input-output pair");
-            removeInputMenuItem.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                }
-            });
-            popup.add(removeInputMenuItem);
             return popup;
         }
 

@@ -138,4 +138,8 @@ public class Xmas extends AbstractMathModel {
         return Hierarchy.getDescendantsOfType(getRoot(), SwitchComponent.class);
     }
 
+    public Collection<SinkComponent> getSinkComponents() {
+        return Hierarchy.getDescendantsOfType(getRoot(), SinkComponent.class);
+    }
+
 }
