@@ -22,6 +22,8 @@ import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.Replica;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.connections.ConnectionGraphic;
+import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.PetriNet;
@@ -263,10 +265,14 @@ public class TransitionContractorTool extends TransformationTool implements Node
                 VisualPlace succPlace = (VisualPlace) succNode;
                 VisualPlace productPlace = createProductPlace(visualModel, predPlace, succPlace);
                 initialiseProductPlace(visualModel, predPlace, succPlace, productPlace);
-                HashSet<Connection> connections = new HashSet<>();
-                connections.addAll(visualModel.getConnections(predPlace));
-                connections.addAll(visualModel.getConnections(succPlace));
-                HashMap<Connection, Connection> productConnectionMap = connectProductPlace(visualModel, connections, productPlace);
+                HashSet<VisualConnection> connections = new HashSet<>();
+                for (Connection connection: visualModel.getConnections(predPlace)) {
+                    connections.add((VisualConnection) connection);
+                }
+                for (Connection connection: visualModel.getConnections(succPlace)) {
+                    connections.add((VisualConnection) connection);
+                }
+                HashMap<VisualConnection, VisualConnection> productConnectionMap = connectProductPlace(visualModel, connections, productPlace);
                 productPlaceMap.put(productPlace, new Pair<>(predPlace, succPlace));
                 if (isTrivial) {
                     productPlace.copyPosition(visualTransition);
@@ -275,17 +281,19 @@ public class TransitionContractorTool extends TransformationTool implements Node
                     Connection succConnection = visualModel.getConnection(visualTransition, succPlace);
                     LinkedList<Point2D> succLocations = ConnectionHelper.getMergedControlPoints(succPlace, (VisualConnection) succConnection, null);
                     if (visualModel.getPostset(succPlace).size() < 2) {
-                        for (Connection newConnection: productConnectionMap.keySet()) {
+                        for (VisualConnection newConnection: productConnectionMap.keySet()) {
                             if (newConnection.getFirst() == productPlace) {
-                                ConnectionHelper.prependControlPoints((VisualConnection) newConnection, succLocations);
+                                ConnectionHelper.prependControlPoints(newConnection, succLocations);
                             }
+                            filterControlPoints(newConnection);
                         }
                     }
                     if (visualModel.getPreset(predPlace).size() < 2) {
-                        for (Connection newConnection: productConnectionMap.keySet()) {
+                        for (VisualConnection newConnection: productConnectionMap.keySet()) {
                             if (newConnection.getSecond() == productPlace) {
-                                ConnectionHelper.addControlPoints((VisualConnection) newConnection, predLocations);
+                                ConnectionHelper.addControlPoints(newConnection, predLocations);
                             }
+                            filterControlPoints(newConnection);
                         }
                     }
                 }
@@ -334,9 +342,11 @@ public class TransitionContractorTool extends TransformationTool implements Node
         mathProductPlace.setCapacity(capacity);
     }
 
-    public HashMap<Connection, Connection> connectProductPlace(VisualModel visualModel, Set<Connection> originalConnections, VisualPlace productPlace) {
-        HashMap<Connection, Connection> productConnectionMap = new HashMap<>();
-        for (Connection originalConnection: originalConnections) {
+    public HashMap<VisualConnection, VisualConnection> connectProductPlace(VisualModel visualModel,
+            Set<VisualConnection> originalConnections, VisualPlace productPlace) {
+
+        HashMap<VisualConnection, VisualConnection> productConnectionMap = new HashMap<>();
+        for (VisualConnection originalConnection: originalConnections) {
             Node first = originalConnection.getFirst();
             Node second = originalConnection.getSecond();
             VisualConnection newConnection = null;
@@ -359,10 +369,11 @@ public class TransitionContractorTool extends TransformationTool implements Node
             } catch (InvalidConnectionException e) {
                 LogUtils.logWarningLine(e.getMessage());
             }
-            if ((newConnection != null) && (originalConnection instanceof VisualConnection)) {
-                productConnectionMap.put(newConnection, originalConnection);
-                newConnection.copyStyle((VisualConnection) originalConnection);
-                newConnection.copyShape((VisualConnection) originalConnection);
+            if (newConnection instanceof VisualConnection) {
+                productConnectionMap.put((VisualConnection) newConnection, originalConnection);
+                newConnection.copyStyle(originalConnection);
+                newConnection.copyShape(originalConnection);
+                filterControlPoints(newConnection);
             }
         }
         return productConnectionMap;
@@ -433,6 +444,13 @@ public class TransitionContractorTool extends TransformationTool implements Node
         }
         for (VisualConnection replicaPlaceConnection: replicaPlaceConnections) {
             PetriNetUtils.replicateConnectedPlace(visualModel, replicaPlaceConnection);
+        }
+    }
+
+    public void filterControlPoints(VisualConnection connection) {
+        ConnectionGraphic grapic = connection.getGraphic();
+        if (grapic instanceof Polyline) {
+            ConnectionHelper.filterControlPoints((Polyline) grapic, 0.01, 0.01);
         }
     }
 

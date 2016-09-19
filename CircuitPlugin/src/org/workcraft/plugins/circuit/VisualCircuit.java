@@ -48,6 +48,7 @@ import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
 import org.workcraft.plugins.circuit.tools.CircuitLayoutTool;
@@ -380,6 +381,24 @@ public class VisualCircuit extends AbstractVisualModel {
             VisualContactFormulaProperties props = new VisualContactFormulaProperties(this);
             properties.add(props.getSetProperty(contact));
             properties.add(props.getResetProperty(contact));
+        } else if (node instanceof VisualCircuitComponent) {
+            VisualCircuitComponent component = (VisualCircuitComponent) node;
+            Collection<VisualContact> outputContacts = component.getVisualOutputs();
+            if (outputContacts.size() == 1) {
+                VisualContact contact = outputContacts.iterator().next();
+                if (contact instanceof VisualFunctionContact) {
+                    VisualFunctionContact functionContact = (VisualFunctionContact) contact;
+                    VisualContactFormulaProperties props = new VisualContactFormulaProperties(this);
+                    properties.add(props.getSetProperty(functionContact));
+                    properties.add(props.getResetProperty(functionContact));
+                }
+                for (PropertyDescriptor property: contact.getDescriptors()) {
+                    String propertyName = property.getName();
+                    if (Contact.PROPERTY_INIT_TO_ONE.equals(propertyName) || Contact.PROPERTY_FORCED_INIT.equals(propertyName)) {
+                        properties.add(property);
+                    }
+                }
+            }
         }
         return properties;
     }
