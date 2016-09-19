@@ -157,12 +157,9 @@ public class ConnectionHelper {
         Point2D startPos = polyline.getPointOnCurve(curveInfo.tStart);
         Point2D endPos = polyline.getPointOnCurve(curveInfo.tEnd);
         // Forward filtering by distance
-        List<ControlPoint> controlPoints = new LinkedList<>(polyline.getControlPoints());
-        filterControlPointsByDistance(polyline, startPos, controlPoints, distanceThreshold);
+        filterControlPointsByDistance(polyline, startPos, distanceThreshold, false);
         // Backward filtering by distance
-        controlPoints = new LinkedList<>(polyline.getControlPoints());
-        Collections.reverse(controlPoints);
-        filterControlPointsByDistance(polyline, endPos, controlPoints, distanceThreshold);
+        filterControlPointsByDistance(polyline, endPos, distanceThreshold, true);
         // Filtering by gradient
         int i = 0;
         while (i < polyline.getControlPointCount()) {
@@ -186,9 +183,11 @@ public class ConnectionHelper {
         }
     }
 
-    private static void filterControlPointsByDistance(Polyline polyline, Point2D startPos,
-            List<ControlPoint> controlPoints, double threshold) {
-
+    private static void filterControlPointsByDistance(Polyline polyline, Point2D startPos, double threshold, boolean reverse) {
+        List<ControlPoint> controlPoints = new LinkedList<>(polyline.getControlPoints());
+        if (reverse) {
+            Collections.reverse(controlPoints);
+        }
         Point2D predPos = startPos;
         for (ControlPoint cp:  controlPoints) {
             Point2D curPos = cp.getPosition();
@@ -196,6 +195,16 @@ public class ConnectionHelper {
                 polyline.remove(cp);
             } else {
                 predPos = curPos;
+            }
+        }
+    }
+
+    public static void removeControlPointsByDistance(Polyline polyline, Point2D pos, double threshold) {
+        List<ControlPoint> controlPoints = new LinkedList<>(polyline.getControlPoints());
+        for (ControlPoint cp:  controlPoints) {
+            Point2D curPos = cp.getPosition();
+            if (curPos.distanceSq(pos) < threshold) {
+                polyline.remove(cp);
             }
         }
     }

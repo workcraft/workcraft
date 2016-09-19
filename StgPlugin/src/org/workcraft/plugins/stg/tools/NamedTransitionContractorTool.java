@@ -12,6 +12,7 @@ import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.petri.tools.TransitionContractorTool;
@@ -59,7 +60,8 @@ public class NamedTransitionContractorTool extends TransitionContractorTool {
                 VisualPlace predPlace = originalPlacePair.getFirst();
                 VisualPlace succPlace = originalPlacePair.getSecond();
                 if (convertedImplicitPlaces.contains(predPlace) && convertedImplicitPlaces.contains(succPlace)) {
-                    visualStg.maybeMakeImplicit(productPlace, true);
+                    VisualConnection connection = visualStg.maybeMakeImplicit(productPlace, true);
+                    filterControlPoints(connection);
                 }
             }
         }

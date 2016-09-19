@@ -279,7 +279,8 @@ public class VisualStg extends AbstractVisualModel {
         return place;
     }
 
-    public void maybeMakeImplicit(VisualPlace place, boolean preserveConnectionShape) {
+    public VisualImplicitPlaceArc maybeMakeImplicit(VisualPlace place, boolean preserveConnectionShape) {
+        VisualImplicitPlaceArc connection = null;
         Collection<Node> preset = getPreset(place);
         Collection<Node> postset = getPostset(place);
         Collection<Replica> replicas = place.getReplicas();
@@ -302,7 +303,7 @@ public class VisualStg extends AbstractVisualModel {
                 }
                 MathConnection refCon1 = con1.getReferencedConnection();
                 MathConnection refCon2 = con2.getReferencedConnection();
-                VisualImplicitPlaceArc connection = new VisualImplicitPlaceArc(first, second, refCon1, refCon2, (StgPlace) place.getReferencedPlace());
+                connection = new VisualImplicitPlaceArc(first, second, refCon1, refCon2, (StgPlace) place.getReferencedPlace());
                 Container parent = Hierarchy.getNearestAncestor(Hierarchy.getCommonParent(first, second), Container.class);
                 parent.add(connection);
                 if (preserveConnectionShape) {
@@ -313,6 +314,7 @@ public class VisualStg extends AbstractVisualModel {
                 remove(place);
             }
         }
+        return connection;
     }
 
     public VisualPlace createPlace(String mathName, Container container) {
