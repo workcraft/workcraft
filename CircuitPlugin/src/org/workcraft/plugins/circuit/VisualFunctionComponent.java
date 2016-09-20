@@ -183,7 +183,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 
     private AffineTransform getMainContactRotateTransform(boolean reverse) {
         AffineTransform at = new AffineTransform();
-        VisualContact contact = getMainContact();
+        VisualContact contact = getMainVisualOutput();
         if (contact != null) {
             switch (contact.getDirection()) {
             case NORTH:
@@ -220,19 +220,19 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         } else {
             AffineTransform at = new AffineTransform();
             AffineTransform bt = new AffineTransform();
-            VisualContact v = getMainContact();
-            if (v != null) {
-                at = VisualContact.Direction.getDirectionTransform(v.getDirection());
+            VisualContact mainOutput = getMainVisualOutput();
+            if (mainOutput != null) {
+                at = VisualContact.Direction.getDirectionTransform(mainOutput.getDirection());
             }
             double inputPositionX = TransformHelper.snapP5(res.boundingBox().getMinX() - GateRenderer.contactMargin);
             double outputPositionX = TransformHelper.snapP5(res.boundingBox().getMaxX() + GateRenderer.contactMargin);
 
-            for (Node n: this.getChildren()) {
-                if (n instanceof VisualFunctionContact) {
-                    VisualFunctionContact vc = (VisualFunctionContact) n;
+            for (Node node: this.getChildren()) {
+                if (node instanceof VisualFunctionContact) {
+                    VisualFunctionContact contact = (VisualFunctionContact) node;
                     bt.setTransform(at);
-                    if (vc.isInput()) {
-                        String vcName = vc.getName();
+                    if (contact.isInput()) {
+                        String vcName = contact.getName();
                         Point2D position = res.contactPositions().get(vcName);
                         if (position != null) {
                             bt.translate(inputPositionX, position.getY());
@@ -243,7 +243,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
                     // Here we only need to change position, do not do the rotation
                     AffineTransform ct = new AffineTransform();
                     ct.translate(bt.getTranslateX(), bt.getTranslateY());
-                    vc.setTransform(ct);
+                    contact.setTransform(ct);
                 }
             }
         }
@@ -263,7 +263,8 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
             PropertyChangedEvent pc = (PropertyChangedEvent) e;
             String propertyName = pc.getPropertyName();
             if (propertyName.equals(VisualContact.PROPERTY_DIRECTION)) {
-                if ((getMainContact() == pc.getSender()) && (getRenderingResult() != null)) {
+                VisualContact mainContact = getMainVisualOutput();
+                if ((mainContact == pc.getSender()) && (getRenderingResult() != null)) {
                     setContactsDefaultPosition();
                 }
             }
@@ -278,7 +279,6 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
                 }
             }
         }
-
     }
 
     private Point2D getContactLinePositionInLocalSpace(VisualFunctionContact vc, ComponentRenderingResult rr) {

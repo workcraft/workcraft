@@ -290,9 +290,9 @@ public class VerilogImporter implements Importer {
         if (outContact != null) {
             try {
                 BooleanFormula setFormula = CircuitUtils.parseContactFuncton(circuit, component, assignGate.setFunction);
-                outContact.setSetFunction(setFormula);
+                outContact.setSetFunctionQuiet(setFormula);
                 BooleanFormula resetFormula = CircuitUtils.parseContactFuncton(circuit, component, assignGate.resetFunction);
-                outContact.setResetFunction(resetFormula);
+                outContact.setResetFunctionQuiet(resetFormula);
             } catch (org.workcraft.formula.jj.ParseException e) {
                 throw new RuntimeException(e);
             }
@@ -738,7 +738,7 @@ public class VerilogImporter implements Importer {
         }
         BooleanFormula rootSetFunction = rootOutputContact.getSetFunction();
         BooleanFormula setFunction = printFunctionSubstitution(rootSetFunction, rootInputContacts, leafSetFunctions);
-        outputContact.setSetFunction(setFunction);
+        outputContact.setSetFunctionQuiet(setFunction);
 
         connectMergedComponent(circuit, component, rootComponent, newToOldContactMap);
         return component;

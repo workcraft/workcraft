@@ -31,7 +31,6 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Line2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -84,8 +83,6 @@ public class VisualCircuitComponent extends VisualComponent implements
     double contactStep = 1.0;
 
     protected Rectangle2D internalBB = null;
-    private WeakReference<VisualContact> mainContact = null;
-
     protected DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
     private final HashMap<VisualContact, GlyphVector> contactLableGlyphs = new HashMap<>();
@@ -118,27 +115,6 @@ public class VisualCircuitComponent extends VisualComponent implements
         });
 // TODO: Rename label to module name (?)
 //        renamePropertyDeclarationByName(PROPERTY_LABEL, CircuitComponent.PROPERTY_MODULE);
-    }
-
-    public void setMainContact(VisualContact contact) {
-        this.mainContact = new WeakReference<VisualContact>(contact);
-    }
-
-    public VisualContact getMainContact() {
-        VisualContact ret = null;
-        if (mainContact != null) {
-            ret = mainContact.get();
-        }
-        if (ret == null) {
-            for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class)) {
-                if (vc.isOutput()) {
-                    setMainContact(vc);
-                    ret = vc;
-                    break;
-                }
-            }
-        }
-        return ret;
     }
 
     public CircuitComponent getReferencedCircuitComponent() {
@@ -812,6 +788,15 @@ public class VisualCircuitComponent extends VisualComponent implements
                 result = contact;
                 break;
             }
+        }
+        return result;
+    }
+
+    public VisualContact getMainVisualOutput() {
+        VisualContact result = null;
+        Collection<VisualContact> outputs = getVisualOutputs();
+        if (outputs.size() == 1) {
+            result = outputs.iterator().next();
         }
         return result;
     }

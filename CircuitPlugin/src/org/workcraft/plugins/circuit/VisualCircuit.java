@@ -383,18 +383,18 @@ public class VisualCircuit extends AbstractVisualModel {
             properties.add(props.getResetProperty(contact));
         } else if (node instanceof VisualCircuitComponent) {
             VisualCircuitComponent component = (VisualCircuitComponent) node;
-            Collection<VisualContact> outputContacts = component.getVisualOutputs();
-            if (outputContacts.size() == 1) {
-                VisualContact contact = outputContacts.iterator().next();
-                if (contact instanceof VisualFunctionContact) {
-                    VisualFunctionContact functionContact = (VisualFunctionContact) contact;
+            VisualContact mainOutput = component.getMainVisualOutput();
+            if (mainOutput != null) {
+                if (mainOutput instanceof VisualFunctionContact) {
+                    VisualFunctionContact functionContact = (VisualFunctionContact) mainOutput;
                     VisualContactFormulaProperties props = new VisualContactFormulaProperties(this);
                     properties.add(props.getSetProperty(functionContact));
                     properties.add(props.getResetProperty(functionContact));
                 }
-                for (PropertyDescriptor property: contact.getDescriptors()) {
+                for (PropertyDescriptor property: mainOutput.getDescriptors()) {
                     String propertyName = property.getName();
-                    if (Contact.PROPERTY_INIT_TO_ONE.equals(propertyName) || Contact.PROPERTY_FORCED_INIT.equals(propertyName)) {
+                    if (Contact.PROPERTY_INIT_TO_ONE.equals(propertyName)
+                            || Contact.PROPERTY_FORCED_INIT.equals(propertyName)) {
                         properties.add(property);
                     }
                 }

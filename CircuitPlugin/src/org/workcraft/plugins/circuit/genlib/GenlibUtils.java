@@ -37,9 +37,9 @@ public class GenlibUtils {
         }
         try {
             BooleanFormula setFormula = CircuitUtils.parseContactFuncton(circuit, component, setFunction);
-            contact.setSetFunction(setFormula);
+            contact.setSetFunctionQuiet(setFormula);
             BooleanFormula resetFormula = CircuitUtils.parseContactFuncton(circuit, component, resetFunction);
-            contact.setResetFunction(resetFormula);
+            contact.setResetFunctionQuiet(resetFormula);
         } catch (org.workcraft.formula.jj.ParseException e) {
             throw new RuntimeException(e);
         }

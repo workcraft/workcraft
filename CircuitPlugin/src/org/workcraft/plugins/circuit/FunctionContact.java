@@ -45,18 +45,26 @@ public class FunctionContact extends Contact {
         return setFunction;
     }
 
-    public void setSetFunction(BooleanFormula setFunction) {
-        this.setFunction = setFunction;
+    public void setSetFunction(BooleanFormula value) {
+        setSetFunctionQuiet(value);
         sendNotification(new PropertyChangedEvent(this, PROPERTY_SET_FUNCTION));
+    }
+
+    public void setSetFunctionQuiet(BooleanFormula value) {
+        setFunction = value;
     }
 
     public BooleanFormula getResetFunction() {
         return resetFunction;
     }
 
-    public void setResetFunction(BooleanFormula resetFunction) {
-        this.resetFunction = resetFunction;
+    public void setResetFunction(BooleanFormula value) {
+        setResetFunctionQuiet(value);
         sendNotification(new PropertyChangedEvent(this, PROPERTY_RESET_FUNCTION));
+    }
+
+    public void setResetFunctionQuiet(BooleanFormula value) {
+        resetFunction = value;
     }
 
 }
