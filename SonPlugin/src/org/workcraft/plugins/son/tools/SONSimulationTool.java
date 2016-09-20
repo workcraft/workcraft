@@ -125,7 +125,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
     protected Timer timer = null;
 
     @Override
-    public String getHintMessage() {
+    public String getHintText() {
         return "Click on a highlighted node to fire it.";
     }
 
@@ -227,7 +227,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (timer == null) {
-                    timer = new Timer(getAnimationDelay(), new ActionListener()    {
+                    timer = new Timer(getAnimationDelay(), new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             step(editor);

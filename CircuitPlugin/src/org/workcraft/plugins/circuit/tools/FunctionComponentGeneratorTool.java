@@ -31,7 +31,7 @@ public class FunctionComponentGeneratorTool extends NodeGeneratorTool {
     }
 
     @Override
-    public String getHintMessage() {
+    public String getHintText() {
         return "Click to create a component, then right-click on the component to add contacts.";
     }
 

@@ -184,7 +184,7 @@ public class PetriSimulationTool extends SimulationTool {
     }
 
     @Override
-    public String getHintMessage() {
+    public String getHintText() {
         return "Click on a highlighted transition to fire it.";
     }
 

@@ -949,13 +949,13 @@ public class SelectionTool extends AbstractTool {
     }
 
     @Override
-    public String getHintMessage() {
+    public String getHintText() {
         if (isPanMode) {
             return "Use " + DesktopApi.getMenuKeyMaskName() + " + RMB to pan the view.";
         } else if (isTextMode) {
             return "Use " + DesktopApi.getMenuKeyMaskName() + " + Enter to finish text editing.";
         }
-        return super.getHintMessage();
+        return super.getHintText();
     }
 
 }

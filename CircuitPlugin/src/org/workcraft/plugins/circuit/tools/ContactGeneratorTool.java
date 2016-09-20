@@ -30,7 +30,7 @@ public class ContactGeneratorTool extends NodeGeneratorTool {
     }
 
     @Override
-    public String getHintMessage() {
+    public String getHintText() {
         return "Click to create an output port (hold Shift for input port).";
     }
 }

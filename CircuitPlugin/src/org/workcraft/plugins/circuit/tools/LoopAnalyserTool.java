@@ -58,7 +58,7 @@ public class LoopAnalyserTool extends AbstractTool {
     }
 
     @Override
-    public String getHintMessage() {
+    public String getHintText() {
         return "Click on a driven contact to toggle its break path state.";
     }
 

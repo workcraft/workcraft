@@ -218,7 +218,7 @@ public class DfsSimulationTool extends StgSimulationTool {
     }
 
     @Override
-    public String getHintMessage() {
+    public String getHintText() {
         return "Click on a highlighted node to progress.";
     }
 

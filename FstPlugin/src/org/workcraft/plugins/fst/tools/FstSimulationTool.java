@@ -117,7 +117,7 @@ public class FstSimulationTool extends StgSimulationTool {
     }
 
     @Override
-    public String getHintMessage() {
+    public String getHintText() {
         return "Click on a highlighted arc to trigger its signal event.";
     }
 
