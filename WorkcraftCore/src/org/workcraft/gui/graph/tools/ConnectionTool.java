@@ -70,7 +70,6 @@ public class ConnectionTool extends AbstractTool {
     private VisualNode firstNode = null;
     private Point2D currentPoint = null;
     protected VisualNode currentNode = null;
-    private String warningMessage = null;
     private boolean mouseLeftFirstNode = false;
     private LinkedList<Point2D> controlPoints = null;
     private VisualConnection templateNode = null;
@@ -110,7 +109,6 @@ public class ConnectionTool extends AbstractTool {
         currentNode = null;
         firstPoint = null;
         firstNode = null;
-        warningMessage = null;
         mouseLeftFirstNode = false;
         editor.getModel().selectNone();
         setup(editor);
@@ -121,7 +119,7 @@ public class ConnectionTool extends AbstractTool {
         if ((currentNode == null) || isConnectable(currentNode)) {
             if (currentNode != firstNode) {
                 mouseLeftFirstNode = true;
-                warningMessage = null;
+                hideIssue(editor);
             }
         } else {
             currentNode = null;
@@ -193,7 +191,7 @@ public class ConnectionTool extends AbstractTool {
                     g.setColor(validConnectionColor);
                     g.draw(path);
                 } catch (InvalidConnectionException e) {
-                    warningMessage = e.getMessage();
+                    showIssue(editor, e.getMessage());
                     g.setColor(invalidConnectionColor);
                     g.draw(path);
                 }
@@ -232,12 +230,12 @@ public class ConnectionTool extends AbstractTool {
                     startConnection(e);
                 } else if ((firstNode == currentNode) && (forbidSelfLoops || !mouseLeftFirstNode)) {
                     if (forbidSelfLoops) {
-                        warningMessage = "Self-loops are not allowed.";
+                        showIssue(editor, "Self-loops are not allowed.");
                     } else if (!mouseLeftFirstNode) {
-                        warningMessage = "Move the mouse outside this node before creating a self-loop.";
+                        showIssue(editor, "Move the mouse outside this node before creating a self-loop.");
                     }
                 } else if ((firstNode instanceof VisualGroup) || (currentNode instanceof VisualGroup)) {
-                    warningMessage = "Connection with group element is not allowed.";
+                    showIssue(editor, "Connection with group element is not allowed.");
                 } else {
                     editor.getWorkspaceEntry().saveMemento();
                     finishConnection(e);
@@ -273,10 +271,11 @@ public class ConnectionTool extends AbstractTool {
             firstPoint = TransformHelper.transform(firstNode, localToRootTransform).getCenter();
         }
         currentNode = null;
-        warningMessage = null;
         mouseLeftFirstNode = false;
         controlPoints = new LinkedList<Point2D>();
-        e.getEditor().getWorkspaceEntry().setCanModify(false);
+        GraphEditor editor = e.getEditor();
+        hideIssue(editor);
+        editor.getWorkspaceEntry().setCanModify(false);
     }
 
     public VisualConnection finishConnection(GraphEditorMouseEvent e) {
@@ -328,16 +327,7 @@ public class ConnectionTool extends AbstractTool {
     }
 
     @Override
-    public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
-        if (warningMessage != null) {
-            GUI.drawEditorMessage(editor, g, Color.RED, warningMessage);
-        } else {
-            super.drawInScreenSpace(editor, g);
-        }
-    }
-
-    @Override
-    public String getHintMessage() {
+    public String getHintText() {
         return (firstNode == null) ? getFirstHintMessage() : getSecondHintMessage();
     }
 

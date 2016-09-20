@@ -43,8 +43,11 @@ public interface GraphEditorTool extends GraphEditorKeyListener, GraphEditorMous
     String getLabel();
     Icon getIcon();
     int getHotKeyCode();
-    String getHintMessage();
+    String getHintText();
     Cursor getCursor();
     boolean requiresButton();
 
+    void flashIssue(final GraphEditor editor, String message);
+    void showIssue(final GraphEditor editor, String message);
+    void hideIssue(final GraphEditor editor);
 }

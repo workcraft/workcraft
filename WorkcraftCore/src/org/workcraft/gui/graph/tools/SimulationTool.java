@@ -222,7 +222,7 @@ public abstract class SimulationTool extends AbstractTool implements ClipboardOw
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (timer == null) {
-                    timer = new Timer(getAnimationDelay(), new ActionListener()    {
+                    timer = new Timer(getAnimationDelay(), new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             randomStep(editor);
@@ -246,7 +246,7 @@ public abstract class SimulationTool extends AbstractTool implements ClipboardOw
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (timer == null) {
-                    timer = new Timer(getAnimationDelay(), new ActionListener()    {
+                    timer = new Timer(getAnimationDelay(), new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             step(editor);
@@ -781,7 +781,7 @@ public abstract class SimulationTool extends AbstractTool implements ClipboardOw
     }
 
     @Override
-    public String getHintMessage() {
+    public String getHintText() {
         return "Click on a highlighted node to fire it.";
     }
 

@@ -166,7 +166,7 @@ public class NodeGeneratorTool extends AbstractTool {
     }
 
     @Override
-    public String getHintMessage() {
+    public String getHintText() {
         return generator.getText();
     }
 

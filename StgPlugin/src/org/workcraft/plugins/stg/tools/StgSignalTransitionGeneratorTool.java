@@ -35,7 +35,7 @@ public class StgSignalTransitionGeneratorTool  extends NodeGeneratorTool {
     }
 
     @Override
-    public String getHintMessage() {
+    public String getHintText() {
         return "Click to create falling (or rising with " + DesktopApi.getMenuKeyMaskName() + ") transition of output (or input with Shift) signal.";
     }
 }

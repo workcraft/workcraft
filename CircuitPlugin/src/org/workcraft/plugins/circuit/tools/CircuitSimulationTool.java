@@ -1,6 +1,7 @@
 package org.workcraft.plugins.circuit.tools;
 
 import java.awt.Color;
+import java.util.Collection;
 import java.util.HashSet;
 
 import org.workcraft.Trace;
@@ -25,7 +26,6 @@ import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.VisualCircuitComponent;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
@@ -171,6 +171,19 @@ public class CircuitSimulationTool extends StgSimulationTool {
         return result;
     }
 
+    private Collection<VisualContact> getExcitedOutputs(VisualFunctionComponent component) {
+        HashSet<VisualContact> excitedOutputs = new HashSet<>();
+        if (!component.getIsZeroDelay()) {
+            for (VisualContact output: component.getVisualOutputs()) {
+                HashSet<SignalTransition> excitedTransitions = getContactExcitedTransitions(output);
+                if (!excitedTransitions.isEmpty()) {
+                    excitedOutputs.add(output);
+                }
+            }
+        }
+        return excitedOutputs;
+    }
+
     @Override
     public void mousePressed(GraphEditorMouseEvent e) {
         Node node = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(),
@@ -182,16 +195,20 @@ public class CircuitSimulationTool extends StgSimulationTool {
                 });
 
         VisualContact contact = null;
-        if (node instanceof VisualCircuitComponent) {
-            VisualFunctionComponent component = (VisualFunctionComponent) node;
-            if (!component.getIsZeroDelay()) {
-                contact = component.getMainVisualOutput();
-            }
-        } else if (node instanceof VisualContact) {
+        if (node instanceof VisualContact) {
             contact = (VisualContact) node;
+        } else if (node instanceof VisualFunctionComponent) {
+            VisualFunctionComponent component = (VisualFunctionComponent) node;
+            Collection<VisualContact> excitedOutputs = getExcitedOutputs(component);
+            if (excitedOutputs.size() == 1) {
+                contact = excitedOutputs.iterator().next();
+            } else if (excitedOutputs.size() > 1) {
+                flashIssue(e.getEditor(), "More than one output of this component is enabled.");
+            }
         }
 
         if (contact != null) {
+            hideIssue(e.getEditor());
             HashSet<SignalTransition> transitions = getContactExcitedTransitions(contact);
             SignalTransition transition = null;
             Node traceCurrentNode = getTraceCurrentNode();
@@ -227,8 +244,8 @@ public class CircuitSimulationTool extends StgSimulationTool {
     }
 
     @Override
-    public String getHintMessage() {
-        return "Click on a highlighted contact to toggle its signal state.";
+    public String getHintText() {
+        return "Click on a highlighted contact or component to toggle its state.";
     }
 
     @Override
@@ -258,18 +275,23 @@ public class CircuitSimulationTool extends StgSimulationTool {
     }
 
     protected Decoration getFunctionComponentDecoration(VisualFunctionComponent component) {
-        VisualContact contact = component.getMainVisualOutput();
-        if (component.getIsZeroDelay() || (contact == null)) {
-            return null;
+        boolean hasSuggestedOutput = false;
+        Collection<VisualContact> excitedOutputs = getExcitedOutputs(component);
+        if (!excitedOutputs.isEmpty()) {
+            Node traceCurrentNode = getTraceCurrentNode();
+            for (VisualContact output: excitedOutputs) {
+                Pair<SignalStg, Boolean> signalStgAndInversion = converter.getSignalStgAndInvertion(output);
+                if (signalStgAndInversion != null) {
+                    SignalStg signalStg = signalStgAndInversion.getFirst();
+                    if (signalStg.contains(traceCurrentNode)) {
+                        hasSuggestedOutput = true;
+                        break;
+                    }
+                }
+            }
         }
-        Pair<SignalStg, Boolean> signalStgAndInversion = converter.getSignalStgAndInvertion(contact);
-        if (signalStgAndInversion == null) {
-            return null;
-        }
-        Node traceCurrentNode = getTraceCurrentNode();
-        SignalStg signalStg = signalStgAndInversion.getFirst();
-        final boolean isExcited = !getContactExcitedTransitions(contact).isEmpty();
-        final boolean isSuggested = isExcited && signalStg.contains(traceCurrentNode);
+        final boolean isExcited = !excitedOutputs.isEmpty();
+        final boolean isSuggested = hasSuggestedOutput;
         return new Decoration() {
             @Override
             public Color getColorisation() {

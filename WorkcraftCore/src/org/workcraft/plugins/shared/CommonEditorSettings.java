@@ -54,37 +54,52 @@ public class CommonEditorSettings implements Settings {
     private static final String prefix = "CommonEditorSettings";
 
     private static final String keyBackgroundColor = prefix + ".backgroundColor";
-    private static final String keyShowGrid = prefix + ".showGrid";
+    private static final String keyGridVisibility = prefix + ".gridVisibility";
     private static final String keyLightGrid = prefix + ".lightGrid";
-    private static final String keyShowRulers = prefix + ".showRulers";
-    private static final String keyShowHints = prefix + ".showHints";
+    private static final String keyRulerVisibility = prefix + ".rulerVisibility";
+    private static final String keyHintVisibility = prefix + ".hintVisibility";
+    private static final String keyHintColor = prefix + ".hintColor";
+    private static final String keyIssueVisibility = prefix + ".issueVisibility";
+    private static final String keyIssueColor = prefix + ".issueColor";
+    private static final String keyFlashInterval = prefix + ".flashInterval";
     private static final String keyRecentCount = prefix + ".recentCount";
     private static final String keyTitleStyle = prefix + ".titleStyle";
     private static final String keyShowAbsolutePaths = prefix + ".showAbsolutePaths";
     private static final String keyOpenNonvisual = prefix + ".openNonvisual";
     private static final String keyFlatNameSeparator = prefix + ".flatNameSeparator";
+    private static final String keyRedrawInterval = prefix + ".redrawInterval";
 
     private static final Color defaultBackgroundColor = Color.WHITE;
-    private static final boolean defaultShowGrid = true;
+    private static final boolean defaultGridVisibility = true;
     private static final boolean defaultLightGrid = true;
-    private static final boolean defaultShowRulers = true;
-    private static final boolean defaultShowHints = true;
+    private static final boolean defaultRulerVisibility = false;
+    private static final boolean defaultHintVisibility = true;
+    private static final Color defaultHintColor = Color.BLACK;
+    private static final boolean defaultIssueVisibility = true;
+    private static final Color defaultIssueColor = Color.RED;
+    private static final Integer defaultFlashInterval = 2000;
     private static final int defaultRecentCount = 10;
     private static final TitleStyle defaultTitleStyle = TitleStyle.SHORT;
     private static final boolean defaultShowAbsolutePaths = false;
     private static final boolean defaultOpenNonvisual = true;
     private static String defaultFlatNameSeparator = "__";
+    private static final Integer defaultRedrawInterval = 20;
 
     private static Color backgroundColor = defaultBackgroundColor;
-    private static boolean showGrid = defaultShowGrid;
+    private static boolean gridVisibility = defaultGridVisibility;
     private static boolean lightGrid = defaultLightGrid;
-    private static boolean showRulers = defaultShowRulers;
-    private static boolean showHints = defaultShowHints;
+    private static boolean rulerVisibility = defaultRulerVisibility;
+    private static boolean hintVisibility = defaultHintVisibility;
+    private static Color hintColor = defaultHintColor;
+    private static boolean issueVisibility = defaultIssueVisibility;
+    private static Color issueColor = defaultIssueColor;
+    private static Integer flashInterval = defaultFlashInterval;
     private static int recentCount = defaultRecentCount;
     private static TitleStyle titleStyle = defaultTitleStyle;
     private static boolean showAbsolutePaths = defaultShowAbsolutePaths;
     private static boolean openNonvisual = defaultOpenNonvisual;
     private static String flatNameSeparator = defaultFlatNameSeparator;
+    private static Integer redrawInterval = defaultRedrawInterval;
 
     public CommonEditorSettings() {
         properties.add(new PropertyDeclaration<CommonEditorSettings, Color>(
@@ -100,10 +115,10 @@ public class CommonEditorSettings implements Settings {
         properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
                 this, "Show grid", Boolean.class, true, false, false) {
             protected void setter(CommonEditorSettings object, Boolean value) {
-                setShowGrid(value);
+                setGridVisibility(value);
             }
             protected Boolean getter(CommonEditorSettings object) {
-                return getShowGrid();
+                return getGridVisibility();
             }
         });
 
@@ -120,20 +135,60 @@ public class CommonEditorSettings implements Settings {
         properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
                 this, "Show rulers", Boolean.class, true, false, false) {
             protected void setter(CommonEditorSettings object, Boolean value) {
-                setShowRulers(value);
+                setRulerVisibility(value);
             }
             protected Boolean getter(CommonEditorSettings object) {
-                return getShowRulers();
+                return getRulerVisibility();
             }
         });
 
         properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
                 this, "Show hints", Boolean.class, true, false, false) {
             protected void setter(CommonEditorSettings object, Boolean value) {
-                setShowHints(value);
+                setHintVisibility(value);
             }
             protected Boolean getter(CommonEditorSettings object) {
-                return getShowHints();
+                return getHintVisibility();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CommonEditorSettings, Color>(
+                this, "Hint color", Color.class, true, false, false) {
+            protected void setter(CommonEditorSettings object, Color value) {
+                setHintColor(value);
+            }
+            protected Color getter(CommonEditorSettings object) {
+                return getHintColor();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
+                this, "Show issues", Boolean.class, true, false, false) {
+            protected void setter(CommonEditorSettings object, Boolean value) {
+                setIssueVisibility(value);
+            }
+            protected Boolean getter(CommonEditorSettings object) {
+                return getIssueVisibility();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CommonEditorSettings, Color>(
+                this, "Issue color", Color.class, true, false, false) {
+            protected void setter(CommonEditorSettings object, Color value) {
+                setIssueColor(value);
+            }
+            protected Color getter(CommonEditorSettings object) {
+                return getIssueColor();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CommonEditorSettings, Integer>(
+                this, "Issue visibility interval (ms)", Integer.class, true, false, false) {
+            protected void setter(CommonEditorSettings object, Integer value) {
+                setFlashInterval(value);
+            }
+            protected Integer getter(CommonEditorSettings object) {
+                return getFlashInterval();
             }
         });
 
@@ -158,7 +213,7 @@ public class CommonEditorSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<CommonEditorSettings, Boolean>(
-                this, "Names shown with absolute paths", Boolean.class, true, false, false) {
+                this, "Show names as absolute paths", Boolean.class, true, false, false) {
             protected void setter(CommonEditorSettings object, Boolean value) {
                 setShowAbsolutePaths(value);
             }
@@ -207,6 +262,16 @@ public class CommonEditorSettings implements Settings {
                 return getFlatNameSeparator();
             }
         });
+
+        properties.add(new PropertyDeclaration<CommonEditorSettings, Integer>(
+                this, "Minimal redraw interval (ms)", Integer.class, true, false, false) {
+            protected void setter(CommonEditorSettings object, Integer value) {
+                setRedrawInterval(value);
+            }
+            protected Integer getter(CommonEditorSettings object) {
+                return getRedrawInterval();
+            }
+        });
     }
 
     @Override
@@ -217,29 +282,39 @@ public class CommonEditorSettings implements Settings {
     @Override
     public void load(Config config) {
         setBackgroundColor(config.getColor(keyBackgroundColor, defaultBackgroundColor));
-        setShowGrid(config.getBoolean(keyShowGrid, defaultShowGrid));
+        setGridVisibility(config.getBoolean(keyGridVisibility, defaultGridVisibility));
         setLightGrid(config.getBoolean(keyLightGrid, defaultLightGrid));
-        setShowRulers(config.getBoolean(keyShowRulers, defaultShowRulers));
-        setShowHints(config.getBoolean(keyShowHints, defaultShowHints));
+        setRulerVisibility(config.getBoolean(keyRulerVisibility, defaultRulerVisibility));
+        setHintVisibility(config.getBoolean(keyHintVisibility, defaultHintVisibility));
+        setHintColor(config.getColor(keyHintColor, defaultHintColor));
+        setIssueVisibility(config.getBoolean(keyIssueVisibility, defaultIssueVisibility));
+        setFlashInterval(config.getInt(keyFlashInterval, defaultFlashInterval));
+        setIssueColor(config.getColor(keyIssueColor, defaultIssueColor));
         setRecentCount(config.getInt(keyRecentCount, defaultRecentCount));
         setTitleStyle(config.getEnum(keyTitleStyle, TitleStyle.class, defaultTitleStyle));
         setShowAbsolutePaths(config.getBoolean(keyShowAbsolutePaths, defaultShowAbsolutePaths));
         setOpenNonvisual(config.getBoolean(keyOpenNonvisual, defaultOpenNonvisual));
         setFlatNameSeparator(config.getString(keyFlatNameSeparator, defaultFlatNameSeparator));
+        setRedrawInterval(config.getInt(keyRedrawInterval, defaultRedrawInterval));
     }
 
     @Override
     public void save(Config config) {
         config.setColor(keyBackgroundColor, getBackgroundColor());
-        config.setBoolean(keyShowGrid, getShowGrid());
+        config.setBoolean(keyGridVisibility, getGridVisibility());
         config.setBoolean(keyLightGrid, getLightGrid());
-        config.setBoolean(keyShowRulers, getShowRulers());
-        config.setBoolean(keyShowHints, getShowHints());
+        config.setBoolean(keyRulerVisibility, getRulerVisibility());
+        config.setBoolean(keyHintVisibility, getHintVisibility());
+        config.setColor(keyHintColor, getHintColor());
+        config.setBoolean(keyIssueVisibility, getIssueVisibility());
+        config.setColor(keyIssueColor, getIssueColor());
+        config.setInt(keyFlashInterval, getFlashInterval());
         config.setInt(keyRecentCount, getRecentCount());
         config.setEnum(keyTitleStyle, TitleStyle.class, getTitleStyle());
         config.setBoolean(keyShowAbsolutePaths, getShowAbsolutePaths());
         config.setBoolean(keyOpenNonvisual, getOpenNonvisual());
         config.set(keyFlatNameSeparator, getFlatNameSeparator());
+        config.setInt(keyRedrawInterval, getRedrawInterval());
     }
 
     @Override
@@ -260,12 +335,12 @@ public class CommonEditorSettings implements Settings {
         backgroundColor = value;
     }
 
-    public static void setShowGrid(Boolean value) {
-        showGrid = value;
+    public static void setGridVisibility(Boolean value) {
+        gridVisibility = value;
     }
 
-    public static Boolean getShowGrid() {
-        return showGrid;
+    public static Boolean getGridVisibility() {
+        return gridVisibility;
     }
 
     public static void setLightGrid(Boolean value) {
@@ -276,20 +351,52 @@ public class CommonEditorSettings implements Settings {
         return lightGrid;
     }
 
-    public static void setShowRulers(Boolean value) {
-        showRulers = value;
+    public static void setRulerVisibility(Boolean value) {
+        rulerVisibility = value;
     }
 
-    public static Boolean getShowRulers() {
-        return showRulers;
+    public static Boolean getRulerVisibility() {
+        return rulerVisibility;
     }
 
-    public static void setShowHints(Boolean value) {
-        showHints = value;
+    public static void setHintVisibility(Boolean value) {
+        hintVisibility = value;
     }
 
-    public static Boolean getShowHints() {
-        return showHints;
+    public static Boolean getHintVisibility() {
+        return hintVisibility;
+    }
+
+    public static Color getHintColor() {
+        return hintColor;
+    }
+
+    public static void setHintColor(Color value) {
+        hintColor = value;
+    }
+
+    public static void setIssueVisibility(Boolean value) {
+        issueVisibility = value;
+    }
+
+    public static Boolean getIssueVisibility() {
+        return issueVisibility;
+    }
+
+    public static Color getIssueColor() {
+        return issueColor;
+    }
+
+    public static void setIssueColor(Color value) {
+        issueColor = value;
+    }
+
+    public static void setFlashInterval(Integer value) {
+        flashInterval = value;
+    }
+
+    public static Integer getFlashInterval() {
+        return flashInterval;
     }
 
     public static int getRecentCount() {
@@ -338,6 +445,14 @@ public class CommonEditorSettings implements Settings {
         if (value.length() > 0) {
             flatNameSeparator = value;
         }
+    }
+
+    public static void setRedrawInterval(Integer value) {
+        redrawInterval = value;
+    }
+
+    public static Integer getRedrawInterval() {
+        return redrawInterval;
     }
 
 }

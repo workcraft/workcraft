@@ -64,7 +64,7 @@ public class InitialisationAnalyserTool extends AbstractTool {
     }
 
     @Override
-    public String getHintMessage() {
+    public String getHintText() {
         return "Click on a driver contact to toggle its force initialisation state.";
     }
 

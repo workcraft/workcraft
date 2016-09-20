@@ -173,7 +173,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         gridToggler.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                CommonEditorSettings.setShowGrid(!CommonEditorSettings.getShowGrid());
+                CommonEditorSettings.setGridVisibility(!CommonEditorSettings.getGridVisibility());
                 repaint();
             }
         });
@@ -212,7 +212,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         rulerToggler.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                CommonEditorSettings.setShowRulers(!CommonEditorSettings.getShowRulers());
+                CommonEditorSettings.setRulerVisibility(!CommonEditorSettings.getRulerVisibility());
                 repaint();
             }
         });
@@ -234,7 +234,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         add(overlay, BorderLayout.CENTER);
 
         // FIXME: timers need to be stopped at some point
-        Timer updateEditorPanelTimer = new Timer(CommonVisualSettings.getRedrawInterval(), new ActionListener() {
+        Timer updateEditorPanelTimer = new Timer(CommonEditorSettings.getRedrawInterval(), new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 if (updateEditorPanelRequested) {
@@ -248,7 +248,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
             }
         });
 
-        Timer updatePropertyTimer = new Timer(CommonVisualSettings.getRedrawInterval(), new ActionListener() {
+        Timer updatePropertyTimer = new Timer(CommonEditorSettings.getRedrawInterval(), new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent arg0) {
                 if (updatePropertyViewRequested) {
@@ -285,17 +285,17 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     @Override
     public void paint(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
-        gridToggler.setSelected(CommonEditorSettings.getShowGrid());
+        gridToggler.setSelected(CommonEditorSettings.getGridVisibility());
         nameToggler.setSelected(CommonVisualSettings.getNameVisibility());
         labelToggler.setSelected(CommonVisualSettings.getLabelVisibility());
-        rulerToggler.setSelected(CommonEditorSettings.getShowRulers());
+        rulerToggler.setSelected(CommonEditorSettings.getRulerVisibility());
 
         AffineTransform screenTransform = (AffineTransform) g2d.getTransform().clone();
 
         g2d.setBackground(CommonEditorSettings.getBackgroundColor());
         g2d.clearRect(0, 0, getWidth(), getHeight());
 
-        if (CommonEditorSettings.getShowGrid()) {
+        if (CommonEditorSettings.getGridVisibility()) {
             grid.draw(g2d);
         }
         g2d.setTransform(screenTransform);
@@ -321,7 +321,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         }
         g2d.setTransform(screenTransform);
 
-        if (CommonEditorSettings.getShowRulers()) {
+        if (CommonEditorSettings.getRulerVisibility()) {
             ruler.draw(g2d);
         }
 
