@@ -25,6 +25,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 
+import org.workcraft.Framework;
 import org.workcraft.NodeTransformer;
 import org.workcraft.TransformationTool;
 import org.workcraft.dom.Model;
@@ -33,6 +34,7 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanOperations;
 import org.workcraft.formula.utils.BooleanUtils;
+import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
@@ -130,6 +132,9 @@ public class BubbleToggleTool extends TransformationTool implements NodeTransfor
                 for (VisualFunctionContact contact: contacts) {
                     transform(visualModel, contact);
                 }
+                Framework framework = Framework.getInstance();
+                GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
+                editor.repaint();
             }
         }
     }
@@ -143,21 +148,21 @@ public class BubbleToggleTool extends TransformationTool implements NodeTransfor
                 BooleanFormula setFunction = contact.getSetFunction();
                 BooleanFormula resetFunction = contact.getResetFunction();
                 if (resetFunction == null) {
-                    contact.setSetFunction(BooleanOperations.not(setFunction));
+                    contact.setSetFunctionQuiet(BooleanOperations.not(setFunction));
                 } else {
-                    contact.setSetFunction(resetFunction);
-                    contact.setResetFunction(setFunction);
+                    contact.setSetFunctionQuiet(resetFunction);
+                    contact.setResetFunctionQuiet(setFunction);
                 }
             } else {
                 for (FunctionContact dependantContact: getDependantContacts(contact)) {
                     BooleanFormula setFunction = dependantContact.getSetFunction();
                     BooleanFormula notContact = BooleanOperations.not(contact);
                     if (setFunction != null) {
-                        dependantContact.setSetFunction(BooleanUtils.prettifyReplace(setFunction, contact, notContact));
+                        dependantContact.setSetFunctionQuiet(BooleanUtils.dumbReplace(setFunction, contact, notContact));
                     }
                     BooleanFormula resetFunction = dependantContact.getResetFunction();
                     if (resetFunction != null) {
-                        dependantContact.setSetFunction(BooleanUtils.prettifyReplace(resetFunction, contact, notContact));
+                        dependantContact.setResetFunctionQuiet(BooleanUtils.dumbReplace(resetFunction, contact, notContact));
                     }
                 }
             }

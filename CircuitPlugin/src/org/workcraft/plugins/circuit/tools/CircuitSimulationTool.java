@@ -1,7 +1,6 @@
 package org.workcraft.plugins.circuit.tools;
 
 import java.awt.Color;
-import java.util.Collection;
 import java.util.HashSet;
 
 import org.workcraft.Trace;
@@ -186,10 +185,7 @@ public class CircuitSimulationTool extends StgSimulationTool {
         if (node instanceof VisualCircuitComponent) {
             VisualFunctionComponent component = (VisualFunctionComponent) node;
             if (!component.getIsZeroDelay()) {
-                Collection<VisualContact> outputContacts = component.getVisualOutputs();
-                if (outputContacts.size() == 1) {
-                    contact = outputContacts.iterator().next();
-                }
+                contact = component.getMainVisualOutput();
             }
         } else if (node instanceof VisualContact) {
             contact = (VisualContact) node;
@@ -262,11 +258,10 @@ public class CircuitSimulationTool extends StgSimulationTool {
     }
 
     protected Decoration getFunctionComponentDecoration(VisualFunctionComponent component) {
-        Collection<VisualContact> outputContacts = component.getVisualOutputs();
-        if (component.getIsZeroDelay() || (outputContacts.size() != 1)) {
+        VisualContact contact = component.getMainVisualOutput();
+        if (component.getIsZeroDelay() || (contact == null)) {
             return null;
         }
-        VisualContact contact = outputContacts.iterator().next();
         Pair<SignalStg, Boolean> signalStgAndInversion = converter.getSignalStgAndInvertion(contact);
         if (signalStgAndInversion == null) {
             return null;
