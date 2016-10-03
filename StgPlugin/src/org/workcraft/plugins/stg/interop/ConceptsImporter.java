@@ -44,7 +44,9 @@ public class ConceptsImporter implements Importer {
             if (result.getOutcome() == Outcome.FINISHED) {
                 String output = new String(result.getReturnValue().getOutput());
                 if (output.startsWith(".model")) {
-                    StgModel stg = new DotGImporter().importSTG(new ByteArrayInputStream(result.getReturnValue().getOutput()));
+                    DotGImporter importer = new DotGImporter();
+                    ByteArrayInputStream is = new ByteArrayInputStream(result.getReturnValue().getOutput());
+                    StgModel stg = importer.importSTG(is);
                     return new ModelEntry(new StgDescriptor(), stg);
                 }
             }
