@@ -14,7 +14,7 @@ repositories {
 }
 
 ext {
-    checkstyleVersion = '7.0'
+    checkstyleVersion = '7.1.2'
     pmdVersion = '5.5.1'
     jacocoVersion = '0.7.7.201606060606'
 }

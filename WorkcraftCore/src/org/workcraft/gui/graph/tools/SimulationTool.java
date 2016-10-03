@@ -935,7 +935,7 @@ public abstract class SimulationTool extends AbstractTool implements ClipboardOw
 
     public abstract void writeModelState(Map<Node, Integer> state);
 
-    public abstract void applySavedState(final GraphEditor editor);
+    public abstract void applySavedState(GraphEditor editor);
 
     public abstract ArrayList<Node> getEnabledNodes();
 

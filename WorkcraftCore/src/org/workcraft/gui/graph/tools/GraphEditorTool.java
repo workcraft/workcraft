@@ -28,16 +28,16 @@ import javax.swing.Icon;
 import javax.swing.JPanel;
 
 public interface GraphEditorTool extends GraphEditorKeyListener, GraphEditorMouseListener {
-    void activated(final GraphEditor editor);
-    void deactivated(final GraphEditor editor);
-    void reactivated(final GraphEditor editor);
-    void setup(final GraphEditor editor);
+    void activated(GraphEditor editor);
+    void deactivated(GraphEditor editor);
+    void reactivated(GraphEditor editor);
+    void setup(GraphEditor editor);
 
-    void drawInUserSpace(final GraphEditor editor, Graphics2D g);
-    void drawInScreenSpace(final GraphEditor editor, Graphics2D g);
-    Decorator getDecorator(final GraphEditor editor);
+    void drawInUserSpace(GraphEditor editor, Graphics2D g);
+    void drawInScreenSpace(GraphEditor editor, Graphics2D g);
+    Decorator getDecorator(GraphEditor editor);
 
-    void createInterfacePanel(final GraphEditor editor);
+    void createInterfacePanel(GraphEditor editor);
     JPanel getInterfacePanel();
 
     String getLabel();
@@ -47,7 +47,7 @@ public interface GraphEditorTool extends GraphEditorKeyListener, GraphEditorMous
     Cursor getCursor();
     boolean requiresButton();
 
-    void flashIssue(final GraphEditor editor, String message);
-    void showIssue(final GraphEditor editor, String message);
-    void hideIssue(final GraphEditor editor);
+    void flashIssue(GraphEditor editor, String message);
+    void showIssue(GraphEditor editor, String message);
+    void hideIssue(GraphEditor editor);
 }
