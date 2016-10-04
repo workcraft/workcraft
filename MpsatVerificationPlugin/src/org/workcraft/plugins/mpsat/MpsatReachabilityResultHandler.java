@@ -60,7 +60,8 @@ final class MpsatReachabilityResultHandler implements Runnable {
             return null;
         }
         try {
-            return new DotGImporter().importSTG(new ByteArrayInputStream(content));
+            DotGImporter importer = new DotGImporter();
+            return importer.importSTG(new ByteArrayInputStream(content));
         } catch (DeserialisationException e) {
             throw new RuntimeException(e);
         }
@@ -119,6 +120,16 @@ final class MpsatReachabilityResultHandler implements Runnable {
         return result;
     }
 
+    private HashSet<SignalTransition> getDisabledOutputTransitions(StgModel stg) {
+        HashSet<SignalTransition> result = new HashSet<>();
+        for (SignalTransition transition: stg.getSignalTransitions()) {
+            if ((transition.getSignalType() == Type.OUTPUT) && !stg.isEnabled(transition)) {
+                result.add(transition);
+            }
+        }
+        return result;
+    }
+
     private HashSet<String> getEnabledLocalSignals(StgModel stg) {
         HashSet<String> result = new HashSet<>();
         for (SignalTransition transition: getEnabledSignalTransitions(stg)) {
@@ -143,9 +154,11 @@ final class MpsatReachabilityResultHandler implements Runnable {
         StgModel stg = getInputStg();
         if ((solution != null) && (stg != null)) {
             Trace mainTrace = solution.getMainTrace();
-            LogUtils.logMessageLine("Extending output persistency violation trace: ");
-            LogUtils.logMessageLine("  original:" + mainTrace);
             if (fireTrace(stg, mainTrace)) {
+                LogUtils.logWarningLine("Cannot execute output persistency trace:" + mainTrace);
+            } else {
+                LogUtils.logMessageLine("Extending output persistency violation trace: ");
+                LogUtils.logMessageLine("  original:" + mainTrace);
                 HashSet<String> enabledLocalSignals = getEnabledLocalSignals(stg);
                 for (SignalTransition transition: getEnabledSignalTransitions(stg)) {
                     stg.fire(transition);
@@ -157,15 +170,15 @@ final class MpsatReachabilityResultHandler implements Runnable {
                         if (nonpersistentLocalSignals.size() > 1) {
                             solution.setComment("Non-persistent signals " + signalList);
                         } else {
-                            solution.setComment("Non-persistent signal " + signalList);
+                            solution.setComment("Non-persistent signal '" + signalList + "'");
                         }
                         mainTrace.add(stg.getNodeReference(transition));
                         break;
                     }
                     stg.unFire(transition);
                 }
+                LogUtils.logMessageLine("  extended:" + mainTrace);
             }
-            LogUtils.logMessageLine("  extended:" + mainTrace);
         }
     }
 
@@ -174,29 +187,35 @@ final class MpsatReachabilityResultHandler implements Runnable {
         HashSet<StgPlace> devPlaces = getDevPlaces(stg);
         if ((solution != null) && (stg != null)) {
             Trace mainTrace = solution.getMainTrace();
-            LogUtils.logMessageLine("Extending conformation violation trace: ");
-            LogUtils.logMessageLine("  original:" + mainTrace);
-            if (fireTrace(stg, mainTrace)) {
-                for (SignalTransition transition: stg.getSignalTransitions(Type.OUTPUT)) {
-                    boolean isDevEnabled = true;
-                    for (Node predNode: stg.getPreset(transition)) {
-                        if (predNode instanceof StgPlace) {
-                            StgPlace predPlace = (StgPlace) predNode;
-                            if ((predPlace.getTokens() == 0) && (devPlaces.contains(predPlace))) {
-                                isDevEnabled = false;
-                                break;
+            if (!fireTrace(stg, mainTrace)) {
+                LogUtils.logWarningLine("Cannot execute conformation violation trace:" + mainTrace);
+            } else {
+                LogUtils.logMessageLine("Extending conformation violation trace: ");
+                LogUtils.logMessageLine("  original:" + mainTrace);
+                HashSet<String> enabledOutputSignals = getEnabledOutputSignals(stg);
+                for (SignalTransition transition: getDisabledOutputTransitions(stg)) {
+                    String signalName = transition.getSignalName();
+                    if (!enabledOutputSignals.contains(signalName)) {
+                        boolean isDevEnabled = true;
+                        for (Node predNode: stg.getPreset(transition)) {
+                            if (predNode instanceof StgPlace) {
+                                StgPlace predPlace = (StgPlace) predNode;
+                                if ((predPlace.getTokens() == 0) && devPlaces.contains(predPlace)) {
+                                    isDevEnabled = false;
+                                    break;
+                                }
                             }
                         }
-                    }
-                    if (isDevEnabled) {
-                        String signal = transition.getSignalName();
-                        solution.setComment("Unexpected change of output " + signal);
-                        mainTrace.add(stg.getNodeReference(transition));
-                        break;
+                        if (isDevEnabled) {
+                            String signal = transition.getSignalName();
+                            solution.setComment("Unexpected change of output '" + signal + "'");
+                            mainTrace.add(stg.getNodeReference(transition));
+                            break;
+                        }
                     }
                 }
+                LogUtils.logMessageLine("  extended:" + mainTrace);
             }
-            LogUtils.logMessageLine("  extended:" + mainTrace);
         }
     }
 
