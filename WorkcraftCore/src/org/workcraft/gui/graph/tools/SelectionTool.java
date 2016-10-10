@@ -312,27 +312,29 @@ public class SelectionTool extends AbstractTool {
         }
 
         VisualModel model = e.getModel();
+        GraphEditor editor = e.getEditor();
+        Point2D position = e.getPosition();
         if (e.getButton() == MouseEvent.BUTTON1) {
-            Node node = HitMan.hitTestForSelection(e.getPosition(), model);
+            Node node = HitMan.hitTestForSelection(position, model);
             if (node == null) {
                 if (e.getClickCount() > 1) {
                     if (model.getCurrentLevel() instanceof VisualGroup) {
                         VisualGroup currentGroup = (VisualGroup) model.getCurrentLevel();
-                        Rectangle2D bb = currentGroup.getBoundingBox();
-                        Point2D pos = currentGroup.getRootSpacePosition();
-                        Rectangle2D bbInRootSpace = BoundingBoxHelper.move(bb, pos);
-                        if (!bbInRootSpace.contains(e.getPosition())) {
-                            changeLevelUp(e.getEditor());
+                        Rectangle2D bbInLocalSpace = currentGroup.getBoundingBoxInLocalSpace();
+                        Point2D posInRootSpace = currentGroup.getRootSpacePosition();
+                        Rectangle2D bbInRootSpace = BoundingBoxHelper.move(bbInLocalSpace, posInRootSpace);
+                        if (!bbInRootSpace.contains(position)) {
+                            changeLevelUp(editor);
                             return;
                         }
                     }
                     if (model.getCurrentLevel() instanceof VisualPage) {
                         VisualPage currentPage = (VisualPage) model.getCurrentLevel();
-                        Rectangle2D bb = currentPage.getBoundingBox();
-                        Point2D pos = currentPage.getRootSpacePosition();
-                        Rectangle2D bbInRootSpace = BoundingBoxHelper.move(bb, pos);
-                        if (!bbInRootSpace.contains(e.getPosition())) {
-                            changeLevelUp(e.getEditor());
+                        Rectangle2D bbInLocalSpace = currentPage.getBoundingBoxInLocalSpace();
+                        Point2D posInRootSpace = currentPage.getRootSpacePosition();
+                        Rectangle2D bbInRootSpace = BoundingBoxHelper.move(bbInLocalSpace, posInRootSpace);
+                        if (!bbInRootSpace.contains(position)) {
+                            changeLevelUp(editor);
                             return;
                         }
                     }
@@ -345,12 +347,12 @@ public class SelectionTool extends AbstractTool {
             } else {
                 if (e.getClickCount() > 1) {
                     if (node instanceof VisualGroup || node instanceof VisualPage) {
-                        changeLevelDown(e.getEditor());
+                        changeLevelDown(editor);
                         return;
 
                     } else if (node instanceof VisualComment) {
                         VisualComment comment = (VisualComment) node;
-                        editLabelInPlace(e.getEditor(), comment, comment.getLabel());
+                        editLabelInPlace(editor, comment, comment.getLabel());
                         return;
                     }
                 } else {
@@ -378,8 +380,8 @@ public class SelectionTool extends AbstractTool {
         }
 
         if (e.getButton() == MouseEvent.BUTTON3) {
-            VisualNode node = (VisualNode) HitMan.hitTestForPopup(e.getPosition(), model);
-            JPopupMenu popup = createPopupMenu(node, e.getEditor());
+            VisualNode node = (VisualNode) HitMan.hitTestForPopup(position, model);
+            JPopupMenu popup = createPopupMenu(node, editor);
             if (popup != null) {
                 if (node == null) {
                     model.selectNone();
