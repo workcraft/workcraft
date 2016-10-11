@@ -46,6 +46,7 @@ public class Console {
         //Allows menu bar of OS X to be used instead of being in the Workcraft main window.
         if (DesktopApi.getOs().isMac()) {
             System.setProperty("apple.laf.useScreenMenuBar", "true");
+            System.setProperty("apple.eawt.quitStrategy", "CLOSE_ALL_WINDOWS");
         }
     }
 

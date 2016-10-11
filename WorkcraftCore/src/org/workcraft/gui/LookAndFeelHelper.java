@@ -26,8 +26,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import javax.swing.InputMap;
+import javax.swing.KeyStroke;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+import javax.swing.text.DefaultEditorKit;
 
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.api.SubstanceConstants.TabContentPaneBorderKind;
@@ -56,6 +58,10 @@ public class LookAndFeelHelper {
         InputMap textAreaInputMap = (InputMap) UIManager.get("TextArea.focusInputMap");
         setLookAndFeel(laf);
         if (DesktopApi.getOs().isMac()) {
+            textFieldInputMap.put(KeyStroke.getKeyStroke("UP"), DefaultEditorKit.upAction);
+            textAreaInputMap.put(KeyStroke.getKeyStroke("UP"), DefaultEditorKit.upAction);
+            textFieldInputMap.put(KeyStroke.getKeyStroke("DOWN"), DefaultEditorKit.downAction);
+            textAreaInputMap.put(KeyStroke.getKeyStroke("DOWN"), DefaultEditorKit.downAction);
             UIManager.put("TextField.focusInputMap", textFieldInputMap);
             UIManager.put("TextArea.focusInputMap", textAreaInputMap);
         }
