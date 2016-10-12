@@ -15,6 +15,7 @@ import java.io.PrintWriter;
 import java.util.Scanner;
 
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
@@ -37,11 +38,11 @@ public class ConceptsWriterDialog extends JDialog {
 
     private final JPanel content, btnPanel;
     private JTextArea conceptsText;
+    private JCheckBox dotLayoutCheckBox;
     private boolean changed = false, translate = false;
 
     public ConceptsWriterDialog() {
         super(Framework.getInstance().getMainWindow(), "Write and translate Concepts", ModalityType.APPLICATION_MODAL);
-        //updateLastDirUsed();
 
         content = new JPanel();
         content.setLayout(new BorderLayout());
@@ -114,10 +115,12 @@ public class ConceptsWriterDialog extends JDialog {
         JButton openFileBtn = GUI.createDialogButton("Open file");
         JButton saveFileBtn = GUI.createDialogButton("Save to file");
         JButton resetBtn = GUI.createDialogButton("Reset to default");
+        dotLayoutCheckBox = new JCheckBox("Use dot layout");
         JPanel fileBtnPanel = new JPanel();
         fileBtnPanel.add(openFileBtn);
         fileBtnPanel.add(saveFileBtn);
         fileBtnPanel.add(resetBtn);
+        fileBtnPanel.add(dotLayoutCheckBox);
 
         openFileBtn.addActionListener(new ActionListener() {
 
@@ -278,6 +281,10 @@ public class ConceptsWriterDialog extends JDialog {
             }
         }
         return lastFileUsed;
+    }
+
+    public boolean getDotLayoutState() {
+        return dotLayoutCheckBox.isSelected();
     }
 
 }
