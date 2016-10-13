@@ -15,6 +15,7 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
+import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
@@ -26,11 +27,49 @@ public class ConceptsLayout {
     private static final double instanceDiff = 1.0;
     private static final double centreXDiff = (xDiff * 2) + 2;
     private static final double replicaDiff = 1.5;
+    private static int prevSize = 0;
 
     public static void layout(VisualStg visualStg) {
-        HashMap<String, HashSet<VisualComponent>> nodeMap = groupBySignal(visualStg);
+        try {
+            HashMap<Type, HashMap<String, HashSet<VisualComponent>>> typeMap = groupBySignalType(visualStg);
 
-        Point2D.Double centre = new Point2D.Double(0, 0);
+            double centreX = 0.0;
+            double centreY = 0.0;
+
+            ArrayList<Type> typeList = new ArrayList<>();
+            typeList.add(Type.INPUT);
+            typeList.add(Type.INTERNAL);
+            typeList.add(Type.OUTPUT);
+
+            for (Type t : typeList) {
+                if (typeMap.containsKey(t)) {
+                    centreX = arrangeNodes(visualStg, typeMap.get(t), centreX, centreY);
+                    centreY = centreY + (yDiff * 2) + 2;
+                }
+            }
+
+            addReplicaPlaces(visualStg);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private static double arrangeNodes(VisualStg visualStg, HashMap<String, HashSet<VisualComponent>> nodeMap, double x, double y) {
+        double leftmost = 0.0;
+        double rightmost = 0.0;
+        int mapSize = nodeMap.values().size();
+
+        if (x != 0 && nodeMap.values().size() > 1) {
+            x = x - (((nodeMap.values().size() - 1) / 2) * centreXDiff);
+            if (prevSize != 0) {
+                if (mapSize % 2 == 0) {
+                    x = x - centreXDiff / 2;
+                }
+            }
+        }
+        prevSize = nodeMap.values().size();
+
+        Point2D.Double centre = new Point2D.Double(x, y);
 
         for (HashSet<VisualComponent> set : nodeMap.values()) {
             HashSet<VisualSignalTransition> plus = new HashSet<>();
@@ -40,8 +79,14 @@ public class ConceptsLayout {
                 if (c instanceof VisualPlace) {
                     if (visualStg.getMathName(c).endsWith("0")) {
                         c.setPosition(new Point2D.Double(centre.getX() - xDiff, centre.getY()));
+                        if ((c.getPosition().getX() < leftmost) || (leftmost == 0.0)) {
+                            leftmost = c.getPosition().getX();
+                        }
                     } else {
                         c.setPosition(new Point2D.Double(centre.getX() + xDiff, centre.getY()));
+                        if ((c.getPosition().getX() > rightmost) || (rightmost == 0.0)) {
+                            rightmost = c.getPosition().getX();
+                        }
                     }
                 }
 
@@ -68,37 +113,68 @@ public class ConceptsLayout {
 
             centre.setLocation(centre.getX() + centreXDiff, centre.getY());
         }
-
-        addReplicaPlaces(visualStg);
+        double diff = rightmost - leftmost;
+        return leftmost + (diff / 2);
     }
 
-    private static HashMap<String, HashSet<VisualComponent>> groupBySignal(VisualStg visualStg) {
-        HashMap<String, HashSet<VisualComponent>> nodeMap = new HashMap<>();
+    private static HashMap<Type, HashMap<String, HashSet<VisualComponent>>> groupBySignalType(VisualStg visualStg) {
+        HashMap<Type, HashMap<String, HashSet<VisualComponent>>> typeMap = new HashMap<>();
 
         for (VisualSignalTransition t : visualStg.getVisualSignalTransitions()) {
             String signalName = t.getSignalName();
-            if (nodeMap.containsKey(signalName)) {
-                nodeMap.get(signalName).add(t);
+            Type signalType = t.getSignalType();
+            if (typeMap.containsKey(signalType)) {
+                HashMap<String, HashSet<VisualComponent>> nodeMap = typeMap.get(signalType);
+                if (nodeMap.containsKey(signalName)) {
+                    nodeMap.get(signalName).add(t);
+                } else {
+                    HashSet<VisualComponent> newSet = new HashSet<>();
+                    newSet.add(t);
+                    nodeMap.put(signalName, newSet);
+                }
             } else {
                 HashSet<VisualComponent> newSet = new HashSet<>();
                 newSet.add(t);
+                HashMap<String, HashSet<VisualComponent>> nodeMap = new HashMap<>();
                 nodeMap.put(signalName, newSet);
+                typeMap.put(signalType, nodeMap);
             }
         }
 
         for (VisualPlace p : visualStg.getVisualPlaces()) {
             String signalName = visualStg.getMathName(p);
             signalName = signalName.substring(0, signalName.length() - 1);
-            if (nodeMap.containsKey(signalName)) {
-                nodeMap.get(signalName).add(p);
+            Type signalType = findSignalType(signalName, typeMap);
+            if (typeMap.containsKey(signalType)) {
+                HashMap<String, HashSet<VisualComponent>> nodeMap = typeMap.get(signalType);
+                if (nodeMap.containsKey(signalName)) {
+                    nodeMap.get(signalName).add(p);
+                } else {
+                    HashSet<VisualComponent> newSet = new HashSet<>();
+                    newSet.add(p);
+                    nodeMap.put(signalName, newSet);
+                }
             } else {
                 HashSet<VisualComponent> newSet = new HashSet<>();
                 newSet.add(p);
+                HashMap<String, HashSet<VisualComponent>> nodeMap = new HashMap<>();
                 nodeMap.put(signalName, newSet);
+                typeMap.put(signalType, nodeMap);
             }
         }
+        return typeMap;
+    }
 
-        return nodeMap;
+    private static Type findSignalType(String signalName, HashMap<Type, HashMap<String, HashSet<VisualComponent>>> typeMap) {
+        for (Type t : typeMap.keySet()) {
+            HashMap<String, HashSet<VisualComponent>> nodeMap = typeMap.get(t);
+            for (String s : nodeMap.keySet()) {
+                if (signalName.equals(s)) {
+                    return t;
+                }
+            }
+        }
+        return null;
     }
 
     private static void addReplicaPlaces(VisualStg visualStg) {

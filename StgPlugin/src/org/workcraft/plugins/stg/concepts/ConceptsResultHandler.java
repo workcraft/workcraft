@@ -139,6 +139,7 @@ public class ConceptsResultHandler extends DummyProgressMonitor<ExternalProcessR
         if (visualStg.getSelection().isEmpty()) {
             return true;
         }
+        visualStg.selectNone();
         return false;
     }
 
