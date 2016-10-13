@@ -92,12 +92,12 @@ for platform in $platforms; do
         dist_path=$dist_path/Contents/Resources
     fi
 
-    cp $core_dir/build/libs/*.jar $dist_path/workcraft.jar
+    mkdir -p $dist_path/bin
 
-    mkdir -p $dist_path/plugins
+    cp $core_dir/build/libs/*.jar $dist_path/bin/
 
     for d in $plugin_dirs; do
-        cp $d/build/libs/*.jar $dist_path/plugins/
+        cp $d/build/libs/*.jar $dist_path/bin/
     done
 
     for d in doc/*; do
