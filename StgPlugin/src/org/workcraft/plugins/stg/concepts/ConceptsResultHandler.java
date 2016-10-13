@@ -17,7 +17,6 @@ import org.workcraft.gui.DockableWindowContentPanel.ViewAction;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.workspace.Path;
-import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.VisualStg;
@@ -29,7 +28,6 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.Import;
 import org.workcraft.workspace.ModelEntry;
-import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class ConceptsResultHandler extends DummyProgressMonitor<ExternalProcessResult> {
@@ -82,13 +80,11 @@ public class ConceptsResultHandler extends DummyProgressMonitor<ExternalProcessR
                                             System.out.println("Expected");
                                             e.printStackTrace();
                                         }
-                                        final Workspace workspace = framework.getWorkspace();
-                                        final Path<String> directory = workspace.getPath(we).getParent();
                                         final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
-                                        workspace.add(directory, name, me, true, true);
+                                        framework.getWorkspace().add(Path.<String>empty(), title + name, me, false, true);
+                                        ConceptsLayout.layout((VisualStg) me.getVisualModel());
                                     } else {
-                                        boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
-                                        framework.getWorkspace().add(Path.<String>empty(), title + name, me, false, openInEditor);
+                                        framework.getWorkspace().add(Path.<String>empty(), title + name, me, false, true);
                                         VisualStg newVisualStg = (VisualStg) me.getVisualModel();
                                         newVisualStg.selectAll();
                                         editor.zoomFit();
