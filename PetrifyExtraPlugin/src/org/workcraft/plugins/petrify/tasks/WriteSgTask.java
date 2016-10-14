@@ -1,5 +1,6 @@
 package org.workcraft.plugins.petrify.tasks;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,18 +17,21 @@ import org.workcraft.util.DataAccumulator;
 import org.workcraft.util.ToolUtils;
 
 public class WriteSgTask implements Task<ExternalProcessResult>, ExternalProcessListener {
-    private final String inputPath, outputPath;
     private final List<String> options;
+    private final File inputFile;
+    private final File outputFile;
+    private final File workingDirectory;
 
     private ProgressMonitor<? super ExternalProcessResult> monitor;
 
     private final DataAccumulator stdoutAccum = new DataAccumulator();
     private final DataAccumulator stderrAccum = new DataAccumulator();
 
-    public WriteSgTask(String inputPath, String outputPath, List<String> options) {
-        this.inputPath = inputPath;
-        this.outputPath = outputPath;
+    public WriteSgTask(List<String> options, File inputFile, File outputFile, File workingDirectory) {
         this.options = options;
+        this.inputFile = inputFile;
+        this.outputFile = outputFile;
+        this.workingDirectory = workingDirectory;
     }
 
     @Override
@@ -47,17 +51,17 @@ public class WriteSgTask implements Task<ExternalProcessResult>, ExternalProcess
         }
 
         // Input file
-        if ((inputPath != null) && !inputPath.isEmpty()) {
-            command.add(inputPath);
+        if (inputFile != null) {
+            command.add(inputFile.getAbsolutePath());
         }
 
         // Output file
-        if ((outputPath != null) && !outputPath.isEmpty()) {
+        if (outputFile != null) {
             command.add("-o");
-            command.add(outputPath);
+            command.add(outputFile.getAbsolutePath());
         }
 
-        ExternalProcessTask task = new ExternalProcessTask(command, null);
+        ExternalProcessTask task = new ExternalProcessTask(command, workingDirectory);
         Result<? extends ExternalProcessResult> res = task.run(monitor);
         if (res.getOutcome() != Outcome.FINISHED) {
             return res;

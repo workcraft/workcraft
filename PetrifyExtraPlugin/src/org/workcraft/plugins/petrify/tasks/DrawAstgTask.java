@@ -1,5 +1,6 @@
 package org.workcraft.plugins.petrify.tasks;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,13 +14,16 @@ import org.workcraft.tasks.Task;
 import org.workcraft.util.ToolUtils;
 
 public class DrawAstgTask implements Task<ExternalProcessResult> {
-    private final String inputPath, outputPath;
     private final List<String> options;
+    private final File inputFile;
+    private final File outputFile;
+    private final File workingDirectory;
 
-    public DrawAstgTask(String inputPath, String outputPath, List<String> options) {
-        this.inputPath = inputPath;
-        this.outputPath = outputPath;
+    public DrawAstgTask(List<String> options, File inputFile, File outputFile, File workingDirectory) {
         this.options = options;
+        this.inputFile = inputFile;
+        this.outputFile = outputFile;
+        this.workingDirectory = workingDirectory;
     }
 
     @Override
@@ -36,13 +40,17 @@ public class DrawAstgTask implements Task<ExternalProcessResult> {
         }
 
         // Input file
-        command.add(inputPath);
+        if (inputFile != null) {
+            command.add(inputFile.getAbsolutePath());
+        }
 
         // Output file
-        command.add("-o");
-        command.add(outputPath);
+        if (outputFile != null) {
+            command.add("-o");
+            command.add(outputFile.getAbsolutePath());
+        }
 
-        ExternalProcessTask task = new ExternalProcessTask(command, null);
+        ExternalProcessTask task = new ExternalProcessTask(command, workingDirectory);
         Result<? extends ExternalProcessResult> res = task.run(monitor);
 
         if (res.getOutcome() != Outcome.FINISHED) {

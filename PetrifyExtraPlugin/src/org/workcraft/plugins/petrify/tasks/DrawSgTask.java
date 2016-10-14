@@ -96,7 +96,7 @@ public class DrawSgTask implements Task<DrawSgResult> {
                 writeSgOptions.add("-bin");
             }
             while (true) {
-                WriteSgTask writeSgTask = new WriteSgTask(stgFile.getAbsolutePath(), sgFile.getAbsolutePath(), writeSgOptions);
+                WriteSgTask writeSgTask = new WriteSgTask(writeSgOptions, stgFile, sgFile, directory);
                 Result<? extends ExternalProcessResult> writeSgResult = framework.getTaskManager().execute(
                         writeSgTask, "Running Petrify");
 
@@ -133,7 +133,7 @@ public class DrawSgTask implements Task<DrawSgResult> {
             if (binary) {
                 drawAstgOptions.add("-bin");
             }
-            DrawAstgTask drawAstgTask = new DrawAstgTask(sgFile.getAbsolutePath(), resultFile.getAbsolutePath(), drawAstgOptions);
+            DrawAstgTask drawAstgTask = new DrawAstgTask(drawAstgOptions, sgFile, resultFile, directory);
             final Result<? extends ExternalProcessResult> drawAstgResult = framework.getTaskManager().execute(drawAstgTask, "Running Petrify");
 
             if (drawAstgResult.getOutcome() != Outcome.FINISHED) {

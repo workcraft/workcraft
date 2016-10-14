@@ -82,7 +82,7 @@ public class AstgExporter implements Exporter {
 
         File resultFile = new File(directory, RESULT_FILE_NAME);
 
-        DrawAstgTask task = new DrawAstgTask(stgFile.getAbsolutePath(), resultFile.getAbsolutePath(), new ArrayList<String>());
+        DrawAstgTask task = new DrawAstgTask(new ArrayList<String>(), stgFile, resultFile, directory);
 
         final Result<? extends ExternalProcessResult> drawAstgResult = framework.getTaskManager().execute(task, "Executing Petrify");
 
