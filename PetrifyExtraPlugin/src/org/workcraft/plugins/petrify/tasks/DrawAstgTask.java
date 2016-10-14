@@ -3,14 +3,14 @@ package org.workcraft.plugins.petrify.tasks;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.workcraft.plugins.petrify.PetrifyExtraUtilitySettings;
+import org.workcraft.plugins.petrify.PetrifyUtilitySettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.ToolUtils;
 import org.workcraft.tasks.Task;
+import org.workcraft.util.ToolUtils;
 
 public class DrawAstgTask implements Task<ExternalProcessResult> {
     private final String inputPath, outputPath;
@@ -27,19 +27,12 @@ public class DrawAstgTask implements Task<ExternalProcessResult> {
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
-        String toolName = ToolUtils.getAbsoluteCommandPath(PetrifyExtraUtilitySettings.getDrawAstgCommand());
+        String toolName = ToolUtils.getAbsoluteCommandPath(PetrifyUtilitySettings.getCommand());
         command.add(toolName);
 
         // Built-in arguments
         for (String arg : options) {
             command.add(arg);
-        }
-
-        // Extra arguments (should go before the file parameters)
-        for (String arg : PetrifyExtraUtilitySettings.getDrawAstgArgs().split("\\s")) {
-            if (!arg.isEmpty()) {
-                command.add(arg);
-            }
         }
 
         // Input file

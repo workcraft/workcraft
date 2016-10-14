@@ -48,7 +48,7 @@ public class AstgExporter implements Exporter {
 
     private static final UUID FORMAT = DesktopApi.getOs().isWindows() ? Format.PS : Format.PDF;
     private static final String EXTENSION = DesktopApi.getOs().isWindows() ? ".ps" : ".pdf";
-    private static final String DESCRIPTION = EXTENSION + " (Petrify draw_astg)";
+    private static final String DESCRIPTION = EXTENSION + " (Petrify)";
     private static final String RESULT_FILE_NAME = "model" + EXTENSION;
     private static final String STG_FILE_NAME = "model.g";
 
@@ -84,7 +84,7 @@ public class AstgExporter implements Exporter {
 
         DrawAstgTask task = new DrawAstgTask(stgFile.getAbsolutePath(), resultFile.getAbsolutePath(), new ArrayList<String>());
 
-        final Result<? extends ExternalProcessResult> drawAstgResult = framework.getTaskManager().execute(task, "Executing draw_astg");
+        final Result<? extends ExternalProcessResult> drawAstgResult = framework.getTaskManager().execute(task, "Executing Petrify");
 
         if (drawAstgResult.getOutcome() != Outcome.FINISHED) {
             if (drawAstgResult.getOutcome() == Outcome.CANCELLED) {
@@ -93,7 +93,7 @@ public class AstgExporter implements Exporter {
                 if (drawAstgResult.getCause() != null) {
                     throw new SerialisationException(drawAstgResult.getCause());
                 } else {
-                    throw new SerialisationException("draw_astg failed with return code " + drawAstgResult.getReturnValue().getReturnCode() + "\n\n" +
+                    throw new SerialisationException("Petrify failed with return code " + drawAstgResult.getReturnValue().getReturnCode() + "\n\n" +
                             new String(drawAstgResult.getReturnValue().getErrors()) + "\n");
                 }
             }
