@@ -91,13 +91,14 @@ public class DrawSgTask implements Task<DrawSgResult> {
             File sgFile = new File(directory, SG_FILE_NAME);
             sgFile.deleteOnExit();
             List<String> writeSgOptions = new ArrayList<>();
+            writeSgOptions.add("-write_sg");
             if (binary) {
                 writeSgOptions.add("-bin");
             }
             while (true) {
                 WriteSgTask writeSgTask = new WriteSgTask(stgFile.getAbsolutePath(), sgFile.getAbsolutePath(), writeSgOptions);
                 Result<? extends ExternalProcessResult> writeSgResult = framework.getTaskManager().execute(
-                        writeSgTask, "Running write_sg");
+                        writeSgTask, "Running Petrify");
 
                 if (writeSgResult.getOutcome() == Outcome.FINISHED) {
                     break;
@@ -127,19 +128,20 @@ public class DrawSgTask implements Task<DrawSgResult> {
             File resultFile = new File(directory, RESULT_FILE_NAME);
             resultFile.deleteOnExit();
             ArrayList<String> drawAstgOptions = new ArrayList<>();
+            drawAstgOptions.add("-draw_astg");
             drawAstgOptions.add("-sg");
             if (binary) {
                 drawAstgOptions.add("-bin");
             }
             DrawAstgTask drawAstgTask = new DrawAstgTask(sgFile.getAbsolutePath(), resultFile.getAbsolutePath(), drawAstgOptions);
-            final Result<? extends ExternalProcessResult> drawAstgResult = framework.getTaskManager().execute(drawAstgTask, "Running draw_astg");
+            final Result<? extends ExternalProcessResult> drawAstgResult = framework.getTaskManager().execute(drawAstgTask, "Running Petrify");
 
             if (drawAstgResult.getOutcome() != Outcome.FINISHED) {
                 if (drawAstgResult.getOutcome() != Outcome.CANCELLED) {
                     if (drawAstgResult.getCause() != null) {
                         return Result.exception(drawAstgResult.getCause());
                     } else {
-                        return Result.failed(new DrawSgResult(null, "Errors running draw_astg: \n"
+                        return Result.failed(new DrawSgResult(null, "Errors running Petrify:\n"
                             + new String(drawAstgResult.getReturnValue().getErrors())));
                     }
                 }

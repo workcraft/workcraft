@@ -5,7 +5,6 @@ import org.workcraft.Initialiser;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Tool;
-import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.petrify.tools.ShowSg;
 
@@ -23,7 +22,6 @@ public class PetrifyExtraModule implements Module {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
         pm.registerClass(Exporter.class, AstgExporter.class);
-        pm.registerClass(Settings.class, PetrifyExtraUtilitySettings.class);
 
         pm.registerClass(Tool.class, ShowSg.class);
 
