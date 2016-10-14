@@ -10,6 +10,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class ConceptsWritingTool extends ConversionTool {
 
+    private boolean dotLayout;
+
     public boolean isApplicableTo(WorkspaceEntry we) {
         if (we.getModelEntry() == null) return false;
         if (we.getModelEntry().getVisualModel() instanceof VisualStg) return true;
@@ -31,11 +33,16 @@ public class ConceptsWritingTool extends ConversionTool {
 
         if (dialog.getTranslate()) {
             File inputFile = dialog.getFile();
+            dotLayout = dialog.getDotLayoutState();
             ConceptsTask task = new ConceptsTask(inputFile);
             ConceptsResultHandler resultHandler = new ConceptsResultHandler(this, FileUtils.getFileNameWithoutExtension(inputFile), we);
 
             Framework.getInstance().getTaskManager().queue(task, "Translating concepts", resultHandler);
         }
+    }
+
+    public boolean getDotLayout() {
+        return dotLayout;
     }
 
 }
