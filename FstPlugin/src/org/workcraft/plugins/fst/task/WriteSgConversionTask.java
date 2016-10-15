@@ -105,7 +105,7 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
             }
 
             while (true) {
-                WriteSgTask writeSgTask = new WriteSgTask(petriFile.getAbsolutePath(), null, writeSgOptions);
+                WriteSgTask writeSgTask = new WriteSgTask(writeSgOptions, petriFile, null, null);
                 Result<? extends ExternalProcessResult> writeSgResult = framework.getTaskManager().execute(
                         writeSgTask, "Building state graph", subtaskMonitor);
 
