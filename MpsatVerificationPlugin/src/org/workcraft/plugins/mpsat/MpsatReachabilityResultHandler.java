@@ -154,8 +154,8 @@ final class MpsatReachabilityResultHandler implements Runnable {
         StgModel stg = getInputStg();
         if ((solution != null) && (stg != null)) {
             Trace mainTrace = solution.getMainTrace();
-            if (fireTrace(stg, mainTrace)) {
-                LogUtils.logWarningLine("Cannot execute output persistency trace:" + mainTrace);
+            if (!fireTrace(stg, mainTrace)) {
+                LogUtils.logWarningLine("Cannot execute output persistency trace: " + mainTrace);
             } else {
                 LogUtils.logMessageLine("Extending output persistency violation trace: ");
                 LogUtils.logMessageLine("  original:" + mainTrace);
@@ -188,7 +188,7 @@ final class MpsatReachabilityResultHandler implements Runnable {
         if ((solution != null) && (stg != null)) {
             Trace mainTrace = solution.getMainTrace();
             if (!fireTrace(stg, mainTrace)) {
-                LogUtils.logWarningLine("Cannot execute conformation violation trace:" + mainTrace);
+                LogUtils.logWarningLine("Cannot execute conformation violation trace: " + mainTrace);
             } else {
                 LogUtils.logMessageLine("Extending conformation violation trace: ");
                 LogUtils.logMessageLine("  original:" + mainTrace);
