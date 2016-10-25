@@ -101,17 +101,20 @@ public class VisualCircuit extends AbstractVisualModel {
         if (first instanceof VisualContact) {
             Contact contact = ((VisualContact) first).getReferencedContact();
             if (contact.isInput() && !contact.isPort()) {
-                throw new InvalidConnectionException("Inputs of components cannot be drivers.");
+                throw new InvalidConnectionException("Input pin of a component cannot be a driver.");
+            }
+            if (contact.isOutput() && contact.isPort()) {
+                throw new InvalidConnectionException("Primary output cannot be a driver.");
             }
         }
 
         if (second instanceof VisualContact) {
             Contact contact = ((VisualContact) second).getReferencedContact();
             if (contact.isOutput() && !contact.isPort()) {
-                throw new InvalidConnectionException("Outputs of the components cannot be driven.");
+                throw new InvalidConnectionException("Output pin of a component cannot be driven.");
             }
             if (contact.isInput() && contact.isPort()) {
-                throw new InvalidConnectionException("Inputs from the environment cannot be driven.");
+                throw new InvalidConnectionException("Primary input cannot be driven.");
             }
         }
 

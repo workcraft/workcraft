@@ -452,9 +452,7 @@ public final class Framework {
                         mainWindow.startup();
                     }
                 });
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (InvocationTargetException e) {
+            } catch (InterruptedException | InvocationTargetException e) {
                 e.printStackTrace();
             }
         }
