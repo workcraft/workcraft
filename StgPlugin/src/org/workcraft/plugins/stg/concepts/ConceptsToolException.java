@@ -57,13 +57,13 @@ public class ConceptsToolException extends Exception {
     }
 
     private void ghcNotFound() {
-        JOptionPane.showMessageDialog(mainWindow, "Stack could not run, please download and install Stack from:\n"
-                + "https://www.haskell.org/downloads#stack", "GHC not installed", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(mainWindow, "Stack could not run, please follow the instructions to install Stack from:\n"
+                + "https://docs.haskellstack.org/en/stable/install_and_upgrade/", "GHC not installed", JOptionPane.ERROR_MESSAGE);
     }
 
     private void conceptsCodeNotFound() {
         JOptionPane.showMessageDialog(mainWindow, "Concepts code could not be found. \n"
-                + "Download it from https://github.com/tuura/concepts. \n"
+                + "Download it from and follow the instructions to build it from https://github.com/tuura/concepts.\n"
                 + "Ensure that the preferences menu points to the correct location of the concepts folder", "Concept translation failed", JOptionPane.ERROR_MESSAGE);
     }
 
@@ -71,9 +71,9 @@ public class ConceptsToolException extends Exception {
         String pkg = StgSettings.getConceptsFolderLocation();
         JOptionPane.showMessageDialog(mainWindow, "Concepts could not be run. \n"
                 + "The " + pkg + " package needs to be installed via stack. To do this: \n"
-                + "1. Make sure stack is installed (https://www.haskell.org/downloads#stack).\n"
+                + "1. Make sure stack is installed (https://docs.haskellstack.org/en/stable/install_and_upgrade/).\n"
                 + "2. In the terminal navigate to the concepts folder, found in \"" + pkg + "\" within the Workcraft directory.\n"
-                + "3. Run the command \"stack setup\".\n"
+                + "3. Run the command \"stack setup --no-system-ghc\".\n"
                 + "4. Run the command \"stack build\".\n"
                 + "Then, rerun the concepts translation.",
                 "Concept translation failed", JOptionPane.ERROR_MESSAGE);
