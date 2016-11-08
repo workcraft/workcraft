@@ -92,9 +92,7 @@ class GraphEditorPanelMouseListener implements MouseMotionListener, MouseListene
             final MainWindow mainWindow = framework.getMainWindow();
             mainWindow.requestFocus(editor);
         }
-        if (!isPanCombo(e)) {
-            toolProvider.getSelectedTool().mouseClicked(adaptEvent(e));
-        }
+        toolProvider.getSelectedTool().mouseClicked(adaptEvent(e));
     }
 
     @Override
