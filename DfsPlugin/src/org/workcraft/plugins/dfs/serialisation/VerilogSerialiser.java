@@ -30,12 +30,18 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.exceptions.ArgumentException;
+import org.workcraft.plugins.dfs.ControlRegister;
+import org.workcraft.plugins.dfs.CounterflowLogic;
+import org.workcraft.plugins.dfs.CounterflowRegister;
 import org.workcraft.plugins.dfs.Dfs;
+import org.workcraft.plugins.dfs.Logic;
 import org.workcraft.plugins.dfs.MathDelayNode;
+import org.workcraft.plugins.dfs.PopRegister;
+import org.workcraft.plugins.dfs.PushRegister;
+import org.workcraft.plugins.dfs.Register;
 import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
-import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
 
 public class VerilogSerialiser implements ModelSerialiser {
@@ -107,7 +113,25 @@ public class VerilogSerialiser implements ModelSerialiser {
     }
 
     private void writeInstances(PrintWriter out, Dfs dfs) {
-        for (MathDelayNode r: Hierarchy.getDescendantsOfType(dfs.getRoot(), MathDelayNode.class)) {
+        for (Logic l: dfs.getLogics()) {
+            writeInstance(out, dfs, l);
+        }
+        for (Register r: dfs.getRegisters()) {
+            writeInstance(out, dfs, r);
+        }
+        for (CounterflowLogic l: dfs.getCounterflowLogics()) {
+            writeInstance(out, dfs, l);
+        }
+        for (CounterflowRegister r: dfs.getCounterflowRegisters()) {
+            writeInstance(out, dfs, r);
+        }
+        for (ControlRegister r: dfs.getControlRegisters()) {
+            writeInstance(out, dfs, r);
+        }
+        for (PushRegister r: dfs.getPushRegisters()) {
+            writeInstance(out, dfs, r);
+        }
+        for (PopRegister r: dfs.getPopRegisters()) {
             writeInstance(out, dfs, r);
         }
     }
@@ -118,6 +142,7 @@ public class VerilogSerialiser implements ModelSerialiser {
         String moduleName = node.getClass().getName();
         out.print("    " + moduleName + " " + instanceFlatName + " (");
         boolean first = true;
+        int inIndex = 0;
         for (Node predNode: dfs.getPreset(node)) {
             if (first) {
                 first = false;
@@ -125,9 +150,10 @@ public class VerilogSerialiser implements ModelSerialiser {
                 out.print(", ");
             }
             String wireName = dfs.getNodeReference(predNode) + "_" + instanceFlatName;
-            String contactName = "?";
+            String contactName = "in" + inIndex++;
             out.print("." + contactName + "(" + wireName + ")");
         }
+        int outIndex = 0;
         for (Node succNode: dfs.getPostset(node)) {
             if (first) {
                 first = false;
@@ -135,7 +161,7 @@ public class VerilogSerialiser implements ModelSerialiser {
                 out.print(", ");
             }
             String wireName = instanceFlatName + "_" + dfs.getNodeReference(succNode);
-            String contactName = "?";
+            String contactName = "out" + outIndex++;
             out.print("." + contactName + "(" + wireName + ")");
         }
         out.print(");\n");

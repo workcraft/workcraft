@@ -21,6 +21,7 @@
 
 package org.workcraft.plugins.dfs;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -205,6 +206,34 @@ public class VisualDfs extends AbstractVisualModel {
             }
         }
         return result;
+    }
+
+    public Collection<VisualLogic> getVisualLogics() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualLogic.class);
+    }
+
+    public Collection<VisualRegister> getVisualRegisters() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualRegister.class);
+    }
+
+    public Collection<VisualCounterflowLogic> getVisualCounterflowLogics() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualCounterflowLogic.class);
+    }
+
+    public Collection<VisualCounterflowRegister> getVisualCounterflowRegisters() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualCounterflowRegister.class);
+    }
+
+    public Collection<VisualControlRegister> getVisualControlRegisters() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualControlRegister.class);
+    }
+
+    public Collection<VisualPushRegister> getVisualPushRegisters() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualPushRegister.class);
+    }
+
+    public Collection<VisualPopRegister> getVisualPopRegisters() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualPopRegister.class);
     }
 
 }

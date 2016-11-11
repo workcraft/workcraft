@@ -31,9 +31,8 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.generator.NodeStg;
-import org.workcraft.util.ColorUtils;
 import org.workcraft.util.ColorGenerator;
-import org.workcraft.util.Hierarchy;
+import org.workcraft.util.ColorUtils;
 
 public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerator {
     public static final String nameC       = "C_";
@@ -81,65 +80,65 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
     @Override
     public void convert() {
         try {
-            for (VisualLogic l : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualLogic.class)) {
+            for (VisualLogic l: getDfsModel().getVisualLogics()) {
                 LogicStg lstg = generateLogicStg(l);
                 groupComponentStg(lstg);
                 putLogicStg(l, lstg);
             }
-            for (VisualRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualRegister.class)) {
+            for (VisualRegister r: getDfsModel().getVisualRegisters()) {
                 RegisterStg rstg = generateRegisterSTG(r);
                 groupComponentStg(rstg);
                 putRegisterStg(r, rstg);
             }
 
-            for (VisualCounterflowLogic l : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualCounterflowLogic.class)) {
+            for (VisualCounterflowLogic l: getDfsModel().getVisualCounterflowLogics()) {
                 CounterflowLogicStg lstg = generateCounterflowLogicStg(l);
                 groupComponentStg(lstg);
                 putCounterflowLogicStg(l, lstg);
             }
-            for (VisualCounterflowRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualCounterflowRegister.class)) {
+            for (VisualCounterflowRegister r: getDfsModel().getVisualCounterflowRegisters()) {
                 CounterflowRegisterStg rstg = generateCounterflowRegisterSTG(r);
                 groupComponentStg(rstg);
                 putCounterflowRegisterStg(r, rstg);
             }
 
-            for (VisualControlRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualControlRegister.class)) {
+            for (VisualControlRegister r: getDfsModel().getVisualControlRegisters()) {
                 BinaryRegisterStg rstg = generateControlRegisterStg(r);
                 groupComponentStg(rstg);
                 putControlRegisterStg(r, rstg);
             }
-            for (VisualPushRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualPushRegister.class)) {
+            for (VisualPushRegister r: getDfsModel().getVisualPushRegisters()) {
                 BinaryRegisterStg rstg = generatePushRegisterStg(r);
                 groupComponentStg(rstg);
                 putPushRegisterStg(r, rstg);
             }
-            for (VisualPopRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualPopRegister.class)) {
+            for (VisualPopRegister r: getDfsModel().getVisualPopRegisters()) {
                 BinaryRegisterStg rstg = generatePopRegisterStg(r);
                 groupComponentStg(rstg);
                 putPopRegisterStg(r, rstg);
             }
 
-            for (VisualLogic l : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualLogic.class)) {
+            for (VisualLogic l: getDfsModel().getVisualLogics()) {
                 connectLogicStg(l);
             }
-            for (VisualRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualRegister.class)) {
+            for (VisualRegister r: getDfsModel().getVisualRegisters()) {
                 connectRegisterStg(r);
             }
 
-            for (VisualCounterflowLogic l : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualCounterflowLogic.class)) {
+            for (VisualCounterflowLogic l: getDfsModel().getVisualCounterflowLogics()) {
                 connectCounterflowLogicStg(l);
             }
-            for (VisualCounterflowRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualCounterflowRegister.class)) {
+            for (VisualCounterflowRegister r: getDfsModel().getVisualCounterflowRegisters()) {
                 connectCounterflowRegisterStg(r);
             }
 
-            for (VisualControlRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualControlRegister.class)) {
+            for (VisualControlRegister r: getDfsModel().getVisualControlRegisters()) {
                 connectControlRegisterStg(r);
             }
-            for (VisualPushRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualPushRegister.class)) {
+            for (VisualPushRegister r: getDfsModel().getVisualPushRegisters()) {
                 connectPushRegisterStg(r);
             }
-            for (VisualPopRegister r : Hierarchy.getDescendantsOfType(getDfsModel().getRoot(), VisualPopRegister.class)) {
+            for (VisualPopRegister r: getDfsModel().getVisualPopRegisters()) {
                 connectPopRegisterStg(r);
             }
         } catch (InvalidConnectionException e) {
@@ -314,14 +313,16 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         setPosition(m1, x + 2.0, y - 1.0);
         nodes.add(m1);
 
-        VisualSignalTransition mR = getStgModel().createSignalTransition(nameM + name, type, SignalTransition.Direction.PLUS, curContainer);
+        VisualSignalTransition mR = getStgModel().createSignalTransition(nameM + name, type,
+                SignalTransition.Direction.PLUS, curContainer);
         mR.setTokenColorGenerator(tokenColorGenerator);
         createConsumingArc(m0, mR, false);
         createProducingArc(mR, m1, true);
         setPosition(mR, x - 2.0, y + 1.0);
         nodes.add(mR);
 
-        VisualSignalTransition mF = getStgModel().createSignalTransition(nameM + name, type, SignalTransition.Direction.MINUS, curContainer);
+        VisualSignalTransition mF = getStgModel().createSignalTransition(nameM + name, type,
+                SignalTransition.Direction.MINUS, curContainer);
         createConsumingArc(m1, mF, false);
         createProducingArc(mF, m0, false);
         setPosition(mF, x - 2.0, y - 1.0);
@@ -452,7 +453,8 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         double dy = 0.0;
         for (Node n: preset) {
             if (fwCR == null || l.getReferencedCounterflowLogic().isForwardEarlyEvaluation()) {
-                fwCR = getStgModel().createSignalTransition(nameFwC + name, type, SignalTransition.Direction.PLUS, curContainer);
+                fwCR = getStgModel().createSignalTransition(nameFwC + name, type,
+                        SignalTransition.Direction.PLUS, curContainer);
                 fwCR.setTokenColorGenerator(presetTokenColorGenerator);
                 createConsumingArc(fwC0, fwCR, false);
                 createProducingArc(fwCR, fwC1, true);
@@ -461,7 +463,8 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
             }
             fwCRs.put(n, fwCR);
             if (fwCF == null) {
-                fwCF = getStgModel().createSignalTransition(nameFwC + name, type, SignalTransition.Direction.MINUS, curContainer);
+                fwCF = getStgModel().createSignalTransition(nameFwC + name, type,
+                        SignalTransition.Direction.MINUS, curContainer);
                 createConsumingArc(fwC1, fwCF, false);
                 createProducingArc(fwCF, fwC0, false);
                 setPosition(fwCF, x - 2.0, y - 4.0 - dy);
@@ -506,7 +509,8 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         dy = 0.0;
         for (Node n: postset) {
             if (bwCR == null || l.getReferencedCounterflowLogic().isBackwardEarlyEvaluation()) {
-                bwCR = getStgModel().createSignalTransition(nameBwC + name, type, SignalTransition.Direction.PLUS, curContainer);
+                bwCR = getStgModel().createSignalTransition(nameBwC + name, type,
+                        SignalTransition.Direction.PLUS, curContainer);
                 bwCR.setTokenColorGenerator(postsetTokenColorGenerator);
                 createConsumingArc(bwC0, bwCR, false);
                 createProducingArc(bwCR, bwC1, false);
@@ -515,7 +519,8 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
             }
             bwCRs.put(n, bwCR);
             if (bwCF == null) {
-                bwCF = getStgModel().createSignalTransition(nameBwC + name, type, SignalTransition.Direction.MINUS, curContainer);
+                bwCF = getStgModel().createSignalTransition(nameBwC + name, type,
+                        SignalTransition.Direction.MINUS, curContainer);
                 createConsumingArc(bwC1, bwCF, false);
                 createProducingArc(bwCF, bwC0, false);
                 setPosition(bwCF, x - 2.0, y + 2.0 - dy);
@@ -602,27 +607,31 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         setPosition(orM1, x + 2.0, y - 4.0);
         nodes.add(orM1);
 
-        VisualSignalTransition orMRfw = getStgModel().createSignalTransition(nameOrM + name, type, SignalTransition.Direction.PLUS, curContainer);
+        VisualSignalTransition orMRfw = getStgModel().createSignalTransition(nameOrM + name, type,
+                SignalTransition.Direction.PLUS, curContainer);
         orMRfw.setTokenColorGenerator(presetTokenColorGenerator);
         createConsumingArc(orM0, orMRfw, false);
         createProducingArc(orMRfw, orM1, true);
         setPosition(orMRfw, x - 2.0, y - 2.5);
         nodes.add(orMRfw);
 
-        VisualSignalTransition orMRbw = getStgModel().createSignalTransition(nameOrM + name, type, SignalTransition.Direction.PLUS, curContainer);
+        VisualSignalTransition orMRbw = getStgModel().createSignalTransition(nameOrM + name, type,
+                SignalTransition.Direction.PLUS, curContainer);
         orMRbw.setTokenColorGenerator(postsetTokenColorGenerator);
         createConsumingArc(orM0, orMRbw, false);
         createProducingArc(orMRbw, orM1, true);
         setPosition(orMRbw, x - 2.0, y - 1.5);
         nodes.add(orMRbw);
 
-        VisualSignalTransition orMFfw = getStgModel().createSignalTransition(nameOrM + name, type, SignalTransition.Direction.MINUS, curContainer);
+        VisualSignalTransition orMFfw = getStgModel().createSignalTransition(nameOrM + name, type,
+                SignalTransition.Direction.MINUS, curContainer);
         createConsumingArc(orM1, orMFfw, false);
         createProducingArc(orMFfw, orM0, false);
         setPosition(orMFfw, x - 2.0, y - 4.5);
         nodes.add(orMFfw);
 
-        VisualSignalTransition orMFbw = getStgModel().createSignalTransition(nameOrM + name, type, SignalTransition.Direction.MINUS, curContainer);
+        VisualSignalTransition orMFbw = getStgModel().createSignalTransition(nameOrM + name, type,
+                SignalTransition.Direction.MINUS, curContainer);
         createConsumingArc(orM1, orMFbw, false);
         createProducingArc(orMFbw, orM0, false);
         setPosition(orMFbw, x - 2.0, y - 3.5);
@@ -650,13 +659,15 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         setPosition(andM1, x + 2.0, y + 2.0);
         nodes.add(andM1);
 
-        VisualSignalTransition andMR = getStgModel().createSignalTransition(nameAndM + name, type, SignalTransition.Direction.PLUS, curContainer);
+        VisualSignalTransition andMR = getStgModel().createSignalTransition(nameAndM + name, type,
+                SignalTransition.Direction.PLUS, curContainer);
         createConsumingArc(andM0, andMR, false);
         createProducingArc(andMR, andM1, false);
         setPosition(andMR, x - 2.0, y + 4.0);
         nodes.add(andMR);
 
-        VisualSignalTransition andMF = getStgModel().createSignalTransition(nameAndM + name, type, SignalTransition.Direction.MINUS, curContainer);
+        VisualSignalTransition andMF = getStgModel().createSignalTransition(nameAndM + name, type,
+                SignalTransition.Direction.MINUS, curContainer);
         createConsumingArc(andM1, andMF, false);
         createProducingArc(andMF, andM0, false);
         setPosition(andMF, x - 2.0, y + 2.0);
@@ -806,7 +817,8 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         double dy = 0.0;
         for (Node n: preset) {
             if (tMR == null || orSync) {
-                tMR = getStgModel().createSignalTransition(nameTrueM + name, type, SignalTransition.Direction.PLUS, curContainer);
+                tMR = getStgModel().createSignalTransition(nameTrueM + name, type,
+                        SignalTransition.Direction.PLUS, curContainer);
                 tMR.setTokenColorGenerator(tokenColorGenerator);
                 createConsumingArc(tM0, tMR, false);
                 createProducingArc(tMR, tM1, true);
@@ -818,7 +830,8 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
             tMRs.put(n, tMR);
             dy += 1.0;
         }
-        VisualSignalTransition tMF = getStgModel().createSignalTransition(nameTrueM + name, type, SignalTransition.Direction.MINUS, curContainer);
+        VisualSignalTransition tMF = getStgModel().createSignalTransition(nameTrueM + name, type,
+                SignalTransition.Direction.MINUS, curContainer);
         createConsumingArc(tM1, tMF, false);
         createProducingArc(tMF, tM0, false);
         createConsumingArc(m1, tMF, false);
@@ -853,7 +866,8 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         dy = 0.0;
         for (Node n: preset) {
             if (fMR == null || andSync) {
-                fMR = getStgModel().createSignalTransition(nameFalseM + name, type, SignalTransition.Direction.PLUS, curContainer);
+                fMR = getStgModel().createSignalTransition(nameFalseM + name, type,
+                        SignalTransition.Direction.PLUS, curContainer);
                 fMR.setTokenColorGenerator(tokenColorGenerator);
                 createConsumingArc(fM0, fMR, false);
                 createProducingArc(fMR, fM1, true);
@@ -865,7 +879,8 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
             fMRs.put(n, fMR);
             dy += 1.0;
         }
-        VisualSignalTransition fMF = getStgModel().createSignalTransition(nameFalseM + name, type, SignalTransition.Direction.MINUS, curContainer);
+        VisualSignalTransition fMF = getStgModel().createSignalTransition(nameFalseM + name, type,
+                SignalTransition.Direction.MINUS, curContainer);
         createConsumingArc(fM1, fMF, false);
         createProducingArc(fMF, fM0, false);
         createConsumingArc(m1, fMF, false);
@@ -908,7 +923,8 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         for (VisualControlRegister n: crPreset) {
             BinaryRegisterStg nstg = getControlRegisterStg(n);
             Connection connection = getDfsModel().getConnection(n, r);
-            if (connection instanceof VisualControlConnection && ((VisualControlConnection) connection).getReferencedControlConnection().isInverting()) {
+            if (connection instanceof VisualControlConnection
+                    && ((VisualControlConnection) connection).getReferencedControlConnection().isInverting()) {
                 createReadArc(nstg.tM1, rstg.fMRs.get(n), true);
                 createReadArc(nstg.fM1, rstg.tMRs.get(n), true);
             } else {
@@ -962,7 +978,8 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         for (VisualPushRegister n: getDfsModel().getRPostset(r, VisualPushRegister.class)) {
             BinaryRegisterStg nstg = getPushRegisterStg(n);
             Connection connection = getDfsModel().getConnection(r, n);
-            if (connection instanceof VisualControlConnection && ((VisualControlConnection) connection).getReferencedControlConnection().isInverting()) {
+            if (connection instanceof VisualControlConnection
+                    && ((VisualControlConnection) connection).getReferencedControlConnection().isInverting()) {
                 createReadArc(nstg.tM1, rstg.fMF, false);
                 createReadArc(nstg.fM1, rstg.tMF, false);
             } else {
@@ -975,7 +992,8 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         for (VisualPopRegister n: getDfsModel().getRPostset(r, VisualPopRegister.class)) {
             BinaryRegisterStg nstg = getPopRegisterStg(n);
             Connection connection = getDfsModel().getConnection(r, n);
-            if (connection instanceof VisualControlConnection && ((VisualControlConnection) connection).getReferencedControlConnection().isInverting()) {
+            if (connection instanceof VisualControlConnection
+                    && ((VisualControlConnection) connection).getReferencedControlConnection().isInverting()) {
                 createReadArc(nstg.tM1, rstg.fMF, false);
                 createReadArc(nstg.fM1, rstg.tMF, false);
             } else {
@@ -1023,7 +1041,8 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         for (VisualControlRegister n: getDfsModel().getRPreset(r, VisualControlRegister.class)) {
             BinaryRegisterStg nstg = getControlRegisterStg(n);
             Connection connection = getDfsModel().getConnection(n, r);
-            if (connection instanceof VisualControlConnection && ((VisualControlConnection) connection).getReferencedControlConnection().isInverting()) {
+            if (connection instanceof VisualControlConnection
+                    && ((VisualControlConnection) connection).getReferencedControlConnection().isInverting()) {
                 createReadArc(nstg.tM1, rstg.fMRs.get(n), true);
                 createReadArc(nstg.fM1, rstg.tMRs.get(n), true);
                 createReadArc(nstg.tM0, rstg.fMF, false);
@@ -1104,7 +1123,8 @@ public class StgGenerator extends org.workcraft.plugins.stg.generator.StgGenerat
         for (VisualControlRegister n: getDfsModel().getRPreset(r, VisualControlRegister.class)) {
             BinaryRegisterStg nstg = getControlRegisterStg(n);
             Connection connection = getDfsModel().getConnection(n, r);
-            if (connection instanceof VisualControlConnection && ((VisualControlConnection) connection).getReferencedControlConnection().isInverting()) {
+            if (connection instanceof VisualControlConnection
+                    && ((VisualControlConnection) connection).getReferencedControlConnection().isInverting()) {
                 createReadArc(nstg.tM1, rstg.fMRs.get(n), true);
                 createReadArc(nstg.fM1, rstg.tMRs.get(n), true);
                 createReadArc(nstg.tM0, rstg.fMF, false);

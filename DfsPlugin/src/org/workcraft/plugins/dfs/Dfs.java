@@ -21,6 +21,8 @@
 
 package org.workcraft.plugins.dfs;
 
+import java.util.Collection;
+
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -61,6 +63,34 @@ public class Dfs extends AbstractMathModel {
         ControlConnection con = new ControlConnection((MathNode) first, (MathNode) second);
         Hierarchy.getNearestContainer(first, second).add(con);
         return con;
+    }
+
+    public Collection<Logic> getLogics() {
+        return Hierarchy.getDescendantsOfType(getRoot(), Logic.class);
+    }
+
+    public Collection<Register> getRegisters() {
+        return Hierarchy.getDescendantsOfType(getRoot(), Register.class);
+    }
+
+    public Collection<CounterflowLogic> getCounterflowLogics() {
+        return Hierarchy.getDescendantsOfType(getRoot(), CounterflowLogic.class);
+    }
+
+    public Collection<CounterflowRegister> getCounterflowRegisters() {
+        return Hierarchy.getDescendantsOfType(getRoot(), CounterflowRegister.class);
+    }
+
+    public Collection<ControlRegister> getControlRegisters() {
+        return Hierarchy.getDescendantsOfType(getRoot(), ControlRegister.class);
+    }
+
+    public Collection<PushRegister> getPushRegisters() {
+        return Hierarchy.getDescendantsOfType(getRoot(), PushRegister.class);
+    }
+
+    public Collection<PopRegister> getPopRegisters() {
+        return Hierarchy.getDescendantsOfType(getRoot(), PopRegister.class);
     }
 
 }
