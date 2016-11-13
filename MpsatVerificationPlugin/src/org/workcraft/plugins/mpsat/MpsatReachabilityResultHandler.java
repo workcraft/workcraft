@@ -238,8 +238,12 @@ final class MpsatReachabilityResultHandler implements Runnable {
         String message = getMessage(!solutions.isEmpty());
         MainWindow mainWindow = Framework.getInstance().getMainWindow();
         if (Solution.hasTraces(solutions)) {
-            String extraMessage = isOutputPersistency ? "" : "&#160;Trace(s) leading to the problematic state(s):<br><br>";
-            String extendedMessage = "<html><br>&#160;" + message + "<br><br>" + extraMessage + "</html>";
+            String traceInfo = "";
+            if (!isOutputPersistency) {
+                String traceChearacteristic = settings.getInversePredicate() ? "problematic" : "sought";
+                traceInfo = "&#160;Trace(s) leading to the " + traceChearacteristic + " state(s):<br><br>";
+            }
+            String extendedMessage = "<html><br>&#160;" + message + "<br><br>" + traceInfo + "</html>";
             final ReachibilityDialog solutionsDialog = new ReachibilityDialog(we, title, extendedMessage, solutions);
             GUI.centerToParent(solutionsDialog, mainWindow);
             solutionsDialog.setVisible(true);
