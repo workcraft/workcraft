@@ -24,6 +24,7 @@ package org.workcraft.dom;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.Queue;
 import java.util.Set;
 
 import org.workcraft.annotations.DisplayName;
@@ -34,6 +35,7 @@ import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
+import org.workcraft.util.Func;
 
 /**
  * A base class for all interpreted graph models.
@@ -160,8 +162,8 @@ public abstract class AbstractModel implements Model {
     }
 
     @Override
-    public <R> Set<R> getPreset(Node node, Class<R> type) {
-        Set<R> result = new HashSet<>();
+    public <T> Set<T> getPreset(Node node, Class<T> type) {
+        Set<T> result = new HashSet<>();
         for (Node pred: getPreset(node)) {
             try {
                 result.add(type.cast(pred));
@@ -172,12 +174,58 @@ public abstract class AbstractModel implements Model {
     }
 
     @Override
-    public <R> Set<R> getPostset(Node node, Class<R> type) {
-        Set<R> result = new HashSet<>();
+    public <T> Set<T> getPostset(Node node, Class<T> type) {
+        Set<T> result = new HashSet<>();
         for (Node pred: getPostset(node)) {
             try {
                 result.add(type.cast(pred));
             } catch (ClassCastException e) {
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public <T> Set<T> getPreset(Node node, Class<T> type, Func<Node, Boolean> through) {
+        Set<T> result = new HashSet<>();
+        Set<Node> visited = new HashSet<>();
+        Queue<Node> queue = new LinkedList<>();
+        queue.add(node);
+        while (!queue.isEmpty()) {
+            Node cur = queue.remove();
+            if (visited.contains(cur)) continue;
+            visited.add(cur);
+            for (Node pred: getPreset(cur)) {
+                try {
+                    result.add(type.cast(pred));
+                } catch (ClassCastException e) {
+                    if (through.eval(pred)) {
+                        queue.add(pred);
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public <T> Set<T> getPostset(Node node, Class<T> type, Func<Node, Boolean> through) {
+        Set<T> result = new HashSet<>();
+        Set<Node> visited = new HashSet<>();
+        Queue<Node> queue = new LinkedList<>();
+        queue.add(node);
+        while (!queue.isEmpty()) {
+            Node cur = queue.remove();
+            if (visited.contains(cur)) continue;
+            visited.add(cur);
+            for (Node succ: getPostset(cur)) {
+                try {
+                    result.add(type.cast(succ));
+                } catch (ClassCastException e) {
+                    if (through.eval(succ)) {
+                        queue.add(succ);
+                    }
+                }
             }
         }
         return result;

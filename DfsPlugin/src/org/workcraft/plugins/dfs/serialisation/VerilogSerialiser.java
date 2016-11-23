@@ -23,19 +23,18 @@ package org.workcraft.plugins.dfs.serialisation;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.plugins.dfs.ControlRegister;
-import org.workcraft.plugins.dfs.CounterflowLogic;
 import org.workcraft.plugins.dfs.CounterflowRegister;
 import org.workcraft.plugins.dfs.Dfs;
-import org.workcraft.plugins.dfs.Logic;
-import org.workcraft.plugins.dfs.MathDelayNode;
 import org.workcraft.plugins.dfs.PopRegister;
 import org.workcraft.plugins.dfs.PushRegister;
 import org.workcraft.plugins.dfs.Register;
@@ -43,6 +42,7 @@ import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.util.LogUtils;
+import org.workcraft.util.Pair;
 
 public class VerilogSerialiser implements ModelSerialiser {
 
@@ -50,6 +50,24 @@ public class VerilogSerialiser implements ModelSerialiser {
     private static final String KEYWORD_INPUT = "input";
     private static final String KEYWORD_MODULE = "module";
     private static final String KEYWORD_ENDMODULE = "endmodule";
+
+    private static final String SEPARATOR = "_";
+    private static final String NAME_OUT = "OUT";
+    private static final String NAME_IN = "IN";
+    private static final String NAME_RI = "RI";
+    private static final String NAME_AI = "AI";
+    private static final String NAME_RO = "RO";
+    private static final String NAME_AO = "AO";
+    private static final String NAME_BUFFER = "BUFFER";
+    private static final String PREFIX_CELEMENT = "CELEMENT" + SEPARATOR;
+    private static final String PREFIX_INST = "INST_";
+    private static final String PREFIX_WIRE = "WIRE_";
+    private static final String PREFIX_OUT = NAME_OUT + SEPARATOR;
+    private static final String PREFIX_IN = NAME_IN + SEPARATOR;
+    private static final String PREFIX_RI = NAME_RI + SEPARATOR;
+    private static final String PREFIX_AI = NAME_AI + SEPARATOR;
+    private static final String PREFIX_RO = NAME_RO + SEPARATOR;
+    private static final String PREFIX_AO = NAME_AO + SEPARATOR;
 
     class ReferenceResolver implements ReferenceProducer {
         HashMap<Object, String> refMap = new HashMap<>();
@@ -105,66 +123,184 @@ public class VerilogSerialiser implements ModelSerialiser {
             topName = "UNTITLED";
             LogUtils.logWarningLine("The top module does not have a name. Exporting as `" + topName + "` module.");
         }
+        ArrayList<Pair<String, Boolean>> ports = new ArrayList<>();
+        for (Node node: dfs.getAllNodes()) {
+            String ref = dfs.getNodeReference(node);
+            if (dfs.getPreset(node).isEmpty()) {
+                ports.add(new Pair<>(PREFIX_IN + ref, false));
+            }
+            if (dfs.getPostset(node).isEmpty()) {
+                ports.add(new Pair<>(PREFIX_OUT + ref, true));
+            }
+        }
+        for (Node node: dfs.getAllRegisters()) {
+            String ref = dfs.getNodeReference(node);
+            if (dfs.getRPreset(node).isEmpty()) {
+                ports.add(new Pair<>(PREFIX_RI + ref, false));
+                ports.add(new Pair<>(PREFIX_AI + ref, true));
+            }
+            if (dfs.getRPostset(node).isEmpty()) {
+                ports.add(new Pair<>(PREFIX_RO + ref, true));
+                ports.add(new Pair<>(PREFIX_AO + ref, false));
+            }
+        }
         out.print(KEYWORD_MODULE + " " + topName + " (");
-        out.println(");");
-        out.println("    //" + KEYWORD_INPUT + "...;");
-        out.println("    //" + KEYWORD_OUTPUT + "...;");
+        boolean isFirstPort = true;
+        for (Pair<String, Boolean> port: ports) {
+            if (!isFirstPort) {
+                out.print(",");
+            }
+            out.println();
+            out.print("    " + port.getFirst());
+            isFirstPort = false;
+        }
+        out.println(" );");
+        out.println();
+        for (Pair<String, Boolean> port: ports) {
+            out.print("    ");
+            if (port.getSecond()) {
+                out.print(KEYWORD_OUTPUT);
+            } else {
+                out.print(KEYWORD_INPUT);
+            }
+            out.println(" " + port.getFirst() + ";");
+        }
         out.println();
     }
 
     private void writeInstances(PrintWriter out, Dfs dfs) {
-        for (Logic l: dfs.getLogics()) {
-            writeInstance(out, dfs, l);
+        HashSet<Node> logicNodes = new HashSet<>();
+        logicNodes.addAll(dfs.getLogics());
+        logicNodes.addAll(dfs.getCounterflowLogics());
+        for (Node node: logicNodes) {
+            writeInstance(out, dfs, node);
         }
-        for (Register r: dfs.getRegisters()) {
-            writeInstance(out, dfs, r);
-        }
-        for (CounterflowLogic l: dfs.getCounterflowLogics()) {
-            writeInstance(out, dfs, l);
-        }
-        for (CounterflowRegister r: dfs.getCounterflowRegisters()) {
-            writeInstance(out, dfs, r);
-        }
-        for (ControlRegister r: dfs.getControlRegisters()) {
-            writeInstance(out, dfs, r);
-        }
-        for (PushRegister r: dfs.getPushRegisters()) {
-            writeInstance(out, dfs, r);
-        }
-        for (PopRegister r: dfs.getPopRegisters()) {
-            writeInstance(out, dfs, r);
+        for (Node node: dfs.getAllRegisters()) {
+            writeInstance(out, dfs, node);
+            writeCelementPred(out, dfs, node);
+            writeCelementSucc(out, dfs, node);
         }
     }
 
-    private void writeInstance(PrintWriter out, Dfs dfs, MathDelayNode node) {
-        String instanceRef = dfs.getNodeReference(node);
-        String instanceFlatName = NamespaceHelper.hierarchicalToFlatName(instanceRef);
-        String moduleName = node.getClass().getName();
-        out.print("    " + moduleName + " " + instanceFlatName + " (");
-        boolean first = true;
+    private void writeInstance(PrintWriter out, Dfs dfs, Node node) {
+        Set<Node> preset = dfs.getPreset(node);
+        Set<Node> postset = dfs.getPostset(node);
+        String ref = dfs.getNodeReference(node);
+        String instanceName = PREFIX_INST + ref;
+        String className = node.getClass().getSimpleName().toUpperCase();
+        int inCount = preset.isEmpty() ? 1 : preset.size();
+        int outCount = postset.isEmpty() ? 1 : postset.size();
+        String moduleName = className + SEPARATOR + inCount + SEPARATOR + outCount;
+        out.print("    " + moduleName + " " + instanceName + " (");
+        boolean isFirstContact = true;
         int inIndex = 0;
-        for (Node predNode: dfs.getPreset(node)) {
-            if (first) {
-                first = false;
-            } else {
-                out.print(", ");
-            }
-            String wireName = dfs.getNodeReference(predNode) + "_" + instanceFlatName;
-            String contactName = "in" + inIndex++;
-            out.print("." + contactName + "(" + wireName + ")");
+        if (preset.isEmpty()) {
+            String inWireName = PREFIX_IN + ref;
+            String inContactName = NAME_IN + inIndex++;
+            writeContact(out, inContactName, inWireName, isFirstContact);
+            isFirstContact = false;
+        }
+        for (Node predNode: preset) {
+            String predRef = dfs.getNodeReference(predNode);
+            String inWireName = PREFIX_WIRE + predRef + SEPARATOR + ref;
+            String inContactName = NAME_IN + inIndex++;
+            writeContact(out, inContactName, inWireName, isFirstContact);
+            isFirstContact = false;
         }
         int outIndex = 0;
-        for (Node succNode: dfs.getPostset(node)) {
-            if (first) {
-                first = false;
-            } else {
-                out.print(", ");
-            }
-            String wireName = instanceFlatName + "_" + dfs.getNodeReference(succNode);
-            String contactName = "out" + outIndex++;
-            out.print("." + contactName + "(" + wireName + ")");
+        if (postset.isEmpty()) {
+            String outWireName = PREFIX_OUT + ref;
+            String outContactName = NAME_OUT + outIndex++;
+            writeContact(out, outContactName, outWireName, isFirstContact);
+            isFirstContact = false;
         }
-        out.print(");\n");
+        for (Node succNode: postset) {
+            String succRef = dfs.getNodeReference(succNode);
+            String outWireName = PREFIX_WIRE + ref + SEPARATOR + succRef;
+            String outContactName = NAME_OUT + outIndex++;
+            writeContact(out, outContactName, outWireName, isFirstContact);
+            isFirstContact = false;
+        }
+        if ((node instanceof Register)
+                || (node instanceof CounterflowRegister)
+                || (node instanceof ControlRegister)
+                || (node instanceof PushRegister)
+                || (node instanceof PopRegister)) {
+            writeContact(out, NAME_RI, PREFIX_WIRE + PREFIX_RI + ref, isFirstContact);
+            writeContact(out, NAME_AI, PREFIX_WIRE + PREFIX_AI + ref, isFirstContact);
+            writeContact(out, NAME_RO, PREFIX_WIRE + PREFIX_RO + ref, isFirstContact);
+            writeContact(out, NAME_AO, PREFIX_WIRE + PREFIX_AO + ref, isFirstContact);
+            isFirstContact = false;
+        }
+        out.println(");");
+    }
+
+    private void writeContact(PrintWriter out, String contactName, String wireName, boolean isFirstContact) {
+        if (!isFirstContact) {
+            out.print(", ");
+        }
+        out.print("." + contactName + "(" + wireName + ")");
+    }
+
+    private void writeCelementPred(PrintWriter out, Dfs dfs, Node node) {
+        ArrayList<String> inWireNames = new ArrayList<>();
+        Set<Node> rPreset = dfs.getRPreset(node);
+        if (rPreset.isEmpty()) {
+            String ref = dfs.getNodeReference(node);
+            String inWireName = PREFIX_RI + ref;
+            inWireNames.add(inWireName);
+        }
+        for (Node predNode: rPreset) {
+            String predRef = dfs.getNodeReference(predNode);
+            String inWireName = PREFIX_WIRE + PREFIX_RO + predRef;
+            inWireNames.add(inWireName);
+        }
+        String ref = dfs.getNodeReference(node);
+        String instanceName = PREFIX_INST + PREFIX_RI + ref;
+        String outWireName = PREFIX_WIRE + PREFIX_RI + ref;
+        writeCelement(out, instanceName, inWireNames, outWireName);
+    }
+
+    private void writeCelementSucc(PrintWriter out, Dfs dfs, Node node) {
+        ArrayList<String> inWireNames = new ArrayList<>();
+        Set<Node> rPostset = dfs.getRPostset(node);
+        if (rPostset.isEmpty()) {
+            String ref = dfs.getNodeReference(node);
+            String inWireName = PREFIX_AO + ref;
+            inWireNames.add(inWireName);
+        }
+        for (Node succNode: rPostset) {
+            String succRef = dfs.getNodeReference(succNode);
+            String inWireName = PREFIX_WIRE + PREFIX_AI + succRef;
+            inWireNames.add(inWireName);
+        }
+        String ref = dfs.getNodeReference(node);
+        String instanceName = PREFIX_INST + PREFIX_AO + ref;
+        String outWireName = PREFIX_WIRE + PREFIX_AO + ref;
+        writeCelement(out, instanceName, inWireNames, outWireName);
+    }
+
+    private void writeCelement(PrintWriter out, String instanceName, ArrayList<String> inWireNames, String outWireName) {
+        int inCount = inWireNames.size();
+        if (inCount == 1) {
+            out.print("    " + NAME_BUFFER + " " + instanceName + " (");
+            String inWireName = inWireNames.get(0);
+            writeContact(out, NAME_IN, inWireName, true);
+            writeContact(out, NAME_OUT, outWireName, false);
+            out.println(");");
+        } else if (inCount > 1) {
+            String moduleName = PREFIX_CELEMENT + inCount;
+            out.print("    " + moduleName + " " + instanceName + " (");
+            boolean isFirstContact = true;
+            int inIndex = 0;
+            for (String inWireName: inWireNames) {
+                String inContactName = NAME_IN + inIndex++;
+                writeContact(out, inContactName, inWireName, isFirstContact);
+                isFirstContact = false;
+            }
+            writeContact(out, NAME_OUT, outWireName, isFirstContact);
+            out.println(");");
+        }
     }
 
 }

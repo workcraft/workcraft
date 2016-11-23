@@ -27,6 +27,7 @@ import java.util.Set;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.util.Func;
 
 public interface Model extends NodeContext {
     void setTitle(String title);
@@ -58,8 +59,10 @@ public interface Model extends NodeContext {
     void reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren);
 
     Container getRoot();
-    <R> Set<R> getPreset(Node node, Class<R> type);
-    <R> Set<R> getPostset(Node node, Class<R> type);
+    <T> Set<T> getPreset(Node node, Class<T> type);
+    <T> Set<T> getPostset(Node node, Class<T> type);
+    <T> Set<T> getPreset(Node node, Class<T> type, Func<Node, Boolean> through);
+    <T> Set<T> getPostset(Node node, Class<T> type, Func<Node, Boolean> through);
 
     void add(Node node);
     void remove(Node node);

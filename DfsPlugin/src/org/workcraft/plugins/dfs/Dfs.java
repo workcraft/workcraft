@@ -22,6 +22,8 @@
 package org.workcraft.plugins.dfs;
 
 import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
@@ -31,6 +33,7 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.serialisation.References;
+import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
 @VisualClass (org.workcraft.plugins.dfs.VisualDfs.class)
@@ -91,6 +94,68 @@ public class Dfs extends AbstractMathModel {
 
     public Collection<PopRegister> getPopRegisters() {
         return Hierarchy.getDescendantsOfType(getRoot(), PopRegister.class);
+    }
+
+    public Collection<Node> getAllLogics() {
+        Set<Node> result = new HashSet<>();
+        result.addAll(getLogics());
+        result.addAll(getCounterflowLogics());
+        return result;
+    }
+
+    public Collection<Node> getAllRegisters() {
+        Set<Node> result = new HashSet<>();
+        result.addAll(getRegisters());
+        result.addAll(getCounterflowRegisters());
+        result.addAll(getControlRegisters());
+        result.addAll(getPushRegisters());
+        result.addAll(getPopRegisters());
+        return result;
+    }
+
+    public Collection<Node> getAllNodes() {
+        Set<Node> result = new HashSet<>();
+        result.addAll(getAllLogics());
+        result.addAll(getAllRegisters());
+        return result;
+    }
+
+    public Set<Node> getRPreset(Node node) {
+        Set<Node> result = new HashSet<>();
+        result.addAll(getRPreset(node, Register.class));
+        result.addAll(getRPreset(node, CounterflowRegister.class));
+        result.addAll(getRPreset(node, ControlRegister.class));
+        result.addAll(getRPreset(node, PushRegister.class));
+        result.addAll(getRPreset(node, PopRegister.class));
+        return result;
+    }
+
+    public Set<Node> getRPostset(Node node) {
+        Set<Node> result = new HashSet<>();
+        result.addAll(getRPostset(node, Register.class));
+        result.addAll(getRPostset(node, CounterflowRegister.class));
+        result.addAll(getRPostset(node, ControlRegister.class));
+        result.addAll(getRPostset(node, PushRegister.class));
+        result.addAll(getRPostset(node, PopRegister.class));
+        return result;
+    }
+
+    public <T> Set<T> getRPreset(Node node, Class<T> type) {
+        return getPreset(node, type, new Func<Node, Boolean>() {
+            @Override
+            public Boolean eval(Node arg) {
+                return (arg instanceof Logic) || (arg instanceof CounterflowLogic);
+            }
+        });
+    }
+
+    public <T> Set<T> getRPostset(Node node, Class<T> type) {
+        return getPostset(node, type, new Func<Node, Boolean>() {
+            @Override
+            public Boolean eval(Node arg) {
+                return (arg instanceof Logic) || (arg instanceof CounterflowLogic);
+            }
+        });
     }
 
 }
