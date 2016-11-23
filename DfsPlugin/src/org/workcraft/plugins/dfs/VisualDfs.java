@@ -21,9 +21,8 @@
 
 package org.workcraft.plugins.dfs;
 
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
 import java.util.Set;
 
 import org.workcraft.annotations.CustomTools;
@@ -35,10 +34,12 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
+import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Dataflow Structure")
@@ -161,49 +162,93 @@ public class VisualDfs extends AbstractVisualModel {
         return ((Dfs) getMathModel()).getName(component.getReferencedComponent());
     }
 
-    public <R> Set<R> getRPostset(Node node, Class<R> rType) {
-        Set<R> result = new HashSet<>();
-        Set<Node> visited = new HashSet<>();
-        Queue<Node> queue = new LinkedList<>();
-        queue.add(node);
-        while (!queue.isEmpty()) {
-            Node cur = queue.remove();
-            if (visited.contains(cur)) continue;
-            visited.add(cur);
-            for (Node succ: getPostset(cur)) {
-                if (!(succ instanceof VisualComponent)) continue;
-                try {
-                    result.add(rType.cast(succ));
-                } catch (ClassCastException e) {
-                    if ((succ instanceof VisualLogic) || (succ instanceof VisualCounterflowLogic)) {
-                        queue.add(succ);
-                    }
-                }
-            }
-        }
+    public Set<Node> getRPreset(Node node) {
+        Set<Node> result = new HashSet<>();
+        result.addAll(getRPreset(node, VisualRegister.class));
+        result.addAll(getRPreset(node, VisualCounterflowRegister.class));
+        result.addAll(getRPreset(node, VisualControlRegister.class));
+        result.addAll(getRPreset(node, VisualPushRegister.class));
+        result.addAll(getRPreset(node, VisualPopRegister.class));
         return result;
     }
 
-    public <R> Set<R> getRPreset(Node node, Class<R> rType) {
-        Set<R> result = new HashSet<>();
-        Set<Node> visited = new HashSet<>();
-        Queue<Node> queue = new LinkedList<>();
-        queue.add(node);
-        while (!queue.isEmpty()) {
-            Node cur = queue.remove();
-            if (visited.contains(cur)) continue;
-            visited.add(cur);
-            for (Node pred: getPreset(cur)) {
-                if (!(pred instanceof VisualComponent)) continue;
-                try {
-                    result.add(rType.cast(pred));
-                } catch (ClassCastException e) {
-                    if ((pred instanceof VisualLogic) || (pred instanceof VisualCounterflowLogic)) {
-                        queue.add(pred);
-                    }
-                }
+    public Set<Node> getRPostset(Node node) {
+        Set<Node> result = new HashSet<>();
+        result.addAll(getRPostset(node, VisualRegister.class));
+        result.addAll(getRPostset(node, VisualCounterflowRegister.class));
+        result.addAll(getRPostset(node, VisualControlRegister.class));
+        result.addAll(getRPostset(node, VisualPushRegister.class));
+        result.addAll(getRPostset(node, VisualPopRegister.class));
+        return result;
+    }
+
+    public <T> Set<T> getRPreset(Node node, Class<T> type) {
+        return getPreset(node, type, new Func<Node, Boolean>() {
+            @Override
+            public Boolean eval(Node arg) {
+                return (arg instanceof VisualLogic) || (arg instanceof VisualCounterflowLogic);
             }
-        }
+        });
+    }
+
+    public <T> Set<T> getRPostset(Node node, Class<T> type) {
+        return getPostset(node, type, new Func<Node, Boolean>() {
+            @Override
+            public Boolean eval(Node arg) {
+                return (arg instanceof VisualLogic) || (arg instanceof VisualCounterflowLogic);
+            }
+        });
+    }
+
+    public Collection<VisualLogic> getVisualLogics() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualLogic.class);
+    }
+
+    public Collection<VisualRegister> getVisualRegisters() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualRegister.class);
+    }
+
+    public Collection<VisualCounterflowLogic> getVisualCounterflowLogics() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualCounterflowLogic.class);
+    }
+
+    public Collection<VisualCounterflowRegister> getVisualCounterflowRegisters() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualCounterflowRegister.class);
+    }
+
+    public Collection<VisualControlRegister> getVisualControlRegisters() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualControlRegister.class);
+    }
+
+    public Collection<VisualPushRegister> getVisualPushRegisters() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualPushRegister.class);
+    }
+
+    public Collection<VisualPopRegister> getVisualPopRegisters() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualPopRegister.class);
+    }
+
+    public Collection<VisualNode> getAllVisualLogics() {
+        Set<VisualNode> result = new HashSet<>();
+        result.addAll(getVisualLogics());
+        result.addAll(getVisualCounterflowLogics());
+        return result;
+    }
+
+    public Collection<VisualNode> getAllVisualRegisters() {
+        Set<VisualNode> result = new HashSet<>();
+        result.addAll(getVisualRegisters());
+        result.addAll(getVisualCounterflowRegisters());
+        result.addAll(getVisualControlRegisters());
+        result.addAll(getVisualPushRegisters());
+        result.addAll(getVisualPopRegisters());
+        return result;
+    }
+
+    public Collection<VisualNode> getAllVisualNodes() {
+        Set<VisualNode> result = new HashSet<>();
+        result.addAll(getAllVisualLogics());
+        result.addAll(getAllVisualRegisters());
         return result;
     }
 
