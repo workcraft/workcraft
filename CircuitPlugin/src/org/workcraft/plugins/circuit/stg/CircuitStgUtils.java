@@ -14,9 +14,9 @@ import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
-import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.serialisation.Format;
@@ -26,7 +26,6 @@ import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class CircuitStgUtils {
@@ -81,11 +80,13 @@ public class CircuitStgUtils {
     private static File exportEnvStg(File envFile, Set<String> inputSignalNames, Set<String> outputSignalNames,
             File directory) throws DeserialisationException, IOException {
 
-        Framework framework = Framework.getInstance();
-        ModelEntry modelEntry = framework.load(envFile);
-        Stg envStg = (Stg) modelEntry.getMathModel();
-        CircuitStgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
-        return exportStg(envStg, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.ASTG_FILE_EXT, directory);
+        File result = null;
+        Stg envStg = StgUtils.loadStg(envFile);
+        if (envStg != null) {
+            restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
+            result = exportStg(envStg, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.ASTG_FILE_EXT, directory);
+        }
+        return result;
     }
 
     private static File exportDevStg(Stg devStg, File directory) throws IOException {

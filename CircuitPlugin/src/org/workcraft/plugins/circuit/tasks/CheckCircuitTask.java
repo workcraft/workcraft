@@ -65,11 +65,22 @@ public class CheckCircuitTask extends MpsatChainTask {
             // Common variables
             VisualCircuit visualCircuit = (VisualCircuit) we.getModelEntry().getVisualModel();
             File envFile = visualCircuit.getEnvironmentFile();
-            boolean hasEnvironment = (envFile != null) && envFile.exists();
 
+            // Load device STG
             CircuitToStgConverter generator = new CircuitToStgConverter(visualCircuit);
             Stg devStg = (Stg) generator.getStg().getMathModel();
-            String devStgName = (hasEnvironment ? StgUtils.DEVICE_FILE_NAME : StgUtils.SYSTEM_FILE_NAME) + StgUtils.ASTG_FILE_EXT;
+
+            // Load environment STG
+            Stg envStg = StgUtils.loadStg(envFile);
+            if (envStg != null) {
+                // Make sure that input signals of the device STG are also inputs in the environment STG
+                Set<String> inputSignalNames = devStg.getSignalNames(Type.INPUT, null);
+                Set<String> outputSignalNames = devStg.getSignalNames(Type.OUTPUT, null);
+                CircuitStgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
+            }
+
+            // Write device STG into a .g file
+            String devStgName = (envStg == null ? StgUtils.SYSTEM_FILE_NAME : StgUtils.DEVICE_FILE_NAME) + StgUtils.ASTG_FILE_EXT;
             File devStgFile = new File(directory, devStgName);
             Result<? extends Object> devExportResult = CircuitStgUtils.exportStg(devStg, devStgFile, directory, monitor);
             if (devExportResult.getOutcome() != Outcome.FINISHED) {
@@ -80,16 +91,6 @@ public class CheckCircuitTask extends MpsatChainTask {
                         new MpsatChainResult(devExportResult, null, null, null, toolchainPreparationSettings));
             }
             monitor.progressUpdate(0.10);
-
-            // Environment STG
-            Stg envStg = null;
-            if (hasEnvironment) {
-                envStg = (Stg) framework.load(envFile).getMathModel();
-                // Make sure that input signals of the device STG are also inputs in the environment STG
-                Set<String> inputSignalNames = devStg.getSignalNames(Type.INPUT, null);
-                Set<String> outputSignalNames = devStg.getSignalNames(Type.OUTPUT, null);
-                CircuitStgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
-            }
 
             // Generating system .g for deadlock and persistency checks (only if needed)
             File sysStgFile = null;
@@ -128,10 +129,9 @@ public class CheckCircuitTask extends MpsatChainTask {
             File sysModStgFile = null;
             File placesModFile = null;
             Result<? extends ExternalProcessResult>  pcompModResult = null;
-            if (checkConformation) {
-                if (envStg == null) {
-                    sysModStgFile = devStgFile;
-                } else if (envStg.getSignalNames(Type.INTERNAL, null).isEmpty() && (sysStgFile != null)) {
+            if ((envStg != null) && checkConformation) {
+                Set<String> envSignalNames = envStg.getSignalNames(Type.INTERNAL, null);
+                if (envSignalNames.isEmpty() && (sysStgFile != null)) {
                     sysModStgFile = sysStgFile;
                     placesModFile = placesFile;
                     pcompModResult = pcompResult;
@@ -186,7 +186,7 @@ public class CheckCircuitTask extends MpsatChainTask {
             File unfoldingModFile = unfoldingFile;
             PunfTask punfModTask = punfTask;
             Result<? extends ExternalProcessResult> punfModResult = punfResult;
-            if (hasEnvironment && checkConformation) {
+            if ((envStg != null) && checkConformation) {
                 if ((sysStgFile != sysModStgFile) || (unfoldingModFile == null)) {
                     String fileSuffix = (sysStgFile == null) ? "" : StgUtils.MODIFIED_FILE_SUFFIX;
                     unfoldingModFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + fileSuffix + PunfUtilitySettings.getUnfoldingExtension(true));
@@ -258,7 +258,7 @@ public class CheckCircuitTask extends MpsatChainTask {
             monitor.progressUpdate(0.80);
 
             // Check for interface conformation (only if requested and if the environment is specified)
-            if (hasEnvironment && checkConformation) {
+            if ((envStg != null) && checkConformation) {
                 Set<String> devOutputNames = devStg.getSignalFlatNames(Type.OUTPUT);
                 byte[] placesList = FileUtils.readAllBytes(placesModFile);
                 Set<String> devPlaceNames = parsePlaceNames(placesList, 0);

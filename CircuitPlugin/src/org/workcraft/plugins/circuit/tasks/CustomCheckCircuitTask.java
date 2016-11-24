@@ -67,11 +67,13 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
             // Environment STG
             Stg envStg = null;
             if (hasEnvironment) {
-                envStg = (Stg) framework.load(envFile).getMathModel();
-                // Make sure that input signals of the device STG are also inputs in the environment STG
-                Set<String> inputSignalNames = devStg.getSignalNames(Type.INPUT, null);
-                Set<String> outputSignalNames = devStg.getSignalNames(Type.OUTPUT, null);
-                CircuitStgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
+                envStg = StgUtils.loadStg(envFile);
+                if (envStg != null) {
+                    // Make sure that input signals of the device STG are also inputs in the environment STG
+                    Set<String> inputSignalNames = devStg.getSignalNames(Type.INPUT, null);
+                    Set<String> outputSignalNames = devStg.getSignalNames(Type.OUTPUT, null);
+                    CircuitStgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
+                }
             }
 
             // Generating system .g for custom property check (only if needed)
