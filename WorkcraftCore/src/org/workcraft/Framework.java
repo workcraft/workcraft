@@ -239,65 +239,57 @@ public final class Framework {
         return instance;
     }
 
-    public void resetConfig() {
-        config = new Config();
+    private void loadConfigPlugins() {
         for (PluginInfo<? extends Settings> info : pluginManager.getPlugins(Settings.class)) {
             info.getSingleton().load(config);
         }
+    }
+
+    private void saveConfigPlugins() {
+        for (PluginInfo<? extends Settings> info : pluginManager.getPlugins(Settings.class)) {
+            info.getSingleton().save(config);
+        }
+    }
+
+    public void resetConfig() {
+        config = new Config();
+        loadConfigPlugins();
     }
 
     public void loadConfig() {
         File file = new File(CONFIG_FILE_PATH);
         LogUtils.logMessageLine("Loading global preferences from " + file.getAbsolutePath());
         config.load(file);
-        for (PluginInfo<? extends Settings> info : pluginManager.getPlugins(Settings.class)) {
-            info.getSingleton().load(config);
-        }
+        loadConfigPlugins();
     }
 
     public void saveConfig() {
-        for (PluginInfo<? extends Settings> info : pluginManager.getPlugins(Settings.class)) {
-            info.getSingleton().save(config);
-        }
+        saveConfigPlugins();
         File file = new File(CONFIG_FILE_PATH);
         LogUtils.logMessageLine("Saving global preferences to " + file.getAbsolutePath());
         config.save(file);
     }
 
-    public void setConfigVar(String key, String value) {
+    public void setConfigCoreVar(String key, String value) {
+        // Set a core variable, that does not require updating plugin settings.
         config.set(key, value);
     }
 
-    public void setConfigVar(String key, int value) {
-        config.set(key, Integer.toString(value));
+    public void setConfigVar(String key, String value) {
+        setConfigCoreVar(key, value);
+        // For consistency, update plugin settings.
+        loadConfigPlugins();
     }
 
-    public void setConfigVar(String key, boolean value) {
-        config.set(key, Boolean.toString(value));
-    }
-
-    public String getConfigVar(String key) {
+    public String getConfigCoreVar(String key) {
+        // Get a core variable, that does not require flushing plugin settings.
         return config.get(key);
     }
 
-    public int getConfigVarAsInt(String key, int defaultValue) {
-        String s = config.get(key);
-
-        try {
-            return Integer.parseInt(s);
-        } catch (NumberFormatException e) {
-            return defaultValue;
-        }
-    }
-
-    public boolean getConfigVarAsBool(String key, boolean defaultValue) {
-        String s = config.get(key);
-
-        if (s == null) {
-            return defaultValue;
-        } else {
-            return Boolean.parseBoolean(s);
-        }
+    public String getConfigVar(String key) {
+        // For consistency, flush plugin settings.
+        saveConfigPlugins();
+        return getConfigCoreVar(key);
     }
 
     public String[] getModelNames() {
@@ -341,11 +333,9 @@ public final class Framework {
             public Object run(Context arg0) {
                 Object scriptable = Context.javaToJS(object, scope);
                 ScriptableObject.putProperty(scope, name, scriptable);
-
                 if (readOnly) {
                     scope.setAttributes(name, ScriptableObject.READONLY);
                 }
-
                 return scriptable;
             }
         });
@@ -357,7 +347,6 @@ public final class Framework {
                 return ScriptableObject.deleteProperty(scope, name);
             }
         });
-
     }
 
     public Object execJavaScript(File file) throws FileNotFoundException {
@@ -380,7 +369,8 @@ public final class Framework {
 
         @Override
         public String getMessage() {
-            return String.format("Java %s was unhandled in javascript. \nJavascript stack trace: %s", getCause().getClass().getSimpleName(), getScriptTrace());
+            return String.format("Java %s was unhandled in javascript. \nJavascript stack trace: %s",
+                    getCause().getClass().getSimpleName(), getScriptTrace());
         }
 
         public String getScriptTrace() {

@@ -141,17 +141,17 @@ public class WorkspaceWindow extends JPanel {
         setLayout(new BorderLayout(0, 0));
         this.add(scrollPane, BorderLayout.CENTER);
 
-        lastSavePath = framework.getConfigVar("gui.workspace.lastSavePath");
-        lastOpenPath = framework.getConfigVar("gui.workspace.lastOpenPath");
+        lastSavePath = framework.getConfigCoreVar("gui.workspace.lastSavePath");
+        lastOpenPath = framework.getConfigCoreVar("gui.workspace.lastOpenPath");
     }
 
     public void shutdown() {
         final Framework framework = Framework.getInstance();
         if (lastSavePath != null) {
-            framework.setConfigVar("gui.workspace.lastSavePath", lastSavePath);
+            framework.setConfigCoreVar("gui.workspace.lastSavePath", lastSavePath);
         }
         if (lastOpenPath != null) {
-            framework.setConfigVar("gui.workspace.lastOpenPath", lastOpenPath);
+            framework.setConfigCoreVar("gui.workspace.lastOpenPath", lastOpenPath);
         }
     }
 

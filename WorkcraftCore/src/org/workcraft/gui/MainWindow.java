@@ -654,9 +654,9 @@ public class MainWindow extends JFrame {
 
     public void loadWindowGeometryFromConfig() {
         final Framework framework = Framework.getInstance();
-        String maximisedStr = framework.getConfigVar(CONFIG_GUI_MAIN_MAXIMISED);
-        String widthStr = framework.getConfigVar(CONFIG_GUI_MAIN_WIDTH);
-        String heightStr = framework.getConfigVar(CONFIG_GUI_MAIN_HEIGHT);
+        String maximisedStr = framework.getConfigCoreVar(CONFIG_GUI_MAIN_MAXIMISED);
+        String widthStr = framework.getConfigCoreVar(CONFIG_GUI_MAIN_WIDTH);
+        String heightStr = framework.getConfigCoreVar(CONFIG_GUI_MAIN_HEIGHT);
 
         boolean maximised = (maximisedStr == null) ? true : Boolean.parseBoolean(maximisedStr);
         this.setExtendedState(maximised ? JFrame.MAXIMIZED_BOTH : JFrame.NORMAL);
@@ -685,17 +685,17 @@ public class MainWindow extends JFrame {
     public void saveWindowGeometryToConfig() {
         final Framework framework = Framework.getInstance();
         boolean maximised = (getExtendedState() & JFrame.MAXIMIZED_BOTH) != 0;
-        framework.setConfigVar(CONFIG_GUI_MAIN_MAXIMISED, Boolean.toString(maximised));
-        framework.setConfigVar(CONFIG_GUI_MAIN_WIDTH, Integer.toString(getWidth()));
-        framework.setConfigVar(CONFIG_GUI_MAIN_HEIGHT, Integer.toString(getHeight()));
+        framework.setConfigCoreVar(CONFIG_GUI_MAIN_MAXIMISED, Boolean.toString(maximised));
+        framework.setConfigCoreVar(CONFIG_GUI_MAIN_WIDTH, Integer.toString(getWidth()));
+        framework.setConfigCoreVar(CONFIG_GUI_MAIN_HEIGHT, Integer.toString(getHeight()));
     }
 
     public void loadRecentFilesFromConfig() {
         final Framework framework = Framework.getInstance();
-        lastSavePath = framework.getConfigVar(CONFIG_GUI_MAIN_LAST_SAVE_PATH);
-        lastOpenPath = framework.getConfigVar(CONFIG_GUI_MAIN_LAST_OPEN_PATH);
+        lastSavePath = framework.getConfigCoreVar(CONFIG_GUI_MAIN_LAST_SAVE_PATH);
+        lastOpenPath = framework.getConfigCoreVar(CONFIG_GUI_MAIN_LAST_OPEN_PATH);
         for (int i = 0; i < CommonEditorSettings.getRecentCount(); i++) {
-            String entry = framework.getConfigVar(CONFIG_GUI_MAIN_RECENT_FILE + i);
+            String entry = framework.getConfigCoreVar(CONFIG_GUI_MAIN_RECENT_FILE + i);
             pushRecentFile(entry, false);
         }
         updateRecentFilesMenu();
@@ -704,15 +704,15 @@ public class MainWindow extends JFrame {
     public void saveRecentFilesToConfig() {
         final Framework framework = Framework.getInstance();
         if (lastSavePath != null) {
-            framework.setConfigVar(CONFIG_GUI_MAIN_LAST_SAVE_PATH, lastSavePath);
+            framework.setConfigCoreVar(CONFIG_GUI_MAIN_LAST_SAVE_PATH, lastSavePath);
         }
         if (lastOpenPath != null) {
-            framework.setConfigVar(CONFIG_GUI_MAIN_LAST_OPEN_PATH, lastOpenPath);
+            framework.setConfigCoreVar(CONFIG_GUI_MAIN_LAST_OPEN_PATH, lastOpenPath);
         }
         int recentCount = CommonEditorSettings.getRecentCount();
         String[] tmp = recentFiles.toArray(new String[recentCount]);
         for (int i = 0; i < recentCount; i++) {
-            framework.setConfigVar(CONFIG_GUI_MAIN_RECENT_FILE + i, tmp[i]);
+            framework.setConfigCoreVar(CONFIG_GUI_MAIN_RECENT_FILE + i, tmp[i]);
         }
     }
 
