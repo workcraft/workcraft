@@ -7,7 +7,7 @@ import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateSupervisor;
 
-public class InitStateConsistencySupervisor extends StateSupervisor  {
+public class InitStateConsistencySupervisor extends StateSupervisor {
 
     private final Circuit circuit;
 

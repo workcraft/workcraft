@@ -11,8 +11,9 @@ public class ExceptionDialog {
     public static void show(Component owner, Throwable cause) {
         final StringWriter writer = new StringWriter();
         cause.printStackTrace(new PrintWriter(writer));
-
-        JOptionPane.showMessageDialog(owner, "Exception of type " + cause.getClass().getCanonicalName() + ": \n" + cause.getMessage() + "\n\n" + writer.toString());
+        String name = cause.getClass().getCanonicalName();
+        JOptionPane.showMessageDialog(owner, "Exception of type " + name
+                + ": \n" + cause.getMessage() + "\n\n" + writer.toString());
     }
 
 }

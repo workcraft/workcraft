@@ -8,7 +8,7 @@ import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateSupervisor;
 
-public class ZeroDelayConsistencySupervisor extends StateSupervisor  {
+public class ZeroDelayConsistencySupervisor extends StateSupervisor {
 
     private final Circuit circuit;
 
@@ -24,7 +24,7 @@ public class ZeroDelayConsistencySupervisor extends StateSupervisor  {
             String propertyName = pce.getPropertyName();
             if ((sender instanceof FunctionContact)
                     && (propertyName.equals(FunctionContact.PROPERTY_SET_FUNCTION)
-                        || propertyName.equals(FunctionContact.PROPERTY_RESET_FUNCTION)))  {
+                        || propertyName.equals(FunctionContact.PROPERTY_RESET_FUNCTION))) {
                 handleFunctionChange((FunctionContact) sender);
             }
             if ((sender instanceof FunctionComponent)
