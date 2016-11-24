@@ -54,7 +54,9 @@ public class CircuitStgUtils {
             Set<String> inputSignalNames = devStg.getSignalNames(Type.INPUT, null);
             Set<String> outputSignalNames = devStg.getSignalNames(Type.OUTPUT, null);
             File envStgFile = exportEnvStg(envWorkFile, inputSignalNames, outputSignalNames, directory);
-            envStgFile.deleteOnExit();
+            if (envStgFile != null) {
+                envStgFile.deleteOnExit();
+            }
             // Generating .g for the whole system (circuit and environment)
             File sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + StgUtils.ASTG_FILE_EXT);
             sysStgFile.deleteOnExit();

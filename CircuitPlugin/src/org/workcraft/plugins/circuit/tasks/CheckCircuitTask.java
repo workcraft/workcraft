@@ -80,7 +80,7 @@ public class CheckCircuitTask extends MpsatChainTask {
             }
 
             // Write device STG into a .g file
-            String devStgName = (envStg == null ? StgUtils.SYSTEM_FILE_NAME : StgUtils.DEVICE_FILE_NAME) + StgUtils.ASTG_FILE_EXT;
+            String devStgName = (envStg != null ? StgUtils.DEVICE_FILE_NAME : StgUtils.SYSTEM_FILE_NAME) + StgUtils.ASTG_FILE_EXT;
             File devStgFile = new File(directory, devStgName);
             Result<? extends Object> devExportResult = CircuitStgUtils.exportStg(devStg, devStgFile, directory, monitor);
             if (devExportResult.getOutcome() != Outcome.FINISHED) {

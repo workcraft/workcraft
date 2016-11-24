@@ -96,13 +96,13 @@ public class SynthesisResultHandler extends DummyProgressMonitor<SynthesisResult
                     visualCircuit.setTitle(title);
                     if (!we.getFile().exists()) {
                         JOptionPane.showMessageDialog(mainWindow,
-                                "Error: unsaved STG cannot be set as the circuit environment.",
+                                "Error: Unsaved STG cannot be set as the circuit environment.",
                                 TITLE, JOptionPane.ERROR_MESSAGE);
                     } else {
                         visualCircuit.setEnvironmentFile(we.getFile());
                         if (we.isChanged()) {
                             JOptionPane.showMessageDialog(mainWindow,
-                                    "Warning: the STG with unsaved changes is set as the circuit environment.",
+                                    "Warning: The STG with unsaved changes is set as the circuit environment.",
                                     TITLE, JOptionPane.WARNING_MESSAGE);
                         }
                     }

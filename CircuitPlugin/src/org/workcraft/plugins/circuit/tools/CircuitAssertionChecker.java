@@ -15,12 +15,14 @@ import org.workcraft.plugins.mpsat.MpsatPresetManager;
 import org.workcraft.plugins.mpsat.MpsatSettingsSerialiser;
 import org.workcraft.plugins.mpsat.gui.MpsatAssertionDialog;
 import org.workcraft.plugins.mpsat.tools.MpsatAssertionChecker;
+import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class CircuitAssertionChecker extends VerificationTool {
 
-    private static final String TITLE_VERIFICATION = "Circuit verification";
+    private static final String TITLE = "Circuit verification";
 
     @Override
     public String getDisplayName() {
@@ -44,17 +46,22 @@ public class CircuitAssertionChecker extends VerificationTool {
 
         Circuit circuit = (Circuit) we.getModelEntry().getMathModel();
         if (circuit.getFunctionComponents().isEmpty()) {
-            JOptionPane.showMessageDialog(mainWindow, "Error: the circuit must have components.",
-                    TITLE_VERIFICATION, JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(mainWindow, "Error: The circuit must have components.",
+                    TITLE, JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         VisualCircuit visualCircuit = (VisualCircuit) we.getModelEntry().getVisualModel();
         File envFile = visualCircuit.getEnvironmentFile();
-        if ((envFile == null) || !envFile.exists()) {
-            JOptionPane.showMessageDialog(mainWindow,
-                    "Warning: the circuit will be verified without environment STG.",
-                    TITLE_VERIFICATION, JOptionPane.WARNING_MESSAGE);
+        Stg envStg = StgUtils.loadStg(envFile);
+        if (envStg == null) {
+            String messagePrefix = "";
+            if (envFile != null) {
+                messagePrefix = "Cannot read an STG model from the file:\n" + envFile.getAbsolutePath() + "\n\n";
+            }
+            JOptionPane.showMessageDialog(mainWindow, "Warning: " + messagePrefix
+                    + "The circuit will be verified without environment STG.",
+                    TITLE, JOptionPane.WARNING_MESSAGE);
         }
 
         File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, MpsatAssertionChecker.MPSAT_ASSERTION_PRESETS_FILE);

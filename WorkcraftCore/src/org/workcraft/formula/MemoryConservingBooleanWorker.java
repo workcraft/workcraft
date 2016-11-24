@@ -34,7 +34,7 @@ public class MemoryConservingBooleanWorker implements ReducedBooleanWorker {
         Integer code = codes.get(f);
         if (code == null) {
             // if (!(f instanceof FreeVariable))
-            // System.out.println("warning: unknown code for formula f=[" +
+            // System.out.println("Warning: Unknown code for formula f=[" +
             // f.getClass().getSimpleName()+"] " + formulaToStr(f));
             code = newCode(f);
         }
