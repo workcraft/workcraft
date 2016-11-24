@@ -39,16 +39,19 @@ public class StgSettings implements Settings {
     private static final String keyDensityMapLevelLimit = prefix + ".densityMapLevelLimit";
     private static final String keyLowLevelSuffix = prefix + ".lowLevelSuffix";
     private static final String keyHighLevelSuffix = prefix + ".highLevelSuffix";
+    private static final String keyGroupSignalConversion = prefix + ".groupSignalConversion";
     private static final String keyConceptsFolderLocation = prefix + ".conceptsFolderLocation";
 
     private static final Integer defaultDensityMapLevelLimit = 5;
     private static final String defaultLowLevelSuffix = "_LOW";
     private static final String defaultHighLevelSuffix = "_HIGH";
+    private static final Boolean defaultGroupSignalConversion = false;
     private static final String defaultConceptsFolderLocation = DesktopApi.getOs().isWindows() ? "tools\\concepts\\" : "tools/concepts/";
 
     private static Integer densityMapLevelLimit = defaultDensityMapLevelLimit;
     private static String lowLevelSuffix = defaultLowLevelSuffix;
     private static String highLevelSuffix = defaultHighLevelSuffix;
+    private static Boolean groupSignalConversion = defaultGroupSignalConversion;
     private static String conceptsFolderLocation = defaultConceptsFolderLocation;
 
     public StgSettings() {
@@ -93,6 +96,16 @@ public class StgSettings implements Settings {
             }
             protected String getter(StgSettings object) {
                 return getHighLevelSuffix();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<StgSettings, Boolean>(
+                this, "Group signals on conversion", Boolean.class, true, false, false) {
+            protected void setter(StgSettings object, Boolean value) {
+                setGroupSignalConversion(value);
+            }
+            protected Boolean getter(StgSettings object) {
+                return getGroupSignalConversion();
             }
         });
 
@@ -142,6 +155,7 @@ public class StgSettings implements Settings {
         setDensityMapLevelLimit(config.getInt(keyDensityMapLevelLimit, defaultDensityMapLevelLimit));
         setLowLevelSuffix(config.getString(keyLowLevelSuffix, defaultLowLevelSuffix));
         setHighLevelSuffix(config.getString(keyHighLevelSuffix, defaultHighLevelSuffix));
+        setGroupSignalConversion(config.getBoolean(keyGroupSignalConversion, defaultGroupSignalConversion));
         setConceptsFolderLocation(config.getString(keyConceptsFolderLocation, defaultConceptsFolderLocation));
     }
 
@@ -150,6 +164,7 @@ public class StgSettings implements Settings {
         config.setInt(keyDensityMapLevelLimit, getDensityMapLevelLimit());
         config.set(keyLowLevelSuffix, getLowLevelSuffix());
         config.set(keyHighLevelSuffix, getHighLevelSuffix());
+        config.setBoolean(keyGroupSignalConversion, getGroupSignalConversion());
         config.set(keyConceptsFolderLocation, getConceptsFolderLocation());
     }
 
@@ -189,6 +204,14 @@ public class StgSettings implements Settings {
         if (value.length() > 0) {
             highLevelSuffix = value;
         }
+    }
+
+    public static Boolean getGroupSignalConversion() {
+        return groupSignalConversion;
+    }
+
+    public static void setGroupSignalConversion(Boolean value) {
+        groupSignalConversion = value;
     }
 
     public static String getConceptsFolderLocation() {

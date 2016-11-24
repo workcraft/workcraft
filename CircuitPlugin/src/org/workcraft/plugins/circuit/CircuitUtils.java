@@ -78,7 +78,8 @@ public class CircuitUtils {
                     queue.addAll(circuit.getPreset(zeroDelayInput));
                 } else if (contact.isDriver()) {
                     result = contact;
-                } else if (node == curNode) {
+                } else {
+                    // Is it necessary to check that (node == curNode) before adding preset to queue?
                     queue.addAll(circuit.getPreset(contact));
                 }
             } else {
@@ -121,25 +122,27 @@ public class CircuitUtils {
         }
         while (!queue.isEmpty()) {
             Node node = queue.remove();
-            if (!visited.contains(node)) {
-                visited.add(node);
-                if (node instanceof Joint) {
-                    queue.addAll(circuit.getPostset(node));
-                } else if (node instanceof Contact) {
-                    Contact contact = (Contact) node;
-                    // Support for zero-delay buffers and inverters.
-                    Contact zeroDelayOutput = transparentZeroDelayComponents ? findZeroDelayOutput(contact) : null;
-                    if (zeroDelayOutput != null) {
-                        queue.addAll(circuit.getPostset(zeroDelayOutput));
-                    } else if (contact.isDriven()) {
-                        result.add(contact);
-                    } else if (node == curNode) {
-                        queue.addAll(circuit.getPostset(contact));
-                    }
+            if (visited.contains(node)) {
+                continue;
+            }
+            visited.add(node);
+            if (node instanceof Joint) {
+                queue.addAll(circuit.getPostset(node));
+            } else if (node instanceof Contact) {
+                Contact contact = (Contact) node;
+                // Support for zero-delay buffers and inverters.
+                Contact zeroDelayOutput = transparentZeroDelayComponents ? findZeroDelayOutput(contact) : null;
+                if (zeroDelayOutput != null) {
+                    queue.addAll(circuit.getPostset(zeroDelayOutput));
+                } else if (contact.isDriven()) {
+                    result.add(contact);
                 } else {
-                    throw new RuntimeException("Unexpected node '" + circuit.getNodeReference(node)
-                            + "' in the driven trace for node '" + circuit.getNodeReference(curNode) + "'!");
+                    // Is it necessary to check that (node == curNode) before adding postset to queue?
+                    queue.addAll(circuit.getPostset(contact));
                 }
+            } else {
+                throw new RuntimeException("Unexpected node '" + circuit.getNodeReference(node)
+                + "' in the driven trace for node '" + circuit.getNodeReference(curNode) + "'!");
             }
         }
         return result;

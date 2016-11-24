@@ -20,6 +20,7 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.StgSettings;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.VisualSignalTransition;
@@ -281,8 +282,10 @@ public abstract class StgGenerator {
     }
 
     public void groupComponentStg(NodeStg nodeStg) {
-        stg.select(nodeStg.getAllNodes());
-        stg.groupSelection();
+        if (StgSettings.getGroupSignalConversion()) {
+            stg.select(nodeStg.getAllNodes());
+            stg.groupSelection();
+        }
     }
 
 }
