@@ -1,12 +1,18 @@
 package org.workcraft.plugins.stg;
 
+import java.io.File;
+
+import org.workcraft.Framework;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.workspace.ModelEntry;
 
 public class StgUtils {
     public static final String DEVICE_FILE_NAME = "device";
@@ -111,6 +117,22 @@ public class StgUtils {
             replaceNamedTransition(stg, dummyTransition, newDummyTransition);
         }
         return newDummyTransition;
+    }
+
+    public static Stg loadStg(File file) {
+        Stg result = null;
+        if ((file != null) && file.exists()) {
+            Framework framework = Framework.getInstance();
+            try {
+                ModelEntry me = framework.load(file);
+                MathModel model = me.getMathModel();
+                if (model instanceof Stg) {
+                    result = (Stg) model;
+                }
+            } catch (DeserialisationException e) {
+            }
+        }
+        return result;
     }
 
 }

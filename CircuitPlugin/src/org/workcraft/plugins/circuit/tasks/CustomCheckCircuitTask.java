@@ -48,11 +48,22 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
             // Common variables
             VisualCircuit visualCircuit = (VisualCircuit) we.getModelEntry().getVisualModel();
             File envFile = visualCircuit.getEnvironmentFile();
-            boolean hasEnvironment = (envFile != null) && envFile.exists();
 
+            // Load device STG
             CircuitToStgConverter generator = new CircuitToStgConverter(visualCircuit);
             Stg devStg = (Stg) generator.getStg().getMathModel();
-            String devStgName = (hasEnvironment ? StgUtils.DEVICE_FILE_NAME : StgUtils.SYSTEM_FILE_NAME) + StgUtils.ASTG_FILE_EXT;
+
+            // Load environment STG
+            Stg envStg = StgUtils.loadStg(envFile);
+            if (envStg != null) {
+                // Make sure that input signals of the device STG are also inputs in the environment STG
+                Set<String> inputSignalNames = devStg.getSignalNames(Type.INPUT, null);
+                Set<String> outputSignalNames = devStg.getSignalNames(Type.OUTPUT, null);
+                CircuitStgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
+            }
+
+            // Write device STG into a .g file
+            String devStgName = (envStg != null ? StgUtils.DEVICE_FILE_NAME : StgUtils.SYSTEM_FILE_NAME) + StgUtils.ASTG_FILE_EXT;
             File devStgFile = new File(directory, devStgName);
             Result<? extends Object> devExportResult = CircuitStgUtils.exportStg(devStg, devStgFile, directory, monitor);
             if (devExportResult.getOutcome() != Outcome.FINISHED) {
@@ -63,16 +74,6 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
                         new MpsatChainResult(devExportResult, null, null, null, toolchainPreparationSettings));
             }
             monitor.progressUpdate(0.10);
-
-            // Environment STG
-            Stg envStg = null;
-            if (hasEnvironment) {
-                envStg = (Stg) framework.load(envFile).getMathModel();
-                // Make sure that input signals of the device STG are also inputs in the environment STG
-                Set<String> inputSignalNames = devStg.getSignalNames(Type.INPUT, null);
-                Set<String> outputSignalNames = devStg.getSignalNames(Type.OUTPUT, null);
-                CircuitStgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
-            }
 
             // Generating system .g for custom property check (only if needed)
             File sysStgFile = null;

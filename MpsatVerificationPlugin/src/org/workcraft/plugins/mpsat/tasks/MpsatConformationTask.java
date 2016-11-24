@@ -82,19 +82,21 @@ public class MpsatConformationTask extends MpsatChainTask {
             if (envFile.getName().endsWith(".g")) {
                 envStgFile = envFile;
             } else {
-                Stg envStg = (Stg) framework.load(envFile).getMathModel();
-                Exporter envStgExporter = Export.chooseBestExporter(framework.getPluginManager(), envStg, Format.STG);
-                envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.ASTG_FILE_EXT);
-                ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile.getAbsolutePath());
-                Result<? extends Object> envExportResult = framework.getTaskManager().execute(
-                        envExportTask, "Exporting environment .g", subtaskMonitor);
+                Stg envStg = StgUtils.loadStg(envFile);
+                if (envStg != null) {
+                    Exporter envStgExporter = Export.chooseBestExporter(framework.getPluginManager(), envStg, Format.STG);
+                    envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.ASTG_FILE_EXT);
+                    ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile.getAbsolutePath());
+                    Result<? extends Object> envExportResult = framework.getTaskManager().execute(
+                            envExportTask, "Exporting environment .g", subtaskMonitor);
 
-                if (envExportResult.getOutcome() != Outcome.FINISHED) {
-                    if (envExportResult.getOutcome() == Outcome.CANCELLED) {
-                        return new Result<MpsatChainResult>(Outcome.CANCELLED);
+                    if (envExportResult.getOutcome() != Outcome.FINISHED) {
+                        if (envExportResult.getOutcome() == Outcome.CANCELLED) {
+                            return new Result<MpsatChainResult>(Outcome.CANCELLED);
+                        }
+                        return new Result<MpsatChainResult>(Outcome.FAILED,
+                                new MpsatChainResult(envExportResult, null, null, null, toolchainPreparationSettings));
                     }
-                    return new Result<MpsatChainResult>(Outcome.FAILED,
-                            new MpsatChainResult(envExportResult, null, null, null, toolchainPreparationSettings));
                 }
             }
             monitor.progressUpdate(0.40);

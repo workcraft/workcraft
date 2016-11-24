@@ -82,7 +82,9 @@ public class PcompTask implements Task<ExternalProcessResult> {
 
         // STG input files
         for (File inputFile: inputFiles) {
-            command.add(inputFile.getAbsolutePath());
+            if (inputFile != null) {
+                command.add(inputFile.getAbsolutePath());
+            }
         }
 
         ExternalProcessTask task = new ExternalProcessTask(command, directory, false, true);

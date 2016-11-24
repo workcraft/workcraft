@@ -91,7 +91,7 @@ public class TSONStructureTask extends AbstractStructuralVerification {
     }
 
     //Check all inputs of a block causally precede all outputs of an un-collapsed block
-    //Warning: run cycle check before
+    //Warning: Run cycle check before
     private Collection<Node> causallyPrecedeTask(Block block) {
         Collection<Node> result = new ArrayList<>();
         for (Node input : getTSONAlg().getBlockPNInputs(block)) {

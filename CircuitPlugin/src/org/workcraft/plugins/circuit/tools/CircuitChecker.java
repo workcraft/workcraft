@@ -11,11 +11,13 @@ import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.tasks.CheckCircuitTask;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
+import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class CircuitChecker extends VerificationTool {
 
-    private static final String TITLE_VERIFICATION = "Circuit verification";
+    private static final String TITLE = "Circuit vetification";
 
     public String getDisplayName() {
         return "Conformation, deadlock and output persistency (reuse unfolding) [MPSat]";
@@ -38,8 +40,8 @@ public class CircuitChecker extends VerificationTool {
 
         Circuit circuit = (Circuit) we.getModelEntry().getMathModel();
         if (circuit.getFunctionComponents().isEmpty()) {
-            JOptionPane.showMessageDialog(mainWindow, "Error: the circuit must have components.",
-                    TITLE_VERIFICATION, JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(mainWindow, "The circuit must have components.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
@@ -49,27 +51,32 @@ public class CircuitChecker extends VerificationTool {
 
         VisualCircuit visualCircuit = (VisualCircuit) we.getModelEntry().getVisualModel();
         File envFile = visualCircuit.getEnvironmentFile();
-        if ((envFile == null) || !envFile.exists()) {
+        Stg envStg = StgUtils.loadStg(envFile);
+        if (envStg == null) {
+            String messagePrefix = "";
+            if (envFile != null) {
+                messagePrefix = "Cannot read an STG model from the file:\n" + envFile.getAbsolutePath() + "\n\n";
+            }
             if (checkConformation) {
                 if (checkDeadlock || checkPersistency) {
-                    int answer = JOptionPane.showConfirmDialog(mainWindow,
-                            "The circuit conformation cannot be checked without environment STG.\n"
-                            + "Proceed with verification of the other properties?",
-                            TITLE_VERIFICATION, JOptionPane.YES_NO_OPTION);
+                    int answer = JOptionPane.showConfirmDialog(mainWindow, "Warning: " + messagePrefix
+                            + "The circuit conformation cannot be checked without environment STG.\n"
+                            + "Proceed with verification of the other properties?\n",
+                            TITLE, JOptionPane.YES_NO_OPTION);
 
                     boolean proceed = answer == JOptionPane.YES_OPTION;
                     checkDeadlock &= proceed;
                     checkPersistency &= proceed;
                 } else {
-                    JOptionPane.showMessageDialog(mainWindow,
-                            "Error: the circuit conformation cannot be checked without environment STG.",
-                            TITLE_VERIFICATION, JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(mainWindow, "Error: " + messagePrefix
+                            + "The circuit conformation cannot be checked without environment STG.\n",
+                            TITLE, JOptionPane.ERROR_MESSAGE);
                 }
                 checkConformation = false;
             } else {
-                JOptionPane.showMessageDialog(mainWindow,
-                        "Warning: the circuit will be verified without environment STG.",
-                        TITLE_VERIFICATION, JOptionPane.WARNING_MESSAGE);
+                JOptionPane.showMessageDialog(mainWindow, "Warning: " + messagePrefix
+                        + "The circuit will be verified without environment STG.\n",
+                        TITLE, JOptionPane.WARNING_MESSAGE);
             }
         }
 

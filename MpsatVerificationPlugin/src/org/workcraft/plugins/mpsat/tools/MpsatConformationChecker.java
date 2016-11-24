@@ -13,10 +13,13 @@ import org.workcraft.plugins.mpsat.tasks.MpsatConformationTask;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatConformationChecker extends VerificationTool {
+
+    private static final String TITLE = "Conformation check";
 
     @Override
     public String getDisplayName() {
@@ -41,38 +44,45 @@ public class MpsatConformationChecker extends VerificationTool {
         // Check for limitations:
         if (stg.getPlaces().isEmpty()) {
             // - The set of device STG place names is non-empty (this limitation can be easily removed).
-            JOptionPane.showMessageDialog(mainWindow, "The STG must have places.",
-                    "Conformation check error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(mainWindow, "Error: The STG must have places.",
+                    TITLE, JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         if (hasDisconnectedTransitions(stg)) {
             // - Each transition in the device STG must have some arcs, i.e. its preset or postset is non-empty.
-            JOptionPane.showMessageDialog(mainWindow, "The STG must have no disconnected transitions.",
-                    "Conformation check error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(mainWindow, "Error: The STG must have no disconnected transitions.",
+                    TITLE, JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         if (!stg.getDummyTransitions().isEmpty()) {
             // - The device STG must have no dummies.
-            JOptionPane.showMessageDialog(mainWindow, "The STG must have no dummies.",
-                    "Conformation check error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(mainWindow, "Error: The STG must have no dummies.",
+                    TITLE, JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         JFileChooser fc = mainWindow.createOpenDialog("Open environment file", false, null);
         if (fc.showDialog(null, "Open") == JFileChooser.APPROVE_OPTION) {
-            File file = fc.getSelectedFile();
-            if (mainWindow.checkFileMessageDialog(file, null)) {
-                final MpsatConformationTask mpsatTask = new MpsatConformationTask(we, file);
-
-                String description = "MPSat tool chain";
-                String title = we.getTitle();
-                if (!title.isEmpty()) {
-                    description += "(" + title + ")";
+            File envFile = fc.getSelectedFile();
+            if (mainWindow.checkFileMessageDialog(envFile, null)) {
+                Stg envStg = StgUtils.loadStg(envFile);
+                if (envStg == null) {
+                    JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(),
+                            "Error: Cannot read an STG model from the file:\n" + envFile.getAbsolutePath() + "\n\n"
+                            + "Conformation cannot be checked without environment STG.\n",
+                            TITLE, JOptionPane.ERROR_MESSAGE);
+                } else {
+                    final MpsatConformationTask mpsatTask = new MpsatConformationTask(we, envFile);
+                    String description = "MPSat tool chain";
+                    String title = we.getTitle();
+                    if (!title.isEmpty()) {
+                        description += "(" + title + ")";
+                    }
+                    MpsatChainResultHandler monitor = new MpsatChainResultHandler(mpsatTask);
+                    framework.getTaskManager().queue(mpsatTask, description, monitor);
                 }
-                MpsatChainResultHandler monitor = new MpsatChainResultHandler(mpsatTask);
-                framework.getTaskManager().queue(mpsatTask, description, monitor);
             }
         }
     }
