@@ -41,12 +41,12 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.StgSettings;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.generator.SignalStg;
 import org.workcraft.util.Geometry;
-import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Pair;
 import org.workcraft.util.TwoWayMap;
 
@@ -79,10 +79,11 @@ public class CircuitToStgConverter {
         this.driverToStgMap = convertDriversToStgs(drivers);
         connectDriverStgs(drivers);
         if (CircuitSettings.getSimplifyStg()) {
-            simplifyDriverStgs(drivers); // remove dead transitions
+            // Remove dead transitions
+            simplifyDriverStgs(drivers);
         }
         positionDriverStgs(drivers);
-        //groupDriverStgs(drivers);
+        groupDriverStgs(drivers);
     }
 
     public CircuitToStgConverter(VisualCircuit circuit, VisualStg stg) {
@@ -91,12 +92,14 @@ public class CircuitToStgConverter {
         this.refToPageMap = convertPages();
         HashSet<VisualContact> drivers = identifyDrivers();
         this.nodeToDriverMap = associateNodesToDrivers(drivers);
-        this.driverToStgMap = associateDriversToStgs(drivers);  // STGs already exist, just associate them with the drivers
+        // STGs already exist, just associate them with the drivers
+        this.driverToStgMap = associateDriversToStgs(drivers);
         if (CircuitSettings.getSimplifyStg()) {
-            simplifyDriverStgs(drivers); // remove dead transitions
+            // Remove dead transitions
+            simplifyDriverStgs(drivers);
         }
         positionDriverStgs(drivers);
-        //groupDriverStgs(drivers);
+        groupDriverStgs(drivers);
     }
 
     public VisualStg getStg() {
@@ -152,7 +155,7 @@ public class CircuitToStgConverter {
 
     private HashSet<VisualContact> identifyDrivers() {
         HashSet<VisualContact> result = new HashSet<>();
-        for (VisualContact contact : Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualContact.class)) {
+        for (VisualContact contact : circuit.getVisualFunctionContacts()) {
             VisualContact driver = CircuitUtils.findDriver(circuit, contact);
             if (driver == null) {
                 driver = contact;
@@ -507,27 +510,32 @@ public class CircuitToStgConverter {
     }
 
     private void groupDriverStgs(HashSet<VisualContact> drivers) {
-        for (VisualContact driver: drivers) {
-            SignalStg signalStg = driverToStgMap.getValue(driver);
-            if (signalStg != null) {
-                Collection<Node> nodesToGroup = new LinkedList<>();
-                nodesToGroup.addAll(signalStg.getAllNodes());
-
-                Container currentLevel = null;
-                Container oldLevel = stg.getCurrentLevel();
-                for (Node node: nodesToGroup) {
-                    if (currentLevel == null) {
-                        currentLevel = (Container) node.getParent();
-                    }
-                    if (currentLevel != node.getParent()) {
-                        throw new RuntimeException("Current level is not the same among the processed nodes");
-                    }
-                }
-                stg.setCurrentLevel(currentLevel);
-                stg.select(nodesToGroup);
-                stg.groupSelection();
-                stg.setCurrentLevel(oldLevel);
+        if (StgSettings.getGroupSignalConversion()) {
+            for (VisualContact driver: drivers) {
+                SignalStg signalStg = driverToStgMap.getValue(driver);
+                groupSignalStg(signalStg);
             }
+        }
+    }
+
+    private void groupSignalStg(SignalStg signalStg) {
+        if ((signalStg != null) && StgSettings.getGroupSignalConversion()) {
+            Collection<Node> nodesToGroup = new LinkedList<>();
+            nodesToGroup.addAll(signalStg.getAllNodes());
+            Container currentLevel = null;
+            Container oldLevel = stg.getCurrentLevel();
+            for (Node node: nodesToGroup) {
+                if (currentLevel == null) {
+                    currentLevel = (Container) node.getParent();
+                }
+                if (currentLevel != node.getParent()) {
+                    throw new RuntimeException("Current level is not the same among the processed nodes");
+                }
+            }
+            stg.setCurrentLevel(currentLevel);
+            stg.select(nodesToGroup);
+            stg.groupSelection();
+            stg.setCurrentLevel(oldLevel);
         }
     }
 
