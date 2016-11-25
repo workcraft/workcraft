@@ -843,9 +843,8 @@ public class MainWindow extends JFrame {
         }
         // Set file filters
         fc.setAcceptAllFileFilterUsed(false);
-        if (importers == null) {
-            fc.setFileFilter(FileFilters.DOCUMENT_FILES);
-        } else {
+        fc.setFileFilter(FileFilters.DOCUMENT_FILES);
+        if (importers != null) {
             for (Importer importer : importers) {
                 fc.addChoosableFileFilter(new ImporterFileFilter(importer));
             }
