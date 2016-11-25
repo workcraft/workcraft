@@ -39,6 +39,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.CompatibilityManager;
 import org.workcraft.Framework;
+import org.workcraft.PluginManager;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
@@ -71,7 +72,7 @@ public class SaveLoadTests {
     //@Test
     public void testMathModelLoad() throws Exception {
         Framework framework = Framework.getInstance();
-        framework.getPluginManager().reconfigure(false);
+        framework.getPluginManager().reconfigureManifest(false);
 
         final CompatibilityManager compatibilityManager = framework.getCompatibilityManager();
         ByteArrayInputStream bis = compatibilityManager.process(new Base16Reader(testDataMathModel));
@@ -86,7 +87,7 @@ public class SaveLoadTests {
     //@Test
     public void testVisualModelLoad() throws Exception {
         Framework framework = Framework.getInstance();
-        framework.getPluginManager().reconfigure(false);
+        framework.getPluginManager().reconfigureManifest(false);
 
         final CompatibilityManager compatibilityManager = framework.getCompatibilityManager();
         ByteArrayInputStream bis = compatibilityManager.process(new Base16Reader(testDataVisualModel));
@@ -114,7 +115,8 @@ public class SaveLoadTests {
 
     private void ensureSampleUpToDate(String sampleVarName, Model model, String currentValue) throws SerialisationException, Exception {
         Framework framework = Framework.getInstance();
-        framework.getPluginManager().reconfigure(false);
+        PluginManager pm = framework.getPluginManager();
+        pm.reconfigureManifest(false);
 
         StringWriter writer = new StringWriter();
         framework.save(new ModelEntry(new PetriNetDescriptor(), model), new Base16Writer(writer));
