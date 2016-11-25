@@ -38,7 +38,7 @@ public class PolicySelectionTool extends SelectionTool {
         JPanel bundlePanel = new JPanel();
         controlPanel.add(bundlePanel);
         JButton bundleButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/selection-bundle.svg"), "Bundle selected transitions (" + DesktopApi.getMenuKeyMaskName() + "+B)");
+                "images/policy-selection-bundle.svg"), "Bundle selected transitions (" + DesktopApi.getMenuKeyMaskName() + "+B)");
         bundleButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -47,7 +47,7 @@ public class PolicySelectionTool extends SelectionTool {
         });
         bundlePanel.add(bundleButton);
         JButton unbundleButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/selection-unbundle.svg"), "Unbundle selected transitions (" + DesktopApi.getMenuKeyMaskName() + "+Shift+B)");
+                "images/policy-selection-unbundle.svg"), "Unbundle selected transitions (" + DesktopApi.getMenuKeyMaskName() + "+Shift+B)");
         unbundleButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

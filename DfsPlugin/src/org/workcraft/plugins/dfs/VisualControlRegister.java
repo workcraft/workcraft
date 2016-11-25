@@ -22,7 +22,7 @@ import org.workcraft.plugins.dfs.decorations.BinaryRegisterDecoration;
 
 @Hotkey(KeyEvent.VK_T)
 @DisplayName ("Control register")
-@SVGIcon("images/node-control_register.svg")
+@SVGIcon("images/dfs-node-control_register.svg")
 public class VisualControlRegister extends VisualBinaryRegister {
 
     public VisualControlRegister(ControlRegister register) {

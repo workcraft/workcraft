@@ -38,7 +38,7 @@ import org.workcraft.gui.graph.tools.Decoration;
 
 @DisplayName("Joint")
 @Hotkey(KeyEvent.VK_J)
-@SVGIcon("images/node-joint.svg")
+@SVGIcon("images/circuit-node-joint.svg")
 public class VisualJoint extends VisualComponent {
     public static double size = 0.25;
     public static final Shape shape = new Ellipse2D.Double(-size / 2, -size / 2, size, size);

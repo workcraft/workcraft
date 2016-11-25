@@ -55,7 +55,7 @@ import org.workcraft.plugins.cpog.formula.PrettifyBooleanReplacer;
 
 @Hotkey(KeyEvent.VK_V)
 @DisplayName("Vertex")
-@SVGIcon("images/node-vertex.svg")
+@SVGIcon("images/cpog-node-vertex.svg")
 public class VisualVertex extends VisualComponent implements CpogFormulaVariable {
 
     public enum RenderType {

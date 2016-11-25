@@ -35,7 +35,7 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @Hotkey(KeyEvent.VK_T)
 @DisplayName("Signal Transition")
-@SVGIcon("images/node-signal_transition.svg")
+@SVGIcon("images/stg-node-signal_transition.svg")
 public class VisualSignalTransition extends VisualNamedTransition implements StateObserver {
 
     public VisualSignalTransition(SignalTransition signalTransition) {

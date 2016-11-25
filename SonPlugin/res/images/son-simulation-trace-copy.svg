@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg id="svg2888" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="48px" width="48px" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
+ <metadata id="metadata2893">
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <g id="layer1">
+  <g id="g2819">
+   <g id="g3044" transform="translate(-1.2771)">
+    <g id="g3026" transform="matrix(.96108 0 0 .96108 .15101 1.0362)">
+     <g id="g3117" transform="matrix(1.48,0,0,1.48,70.48,-21.2)">
+      <g id="g3078">
+       <path id="rect3039-2" d="m-45 18h10l4 4v13h-14z" stroke="#000" stroke-width=".87482" fill="#fff"/>
+      </g>
+      <path id="path3049" d="m-43 22h6" stroke="#000" stroke-width="1px" fill="none"/>
+      <path id="path3051" d="m-43 26h9" stroke="#000" stroke-width="1px" fill="none"/>
+      <path id="path3053" d="m-43 29h9" stroke="#000" stroke-width="1px" fill="none"/>
+      <path id="path3055" d="m-43 32h9" stroke="#000" stroke-width="1px" fill="none"/>
+      <path id="path3076" d="m-35 18v4h4" stroke="#000" stroke-width="1px" fill="none"/>
+     </g>
+     <g id="g3117-2" transform="matrix(1.48,0,0,1.48,82.32,-9.36)">
+      <g id="g3078-9">
+       <path id="rect3039-2-8" d="m-45 18h10l4 4v13h-14z" stroke="#000" stroke-width=".87482" fill="#fff"/>
+      </g>
+      <path id="path3049-6" d="m-43 22h6" stroke="#000" stroke-width="1px" fill="none"/>
+      <path id="path3051-6" d="m-43 26h9" stroke="#000" stroke-width="1px" fill="none"/>
+      <path id="path3053-9" d="m-43 29h9" stroke="#000" stroke-width="1px" fill="none"/>
+      <path id="path3055-9" d="m-43 32h9" stroke="#000" stroke-width="1px" fill="none"/>
+      <path id="path3076-6" d="m-35 18v4h4" stroke="#000" stroke-width="1px" fill="none"/>
+     </g>
+    </g>
+    <text id="text3165" style="word-spacing:0px;letter-spacing:0px;text-anchor:middle;text-align:center" font-size="16px" line-height="85.00000238%" y="14.767187" x="43.093246" font-family="Sans" xml:space="preserve" fill="#000000"><tspan id="tspan3167" y="14.767187" x="43.093246">a</tspan><tspan id="tspan3022" y="28.367188" x="43.093246">↓</tspan><tspan id="tspan3024" y="41.967186" x="43.093246">b</tspan></text>
+   </g>
+  </g>
+ </g>
+</svg>

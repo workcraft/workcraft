@@ -88,12 +88,12 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
         net = (SON) visualNet.getMathModel();
         net.refreshAllColor();
 
-        startButton = SONGUI.createIconToggleButton(GUI.createIconFromSVG("images/scenario-start.svg"), "Generate");
-        resetButton = GUI.createIconButton(GUI.createIconFromSVG("images/scenario-reset.svg"), "Reset");
-        saveButton = GUI.createIconButton(GUI.createIconFromSVG("images/scenario-save.svg"), "Save");
-        removeButton = GUI.createIconButton(GUI.createIconFromSVG("images/scenario-delete.svg"), "Remove");
-        importButton = GUI.createIconButton(GUI.createIconFromSVG("images/scenario-import.svg"), "Import scenarios");
-        exportButton = GUI.createIconButton(GUI.createIconFromSVG("images/scenario-export.svg"), "Export scenarios");
+        startButton = SONGUI.createIconToggleButton(GUI.createIconFromSVG("images/son-scenario-start.svg"), "Generate");
+        resetButton = GUI.createIconButton(GUI.createIconFromSVG("images/son-scenario-reset.svg"), "Reset");
+        saveButton = GUI.createIconButton(GUI.createIconFromSVG("images/son-scenario-save.svg"), "Save");
+        removeButton = GUI.createIconButton(GUI.createIconFromSVG("images/son-scenario-delete.svg"), "Remove");
+        importButton = GUI.createIconButton(GUI.createIconFromSVG("images/son-scenario-import.svg"), "Import scenarios");
+        exportButton = GUI.createIconButton(GUI.createIconFromSVG("images/son-scenario-export.svg"), "Export scenarios");
 
         int buttonWidth = (int) Math.round(startButton.getPreferredSize().getWidth() + 5);
         int buttonHeight = (int) Math.round(startButton.getPreferredSize().getHeight() + 5);
@@ -419,7 +419,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
 
     @Override
     public Icon getIcon() {
-        return GUI.createIconFromSVG("images/tool-scenario.svg");
+        return GUI.createIconFromSVG("images/son-tool-scenario.svg");
     }
 
     @Override

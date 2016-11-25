@@ -44,7 +44,7 @@ import org.workcraft.observation.PropertyChangedEvent;
 
 @Hotkey(KeyEvent.VK_V)
 @DisplayName("Vertex")
-@SVGIcon("images/node-vertex.svg")
+@SVGIcon("images/graph-node-vertex.svg")
 public class VisualVertex extends VisualComponent {
 
     public enum RenderType {

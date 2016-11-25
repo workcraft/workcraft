@@ -29,7 +29,7 @@ import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.Positioning;
 
 @DisplayName("Merge")
-@SVGIcon("images/node-merge.svg")
+@SVGIcon("images/xmas-node-merge.svg")
 public class VisualMergeComponent extends VisualXmasComponent {
 
     public VisualMergeComponent(MergeComponent component) {

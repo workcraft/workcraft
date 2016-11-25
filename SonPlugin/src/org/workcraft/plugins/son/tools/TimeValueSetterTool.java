@@ -646,7 +646,7 @@ public class TimeValueSetterTool extends AbstractTool {
 
     @Override
     public Icon getIcon() {
-        return GUI.createIconFromSVG("images/tool-time.svg");
+        return GUI.createIconFromSVG("images/son-tool-time.svg");
     }
 
     @Override
