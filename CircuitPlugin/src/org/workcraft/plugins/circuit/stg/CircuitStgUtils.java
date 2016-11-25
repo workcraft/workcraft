@@ -26,7 +26,6 @@ import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
-import org.workcraft.workspace.WorkspaceEntry;
 
 public class CircuitStgUtils {
 
@@ -72,7 +71,7 @@ public class CircuitStgUtils {
             case FAILED:
                 throw new RuntimeException("Composition failed:\n" + pcompResult.getCause());
             }
-            systemStg = importStg(sysStgFile);
+            systemStg = StgUtils.loadStg(sysStgFile);
         } catch (Throwable e) {
             System.err.println(e.getMessage());
         }
@@ -145,18 +144,6 @@ public class CircuitStgUtils {
             subtaskMonitor = new SubtaskMonitor<Object>(monitor);
         }
         return framework.getTaskManager().execute(pcompTask, description, subtaskMonitor);
-    }
-
-    public static Stg importStg(File stgFile) {
-        Stg stg = null;
-        try {
-            Framework framework = Framework.getInstance();
-            WorkspaceEntry stgWorkspaceEntry = framework.getWorkspace().open(stgFile, true);
-            stg = (Stg) stgWorkspaceEntry.getModelEntry().getMathModel();
-            framework.getWorkspace().close(stgWorkspaceEntry);
-        } catch (DeserialisationException e) {
-        }
-        return stg;
     }
 
     public static void restoreInterfaceSignals(Stg stg, Collection<String> inputSignalNames, Collection<String> outputSignalNames) {

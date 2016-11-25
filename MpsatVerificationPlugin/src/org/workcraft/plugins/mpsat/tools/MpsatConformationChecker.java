@@ -8,12 +8,14 @@ import javax.swing.JOptionPane;
 import org.workcraft.Framework;
 import org.workcraft.VerificationTool;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.interop.Importer;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.tasks.MpsatConformationTask;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.StgUtils;
+import org.workcraft.plugins.stg.interop.DotGImporter;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -63,7 +65,8 @@ public class MpsatConformationChecker extends VerificationTool {
             return;
         }
 
-        JFileChooser fc = mainWindow.createOpenDialog("Open environment file", false, null);
+        Importer[] importers = {new DotGImporter()};
+        JFileChooser fc = mainWindow.createOpenDialog("Open environment file", false, importers);
         if (fc.showDialog(null, "Open") == JFileChooser.APPROVE_OPTION) {
             File envFile = fc.getSelectedFile();
             if (mainWindow.checkFileMessageDialog(envFile, null)) {

@@ -163,6 +163,7 @@ TOKEN :
 |   <OUTPUT_HEADER : ".outputs">
 |   <INTERNAL_HEADER : ".internal">
 |   <DUMMY_HEADER : ".dummy">
+|   <SILENT_HEADER : ".silent">
 |   <GRAPH : ".graph">
 |   <MARKING : ".marking">
 |   <CAPACITY : ".capacity">
@@ -220,6 +221,10 @@ void header() :
             addSignals(list, Type.INTERNAL);
         }
     |   <DUMMY_HEADER> list = stringList()
+        {
+            addDummies(list);
+        }
+    |   <SILENT_HEADER> list = stringList()
         {
             addDummies(list);
         }
