@@ -35,6 +35,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.plugins.PluginInfo;
@@ -79,14 +80,13 @@ public class PluginManager implements PluginProvider {
 
     public boolean tryLoadManifest(File file) {
         if (!file.exists()) {
-            LogUtils.logMessageLine("Plugin manifest \"" + file.getAbsolutePath() + "\" does not exist, plugins will be reconfigured.");
+            LogUtils.logMessageLine("Plugin manifest '" + file.getAbsolutePath() + "' does not exist, plugins will be reconfigured.");
             return false;
         }
 
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
         Document doc;
         DocumentBuilder db;
-
         try {
             db = dbf.newDocumentBuilder();
             doc = db.parse(file);
@@ -102,46 +102,63 @@ public class PluginManager implements PluginProvider {
         }
 
         final Element versionElement = XmlUtil.getChildElement("version", xmlroot);
-
         if (versionElement == null || !XmlUtil.readStringAttr(versionElement, "value").equals(VERSION_STAMP)) {
-            LogUtils.logWarningLine("Old plugin manifest version detected. Will reconfigure.");
+            LogUtils.logWarningLine("Old plugin manifest version detected, plugins will be reconfigured.");
             return false;
         }
 
         plugins.clear();
-
         for (Element pluginElement : XmlUtil.getChildElements("plugin", xmlroot)) {
             LegacyPluginInfo info = new LegacyPluginInfo(pluginElement);
             for (String interfaceName : info.getInterfaces()) {
                 try {
                     plugins.put(Class.forName(interfaceName), new PluginInstanceHolder<Object>(info));
                 } catch (ClassNotFoundException e) {
-                    LogUtils.logErrorLine("Class '" + info.getClassName() + "' implements unknown interface '" + interfaceName + "'. Skipping interface.");
+                    String className = info.getClassName();
+                    LogUtils.logWarningLine("Class '" + className + "' implements unknown interface '"
+                            + interfaceName + "', skipping interface.");
                 }
             }
         }
-
         return true;
     }
 
     public void loadManifest(File file) throws IOException, FormatException, PluginInstantiationException {
+        boolean needsReconfigure = false;
         if (!tryLoadManifest(file)) {
-            reconfigure(true);
+            needsReconfigure = true;
         } else {
-            initModules();
+            if (!initModules()) {
+                LogUtils.logWarningLine("Problems initialising modules, plugins will be reconfigured.");
+                needsReconfigure = true;
+            } else if (getPlugins(ModelDescriptor.class).isEmpty()) {
+                LogUtils.logWarningLine("No graph models loaded, plugins will be reconfigured.");
+                needsReconfigure = true;
+            }
+        }
+        if (needsReconfigure) {
+            reconfigureManifest(true);
         }
     }
 
-    private void initModules() {
+    private boolean initModules() {
+        boolean result = true;
         for (PluginInfo<? extends Module> info : getPlugins(Module.class)) {
-            final Module module = info.newInstance();
             try {
-                LogUtils.logMessageLine("  Loading module: " + module.getDescription());
-                module.init();
-            } catch (Throwable th) {
-                LogUtils.logErrorLine("Failed initialisation of module " + module.toString());
+                final Module module = info.newInstance();
+                try {
+                    LogUtils.logMessageLine("  Loading module: " + module.getDescription());
+                    module.init();
+                } catch (Throwable th) {
+                    LogUtils.logWarningLine("Failed to initialise module '" + module.toString() + "'.");
+                    result = false;
+                }
+            } catch (Exception e) {
+                LogUtils.logWarningLine("Failed to load module implementation: " + e.getMessage());
+                result = false;
             }
         }
+        return result;
     }
 
     public static void saveManifest(List<LegacyPluginInfo> plugins) throws IOException {
@@ -184,12 +201,13 @@ public class PluginManager implements PluginProvider {
             try {
                 plugins.put(Class.forName(interfaceName), new PluginInstanceHolder<Object>(info));
             } catch (ClassNotFoundException e) {
-                LogUtils.logErrorLine("Class '" + info.getClassName() + "' implements unknown interface '" + interfaceName + "'. Skipping interface.");
+                LogUtils.logWarningLine("Class '" + info.getClassName() + "' implements unknown interface '"
+                        + interfaceName + "', skipping interface.");
             }
         }
     }
 
-    public void reconfigure(boolean save) throws PluginInstantiationException {
+    public void reconfigureManifest(boolean save) throws PluginInstantiationException {
         LogUtils.logMessageLine("Reconfiguring plugins...");
         plugins.clear();
 
@@ -218,7 +236,6 @@ public class PluginManager implements PluginProvider {
                 System.err.println(e.getMessage());
             }
         }
-
         initModules();
     }
 

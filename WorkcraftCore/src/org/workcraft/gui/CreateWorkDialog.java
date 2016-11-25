@@ -51,6 +51,7 @@ import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 
 import org.workcraft.Framework;
+import org.workcraft.PluginManager;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.PluginInfo;
@@ -144,7 +145,8 @@ public class CreateWorkDialog extends JDialog {
         });
 
         final Framework framework = Framework.getInstance();
-        final Collection<PluginInfo<? extends ModelDescriptor>> modelDescriptors = framework.getPluginManager().getPlugins(ModelDescriptor.class);
+        PluginManager pm = framework.getPluginManager();
+        final Collection<PluginInfo<? extends ModelDescriptor>> modelDescriptors = pm.getPlugins(ModelDescriptor.class);
         ArrayList<ListElement> elements = new ArrayList<>();
 
         for (PluginInfo<? extends ModelDescriptor> plugin : modelDescriptors) {

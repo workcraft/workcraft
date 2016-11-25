@@ -69,9 +69,10 @@ public class LegacyPluginInfo implements Initialiser<Object> {
     public Object create() {
         try {
             return loadClass().getConstructor().newInstance();
-        } catch (IllegalArgumentException | SecurityException | InstantiationException |
-                IllegalAccessException | InvocationTargetException |
-                NoSuchMethodException | ClassNotFoundException e) {
+        } catch (IllegalArgumentException
+                | SecurityException | InstantiationException
+                | IllegalAccessException | InvocationTargetException
+                | NoSuchMethodException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
@@ -135,4 +136,5 @@ public class LegacyPluginInfo implements Initialiser<Object> {
     public String toString() {
         return displayName;
     }
+
 }

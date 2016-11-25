@@ -4,93 +4,125 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.workcraft.Framework;
+import org.workcraft.PluginManager;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.util.GUI;
+import org.workcraft.util.LogUtils;
 
 public class MainWindowActions {
+
     public static final Action CREATE_WORK_ACTION = new Action() {
-        @Override public void run() {
-            final Framework f = Framework.getInstance();
-            try {
-                f.getMainWindow().createWork();
-            } catch (OperationCancelledException e) { }
-        }
-        @Override public String getText() {
+        @Override
+        public String getText() {
             return "Create work...";
         }
-    };
-    public static final Action OPEN_WORK_ACTION = new Action() {
-        @Override public void run() {
-            final Framework f = Framework.getInstance();
+        @Override
+        public void run() {
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
             try {
-                f.getMainWindow().openWork();
-            } catch (OperationCancelledException e) { }
+                mainWindow.createWork();
+            } catch (OperationCancelledException e) {
+            }
         }
-        @Override public String getText() {
+    };
+
+    public static final Action OPEN_WORK_ACTION = new Action() {
+        @Override
+        public String getText() {
             return "Open work...";
         }
-    };
-    public static final Action MERGE_WORK_ACTION = new Action() {
-        @Override public void run() {
-            final Framework f = Framework.getInstance();
+        @Override
+        public void run() {
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
             try {
-                f.getMainWindow().mergeWork();
-            } catch (OperationCancelledException e) { }
+                mainWindow.openWork();
+            } catch (OperationCancelledException e) {
+            }
         }
-        @Override public String getText() {
+    };
+
+    public static final Action MERGE_WORK_ACTION = new Action() {
+        @Override
+        public String getText() {
             return "Merge work...";
         }
-    };
-    public static final Action SAVE_WORK_ACTION = new Action() {
-        @Override public void run() {
-            final Framework f = Framework.getInstance();
+        @Override
+        public void run() {
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
             try {
-                f.getMainWindow().saveWork();
+                mainWindow.mergeWork();
             } catch (OperationCancelledException e) {
             }
         }
-        @Override public String getText() {
+    };
+
+    public static final Action SAVE_WORK_ACTION = new Action() {
+        @Override
+        public String getText() {
             return "Save work";
         }
-    };
-    public static final Action SAVE_WORK_AS_ACTION = new Action() {
-        @Override public void run() {
-            final Framework f = Framework.getInstance();
+        @Override
+        public void run() {
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
             try {
-                f.getMainWindow().saveWorkAs();
+                mainWindow.saveWork();
             } catch (OperationCancelledException e) {
             }
         }
+    };
+
+    public static final Action SAVE_WORK_AS_ACTION = new Action() {
+        @Override
         public String getText() {
             return "Save work as...";
         }
-    };
-    public static final Action CLOSE_ACTIVE_EDITOR_ACTION = new Action() {
-        @Override public void run() {
-            final Framework f = Framework.getInstance();
+        @Override
+        public void run() {
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
             try {
-                f.getMainWindow().closeActiveEditor();
+                mainWindow.saveWorkAs();
             } catch (OperationCancelledException e) {
             }
         }
+    };
+
+    public static final Action CLOSE_ACTIVE_EDITOR_ACTION = new Action() {
+        @Override
         public String getText() {
             return "Close active work";
+        }
+        @Override
+        public void run() {
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            try {
+                mainWindow.closeActiveEditor();
+            } catch (OperationCancelledException e) {
+            }
         }
     };
 
     public static final Action CLOSE_ALL_EDITORS_ACTION = new Action() {
-        @Override public void run() {
-            final Framework f = Framework.getInstance();
-            try {
-                f.getMainWindow().closeEditorWindows();
-            } catch (OperationCancelledException e) {
-            }
-        }
+        @Override
         public String getText() {
             return "Close all works";
+        }
+        @Override
+        public void run() {
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            try {
+                mainWindow.closeEditorWindows();
+            } catch (OperationCancelledException e) {
+            }
         }
     };
 
@@ -101,34 +133,39 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework f = Framework.getInstance();
+            final Framework framework = Framework.getInstance();
+            PluginManager pm = framework.getPluginManager();
             try {
-                f.getPluginManager().reconfigure(true);
+                pm.reconfigureManifest(true);
             } catch (PluginInstantiationException e) {
-                e.printStackTrace();
+                LogUtils.logErrorLine(e.getMessage());
             }
         }
     };
 
     public static final Action SHUTDOWN_GUI_ACTION = new Action() {
-        @Override public void run() {
-            final Framework f = Framework.getInstance();
-            try {
-                f.shutdownGUI();
-            } catch (OperationCancelledException e) { }
-        }
+        @Override
         public String getText() {
             return "Switch to console mode";
+        }
+        @Override
+        public void run() {
+            final Framework framework = Framework.getInstance();
+            try {
+                framework.shutdownGUI();
+            } catch (OperationCancelledException e) { }
         }
     };
 
     public static final Action EXIT_ACTION = new Action() {
-        @Override public void run() {
-            final Framework f = Framework.getInstance();
-            f.shutdown();
-        }
+        @Override
         public String getText() {
             return "Exit";
+        }
+        @Override
+        public void run() {
+            final Framework framework = Framework.getInstance();
+            framework.shutdown();
         }
     };
 
@@ -139,8 +176,9 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework f = Framework.getInstance();
-            f.getMainWindow().importFrom();
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            mainWindow.importFrom();
         }
     };
 
@@ -151,8 +189,9 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework f = Framework.getInstance();
-            f.getMainWindow().undo();
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            mainWindow.undo();
         }
     };
 
@@ -163,8 +202,9 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework f = Framework.getInstance();
-            f.getMainWindow().redo();
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            mainWindow.redo();
         }
     };
 
@@ -175,8 +215,9 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework f = Framework.getInstance();
-            f.getMainWindow().cut();
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            mainWindow.cut();
         }
     };
 
@@ -187,8 +228,9 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework f = Framework.getInstance();
-            f.getMainWindow().copy();
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            mainWindow.copy();
         }
     };
 
@@ -199,8 +241,9 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework f = Framework.getInstance();
-            f.getMainWindow().paste();
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            mainWindow.paste();
         }
     };
 
@@ -211,8 +254,8 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework f = Framework.getInstance();
-            f.getMainWindow().delete();
+            final Framework framework = Framework.getInstance();
+            framework.getMainWindow().delete();
         }
     };
 
@@ -223,8 +266,9 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework f = Framework.getInstance();
-            f.getMainWindow().selectAll();
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            mainWindow.selectAll();
         }
     };
 
@@ -235,8 +279,9 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework f = Framework.getInstance();
-            f.getMainWindow().selectInverse();
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            mainWindow.selectInverse();
         }
     };
 
@@ -247,8 +292,9 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework f = Framework.getInstance();
-            f.getMainWindow().selectNone();
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            mainWindow.selectNone();
         }
     };
 
@@ -259,8 +305,9 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework f = Framework.getInstance();
-            f.getMainWindow().editSettings();
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            mainWindow.editSettings();
         }
     };
 
@@ -271,7 +318,9 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            GraphEditor editor = Framework.getInstance().getMainWindow().getCurrentEditor();
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            final GraphEditor editor = mainWindow.getCurrentEditor();
             if (editor != null) {
                 editor.zoomIn();
             }
@@ -285,7 +334,9 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            GraphEditor editor = Framework.getInstance().getMainWindow().getCurrentEditor();
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            final GraphEditor editor = mainWindow.getCurrentEditor();
             if (editor != null) {
                 editor.zoomOut();
             }
@@ -299,7 +350,9 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            GraphEditor editor = Framework.getInstance().getMainWindow().getCurrentEditor();
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            final GraphEditor editor = mainWindow.getCurrentEditor();
             if (editor != null) {
                 editor.zoomDefault();
             }
@@ -313,7 +366,9 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            GraphEditor editor = Framework.getInstance().getMainWindow().getCurrentEditor();
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            final GraphEditor editor = mainWindow.getCurrentEditor();
             if (editor != null) {
                 editor.panCenter();
             }
@@ -327,7 +382,9 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            GraphEditor editor = Framework.getInstance().getMainWindow().getCurrentEditor();
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            final GraphEditor editor = mainWindow.getCurrentEditor();
             if (editor != null) {
                 editor.zoomFit();
             }
@@ -341,7 +398,9 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            GraphEditor editor = Framework.getInstance().getMainWindow().getCurrentEditor();
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            final GraphEditor editor = mainWindow.getCurrentEditor();
             if (editor != null) {
                 editor.panLeft();
             }
@@ -355,7 +414,9 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            GraphEditor editor = Framework.getInstance().getMainWindow().getCurrentEditor();
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            final GraphEditor editor = mainWindow.getCurrentEditor();
             if (editor != null) {
                 editor.panUp();
             }
@@ -369,7 +430,9 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            GraphEditor editor = Framework.getInstance().getMainWindow().getCurrentEditor();
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            final GraphEditor editor = mainWindow.getCurrentEditor();
             if (editor != null) {
                 editor.panRight();
             }
@@ -383,7 +446,9 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            GraphEditor editor = Framework.getInstance().getMainWindow().getCurrentEditor();
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            final GraphEditor editor = mainWindow.getCurrentEditor();
             if (editor != null) {
                 editor.panDown();
             }
@@ -395,97 +460,98 @@ public class MainWindowActions {
         public String getText() {
             return "Reset UI layout";
         }
-
         @Override
         public void run() {
-            final Framework f = Framework.getInstance();
-            f.getMainWindow().resetLayout();
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            mainWindow.resetLayout();
         }
 
     };
 
     public static final Action HELP_OVERVIEW_ACTION = new Action() {
         @Override
-        public void run() {
-            final Framework f = Framework.getInstance();
-            f.getMainWindow().openExternally("overview/start.html", "Overview access error");
-        }
-
         public String getText() {
             return "Overview";
+        }
+        @Override
+        public void run() {
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            mainWindow.openExternally("overview/start.html", "Overview access error");
         }
     };
 
     public static final Action HELP_CONTENTS_ACTION = new Action() {
         @Override
-        public void run() {
-            final Framework f = Framework.getInstance();
-            f.getMainWindow().openExternally("help/start.html", "Help access error");
-        }
-
         public String getText() {
             return "Help contents";
+        }
+        @Override
+        public void run() {
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            mainWindow.openExternally("help/start.html", "Help access error");
         }
     };
 
     public static final Action HELP_TUTORIALS_ACTION = new Action() {
         @Override
-        public void run() {
-            final Framework f = Framework.getInstance();
-            f.getMainWindow().openExternally("tutorial/start.html", "Tutorials access error");
-        }
-
         public String getText() {
             return "Tutorials";
+        }
+        @Override
+        public void run() {
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            mainWindow.openExternally("tutorial/start.html", "Tutorials access error");
         }
     };
 
     public static final Action HELP_BUGREPORT_ACTION = new Action() {
         @Override
-        public void run() {
-            URI uri;
-            try {
-                uri = new URI("https://github.com/tuura/workcraft/issues/new");
-                DesktopApi.browse(uri);
-            } catch (URISyntaxException e) {
-                System.out.println(e);
-            }
-        }
-
         public String getText() {
             return "Report a bug at GitHub";
+        }
+        @Override
+        public void run() {
+            try {
+                URI uri = new URI("https://github.com/tuura/workcraft/issues/new");
+                DesktopApi.browse(uri);
+            } catch (URISyntaxException e) {
+                LogUtils.logErrorLine(e.getMessage());
+            }
         }
     };
 
     public static final Action HELP_EMAIL_ACTION = new Action() {
         @Override
-        public void run() {
-            URI uri;
-            try {
-                uri = new URI("mailto", "support@workcraft.org", null);
-                DesktopApi.browse(uri);
-            } catch (URISyntaxException e) {
-                System.out.println(e);
-            }
-        }
-
         public String getText() {
             return "Contact developers by e-mail";
+        }
+        @Override
+        public void run() {
+            try {
+                URI uri = new URI("mailto", "support@workcraft.org", null);
+                DesktopApi.browse(uri);
+            } catch (URISyntaxException e) {
+                LogUtils.logErrorLine(e.getMessage());
+            }
         }
     };
 
     public static final Action HELP_ABOUT_ACTION = new Action() {
         @Override
+        public String getText() {
+            return "About Workcraft";
+        }
+        @Override
         public void run() {
             final Framework framework = Framework.getInstance();
             final MainWindow mainWindow = framework.getMainWindow();
-            AboutDialog about = new AboutDialog(mainWindow);
+            final AboutDialog about = new AboutDialog(mainWindow);
             GUI.centerToParent(about, mainWindow);
             about.setVisible(true);
-        }
-
-        public String getText() {
-            return "About Workcraft";
         }
     };
 
