@@ -1,21 +1,23 @@
 // Standard function shortcuts
+importPackage(java.lang);
+
 
 // Printing
 
 function print(msg) {
-	java.lang.System.out.print(msg);
+	System.out.print(msg);
 }
 
 function println(msg) {
-	java.lang.System.out.println(msg);
+	System.out.println(msg);
 }
 
 function printerr(msg) {
-	java.lang.System.err.print(msg);
+	System.err.print(msg);
 }
 
 function printlnerr(msg) {
-	java.lang.System.err.println(msg);
+	System.err.println(msg);
 }
 
 // File operations

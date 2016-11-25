@@ -811,8 +811,8 @@ public class MainWindow extends JFrame {
             final Framework framework = Framework.getInstance();
 
             framework.deleteJavaScriptProperty("visualModel", framework.getJavaScriptGlobalScope());
-            framework.setJavaScriptProperty("visualModel", sender.getModel(), framework.getJavaScriptGlobalScope(),
-                    true);
+            framework.setJavaScriptProperty("visualModel", sender.getModel(),
+                    framework.getJavaScriptGlobalScope(), true);
 
             framework.deleteJavaScriptProperty("model", framework.getJavaScriptGlobalScope());
             framework.setJavaScriptProperty("model", sender.getModel().getMathModel(),
