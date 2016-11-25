@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg id="svg2888" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" xmlns:osb="http://www.openswatchbook.org/uri/2009/osb" height="48px" width="48px" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/">
+ <defs id="defs2890">
+  <marker id="DotM" refY="0.0" refX="0.0" orient="auto" overflow="visible">
+   <path id="path3907" d="m-2.5-1c0 2.76-2.24 5-5 5s-5-2.24-5-5 2.24-5 5-5 5 2.24 5 5z" fill-rule="evenodd" transform="scale(.4) translate(7.4 1)" stroke="#000" stroke-width="1pt"/>
+  </marker>
+  <marker id="TriangleInL" refY="0.0" refX="0.0" orient="auto" overflow="visible">
+   <path id="path3902" d="m5.77 0l-8.65 5v-10l8.65 5z" fill-rule="evenodd" transform="scale(-.8)" stroke="#000" stroke-width="1pt"/>
+  </marker>
+ </defs>
+ <metadata id="metadata2893">
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title/>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <g id="layer1">
+  <rect id="rect3835" stroke-dashoffset="2.4" height="27.061" width="45.984" stroke="#565656" stroke-miterlimit="3" y="19.923" x="1.0154" stroke-width="2.0003" fill="#d4d4d4"/>
+  <path id="path5562" marker-end="url(#DotM)" d="m23.438 29.357v-24.874" marker-start="url(#TriangleInL)" stroke="#000" stroke-width="2" fill="none"/>
+ </g>
+</svg>

@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg id="svg1307" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns="http://www.w3.org/2000/svg" height="48px" width="48px" version="1.1" xmlns:cc="http://creativecommons.org/ns#" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:dc="http://purl.org/dc/elements/1.1/">
+ <defs id="defs1309">
+  <linearGradient id="linearGradient2306" y2="95" gradientUnits="userSpaceOnUse" x2="70.827" gradientTransform="matrix(-1 0 0 1 95.056 -71.094)" y1="124.12" x1="71.289">
+   <stop id="stop5077" stop-color="#adb0a8" offset="0"/>
+   <stop id="stop5079" stop-color="#464744" offset="1"/>
+  </linearGradient>
+  <radialGradient id="radialGradient2314" gradientUnits="userSpaceOnUse" cy="83.991" cx="107.59" gradientTransform="matrix(-.053243 -.83624 -2.0195 .12857 201.98 108.08)" r="12.552">
+   <stop id="stop2693" stop-color="#fff" offset="0"/>
+   <stop id="stop2695" stop-color="#d3d7cf" offset="1"/>
+  </radialGradient>
+  <linearGradient id="linearGradient2690" y2="88.924" gradientUnits="userSpaceOnUse" x2="70.952" gradientTransform="matrix(-1.1282 0 0 1.1282 104.05 -83.36)" y1="101.74" x1="70.914">
+   <stop id="stop2686" stop-color="#fff" offset="0"/>
+   <stop id="stop2688" offset="1"/>
+  </linearGradient>
+  <linearGradient id="linearGradient2306-9" y2="95" gradientUnits="userSpaceOnUse" x2="70.827" gradientTransform="matrix(-1 0 0 1 110.86 -70.947)" y1="124.12" x1="71.289">
+   <stop id="stop5077-3" stop-color="#adb0a8" offset="0"/>
+   <stop id="stop5079-8" stop-color="#464744" offset="1"/>
+  </linearGradient>
+  <radialGradient id="radialGradient2314-1" gradientUnits="userSpaceOnUse" cy="83.991" cx="107.59" gradientTransform="matrix(-.053243 -.83624 -2.0195 .12857 217.78 108.22)" r="12.552">
+   <stop id="stop2693-2" stop-color="#fff" offset="0"/>
+   <stop id="stop2695-1" stop-color="#d3d7cf" offset="1"/>
+  </radialGradient>
+  <linearGradient id="linearGradient3053" y2="88.924" gradientUnits="userSpaceOnUse" y1="101.74" gradientTransform="matrix(-1.1282 0 0 1.1282 119.85 -83.213)" x2="70.952" x1="70.914">
+   <stop id="stop2686-0" stop-color="#fff" offset="0"/>
+   <stop id="stop2688-4" offset="1"/>
+  </linearGradient>
+ </defs>
+ <metadata id="metadata1312">
+  <rdf:RDF>
+   <cc:Work rdf:about="">
+    <dc:format>image/svg+xml</dc:format>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:title>Media Playback Start</dc:title>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Lapo Calamandrei</dc:title>
+     </cc:Agent>
+    </dc:creator>
+    <cc:license rdf:resource="http://creativecommons.org/licenses/publicdomain/"/>
+    <dc:subject>
+     <rdf:Bag>
+      <rdf:li>play</rdf:li>
+      <rdf:li>media</rdf:li>
+      <rdf:li>music</rdf:li>
+      <rdf:li>video</rdf:li>
+      <rdf:li>player</rdf:li>
+     </rdf:Bag>
+    </dc:subject>
+    <dc:contributor>
+     <cc:Agent>
+      <dc:title>Jakub Steiner</dc:title>
+     </cc:Agent>
+    </dc:contributor>
+   </cc:Work>
+   <cc:License rdf:about="http://creativecommons.org/licenses/publicdomain/">
+    <cc:permits rdf:resource="http://creativecommons.org/ns#Reproduction"/>
+    <cc:permits rdf:resource="http://creativecommons.org/ns#Distribution"/>
+    <cc:permits rdf:resource="http://creativecommons.org/ns#DerivativeWorks"/>
+   </cc:License>
+  </rdf:RDF>
+ </metadata>
+ <g id="layer1">
+  <path id="path2682" opacity=".15" stroke-linejoin="round" style="color:#000000" fill="none" stroke="url(#linearGradient2690)" stroke-linecap="square" stroke-width="2" d="m24.267 39.5v-30.5l-12.281 14.817z"/>
+  <path id="path3375" style="color:#000000" fill-rule="evenodd" fill="url(#radialGradient2314)" d="m23.768 37.811v-27.811l-10.315 13.906z"/>
+  <path id="path2479" stroke-linejoin="round" style="color:#000000" fill="none" stroke="url(#linearGradient2306)" stroke-linecap="square" d="m23.768 37.811v-27.811l-10.315 13.906z"/>
+  <path id="path2481" style="color:#000000" fill-rule="evenodd" fill="#fff" d="m23.268 10.874v26.062l-8.8052-13.031zm-1 1.75-5.7739 11.281 5.7739 11.281z"/>
+  <path id="path2339" opacity=".5" style="color:#000000" display="block" fill="#fff" d="m22.33 12.562v11.688c-4.2692-0.04479 3.6522 0.36154-4.2462-1.1679z"/>
+  <path id="path2682-5" opacity=".15" stroke-linejoin="round" style="color:#000000" fill="none" stroke="url(#linearGradient3053)" stroke-linecap="square" stroke-width="2" d="m40.07 39.647v-30.5l-12.281 14.817z"/>
+  <path id="path3375-3" style="color:#000000" fill-rule="evenodd" fill="url(#radialGradient2314-1)" d="m39.571 37.958v-27.811l-10.315 13.906z"/>
+  <path id="path2479-0" stroke-linejoin="round" style="color:#000000" fill="none" stroke="url(#linearGradient2306-9)" stroke-linecap="square" d="m39.571 37.958v-27.811l-10.315 13.906z"/>
+  <path id="path2481-3" style="color:#000000" fill-rule="evenodd" fill="#fff" d="m39.071 11.021v26.062l-8.8052-13.031zm-1 1.75-5.7739 11.281 5.7739 11.281z"/>
+  <path id="path2339-8" opacity=".5" style="color:#000000" display="block" fill="#fff" d="m38.132 12.709v11.688c-4.2692-0.04479 3.6522 0.36154-4.2462-1.1679z"/>
+ </g>
+</svg>

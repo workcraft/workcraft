@@ -40,7 +40,7 @@ import org.workcraft.plugins.dfs.decorations.BinaryRegisterDecoration;
 
 @Hotkey(KeyEvent.VK_O)
 @DisplayName ("Pop register")
-@SVGIcon("images/node-pop_register.svg")
+@SVGIcon("images/dfs-node-pop_register.svg")
 public class VisualPopRegister extends VisualBinaryRegister {
 
     public VisualPopRegister(PopRegister register) {

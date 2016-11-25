@@ -56,7 +56,7 @@ import org.workcraft.util.Hierarchy;
 
 @DisplayName("Input/output port")
 @Hotkey(KeyEvent.VK_P)
-@SVGIcon("images/node-port.svg")
+@SVGIcon("images/circuit-node-port.svg")
 public class VisualFunctionContact extends VisualContact implements StateObserver {
 
     private static final double size = 0.3;

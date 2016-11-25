@@ -39,7 +39,7 @@ import org.workcraft.util.ColorGenerator;
 
 @Hotkey(KeyEvent.VK_T)
 @DisplayName ("Transition")
-@SVGIcon("images/node-transition.svg")
+@SVGIcon("images/petri-node-transition.svg")
 public class VisualTransition extends VisualComponent {
     private ColorGenerator tokenColorGenerator = null;
 

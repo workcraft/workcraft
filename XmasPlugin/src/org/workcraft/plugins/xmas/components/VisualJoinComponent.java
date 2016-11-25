@@ -29,7 +29,7 @@ import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.Positioning;
 
 @DisplayName("Join")
-@SVGIcon("images/node-join.svg")
+@SVGIcon("images/xmas-node-join.svg")
 public class VisualJoinComponent extends VisualXmasComponent {
 
     public VisualJoinComponent(JoinComponent component) {

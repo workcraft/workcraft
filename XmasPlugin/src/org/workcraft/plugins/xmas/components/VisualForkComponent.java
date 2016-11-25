@@ -29,7 +29,7 @@ import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.Positioning;
 
 @DisplayName("Fork")
-@SVGIcon("images/node-fork.svg")
+@SVGIcon("images/xmas-node-fork.svg")
 public class VisualForkComponent extends VisualXmasComponent {
 
     public VisualForkComponent(ForkComponent component) {

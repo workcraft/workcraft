@@ -38,7 +38,7 @@ import org.workcraft.plugins.petri.VisualTransition;
 
 @Hotkey(KeyEvent.VK_T)
 @DisplayName ("Transition")
-@SVGIcon("images/node-transition.svg")
+@SVGIcon("images/policy-node-transition.svg")
 public class VisualBundledTransition extends VisualTransition {
 
     public VisualBundledTransition(BundledTransition transition) {

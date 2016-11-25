@@ -49,7 +49,7 @@ public class LoopAnalyserTool extends AbstractTool {
 
     @Override
     public Icon getIcon() {
-        return GUI.createIconFromSVG("images/tool-loop_analysis.svg");
+        return GUI.createIconFromSVG("images/circuit-tool-loop_analysis.svg");
     }
 
     @Override

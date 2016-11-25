@@ -45,7 +45,7 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @Hotkey(KeyEvent.VK_X)
 @DisplayName("Signal")
-@SVGIcon("images/node-signal.svg")
+@SVGIcon("images/dtd-node-signal.svg")
 public class VisualSignal extends VisualComponent {
 
     public VisualSignal(Signal signal) {

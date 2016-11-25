@@ -20,7 +20,7 @@ import org.workcraft.plugins.dfs.decorations.CounterflowRegisterDecoration;
 
 @Hotkey(KeyEvent.VK_Q)
 @DisplayName ("Counterflow register")
-@SVGIcon("images/node-counterflow_register.svg")
+@SVGIcon("images/dfs-node-counterflow_register.svg")
 public class VisualCounterflowRegister extends VisualAbstractRegister {
 
     public VisualCounterflowRegister(CounterflowRegister register) {

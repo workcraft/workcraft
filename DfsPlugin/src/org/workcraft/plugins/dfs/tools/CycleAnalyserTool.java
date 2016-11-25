@@ -209,7 +209,7 @@ public class CycleAnalyserTool extends AbstractTool {
 
     @Override
     public Icon getIcon() {
-        return GUI.createIconFromSVG("images/tool-cycle_analysis.svg");
+        return GUI.createIconFromSVG("images/dfs-tool-cycle_analysis.svg");
     }
 
     @Override
