@@ -45,6 +45,7 @@ import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class BubbleToggleTool extends TransformationTool implements NodeTransformer {
@@ -60,8 +61,8 @@ public class BubbleToggleTool extends TransformationTool implements NodeTransfor
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, VisualCircuit.class);
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, VisualCircuit.class);
     }
 
     @Override
@@ -72,7 +73,7 @@ public class BubbleToggleTool extends TransformationTool implements NodeTransfor
     }
 
     @Override
-    public boolean isEnabled(WorkspaceEntry we, Node node) {
+    public boolean isEnabled(ModelEntry me, Node node) {
         boolean result = false;
         if (node instanceof VisualFunctionComponent) {
             VisualFunctionComponent component = (VisualFunctionComponent) node;

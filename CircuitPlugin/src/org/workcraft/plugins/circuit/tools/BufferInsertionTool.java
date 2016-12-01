@@ -23,6 +23,7 @@ package org.workcraft.plugins.circuit.tools;
 
 import java.awt.geom.Point2D;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.LinkedList;
 
 import org.workcraft.NodeTransformer;
@@ -44,7 +45,7 @@ import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.WorkspaceUtils;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.ModelEntry;
 
 public class BufferInsertionTool extends TransformationTool implements NodeTransformer {
 
@@ -59,8 +60,8 @@ public class BufferInsertionTool extends TransformationTool implements NodeTrans
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, VisualCircuit.class);
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, VisualCircuit.class);
     }
 
     @Override
@@ -69,7 +70,7 @@ public class BufferInsertionTool extends TransformationTool implements NodeTrans
     }
 
     @Override
-    public boolean isEnabled(WorkspaceEntry we, Node node) {
+    public boolean isEnabled(ModelEntry me, Node node) {
         return true;
     }
 
@@ -79,19 +80,14 @@ public class BufferInsertionTool extends TransformationTool implements NodeTrans
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
-        final VisualModel visualModel = we.getModelEntry().getVisualModel();
-        if (visualModel != null) {
-            Collection<VisualCircuitConnection> connections = Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualCircuitConnection.class);
-            Collection<Node> selection = visualModel.getSelection();
-            connections.retainAll(selection);
-            if (!connections.isEmpty()) {
-                we.saveMemento();
-                for (VisualCircuitConnection connection: connections) {
-                    transform(visualModel, connection);
-                }
-            }
+    public Collection<Node> collect(Model model) {
+        Collection<Node> result = new HashSet<>();
+        if (model instanceof VisualModel) {
+            VisualModel visualModel = (VisualModel) model;
+            result.addAll(Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualCircuitConnection.class));
+            result.retainAll(visualModel.getSelection());
         }
+        return result;
     }
 
     @Override

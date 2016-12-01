@@ -12,17 +12,18 @@ import org.workcraft.plugins.dfs.VisualLogic;
 import org.workcraft.plugins.dfs.VisualPopRegister;
 import org.workcraft.plugins.dfs.VisualPushRegister;
 import org.workcraft.plugins.dfs.VisualRegister;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.ModelEntry;
 
 public final class ComponentMergerTool extends AbstractMergerTool {
+
     @Override
     public String getDisplayName() {
         return "Merge selected components";
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return we.getModelEntry().getMathModel() instanceof Dfs;
+    public boolean isApplicableTo(ModelEntry me) {
+        return me.getMathModel() instanceof Dfs;
     }
 
     @Override

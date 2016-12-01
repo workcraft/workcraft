@@ -6,17 +6,18 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.graph.tools.AbstractMergerTool;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.ModelEntry;
 
 public final class MergePlaceTool extends AbstractMergerTool {
+
     @Override
     public String getDisplayName() {
         return "Merge selected places";
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return we.getModelEntry().getMathModel() instanceof PetriNetModel;
+    public boolean isApplicableTo(ModelEntry me) {
+        return me.getMathModel() instanceof PetriNetModel;
     }
 
     @Override

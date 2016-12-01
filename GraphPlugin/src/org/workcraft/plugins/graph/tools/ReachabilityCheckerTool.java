@@ -17,6 +17,8 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.graph.Graph;
 import org.workcraft.plugins.graph.Vertex;
+import org.workcraft.util.LogUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class ReachabilityCheckerTool extends VerificationTool {
@@ -29,8 +31,21 @@ public class ReachabilityCheckerTool extends VerificationTool {
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return we.getModelEntry().getMathModel() instanceof Graph;
+    public boolean isApplicableTo(ModelEntry me) {
+        return me.getMathModel() instanceof Graph;
+    }
+
+    @Override
+    public ModelEntry apply(ModelEntry me) {
+        final Graph graph = (Graph) me.getMathModel();
+        HashSet<Vertex> unreachable = checkReachability(graph);
+        if (unreachable.isEmpty()) {
+            LogUtils.logInfoLine("The graph does not have unreachable vertices.");
+        } else {
+            String refStr = ReferenceHelper.getNodesAsString(graph, (Collection) unreachable);
+            LogUtils.logWarningLine("The graph has unreachable vertices:\n" + refStr);
+        }
+        return me;
     }
 
     @Override

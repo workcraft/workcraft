@@ -6,17 +6,18 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.graph.tools.AbstractMergerTool;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.VisualState;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.ModelEntry;
 
 public final class StateMergerTool extends AbstractMergerTool {
+
     @Override
     public String getDisplayName() {
         return "Merge selected states";
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return we.getModelEntry().getMathModel() instanceof Fsm;
+    public boolean isApplicableTo(ModelEntry me) {
+        return me.getMathModel() instanceof Fsm;
     }
 
     @Override

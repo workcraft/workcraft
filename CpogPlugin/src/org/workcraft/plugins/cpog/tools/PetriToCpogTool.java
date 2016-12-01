@@ -10,13 +10,14 @@ import org.workcraft.plugins.cpog.tasks.PetriToCpogTask;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class PetriToCpogTool extends ConversionTool {
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, PetriNet.class);
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, PetriNet.class);
     }
 
     @Override
@@ -42,4 +43,10 @@ public class PetriToCpogTool extends ConversionTool {
             framework.getTaskManager().queue(task, "Converting Petri net into CPOG...", result);
         }
     }
+
+    @Override
+    public ModelEntry apply(ModelEntry me) {
+        return null; // !!!
+    }
+
 }

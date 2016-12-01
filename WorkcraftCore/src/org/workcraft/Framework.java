@@ -60,6 +60,7 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
@@ -91,10 +92,12 @@ import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.Import;
 import org.workcraft.util.LogUtils;
+import org.workcraft.util.Tools;
 import org.workcraft.util.XmlUtil;
 import org.workcraft.workspace.Memento;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
+import org.workcraft.workspace.WorkspaceEntry;
 import org.xml.sax.SAXException;
 
 public final class Framework {
@@ -324,11 +327,29 @@ public final class Framework {
         });
     }
 
+    public void updateJavaScript(WorkspaceEntry we) {
+        ScriptableObject jsGlobalScope = getJavaScriptGlobalScope();
+        setJavaScriptProperty("workspaceEntry", we, jsGlobalScope, true);
+
+        ModelEntry modelEntry = we.getModelEntry();
+        setJavaScriptProperty("modelEntry", modelEntry, jsGlobalScope, true);
+
+        VisualModel visualModel = modelEntry.getVisualModel();
+        setJavaScriptProperty("visualModel", visualModel, jsGlobalScope, true);
+
+        MathModel mathModel = modelEntry.getMathModel();
+        setJavaScriptProperty("mathModel", mathModel, jsGlobalScope, true);
+    }
+
     public ScriptableObject getJavaScriptGlobalScope() {
         return globalScope;
     }
 
-    public void setJavaScriptProperty(final String name, final Object object, final ScriptableObject scope, final boolean readOnly) {
+    public void setJavaScriptProperty(final String name, final Object object,
+            final ScriptableObject scope, final boolean readOnly) {
+
+        deleteJavaScriptProperty(name, scope);
+
         contextFactory.call(new ContextAction() {
             public Object run(Context arg0) {
                 Object scriptable = Context.javaToJS(object, scope);
@@ -406,11 +427,11 @@ public final class Framework {
         }
     }
 
-    public void execJSResource(String resourceName) throws IOException {
+    public void execJavaScriptResource(String resourceName) throws IOException {
         execJavaScript(FileUtils.readAllTextFromSystemResource(resourceName));
     }
 
-    public void execJSFile(String filePath) throws IOException {
+    public void execJavaScriptFile(String filePath) throws IOException {
         execJavaScript(FileUtils.readAllText(new File(filePath)), globalScope);
     }
 
@@ -823,6 +844,17 @@ public final class Framework {
                 throw new SerialisationException(e);
             }
         }
+    }
+
+    public ModelEntry applyTool(ModelEntry me, String className) {
+        if (className != null) {
+            for (Tool tool: Tools.getApplicableTools(me)) {
+                if (className.equals(tool.getClass().getSimpleName())) {
+                    return tool.apply(me);
+                }
+            }
+        }
+        return null;
     }
 
     public void initPlugins() {

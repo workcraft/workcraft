@@ -22,15 +22,17 @@
 package org.workcraft.plugins.transform;
 
 import java.util.Collection;
+import java.util.HashSet;
 
 import org.workcraft.TransformationTool;
+import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.WorkspaceUtils;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.ModelEntry;
 
 public class CopyLablesTool extends TransformationTool {
 
@@ -40,8 +42,8 @@ public class CopyLablesTool extends TransformationTool {
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, VisualModel.class);
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, VisualModel.class);
     }
 
     @Override
@@ -50,21 +52,27 @@ public class CopyLablesTool extends TransformationTool {
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
-        VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
-        if (visualModel != null) {
+    public Collection<Node> collect(Model model) {
+        Collection<Node> result = new HashSet<>();
+        if (model instanceof VisualModel) {
+            VisualModel visualModel = (VisualModel) model;
+            result.addAll(Hierarchy.getDescendantsOfType(model.getRoot(), VisualComponent.class));
+            Collection<Node> selection = visualModel.getSelection();
+            if (!selection.isEmpty()) {
+                result.retainAll(selection);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public void transform(Model model, Node node) {
+        if ((model instanceof VisualModel) && (node instanceof VisualComponent)) {
+            VisualModel visualModel = (VisualModel) model;
+            VisualComponent visualComponent = (VisualComponent) node;
             MathModel mathModel = visualModel.getMathModel();
-            Collection<VisualComponent> components = Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualComponent.class);
-            if (!visualModel.getSelection().isEmpty()) {
-                components.retainAll(visualModel.getSelection());
-            }
-            if (!components.isEmpty()) {
-                we.saveMemento();
-                for (VisualComponent visualComponent : components) {
-                    Node refComponent = visualComponent.getReferencedComponent();
-                    visualComponent.setLabel(mathModel.getName(refComponent));
-                }
-            }
+            Node refComponent = visualComponent.getReferencedComponent();
+            visualComponent.setLabel(mathModel.getName(refComponent));
         }
     }
 

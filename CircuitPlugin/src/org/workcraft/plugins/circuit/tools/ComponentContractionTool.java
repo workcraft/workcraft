@@ -47,7 +47,7 @@ import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.WorkspaceUtils;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.ModelEntry;
 
 public class ComponentContractionTool extends TransformationTool implements NodeTransformer {
 
@@ -62,8 +62,8 @@ public class ComponentContractionTool extends TransformationTool implements Node
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, VisualCircuit.class);
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, VisualCircuit.class);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class ComponentContractionTool extends TransformationTool implements Node
     }
 
     @Override
-    public boolean isEnabled(WorkspaceEntry we, Node node) {
+    public boolean isEnabled(ModelEntry me, Node node) {
         boolean result = false;
         if (node instanceof VisualCircuitComponent) {
             VisualCircuitComponent component = (VisualCircuitComponent) node;
@@ -87,19 +87,14 @@ public class ComponentContractionTool extends TransformationTool implements Node
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
-        final VisualModel visualModel = we.getModelEntry().getVisualModel();
-        if (visualModel != null) {
-            Collection<VisualCircuitComponent> components = Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualCircuitComponent.class);
-            Collection<Node> selection = visualModel.getSelection();
-            components.retainAll(selection);
-            if (!components.isEmpty()) {
-                we.saveMemento();
-                for (VisualCircuitComponent component: components) {
-                    transform(visualModel, component);
-                }
-            }
+    public Collection<Node> collect(Model model) {
+        Collection<Node> result = new HashSet<>();
+        if (model instanceof VisualModel) {
+            VisualModel visualModel = (VisualModel) model;
+            result.addAll(Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualCircuitComponent.class));
+            result.addAll(visualModel.getSelection());
         }
+        return result;
     }
 
     @Override

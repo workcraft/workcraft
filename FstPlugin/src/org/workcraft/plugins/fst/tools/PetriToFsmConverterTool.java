@@ -6,13 +6,14 @@ import org.workcraft.plugins.fst.task.PetriToFsmConversionResultHandler;
 import org.workcraft.plugins.fst.task.WriteSgConversionTask;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class PetriToFsmConverterTool extends ConversionTool {
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, PetriNet.class);
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, PetriNet.class);
     }
 
     @Override
@@ -25,6 +26,11 @@ public class PetriToFsmConverterTool extends ConversionTool {
         WriteSgConversionTask task = new WriteSgConversionTask(we, false);
         final Framework framework = Framework.getInstance();
         framework.getTaskManager().queue(task, "Building state graph", new PetriToFsmConversionResultHandler(task));
+    }
+
+    @Override
+    public ModelEntry apply(ModelEntry me) {
+        return null; // !!!
     }
 
 }

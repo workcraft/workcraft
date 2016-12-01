@@ -38,14 +38,23 @@ function export(model, path, format) {
 	return framework.exportFile(model, path, format);
 }
 
+// Tool execution
+
+function applyTool(me, toolClassName) {
+	println(me);
+	println(toolClassName);
+	println(framework);
+	framework.runTool(me, toolClass);
+}
+
 // Script execution
 
 function execResource(x) {
-	framework.execJSResource(x);
+	framework.execJavaScriptResource(x);
 }
 
 function execFile(x) {
-	framework.execJSFile(x);
+	framework.execJavaScriptFile(x);
 }
 
 // Configuration

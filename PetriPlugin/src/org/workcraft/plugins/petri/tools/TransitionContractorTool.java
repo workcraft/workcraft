@@ -1,6 +1,7 @@
 package org.workcraft.plugins.petri.tools;
 
 import java.awt.geom.Point2D;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -39,11 +40,14 @@ import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.Pair;
+import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class TransitionContractorTool extends TransformationTool implements NodeTransformer {
 
     private static final String MESSAGE_TITLE = "Transition contraction";
+    private static final String ERROR_MORE_THAN_ONE_TRANSITION = "One transition can be contracted at a time.";
 
     private final HashSet<VisualConnection> convertedReplicaConnections = new HashSet<>();
 
@@ -58,8 +62,8 @@ public class TransitionContractorTool extends TransformationTool implements Node
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return we.getModelEntry().getMathModel() instanceof PetriNet;
+    public boolean isApplicableTo(ModelEntry me) {
+        return me.getMathModel() instanceof PetriNet;
     }
 
     @Override
@@ -68,7 +72,7 @@ public class TransitionContractorTool extends TransformationTool implements Node
     }
 
     @Override
-    public boolean isEnabled(WorkspaceEntry we, Node node) {
+    public boolean isEnabled(ModelEntry me, Node node) {
         return true;
     }
 
@@ -79,19 +83,39 @@ public class TransitionContractorTool extends TransformationTool implements Node
 
     @Override
     public void run(WorkspaceEntry we) {
-        final VisualModel visualModel = we.getModelEntry().getVisualModel();
-        HashSet<VisualTransition> visualTransitions = PetriNetUtils.getVisualTransitions(visualModel);
-        visualTransitions.retainAll(visualModel.getSelection());
-        if (visualTransitions.size() > 1) {
-            JOptionPane.showMessageDialog(null,
-                    "One transition can be contracted at a time.",
+        VisualModel visualModel = WorkspaceUtils.getAs(we.getModelEntry(), VisualModel.class);
+        Collection<Node> nodes = collect(visualModel);
+        if (nodes.size() > 1) {
+            JOptionPane.showMessageDialog(null, ERROR_MORE_THAN_ONE_TRANSITION,
                     MESSAGE_TITLE, JOptionPane.ERROR_MESSAGE);
-        } else if (!visualTransitions.isEmpty()) {
+        } else if (!nodes.isEmpty()) {
             we.saveMemento();
-            for (VisualTransition visualTransition: visualTransitions) {
-                transform(visualModel, visualTransition);
-            }
+            transform(visualModel, nodes);
+            visualModel.selectNone();
         }
+    }
+
+    @Override
+    public ModelEntry apply(ModelEntry me) {
+        VisualModel visualModel = WorkspaceUtils.getAs(me, VisualModel.class);
+        Collection<Node> nodes = collect(visualModel);
+        if (nodes.size() > 1) {
+            LogUtils.logErrorLine(ERROR_MORE_THAN_ONE_TRANSITION);
+        } else if (!nodes.isEmpty()) {
+            transform(visualModel, nodes);
+        }
+        return me;
+    }
+
+    @Override
+    public Collection<Node> collect(Model model) {
+        Collection<Node> result = new HashSet<>();
+        if (model instanceof VisualModel) {
+            VisualModel visualModel = (VisualModel) model;
+            result.addAll(PetriNetUtils.getVisualTransitions(visualModel));
+            result.retainAll(visualModel.getSelection());
+        }
+        return result;
     }
 
     @Override

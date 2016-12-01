@@ -6,6 +6,7 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public abstract class AbstractLayoutTool implements Tool {
@@ -16,14 +17,19 @@ public abstract class AbstractLayoutTool implements Tool {
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, VisualModel.class);
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, VisualModel.class);
     }
 
     @Override
     public void run(WorkspaceEntry we) {
         we.saveMemento();
-        VisualModel model = WorkspaceUtils.getAs(we, VisualModel.class);
+        apply(we.getModelEntry());
+    }
+
+    @Override
+    public ModelEntry apply(ModelEntry me) {
+        VisualModel model = WorkspaceUtils.getAs(me, VisualModel.class);
         layout(model);
         MainWindow mainWindow = Framework.getInstance().getMainWindow();
         if (mainWindow != null) {
@@ -32,6 +38,7 @@ public abstract class AbstractLayoutTool implements Tool {
                 editor.zoomFit();
             }
         }
+        return me;
     }
 
     public abstract void layout(VisualModel model);

@@ -485,7 +485,7 @@ public class MainMenu extends JMenuBar {
     private void createToolsMenu(final WorkspaceEntry we) {
         removeToolsMenu();
 
-        List<Tool> applicableTools = Tools.getApplicableTools(we);
+        List<Tool> applicableTools = Tools.getApplicableTools(we.getModelEntry());
         List<String> sections = Tools.getSections(applicableTools);
 
         JMenu mnTools = new JMenu("Tools");

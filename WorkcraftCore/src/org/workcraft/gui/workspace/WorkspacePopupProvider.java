@@ -46,6 +46,7 @@ import org.workcraft.gui.trees.TreePopupProvider;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.util.Tools;
 import org.workcraft.workspace.FileHandler;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceTree;
@@ -151,82 +152,85 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                         popup.add(mi);
                     }
                 }
-            } else if (openFile.getModelEntry() != null) {
-                final Model model = openFile.getModelEntry().getModel();
-                JLabel label = new JLabel(model.getDisplayName() + " " + (model.getTitle().isEmpty() ? "" : ("'" + model.getTitle() + "'")));
-                popup.add(label);
-                popup.addSeparator();
-
-                JMenuItem miOpenView = new JMenuItem("Open editor");
-                miOpenView.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        framework.getMainWindow().createEditorWindow(openFile);
-                    }
-                });
-
-                JMenuItem miSave = new JMenuItem("Save");
-                miSave.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        try {
-                            framework.getMainWindow().save(openFile);
-                        } catch (OperationCancelledException e1) {
-                        }
-                    }
-                });
-
-                JMenuItem miSaveAs = new JMenuItem("Save as...");
-                miSaveAs.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        try {
-                            framework.getMainWindow().saveAs(openFile);
-                        } catch (OperationCancelledException e1) {
-                        }
-                    }
-                });
-
-                popup.add(miSave);
-                popup.add(miSaveAs);
-                popup.add(miOpenView);
-
-                List<Tool> applicableTools = Tools.getApplicableTools(openFile);
-                List<String> sections = Tools.getSections(applicableTools);
-
-                if (!sections.isEmpty()) {
+            } else {
+                ModelEntry modelEntry = openFile.getModelEntry();
+                if (modelEntry != null) {
+                    final Model model = modelEntry.getModel();
+                    JLabel label = new JLabel(model.getDisplayName() + " " + (model.getTitle().isEmpty() ? "" : ("'" + model.getTitle() + "'")));
+                    popup.add(label);
                     popup.addSeparator();
-                }
-                for (String section : sections) {
-                    String sectionMenuName = MainMenu.getMenuNameFromSection(section);
-                    JMenu sectionMenu = new JMenu(sectionMenuName);
 
-                    List<Tool> sectionTools = Tools.getSectionTools(section, applicableTools);
-                    List<List<Tool>> sectionToolsPartitions = new LinkedList<>();
-                    sectionToolsPartitions.add(Tools.getUnpositionedTools(sectionTools));
-                    sectionToolsPartitions.add(Tools.getPositionedTools(sectionTools, Position.TOP));
-                    sectionToolsPartitions.add(Tools.getPositionedTools(sectionTools, Position.MIDDLE));
-                    sectionToolsPartitions.add(Tools.getPositionedTools(sectionTools, Position.BOTTOM));
-                    boolean needSeparator = false;
-                    for (List<Tool> sectionToolsPartition: sectionToolsPartitions) {
-                        boolean isFirstItem = true;
-                        for (Tool tool : sectionToolsPartition) {
-                            if (needSeparator && isFirstItem) {
-                                sectionMenu.addSeparator();
-                            }
-                            needSeparator = true;
-                            isFirstItem = false;
-                            JMenuItem item = new JMenuItem(tool.getDisplayName().trim());
-                            tools.put(item, tool);
-                            item.addActionListener(new ActionListener() {
-                                public void actionPerformed(ActionEvent e) {
-                                    Tools.run(openFile, tools.get(e.getSource()));
-                                }
-                            });
-                            sectionMenu.add(item);
+                    JMenuItem miOpenView = new JMenuItem("Open editor");
+                    miOpenView.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            framework.getMainWindow().createEditorWindow(openFile);
                         }
+                    });
+
+                    JMenuItem miSave = new JMenuItem("Save");
+                    miSave.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            try {
+                                framework.getMainWindow().save(openFile);
+                            } catch (OperationCancelledException e1) {
+                            }
+                        }
+                    });
+
+                    JMenuItem miSaveAs = new JMenuItem("Save as...");
+                    miSaveAs.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            try {
+                                framework.getMainWindow().saveAs(openFile);
+                            } catch (OperationCancelledException e1) {
+                            }
+                        }
+                    });
+
+                    popup.add(miSave);
+                    popup.add(miSaveAs);
+                    popup.add(miOpenView);
+
+                    List<Tool> applicableTools = Tools.getApplicableTools(modelEntry);
+                    List<String> sections = Tools.getSections(applicableTools);
+
+                    if (!sections.isEmpty()) {
+                        popup.addSeparator();
                     }
-                    popup.add(sectionMenu);
+                    for (String section : sections) {
+                        String sectionMenuName = MainMenu.getMenuNameFromSection(section);
+                        JMenu sectionMenu = new JMenu(sectionMenuName);
+
+                        List<Tool> sectionTools = Tools.getSectionTools(section, applicableTools);
+                        List<List<Tool>> sectionToolsPartitions = new LinkedList<>();
+                        sectionToolsPartitions.add(Tools.getUnpositionedTools(sectionTools));
+                        sectionToolsPartitions.add(Tools.getPositionedTools(sectionTools, Position.TOP));
+                        sectionToolsPartitions.add(Tools.getPositionedTools(sectionTools, Position.MIDDLE));
+                        sectionToolsPartitions.add(Tools.getPositionedTools(sectionTools, Position.BOTTOM));
+                        boolean needSeparator = false;
+                        for (List<Tool> sectionToolsPartition: sectionToolsPartitions) {
+                            boolean isFirstItem = true;
+                            for (Tool tool : sectionToolsPartition) {
+                                if (needSeparator && isFirstItem) {
+                                    sectionMenu.addSeparator();
+                                }
+                                needSeparator = true;
+                                isFirstItem = false;
+                                JMenuItem item = new JMenuItem(tool.getDisplayName().trim());
+                                tools.put(item, tool);
+                                item.addActionListener(new ActionListener() {
+                                    public void actionPerformed(ActionEvent e) {
+                                        Tools.run(openFile, tools.get(e.getSource()));
+                                    }
+                                });
+                                sectionMenu.add(item);
+                            }
+                        }
+                        popup.add(sectionMenu);
+                    }
                 }
             }
             popup.addSeparator();

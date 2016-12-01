@@ -22,15 +22,15 @@ import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Pair;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.ModelEntry;
 
 public class NamedTransitionContractorTool extends TransitionContractorTool {
 
     HashSet<VisualPlace> convertedImplicitPlaces = new HashSet<>();
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return we.getModelEntry().getMathModel() instanceof Stg;
+    public boolean isApplicableTo(ModelEntry me) {
+        return me.getMathModel() instanceof Stg;
     }
 
     @Override

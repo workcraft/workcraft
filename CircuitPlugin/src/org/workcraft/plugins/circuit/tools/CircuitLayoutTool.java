@@ -42,7 +42,7 @@ import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.layout.AbstractLayoutTool;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.WorkspaceUtils;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.ModelEntry;
 
 public class CircuitLayoutTool extends AbstractLayoutTool {
     private static final double DX = 10;
@@ -55,8 +55,8 @@ public class CircuitLayoutTool extends AbstractLayoutTool {
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, VisualCircuit.class);
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, VisualCircuit.class);
     }
 
     @Override

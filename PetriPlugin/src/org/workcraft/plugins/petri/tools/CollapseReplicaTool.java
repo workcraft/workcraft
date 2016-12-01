@@ -1,5 +1,6 @@
 package org.workcraft.plugins.petri.tools;
 
+import java.util.Collection;
 import java.util.HashSet;
 
 import org.workcraft.NodeTransformer;
@@ -11,7 +12,7 @@ import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.ModelEntry;
 
 public class CollapseReplicaTool extends TransformationTool implements NodeTransformer {
 
@@ -26,8 +27,8 @@ public class CollapseReplicaTool extends TransformationTool implements NodeTrans
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return we.getModelEntry().getMathModel() instanceof PetriNetModel;
+    public boolean isApplicableTo(ModelEntry me) {
+        return me.getMathModel() instanceof PetriNetModel;
     }
 
     @Override
@@ -36,7 +37,7 @@ public class CollapseReplicaTool extends TransformationTool implements NodeTrans
     }
 
     @Override
-    public boolean isEnabled(WorkspaceEntry we, Node node) {
+    public boolean isEnabled(ModelEntry me, Node node) {
         return true;
     }
 
@@ -46,32 +47,31 @@ public class CollapseReplicaTool extends TransformationTool implements NodeTrans
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
-        final VisualModel visualModel = we.getModelEntry().getVisualModel();
-        HashSet<VisualReplicaPlace> replicas = PetriNetUtils.getVisualReplicaPlaces(visualModel);
-        if (!visualModel.getSelection().isEmpty()) {
-            replicas.retainAll(visualModel.getSelection());
-        }
-
-        HashSet<VisualReadArc> readArcs = PetriNetUtils.getVisualReadArcs(visualModel);
-        if (!visualModel.getSelection().isEmpty()) {
-            readArcs.retainAll(visualModel.getSelection());
-        }
-        if (!readArcs.isEmpty()) {
-            for (VisualReadArc readArc: readArcs) {
-                if (readArc.getFirst() instanceof VisualReplicaPlace) {
-                    VisualReplicaPlace replica = (VisualReplicaPlace) readArc.getFirst();
-                    replicas.add(replica);
+    public Collection<Node> collect(Model model) {
+        Collection<Node> result = new HashSet<>();
+        if (model instanceof VisualModel) {
+            VisualModel visualModel = (VisualModel) model;
+            // Collect selected (or all) replicas
+            result.addAll(PetriNetUtils.getVisualReplicaPlaces(visualModel));
+            Collection<Node> selection = visualModel.getSelection();
+            if (!selection.isEmpty()) {
+                result.retainAll(selection);
+            }
+            // Collect replicas on selected (or all) read-arcs
+            HashSet<VisualReadArc> readArcs = PetriNetUtils.getVisualReadArcs(visualModel);
+            if (!selection.isEmpty()) {
+                readArcs.retainAll(selection);
+            }
+            if (!readArcs.isEmpty()) {
+                for (VisualReadArc readArc: readArcs) {
+                    if (readArc.getFirst() instanceof VisualReplicaPlace) {
+                        VisualReplicaPlace replica = (VisualReplicaPlace) readArc.getFirst();
+                        result.add(replica);
+                    }
                 }
             }
         }
-        if (!replicas.isEmpty()) {
-            we.saveMemento();
-            for (VisualReplicaPlace replica: replicas) {
-                transform(visualModel, replica);
-            }
-            visualModel.selectNone();
-        }
+        return result;
     }
 
     @Override

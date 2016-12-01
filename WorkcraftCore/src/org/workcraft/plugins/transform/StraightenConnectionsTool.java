@@ -36,6 +36,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class StraightenConnectionsTool extends TransformationTool implements NodeTransformer {
@@ -51,8 +52,8 @@ public class StraightenConnectionsTool extends TransformationTool implements Nod
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, VisualModel.class);
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, VisualModel.class);
     }
 
     @Override
@@ -83,7 +84,7 @@ public class StraightenConnectionsTool extends TransformationTool implements Nod
 
     @Override
     public void run(WorkspaceEntry we) {
-        VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
+        VisualModel visualModel = WorkspaceUtils.getAs(we.getModelEntry(), VisualModel.class);
         if (visualModel != null) {
             Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualConnection.class);
             Collection<Node> selection = visualModel.getSelection();

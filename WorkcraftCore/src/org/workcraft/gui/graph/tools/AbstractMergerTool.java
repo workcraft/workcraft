@@ -2,6 +2,7 @@ package org.workcraft.gui.graph.tools;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -10,6 +11,7 @@ import java.util.Set;
 import org.workcraft.TransformationTool;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
+import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathModel;
@@ -20,7 +22,6 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.workspace.WorkspaceEntry;
 
 public abstract class AbstractMergerTool extends TransformationTool {
 
@@ -29,40 +30,40 @@ public abstract class AbstractMergerTool extends TransformationTool {
         return "Merge selected nodes";
     }
 
-    @Override
-    public void run(WorkspaceEntry we) {
-        final VisualModel model = we.getModelEntry().getVisualModel();
-        if (model.getSelection().size() > 0) {
-            we.saveMemento();
-            mergeSelection(model);
-        }
-    }
-
     public Set<Class<? extends VisualComponent>> getMergableClasses() {
         return new HashSet<Class<? extends VisualComponent>>();
     }
 
-    private void mergeSelection(VisualModel model) {
+    @Override
+    public void transform(Model model, Collection<Node> nodes) {
         Map<Class<? extends VisualComponent>, Set<VisualComponent>> classComponents = new HashMap<>();
         Set<Class<? extends VisualComponent>> mergableClasses = getMergableClasses();
         for (Class<? extends VisualComponent> mergableClass: mergableClasses) {
             Set<VisualComponent> components = new HashSet<>();
-            for (Node component: model.getSelection()) {
+            for (Node component: nodes) {
                 if (mergableClass.isInstance(component)) {
                     components.add((VisualComponent) component);
                 }
             }
             classComponents.put(mergableClass, components);
         }
-        for (Class<? extends VisualComponent> mergableClass: mergableClasses) {
-            Set<VisualComponent> components = classComponents.get(mergableClass);
-            VisualComponent mergedComponent = createMergedComponent(model, components, mergableClass);
-            replaceComponents(model, components, mergedComponent);
-            if (mergedComponent != null) {
-                model.addToSelection(mergedComponent);
+        if (model instanceof VisualModel) {
+            VisualModel visualModel = (VisualModel) model;
+            for (Class<? extends VisualComponent> mergableClass: mergableClasses) {
+                Set<VisualComponent> components = classComponents.get(mergableClass);
+                VisualComponent mergedComponent = createMergedComponent(visualModel, components, mergableClass);
+                replaceComponents(visualModel, components, mergedComponent);
+                if (mergedComponent != null) {
+                    visualModel.addToSelection(mergedComponent);
+                }
             }
         }
     }
+
+    @Override
+    public void transform(Model model, Node node) {
+    }
+
 
     public <T extends VisualComponent> T createMergedComponent(VisualModel model, Set<VisualComponent> components, Class<T> type) {
         T result = null;

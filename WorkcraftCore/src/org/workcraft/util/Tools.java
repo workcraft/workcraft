@@ -13,29 +13,30 @@ import org.workcraft.MenuOrdering;
 import org.workcraft.MenuOrdering.Position;
 import org.workcraft.Tool;
 import org.workcraft.plugins.PluginInfo;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class Tools {
 
     public static void run(WorkspaceEntry we, Tool tool) {
-        if (tool.isApplicableTo(we)) {
+        if (tool.isApplicableTo(we.getModelEntry())) {
             tool.run(we);
         } else {
-            String errorMessage = "Attempt to apply incompatible tool " +
+            String errorMessage = "Attempt to run incompatible tool " +
                     tool.getClass().getName() + " to a workspace entry " + we.getWorkspacePath();
 
             throw new RuntimeException(errorMessage);
         }
     }
 
-    public static List<Tool> getApplicableTools(WorkspaceEntry we) {
+    public static List<Tool> getApplicableTools(ModelEntry me) {
         ArrayList<Tool> tools = new ArrayList<>();
 
         final Framework framework = Framework.getInstance();
         Collection<PluginInfo<? extends Tool>> toolPlugins = framework.getPluginManager().getPlugins(Tool.class);
         for (PluginInfo<? extends Tool> info : toolPlugins) {
             Tool tool = info.getSingleton();
-            if (tool.isApplicableTo(we)) {
+            if (tool.isApplicableTo(me)) {
                 tools.add(tool);
             }
         }

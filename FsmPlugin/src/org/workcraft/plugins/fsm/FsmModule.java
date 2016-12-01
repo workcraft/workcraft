@@ -12,22 +12,22 @@ import org.workcraft.plugins.fsm.serialisation.EventDeserialiser;
 import org.workcraft.plugins.fsm.serialisation.EventSerialiser;
 import org.workcraft.plugins.fsm.tools.DeadlockCheckerTool;
 import org.workcraft.plugins.fsm.tools.DeterminismCheckerTool;
-import org.workcraft.plugins.fsm.tools.GraphToFsmConverterTool;
 import org.workcraft.plugins.fsm.tools.FsmToGraphConverterTool;
 import org.workcraft.plugins.fsm.tools.FsmToPetriConverterTool;
+import org.workcraft.plugins.fsm.tools.GraphToFsmConverterTool;
 import org.workcraft.plugins.fsm.tools.ReachabilityCheckerTool;
 import org.workcraft.plugins.fsm.tools.ReversibilityCheckerTool;
 import org.workcraft.plugins.fsm.tools.StateMergerTool;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
 import org.workcraft.serialisation.xml.XMLSerialiser;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.ModelEntry;
 
 public class FsmModule  implements Module {
 
     private final class FsmContractorTool extends AbstractContractorTool {
         @Override
-        public boolean isApplicableTo(WorkspaceEntry we) {
-            return we.getModelEntry().getMathModel() instanceof Fsm;
+        public boolean isApplicableTo(ModelEntry me) {
+            return me.getMathModel() instanceof Fsm;
         }
     }
 

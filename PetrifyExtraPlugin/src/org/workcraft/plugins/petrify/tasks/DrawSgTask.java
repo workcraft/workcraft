@@ -23,7 +23,7 @@ import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.WorkspaceUtils;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.ModelEntry;
 
 public class DrawSgTask implements Task<DrawSgResult> {
 
@@ -57,23 +57,22 @@ public class DrawSgTask implements Task<DrawSgResult> {
 
     final Pattern hugeSgPattern = Pattern.compile("with ([0-9]+) states");
 
-    private final WorkspaceEntry we;
+    private final ModelEntry me;
     private final boolean binary;
 
-    public DrawSgTask(WorkspaceEntry we, boolean binary) {
-        this.we = we;
+    public DrawSgTask(ModelEntry me, boolean binary) {
+        this.me = me;
         this.binary = binary;
     }
 
     @Override
     public Result<? extends DrawSgResult> run(ProgressMonitor<? super DrawSgResult> monitor) {
         final Framework framework = Framework.getInstance();
-        String prefix = FileUtils.getTempPrefix(we.getTitle());
-        File directory = FileUtils.createTempDirectory(prefix);
+        File directory = FileUtils.createTempDirectory();
         try {
             File stgFile = new File(directory, STG_FILE_NAME);
             stgFile.deleteOnExit();
-            Model model = WorkspaceUtils.getAs(we, PetriNetModel.class);
+            Model model = WorkspaceUtils.getAs(me, PetriNetModel.class);
             ExportTask exportTask = Export.createExportTask(model, stgFile, Format.STG, framework.getPluginManager());
             final Result<? extends Object> dotGResult = framework.getTaskManager().execute(exportTask, "Exporting to .g");
 

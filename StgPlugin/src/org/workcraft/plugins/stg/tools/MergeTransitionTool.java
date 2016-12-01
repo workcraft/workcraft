@@ -9,17 +9,18 @@ import org.workcraft.gui.graph.tools.AbstractMergerTool;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualDummyTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.ModelEntry;
 
 public final class MergeTransitionTool extends AbstractMergerTool {
+
     @Override
     public String getDisplayName() {
         return "Merge selected transitions";
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return we.getModelEntry().getMathModel() instanceof Stg;
+    public boolean isApplicableTo(ModelEntry me) {
+        return me.getMathModel() instanceof Stg;
     }
 
     @Override

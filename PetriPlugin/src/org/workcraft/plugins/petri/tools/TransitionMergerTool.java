@@ -6,17 +6,18 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.graph.tools.AbstractMergerTool;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.VisualTransition;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.ModelEntry;
 
 public final class TransitionMergerTool extends AbstractMergerTool {
+
     @Override
     public String getDisplayName() {
         return "Merge selected transitions";
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return we.getModelEntry().getMathModel() instanceof PetriNet;
+    public boolean isApplicableTo(ModelEntry me) {
+        return me.getMathModel() instanceof PetriNet;
     }
 
     @Override

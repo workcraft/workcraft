@@ -86,7 +86,7 @@ import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.util.GUI;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Tools;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.ModelEntry;
 
 public class SelectionTool extends AbstractTool {
 
@@ -396,15 +396,15 @@ public class SelectionTool extends AbstractTool {
 
     public JPopupMenu createPopupMenu(Node node, final GraphEditor editor) {
         JPopupMenu popup = null;
-        WorkspaceEntry we = editor.getWorkspaceEntry();
+        ModelEntry me = editor.getWorkspaceEntry().getModelEntry();
         List<Tool> applicableTools = new ArrayList<>();
         HashSet<Tool> enabledTools = new HashSet<>();
-        for (Tool tool: Tools.getApplicableTools(we)) {
+        for (Tool tool: Tools.getApplicableTools(me)) {
             if (tool instanceof NodeTransformer) {
                 NodeTransformer nodeTransformer = (NodeTransformer) tool;
                 if (nodeTransformer.isApplicableTo(node)) {
                     applicableTools.add(tool);
-                    if (nodeTransformer.isEnabled(we, node)) {
+                    if (nodeTransformer.isEnabled(me, node)) {
                         enabledTools.add(tool);
                     }
                 }

@@ -6,6 +6,7 @@ import org.workcraft.plugins.fst.task.StgToFstConversionResultHandler;
 import org.workcraft.plugins.fst.task.WriteSgConversionTask;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class StgToFstConverterTool extends ConversionTool {
@@ -15,8 +16,8 @@ public class StgToFstConverterTool extends ConversionTool {
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, Stg.class);
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, Stg.class);
     }
 
     public Position getPosition() {
@@ -33,6 +34,11 @@ public class StgToFstConverterTool extends ConversionTool {
         WriteSgConversionTask task = new WriteSgConversionTask(we, isBinary());
         final Framework framework = Framework.getInstance();
         framework.getTaskManager().queue(task, "Building state graph", new StgToFstConversionResultHandler(task));
+    }
+
+    @Override
+    public ModelEntry apply(ModelEntry me) {
+        return null; // !!!
     }
 
 }

@@ -2,17 +2,15 @@ package org.workcraft.util;
 
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.workspace.ModelEntry;
-import org.workcraft.workspace.WorkspaceEntry;
 
 public class WorkspaceUtils {
 
-    public static boolean isApplicable(WorkspaceEntry entry, Class<?> cls) {
-        return getAs(entry, cls) != null;
+    public static boolean isApplicable(ModelEntry me, Class<?> cls) {
+        return getAs(me, cls) != null;
     }
 
     @SuppressWarnings("unchecked")
-    public static <T> T getAs(WorkspaceEntry we, Class<T> cls) {
-        ModelEntry me = we.getModelEntry();
+    public static <T> T getAs(ModelEntry me, Class<T> cls) {
         if (cls.isInstance(me.getModel())) {
             return (T) me.getModel();
         }
