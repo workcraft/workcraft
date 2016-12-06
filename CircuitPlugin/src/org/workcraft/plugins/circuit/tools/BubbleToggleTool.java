@@ -116,7 +116,7 @@ public class BubbleToggleTool extends TransformationTool implements NodeTransfor
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public WorkspaceEntry run(WorkspaceEntry we) {
         final VisualModel visualModel = we.getModelEntry().getVisualModel();
         if (visualModel != null) {
             Collection<VisualFunctionContact> contacts = Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualFunctionContact.class);
@@ -138,6 +138,7 @@ public class BubbleToggleTool extends TransformationTool implements NodeTransfor
                 editor.repaint();
             }
         }
+        return we;
     }
 
     @Override

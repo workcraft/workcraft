@@ -13,6 +13,7 @@ import org.workcraft.plugins.petrify.tasks.TransformationTask;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.VisualDummyTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -30,7 +31,7 @@ public class PetrifyNetSynthesisHide extends PetrifyNetSynthesis {
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public WorkspaceEntry run(WorkspaceEntry we) {
         VisualModel visualModel = we.getModelEntry().getVisualModel();
         HashSet<VisualTransition> transitions = PetriNetUtils.getVisualTransitions(visualModel);
         transitions.retainAll(visualModel.getSelection());
@@ -61,11 +62,14 @@ public class PetrifyNetSynthesisHide extends PetrifyNetSynthesis {
             args.add("-hide");
             args.add(names);
         }
-        final TransformationTask task = new TransformationTask(we, "Net synthesis", args.toArray(new String[args.size()]));
+
         final Framework framework = Framework.getInstance();
+        final TaskManager taskManager = framework.getTaskManager();
+        final TransformationTask task = new TransformationTask(we, "Net synthesis", args.toArray(new String[args.size()]));
         boolean hasSignals = WorkspaceUtils.isApplicable(we.getModelEntry(), StgModel.class);
-        TransformationResultHandler monitor = new TransformationResultHandler(we, hasSignals);
-        framework.getTaskManager().queue(task, "Petrify net synthesis", monitor);
+        final TransformationResultHandler monitor = new TransformationResultHandler(we, hasSignals);
+        taskManager.queue(task, "Petrify net synthesis", monitor);
+        return we;
     }
 
 }

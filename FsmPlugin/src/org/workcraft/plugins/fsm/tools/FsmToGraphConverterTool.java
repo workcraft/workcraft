@@ -21,7 +21,7 @@ public class FsmToGraphConverterTool extends ConversionTool {
     }
 
     @Override
-    public ModelEntry apply(ModelEntry me) {
+    public ModelEntry run(ModelEntry me) {
         final VisualFsm fsm = (VisualFsm) me.getVisualModel();
         final VisualGraph graph = new VisualGraph(new Graph());
         final FsmToGraphConverter converter = new FsmToGraphConverter(fsm, graph);

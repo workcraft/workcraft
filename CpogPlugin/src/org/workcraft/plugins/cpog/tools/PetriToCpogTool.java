@@ -8,6 +8,7 @@ import org.workcraft.plugins.cpog.gui.PetriToCpogDialog;
 import org.workcraft.plugins.cpog.tasks.PetriToCpogHandler;
 import org.workcraft.plugins.cpog.tasks.PetriToCpogTask;
 import org.workcraft.plugins.petri.PetriNet;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
@@ -26,7 +27,12 @@ public class PetriToCpogTool extends ConversionTool {
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public ModelEntry run(ModelEntry me) {
+        return null; // !!!
+    }
+
+    @Override
+    public WorkspaceEntry run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
 
@@ -40,13 +46,10 @@ public class PetriToCpogTool extends ConversionTool {
             // Instantiate object for handling solution
             PetriToCpogHandler result = new PetriToCpogHandler(task);
             //Run both
-            framework.getTaskManager().queue(task, "Converting Petri net into CPOG...", result);
+            final TaskManager taskManager = framework.getTaskManager();
+            taskManager.queue(task, "Converting Petri net into CPOG...", result);
         }
-    }
-
-    @Override
-    public ModelEntry apply(ModelEntry me) {
-        return null; // !!!
+        return we;
     }
 
 }

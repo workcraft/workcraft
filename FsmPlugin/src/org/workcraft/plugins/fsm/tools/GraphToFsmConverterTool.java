@@ -6,6 +6,7 @@ import org.workcraft.plugins.fsm.FsmDescriptor;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.graph.Graph;
 import org.workcraft.plugins.graph.VisualGraph;
+import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 
 public class GraphToFsmConverterTool extends ConversionTool {
@@ -17,11 +18,11 @@ public class GraphToFsmConverterTool extends ConversionTool {
 
     @Override
     public boolean isApplicableTo(ModelEntry me) {
-        return me.getMathModel().getClass().equals(Graph.class);
+        return WorkspaceUtils.isApplicableExact(me, Graph.class);
     }
 
     @Override
-    public ModelEntry apply(ModelEntry me) {
+    public ModelEntry run(ModelEntry me) {
         final VisualGraph graph = (VisualGraph) me.getVisualModel();
         final VisualFsm fsm = new VisualFsm(new Fsm());
         final GraphToFsmConverter converter = new GraphToFsmConverter(graph, fsm);

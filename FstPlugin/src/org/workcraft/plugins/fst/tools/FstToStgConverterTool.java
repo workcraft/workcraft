@@ -21,7 +21,7 @@ public class FstToStgConverterTool extends ConversionTool {
     }
 
     @Override
-    public ModelEntry apply(ModelEntry me) {
+    public ModelEntry run(ModelEntry me) {
         final VisualFst fst = (VisualFst) me.getVisualModel();
         final VisualStg stg = new VisualStg(new Stg());
         final FstToStgConverter converter = new FstToStgConverter(fst, stg);

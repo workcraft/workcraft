@@ -209,6 +209,7 @@ public final class Framework {
     private Framework() {
         pluginManager = new PluginManager();
         taskManager = new DefaultTaskManager() {
+            @Override
             public <T> Result<? extends T> execute(Task<T> task, String description, ProgressMonitor<? super T> observer) {
                 if (SwingUtilities.isEventDispatchThread()) {
                     OperationCancelDialog<T> cancelDialog = new OperationCancelDialog<>(mainWindow, description);
@@ -220,9 +221,7 @@ public final class Framework {
                     observers.add(cancelDialog);
 
                     this.queue(task, description, observers);
-
                     cancelDialog.setVisible(true);
-
                     return cancelDialog.result;
                 } else {
                     return super.execute(task, description, observer);
@@ -846,11 +845,11 @@ public final class Framework {
         }
     }
 
-    public ModelEntry applyTool(ModelEntry me, String className) {
+    public ModelEntry runTool(ModelEntry me, String className) {
         if (className != null) {
             for (Tool tool: Tools.getApplicableTools(me)) {
                 if (className.equals(tool.getClass().getSimpleName())) {
-                    return tool.apply(me);
+                    return tool.run(me);
                 }
             }
         }

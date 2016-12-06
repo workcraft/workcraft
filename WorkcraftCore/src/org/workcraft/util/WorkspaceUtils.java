@@ -9,6 +9,10 @@ public class WorkspaceUtils {
         return getAs(me, cls) != null;
     }
 
+    public static boolean isApplicableExact(ModelEntry me, Class<?> cls) {
+        return me.getMathModel().getClass().equals(cls.getName()); // !!!
+    }
+
     @SuppressWarnings("unchecked")
     public static <T> T getAs(ModelEntry me, Class<T> cls) {
         if (cls.isInstance(me.getModel())) {

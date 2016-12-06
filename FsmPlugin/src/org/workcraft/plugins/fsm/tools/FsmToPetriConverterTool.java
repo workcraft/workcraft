@@ -6,6 +6,7 @@ import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.PetriNetDescriptor;
 import org.workcraft.plugins.petri.VisualPetriNet;
+import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 
 public class FsmToPetriConverterTool extends ConversionTool {
@@ -17,11 +18,11 @@ public class FsmToPetriConverterTool extends ConversionTool {
 
     @Override
     public boolean isApplicableTo(ModelEntry me) {
-        return me.getMathModel().getClass().equals(Fsm.class);
+        return WorkspaceUtils.isApplicableExact(me, Fsm.class);
     }
 
     @Override
-    public ModelEntry apply(ModelEntry me) {
+    public ModelEntry run(ModelEntry me) {
         final VisualFsm fsm = (VisualFsm) me.getVisualModel();
         final VisualPetriNet petri = new VisualPetriNet(new PetriNet());
         final FsmToPetriConverter converter = new FsmToPetriConverter(fsm, petri);

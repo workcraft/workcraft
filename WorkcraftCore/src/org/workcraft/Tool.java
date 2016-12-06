@@ -25,9 +25,9 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public interface Tool {
-    boolean isApplicableTo(ModelEntry me);
     String getSection();
     String getDisplayName();
-    ModelEntry apply(ModelEntry me);
-    void run(WorkspaceEntry we);
+    boolean isApplicableTo(ModelEntry me);
+    ModelEntry run(ModelEntry me);
+    WorkspaceEntry run(WorkspaceEntry we);
 }

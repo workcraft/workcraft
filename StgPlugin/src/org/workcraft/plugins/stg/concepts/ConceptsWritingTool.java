@@ -5,6 +5,7 @@ import java.io.File;
 import org.workcraft.ConversionTool;
 import org.workcraft.Framework;
 import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -29,7 +30,7 @@ public class ConceptsWritingTool extends ConversionTool {
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public WorkspaceEntry run(WorkspaceEntry we) {
         ConceptsWriterDialog dialog = new ConceptsWriterDialog();
         dialog.setVisible(true);
 
@@ -41,12 +42,14 @@ public class ConceptsWritingTool extends ConversionTool {
             ConceptsResultHandler resultHandler = new ConceptsResultHandler(this, name, we);
 
             Framework framework = Framework.getInstance();
-            framework.getTaskManager().queue(task, "Translating concepts", resultHandler);
+            TaskManager taskManager = framework.getTaskManager();
+            taskManager.queue(task, "Translating concepts", resultHandler);
         }
+        return we;
     }
 
     @Override
-    public ModelEntry apply(ModelEntry me) {
+    public ModelEntry run(ModelEntry me) {
         return null; // !!!
     }
 

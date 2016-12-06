@@ -28,7 +28,7 @@ public abstract class TransformationTool extends PromotedTool implements MenuOrd
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public WorkspaceEntry run(WorkspaceEntry we) {
         VisualModel visualModel = WorkspaceUtils.getAs(we.getModelEntry(), VisualModel.class);
         Collection<Node> nodes = collect(visualModel);
         if (!nodes.isEmpty()) {
@@ -36,10 +36,11 @@ public abstract class TransformationTool extends PromotedTool implements MenuOrd
             transform(visualModel, nodes);
             visualModel.selectNone();
         }
+        return we;
     }
 
     @Override
-    public ModelEntry apply(ModelEntry me) {
+    public ModelEntry run(ModelEntry me) {
         VisualModel visualModel = WorkspaceUtils.getAs(me, VisualModel.class);
         Collection<Node> nodes = collect(visualModel);
         transform(visualModel, nodes);

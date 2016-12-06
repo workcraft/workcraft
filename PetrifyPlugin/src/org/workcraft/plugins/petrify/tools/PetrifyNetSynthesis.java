@@ -10,6 +10,7 @@ import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petrify.tasks.TransformationResultHandler;
 import org.workcraft.plugins.petrify.tasks.TransformationTask;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -32,18 +33,23 @@ public class PetrifyNetSynthesis extends ConversionTool {
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public WorkspaceEntry run(WorkspaceEntry we) {
         ArrayList<String> args = getArgs();
         final TransformationTask task = new TransformationTask(we, "Net synthesis", args.toArray(new String[args.size()]));
-        final Framework framework = Framework.getInstance();
+
         ModelEntry me = we.getModelEntry();
-        boolean hasSignals = WorkspaceUtils.isApplicable(me, StgModel.class) || WorkspaceUtils.isApplicable(me, Fst.class);
-        TransformationResultHandler monitor = new TransformationResultHandler(we, hasSignals);
-        framework.getTaskManager().queue(task, "Petrify net synthesis", monitor);
+        boolean hasSignals = WorkspaceUtils.isApplicable(me, StgModel.class)
+                || WorkspaceUtils.isApplicable(me, Fst.class);
+
+        final Framework framework = Framework.getInstance();
+        final TaskManager taskManager = framework.getTaskManager();
+        final TransformationResultHandler monitor = new TransformationResultHandler(we, hasSignals);
+        taskManager.queue(task, "Petrify net synthesis", monitor);
+        return we;
     }
 
     @Override
-    public ModelEntry apply(ModelEntry me) {
+    public ModelEntry run(ModelEntry me) {
         return null; // !!!
     }
 

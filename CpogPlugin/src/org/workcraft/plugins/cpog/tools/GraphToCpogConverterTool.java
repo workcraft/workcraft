@@ -6,6 +6,7 @@ import org.workcraft.plugins.cpog.CpogDescriptor;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.graph.Graph;
 import org.workcraft.plugins.graph.VisualGraph;
+import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 
 public class GraphToCpogConverterTool extends ConversionTool {
@@ -17,11 +18,11 @@ public class GraphToCpogConverterTool extends ConversionTool {
 
     @Override
     public boolean isApplicableTo(ModelEntry me) {
-        return me.getMathModel().getClass().equals(Graph.class);
+        return WorkspaceUtils.isApplicableExact(me, Graph.class);
     }
 
     @Override
-    public ModelEntry apply(ModelEntry me) {
+    public ModelEntry run(ModelEntry me) {
         final VisualGraph graph = (VisualGraph) me.getVisualModel();
         final VisualCpog cpog = new VisualCpog(new Cpog());
         final GraphToCpogConverter converter = new GraphToCpogConverter(graph, cpog);

@@ -24,14 +24,16 @@ public abstract class ConversionTool extends PromotedTool implements MenuOrderin
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
-        final ModelEntry me = apply(we.getModelEntry());
-        if (me != null) {
+    public WorkspaceEntry run(WorkspaceEntry we) {
+        final ModelEntry me = run(we.getModelEntry());
+        if (me == null) {
+            return null;
+        } else {
             final Workspace workspace = Framework.getInstance().getWorkspace();
             final Path<String> directory = we.getWorkspacePath().getParent();
             final String name = we.getWorkspacePath().getNode();
-            boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
-            workspace.add(directory, name, me, false, openInEditor);
+            final boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
+            return workspace.add(directory, name, me, false, openInEditor);
         }
     }
 

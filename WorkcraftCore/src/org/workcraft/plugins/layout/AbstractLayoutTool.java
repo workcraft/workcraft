@@ -22,13 +22,14 @@ public abstract class AbstractLayoutTool implements Tool {
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public WorkspaceEntry run(WorkspaceEntry we) {
         we.saveMemento();
-        apply(we.getModelEntry());
+        run(we.getModelEntry());
+        return we;
     }
 
     @Override
-    public ModelEntry apply(ModelEntry me) {
+    public ModelEntry run(ModelEntry me) {
         VisualModel model = WorkspaceUtils.getAs(me, VisualModel.class);
         layout(model);
         MainWindow mainWindow = Framework.getInstance().getMainWindow();
