@@ -32,37 +32,40 @@ import org.workcraft.plugins.son.util.Marking;
 import org.workcraft.plugins.son.util.Phase;
 import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class TestTool extends AbstractTool implements Tool {
 
     private String message = "";
 
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, SON.class);
-
+    @Override
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, SON.class);
     }
 
+    @Override
     public String getSection() {
         return "test";
     }
 
+    @Override
     public String getDisplayName() {
         return "Test";
     }
 
     GraphEditor editor1;
 
-    public void run(WorkspaceEntry we) {
+    @Override
+    public ModelEntry run(ModelEntry me) {
         System.out.println("================================================================================");
-        SON net = (SON) we.getModelEntry().getMathModel();
+        SON net = (SON) me.getMathModel();
         // VisualSON vnet = (VisualSON) we.getModelEntry().getVisualModel();
         // reachableMarkingsTest(net);
         esitmationTest(net);
         // timeTest(net);
         // bhvTimeTest(net);
         // getScenario(net);
-
         // dfsTest(net);
         // outputBefore(net);
         // phaseTest(net);
@@ -76,6 +79,13 @@ public class TestTool extends AbstractTool implements Tool {
         // this.convertBlockTest(net, vnet);
         // relation(net, vnet);
         // conditionOutputTest(vnet);
+        return me;
+    }
+
+    @Override
+    public WorkspaceEntry run(WorkspaceEntry we) {
+        run(we.getModelEntry());
+        return we;
     }
 
     private void reachableMarkingsTest(SON net) {

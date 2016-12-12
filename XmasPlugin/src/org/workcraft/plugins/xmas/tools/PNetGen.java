@@ -22,6 +22,7 @@ import org.workcraft.plugins.xmas.components.SourceComponent;
 import org.workcraft.plugins.xmas.components.SwitchComponent;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class PNetGen implements Tool {
@@ -122,8 +123,8 @@ public class PNetGen implements Tool {
         return "GenCPNet";
     }
 
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, Xmas.class);
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, Xmas.class);
     }
 
     private static String searchList(String id) {
@@ -976,11 +977,10 @@ public class PNetGen implements Tool {
     public Collection<SwitchComponent> swNodes;
     public Collection<SinkComponent> snkNodes;
 
-    public void run(WorkspaceEntry we) {
+    @Override
+    public ModelEntry run(ModelEntry me) {
         System.out.println("");
-        Xmas cnet = (Xmas) we.getModelEntry().getMathModel();
-        //VisualXmas vnet = (VisualXmas) we.getModelEntry().getVisualModel();
-        //srcNodes = Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualSourceComponent.class);
+        Xmas cnet = (Xmas) me.getMathModel();
         srcNodes = cnet.getSourceComponents();
         //funNodes = Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualFunctionComponent.class);
         funNodes = cnet.getFunctionComponents();
@@ -1007,7 +1007,7 @@ public class PNetGen implements Tool {
             current = jp.nextToken();
             if (current != JsonToken.START_OBJECT) {
                 LogUtils.logErrorLine("Root should be object: quiting.");
-                return;
+                return me;
             }
 
             while (jp.nextToken() != JsonToken.END_OBJECT) {
@@ -1145,5 +1145,14 @@ public class PNetGen implements Tool {
             }
         }
         System.out.println("");
+        return me;
     }
+
+
+    @Override
+    public WorkspaceEntry run(WorkspaceEntry we) {
+        run(we.getModelEntry());
+        return we;
+    }
+
 }

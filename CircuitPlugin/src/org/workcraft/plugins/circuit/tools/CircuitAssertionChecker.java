@@ -17,7 +17,10 @@ import org.workcraft.plugins.mpsat.gui.MpsatAssertionDialog;
 import org.workcraft.plugins.mpsat.tools.MpsatAssertionChecker;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.GUI;
+import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class CircuitAssertionChecker extends VerificationTool {
@@ -30,8 +33,8 @@ public class CircuitAssertionChecker extends VerificationTool {
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return we.getModelEntry().getMathModel() instanceof Circuit;
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, Circuit.class);
     }
 
     @Override
@@ -40,15 +43,20 @@ public class CircuitAssertionChecker extends VerificationTool {
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public ModelEntry run(ModelEntry me) {
+        return null; // !!!
+    }
+
+    @Override
+    public WorkspaceEntry run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
-        MainWindow mainWindow = framework.getMainWindow();
+        final MainWindow mainWindow = framework.getMainWindow();
 
         Circuit circuit = (Circuit) we.getModelEntry().getMathModel();
         if (circuit.getFunctionComponents().isEmpty()) {
             JOptionPane.showMessageDialog(mainWindow, "Error: The circuit must have components.",
                     TITLE, JOptionPane.ERROR_MESSAGE);
-            return;
+            return we;
         }
 
         VisualCircuit visualCircuit = (VisualCircuit) we.getModelEntry().getVisualModel();
@@ -77,8 +85,11 @@ public class CircuitAssertionChecker extends VerificationTool {
             if (!title.isEmpty()) {
                 description += "(" + title + ")";
             }
-            framework.getTaskManager().queue(task, description, new MpsatChainResultHandler(task));
+            final TaskManager taskManager = framework.getTaskManager();
+            final MpsatChainResultHandler monitor = new MpsatChainResultHandler(task);
+            taskManager.queue(task, description, monitor);
         }
+        return we;
     }
 
 }

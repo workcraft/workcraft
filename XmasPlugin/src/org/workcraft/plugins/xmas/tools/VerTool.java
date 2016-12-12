@@ -1,7 +1,6 @@
 package org.workcraft.plugins.xmas.tools;
 
 import java.awt.Color;
-import java.awt.Graphics2D;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -13,10 +12,8 @@ import java.util.Scanner;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
-import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.dom.Node;
-import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.tools.AbstractTool;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
@@ -33,6 +30,7 @@ import org.workcraft.plugins.xmas.gui.SolutionsDialog2;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class VerTool extends AbstractTool implements Tool {
@@ -348,18 +346,17 @@ public class VerTool extends AbstractTool implements Tool {
         }
     }
 
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, Xmas.class);
+    @Override
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, Xmas.class);
     }
 
-    GraphEditorPanel editor1;
-    Graphics2D g;
-
-    public void run(final WorkspaceEntry we) {
+    @Override
+    public ModelEntry run(ModelEntry me) {
         System.out.println("Verifying Model");
 
-        Xmas xnet = (Xmas) we.getModelEntry().getMathModel();
-        VisualXmas vnet = (VisualXmas) we.getModelEntry().getVisualModel();
+        Xmas xnet = (Xmas) me.getMathModel();
+        VisualXmas vnet = (VisualXmas) me.getVisualModel();
 
         try {
             File cpnFile = XmasSettings.getTempVxmCpnFile();
@@ -423,29 +420,22 @@ public class VerTool extends AbstractTool implements Tool {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return me;
+    }
 
-        //final SolutionsDialog solutionsDialog = new SolutionsDialog("hello", null);
-        //GUI.centerAndSizeToParent(solutionsDialog, we.getFramework().getMainWindow());
-        //solutionsDialog.setVisible(true);
-        final Framework framework = Framework.getInstance();
-        for (GraphEditorPanel e : framework.getMainWindow().getEditors(we)) {
-            editor1 = e;
-            g = (Graphics2D) e.getGraphics();
-            for (int i = 0; i < 25; i++) {
-                //GUI.drawEditorMessage(editor1, g, Color.RED, "hello");
-            }
-        }
+    @Override
+    public WorkspaceEntry run(WorkspaceEntry we) {
+        run(we.getModelEntry());
+        return we;
     }
 
     @Override
     public String getLabel() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public Decorator getDecorator(GraphEditor editor) {
-        // TODO Auto-generated method stub
         return null;
     }
 

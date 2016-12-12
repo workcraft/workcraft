@@ -7,11 +7,12 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
+import org.workcraft.Framework;
+import org.workcraft.Tool;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.tasks.PGMinerResultHandler;
 import org.workcraft.plugins.cpog.tasks.PGMinerTask;
-import org.workcraft.Framework;
-import org.workcraft.Tool;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class PGMinerSelectedGraphsExtractionTool implements Tool {
@@ -25,10 +26,8 @@ public class PGMinerSelectedGraphsExtractionTool implements Tool {
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        if (we.getModelEntry() == null) return false;
-        if (we.getModelEntry().getVisualModel() instanceof VisualCpog) return true;
-        return false;
+    public boolean isApplicableTo(ModelEntry me) {
+        return me.getVisualModel() instanceof VisualCpog;
     }
 
     public File getInputFile(WorkspaceEntry we) {
@@ -95,19 +94,21 @@ public class PGMinerSelectedGraphsExtractionTool implements Tool {
         return null;
     }
 
-    public void run(WorkspaceEntry we) {
+    @Override
+    public ModelEntry run(ModelEntry me) {
+        return null; // !!!
+    }
 
+    @Override
+    public WorkspaceEntry run(WorkspaceEntry we) {
         try {
-
             PGMinerTask task = new PGMinerTask(getInputFile(we), false);
-
             final Framework framework = Framework.getInstance();
             PGMinerResultHandler result = new PGMinerResultHandler((VisualCpog) we.getModelEntry().getVisualModel(), we, true);
             framework.getTaskManager().queue(task, "PGMiner", result);
         } catch (ArrayIndexOutOfBoundsException e) {
-
         }
-
+        return we;
     }
 
 }

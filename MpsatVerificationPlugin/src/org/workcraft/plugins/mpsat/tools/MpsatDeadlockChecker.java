@@ -1,9 +1,9 @@
 package org.workcraft.plugins.mpsat.tools;
 
 import org.workcraft.plugins.mpsat.MpsatSettings;
-import org.workcraft.plugins.petri.PetriNetModel;
+import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.util.WorkspaceUtils;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.ModelEntry;
 
 public class MpsatDeadlockChecker extends AbstractMpsatChecker  {
 
@@ -13,8 +13,8 @@ public class MpsatDeadlockChecker extends AbstractMpsatChecker  {
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, PetriNetModel.class);
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, StgModel.class);
     }
 
     @Override

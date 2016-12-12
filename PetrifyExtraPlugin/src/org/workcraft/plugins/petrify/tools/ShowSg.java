@@ -12,7 +12,9 @@ import org.workcraft.plugins.petrify.tasks.DrawSgTask;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class ShowSg implements Tool {
@@ -24,8 +26,8 @@ public class ShowSg implements Tool {
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, PetriNetModel.class);
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, PetriNetModel.class);
     }
 
     @Override
@@ -39,8 +41,8 @@ public class ShowSg implements Tool {
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
-        DrawSgTask task = new DrawSgTask(we, isBinary());
+    public ModelEntry run(ModelEntry me) {
+        DrawSgTask task = new DrawSgTask(me, isBinary());
         final Framework framework = Framework.getInstance();
 
         ProgressMonitor<DrawSgResult> monitor = new ProgressMonitor<DrawSgResult>() {
@@ -76,13 +78,21 @@ public class ShowSg implements Tool {
                             errorMessage += ERROR_CAUSE_PREFIX + returnValue.getErrorMessages();
                         }
                     }
-                    MainWindow mainWindow = Framework.getInstance().getMainWindow();
+                    final MainWindow mainWindow = framework.getMainWindow();
                     JOptionPane.showMessageDialog(mainWindow, errorMessage, TITLE, JOptionPane.ERROR_MESSAGE);
                 }
             }
         };
 
-        framework.getTaskManager().queue(task, "Show state graph", monitor);
+        final TaskManager taskManager = framework.getTaskManager();
+        taskManager.queue(task, "Show state graph", monitor);
+        return me;
+    }
+
+    @Override
+    public WorkspaceEntry run(WorkspaceEntry we) {
+        run(we.getModelEntry());
+        return we;
     }
 
 }

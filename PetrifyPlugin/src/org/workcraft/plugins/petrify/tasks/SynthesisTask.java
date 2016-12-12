@@ -103,7 +103,7 @@ public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessList
         command.add("-log");
         command.add(logFile.getAbsolutePath());
 
-        StgModel stg = WorkspaceUtils.getAs(we, StgModel.class);
+        StgModel stg = WorkspaceUtils.getAs(we.getModelEntry(), StgModel.class);
 
         // Check for isolated marked places and temporary remove them is requested
         HashSet<Place> isolatedPlaces = PetriNetUtils.getIsolatedMarkedPlaces(stg);

@@ -37,7 +37,6 @@ import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
-import org.workcraft.workspace.WorkspaceEntry;
 
 public class StraightenConnectionsTool extends TransformationTool implements NodeTransformer {
 
@@ -62,7 +61,7 @@ public class StraightenConnectionsTool extends TransformationTool implements Nod
     }
 
     @Override
-    public boolean isEnabled(WorkspaceEntry we, Node node) {
+    public boolean isEnabled(ModelEntry me, Node node) {
         boolean result = false;
         if (node instanceof VisualConnection) {
             VisualConnection connection = (VisualConnection) node;
@@ -83,10 +82,11 @@ public class StraightenConnectionsTool extends TransformationTool implements Nod
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
-        VisualModel visualModel = WorkspaceUtils.getAs(we.getModelEntry(), VisualModel.class);
-        if (visualModel != null) {
-            Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualConnection.class);
+    public Collection<Node> collect(Model model) {
+        Collection<Node> connections = new HashSet<>();
+        if (model instanceof VisualModel) {
+            VisualModel visualModel = (VisualModel) model;
+            connections.addAll(Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualConnection.class));
             Collection<Node> selection = visualModel.getSelection();
             if (!selection.isEmpty()) {
                 HashSet<Node> selectedConnections = new HashSet<>(selection);
@@ -95,13 +95,8 @@ public class StraightenConnectionsTool extends TransformationTool implements Nod
                     connections.retainAll(selection);
                 }
             }
-            if (!connections.isEmpty()) {
-                we.saveMemento();
-                for (VisualConnection connection: connections) {
-                    transform(visualModel, connection);
-                }
-            }
         }
+        return connections;
     }
 
     @Override

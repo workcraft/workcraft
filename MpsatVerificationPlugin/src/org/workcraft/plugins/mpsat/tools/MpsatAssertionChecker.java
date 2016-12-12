@@ -11,8 +11,10 @@ import org.workcraft.plugins.mpsat.MpsatSettingsSerialiser;
 import org.workcraft.plugins.mpsat.gui.MpsatAssertionDialog;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatAssertionChecker extends VerificationTool {
@@ -25,8 +27,8 @@ public class MpsatAssertionChecker extends VerificationTool {
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, StgModel.class);
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, StgModel.class);
     }
 
     @Override
@@ -35,7 +37,12 @@ public class MpsatAssertionChecker extends VerificationTool {
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public ModelEntry run(ModelEntry me) {
+        return null; // !!!
+    }
+
+    @Override
+    public WorkspaceEntry run(WorkspaceEntry we) {
         File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, MPSAT_ASSERTION_PRESETS_FILE);
         MpsatPresetManager pmgr = new MpsatPresetManager(presetFile, new MpsatSettingsSerialiser(), true);
         final Framework framework = Framework.getInstance();
@@ -46,9 +53,11 @@ public class MpsatAssertionChecker extends VerificationTool {
         dialog.setVisible(true);
         if (dialog.getModalResult() == 1) {
             final MpsatChainTask mpsatTask = new MpsatChainTask(we, dialog.getSettings());
-            framework.getTaskManager().queue(mpsatTask, "MPSat tool chain",
-                    new MpsatChainResultHandler(mpsatTask));
+            final TaskManager taskManager = framework.getTaskManager();
+            final MpsatChainResultHandler monitor = new MpsatChainResultHandler(mpsatTask);
+            taskManager.queue(mpsatTask, "MPSat tool chain", monitor);
         }
+        return we;
     }
 
 }

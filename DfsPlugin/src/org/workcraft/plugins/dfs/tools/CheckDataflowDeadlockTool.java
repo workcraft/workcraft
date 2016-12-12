@@ -5,6 +5,9 @@ import org.workcraft.VerificationTool;
 import org.workcraft.plugins.dfs.Dfs;
 import org.workcraft.plugins.dfs.tasks.CheckDataflowDeadlockTask;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
+import org.workcraft.tasks.TaskManager;
+import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class CheckDataflowDeadlockTool extends VerificationTool {
@@ -14,12 +17,17 @@ public class CheckDataflowDeadlockTool extends VerificationTool {
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return we.getModelEntry().getMathModel() instanceof Dfs;
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, Dfs.class);
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public ModelEntry run(ModelEntry me) {
+        return null; // !!!
+    }
+
+    @Override
+    public WorkspaceEntry run(WorkspaceEntry we) {
         final CheckDataflowDeadlockTask task = new CheckDataflowDeadlockTask(we);
         String description = "MPSat tool chain";
         String title = we.getTitle();
@@ -27,7 +35,10 @@ public class CheckDataflowDeadlockTool extends VerificationTool {
             description += "(" + title + ")";
         }
         final Framework framework = Framework.getInstance();
-        framework.getTaskManager().queue(task, description, new MpsatChainResultHandler(task));
+        final TaskManager taskManager = framework.getTaskManager();
+        final MpsatChainResultHandler monitor = new MpsatChainResultHandler(task);
+        taskManager.queue(task, description, monitor);
+        return we;
     }
 
 }

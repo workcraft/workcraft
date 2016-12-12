@@ -1,5 +1,6 @@
 package org.workcraft.plugins.stg.tools;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 
@@ -7,14 +8,17 @@ import org.workcraft.NodeTransformer;
 import org.workcraft.TransformationTool;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.plugins.stg.VisualDummyTransition;
-import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.VisualSignalTransition;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 
 public class DummyToSignalTransitionConverterTool extends TransformationTool implements NodeTransformer {
+
     private HashSet<VisualSignalTransition> signalTransitions = null;
 
     @Override
@@ -28,8 +32,8 @@ public class DummyToSignalTransitionConverterTool extends TransformationTool imp
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return we.getModelEntry().getMathModel() instanceof Stg;
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, Stg.class);
     }
 
     @Override
@@ -38,7 +42,7 @@ public class DummyToSignalTransitionConverterTool extends TransformationTool imp
     }
 
     @Override
-    public boolean isEnabled(WorkspaceEntry we, Node node) {
+    public boolean isEnabled(ModelEntry me, Node node) {
         return true;
     }
 
@@ -53,19 +57,26 @@ public class DummyToSignalTransitionConverterTool extends TransformationTool imp
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
-        final VisualStg model = (VisualStg) we.getModelEntry().getVisualModel();
-        HashSet<VisualDummyTransition> dummyTransitions = new HashSet<>(model.getVisualDummyTransitions());
-        dummyTransitions.retainAll(model.getSelection());
-        if (!dummyTransitions.isEmpty()) {
-            we.saveMemento();
-            signalTransitions = new HashSet<VisualSignalTransition>(dummyTransitions.size());
-            for (VisualDummyTransition dummyTransition: dummyTransitions) {
-                transform(model, dummyTransition);
+    public void transform(Model model, Collection<Node> nodes) {
+        if (model instanceof VisualModel) {
+            VisualModel visualModel = (VisualModel) model;
+            signalTransitions = new HashSet<VisualSignalTransition>(nodes.size());
+            for (Node node: nodes) {
+                transform(model, node);
             }
-            model.select(new LinkedList<Node>(signalTransitions));
+            visualModel.select(new LinkedList<Node>(signalTransitions));
             signalTransitions = null;
         }
+    }
+
+    @Override
+    public Collection<Node> collect(Model model) {
+        Collection<Node> dummyTransitions = new HashSet<>();
+        if (model instanceof VisualStg) {
+            VisualStg visualModel = (VisualStg) model;
+            dummyTransitions.addAll(visualModel.getVisualDummyTransitions());
+        }
+        return dummyTransitions;
     }
 
     @Override

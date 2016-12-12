@@ -28,6 +28,11 @@ public class PetrifyDummyContraction extends ConversionTool {
     }
 
     @Override
+    public ModelEntry run(ModelEntry me) {
+        return null; // !!!
+    }
+
+    @Override
     public WorkspaceEntry run(WorkspaceEntry we) {
         final TransformationTask task = new TransformationTask(we, "Dummy contraction", new String[] {"-hide", ".dummy" });
         final Framework framework = Framework.getInstance();
@@ -35,11 +40,6 @@ public class PetrifyDummyContraction extends ConversionTool {
         final TransformationResultHandler monitor = new TransformationResultHandler(we);
         taskManager.queue(task, "Petrify dummy contraction", monitor);
         return we;
-    }
-
-    @Override
-    public ModelEntry run(ModelEntry me) {
-        return null; // !!!
     }
 
 }

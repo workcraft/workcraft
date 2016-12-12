@@ -1,6 +1,7 @@
 package org.workcraft.plugins.stg.tools;
 
 import java.awt.geom.Point2D;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 
@@ -18,7 +19,8 @@ import org.workcraft.plugins.stg.VisualDummyTransition;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.util.LogUtils;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 
 public final class DummyInserterTool extends TransformationTool implements NodeTransformer {
 
@@ -33,8 +35,8 @@ public final class DummyInserterTool extends TransformationTool implements NodeT
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return we.getModelEntry().getMathModel() instanceof Stg;
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, Stg.class);
     }
 
     @Override
@@ -45,7 +47,7 @@ public final class DummyInserterTool extends TransformationTool implements NodeT
     }
 
     @Override
-    public boolean isEnabled(WorkspaceEntry we, Node node) {
+    public boolean isEnabled(ModelEntry me, Node node) {
         return true;
     }
 
@@ -60,19 +62,16 @@ public final class DummyInserterTool extends TransformationTool implements NodeT
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
-        final VisualStg model = (VisualStg) we.getModelEntry().getVisualModel();
-        HashSet<VisualConnection> connections = new HashSet<>();
-        connections.addAll(model.getVisualImplicitPlaceArcs());
-        connections.addAll(PetriNetUtils.getVisualConsumingArcs(model));
-        connections.addAll(PetriNetUtils.getVisualProducingArcs(model));
-        connections.retainAll(model.getSelection());
-        if (!connections.isEmpty()) {
-            we.saveMemento();
-            for (VisualConnection connection: connections) {
-                transform(model, connection);
-            }
+    public Collection<Node> collect(Model model) {
+        Collection<Node> arcs = new HashSet<>();
+        if (model instanceof VisualStg) {
+            VisualStg stg = (VisualStg) model;
+            arcs.addAll(stg.getVisualImplicitPlaceArcs());
+            arcs.addAll(PetriNetUtils.getVisualConsumingArcs(stg));
+            arcs.addAll(PetriNetUtils.getVisualProducingArcs(stg));
+            arcs.retainAll(stg.getSelection());
         }
+        return arcs;
     }
 
     @Override

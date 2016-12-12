@@ -88,13 +88,13 @@ public class ComponentContractionTool extends TransformationTool implements Node
 
     @Override
     public Collection<Node> collect(Model model) {
-        Collection<Node> result = new HashSet<>();
+        Collection<Node> components = new HashSet<>();
         if (model instanceof VisualModel) {
             VisualModel visualModel = (VisualModel) model;
-            result.addAll(Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualCircuitComponent.class));
-            result.addAll(visualModel.getSelection());
+            components.addAll(Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualCircuitComponent.class));
+            components.retainAll(visualModel.getSelection());
         }
-        return result;
+        return components;
     }
 
     @Override

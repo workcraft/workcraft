@@ -52,6 +52,7 @@ import org.workcraft.plugins.xmas.components.VisualSyncComponent;
 import org.workcraft.plugins.xmas.components.XmasContact;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class SyncTool implements Tool {
@@ -67,8 +68,8 @@ public class SyncTool implements Tool {
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, Xmas.class);
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, Xmas.class);
     }
 
     int cntSyncnodes = 0;
@@ -310,18 +311,15 @@ public class SyncTool implements Tool {
     public List<String> slist1 = new ArrayList<>();
     public List<String> slist2 = new ArrayList<>();
 
-    public void run(WorkspaceEntry we) {
+    @Override
+    public ModelEntry run(ModelEntry me) {
         System.out.println("Running tests");
-        final VisualXmas vnet = (VisualXmas) we.getModelEntry().getVisualModel();
-
+        final VisualXmas vnet = (VisualXmas) me.getVisualModel();
         if (vnet != vnet1) {
             loaded = 0;
         }
         vnet1 = vnet;
-
-        //Circuit cnet = (Circuit) we.getModelEntry().getModel();
-        //VisualCircuit vnet = (VisualCircuit) we.getModelEntry().getMathModel();
-        Xmas cnet = (Xmas) we.getModelEntry().getMathModel();
+        Xmas cnet = (Xmas) me.getMathModel();
 
         cntSyncnodes = 0;
         if (loaded == 0) {
@@ -847,6 +845,13 @@ public class SyncTool implements Tool {
         });
         mainFrame.pack();
         mainFrame.setVisible(true);
+        return me;
+    }
+
+    @Override
+    public WorkspaceEntry run(WorkspaceEntry we) {
+        run(we.getModelEntry());
+        return we;
     }
 
 }

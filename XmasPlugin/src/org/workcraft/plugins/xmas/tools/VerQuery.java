@@ -47,6 +47,7 @@ import org.workcraft.util.FileUtils;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class VerQuery extends AbstractTool implements Tool {
@@ -412,8 +413,9 @@ public class VerQuery extends AbstractTool implements Tool {
         }
     }
 
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, Xmas.class);
+    @Override
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, Xmas.class);
     }
 
     GraphEditorPanel editor1;
@@ -555,12 +557,13 @@ public class VerQuery extends AbstractTool implements Tool {
         jcbn.add(jcb);
     }
 
-    public void run(final WorkspaceEntry we) {
+    @Override
+    public ModelEntry run(ModelEntry me) {
         System.out.println("Query is undergoing implemention");
 
-        final Xmas xnet = (Xmas) we.getModelEntry().getMathModel();
-        final VisualXmas vnet = (VisualXmas) we.getModelEntry().getVisualModel();
-        Xmas cnet = (Xmas) we.getModelEntry().getMathModel();
+        final Xmas xnet = (Xmas) me.getMathModel();
+        final VisualXmas vnet = (VisualXmas) me.getVisualModel();
+        Xmas cnet = (Xmas) me.getMathModel();
 
         int grnum = Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualGroup.class).size();
 
@@ -678,17 +681,22 @@ public class VerQuery extends AbstractTool implements Tool {
                 }
             }
         });
+        return me;
+    }
+
+    @Override
+    public WorkspaceEntry run(WorkspaceEntry we) {
+        run(we.getModelEntry());
+        return we;
     }
 
     @Override
     public String getLabel() {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public Decorator getDecorator(GraphEditor editor) {
-        // TODO Auto-generated method stub
         return null;
     }
 

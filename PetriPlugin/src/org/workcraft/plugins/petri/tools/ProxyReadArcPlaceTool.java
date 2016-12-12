@@ -1,5 +1,6 @@
 package org.workcraft.plugins.petri.tools;
 
+import java.util.Collection;
 import java.util.HashSet;
 
 import org.workcraft.NodeTransformer;
@@ -12,7 +13,7 @@ import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReadArc;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.ModelEntry;
 
 public class ProxyReadArcPlaceTool extends TransformationTool implements NodeTransformer {
 
@@ -27,8 +28,8 @@ public class ProxyReadArcPlaceTool extends TransformationTool implements NodeTra
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return we.getModelEntry().getMathModel() instanceof PetriNetModel;
+    public boolean isApplicableTo(ModelEntry me) {
+        return me.getMathModel() instanceof PetriNetModel;
     }
 
     @Override
@@ -41,7 +42,7 @@ public class ProxyReadArcPlaceTool extends TransformationTool implements NodeTra
     }
 
     @Override
-    public boolean isEnabled(WorkspaceEntry we, Node node) {
+    public boolean isEnabled(ModelEntry me, Node node) {
         return true;
     }
 
@@ -51,31 +52,28 @@ public class ProxyReadArcPlaceTool extends TransformationTool implements NodeTra
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
-        final VisualModel model = we.getModelEntry().getVisualModel();
-        HashSet<VisualReadArc> readArcs = PetriNetUtils.getVisualReadArcs(model);
-        if (!model.getSelection().isEmpty()) {
-            readArcs.retainAll(model.getSelection());
-        }
-        HashSet<VisualPlace> places = PetriNetUtils.getVisualPlaces(model);
-        if (!model.getSelection().isEmpty()) {
-            places.retainAll(model.getSelection());
-        }
-        for (VisualPlace place: places) {
-            for (Connection connection: model.getConnections(place)) {
-                if (connection instanceof VisualReadArc) {
-                    readArcs.add((VisualReadArc) connection);
+    public Collection<Node> collect(Model model) {
+        Collection<Node> readArcs = new HashSet<>();
+        if (model instanceof VisualModel) {
+            VisualModel visualModel = (VisualModel) model;
+            readArcs.addAll(PetriNetUtils.getVisualReadArcs(visualModel));
+            Collection<Node> selection = visualModel.getSelection();
+            if (!selection.isEmpty()) {
+                readArcs.retainAll(selection);
+            }
+            HashSet<VisualPlace> places = PetriNetUtils.getVisualPlaces(visualModel);
+            if (!selection.isEmpty()) {
+                places.retainAll(selection);
+            }
+            for (VisualPlace place: places) {
+                for (Connection connection: model.getConnections(place)) {
+                    if (connection instanceof VisualReadArc) {
+                        readArcs.add(connection);
+                    }
                 }
             }
         }
-
-        if (!readArcs.isEmpty()) {
-            we.saveMemento();
-            for (VisualReadArc readArc: readArcs) {
-                transform(model, readArc);
-            }
-            model.selectNone();
-        }
+        return readArcs;
     }
 
     @Override

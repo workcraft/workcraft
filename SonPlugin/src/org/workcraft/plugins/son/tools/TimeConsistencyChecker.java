@@ -11,13 +11,14 @@ import org.workcraft.plugins.son.gui.TimeConsistencyDialog;
 import org.workcraft.plugins.son.tasks.TimeConsistencyTask;
 import org.workcraft.util.GUI;
 import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class TimeConsistencyChecker implements Tool {
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, SON.class);
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, SON.class);
     }
 
     @Override
@@ -31,7 +32,12 @@ public class TimeConsistencyChecker implements Tool {
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public ModelEntry run(ModelEntry me) {
+        return null; // !!!
+    }
+
+    @Override
+    public WorkspaceEntry run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
         VisualSON visualNet = (VisualSON) we.getModelEntry().getVisualModel();
@@ -54,6 +60,7 @@ public class TimeConsistencyChecker implements Tool {
         }
 
         BlockConnector.blockInternalConnector(visualNet);
+        return we;
     }
 
 }

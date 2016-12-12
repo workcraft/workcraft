@@ -5,25 +5,33 @@ import org.workcraft.SynthesisTool;
 import org.workcraft.plugins.petrify.tasks.SynthesisResultHandler;
 import org.workcraft.plugins.petrify.tasks.SynthesisTask;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public abstract class PetrifySynthesis extends SynthesisTool {
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, StgModel.class);
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, StgModel.class);
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
-        SynthesisTask task = new SynthesisTask(we, getSynthesisParameter());
-        final Framework framework = Framework.getInstance();
+    public ModelEntry run(ModelEntry me) {
+        return null; // !!!
+    }
 
-        SynthesisResultHandler monitor = new SynthesisResultHandler(we,
+    @Override
+    public WorkspaceEntry run(WorkspaceEntry we) {
+        final Framework framework = Framework.getInstance();
+        final TaskManager taskManager = framework.getTaskManager();
+        final SynthesisTask task = new SynthesisTask(we, getSynthesisParameter());
+        final SynthesisResultHandler monitor = new SynthesisResultHandler(we,
                 boxSequentialComponents(), boxCombinationalComponents(), sequentialAssign());
 
-        framework.getTaskManager().queue(task, "Petrify logic synthesis", monitor);
+        taskManager.queue(task, "Petrify logic synthesis", monitor);
+        return we;
     }
 
     public boolean boxSequentialComponents() {

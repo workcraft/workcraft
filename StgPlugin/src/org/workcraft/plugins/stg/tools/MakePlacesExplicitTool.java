@@ -1,5 +1,6 @@
 package org.workcraft.plugins.stg.tools;
 
+import java.util.Collection;
 import java.util.HashSet;
 
 import org.workcraft.NodeTransformer;
@@ -9,7 +10,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualStg;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.ModelEntry;
 
 public class MakePlacesExplicitTool extends TransformationTool implements NodeTransformer {
 
@@ -24,8 +25,8 @@ public class MakePlacesExplicitTool extends TransformationTool implements NodeTr
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return we.getModelEntry().getMathModel() instanceof Stg;
+    public boolean isApplicableTo(ModelEntry me) {
+        return me.getMathModel() instanceof Stg;
     }
 
     @Override
@@ -34,7 +35,7 @@ public class MakePlacesExplicitTool extends TransformationTool implements NodeTr
     }
 
     @Override
-    public boolean isEnabled(WorkspaceEntry we, Node node) {
+    public boolean isEnabled(ModelEntry me, Node node) {
         return true;
     }
 
@@ -44,25 +45,25 @@ public class MakePlacesExplicitTool extends TransformationTool implements NodeTr
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
-        final VisualStg model = (VisualStg) we.getModelEntry().getVisualModel();
-        HashSet<VisualImplicitPlaceArc> connections = new HashSet<>(model.getVisualImplicitPlaceArcs());
-        if (!model.getSelection().isEmpty()) {
-            connections.retainAll(model.getSelection());
-        }
-        if (!connections.isEmpty()) {
-            we.saveMemento();
-            for (VisualImplicitPlaceArc connection: connections) {
-                transform(model, connection);
+    public Collection<Node> collect(Model model) {
+        Collection<Node> connections = new HashSet<>();
+        if (model instanceof VisualStg) {
+            VisualStg stg = (VisualStg) model;
+            connections.addAll(stg.getVisualImplicitPlaceArcs());
+            Collection<Node> selection = stg.getSelection();
+            if (!selection.isEmpty()) {
+                connections.retainAll(selection);
             }
         }
+        return connections;
     }
 
     @Override
     public void transform(Model model, Node node) {
         if ((model instanceof VisualStg) && (node instanceof VisualImplicitPlaceArc)) {
+            VisualStg stg = (VisualStg) model;
             VisualImplicitPlaceArc implicitArc = (VisualImplicitPlaceArc) node;
-            ((VisualStg) model).makeExplicit(implicitArc);
+            stg.makeExplicit(implicitArc);
         }
     }
 

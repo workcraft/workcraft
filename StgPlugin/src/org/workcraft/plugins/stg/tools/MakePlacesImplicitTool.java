@@ -14,7 +14,7 @@ import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualStg;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.ModelEntry;
 
 public class MakePlacesImplicitTool extends TransformationTool implements NodeTransformer {
 
@@ -29,8 +29,8 @@ public class MakePlacesImplicitTool extends TransformationTool implements NodeTr
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return we.getModelEntry().getMathModel() instanceof Stg;
+    public boolean isApplicableTo(ModelEntry me) {
+        return me.getMathModel() instanceof Stg;
     }
 
     @Override
@@ -39,9 +39,9 @@ public class MakePlacesImplicitTool extends TransformationTool implements NodeTr
     }
 
     @Override
-    public boolean isEnabled(WorkspaceEntry we, Node node) {
+    public boolean isEnabled(ModelEntry me, Node node) {
         if (node instanceof VisualPlace) {
-            VisualModel model = we.getModelEntry().getVisualModel();
+            VisualModel model = me.getVisualModel();
             VisualPlace place = (VisualPlace) node;
             Collection<Node> preset = model.getPreset(place);
             Collection<Node> postset = model.getPostset(place);
@@ -63,25 +63,25 @@ public class MakePlacesImplicitTool extends TransformationTool implements NodeTr
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
-        final VisualStg model = (VisualStg) we.getModelEntry().getVisualModel();
-        HashSet<VisualPlace> places = new HashSet<>(model.getVisualPlaces());
-        if (!model.getSelection().isEmpty()) {
-            places.retainAll(model.getSelection());
-        }
-        if (!places.isEmpty()) {
-            we.saveMemento();
-            for (VisualPlace place: places) {
-                transform(model, place);
+    public Collection<Node> collect(Model model) {
+        Collection<Node> places = new HashSet<>();
+        if (model instanceof VisualStg) {
+            VisualStg stg = (VisualStg) model;
+            places.addAll(stg.getVisualPlaces());
+            Collection<Node> selection = stg.getSelection();
+            if (!selection.isEmpty()) {
+                places.retainAll(selection);
             }
         }
+        return places;
     }
 
     @Override
     public void transform(Model model, Node node) {
         if ((model instanceof VisualStg) && (node instanceof VisualPlace)) {
+            VisualStg stg = (VisualStg) model;
             VisualPlace place = (VisualPlace) node;
-            ((VisualStg) model).maybeMakeImplicit(place, true);
+            stg.maybeMakeImplicit(place, true);
         }
     }
 

@@ -48,14 +48,14 @@ public class CollapseReplicaTool extends TransformationTool implements NodeTrans
 
     @Override
     public Collection<Node> collect(Model model) {
-        Collection<Node> result = new HashSet<>();
+        Collection<Node> replicas = new HashSet<>();
         if (model instanceof VisualModel) {
             VisualModel visualModel = (VisualModel) model;
             // Collect selected (or all) replicas
-            result.addAll(PetriNetUtils.getVisualReplicaPlaces(visualModel));
+            replicas.addAll(PetriNetUtils.getVisualReplicaPlaces(visualModel));
             Collection<Node> selection = visualModel.getSelection();
             if (!selection.isEmpty()) {
-                result.retainAll(selection);
+                replicas.retainAll(selection);
             }
             // Collect replicas on selected (or all) read-arcs
             HashSet<VisualReadArc> readArcs = PetriNetUtils.getVisualReadArcs(visualModel);
@@ -66,12 +66,12 @@ public class CollapseReplicaTool extends TransformationTool implements NodeTrans
                 for (VisualReadArc readArc: readArcs) {
                     if (readArc.getFirst() instanceof VisualReplicaPlace) {
                         VisualReplicaPlace replica = (VisualReplicaPlace) readArc.getFirst();
-                        result.add(replica);
+                        replicas.add(replica);
                     }
                 }
             }
         }
-        return result;
+        return replicas;
     }
 
     @Override

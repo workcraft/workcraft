@@ -7,10 +7,13 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.workcraft.plugins.stg.VisualStg;
-import org.workcraft.util.FileUtils;
 import org.workcraft.Framework;
 import org.workcraft.Tool;
+import org.workcraft.plugins.stg.Stg;
+import org.workcraft.tasks.TaskManager;
+import org.workcraft.util.FileUtils;
+import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class ConceptsTool implements Tool {
@@ -23,10 +26,8 @@ public class ConceptsTool implements Tool {
         return "Import concepts...";
     }
 
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        if (we.getModelEntry() == null) return false;
-        if (we.getModelEntry().getVisualModel() instanceof VisualStg) return true;
-        return false;
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, Stg.class);
     }
 
     public File getInputFile() {
@@ -39,9 +40,7 @@ public class ConceptsTool implements Tool {
                 if (!f.exists()) {
                     throw new FileNotFoundException();
                 }
-
                 inputFile = f;
-
             } catch (FileNotFoundException e1) {
                 // TODO Auto-generated catch block
                 JOptionPane.showMessageDialog(null, e1.getMessage(),
@@ -53,15 +52,22 @@ public class ConceptsTool implements Tool {
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public ModelEntry run(ModelEntry me) {
+        return null; // !!!
+    }
+
+    @Override
+    public WorkspaceEntry run(WorkspaceEntry we) {
         File inputFile = getInputFile();
-        if (inputFile == null) return;
-
-        ConceptsTask task = new ConceptsTask(inputFile);
-
-        ConceptsResultHandler result = new ConceptsResultHandler(this, FileUtils.getFileNameWithoutExtension(inputFile), we);
-
-        Framework.getInstance().getTaskManager().queue(task, "Translating concepts", result);
+        if (inputFile != null) {
+            final Framework framework = Framework.getInstance();
+            final TaskManager taskManager = framework.getTaskManager();
+            ConceptsTask task = new ConceptsTask(inputFile);
+            String inputName = FileUtils.getFileNameWithoutExtension(inputFile);
+            final ConceptsResultHandler result = new ConceptsResultHandler(this, inputName, we);
+            taskManager.queue(task, "Translating concepts", result);
+        }
+        return we;
     }
 
 }

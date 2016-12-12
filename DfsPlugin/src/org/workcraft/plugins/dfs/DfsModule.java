@@ -17,6 +17,7 @@ import org.workcraft.plugins.dfs.tools.CheckDataflowTool;
 import org.workcraft.plugins.dfs.tools.ComponentMergerTool;
 import org.workcraft.plugins.dfs.tools.StgGeneratorTool;
 import org.workcraft.plugins.dfs.tools.WaggingGeneratorTool;
+import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 
 public class DfsModule implements Module {
@@ -60,7 +61,7 @@ public class DfsModule implements Module {
     private final class DfsContractorTool extends AbstractContractorTool {
         @Override
         public boolean isApplicableTo(ModelEntry me) {
-            return me.getMathModel() instanceof Dfs;
+            return WorkspaceUtils.isApplicable(me, Dfs.class);
         }
     }
 

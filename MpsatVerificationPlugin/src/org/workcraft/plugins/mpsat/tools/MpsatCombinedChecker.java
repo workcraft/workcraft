@@ -8,7 +8,9 @@ import org.workcraft.plugins.mpsat.MpsatCombinedChainResultHandler;
 import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainTask;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatCombinedChecker extends VerificationTool {
@@ -19,8 +21,8 @@ public class MpsatCombinedChecker extends VerificationTool {
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, StgModel.class);
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, StgModel.class);
     }
 
     @Override
@@ -34,7 +36,12 @@ public class MpsatCombinedChecker extends VerificationTool {
     }
 
     @Override
-    public final void run(WorkspaceEntry we) {
+    public ModelEntry run(ModelEntry me) {
+        return null; // !!!
+    }
+
+    @Override
+    public final WorkspaceEntry run(WorkspaceEntry we) {
         final ArrayList<MpsatSettings> settingsList = new ArrayList<>();
         settingsList.add(MpsatSettings.getConsistencySettings());
         settingsList.add(MpsatSettings.getDeadlockSettings());
@@ -48,9 +55,11 @@ public class MpsatCombinedChecker extends VerificationTool {
         if (!title.isEmpty()) {
             description += "(" + title + ")";
         }
-        MpsatCombinedChainResultHandler monitor = new MpsatCombinedChainResultHandler(mpsatTask);
         final Framework framework = Framework.getInstance();
-        framework.getTaskManager().queue(mpsatTask, description, monitor);
+        final TaskManager taskManager = framework.getTaskManager();
+        final MpsatCombinedChainResultHandler monitor = new MpsatCombinedChainResultHandler(mpsatTask);
+        taskManager.queue(mpsatTask, description, monitor);
+        return we;
     }
 
 }

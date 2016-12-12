@@ -17,6 +17,7 @@ import org.workcraft.plugins.cpog.tasks.ScencoResultHandler;
 import org.workcraft.plugins.cpog.tasks.ScencoSolver;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.util.GUI;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class ScencoExhaustiveTool implements Tool {
@@ -26,10 +27,8 @@ public class ScencoExhaustiveTool implements Tool {
     PresetManager<EncoderSettings> pmgr;
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        if (we.getModelEntry() == null) return true;
-        if (we.getModelEntry().getVisualModel() instanceof VisualCpog) return true;
-        return false;
+    public boolean isApplicableTo(ModelEntry me) {
+        return me.getVisualModel() instanceof VisualCpog;
     }
 
     @Override
@@ -43,7 +42,12 @@ public class ScencoExhaustiveTool implements Tool {
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public ModelEntry run(ModelEntry me) {
+        return null; // !!!
+    }
+
+    @Override
+    public WorkspaceEntry run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
         if (!CpogParsingTool.hasEnoughScenarios(we)) {
@@ -71,6 +75,7 @@ public class ScencoExhaustiveTool implements Tool {
                 framework.getTaskManager().queue(scencoTask, "Exhaustive search execution", resultScenco);
             }
         }
+        return we;
     }
 
 }

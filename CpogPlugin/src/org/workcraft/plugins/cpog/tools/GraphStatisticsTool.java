@@ -10,11 +10,11 @@ import org.workcraft.dom.Node;
 import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
 import org.workcraft.formula.utils.FormulaToString;
-import org.workcraft.plugins.cpog.Cpog;
 import org.workcraft.plugins.cpog.VisualArc;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.VisualScenario;
 import org.workcraft.plugins.cpog.VisualVertex;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class GraphStatisticsTool implements Tool {
@@ -30,13 +30,13 @@ public class GraphStatisticsTool implements Tool {
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return we.getModelEntry().getMathModel() instanceof Cpog;
+    public boolean isApplicableTo(ModelEntry me) {
+        return me.getVisualModel() instanceof VisualCpog;
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
-        final VisualCpog cpog = (VisualCpog) we.getModelEntry().getVisualModel();
+    public ModelEntry run(ModelEntry me) {
+        final VisualCpog cpog = (VisualCpog) me.getVisualModel();
 
         ArrayList<Container> scenarios = new ArrayList<>();
         for (Node cur: cpog.getSelection()) {
@@ -51,6 +51,13 @@ public class GraphStatisticsTool implements Tool {
             printHeaderSelected();
         }
         printStatistics(cpog, scenarios);
+        return me;
+    }
+
+    @Override
+    public WorkspaceEntry run(WorkspaceEntry we) {
+        run(we.getModelEntry());
+        return we;
     }
 
     private void printHeaderCurrent() {

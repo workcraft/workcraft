@@ -1,5 +1,6 @@
 package org.workcraft.plugins.petri.tools;
 
+import java.util.Collection;
 import java.util.HashSet;
 
 import org.workcraft.NodeTransformer;
@@ -11,7 +12,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.ModelEntry;
 
 public class ProxyDirectedArcPlaceTool extends TransformationTool implements NodeTransformer {
 
@@ -26,8 +27,8 @@ public class ProxyDirectedArcPlaceTool extends TransformationTool implements Nod
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return we.getModelEntry().getMathModel() instanceof PetriNetModel;
+    public boolean isApplicableTo(ModelEntry me) {
+        return me.getMathModel() instanceof PetriNetModel;
     }
 
     @Override
@@ -47,7 +48,7 @@ public class ProxyDirectedArcPlaceTool extends TransformationTool implements Nod
     }
 
     @Override
-    public boolean isEnabled(WorkspaceEntry we, Node node) {
+    public boolean isEnabled(ModelEntry me, Node node) {
         return true;
     }
 
@@ -57,19 +58,15 @@ public class ProxyDirectedArcPlaceTool extends TransformationTool implements Nod
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
-        final VisualModel model = we.getModelEntry().getVisualModel();
-        HashSet<VisualConnection> connections = new HashSet<>();
-        connections.addAll(PetriNetUtils.getVisualProducingArcs(model));
-        connections.addAll(PetriNetUtils.getVisualConsumingArcs(model));
-        connections.retainAll(model.getSelection());
-        if (!connections.isEmpty()) {
-            we.saveMemento();
-            for (VisualConnection connection: connections) {
-                transform(model, connection);
-            }
-            model.selectNone();
+    public Collection<Node> collect(Model model) {
+        Collection<Node> connections = new HashSet<>();
+        if (model instanceof VisualModel) {
+            VisualModel visualModel = (VisualModel) model;
+            connections.addAll(PetriNetUtils.getVisualProducingArcs(visualModel));
+            connections.addAll(PetriNetUtils.getVisualConsumingArcs(visualModel));
+            connections.retainAll(visualModel.getSelection());
         }
+        return connections;
     }
 
     @Override

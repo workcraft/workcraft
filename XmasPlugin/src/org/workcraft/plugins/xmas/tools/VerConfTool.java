@@ -11,20 +11,21 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
 import org.workcraft.Tool;
 import org.workcraft.plugins.xmas.Xmas;
 import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-
-import javax.swing.Box;
-import javax.swing.JFrame;
-import javax.swing.BoxLayout;
-import javax.swing.JPanel;
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JComboBox;
 
 public class VerConfTool implements Tool {
 
@@ -43,8 +44,9 @@ public class VerConfTool implements Tool {
         return "Verification";
     }
 
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, Xmas.class);
+    @Override
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, Xmas.class);
     }
 
     int cntSyncNodes = 0;
@@ -156,7 +158,8 @@ public class VerConfTool implements Tool {
     public List<String> slist1;
     public List<String> slist2;
 
-    public void run(WorkspaceEntry we) {
+    @Override
+    public ModelEntry run(ModelEntry me) {
         System.out.println("Running tests");
         cntSyncNodes = 0;
 
@@ -235,7 +238,13 @@ public class VerConfTool implements Tool {
 
         mainFrame.pack();
         mainFrame.setVisible(true);
+        return me;
+    }
 
+    @Override
+    public WorkspaceEntry run(WorkspaceEntry we) {
+        run(we.getModelEntry());
+        return we;
     }
 
 }

@@ -36,7 +36,7 @@ public class ReachabilityCheckerTool extends VerificationTool {
     }
 
     @Override
-    public ModelEntry apply(ModelEntry me) {
+    public ModelEntry run(ModelEntry me) {
         final Graph graph = (Graph) me.getMathModel();
         HashSet<Vertex> unreachable = checkReachability(graph);
         if (unreachable.isEmpty()) {
@@ -45,11 +45,11 @@ public class ReachabilityCheckerTool extends VerificationTool {
             String refStr = ReferenceHelper.getNodesAsString(graph, (Collection) unreachable);
             LogUtils.logWarningLine("The graph has unreachable vertices:\n" + refStr);
         }
-        return me;
+        return me; // !!!
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public WorkspaceEntry run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
         final Graph graph = (Graph) we.getModelEntry().getMathModel();
@@ -68,6 +68,7 @@ public class ReachabilityCheckerTool extends VerificationTool {
                 SelectionHelper.selectByReferencedComponents(visualGraph, (HashSet) unreachable);
             }
         }
+        return we;
     }
 
     private HashSet<Vertex> checkReachability(final Graph graph) {

@@ -40,7 +40,7 @@ import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualJoint;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.WorkspaceUtils;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.ModelEntry;
 
 public class JointDetachTool extends TransformationTool implements NodeTransformer {
 
@@ -55,8 +55,8 @@ public class JointDetachTool extends TransformationTool implements NodeTransform
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, VisualCircuit.class);
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, VisualCircuit.class);
     }
 
     @Override
@@ -69,9 +69,9 @@ public class JointDetachTool extends TransformationTool implements NodeTransform
     }
 
     @Override
-    public boolean isEnabled(WorkspaceEntry we, Node node) {
+    public boolean isEnabled(ModelEntry me, Node node) {
         if (node instanceof VisualContact) {
-            VisualModel visualModel = we.getModelEntry().getVisualModel();
+            VisualModel visualModel = me.getVisualModel();
             return visualModel.getConnections(node).size() > 1;
         }
         return false;
@@ -83,17 +83,16 @@ public class JointDetachTool extends TransformationTool implements NodeTransform
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
-        final VisualModel model = we.getModelEntry().getVisualModel();
+    public Collection<Node> collect(Model model) {
+        Collection<Node> drivers = new HashSet<>();
         if (model instanceof VisualCircuit) {
             VisualCircuit circuit = (VisualCircuit) model;
-            HashSet<VisualContact> drivers = new HashSet<>();
             for (VisualContact driver: circuit.getVisualDrivers()) {
                 if (circuit.getConnections(driver).size() > 1) {
                     drivers.add(driver);
                 }
             }
-            Collection<Node> selection = model.getSelection();
+            Collection<Node> selection = circuit.getSelection();
             if (!selection.isEmpty()) {
                 HashSet<Node> selectedDrivers = new HashSet<>(selection);
                 for (Node node: selection) {
@@ -107,13 +106,8 @@ public class JointDetachTool extends TransformationTool implements NodeTransform
                     drivers.retainAll(selectedDrivers);
                 }
             }
-            if (!drivers.isEmpty()) {
-                we.saveMemento();
-                for (VisualContact driver: drivers) {
-                    transform(model, driver);
-                }
-            }
         }
+        return drivers;
     }
 
     @Override

@@ -82,21 +82,7 @@ public class TransitionContractorTool extends TransformationTool implements Node
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
-        VisualModel visualModel = WorkspaceUtils.getAs(we.getModelEntry(), VisualModel.class);
-        Collection<Node> nodes = collect(visualModel);
-        if (nodes.size() > 1) {
-            JOptionPane.showMessageDialog(null, ERROR_MORE_THAN_ONE_TRANSITION,
-                    MESSAGE_TITLE, JOptionPane.ERROR_MESSAGE);
-        } else if (!nodes.isEmpty()) {
-            we.saveMemento();
-            transform(visualModel, nodes);
-            visualModel.selectNone();
-        }
-    }
-
-    @Override
-    public ModelEntry apply(ModelEntry me) {
+    public ModelEntry run(ModelEntry me) {
         VisualModel visualModel = WorkspaceUtils.getAs(me, VisualModel.class);
         Collection<Node> nodes = collect(visualModel);
         if (nodes.size() > 1) {
@@ -108,14 +94,29 @@ public class TransitionContractorTool extends TransformationTool implements Node
     }
 
     @Override
+    public WorkspaceEntry run(WorkspaceEntry we) {
+        VisualModel visualModel = WorkspaceUtils.getAs(we.getModelEntry(), VisualModel.class);
+        Collection<Node> nodes = collect(visualModel);
+        if (nodes.size() > 1) {
+            JOptionPane.showMessageDialog(null, ERROR_MORE_THAN_ONE_TRANSITION,
+                    MESSAGE_TITLE, JOptionPane.ERROR_MESSAGE);
+        } else if (!nodes.isEmpty()) {
+            we.saveMemento();
+            transform(visualModel, nodes);
+            visualModel.selectNone();
+        }
+        return we;
+    }
+
+    @Override
     public Collection<Node> collect(Model model) {
-        Collection<Node> result = new HashSet<>();
+        Collection<Node> transitions = new HashSet<>();
         if (model instanceof VisualModel) {
             VisualModel visualModel = (VisualModel) model;
-            result.addAll(PetriNetUtils.getVisualTransitions(visualModel));
-            result.retainAll(visualModel.getSelection());
+            transitions.addAll(PetriNetUtils.getVisualTransitions(visualModel));
+            transitions.retainAll(visualModel.getSelection());
         }
-        return result;
+        return transitions;
     }
 
     @Override

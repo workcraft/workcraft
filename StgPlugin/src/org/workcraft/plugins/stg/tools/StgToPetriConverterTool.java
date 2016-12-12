@@ -6,6 +6,7 @@ import org.workcraft.plugins.petri.PetriNetDescriptor;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 
 public class StgToPetriConverterTool extends ConversionTool {
@@ -22,11 +23,11 @@ public class StgToPetriConverterTool extends ConversionTool {
 
     @Override
     public boolean isApplicableTo(ModelEntry me) {
-        return me.getMathModel() instanceof Stg;
+        return WorkspaceUtils.isApplicable(me, Stg.class);
     }
 
     @Override
-    public ModelEntry apply(ModelEntry me) {
+    public ModelEntry run(ModelEntry me) {
         final VisualStg stg = (VisualStg) me.getVisualModel();
         final VisualPetriNet petri = new VisualPetriNet(new PetriNet());
         final StgToPetriConverter converter = new StgToPetriConverter(stg, petri);

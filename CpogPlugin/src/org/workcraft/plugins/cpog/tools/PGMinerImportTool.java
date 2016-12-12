@@ -11,6 +11,7 @@ import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.gui.PGMinerImportDialog;
 import org.workcraft.plugins.cpog.tasks.PGMinerResultHandler;
 import org.workcraft.plugins.cpog.tasks.PGMinerTask;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class PGMinerImportTool implements Tool {
@@ -29,10 +30,8 @@ public class PGMinerImportTool implements Tool {
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        if (we.getModelEntry() == null) return false;
-        if (we.getModelEntry().getVisualModel() instanceof VisualCpog) return true;
-        return false;
+    public boolean isApplicableTo(ModelEntry me) {
+        return me.getVisualModel() instanceof VisualCpog;
     }
 
     public File getInputFile(WorkspaceEntry we) {
@@ -48,7 +47,12 @@ public class PGMinerImportTool implements Tool {
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public ModelEntry run(ModelEntry me) {
+        return null; // !!!
+    }
+
+    @Override
+    public WorkspaceEntry run(WorkspaceEntry we) {
         File inputFile = getInputFile(we);
         final Framework framework = Framework.getInstance();
         final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
@@ -81,6 +85,7 @@ public class PGMinerImportTool implements Tool {
             e.printStackTrace();
             editor.getWorkspaceEntry().cancelMemento();
         }
+        return we;
     }
 
 }

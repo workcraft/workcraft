@@ -42,7 +42,7 @@ import org.workcraft.plugins.circuit.VisualJoint;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.WorkspaceUtils;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.ModelEntry;
 
 public class JointContractionTool extends TransformationTool implements NodeTransformer {
 
@@ -57,8 +57,8 @@ public class JointContractionTool extends TransformationTool implements NodeTran
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, VisualCircuit.class);
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, VisualCircuit.class);
     }
 
     @Override
@@ -67,10 +67,10 @@ public class JointContractionTool extends TransformationTool implements NodeTran
     }
 
     @Override
-    public boolean isEnabled(WorkspaceEntry we, Node node) {
+    public boolean isEnabled(ModelEntry me, Node node) {
         boolean result = false;
         if (node instanceof VisualJoint) {
-            VisualModel visualModel = we.getModelEntry().getVisualModel();
+            VisualModel visualModel = me.getVisualModel();
             if (visualModel != null) {
                 result = (visualModel.getPreset(node).size() < 2) && (visualModel.getPostset(node).size() < 2);
             }
@@ -84,10 +84,11 @@ public class JointContractionTool extends TransformationTool implements NodeTran
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
-        final VisualModel visualModel = we.getModelEntry().getVisualModel();
-        if (visualModel != null) {
-            Collection<VisualJoint> joints = Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualJoint.class);
+    public Collection<Node> collect(Model model) {
+        Collection<Node> joints = new HashSet<>();
+        if (model instanceof VisualModel) {
+            VisualModel visualModel = (VisualModel) model;
+            joints.addAll(Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualJoint.class));
             Collection<Node> selection = visualModel.getSelection();
             if (!selection.isEmpty()) {
                 HashSet<Node> selectedConnections = new HashSet<>(selection);
@@ -96,13 +97,8 @@ public class JointContractionTool extends TransformationTool implements NodeTran
                     joints.retainAll(selection);
                 }
             }
-            if (!joints.isEmpty()) {
-                we.saveMemento();
-                for (VisualJoint joint: joints) {
-                    transform(visualModel, joint);
-                }
-            }
         }
+        return joints;
     }
 
     @Override

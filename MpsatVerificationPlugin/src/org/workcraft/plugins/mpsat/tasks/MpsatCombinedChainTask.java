@@ -38,7 +38,7 @@ public class MpsatCombinedChainTask implements Task<MpsatCombinedChainResult> {
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         try {
-            PetriNetModel model = WorkspaceUtils.getAs(we, PetriNetModel.class);
+            PetriNetModel model = WorkspaceUtils.getAs(we.getModelEntry(), PetriNetModel.class);
             Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
             if (exporter == null) {
                 throw new RuntimeException("Exporter not available: model class " + model.getClass().getName() + " to format STG.");

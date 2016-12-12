@@ -1,5 +1,6 @@
 package org.workcraft.plugins.petri.tools;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 
@@ -13,7 +14,7 @@ import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.util.Pair;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.ModelEntry;
 
 public class ReadArcToDualArcConverterTool extends TransformationTool implements NodeTransformer {
     private HashSet<VisualConnection> connections = null;
@@ -29,8 +30,8 @@ public class ReadArcToDualArcConverterTool extends TransformationTool implements
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return we.getModelEntry().getMathModel() instanceof PetriNetModel;
+    public boolean isApplicableTo(ModelEntry me) {
+        return me.getMathModel() instanceof PetriNetModel;
     }
 
     @Override
@@ -39,7 +40,7 @@ public class ReadArcToDualArcConverterTool extends TransformationTool implements
     }
 
     @Override
-    public boolean isEnabled(WorkspaceEntry we, Node node) {
+    public boolean isEnabled(ModelEntry me, Node node) {
         return true;
     }
 
@@ -49,17 +50,26 @@ public class ReadArcToDualArcConverterTool extends TransformationTool implements
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
-        final VisualModel visualModel = we.getModelEntry().getVisualModel();
-        HashSet<VisualReadArc> readArcs = PetriNetUtils.getVisualReadArcs(visualModel);
-        if (!visualModel.getSelection().isEmpty()) {
-            readArcs.retainAll(visualModel.getSelection());
+    public Collection<Node> collect(Model model) {
+        Collection<Node> readArcs = new HashSet<>();
+        if (model instanceof VisualModel) {
+            VisualModel visualModel = (VisualModel) model;
+            readArcs.addAll(PetriNetUtils.getVisualReadArcs(visualModel));
+            Collection<Node> selection = visualModel.getSelection();
+            if (!selection.isEmpty()) {
+                readArcs.retainAll(selection);
+            }
         }
-        if (!readArcs.isEmpty()) {
-            we.saveMemento();
-            connections = new HashSet<>(2 * readArcs.size());
-            for (VisualReadArc readArc: readArcs) {
-                transform(visualModel, readArc);
+        return readArcs;
+    }
+
+    @Override
+    public void transform(Model model, Collection<Node> nodes) {
+        if (model instanceof VisualModel) {
+            VisualModel visualModel = (VisualModel) model;
+            connections = new HashSet<>(2 * nodes.size());
+            for (Node node: nodes) {
+                transform(model, node);
             }
             visualModel.select(new LinkedList<Node>(connections));
             connections.clear();

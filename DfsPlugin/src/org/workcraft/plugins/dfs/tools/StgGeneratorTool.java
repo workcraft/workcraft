@@ -5,6 +5,7 @@ import org.workcraft.plugins.dfs.Dfs;
 import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.plugins.dfs.stg.StgGenerator;
 import org.workcraft.plugins.stg.StgDescriptor;
+import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 
 public class StgGeneratorTool extends ConversionTool {
@@ -16,11 +17,11 @@ public class StgGeneratorTool extends ConversionTool {
 
     @Override
     public boolean isApplicableTo(ModelEntry me) {
-        return me.getMathModel() instanceof Dfs;
+        return WorkspaceUtils.isApplicableExact(me, Dfs.class);
     }
 
     @Override
-    public ModelEntry apply(ModelEntry me) {
+    public ModelEntry run(ModelEntry me) {
         final VisualDfs dfs = (VisualDfs) me.getVisualModel();
         final StgGenerator generator = new StgGenerator(dfs);
         return new ModelEntry(new StgDescriptor(), generator.getStgModel());

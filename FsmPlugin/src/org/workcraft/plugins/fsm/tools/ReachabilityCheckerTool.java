@@ -18,6 +18,8 @@ import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.VisualFsm;
+import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class ReachabilityCheckerTool extends VerificationTool {
@@ -30,12 +32,17 @@ public class ReachabilityCheckerTool extends VerificationTool {
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return we.getModelEntry().getMathModel() instanceof Fsm;
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, Fsm.class);
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public ModelEntry run(ModelEntry me) {
+        return null; // !!!
+    }
+
+    @Override
+    public final WorkspaceEntry run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
         final Fsm fsm = (Fsm) we.getModelEntry().getMathModel();
@@ -54,6 +61,7 @@ public class ReachabilityCheckerTool extends VerificationTool {
                 SelectionHelper.selectByReferencedComponents(visualFsm, (HashSet) unreachableState);
             }
         }
+        return we;
     }
 
     private HashSet<State> checkReachability(final Fsm fsm) {

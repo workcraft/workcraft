@@ -12,6 +12,7 @@ import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.generator.SignalStg;
+import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 
 public class StgGeneratorTool extends ConversionTool {
@@ -23,11 +24,11 @@ public class StgGeneratorTool extends ConversionTool {
 
     @Override
     public boolean isApplicableTo(ModelEntry me) {
-        return me.getMathModel() instanceof Circuit;
+        return WorkspaceUtils.isApplicableExact(me, Circuit.class);
     }
 
     @Override
-    public ModelEntry apply(ModelEntry me) {
+    public ModelEntry run(ModelEntry me) {
         final VisualCircuit circuit = (VisualCircuit) me.getVisualModel();
         HashSet<String> interfaceSignalNames = new HashSet<>();
         for (VisualFunctionContact contact: circuit.getVisualFunctionContacts()) {

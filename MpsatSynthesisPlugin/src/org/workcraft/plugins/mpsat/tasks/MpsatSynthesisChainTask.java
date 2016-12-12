@@ -36,7 +36,7 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> 
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         try {
-            Stg model = WorkspaceUtils.getAs(we, Stg.class);
+            Stg model = WorkspaceUtils.getAs(we.getModelEntry(), Stg.class);
             Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
             if (exporter == null) {
                 throw new RuntimeException("Exporter not available: model class " + model.getClass().getName() + " to format STG.");

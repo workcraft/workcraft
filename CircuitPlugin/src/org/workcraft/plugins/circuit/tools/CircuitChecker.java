@@ -13,6 +13,9 @@ import org.workcraft.plugins.circuit.tasks.CheckCircuitTask;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
+import org.workcraft.tasks.TaskManager;
+import org.workcraft.util.WorkspaceUtils;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class CircuitChecker extends VerificationTool {
@@ -24,8 +27,8 @@ public class CircuitChecker extends VerificationTool {
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return we.getModelEntry().getMathModel() instanceof Circuit;
+    public boolean isApplicableTo(ModelEntry me) {
+        return WorkspaceUtils.isApplicable(me, Circuit.class);
     }
 
     @Override
@@ -34,15 +37,20 @@ public class CircuitChecker extends VerificationTool {
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public ModelEntry run(ModelEntry me) {
+        return null; // !!!
+    }
+
+    @Override
+    public WorkspaceEntry run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
-        MainWindow mainWindow = framework.getMainWindow();
+        final MainWindow mainWindow = framework.getMainWindow();
 
         Circuit circuit = (Circuit) we.getModelEntry().getMathModel();
         if (circuit.getFunctionComponents().isEmpty()) {
             JOptionPane.showMessageDialog(mainWindow, "The circuit must have components.",
                     "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+            return we;
         }
 
         boolean checkConformation = checkConformation();
@@ -87,8 +95,11 @@ public class CircuitChecker extends VerificationTool {
             if (!title.isEmpty()) {
                 description += "(" + title + ")";
             }
-            framework.getTaskManager().queue(task, description, new MpsatChainResultHandler(task));
+            final TaskManager taskManager = framework.getTaskManager();
+            final MpsatChainResultHandler monitor = new MpsatChainResultHandler(task);
+            taskManager.queue(task, description, monitor);
         }
+        return we;
     }
 
     public boolean checkConformation() {

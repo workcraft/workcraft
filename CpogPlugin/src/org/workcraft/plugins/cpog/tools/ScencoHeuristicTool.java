@@ -17,6 +17,7 @@ import org.workcraft.plugins.cpog.tasks.ScencoResultHandler;
 import org.workcraft.plugins.cpog.tasks.ScencoSolver;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.util.GUI;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class ScencoHeuristicTool implements Tool {
@@ -24,11 +25,10 @@ public class ScencoHeuristicTool implements Tool {
     private EncoderSettings settings;
     private ScencoConstrainedSearchDialog dialog;
     PresetManager<EncoderSettings> pmgr;
+
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        if (we.getModelEntry() == null) return false;
-        if (we.getModelEntry().getVisualModel() instanceof VisualCpog) return true;
-        return false;
+    public boolean isApplicableTo(ModelEntry me) {
+        return me.getVisualModel() instanceof VisualCpog;
     }
 
     @Override
@@ -42,7 +42,12 @@ public class ScencoHeuristicTool implements Tool {
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public ModelEntry run(ModelEntry me) {
+        return null; // !!!
+    }
+
+    @Override
+    public WorkspaceEntry run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
         if (!CpogParsingTool.hasEnoughScenarios(we)) {
@@ -72,6 +77,7 @@ public class ScencoHeuristicTool implements Tool {
                 framework.getTaskManager().queue(scencoTask, "Heuristic encoding execution", resultScenco);
             }
         }
+        return we;
     }
 
 }

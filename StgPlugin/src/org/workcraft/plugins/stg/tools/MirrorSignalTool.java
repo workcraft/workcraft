@@ -1,5 +1,6 @@
 package org.workcraft.plugins.stg.tools;
 
+import java.util.Collection;
 import java.util.HashSet;
 
 import org.workcraft.NodeTransformer;
@@ -11,7 +12,7 @@ import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
-import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.ModelEntry;
 
 public class MirrorSignalTool extends TransformationTool implements NodeTransformer {
 
@@ -26,8 +27,8 @@ public class MirrorSignalTool extends TransformationTool implements NodeTransfor
     }
 
     @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return we.getModelEntry().getMathModel() instanceof Stg;
+    public boolean isApplicableTo(ModelEntry me) {
+        return me.getMathModel() instanceof Stg;
     }
 
     @Override
@@ -41,7 +42,7 @@ public class MirrorSignalTool extends TransformationTool implements NodeTransfor
     }
 
     @Override
-    public boolean isEnabled(WorkspaceEntry we, Node node) {
+    public boolean isEnabled(ModelEntry me, Node node) {
         return true;
     }
 
@@ -51,22 +52,34 @@ public class MirrorSignalTool extends TransformationTool implements NodeTransfor
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
-        final VisualStg visualStg = (VisualStg) we.getModelEntry().getVisualModel();
-        HashSet<VisualSignalTransition> signalTransitions = new HashSet<>(visualStg.getVisualSignalTransitions());
-        if (!visualStg.getSelection().isEmpty()) {
-            signalTransitions.retainAll(visualStg.getSelection());
+    public Collection<Node> collect(Model model) {
+        Collection<Node> signalTransitions = new HashSet<>();
+        if (model instanceof VisualStg) {
+            VisualStg stg = (VisualStg) model;
+            signalTransitions.addAll(stg.getVisualSignalTransitions());
+            Collection<Node> selection = stg.getSelection();
+            if (!selection.isEmpty()) {
+                signalTransitions.retainAll(selection);
+            }
         }
-        if (!signalTransitions.isEmpty()) {
-            we.saveMemento();
+        return signalTransitions;
+    }
+
+    @Override
+    public void transform(Model model, Collection<Node> nodes) {
+        if (model instanceof VisualStg) {
+            VisualStg visualStg = (VisualStg) model;
             HashSet<String> processedSignals = new HashSet<>();
             Stg stg = (Stg) visualStg.getMathModel();
-            for (VisualSignalTransition visualTransition: signalTransitions) {
-                SignalTransition transition = visualTransition.getReferencedTransition();
-                String signalRef = stg.getSignalReference(transition);
-                if (!processedSignals.contains(signalRef)) {
-                    transform(visualStg, visualTransition);
-                    processedSignals.add(signalRef);
+            for (Node node: nodes) {
+                if (node instanceof VisualSignalTransition) {
+                    VisualSignalTransition visualTransition = (VisualSignalTransition) node;
+                    SignalTransition transition = visualTransition.getReferencedTransition();
+                    String signalRef = stg.getSignalReference(transition);
+                    if (!processedSignals.contains(signalRef)) {
+                        transform(visualStg, visualTransition);
+                        processedSignals.add(signalRef);
+                    }
                 }
             }
         }
