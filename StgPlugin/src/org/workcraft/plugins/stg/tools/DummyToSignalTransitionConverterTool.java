@@ -57,6 +57,17 @@ public class DummyToSignalTransitionConverterTool extends TransformationTool imp
     }
 
     @Override
+    public Collection<Node> collect(Model model) {
+        Collection<Node> dummyTransitions = new HashSet<>();
+        if (model instanceof VisualStg) {
+            VisualStg stg = (VisualStg) model;
+            dummyTransitions.addAll(stg.getVisualDummyTransitions());
+            dummyTransitions.retainAll(stg.getSelection());
+        }
+        return dummyTransitions;
+    }
+
+    @Override
     public void transform(Model model, Collection<Node> nodes) {
         if (model instanceof VisualModel) {
             VisualModel visualModel = (VisualModel) model;
@@ -67,16 +78,6 @@ public class DummyToSignalTransitionConverterTool extends TransformationTool imp
             visualModel.select(new LinkedList<Node>(signalTransitions));
             signalTransitions = null;
         }
-    }
-
-    @Override
-    public Collection<Node> collect(Model model) {
-        Collection<Node> dummyTransitions = new HashSet<>();
-        if (model instanceof VisualStg) {
-            VisualStg visualModel = (VisualStg) model;
-            dummyTransitions.addAll(visualModel.getVisualDummyTransitions());
-        }
-        return dummyTransitions;
     }
 
     @Override

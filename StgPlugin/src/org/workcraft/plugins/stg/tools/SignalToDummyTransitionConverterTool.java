@@ -59,10 +59,7 @@ public class SignalToDummyTransitionConverterTool extends TransformationTool imp
         if (model instanceof VisualStg) {
             VisualStg stg = (VisualStg) model;
             signalTransitions.addAll(stg.getVisualSignalTransitions());
-            Collection<Node> selection = stg.getSelection();
-            if (!selection.isEmpty()) {
-                signalTransitions.retainAll(selection);
-            }
+            signalTransitions.retainAll(stg.getSelection());
         }
         return signalTransitions;
     }
