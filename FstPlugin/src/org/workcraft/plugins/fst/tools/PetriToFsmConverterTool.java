@@ -37,4 +37,9 @@ public class PetriToFsmConverterTool extends ConversionTool {
         return we;
     }
 
+    @Override
+    public ModelEntry convert(ModelEntry me) {
+        return null; // !!!
+    }
+
 }

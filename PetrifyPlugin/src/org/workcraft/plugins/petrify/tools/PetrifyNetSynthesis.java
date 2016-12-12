@@ -33,6 +33,11 @@ public class PetrifyNetSynthesis extends ConversionTool {
     }
 
     @Override
+    public ModelEntry run(ModelEntry me) {
+        return null; // !!!
+    }
+
+    @Override
     public WorkspaceEntry run(WorkspaceEntry we) {
         ArrayList<String> args = getArgs();
         final TransformationTask task = new TransformationTask(we, "Net synthesis", args.toArray(new String[args.size()]));
@@ -49,7 +54,7 @@ public class PetrifyNetSynthesis extends ConversionTool {
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
+    public ModelEntry convert(ModelEntry me) {
         return null; // !!!
     }
 

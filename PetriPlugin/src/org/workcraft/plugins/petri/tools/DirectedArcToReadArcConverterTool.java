@@ -57,6 +57,8 @@ public class DirectedArcToReadArcConverterTool extends TransformationTool implem
             VisualModel visualModel = (VisualModel) model;
             arcs.addAll(PetriNetUtils.getVisualConsumingArcs(visualModel));
             arcs.addAll(PetriNetUtils.getVisualProducingArcs(visualModel));
+            Collection<Node> selection = visualModel.getSelection();
+            arcs.retainAll(selection);
         }
         return arcs;
     }

@@ -22,7 +22,7 @@ public class GraphToPetriConverterTool extends ConversionTool {
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
+    public ModelEntry convert(ModelEntry me) {
         final VisualGraph graph = (VisualGraph) me.getVisualModel();
         final VisualPetriNet petri = new VisualPetriNet(new PetriNet());
         final GraphToPetriConverter converter = new GraphToPetriConverter(graph, petri);

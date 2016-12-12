@@ -22,7 +22,7 @@ public class PetriToStgConverterTool extends ConversionTool {
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
+    public ModelEntry convert(ModelEntry me) {
         final VisualPetriNet petri = (VisualPetriNet) me.getVisualModel();
         final VisualStg stg = new VisualStg(new Stg());
         final PetriToStgConverter converter = new PetriToStgConverter(petri, stg);

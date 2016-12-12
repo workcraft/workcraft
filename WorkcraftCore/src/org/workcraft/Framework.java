@@ -70,6 +70,7 @@ import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
@@ -481,7 +482,7 @@ public final class Framework {
     }
 
     public void shutdownGUI() throws OperationCancelledException {
-        if (inGUIMode) {
+        if (isInGuiMode()) {
             mainWindow.shutdown();
             mainWindow.dispose();
             mainWindow = null;
@@ -913,6 +914,20 @@ public final class Framework {
 
     public File getWorkingDirectory() {
         return workingDirectory;
+    }
+
+    public void saveMementoInCurrentWorkspaceEntry() {
+        if (isInGuiMode()) {
+            final WorkspaceEntry we = mainWindow.getCurrentWorkspaceEntry();
+            we.saveMemento();
+        }
+    }
+
+    public void repaintCurrentEditor() {
+        if (isInGuiMode()) {
+            final GraphEditorPanel editor = mainWindow.getCurrentEditor();
+            editor.repaint();
+        }
     }
 
 }

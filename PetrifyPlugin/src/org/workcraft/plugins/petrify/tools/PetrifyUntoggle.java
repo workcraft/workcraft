@@ -27,6 +27,11 @@ public class PetrifyUntoggle extends ConversionTool {
     }
 
     @Override
+    public ModelEntry run(ModelEntry me) {
+        return null; // !!!
+    }
+
+    @Override
     public WorkspaceEntry run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
@@ -37,7 +42,7 @@ public class PetrifyUntoggle extends ConversionTool {
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
+    public ModelEntry convert(ModelEntry me) {
         return null; // !!!
     }
 

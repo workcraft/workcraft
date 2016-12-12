@@ -42,4 +42,9 @@ public class PetrifyDummyContraction extends ConversionTool {
         return we;
     }
 
+    @Override
+    public ModelEntry convert(ModelEntry me) {
+        return null; // !!!
+    }
+
 }

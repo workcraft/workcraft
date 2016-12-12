@@ -30,6 +30,11 @@ public class ConceptsWritingTool extends ConversionTool {
     }
 
     @Override
+    public ModelEntry run(ModelEntry me) {
+        return null; // !!!
+    }
+
+    @Override
     public WorkspaceEntry run(WorkspaceEntry we) {
         ConceptsWriterDialog dialog = new ConceptsWriterDialog();
         dialog.setVisible(true);
@@ -49,7 +54,7 @@ public class ConceptsWritingTool extends ConversionTool {
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
+    public ModelEntry convert(ModelEntry me) {
         return null; // !!!
     }
 

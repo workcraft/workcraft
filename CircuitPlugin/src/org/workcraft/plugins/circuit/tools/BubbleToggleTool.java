@@ -25,16 +25,13 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-import org.workcraft.Framework;
 import org.workcraft.NodeTransformer;
 import org.workcraft.TransformationTool;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanOperations;
 import org.workcraft.formula.utils.BooleanUtils;
-import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
@@ -46,7 +43,6 @@ import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
-import org.workcraft.workspace.WorkspaceEntry;
 
 public class BubbleToggleTool extends TransformationTool implements NodeTransformer {
 
@@ -116,11 +112,12 @@ public class BubbleToggleTool extends TransformationTool implements NodeTransfor
     }
 
     @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
-        final VisualModel visualModel = we.getModelEntry().getVisualModel();
-        if (visualModel != null) {
-            Collection<VisualFunctionContact> contacts = Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualFunctionContact.class);
-            Collection<Node> selection = new LinkedList<>(visualModel.getSelection());
+    public Collection<Node> collect(Model model) {
+        Collection<Node> contacts = new HashSet<>();
+        if (model instanceof VisualCircuit) {
+            VisualCircuit circuit = (VisualCircuit) model;
+            contacts.addAll(Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualFunctionContact.class));
+            Collection<Node> selection = new LinkedList<>(circuit.getSelection());
             for (Node node: new LinkedList<>(selection)) {
                 if (node instanceof VisualFunctionComponent) {
                     VisualFunctionComponent component = (VisualFunctionComponent) node;
@@ -128,17 +125,8 @@ public class BubbleToggleTool extends TransformationTool implements NodeTransfor
                 }
             }
             contacts.retainAll(selection);
-            if (!contacts.isEmpty()) {
-                we.saveMemento();
-                for (VisualFunctionContact contact: contacts) {
-                    transform(visualModel, contact);
-                }
-                Framework framework = Framework.getInstance();
-                GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
-                editor.repaint();
-            }
         }
-        return we;
+        return contacts;
     }
 
     @Override

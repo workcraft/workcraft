@@ -31,18 +31,18 @@ public abstract class TransformationTool extends PromotedTool implements MenuOrd
     public ModelEntry run(ModelEntry me) {
         VisualModel visualModel = WorkspaceUtils.getAs(me, VisualModel.class);
         Collection<Node> nodes = collect(visualModel);
-        transform(visualModel, nodes);
+        if (!nodes.isEmpty()) {
+            final Framework framework = Framework.getInstance();
+            framework.saveMementoInCurrentWorkspaceEntry();
+            transform(visualModel, nodes);
+            framework.repaintCurrentEditor();
+        }
         return me;
     }
 
     @Override
     public WorkspaceEntry run(WorkspaceEntry we) {
-        VisualModel visualModel = WorkspaceUtils.getAs(we.getModelEntry(), VisualModel.class);
-        Collection<Node> nodes = collect(visualModel);
-        if (!nodes.isEmpty()) {
-            we.saveMemento();
-            transform(visualModel, nodes);
-        }
+        run(we.getModelEntry());
         return we;
     }
 

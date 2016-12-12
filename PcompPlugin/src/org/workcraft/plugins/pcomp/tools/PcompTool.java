@@ -46,7 +46,7 @@ public class PcompTool implements Tool {
     public final ModelEntry run(ModelEntry me) {
         final Framework framework = Framework.getInstance();
         if (!framework.isInGuiMode()) {
-            LogUtils.logErrorLine("This tool only works in GUI mode.");
+            LogUtils.logErrorLine("Tool '" + getClass().getSimpleName() + "' only works in GUI mode.");
         } else {
             MainWindow mainWindow = framework.getMainWindow();
             PcompDialog dialog = new PcompDialog(mainWindow);

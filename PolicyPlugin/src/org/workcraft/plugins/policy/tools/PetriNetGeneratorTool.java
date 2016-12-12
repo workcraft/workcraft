@@ -19,7 +19,7 @@ public class PetriNetGeneratorTool extends ConversionTool {
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
+    public ModelEntry convert(ModelEntry me) {
         final VisualPolicyNet visualModel = (VisualPolicyNet) me.getVisualModel();
         final PetriNetGenerator generator = new PetriNetGenerator(visualModel);
         return new ModelEntry(new PetriNetDescriptor(), generator.getPetriNet());

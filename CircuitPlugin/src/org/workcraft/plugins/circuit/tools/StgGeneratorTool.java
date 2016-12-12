@@ -5,7 +5,6 @@ import java.util.HashSet;
 import javax.swing.JOptionPane;
 
 import org.workcraft.ConversionTool;
-import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
@@ -24,11 +23,11 @@ public class StgGeneratorTool extends ConversionTool {
 
     @Override
     public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicableExact(me, Circuit.class);
+        return WorkspaceUtils.isApplicableExact(me, VisualCircuit.class);
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
+    public ModelEntry convert(ModelEntry me) {
         final VisualCircuit circuit = (VisualCircuit) me.getVisualModel();
         HashSet<String> interfaceSignalNames = new HashSet<>();
         for (VisualFunctionContact contact: circuit.getVisualFunctionContacts()) {
@@ -40,7 +39,7 @@ public class StgGeneratorTool extends ConversionTool {
             String oneName = SignalStg.getHighName(signalName);
             String zeroName = SignalStg.getLowName(signalName);
             if (interfaceSignalNames.contains(oneName) || interfaceSignalNames.contains(zeroName)) {
-                JOptionPane.showMessageDialog(null,
+                JOptionPane.showMessageDialog(null, // !!!
                         "Complimentary STG places cannot be created for the interface signal `"
                                 + signalName + "` because of a name clash.\n"
                                 + "Either rename the port or change the signal level suffix in the STG plugin settings.",

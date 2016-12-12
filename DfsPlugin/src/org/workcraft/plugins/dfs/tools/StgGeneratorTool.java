@@ -21,7 +21,7 @@ public class StgGeneratorTool extends ConversionTool {
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
+    public ModelEntry convert(ModelEntry me) {
         final VisualDfs dfs = (VisualDfs) me.getVisualModel();
         final StgGenerator generator = new StgGenerator(dfs);
         return new ModelEntry(new StgDescriptor(), generator.getStgModel());

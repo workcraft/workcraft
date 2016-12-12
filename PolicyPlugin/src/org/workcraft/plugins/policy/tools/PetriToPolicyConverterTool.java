@@ -22,7 +22,7 @@ public class PetriToPolicyConverterTool extends ConversionTool {
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
+    public ModelEntry convert(ModelEntry me) {
         final VisualPetriNet srcModel = (VisualPetriNet) me.getVisualModel();
         final VisualPolicyNet dstModel = new VisualPolicyNet(new PolicyNet());
         final PetriToPolicyConverter converter = new PetriToPolicyConverter(srcModel, dstModel);

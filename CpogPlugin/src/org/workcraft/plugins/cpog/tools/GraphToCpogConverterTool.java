@@ -22,7 +22,7 @@ public class GraphToCpogConverterTool extends ConversionTool {
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
+    public ModelEntry convert(ModelEntry me) {
         final VisualGraph graph = (VisualGraph) me.getVisualModel();
         final VisualCpog cpog = new VisualCpog(new Cpog());
         final GraphToCpogConverter converter = new GraphToCpogConverter(graph, cpog);

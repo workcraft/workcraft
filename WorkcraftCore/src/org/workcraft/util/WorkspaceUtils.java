@@ -1,5 +1,6 @@
 package org.workcraft.util;
 
+import org.workcraft.dom.Model;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.workspace.ModelEntry;
 
@@ -10,7 +11,15 @@ public class WorkspaceUtils {
     }
 
     public static boolean isApplicableExact(ModelEntry me, Class<?> cls) {
-        return me.getMathModel().getClass().equals(cls.getName()); // !!!
+        boolean result = false;
+        final Model model = me.getModel();
+        if (model.getClass() == cls) {
+            result = true;
+        } else if (me.isVisual()) {
+            final MathModel mathModel = me.getMathModel();
+            result = mathModel.getClass() == cls;
+        }
+        return result;
     }
 
     @SuppressWarnings("unchecked")

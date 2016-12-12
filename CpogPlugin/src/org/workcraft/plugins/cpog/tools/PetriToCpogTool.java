@@ -34,8 +34,7 @@ public class PetriToCpogTool extends ConversionTool {
     @Override
     public WorkspaceEntry run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
-        MainWindow mainWindow = framework.getMainWindow();
-
+        final MainWindow mainWindow = framework.getMainWindow();
         PetriToCpogSettings settings = new PetriToCpogSettings();
         PetriToCpogDialog dialog = new PetriToCpogDialog(mainWindow, settings, we);
         GUI.centerToParent(dialog, mainWindow);
@@ -50,6 +49,11 @@ public class PetriToCpogTool extends ConversionTool {
             taskManager.queue(task, "Converting Petri net into CPOG...", result);
         }
         return we;
+    }
+
+    @Override
+    public ModelEntry convert(ModelEntry me) {
+        return null; // !!!
     }
 
 }

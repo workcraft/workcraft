@@ -8,9 +8,9 @@ import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.ToolboxPanel;
-import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.util.LogUtils;
+import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -18,7 +18,7 @@ public class AlgebraImportTool implements Tool {
 
     @Override
     public boolean isApplicableTo(ModelEntry me) {
-        return me.getVisualModel() instanceof VisualCpog;
+        return WorkspaceUtils.isApplicable(me, VisualCpog.class);
     }
 
     @Override
@@ -35,15 +35,14 @@ public class AlgebraImportTool implements Tool {
     public ModelEntry run(ModelEntry me) {
         final Framework framework = Framework.getInstance();
         if (!framework.isInGuiMode()) {
-            LogUtils.logErrorLine("This tool only works in GUI mode.");
+            LogUtils.logErrorLine("Tool '" + getClass().getSimpleName() + "' only works in GUI mode.");
         } else {
             final MainWindow mainWindow = framework.getMainWindow();
-            final GraphEditorPanel editor = mainWindow.getCurrentEditor();
-            final WorkspaceEntry we = editor.getWorkspaceEntry();
+            final WorkspaceEntry we = mainWindow.getCurrentWorkspaceEntry();
             we.captureMemento();
             JFileChooser chooser = new JFileChooser();
             if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-                final ToolboxPanel toolbox = editor.getToolBox();
+                final ToolboxPanel toolbox = mainWindow.getCurrentToolbox();
                 final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
                 File file = chooser.getSelectedFile();
                 if (tool.insertCpogFromFile(file)) {

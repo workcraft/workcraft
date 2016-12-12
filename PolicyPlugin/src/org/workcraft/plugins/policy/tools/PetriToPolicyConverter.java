@@ -10,7 +10,7 @@ import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.policy.BundledTransition;
 import org.workcraft.plugins.policy.VisualPolicyNet;
 
-public     class PetriToPolicyConverter extends DefaultModelConverter<VisualPetriNet, VisualPolicyNet>  {
+public class PetriToPolicyConverter extends DefaultModelConverter<VisualPetriNet, VisualPolicyNet> {
 
     public PetriToPolicyConverter(VisualPetriNet srcModel, VisualPolicyNet dstModel) {
         super(srcModel, dstModel);
