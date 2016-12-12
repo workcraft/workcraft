@@ -38,10 +38,12 @@ import javax.swing.JPopupMenu;
 import org.workcraft.Framework;
 import org.workcraft.Tool;
 import org.workcraft.MenuOrdering.Position;
+import org.workcraft.PluginManager;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.FileFilters;
 import org.workcraft.gui.MainMenu;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.trees.TreePopupProvider;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.util.Tools;
@@ -52,6 +54,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceTree;
 
 public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
+
     private final WorkspaceWindow wsWindow;
 
     public WorkspacePopupProvider(WorkspaceWindow wsWindow) {
@@ -66,6 +69,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 
         final Framework framework = Framework.getInstance();
         final Workspace workspace = framework.getWorkspace();
+        final MainWindow mainWindow = framework.getMainWindow();
 
         final File file = workspace.getFile(path);
 
@@ -73,14 +77,16 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
             popup.addSeparator();
             final JMenuItem miLink = new JMenuItem("Link external files or directories...");
             miLink.addActionListener(new ActionListener() {
-                @Override public void actionPerformed(ActionEvent e) {
+                @Override
+                public void actionPerformed(ActionEvent e) {
                     wsWindow.addToWorkspace(path);
                 }
             });
             popup.add(miLink);
             final JMenuItem miCreateWork = new JMenuItem("Create work...");
             miCreateWork.addActionListener(new ActionListener() {
-                @Override public void actionPerformed(ActionEvent e) {
+                @Override
+                public void actionPerformed(ActionEvent e) {
                     try {
                         framework.getMainWindow().createWork(path);
                     } catch (OperationCancelledException e1) { }
@@ -89,7 +95,8 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
             popup.add(miCreateWork);
             final JMenuItem miCreateFolder = new JMenuItem("Create folder...");
             miCreateFolder.addActionListener(new ActionListener() {
-                @Override public void actionPerformed(ActionEvent e) {
+                @Override
+                public void actionPerformed(ActionEvent e) {
                     try {
                         createFolder(path);
                     } catch (OperationCancelledException e1) { }
@@ -104,10 +111,9 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                         }
                         File newDir = workspace.getFile(Path.append(path, name));
                         if (!newDir.mkdir()) {
-                            JOptionPane
-                                    .showMessageDialog(
-                                            framework.getMainWindow(),
-                                            "The directory could not be created. Please check that the name does not contain any special characters.");
+                            JOptionPane.showMessageDialog(mainWindow,
+                                    "The directory could not be created.\n"
+                                    + "Please check that the name does not contain any special characters.");
                         } else {
                             break;
                         }
@@ -129,13 +135,14 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                         miOpen.addActionListener(new ActionListener() {
                             @Override
                             public void actionPerformed(ActionEvent e) {
-                                framework.getMainWindow().openWork(file);
+                                mainWindow.openWork(file);
                             }
                         });
                         popup.add(miOpen);
                     }
 
-                    for (PluginInfo<? extends FileHandler> info : framework.getPluginManager().getPlugins(FileHandler.class)) {
+                    final PluginManager pluginManager = framework.getPluginManager();
+                    for (PluginInfo<? extends FileHandler> info : pluginManager.getPlugins(FileHandler.class)) {
                         FileHandler handler = info.getSingleton();
 
                         if (!handler.accept(file)) {
@@ -156,7 +163,8 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                 ModelEntry modelEntry = openFile.getModelEntry();
                 if (modelEntry != null) {
                     final Model model = modelEntry.getModel();
-                    JLabel label = new JLabel(model.getDisplayName() + " " + (model.getTitle().isEmpty() ? "" : ("'" + model.getTitle() + "'")));
+                    String title = model.getTitle();
+                    JLabel label = new JLabel(model.getDisplayName() + " " + (title.isEmpty() ? "" : ("'" + title + "'")));
                     popup.add(label);
                     popup.addSeparator();
 
@@ -164,7 +172,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                     miOpenView.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            framework.getMainWindow().createEditorWindow(openFile);
+                            mainWindow.createEditorWindow(openFile);
                         }
                     });
 
@@ -173,7 +181,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             try {
-                                framework.getMainWindow().save(openFile);
+                                mainWindow.save(openFile);
                             } catch (OperationCancelledException e1) {
                             }
                         }
@@ -184,7 +192,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             try {
-                                framework.getMainWindow().saveAs(openFile);
+                                mainWindow.saveAs(openFile);
                             } catch (OperationCancelledException e1) {
                             }
                         }

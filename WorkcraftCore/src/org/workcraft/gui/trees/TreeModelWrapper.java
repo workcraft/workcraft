@@ -31,6 +31,7 @@ import javax.swing.tree.TreePath;
 import org.workcraft.gui.workspace.Path;
 
 final class TreeModelWrapper<Node> implements TreeModel {
+
     private final TreeSource<Node> source;
     Map<TreeModelListener, TreeListenerWrapper<Node>> listeners = new HashMap<>();
 
@@ -44,7 +45,8 @@ final class TreeModelWrapper<Node> implements TreeModel {
         this.source = source;
     }
 
-    @Override public void addTreeModelListener(final TreeModelListener l) {
+    @Override
+    public void addTreeModelListener(final TreeModelListener l) {
         source.addListener(wrap(l));
     }
 
@@ -56,7 +58,8 @@ final class TreeModelWrapper<Node> implements TreeModel {
         return result;
     }
 
-    @Override public Object getChild(Object parent, int index) {
+    @Override
+    public Object getChild(Object parent, int index) {
         Object result = null;
         List<Node> children = source.getChildren(cast(parent));
         if (index < children.size()) {
@@ -74,15 +77,18 @@ final class TreeModelWrapper<Node> implements TreeModel {
         return source.getChildren(cast(parent));
     }
 
-    @Override public int getIndexOfChild(Object parent, Object child) {
+    @Override
+    public int getIndexOfChild(Object parent, Object child) {
         return getChildren(parent).indexOf(child);
     }
 
-    @Override public Object getRoot() {
+    @Override
+    public Object getRoot() {
         return source.getRoot();
     }
 
-    @Override public boolean isLeaf(Object node) {
+    @Override
+    public boolean isLeaf(Object node) {
         return source.isLeaf(cast(node));
     }
 
@@ -91,11 +97,13 @@ final class TreeModelWrapper<Node> implements TreeModel {
         return (Node) node;
     }
 
-    @Override public void removeTreeModelListener(TreeModelListener l) {
+    @Override
+    public void removeTreeModelListener(TreeModelListener l) {
         source.removeListener(wrap(l));
     }
 
-    @Override public void valueForPathChanged(TreePath path, Object newValue) {
+    @Override
+    public void valueForPathChanged(TreePath path, Object newValue) {
         throw new org.workcraft.exceptions.NotSupportedException();
     }
 

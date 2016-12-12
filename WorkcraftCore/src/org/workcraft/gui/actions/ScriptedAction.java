@@ -24,6 +24,7 @@ package org.workcraft.gui.actions;
 import org.workcraft.Framework;
 
 public abstract class ScriptedAction extends Action {
+
     public static final String tryOperation(String operation) {
         return "try\n" +
                 "{\n" +
@@ -39,7 +40,8 @@ public abstract class ScriptedAction extends Action {
 
     protected abstract String getScript();
 
-    @Override public void run() {
+    @Override
+    public void run() {
         if (getScript() != null) {
             final Framework framework = Framework.getInstance();
             framework.execJavaScript(getScript());
@@ -53,4 +55,5 @@ public abstract class ScriptedAction extends Action {
     public String getRedoScript() {
         return null;
     }
+
 }

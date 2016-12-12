@@ -26,6 +26,7 @@ import javax.swing.event.TreeModelListener;
 import org.workcraft.gui.workspace.Path;
 
 class TreeListenerWrapper<Node> implements TreeListener<Node> {
+
     private final TreeModelListener l;
 
     TreeListenerWrapper(TreeModelListener l) {
@@ -45,7 +46,8 @@ class TreeListenerWrapper<Node> implements TreeListener<Node> {
         return Path.getPath(path).toArray();
     }
 
-    @Override public void changed(Path<Node> path) {
+    @Override
+    public void changed(Path<Node> path) {
         l.treeNodesChanged(tme(path));
     }
 
@@ -58,4 +60,5 @@ class TreeListenerWrapper<Node> implements TreeListener<Node> {
     public void restructured(Path<Node> path) {
         l.treeStructureChanged(tme(path));
     }
+
 }

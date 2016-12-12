@@ -99,6 +99,7 @@ import org.workcraft.plugins.layout.DotLayoutTool;
 import org.workcraft.plugins.layout.RandomLayoutTool;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.tasks.Task;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.GUI;
@@ -1127,7 +1128,8 @@ public class MainWindow extends JFrame {
     }
 
     public void runTool(Tool tool) {
-        Tools.run(editorInFocus.getWorkspaceEntry(), tool);
+        WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
+        Tools.run(we, tool);
     }
 
     public void export(Exporter exporter) throws OperationCancelledException {
@@ -1135,9 +1137,12 @@ public class MainWindow extends JFrame {
         File file = new File(getFileNameForCurrentWork());
         JFileChooser fc = createSaveDialog(title, file, exporter);
         String path = getValidSavePath(fc, exporter);
-        Task<Object> exportTask = new Export.ExportTask(exporter, editorInFocus.getModel(), path);
+        VisualModel model = editorInFocus.getModel();
+        Task<Object> exportTask = new Export.ExportTask(exporter, model, path);
         final Framework framework = Framework.getInstance();
-        framework.getTaskManager().queue(exportTask, "Exporting " + title, new TaskFailureNotifier());
+        final TaskManager taskManager = framework.getTaskManager();
+        final TaskFailureNotifier monitor = new TaskFailureNotifier();
+        taskManager.queue(exportTask, "Exporting " + title, monitor);
         lastSavePath = fc.getCurrentDirectory().getPath();
     }
 
