@@ -24,7 +24,7 @@ import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
 import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.tools.AbstractTool;
+import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
@@ -37,7 +37,7 @@ import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.util.GUI;
 import org.workcraft.util.Hierarchy;
 
-public class InitialisationAnalyserTool extends AbstractTool {
+public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
     private HashSet<Node> initHighSet;
     private HashSet<Node> initLowSet;

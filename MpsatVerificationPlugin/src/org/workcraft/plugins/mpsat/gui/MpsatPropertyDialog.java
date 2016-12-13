@@ -69,8 +69,8 @@ public class MpsatPropertyDialog extends JDialog {
 
         int buttonPanelHeight = buttonsPanel.getPreferredSize().height;
         double[][] size = new double[][] {
-                {TableLayout.FILL},
-                {TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL, buttonPanelHeight},
+            {TableLayout.FILL},
+            {TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL, buttonPanelHeight},
         };
         final TableLayout layout = new TableLayout(size);
         int hGap = SizeHelper.getCompactLayoutHGap();

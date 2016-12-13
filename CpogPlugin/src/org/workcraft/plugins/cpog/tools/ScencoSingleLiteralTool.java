@@ -5,7 +5,7 @@ import java.io.File;
 import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
-import org.workcraft.Tool;
+import org.workcraft.Command;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
@@ -20,7 +20,7 @@ import org.workcraft.util.GUI;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class ScencoSingleLiteralTool implements Tool {
+public class ScencoSingleLiteralTool implements Command {
 
     private EncoderSettings settings;
     private ScencoSingleSequentialDialog dialog;

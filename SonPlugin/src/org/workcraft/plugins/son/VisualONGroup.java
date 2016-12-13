@@ -26,7 +26,7 @@ public class VisualONGroup extends VisualPage {
 
     private ONGroup mathGroup = null;
 
-    public VisualONGroup(ONGroup mathGroup)    {
+    public VisualONGroup(ONGroup mathGroup) {
         super(mathGroup);
         this.mathGroup = mathGroup;
         removePropertyDeclarationByName("Fill color");

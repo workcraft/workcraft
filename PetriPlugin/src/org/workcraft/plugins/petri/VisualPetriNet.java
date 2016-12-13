@@ -124,7 +124,7 @@ public class VisualPetriNet extends AbstractVisualModel {
     }
 
     @Override
-    public void validateUndirectedConnection(Node first, Node second)    throws InvalidConnectionException {
+    public void validateUndirectedConnection(Node first, Node second) throws InvalidConnectionException {
         if (first == second) {
             throw new InvalidConnectionException("Self-loops are not allowed.");
         }

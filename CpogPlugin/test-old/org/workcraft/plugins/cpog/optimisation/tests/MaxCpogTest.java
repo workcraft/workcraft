@@ -12,8 +12,7 @@ import org.workcraft.plugins.cpog.optimisation.OneHotNumberProvider;
 import org.workcraft.plugins.cpog.optimisation.Optimiser;
 
 public class MaxCpogTest {
-    static String[] cpog =
-    {
+    static String[] cpog = {
             "-0001",
             "00011",
             "11111",
@@ -37,4 +36,5 @@ public class MaxCpogTest {
             System.out.println();
         }*/
     }
+
 }

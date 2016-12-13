@@ -9,7 +9,7 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.dtd.Signal;
 import org.workcraft.plugins.dtd.Signal.Type;
 
-public class SignalTypePropertyDescriptor implements PropertyDescriptor  {
+public class SignalTypePropertyDescriptor implements PropertyDescriptor {
     private final Model model;
     private final Signal signal;
 

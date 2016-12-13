@@ -102,7 +102,7 @@ public class Circuit extends AbstractMathModel {
     @Override
     public ModelProperties getProperties(Node node) {
         ModelProperties properties = super.getProperties(node);
-        if (node != null)  {
+        if (node != null) {
             if (node instanceof Joint) {
                 properties.removeByName(NamePropertyDescriptor.PROPERTY_NAME);
             }

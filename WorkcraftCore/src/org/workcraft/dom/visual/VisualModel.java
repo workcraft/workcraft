@@ -36,7 +36,7 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.observation.ObservableState;
-import org.workcraft.plugins.layout.AbstractLayoutTool;
+import org.workcraft.plugins.layout.AbstractLayoutCommand;
 
 public interface VisualModel extends Model, ObservableState {
     void createDefaultFlatStructure() throws NodeCreationException;
@@ -84,6 +84,6 @@ public interface VisualModel extends Model, ObservableState {
 
     void setTemplateNode(VisualNode node);
     VisualNode getTemplateNode();
-    AbstractLayoutTool getBestLayoutTool();
+    AbstractLayoutCommand getBestLayouter();
 
 }

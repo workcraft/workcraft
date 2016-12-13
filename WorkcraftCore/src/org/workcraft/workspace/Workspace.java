@@ -276,6 +276,15 @@ public class Workspace {
         return new ArrayList<WorkspaceEntry>(openFiles.values());
     }
 
+    public WorkspaceEntry getWorkspaceEntry(ModelEntry me) {
+        for (WorkspaceEntry we: getOpenFiles()) {
+            if (we.getModelEntry() == me) {
+                return we;
+            }
+        }
+        return null;
+    }
+
     public void addListener(WorkspaceListener l) {
         workspaceListeners.add(l);
     }

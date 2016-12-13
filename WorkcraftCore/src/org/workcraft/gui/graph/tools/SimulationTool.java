@@ -82,7 +82,7 @@ import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
 
-public abstract class SimulationTool extends AbstractTool implements ClipboardOwner {
+public abstract class SimulationTool extends AbstractGraphEditorTool implements ClipboardOwner {
     private VisualModel underlyingModel;
 
     protected JPanel interfacePanel;
@@ -548,7 +548,7 @@ public abstract class SimulationTool extends AbstractTool implements ClipboardOw
         writeModelState(initialState);
         mainTrace.clear();
         branchTrace.clear();
-        if (timer != null)     {
+        if (timer != null) {
             timer.stop();
             timer = null;
         }

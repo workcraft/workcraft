@@ -30,16 +30,16 @@ import org.workcraft.util.FileUtils;
 public class CircuitStgUtils {
 
     public static CircuitToStgConverter createCircuitToStgConverter(VisualCircuit circuit) {
-        CircuitToStgConverter generator = new CircuitToStgConverter(circuit);
+        CircuitToStgConverter converter = new CircuitToStgConverter(circuit);
         File envWorkFile = circuit.getEnvironmentFile();
         if ((envWorkFile != null) && envWorkFile.exists()) {
-            Stg devStg = (Stg) generator.getStg().getMathModel();
+            Stg devStg = (Stg) converter.getStg().getMathModel();
             Stg systemStg = createSystemStg(devStg, envWorkFile, circuit.getTitle());
             if (systemStg != null) {
-                generator = new CircuitToStgConverter(circuit, new VisualStg(systemStg));
+                converter = new CircuitToStgConverter(circuit, new VisualStg(systemStg));
             }
         }
-        return generator;
+        return converter;
     }
 
     private static Stg createSystemStg(Stg devStg, File envWorkFile, String title) {

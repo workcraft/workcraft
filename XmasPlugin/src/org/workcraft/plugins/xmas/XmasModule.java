@@ -4,12 +4,12 @@ import org.workcraft.CompatibilityManager;
 import org.workcraft.Framework;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
-import org.workcraft.Tool;
+import org.workcraft.Command;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
-import org.workcraft.plugins.xmas.tools.JsonExport;
+import org.workcraft.plugins.xmas.tools.JsonExportCommand;
 import org.workcraft.plugins.xmas.tools.PNetGen;
-import org.workcraft.plugins.xmas.tools.StgGeneratorTool;
+import org.workcraft.plugins.xmas.tools.XmasToStgConversionCommand;
 import org.workcraft.plugins.xmas.tools.SyncTool;
 import org.workcraft.plugins.xmas.tools.VerAnalysis;
 import org.workcraft.plugins.xmas.tools.VerConfTool;
@@ -36,14 +36,14 @@ public class XmasModule implements Module {
         pm.registerClass(ModelDescriptor.class, XmasDescriptor.class);
         pm.registerClass(Settings.class, XmasSettings.class);
 
-        pm.registerClass(Tool.class, JsonExport.class);
-        pm.registerClass(Tool.class, PNetGen.class);
-        pm.registerClass(Tool.class, SyncTool.class);
-        pm.registerClass(Tool.class, VerConfTool.class);
-        pm.registerClass(Tool.class, StgGeneratorTool.class);
-        pm.registerClass(Tool.class, VerTool.class);
-        pm.registerClass(Tool.class, VerAnalysis.class);
-        pm.registerClass(Tool.class, VerQuery.class);
+        pm.registerClass(Command.class, JsonExportCommand.class);
+        pm.registerClass(Command.class, PNetGen.class);
+        pm.registerClass(Command.class, SyncTool.class);
+        pm.registerClass(Command.class, VerConfTool.class);
+        pm.registerClass(Command.class, XmasToStgConversionCommand.class);
+        pm.registerClass(Command.class, VerTool.class);
+        pm.registerClass(Command.class, VerAnalysis.class);
+        pm.registerClass(Command.class, VerQuery.class);
     }
 
     private void initCompatibilityManager() {

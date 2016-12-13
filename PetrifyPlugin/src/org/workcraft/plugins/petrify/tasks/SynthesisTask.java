@@ -30,8 +30,8 @@ import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.ToolUtils;
-import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public class SynthesisTask implements Task<SynthesisResult>, ExternalProcessListener {
     private final WorkspaceEntry we;

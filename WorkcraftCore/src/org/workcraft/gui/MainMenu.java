@@ -44,17 +44,17 @@ import javax.swing.KeyStroke;
 import org.workcraft.Framework;
 import org.workcraft.MenuOrdering.Position;
 import org.workcraft.PluginManager;
-import org.workcraft.Tool;
+import org.workcraft.Command;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.actions.ActionCheckBoxMenuItem;
 import org.workcraft.gui.actions.ActionMenuItem;
 import org.workcraft.gui.actions.ExportAction;
 import org.workcraft.gui.actions.ToggleWindowAction;
-import org.workcraft.gui.actions.ToolAction;
+import org.workcraft.gui.actions.CommandAction;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.PluginInfo;
-import org.workcraft.util.Tools;
+import org.workcraft.util.Commands;
 import org.workcraft.workspace.WorkspaceEntry;
 
 @SuppressWarnings("serial")
@@ -66,7 +66,7 @@ public class MainMenu extends JMenuBar {
     private final JMenu mnRecent = new JMenu("Open recent");
     private final JMenu mnWindows = new JMenu("Windows");
     private final HashMap<Integer, ActionCheckBoxMenuItem> windowItems = new HashMap<>();
-    private final LinkedList<JMenu> mnToolsList = new LinkedList<>();
+    private final LinkedList<JMenu> mnCommandsList = new LinkedList<>();
     private final JMenu mnHelp = new JMenu("Help");
     private final int menuKeyMask = DesktopApi.getMenuKeyMask();
 
@@ -482,50 +482,50 @@ public class MainMenu extends JMenuBar {
         }
     }
 
-    private void createToolsMenu(final WorkspaceEntry we) {
-        removeToolsMenu();
+    private void createCommandsMenu(final WorkspaceEntry we) {
+        removeCommandsMenu();
 
-        List<Tool> applicableTools = Tools.getApplicableTools(we.getModelEntry());
-        List<String> sections = Tools.getSections(applicableTools);
+        List<Command> applicableCommands = Commands.getApplicableCommands(we.getModelEntry());
+        List<String> sections = Commands.getSections(applicableCommands);
 
-        JMenu mnTools = new JMenu("Tools");
-        mnToolsList.clear();
+        JMenu mnCommands = new JMenu("Tools");
+        mnCommandsList.clear();
         for (String section : sections) {
-            JMenu mnSection = mnTools;
+            JMenu mnSection = mnCommands;
             if (!section.isEmpty()) {
                 mnSection = new JMenu(section);
                 if (isPromotedSection(section)) {
                     String menuName = getMenuNameFromSection(section);
                     mnSection.setText(menuName);
-                    mnToolsList.add(mnSection);
+                    mnCommandsList.add(mnSection);
                 } else {
-                    mnTools.add(mnSection);
-                    mnToolsList.addFirst(mnTools);
+                    mnCommands.add(mnSection);
+                    mnCommandsList.addFirst(mnCommands);
                 }
             }
-            List<Tool> sectionTools = Tools.getSectionTools(section, applicableTools);
-            List<List<Tool>> sectionToolsPartitions = new LinkedList<>();
-            sectionToolsPartitions.add(Tools.getUnpositionedTools(sectionTools));
-            sectionToolsPartitions.add(Tools.getPositionedTools(sectionTools, Position.TOP));
-            sectionToolsPartitions.add(Tools.getPositionedTools(sectionTools, Position.MIDDLE));
-            sectionToolsPartitions.add(Tools.getPositionedTools(sectionTools, Position.BOTTOM));
+            List<Command> sectionCommands = Commands.getSectionCommands(section, applicableCommands);
+            List<List<Command>> sectionCommandsPartitions = new LinkedList<>();
+            sectionCommandsPartitions.add(Commands.getUnpositionedCommands(sectionCommands));
+            sectionCommandsPartitions.add(Commands.getPositionedCommands(sectionCommands, Position.TOP));
+            sectionCommandsPartitions.add(Commands.getPositionedCommands(sectionCommands, Position.MIDDLE));
+            sectionCommandsPartitions.add(Commands.getPositionedCommands(sectionCommands, Position.BOTTOM));
             boolean needSeparator = false;
-            for (List<Tool> sectionToolsPartition : sectionToolsPartitions) {
+            for (List<Command> sectionCommandsPartition : sectionCommandsPartitions) {
                 boolean isFirstItem = true;
-                for (Tool tool : sectionToolsPartition) {
+                for (Command command : sectionCommandsPartition) {
                     if (needSeparator && isFirstItem) {
                         mnSection.addSeparator();
                     }
                     needSeparator = true;
                     isFirstItem = false;
-                    ToolAction toolAction = new ToolAction(tool);
-                    ActionMenuItem miTool = new ActionMenuItem(toolAction);
-                    miTool.addScriptedActionListener(mainWindow.getDefaultActionListener());
-                    mnSection.add(miTool);
+                    CommandAction commandAction = new CommandAction(command);
+                    ActionMenuItem miCommand = new ActionMenuItem(commandAction);
+                    miCommand.addScriptedActionListener(mainWindow.getDefaultActionListener());
+                    mnSection.add(miCommand);
                 }
             }
         }
-        addToolsMenu();
+        addCommandsMenu();
     }
 
     public static boolean isPromotedSection(String section) {
@@ -544,31 +544,31 @@ public class MainMenu extends JMenuBar {
         return result.trim();
     }
 
-    private void addToolsMenu() {
-        for (JMenu mnTools : mnToolsList) {
-            add(mnTools);
+    private void addCommandsMenu() {
+        for (JMenu mnCommands : mnCommandsList) {
+            add(mnCommands);
         }
         remove(mnHelp);
         add(mnHelp);
         revalidate();
     }
 
-    public void removeToolsMenu() {
-        for (JMenu mnTools : mnToolsList) {
-            remove(mnTools);
+    public void removeCommandsMenu() {
+        for (JMenu mnCommands : mnCommandsList) {
+            remove(mnCommands);
         }
         revalidate();
     }
 
-    public void updateToolsMenuState(boolean enable) {
-        for (JMenu mnTool : mnToolsList) {
-            mnTool.setEnabled(enable);
+    public void updateCommandsMenuState(boolean enable) {
+        for (JMenu mnCommands : mnCommandsList) {
+            mnCommands.setEnabled(enable);
         }
     }
 
     public void setMenuForWorkspaceEntry(final WorkspaceEntry we) {
         we.updateActionState();
-        createToolsMenu(we);
+        createCommandsMenu(we);
         setExportMenu(we);
     }
 }

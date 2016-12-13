@@ -51,7 +51,7 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.tools.AbstractTool;
+import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
 import org.workcraft.gui.graph.tools.ContainerDecoration;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
@@ -86,7 +86,7 @@ import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
+public class SONSimulationTool extends AbstractGraphEditorTool implements ClipboardOwner {
 
     protected SON net;
     protected VisualSON visualNet;
@@ -234,7 +234,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
                         }
                     });
                     timer.start();
-                } else  {
+                } else {
                     timer.stop();
                     timer = null;
                 }
@@ -604,7 +604,7 @@ public class SONSimulationTool extends AbstractTool implements ClipboardOwner {
         mainTrace.clear();
         branchTrace.clear();
 
-        if (timer != null)     {
+        if (timer != null) {
             timer.stop();
             timer = null;
         }

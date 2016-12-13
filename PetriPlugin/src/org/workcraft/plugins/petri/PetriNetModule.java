@@ -4,19 +4,19 @@ import org.workcraft.CompatibilityManager;
 import org.workcraft.Framework;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
-import org.workcraft.Tool;
+import org.workcraft.Command;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.plugins.petri.serialization.ReadArcDeserialiser;
 import org.workcraft.plugins.petri.serialization.ReadArcSerialiser;
-import org.workcraft.plugins.petri.tools.CollapseReplicaTool;
-import org.workcraft.plugins.petri.tools.DirectedArcToReadArcConverterTool;
-import org.workcraft.plugins.petri.tools.DualArcToReadArcConverterTool;
-import org.workcraft.plugins.petri.tools.MergePlaceTool;
-import org.workcraft.plugins.petri.tools.ProxyDirectedArcPlaceTool;
-import org.workcraft.plugins.petri.tools.ProxyReadArcPlaceTool;
-import org.workcraft.plugins.petri.tools.ReadArcToDualArcConverterTool;
-import org.workcraft.plugins.petri.tools.TransitionContractorTool;
-import org.workcraft.plugins.petri.tools.TransitionMergerTool;
+import org.workcraft.plugins.petri.tools.CollapseProxyTransformationCommand;
+import org.workcraft.plugins.petri.tools.DirectedArcToReadArcTransformationCommand;
+import org.workcraft.plugins.petri.tools.DualArcToReadArcTransformationCommand;
+import org.workcraft.plugins.petri.tools.MergePlaceTransformationCommand;
+import org.workcraft.plugins.petri.tools.ProxyDirectedArcPlaceTransformationCommand;
+import org.workcraft.plugins.petri.tools.ProxyReadArcPlaceTransformationCommand;
+import org.workcraft.plugins.petri.tools.ReadArcToDualArcTransformationCommand;
+import org.workcraft.plugins.petri.tools.ContractTransitionTransformationCommand;
+import org.workcraft.plugins.petri.tools.MergeTransitionTransformationCommand;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
 import org.workcraft.serialisation.xml.XMLSerialiser;
 
@@ -41,15 +41,15 @@ public class PetriNetModule implements Module {
         pm.registerClass(XMLSerialiser.class, ReadArcSerialiser.class);
         pm.registerClass(XMLDeserialiser.class, ReadArcDeserialiser.class);
 
-        pm.registerClass(Tool.class, TransitionContractorTool.class);
-        pm.registerClass(Tool.class, DirectedArcToReadArcConverterTool.class);
-        pm.registerClass(Tool.class, DualArcToReadArcConverterTool.class);
-        pm.registerClass(Tool.class, ReadArcToDualArcConverterTool.class);
-        pm.registerClass(Tool.class, CollapseReplicaTool.class);
-        pm.registerClass(Tool.class, ProxyDirectedArcPlaceTool.class);
-        pm.registerClass(Tool.class, ProxyReadArcPlaceTool.class);
-        pm.registerClass(Tool.class, MergePlaceTool.class);
-        pm.registerClass(Tool.class, TransitionMergerTool.class);
+        pm.registerClass(Command.class, ContractTransitionTransformationCommand.class);
+        pm.registerClass(Command.class, DirectedArcToReadArcTransformationCommand.class);
+        pm.registerClass(Command.class, DualArcToReadArcTransformationCommand.class);
+        pm.registerClass(Command.class, ReadArcToDualArcTransformationCommand.class);
+        pm.registerClass(Command.class, CollapseProxyTransformationCommand.class);
+        pm.registerClass(Command.class, ProxyDirectedArcPlaceTransformationCommand.class);
+        pm.registerClass(Command.class, ProxyReadArcPlaceTransformationCommand.class);
+        pm.registerClass(Command.class, MergePlaceTransformationCommand.class);
+        pm.registerClass(Command.class, MergeTransitionTransformationCommand.class);
     }
 
     private void initCompatibilityManager() {

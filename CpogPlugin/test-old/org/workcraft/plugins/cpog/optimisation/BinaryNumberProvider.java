@@ -37,23 +37,20 @@ public class BinaryNumberProvider implements
         NumberProvider<BinaryIntBooleanFormula> {
 
     @Test
-    public void testBigConstraint()
-    {
+    public void testBigConstraint() {
         BinaryNumberProvider p = new BinaryNumberProvider();
         p.generate("x", 25);
         Assert.assertEquals("(!xb4|(!xb3|(!xb2&(!xb1&!xb0))))", FormulaToString.toString(p.getConstraints()));
     }
 
     @Test
-    public void testValuesCount()
-    {
+    public void testValuesCount() {
         BinaryNumberProvider p = new BinaryNumberProvider();
         BinaryIntBooleanFormula num = p.generate("", 9);
         Assert.assertEquals(9, num.getValuesCount());
     }
     @Test
-    public void testBigSelect()
-    {
+    public void testBigSelect() {
         BinaryNumberProvider p = new BinaryNumberProvider();
         BinaryIntBooleanFormula num = p.generate("", 9);
         BooleanFormula[] f = new BooleanFormula[9];
@@ -72,24 +69,21 @@ public class BinaryNumberProvider implements
     }
 
     @Test
-    public void testEmptyConstraint()
-    {
+    public void testEmptyConstraint() {
         BinaryNumberProvider p = new BinaryNumberProvider();
         p.generate("x", 2);
         Assert.assertEquals("1", p.getConstraints().accept(new formulaToString()));
     }
 
     @Test
-    public void testZeroBitEmptyConstraint()
-    {
+    public void testZeroBitEmptyConstraint() {
         BinaryNumberProvider p = new BinaryNumberProvider();
         p.generate("", 1);
         Assert.assertEquals("1", p.getConstraints().accept(new formulaToString()));
     }
 
     @Test
-    public void testSelectZeroBit()
-    {
+    public void testSelectZeroBit() {
         BinaryNumberProvider p = new BinaryNumberProvider();
         BinaryIntBooleanFormula num = p.generate("", 1);
         BooleanFormula[] f = new BooleanFormula[1];
@@ -99,8 +93,7 @@ public class BinaryNumberProvider implements
     }
 
     @Test
-    public void testSelectOneBit()
-    {
+    public void testSelectOneBit() {
         BinaryNumberProvider p = new BinaryNumberProvider();
         BinaryIntBooleanFormula num = p.generate("", 2);
         BooleanFormula[] f = new BooleanFormula[2];
@@ -111,8 +104,7 @@ public class BinaryNumberProvider implements
     }
 
     @Test
-    public void testSelectThreeValues()
-    {
+    public void testSelectThreeValues() {
         BinaryNumberProvider p = new BinaryNumberProvider();
         BinaryIntBooleanFormula num = p.generate("", 3);
         BooleanFormula[] f = new BooleanFormula[3];
@@ -127,23 +119,23 @@ public class BinaryNumberProvider implements
 
     @Override
     public BinaryIntBooleanFormula generate(String varPrefix, int range) {
-        if(range == 0)
+        if (range == 0) {
             throw new RuntimeException("range=0");
+        }
         int varCount = 0;
         int tmp = range-1;
-        while(tmp>0)
-        {
+        while(tmp>0) {
             tmp/=2;
             varCount++;
         }
 
         List<BooleanVariable> vars = new ArrayList<>();
-        for(int i=0;i<varCount;i++)
+        for(int i=0;i<varCount;i++) {
             vars.add(new FreeVariable(varPrefix + "b"+i));
-
-        if(1<<varCount != range)
+        }
+        if (1<<varCount != range) {
             constraints.add(less(vars, varCount-1, range));
-
+        }
         return new BinaryIntBooleanFormula(vars, range);
     }
 
@@ -152,18 +144,20 @@ public class BinaryNumberProvider implements
         boolean bn = ((b>>n)&1) > 0;
         BooleanFormula nan = not(an);
 
-        if(n==0)
-            if(bn)
+        if(n==0) {
+            if(bn) {
                 return nan;
-            else
+            } else {
                 return Zero.instance();
-
+            }
+        }
         BooleanFormula L = less(a, n-1, b);
 
-        if(bn)
+        if(bn) {
             return or(nan, L);
-        else
+        } else {
             return and(nan, L);
+        }
     }
 
     @Override
@@ -174,16 +168,19 @@ public class BinaryNumberProvider implements
     @Override
     public BooleanFormula select(BooleanFormula[] vars, BinaryIntBooleanFormula number) {
         List<BooleanVariable> bits = number.getVars();
-        if(number.getValuesCount() != vars.length)
+        if(number.getValuesCount() != vars.length) {
             throw new RuntimeException("lengths do not match: vars=" + vars.length + ", number="+number.getValuesCount());
+        }
         return select(vars, bits, bits.size(), 0, number.getValuesCount());
     }
 
     private BooleanFormula select(BooleanFormula[] vars, List<BooleanVariable> bits, int length, int offset, int threshold) {
-        if(offset >= threshold)
+        if(offset >= threshold) {
             return Zero.instance();
-        if(length == 0)
+        }
+        if(length == 0) {
             return vars[offset];
+        }
         BooleanVariable x = bits.get(length-1);
         BooleanFormula nx = not(x);
         return or(
@@ -193,8 +190,7 @@ public class BinaryNumberProvider implements
     }
 
     @Override
-    public BooleanFormula less(BinaryIntBooleanFormula a,
-            BinaryIntBooleanFormula b) {
+    public BooleanFormula less(BinaryIntBooleanFormula a, BinaryIntBooleanFormula b) {
         return less(a.getVars(), b.getVars(), a.getVars().size()-1);
     }
 
@@ -202,12 +198,10 @@ public class BinaryNumberProvider implements
         BooleanVariable an = a.get(n);
         BooleanFormula bn = b.get(n);
         BooleanFormula nan = not(an);
-
-        if(n==0)
+        if(n==0) {
             return and(nan, bn);
-
+        }
         BooleanFormula L = less(a, b, n-1);
-
         return or(and(nan, bn), and(or(nan, bn), L));
     }
 

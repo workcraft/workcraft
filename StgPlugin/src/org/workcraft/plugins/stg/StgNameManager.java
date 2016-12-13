@@ -136,7 +136,7 @@ public class StgNameManager extends UniqueNameManager {
     public Node getNode(String name) {
         Node result = null;
         Pair<String, Integer> instancedName = LabelParser.parseInstancedTransition(name);
-        if (instancedName != null)    {
+        if (instancedName != null) {
             if (instancedName.getSecond() == null) {
                 instancedName = Pair.of(instancedName.getFirst(), 0);
             }

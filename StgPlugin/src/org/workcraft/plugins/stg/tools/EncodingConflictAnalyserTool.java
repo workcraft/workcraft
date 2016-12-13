@@ -27,7 +27,7 @@ import javax.swing.table.TableCellRenderer;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.gui.graph.tools.AbstractTool;
+import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
@@ -35,7 +35,7 @@ import org.workcraft.gui.propertyeditor.PropertyEditorTable;
 import org.workcraft.plugins.stg.VisualNamedTransition;
 import org.workcraft.plugins.stg.VisualStg;
 
-public class EncodingConflictAnalyserTool extends AbstractTool {
+public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
 
     private static final int COLUMN_COLOR = 0;
     private static final int COLUMN_CORE = 1;

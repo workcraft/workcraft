@@ -79,7 +79,7 @@ public class Cpog extends AbstractMathModel {
     @Override
     public ModelProperties getProperties(Node node) {
         ModelProperties properties = super.getProperties(node);
-        if (node != null)  {
+        if (node != null) {
             properties.removeByName("Name");
         }
         return properties;

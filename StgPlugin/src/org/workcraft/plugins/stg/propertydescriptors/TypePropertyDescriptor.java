@@ -9,7 +9,7 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 
-public class TypePropertyDescriptor implements PropertyDescriptor  {
+public class TypePropertyDescriptor implements PropertyDescriptor {
     public static final String PROPERTY_SIGNAL_TYPE = "Signal type";
 
     private final SignalTransition transition;

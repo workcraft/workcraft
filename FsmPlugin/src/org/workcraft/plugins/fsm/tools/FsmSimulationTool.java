@@ -31,7 +31,7 @@ import org.workcraft.util.Func;
 
 public class FsmSimulationTool extends PetriSimulationTool {
 
-    private FsmToPetriConverter generator;
+    private FsmToPetriConverter converter;
 
     @Override
     public void activated(final GraphEditor editor) {
@@ -43,7 +43,7 @@ public class FsmSimulationTool extends PetriSimulationTool {
     public String getTraceLabelByReference(String ref) {
         String label = null;
         if (ref != null) {
-            label = generator.getSymbol(ref);
+            label = converter.getSymbol(ref);
             if (label == "") {
                 label = Character.toString(VisualEvent.EPSILON_SYMBOL);
             }
@@ -58,8 +58,8 @@ public class FsmSimulationTool extends PetriSimulationTool {
     public void generateUnderlyingModel(VisualModel model) {
         final VisualFsm fsm = (VisualFsm) model;
         final VisualPetriNet petri = new VisualPetriNet(new PetriNet());
-        generator = new FsmToPetriConverter(fsm, petri);
-        setUnderlyingModel(generator.getDstModel());
+        converter = new FsmToPetriConverter(fsm, petri);
+        setUnderlyingModel(converter.getDstModel());
     }
 
     @Override
@@ -126,7 +126,7 @@ public class FsmSimulationTool extends PetriSimulationTool {
         return new Decorator() {
             @Override
             public Decoration getDecoration(Node node) {
-                if (generator == null) return null;
+                if (converter == null) return null;
                 if (node instanceof VisualState) {
                     return getStateDecoration((VisualState) node);
                 } else if (node instanceof VisualEvent) {
@@ -142,7 +142,7 @@ public class FsmSimulationTool extends PetriSimulationTool {
     public Decoration getEventDecoration(VisualEvent event) {
         Node transition = getTraceCurrentNode();
         final boolean isExcited = getExcitedTransitionOfNode(event) != null;
-        final boolean isSuggested = isExcited && generator.isRelated(event, transition);
+        final boolean isSuggested = isExcited && converter.isRelated(event, transition);
         return new Decoration() {
             @Override
             public Color getColorisation() {
@@ -157,7 +157,7 @@ public class FsmSimulationTool extends PetriSimulationTool {
     }
 
     public Decoration getStateDecoration(VisualState state) {
-        VisualPlace p = generator.getRelatedPlace(state);
+        VisualPlace p = converter.getRelatedPlace(state);
         if (p == null) {
             return null;
         }
@@ -176,7 +176,7 @@ public class FsmSimulationTool extends PetriSimulationTool {
 
     private Transition getExcitedTransitionOfNode(Node node) {
         if ((node != null) && (node instanceof VisualEvent)) {
-            VisualTransition vTransition = generator.getRelatedTransition((VisualEvent) node);
+            VisualTransition vTransition = converter.getRelatedTransition((VisualEvent) node);
             if (vTransition != null) {
                 Transition transition = vTransition.getReferencedTransition();
                 if (isEnabledNode(transition)) {

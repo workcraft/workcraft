@@ -28,8 +28,8 @@ public class SolutionPanel extends JPanel {
 
     public SolutionPanel(final WorkspaceEntry we, final Solution solution, final ActionListener closeAction) {
         double[][] sizes = new double[][] {
-                {TableLayout.FILL, TableLayout.PREFERRED},
-                {TableLayout.PREFERRED, TableLayout.FILL},
+            {TableLayout.FILL, TableLayout.PREFERRED},
+            {TableLayout.PREFERRED, TableLayout.FILL},
         };
         TableLayout layout = new TableLayout(sizes);
         int hGap = SizeHelper.getCompactLayoutHGap();

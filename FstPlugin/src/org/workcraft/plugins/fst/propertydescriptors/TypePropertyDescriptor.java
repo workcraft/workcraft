@@ -8,7 +8,7 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.fst.Signal;
 import org.workcraft.plugins.fst.Signal.Type;
 
-public class TypePropertyDescriptor implements PropertyDescriptor  {
+public class TypePropertyDescriptor implements PropertyDescriptor {
 
     private final Signal signal;
 

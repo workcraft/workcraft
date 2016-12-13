@@ -71,7 +71,7 @@ import org.flexdock.plaf.common.border.ShadowBorder;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.api.SubstanceConstants.TabContentPaneBorderKind;
 import org.workcraft.Framework;
-import org.workcraft.Tool;
+import org.workcraft.Command;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
@@ -94,9 +94,9 @@ import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.PluginInfo;
-import org.workcraft.plugins.layout.AbstractLayoutTool;
-import org.workcraft.plugins.layout.DotLayoutTool;
-import org.workcraft.plugins.layout.RandomLayoutTool;
+import org.workcraft.plugins.layout.AbstractLayoutCommand;
+import org.workcraft.plugins.layout.DotLayoutCommand;
+import org.workcraft.plugins.layout.RandomLayoutCommand;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.TaskManager;
@@ -106,7 +106,7 @@ import org.workcraft.util.GUI;
 import org.workcraft.util.Import;
 import org.workcraft.util.ListMap;
 import org.workcraft.util.LogUtils;
-import org.workcraft.util.Tools;
+import org.workcraft.util.Commands;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -314,15 +314,15 @@ public class MainWindow extends JFrame {
     }
 
     private void applyDefaultLayout(VisualModel visualModel) {
-        AbstractLayoutTool layoutTool = visualModel.getBestLayoutTool();
-        if (layoutTool == null) {
-            layoutTool = new DotLayoutTool();
+        AbstractLayoutCommand layoutCommand = visualModel.getBestLayouter();
+        if (layoutCommand == null) {
+            layoutCommand = new DotLayoutCommand();
         }
         try {
-            layoutTool.layout(visualModel);
+            layoutCommand.layout(visualModel);
         } catch (LayoutException e) {
-            layoutTool = new RandomLayoutTool();
-            layoutTool.layout(visualModel);
+            layoutCommand = new RandomLayoutCommand();
+            layoutCommand.layout(visualModel);
         }
     }
 
@@ -486,7 +486,7 @@ public class MainWindow extends JFrame {
 
             if (editorInFocus == editor) {
                 toolControlsWindow.setContent(null);
-                mainMenu.removeToolsMenu();
+                mainMenu.removeCommandsMenu();
                 editorInFocus = null;
                 setDockableTitle(getPropertyEditor(), TITLE_PROPERTY_EDITOR);
             }
@@ -1127,9 +1127,9 @@ public class MainWindow extends JFrame {
         }
     }
 
-    public void runTool(Tool tool) {
+    public void runCommand(Command tool) {
         WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
-        Tools.run(we, tool);
+        Commands.run(we, tool);
     }
 
     public void export(Exporter exporter) throws OperationCancelledException {

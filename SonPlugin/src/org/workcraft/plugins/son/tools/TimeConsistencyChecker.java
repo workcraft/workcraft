@@ -1,7 +1,7 @@
 package org.workcraft.plugins.son.tools;
 
+import org.workcraft.Command;
 import org.workcraft.Framework;
-import org.workcraft.Tool;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.son.BlockConnector;
 import org.workcraft.plugins.son.OutputRedirect;
@@ -10,11 +10,11 @@ import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.gui.TimeConsistencyDialog;
 import org.workcraft.plugins.son.tasks.TimeConsistencyTask;
 import org.workcraft.util.GUI;
-import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
-public class TimeConsistencyChecker implements Tool {
+public class TimeConsistencyChecker implements Command {
 
     @Override
     public boolean isApplicableTo(ModelEntry me) {

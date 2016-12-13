@@ -18,7 +18,7 @@ import org.workcraft.plugins.fst.SignalEvent;
 import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.fst.VisualSignalEvent;
 
-public     class FstToFsmConverter extends DefaultModelConverter<VisualFst, VisualFsm>  {
+public class FstToFsmConverter extends DefaultModelConverter<VisualFst, VisualFsm> {
 
     public FstToFsmConverter(VisualFst srcModel, VisualFsm dstModel) {
         super(srcModel, dstModel);

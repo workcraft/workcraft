@@ -13,7 +13,7 @@ import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.policy.VisualPolicyNet;
-import org.workcraft.plugins.policy.tools.PetriNetGenerator;
+import org.workcraft.plugins.policy.tools.PolicyToPetriConverter;
 import org.workcraft.plugins.punf.PunfUtilitySettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
@@ -44,8 +44,8 @@ public class CheckDeadlockTask extends MpsatChainTask {
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         try {
-            PetriNetGenerator generator = new PetriNetGenerator((VisualPolicyNet) we.getModelEntry().getVisualModel());
-            PetriNet model = (PetriNet) generator.getPetriNet().getMathModel();
+            PolicyToPetriConverter converter = new PolicyToPetriConverter((VisualPolicyNet) we.getModelEntry().getVisualModel());
+            PetriNet model = (PetriNet) converter.getPetriNet().getMathModel();
             Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
             if (exporter == null) {
                 throw new RuntimeException("Exporter not available: model class " + model.getClass().getName() + " to format Petri net.");

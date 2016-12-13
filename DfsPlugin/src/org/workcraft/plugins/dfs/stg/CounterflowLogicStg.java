@@ -10,7 +10,7 @@ import java.util.Set;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
-import org.workcraft.plugins.stg.generator.NodeStg;
+import org.workcraft.plugins.stg.converter.NodeStg;
 
 public class CounterflowLogicStg extends NodeStg {
     public final VisualPlace fwC0;                            // forwardC=0

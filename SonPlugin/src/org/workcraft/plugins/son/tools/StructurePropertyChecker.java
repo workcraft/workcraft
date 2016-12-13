@@ -1,7 +1,7 @@
 package org.workcraft.plugins.son.tools;
 
 import org.workcraft.Framework;
-import org.workcraft.Tool;
+import org.workcraft.Command;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.son.BlockConnector;
 import org.workcraft.plugins.son.OutputRedirect;
@@ -11,11 +11,11 @@ import org.workcraft.plugins.son.gui.StructureVerifyDialog;
 import org.workcraft.plugins.son.tasks.SONMainTask;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.GUI;
-import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
-public class StructurePropertyChecker implements Tool {
+public class StructurePropertyChecker implements Command {
 
     @Override
     public boolean isApplicableTo(ModelEntry me) {

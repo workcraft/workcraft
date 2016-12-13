@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Scanner;
 
 import org.workcraft.Framework;
-import org.workcraft.Tool;
+import org.workcraft.Command;
 import org.workcraft.gui.ToolboxPanel;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.plugins.cpog.VisualCpog;
@@ -14,7 +14,7 @@ import org.workcraft.plugins.cpog.tasks.PGMinerTask;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class PGMinerImportTool implements Tool {
+public class PGMinerImportTool implements Command {
 
     boolean split = false;
     PGMinerImportDialog dialog;

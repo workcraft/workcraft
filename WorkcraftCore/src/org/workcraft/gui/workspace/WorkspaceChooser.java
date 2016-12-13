@@ -31,10 +31,9 @@ public class WorkspaceChooser extends JPanel {
 
         this.filter = filter;
 
-        double[][] sizes =
-        {
-                {TableLayout.FILL },
-                {TableLayout.PREFERRED, TableLayout.FILL },
+        double[][] sizes = {
+            {TableLayout.FILL},
+            {TableLayout.PREFERRED, TableLayout.FILL},
         };
 
         final TableLayout mgr = new TableLayout(sizes);

@@ -4,18 +4,18 @@ import org.workcraft.CompatibilityManager;
 import org.workcraft.Framework;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
-import org.workcraft.Tool;
+import org.workcraft.Command;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
-import org.workcraft.plugins.son.tools.ColorResetTool;
-import org.workcraft.plugins.son.tools.ErrTracingDisable;
-import org.workcraft.plugins.son.tools.ErrTracingReset;
+import org.workcraft.plugins.son.tools.ColorResetCommand;
+import org.workcraft.plugins.son.tools.ErrTracingDisableCommand;
+import org.workcraft.plugins.son.tools.ErrTracingResetCommand;
 import org.workcraft.plugins.son.tools.ReachabilityTool;
 import org.workcraft.plugins.son.tools.StructurePropertyChecker;
 import org.workcraft.plugins.son.tools.TestTool;
 import org.workcraft.plugins.son.tools.TimeConsistencyChecker;
 import org.workcraft.plugins.son.tools.TimeValueDisable;
-import org.workcraft.plugins.son.tools.ClearMarkingTool;
+import org.workcraft.plugins.son.tools.ClearMarkingCommand;
 import org.workcraft.plugins.son.tools.TimeValueSetter;
 
 public class SONModule implements Module {
@@ -35,21 +35,21 @@ public class SONModule implements Module {
 
         pm.registerClass(ModelDescriptor.class, SONDescriptor.class);
         pm.registerClass(Settings.class, SONSettings.class);
-        pm.registerClass(Tool.class, TestTool.class);
+        pm.registerClass(Command.class, TestTool.class);
         //verification
-        pm.registerClass(Tool.class, StructurePropertyChecker.class);
-        pm.registerClass(Tool.class, ReachabilityTool.class);
+        pm.registerClass(Command.class, StructurePropertyChecker.class);
+        pm.registerClass(Command.class, ReachabilityTool.class);
         //Custom tools
-        pm.registerClass(Tool.class, ColorResetTool.class);
-        pm.registerClass(Tool.class, ClearMarkingTool.class);
+        pm.registerClass(Command.class, ColorResetCommand.class);
+        pm.registerClass(Command.class, ClearMarkingCommand.class);
         // Error tracing
-        pm.registerClass(Tool.class, ErrTracingReset.class);
-        pm.registerClass(Tool.class, ErrTracingDisable.class);
+        pm.registerClass(Command.class, ErrTracingResetCommand.class);
+        pm.registerClass(Command.class, ErrTracingDisableCommand.class);
         //time analysis
-        pm.registerClass(Tool.class, TimeValueSetter.class);
-        pm.registerClass(Tool.class, TimeValueDisable.class);
+        pm.registerClass(Command.class, TimeValueSetter.class);
+        pm.registerClass(Command.class, TimeValueDisable.class);
         //pm.registerClass(Tool.class, TimeValueEstimator.class);
-        pm.registerClass(Tool.class, TimeConsistencyChecker.class);
+        pm.registerClass(Command.class, TimeConsistencyChecker.class);
     }
 
     private void initCompatibilityManager() {

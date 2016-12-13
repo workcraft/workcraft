@@ -190,11 +190,7 @@ public class TreeWindow<Node> extends JPanel {
 
         tree.setCellRenderer(new DefaultTreeCellRenderer() {
             private static final long serialVersionUID = 1L;
-            private JPanel cellRenderer;
-
-            {
-                cellRenderer = new JPanel(new TableLayout(new double[][] {{TableLayout.PREFERRED, TableLayout.PREFERRED }, {TableLayout.PREFERRED} }));
-            }
+            private JPanel cellRenderer = new JPanel(new TableLayout(new double[][] {{TableLayout.PREFERRED, TableLayout.PREFERRED }, {TableLayout.PREFERRED} }));
 
             @SuppressWarnings("unchecked")
             @Override

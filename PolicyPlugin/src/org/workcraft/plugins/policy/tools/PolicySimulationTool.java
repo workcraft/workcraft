@@ -28,7 +28,7 @@ import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.util.Func;
 
 public class PolicySimulationTool extends PetriSimulationTool {
-    private PetriNetGenerator generator;
+    private PolicyToPetriConverter converter;
 
     @Override
     public void activated(final GraphEditor editor) {
@@ -38,8 +38,8 @@ public class PolicySimulationTool extends PetriSimulationTool {
 
     @Override
     public void generateUnderlyingModel(VisualModel model) {
-        generator = new PetriNetGenerator((VisualPolicyNet) model);
-        setUnderlyingModel(generator.getPetriNet());
+        converter = new PolicyToPetriConverter((VisualPolicyNet) model);
+        setUnderlyingModel(converter.getPetriNet());
     }
 
     @Override
@@ -91,7 +91,7 @@ public class PolicySimulationTool extends PetriSimulationTool {
             public Decoration getDecoration(Node node) {
                 Node transition = getTraceCurrentNode();
                 final boolean isExcited = getExcitedTransitionOfNode(node) != null;
-                final boolean isSuggested = isExcited && generator.isRelated(node, transition);
+                final boolean isSuggested = isExcited && converter.isRelated(node, transition);
 
                 if (node instanceof VisualBundledTransition) {
                     return new Decoration() {
@@ -108,7 +108,7 @@ public class PolicySimulationTool extends PetriSimulationTool {
                 }
 
                 if (node instanceof VisualPlace) {
-                    final VisualPlace p = generator.getRelatedPlace((VisualPlace) node);
+                    final VisualPlace p = converter.getRelatedPlace((VisualPlace) node);
                     return new PlaceDecoration() {
                         @Override
                         public Color getColorisation() {
@@ -163,7 +163,7 @@ public class PolicySimulationTool extends PetriSimulationTool {
     private Transition getExcitedTransitionOfNode(Node node) {
         Collection<VisualTransition> ts = null;
         if (node != null && node instanceof VisualBundledTransition) {
-            ts = generator.getRelatedTransitions((VisualBundledTransition) node);
+            ts = converter.getRelatedTransitions((VisualBundledTransition) node);
         }
         return getExcitedTransitionOfCollection(ts);
     }
@@ -185,7 +185,7 @@ public class PolicySimulationTool extends PetriSimulationTool {
     public String getTraceLabelByReference(String ref) {
         String label = null;
         if (ref != null) {
-            PolicyNet policy = generator.getPolicyNet().getPolicyNet();
+            PolicyNet policy = converter.getPolicyNet().getPolicyNet();
             Node node = policy.getNodeByReference(ref);
             if (node instanceof Bundle) {
                 Bundle bundle = (Bundle) node;

@@ -9,7 +9,7 @@ import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.Signal;
 import org.workcraft.plugins.fst.Signal.Type;
 
-public class SignalTypePropertyDescriptor implements PropertyDescriptor  {
+public class SignalTypePropertyDescriptor implements PropertyDescriptor {
     private final Fst fst;
     private final Signal signal;
 

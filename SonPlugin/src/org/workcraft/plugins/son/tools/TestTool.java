@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.workcraft.Tool;
+import org.workcraft.Command;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.gui.graph.tools.AbstractTool;
+import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.son.ONGroup;
@@ -31,11 +31,11 @@ import org.workcraft.plugins.son.exception.UnboundedException;
 import org.workcraft.plugins.son.util.Marking;
 import org.workcraft.plugins.son.util.Phase;
 import org.workcraft.util.GUI;
-import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
-public class TestTool extends AbstractTool implements Tool {
+public class TestTool extends AbstractGraphEditorTool implements Command {
 
     private String message = "";
 

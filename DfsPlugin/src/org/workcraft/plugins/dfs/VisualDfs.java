@@ -63,7 +63,7 @@ public class VisualDfs extends AbstractVisualModel {
     }
 
     @Override
-    public void validateConnection(Node first, Node second)    throws InvalidConnectionException {
+    public void validateConnection(Node first, Node second) throws InvalidConnectionException {
         if (first == null || second == null) {
             throw new InvalidConnectionException("Invalid connection");
         }

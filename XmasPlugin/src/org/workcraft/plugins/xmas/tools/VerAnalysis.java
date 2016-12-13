@@ -27,10 +27,10 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
-import org.workcraft.Tool;
+import org.workcraft.Command;
 import org.workcraft.dom.Node;
 import org.workcraft.gui.graph.GraphEditorPanel;
-import org.workcraft.gui.graph.tools.AbstractTool;
+import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
@@ -45,11 +45,11 @@ import org.workcraft.plugins.xmas.gui.SolutionsDialog1;
 import org.workcraft.plugins.xmas.gui.SolutionsDialog2;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.LogUtils;
-import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
-public class VerAnalysis extends AbstractTool implements Tool {
+public class VerAnalysis extends AbstractGraphEditorTool implements Command {
 
     private static class Qslist {
         String name;

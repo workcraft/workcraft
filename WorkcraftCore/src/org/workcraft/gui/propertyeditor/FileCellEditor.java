@@ -55,7 +55,6 @@ public class FileCellEditor extends AbstractCellEditor implements TableCellEdito
     public void actionPerformed(ActionEvent e) {
         if (TAG_EDIT.equals(e.getActionCommand())) {
             final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
             JFileChooser fc = new JFileChooser();
             fc.setDialogType(JFileChooser.OPEN_DIALOG);
             fc.setMultiSelectionEnabled(false);
@@ -72,6 +71,7 @@ public class FileCellEditor extends AbstractCellEditor implements TableCellEdito
                     }
                 }
             }
+            final MainWindow mainWindow = framework.getMainWindow();
             if (!fcConfigured) {
                 WorkspaceEntry we = mainWindow.getCurrentWorkspaceEntry();
                 File file = we.getFile();

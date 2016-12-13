@@ -30,7 +30,7 @@ import javax.swing.table.TableColumnModel;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.gui.graph.tools.AbstractTool;
+import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
@@ -41,7 +41,7 @@ import org.workcraft.util.Hierarchy;
 import org.workcraft.util.IntDocument;
 import org.workcraft.util.graph.cycle.ElementaryCyclesSearch;
 
-public class CycleAnalyserTool extends AbstractTool {
+public class CycleAnalyserTool extends AbstractGraphEditorTool {
     // Infinity symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
     public static final char INFINITY_SYMBOL = 0x221E;
 

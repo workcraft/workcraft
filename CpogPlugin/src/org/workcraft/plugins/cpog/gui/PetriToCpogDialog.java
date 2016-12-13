@@ -48,8 +48,8 @@ public class PetriToCpogDialog extends JDialog {
         createButtonPanel(settings);
 
         double[][] size = new double[][] {
-                {TableLayout.FILL},
-                {110, TableLayout.FILL},
+            {TableLayout.FILL},
+            {110, TableLayout.FILL},
         };
 
         TableLayout layout = new TableLayout(size);

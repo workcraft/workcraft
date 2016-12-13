@@ -3,7 +3,7 @@ package org.workcraft.plugins.petrify.tools;
 import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
-import org.workcraft.Tool;
+import org.workcraft.Command;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.petri.PetriNetModel;
@@ -13,11 +13,11 @@ import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
-public class ShowSg implements Tool {
+public class ShowSg implements Command {
     private static final String TITLE = "State graph synthesis";
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
 

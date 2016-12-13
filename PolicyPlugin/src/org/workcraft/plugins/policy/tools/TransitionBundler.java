@@ -32,9 +32,9 @@ public class TransitionBundler {
 
     private final HashMap<Transition, VisualBundledTransition> t2vbt;
 
-    public TransitionBundler(PetriNetGenerator generator) {
-        policyNet = generator.getPolicyNet();
-        VisualPetriNet petriNet = generator.getPetriNet();
+    public TransitionBundler(PolicyToPetriConverter converter) {
+        policyNet = converter.getPolicyNet();
+        VisualPetriNet petriNet = converter.getPetriNet();
         model = petriNet.getPetriNet();
         unbundled = new Step();
 
@@ -42,7 +42,7 @@ public class TransitionBundler {
         this.t2vbt = new HashMap<Transition, VisualBundledTransition>();
         for (VisualBundledTransition vbt: policyNet.getVisualBundledTransitions()) {
             Transition t = null;
-            for (VisualTransition vt: generator.getRelatedTransitions(vbt)) {
+            for (VisualTransition vt: converter.getRelatedTransitions(vbt)) {
                 if (t == null) {
                     t = vt.getReferencedTransition();
                 } else {

@@ -8,7 +8,7 @@ import org.workcraft.plugins.cpog.Vertex;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.graph.VisualGraph;
 
-public     class CpogToGraphConverter extends DefaultModelConverter<VisualCpog, VisualGraph>  {
+public class CpogToGraphConverter extends DefaultModelConverter<VisualCpog, VisualGraph> {
 
     public CpogToGraphConverter(VisualCpog srcModel, VisualGraph dstModel) {
         super(srcModel, dstModel);

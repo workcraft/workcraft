@@ -12,7 +12,7 @@ import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class ScencoExternalToolTask implements Task<ScencoResult>, ExternalProcessListener  {
+public class ScencoExternalToolTask implements Task<ScencoResult>, ExternalProcessListener {
 
     private final WorkspaceEntry we;
     private final ScencoSolver solver;

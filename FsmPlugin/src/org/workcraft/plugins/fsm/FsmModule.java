@@ -5,29 +5,30 @@ import org.workcraft.Framework;
 import org.workcraft.Initialiser;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
-import org.workcraft.Tool;
+import org.workcraft.Command;
 import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.gui.graph.tools.AbstractContractorTool;
+import org.workcraft.gui.graph.tools.AbstractContractTransformationCommand;
 import org.workcraft.plugins.fsm.serialisation.EventDeserialiser;
 import org.workcraft.plugins.fsm.serialisation.EventSerialiser;
-import org.workcraft.plugins.fsm.tools.DeadlockCheckerTool;
-import org.workcraft.plugins.fsm.tools.DeterminismCheckerTool;
-import org.workcraft.plugins.fsm.tools.FsmToGraphConverterTool;
-import org.workcraft.plugins.fsm.tools.FsmToPetriConverterTool;
-import org.workcraft.plugins.fsm.tools.GraphToFsmConverterTool;
-import org.workcraft.plugins.fsm.tools.ReachabilityCheckerTool;
-import org.workcraft.plugins.fsm.tools.ReversibilityCheckerTool;
-import org.workcraft.plugins.fsm.tools.StateMergerTool;
+import org.workcraft.plugins.fsm.tools.FsmDeadlockVerificationCommand;
+import org.workcraft.plugins.fsm.tools.FsmDeterminismVerificationCommand;
+import org.workcraft.plugins.fsm.tools.FsmToGraphConversionCommand;
+import org.workcraft.plugins.fsm.tools.FsmToPetriConversionCommand;
+import org.workcraft.plugins.fsm.tools.GraphToFsmConversionCommand;
+import org.workcraft.plugins.fsm.tools.FsmReachabilityVerificationCommand;
+import org.workcraft.plugins.fsm.tools.FsmReversibilityVerificationCommand;
+import org.workcraft.plugins.fsm.tools.MergeStateTransformationCommand;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
 import org.workcraft.serialisation.xml.XMLSerialiser;
 import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public class FsmModule  implements Module {
 
-    private final class FsmContractorTool extends AbstractContractorTool {
+    private final class ContractStateTransformationCommand extends AbstractContractTransformationCommand {
         @Override
         public boolean isApplicableTo(ModelEntry me) {
-            return me.getMathModel() instanceof Fsm;
+            return WorkspaceUtils.isApplicable(me, Fsm.class);
         }
     }
 
@@ -51,19 +52,19 @@ public class FsmModule  implements Module {
         pm.registerClass(XMLSerialiser.class, EventSerialiser.class);
         pm.registerClass(XMLDeserialiser.class, EventDeserialiser.class);
 
-        pm.registerClass(Tool.class, FsmToGraphConverterTool.class);
-        pm.registerClass(Tool.class, GraphToFsmConverterTool.class);
-        pm.registerClass(Tool.class, FsmToPetriConverterTool.class);
-        pm.registerClass(Tool.class, DeadlockCheckerTool.class);
-        pm.registerClass(Tool.class, DeterminismCheckerTool.class);
-        pm.registerClass(Tool.class, ReachabilityCheckerTool.class);
-        pm.registerClass(Tool.class, ReversibilityCheckerTool.class);
-        pm.registerClass(Tool.class, StateMergerTool.class);
+        pm.registerClass(Command.class, FsmToGraphConversionCommand.class);
+        pm.registerClass(Command.class, GraphToFsmConversionCommand.class);
+        pm.registerClass(Command.class, FsmToPetriConversionCommand.class);
+        pm.registerClass(Command.class, FsmDeadlockVerificationCommand.class);
+        pm.registerClass(Command.class, FsmDeterminismVerificationCommand.class);
+        pm.registerClass(Command.class, FsmReachabilityVerificationCommand.class);
+        pm.registerClass(Command.class, FsmReversibilityVerificationCommand.class);
+        pm.registerClass(Command.class, MergeStateTransformationCommand.class);
 
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+        pm.registerClass(Command.class, new Initialiser<Command>() {
             @Override
-            public Tool create() {
-                return new FsmContractorTool();
+            public Command create() {
+                return new ContractStateTransformationCommand();
             }
         });
     }

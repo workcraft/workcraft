@@ -34,7 +34,6 @@ import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -88,12 +87,12 @@ import org.workcraft.tasks.ProgressMonitorArray;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.TaskManager;
+import org.workcraft.util.Commands;
 import org.workcraft.util.DataAccumulator;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.Import;
 import org.workcraft.util.LogUtils;
-import org.workcraft.util.Tools;
 import org.workcraft.util.XmlUtil;
 import org.workcraft.workspace.Memento;
 import org.workcraft.workspace.ModelEntry;
@@ -123,6 +122,7 @@ public final class Framework {
             this.scope = scope;
         }
 
+        @Override
         public Object run(Context cx) {
             return cx.evaluateString(scope, script, "<string>", 1, null);
         }
@@ -137,6 +137,7 @@ public final class Framework {
             this.scope = scope;
         }
 
+        @Override
         public Object run(Context cx) {
             return script.exec(cx, scope);
         }
@@ -151,6 +152,7 @@ public final class Framework {
             this.reader = reader;
         }
 
+        @Override
         public Object run(Context cx) {
             try {
                 return cx.compileReader(reader, sourceName, 1, null);
@@ -168,6 +170,7 @@ public final class Framework {
             this.sourceName = sourceName;
         }
 
+        @Override
         public Object run(Context cx) {
             return cx.compileString(source, sourceName, 1, null);
         }
@@ -180,6 +183,7 @@ public final class Framework {
             this.args = args;
         }
 
+        @Override
         public Object run(Context cx) {
             Object scriptable = Context.javaToJS(args, systemScope);
             ScriptableObject.putProperty(systemScope, "args", scriptable);
@@ -190,12 +194,11 @@ public final class Framework {
     }
 
     private final PluginManager pluginManager;
-    private final ModelManager modelManager;
     private final TaskManager taskManager;
     private final CompatibilityManager compatibilityManager;
-    private Config config;
     private final Workspace workspace;
 
+    private Config config;
     private ScriptableObject systemScope;
     private ScriptableObject globalScope;
 
@@ -229,7 +232,6 @@ public final class Framework {
                 }
             }
         };
-        modelManager = new ModelManager();
         compatibilityManager = new CompatibilityManager();
         config = new Config();
         workspace = new Workspace();
@@ -295,19 +297,10 @@ public final class Framework {
         return getConfigCoreVar(key);
     }
 
-    public String[] getModelNames() {
-        LinkedList<Class<?>> list = modelManager.getModelList();
-        String[] a = new String[list.size()];
-        int i = 0;
-        for (Class<?> cls : list) {
-            a[i++] = cls.getName();
-        }
-        return a;
-    }
-
     public void initJavaScript() {
         LogUtils.logMessageLine("Initialising javascript...");
         contextFactory.call(new ContextAction() {
+            @Override
             public Object run(Context cx) {
                 ImporterTopLevel importer = new ImporterTopLevel();
                 importer.initStandardObjects(cx, false);
@@ -351,6 +344,7 @@ public final class Framework {
         deleteJavaScriptProperty(name, scope);
 
         contextFactory.call(new ContextAction() {
+            @Override
             public Object run(Context arg0) {
                 Object scriptable = Context.javaToJS(object, scope);
                 ScriptableObject.putProperty(scope, name, scriptable);
@@ -514,10 +508,6 @@ public final class Framework {
         return mainWindow;
     }
 
-    public ModelManager getModelManager() {
-        return modelManager;
-    }
-
     public PluginManager getPluginManager() {
         return pluginManager;
     }
@@ -536,6 +526,10 @@ public final class Framework {
 
     public boolean isInGuiMode() {
         return inGUIMode;
+    }
+
+    public WorkspaceEntry getWorkspaceEntry(ModelEntry me) {
+        return getWorkspace().getWorkspaceEntry(me);
     }
 
     public void setArgs(List<String> args) {
@@ -567,7 +561,7 @@ public final class Framework {
         return mathData;
     }
 
-    private InputStream getVisualData(byte[] bufferedInput, Document metaDoc)    throws IOException {
+    private InputStream getVisualData(byte[] bufferedInput, Document metaDoc) throws IOException {
         Element visualElement = XmlUtil.getChildElement("visual", metaDoc.getDocumentElement());
         InputStream visualData = null;
         if (visualElement  != null) {
@@ -848,7 +842,7 @@ public final class Framework {
 
     public ModelEntry runTool(ModelEntry me, String className) {
         if (className != null) {
-            for (Tool tool: Tools.getApplicableTools(me)) {
+            for (Command tool: Commands.getApplicableCommands(me)) {
                 if (className.equals(tool.getClass().getSimpleName())) {
                     return tool.run(me);
                 }
@@ -914,13 +908,6 @@ public final class Framework {
 
     public File getWorkingDirectory() {
         return workingDirectory;
-    }
-
-    public void saveMementoInCurrentWorkspaceEntry() {
-        if (isInGuiMode()) {
-            final WorkspaceEntry we = mainWindow.getCurrentWorkspaceEntry();
-            we.saveMemento();
-        }
     }
 
     public void repaintCurrentEditor() {

@@ -8,14 +8,14 @@ import java.util.ArrayList;
 import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
-import org.workcraft.Tool;
+import org.workcraft.Command;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.tasks.PGMinerResultHandler;
 import org.workcraft.plugins.cpog.tasks.PGMinerTask;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class PGMinerSelectedGraphsExtractionTool implements Tool {
+public class PGMinerSelectedGraphsExtractionTool implements Command {
 
     public String getSection() {
         return "! Process Mining";

@@ -27,12 +27,12 @@ import org.workcraft.plugins.cpog.optimisation.LegacyCpogSolver;
 import org.workcraft.plugins.cpog.optimisation.LegacyDefaultCpogSolver;
 
 public class CnfSolver_CleverCnfGeneratorTests extends SolverTests {
-    public CnfSolver_CleverCnfGeneratorTests()
-    {
+
+    public CnfSolver_CleverCnfGeneratorTests() {
     }
 
-    protected LegacyCpogSolver createSolver()
-    {
+    protected LegacyCpogSolver createSolver() {
         return new LegacyDefaultCpogSolver<BooleanFormula>(new CnfGeneratingOptimiser(), new CleverCnfGenerator());
     }
+
 }

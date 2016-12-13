@@ -56,7 +56,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
 
         double[][] size = new double[][] {
             {TableLayout.FILL},
-                {60, TableLayout.FILL},
+            {60, TableLayout.FILL},
         };
 
         TableLayout layout = new TableLayout(size);

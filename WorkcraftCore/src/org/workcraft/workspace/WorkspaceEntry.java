@@ -79,7 +79,10 @@ public class WorkspaceEntry implements ObservableState {
             }
             workspace.fireEntryChanged(this);
             final Framework framework = Framework.getInstance();
-            framework.getMainWindow().refreshWorkspaceEntryTitle(this, true);
+            final MainWindow mainWindow = framework.getMainWindow();
+            if (mainWindow != null) {
+                mainWindow.refreshWorkspaceEntryTitle(this, true);
+            }
         }
     }
 
@@ -208,9 +211,10 @@ public class WorkspaceEntry implements ObservableState {
         MainWindowActions.EDIT_SELECT_ALL_ACTION.setEnabled(canModify && canSelect);
         MainWindowActions.EDIT_SELECT_INVERSE_ACTION.setEnabled(canModify && canSelect);
         MainWindowActions.EDIT_SELECT_NONE_ACTION.setEnabled(canModify && canSelect);
-        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        final Framework instance = Framework.getInstance();
+        final MainWindow mainWindow = instance.getMainWindow();
         if (mainWindow != null) {
-            mainWindow.getMainMenu().updateToolsMenuState(canModify);
+            mainWindow.getMainMenu().updateCommandsMenuState(canModify);
             mainWindow.getPropertyView().setVisible(canModify);
         }
     }

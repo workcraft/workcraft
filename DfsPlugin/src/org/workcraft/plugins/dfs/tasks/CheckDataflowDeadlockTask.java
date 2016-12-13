@@ -5,7 +5,7 @@ import java.io.File;
 import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.dfs.VisualDfs;
-import org.workcraft.plugins.dfs.stg.StgGenerator;
+import org.workcraft.plugins.dfs.stg.DfsToStgConverter;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.MpsatSettings;
@@ -45,8 +45,8 @@ public class CheckDataflowDeadlockTask extends MpsatChainTask {
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         try {
-            StgGenerator generator = new StgGenerator((VisualDfs) we.getModelEntry().getVisualModel());
-            StgModel model = (StgModel) generator.getStgModel().getMathModel();
+            DfsToStgConverter converter = new DfsToStgConverter((VisualDfs) we.getModelEntry().getVisualModel());
+            StgModel model = (StgModel) converter.getStgModel().getMathModel();
             Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
             if (exporter == null) {
                 throw new RuntimeException("Exporter not available: model class " + model.getClass().getName() + " to format STG.");

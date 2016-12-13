@@ -1,14 +1,14 @@
 package org.workcraft.plugins.son.tools;
 
-import org.workcraft.Tool;
+import org.workcraft.Command;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.algorithm.TimeAlg;
-import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
-public class TimeValueDisable implements Tool {
+public class TimeValueDisable implements Command {
 
     @Override
     public boolean isApplicableTo(ModelEntry me) {

@@ -68,7 +68,7 @@ public class ConceptsResultHandler extends DummyProgressMonitor<ExternalProcessR
                                     ModelEntry me = Import.importFromByteArray(new DotGImporter(), result.getReturnValue().getOutput());
                                     String title = "Concepts - ";
                                     me.getModel().setTitle(title + name);
-                                    if (sender instanceof ConceptsWritingTool && !((ConceptsWritingTool) sender).getDotLayout()) {
+                                    if (sender instanceof TranslateConceptConversionCommand && !((TranslateConceptConversionCommand) sender).getDotLayout()) {
                                         StgDescriptor stgModel = new StgDescriptor();
                                         MathModel mathModel = me.getMathModel();
                                         Path<String> path = we.getWorkspacePath();

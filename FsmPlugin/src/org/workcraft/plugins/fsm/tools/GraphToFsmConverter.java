@@ -9,7 +9,7 @@ import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.graph.Vertex;
 import org.workcraft.plugins.graph.VisualGraph;
 
-public     class GraphToFsmConverter extends DefaultModelConverter<VisualGraph, VisualFsm>  {
+public class GraphToFsmConverter extends DefaultModelConverter<VisualGraph, VisualFsm> {
 
     public GraphToFsmConverter(VisualGraph srcModel, VisualFsm dstModel) {
         super(srcModel, dstModel);

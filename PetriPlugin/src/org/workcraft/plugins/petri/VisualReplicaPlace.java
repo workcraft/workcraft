@@ -52,7 +52,7 @@ public class VisualReplicaPlace extends VisualReplica {
     }
 
     @Override
-    public void draw(DrawRequest r)    {
+    public void draw(DrawRequest r) {
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
         cacheRenderedText(r);  // needed to better estimate the bounding box

@@ -29,7 +29,7 @@ public final class PropertyCombiner implements PropertyDescriptor {
     }
 
     @Override
-    public void setValue(Object value)  throws InvocationTargetException {
+    public void setValue(Object value) throws InvocationTargetException {
         for (PropertyDescriptor descriptor: values) {
             descriptor.setValue(value);
         }

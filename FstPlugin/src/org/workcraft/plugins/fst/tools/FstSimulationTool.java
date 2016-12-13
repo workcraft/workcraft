@@ -30,7 +30,7 @@ import org.workcraft.plugins.stg.tools.StgSimulationTool;
 import org.workcraft.util.Func;
 
 public class FstSimulationTool extends StgSimulationTool {
-    private FstToStgConverter generator;
+    private FstToStgConverter converter;
 
     @Override
     public void activated(final GraphEditor editor) {
@@ -42,7 +42,7 @@ public class FstSimulationTool extends StgSimulationTool {
     public String getTraceLabelByReference(String ref) {
         String label = null;
         if (ref != null) {
-            label = generator.getEventLabel(ref);
+            label = converter.getEventLabel(ref);
             if (label == "") label = Character.toString(VisualEvent.EPSILON_SYMBOL);
         }
         if (label == null) {
@@ -55,8 +55,8 @@ public class FstSimulationTool extends StgSimulationTool {
     public void generateUnderlyingModel(VisualModel model) {
         final VisualFst fst = (VisualFst) model;
         final VisualStg stg = new VisualStg(new Stg());
-        generator = new FstToStgConverter(fst, stg);
-        setUnderlyingModel(generator.getDstModel());
+        converter = new FstToStgConverter(fst, stg);
+        setUnderlyingModel(converter.getDstModel());
     }
 
     @Override
@@ -126,7 +126,7 @@ public class FstSimulationTool extends StgSimulationTool {
         return new Decorator() {
             @Override
             public Decoration getDecoration(Node node) {
-                if (generator == null) return null;
+                if (converter == null) return null;
                 if (node instanceof VisualState) {
                     return getStateDecoration((VisualState) node);
                 } else if (node instanceof VisualEvent) {
@@ -142,7 +142,7 @@ public class FstSimulationTool extends StgSimulationTool {
     public Decoration getEventDecoration(VisualEvent event) {
         Node transition = getTraceCurrentNode();
         final boolean isExcited = getExcitedTransitionOfNode(event) != null;
-        final boolean isSuggested = isExcited && generator.isRelated(event, transition);
+        final boolean isSuggested = isExcited && converter.isRelated(event, transition);
         return new Decoration() {
             @Override
             public Color getColorisation() {
@@ -157,7 +157,7 @@ public class FstSimulationTool extends StgSimulationTool {
     }
 
     public Decoration getStateDecoration(VisualState state) {
-        VisualPlace p = generator.getRelatedPlace(state);
+        VisualPlace p = converter.getRelatedPlace(state);
         if (p == null) {
             return null;
         }
@@ -176,7 +176,7 @@ public class FstSimulationTool extends StgSimulationTool {
 
     private Transition getExcitedTransitionOfNode(Node node) {
         if ((node != null) && (node instanceof VisualEvent)) {
-            VisualTransition vTransition = generator.getRelatedTransition((VisualEvent) node);
+            VisualTransition vTransition = converter.getRelatedTransition((VisualEvent) node);
             if (vTransition != null) {
                 Transition transition = vTransition.getReferencedTransition();
                 if (isEnabledNode(transition)) {

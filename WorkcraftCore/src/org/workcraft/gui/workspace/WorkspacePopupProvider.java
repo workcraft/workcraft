@@ -36,7 +36,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 import org.workcraft.Framework;
-import org.workcraft.Tool;
+import org.workcraft.Command;
 import org.workcraft.MenuOrdering.Position;
 import org.workcraft.PluginManager;
 import org.workcraft.dom.Model;
@@ -46,7 +46,7 @@ import org.workcraft.gui.MainMenu;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.trees.TreePopupProvider;
 import org.workcraft.plugins.PluginInfo;
-import org.workcraft.util.Tools;
+import org.workcraft.util.Commands;
 import org.workcraft.workspace.FileHandler;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
@@ -65,7 +65,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
         JPopupMenu popup = new JPopupMenu();
 
         final HashMap<JMenuItem, FileHandler> handlers = new HashMap<>();
-        final HashMap<JMenuItem, Tool> tools = new HashMap<>();
+        final HashMap<JMenuItem, Command> commands = new HashMap<>();
 
         final Framework framework = Framework.getInstance();
         final Workspace workspace = framework.getWorkspace();
@@ -202,8 +202,8 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                     popup.add(miSaveAs);
                     popup.add(miOpenView);
 
-                    List<Tool> applicableTools = Tools.getApplicableTools(modelEntry);
-                    List<String> sections = Tools.getSections(applicableTools);
+                    List<Command> applicableCommands = Commands.getApplicableCommands(modelEntry);
+                    List<String> sections = Commands.getSections(applicableCommands);
 
                     if (!sections.isEmpty()) {
                         popup.addSeparator();
@@ -212,26 +212,26 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                         String sectionMenuName = MainMenu.getMenuNameFromSection(section);
                         JMenu sectionMenu = new JMenu(sectionMenuName);
 
-                        List<Tool> sectionTools = Tools.getSectionTools(section, applicableTools);
-                        List<List<Tool>> sectionToolsPartitions = new LinkedList<>();
-                        sectionToolsPartitions.add(Tools.getUnpositionedTools(sectionTools));
-                        sectionToolsPartitions.add(Tools.getPositionedTools(sectionTools, Position.TOP));
-                        sectionToolsPartitions.add(Tools.getPositionedTools(sectionTools, Position.MIDDLE));
-                        sectionToolsPartitions.add(Tools.getPositionedTools(sectionTools, Position.BOTTOM));
+                        List<Command> sectionCommands = Commands.getSectionCommands(section, applicableCommands);
+                        List<List<Command>> sectionCommandsPartitions = new LinkedList<>();
+                        sectionCommandsPartitions.add(Commands.getUnpositionedCommands(sectionCommands));
+                        sectionCommandsPartitions.add(Commands.getPositionedCommands(sectionCommands, Position.TOP));
+                        sectionCommandsPartitions.add(Commands.getPositionedCommands(sectionCommands, Position.MIDDLE));
+                        sectionCommandsPartitions.add(Commands.getPositionedCommands(sectionCommands, Position.BOTTOM));
                         boolean needSeparator = false;
-                        for (List<Tool> sectionToolsPartition: sectionToolsPartitions) {
+                        for (List<Command> sectionCommandsPartition: sectionCommandsPartitions) {
                             boolean isFirstItem = true;
-                            for (Tool tool : sectionToolsPartition) {
+                            for (Command command : sectionCommandsPartition) {
                                 if (needSeparator && isFirstItem) {
                                     sectionMenu.addSeparator();
                                 }
                                 needSeparator = true;
                                 isFirstItem = false;
-                                JMenuItem item = new JMenuItem(tool.getDisplayName().trim());
-                                tools.put(item, tool);
+                                JMenuItem item = new JMenuItem(command.getDisplayName().trim());
+                                commands.put(item, command);
                                 item.addActionListener(new ActionListener() {
                                     public void actionPerformed(ActionEvent e) {
-                                        Tools.run(openFile, tools.get(e.getSource()));
+                                        Commands.run(openFile, commands.get(e.getSource()));
                                     }
                                 });
                                 sectionMenu.add(item);
