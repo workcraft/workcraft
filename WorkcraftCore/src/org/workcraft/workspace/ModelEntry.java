@@ -7,7 +7,7 @@ import org.workcraft.dom.visual.VisualModel;
 
 public class ModelEntry {
     private final ModelDescriptor descriptor;
-    private Model model;
+    private final Model model;
 
     public ModelEntry(ModelDescriptor descriptor, Model model) {
         this.descriptor = descriptor;
@@ -18,17 +18,13 @@ public class ModelEntry {
         return descriptor;
     }
 
-    public void setModel(Model model) {
-        this.model = model;
-    }
-
     public Model getModel() {
         return model;
     }
 
     public VisualModel getVisualModel() {
         if (isVisual()) {
-            return (VisualModel) model;
+            return (VisualModel) getModel();
         } else {
             return null;
         }
@@ -38,12 +34,42 @@ public class ModelEntry {
         if (isVisual()) {
             return getVisualModel().getMathModel();
         } else {
-            return (MathModel) model;
+            return (MathModel) getModel();
         }
     }
 
     public boolean isVisual() {
-        return model instanceof VisualModel;
+        return getModel() instanceof VisualModel;
+    }
+
+    public boolean isApplicable(Class<?> cls) {
+        return getAs(cls) != null;
+    }
+
+    public boolean isApplicableExact(Class<?> cls) {
+        boolean result = false;
+        final Model model = getModel();
+        if (model.getClass() == cls) {
+            result = true;
+        } else if (isVisual()) {
+            final MathModel mathModel = getMathModel();
+            result = mathModel.getClass() == cls;
+        }
+        return result;
+    }
+
+    @SuppressWarnings("unchecked")
+    public <T> T getAs(Class<T> cls) {
+        if (cls.isInstance(getModel())) {
+            return (T) getModel();
+        }
+        if (isVisual()) {
+            final MathModel mathModel = getMathModel();
+            if (cls.isInstance(mathModel)) {
+                return (T) mathModel;
+            }
+        }
+        return null;
     }
 
 }

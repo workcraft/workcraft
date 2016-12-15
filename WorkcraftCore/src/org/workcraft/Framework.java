@@ -35,10 +35,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import javax.swing.SwingUtilities;
@@ -55,7 +53,6 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.Node;
@@ -80,7 +77,6 @@ import org.workcraft.serialisation.DeserialisationResult;
 import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
-import org.workcraft.serialisation.References;
 import org.workcraft.tasks.DefaultTaskManager;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.ProgressMonitorArray;
@@ -202,7 +198,7 @@ public final class Framework {
     private ScriptableObject systemScope;
     private ScriptableObject globalScope;
 
-    private boolean inGUIMode = false;
+    private boolean inGuiMode = false;
     private boolean shutdownRequested = false;
     private boolean guiRestartRequested = false;
     private final ContextFactory contextFactory = new ContextFactory();
@@ -308,7 +304,6 @@ public final class Framework {
 
                 Object frameworkScriptable = Context.javaToJS(Framework.this, systemScope);
                 ScriptableObject.putProperty(systemScope, "framework", frameworkScriptable);
-                //ScriptableObject.putProperty(systemScope, "importer", );
                 systemScope.setAttributes("framework", ScriptableObject.READONLY);
 
                 globalScope = (ScriptableObject) cx.newObject(systemScope);
@@ -322,10 +317,7 @@ public final class Framework {
 
     public void updateJavaScript(WorkspaceEntry we) {
         ScriptableObject jsGlobalScope = getJavaScriptGlobalScope();
-        setJavaScriptProperty("workspaceEntry", we, jsGlobalScope, true);
-
         ModelEntry modelEntry = we.getModelEntry();
-        setJavaScriptProperty("modelEntry", modelEntry, jsGlobalScope, true);
 
         VisualModel visualModel = modelEntry.getVisualModel();
         setJavaScriptProperty("visualModel", visualModel, jsGlobalScope, true);
@@ -438,7 +430,7 @@ public final class Framework {
     }
 
     public void startGUI() {
-        if (inGUIMode) {
+        if (inGuiMode) {
             System.out.println("Already in GUI mode");
             return;
         }
@@ -472,7 +464,7 @@ public final class Framework {
             }
         });
 
-        inGUIMode = true;
+        inGuiMode = true;
     }
 
     public void shutdownGUI() throws OperationCancelledException {
@@ -480,7 +472,7 @@ public final class Framework {
             mainWindow.shutdown();
             mainWindow.dispose();
             mainWindow = null;
-            inGUIMode = false;
+            inGuiMode = false;
 
             contextFactory.call(new ContextAction() {
                 @Override
@@ -525,7 +517,7 @@ public final class Framework {
     }
 
     public boolean isInGuiMode() {
-        return inGUIMode;
+        return inGuiMode;
     }
 
     public WorkspaceEntry getWorkspaceEntry(ModelEntry me) {
@@ -538,115 +530,39 @@ public final class Framework {
         contextFactory.call(setargs);
     }
 
-    private InputStream getUncompressedEntry(String name, InputStream zippedData) throws IOException {
-        ZipInputStream zis = new ZipInputStream(zippedData);
-        ZipEntry ze;
-        while ((ze = zis.getNextEntry()) != null) {
-            if (ze.getName().equals(name)) {
-                return zis;
-            }
-            zis.closeEntry();
-        }
-        zis.close();
-        return null;
-    }
-
-    private InputStream getMathData(byte[] bufferedInput, Document metaDoc) throws IOException {
-        Element mathElement = XmlUtil.getChildElement("math", metaDoc.getDocumentElement());
-        InputStream mathData = null;
-        if (mathElement != null) {
-            InputStream is = new ByteArrayInputStream(bufferedInput);
-            mathData = getUncompressedEntry(mathElement.getAttribute("entry-name"), is);
-        }
-        return mathData;
-    }
-
-    private InputStream getVisualData(byte[] bufferedInput, Document metaDoc) throws IOException {
-        Element visualElement = XmlUtil.getChildElement("visual", metaDoc.getDocumentElement());
-        InputStream visualData = null;
-        if (visualElement  != null) {
-            InputStream is = new ByteArrayInputStream(bufferedInput);
-            visualData = getUncompressedEntry(visualElement.getAttribute("entry-name"), is);
-        }
-        return visualData;
-    }
-
-    private ModelDescriptor loadMetaDescriptor(Document metaDoc)
-            throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-        Element descriptorElement = XmlUtil.getChildElement("descriptor", metaDoc.getDocumentElement());
-        String descriptorClass = XmlUtil.readStringAttr(descriptorElement, "class");
-        return (ModelDescriptor) Class.forName(descriptorClass).newInstance();
-    }
-
-    private Document loadMetaDoc(byte[] bufferedInput)
-            throws IOException, DeserialisationException, ParserConfigurationException, SAXException {
-        InputStream metaData = getUncompressedEntry("meta", new ByteArrayInputStream(bufferedInput));
-        if (metaData == null) {
-            throw new DeserialisationException("meta entry is missing in the ZIP file");
-        }
-        Document metaDoc = XmlUtil.loadDocument(metaData);
-        metaData.close();
-        return metaDoc;
-    }
-
-    private void loadVisualModelState(byte[] bi, VisualModel model, References references)
-            throws IOException, ParserConfigurationException, SAXException {
-        InputStream stateData = getUncompressedEntry("state.xml", new ByteArrayInputStream(bi));
-        if (stateData != null) {
-            Document stateDoc = XmlUtil.loadDocument(stateData);
-            Element stateElement = stateDoc.getDocumentElement();
-            // level
-            Element levelElement = XmlUtil.getChildElement("level", stateElement);
-            Object currentLevel = references.getObject(levelElement.getAttribute("ref"));
-            if (currentLevel instanceof Container) {
-                model.setCurrentLevel((Container) currentLevel);
-            }
-            // selection
-            Element selectionElement = XmlUtil.getChildElement("selection", stateElement);
-            Set<Node> nodes = new HashSet<>();
-            for (Element nodeElement: XmlUtil.getChildElements("node", selectionElement)) {
-                Object node = references.getObject(nodeElement.getAttribute("ref"));
-                if (node instanceof Node) {
-                    nodes.add((Node) node);
-                }
-            }
-            model.addToSelection(nodes);
-        }
-    }
-
-    public ModelEntry load(String path) throws DeserialisationException {
+    public ModelEntry loadModel(String path) throws DeserialisationException {
         File file = getFileByAbsoluteOrRelativePath(path);
         if (checkFileMessageLog(file, null)) {
-            return load(file);
+            return loadModel(file);
         }
         return null;
     }
 
-    public ModelEntry load(File file) throws DeserialisationException {
+    public ModelEntry loadModel(File file) throws DeserialisationException {
         try {
             FileInputStream fis = new FileInputStream(file);
             ByteArrayInputStream bis = compatibilityManager.process(fis);
-            return load(bis);
+            return loadModel(bis);
         } catch (FileNotFoundException e) {
             throw new DeserialisationException(e);
         }
     }
 
-    public ModelEntry load(InputStream is) throws DeserialisationException {
+    public ModelEntry loadModel(InputStream is) throws DeserialisationException {
         try {
             // load meta data
             byte[] bi = DataAccumulator.loadStream(is);
-            Document metaDoc = loadMetaDoc(bi);
-            ModelDescriptor descriptor = loadMetaDescriptor(metaDoc);
+            Document metaDoc = FrameworkUtils.loadMetaDoc(bi);
+            ModelDescriptor descriptor = FrameworkUtils.loadMetaDescriptor(metaDoc);
 
             // load math model
-            InputStream mathData = getMathData(bi, metaDoc);
+            InputStream mathData = FrameworkUtils.getMathData(bi, metaDoc);
             XMLModelDeserialiser mathDeserialiser = new XMLModelDeserialiser(getPluginManager());
             DeserialisationResult mathResult = mathDeserialiser.deserialise(mathData, null, null);
             mathData.close();
 
             // load visual model (if present)
-            InputStream visualData = getVisualData(bi, metaDoc);
+            InputStream visualData = FrameworkUtils.getVisualData(bi, metaDoc);
             if (visualData == null) {
                 return new ModelEntry(descriptor, mathResult.model);
             }
@@ -656,7 +572,7 @@ public final class Framework {
 
             // load current level and selection
             if (visualResult.model instanceof VisualModel) {
-                loadVisualModelState(bi, (VisualModel) visualResult.model, visualResult.references);
+                FrameworkUtils.loadVisualModelState(bi, (VisualModel) visualResult.model, visualResult.references);
             }
             return new ModelEntry(descriptor, visualResult.model);
         } catch (IOException | ParserConfigurationException | SAXException |
@@ -665,17 +581,17 @@ public final class Framework {
         }
     }
 
-    public ModelEntry load(Memento memento) {
+    public ModelEntry loadModel(Memento memento) {
         try {
-            return load(memento.getStream());
+            return loadModel(memento.getStream());
         } catch (DeserialisationException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public ModelEntry load(InputStream is1, InputStream is2) throws DeserialisationException {
-        ModelEntry me1 = load(is1);
-        ModelEntry me2 = load(is2);
+    public ModelEntry loadModel(InputStream is1, InputStream is2) throws DeserialisationException {
+        ModelEntry me1 = loadModel(is1);
+        ModelEntry me2 = loadModel(is2);
 
         VisualModel vmodel1 = me1.getVisualModel();
         VisualModel vmodel2 = me2.getVisualModel();
@@ -691,48 +607,28 @@ public final class Framework {
         vmodel1.select(children);
 
         // FIXME: Dirty hack to avoid any hanging observers (serialise and deserialise the model).
-        Memento memo = save(me1);
-        return load(memo);
+        Memento memo = saveModel(me1);
+        return loadModel(memo);
     }
 
-    public void save(ModelEntry modelEntry, String path) throws SerialisationException {
+    public void saveModel(ModelEntry modelEntry, String path) throws SerialisationException {
         if (modelEntry == null) return;
         File file = getFileByAbsoluteOrRelativePath(path);
-        save(modelEntry, file);
+        saveModel(modelEntry, file);
     }
 
-    public void save(ModelEntry modelEntry, File file) throws SerialisationException {
+    public void saveModel(ModelEntry modelEntry, File file) throws SerialisationException {
         if (modelEntry == null) return;
         try {
             FileOutputStream stream = new FileOutputStream(file);
-            save(modelEntry, stream);
+            saveModel(modelEntry, stream);
             stream.close();
         } catch (IOException e) {
             throw new SerialisationException(e);
         }
     }
 
-    private void saveSelectionState(VisualModel visualModel, OutputStream os, ReferenceProducer visualRefs)
-            throws ParserConfigurationException, IOException {
-        Document stateDoc = XmlUtil.createDocument();
-        Element stateRoot = stateDoc.createElement("workcraft-state");
-        stateDoc.appendChild(stateRoot);
-        // level
-        Element levelElement = stateDoc.createElement("level");
-        levelElement.setAttribute("ref", visualRefs.getReference(visualModel.getCurrentLevel()));
-        stateRoot.appendChild(levelElement);
-        // selection
-        Element selectionElement = stateDoc.createElement("selection");
-        for (Node node: visualModel.getSelection()) {
-            Element nodeElement = stateDoc.createElement("node");
-            nodeElement.setAttribute("ref", visualRefs.getReference(node));
-            selectionElement.appendChild(nodeElement);
-        }
-        stateRoot.appendChild(selectionElement);
-        XmlUtil.writeDocument(stateDoc, os);
-    }
-
-    public void save(ModelEntry modelEntry, OutputStream out) throws SerialisationException {
+    public void saveModel(ModelEntry modelEntry, OutputStream out) throws SerialisationException {
         Model model = modelEntry.getModel();
         VisualModel visualModel = (model instanceof VisualModel) ? (VisualModel) model : null;
         Model mathModel = (visualModel == null) ? model : visualModel.getMathModel();
@@ -756,7 +652,7 @@ public final class Framework {
                 zos.closeEntry();
                 // serialise visual model selection state
                 zos.putNextEntry(new ZipEntry("state.xml"));
-                saveSelectionState(visualModel, zos, visualRefs);
+                FrameworkUtils.saveSelectionState(visualModel, zos, visualRefs);
                 zos.closeEntry();
             }
             // serialise meta data
@@ -789,22 +685,22 @@ public final class Framework {
         }
     }
 
-    public Memento save(ModelEntry modelEntry) {
+    public Memento saveModel(ModelEntry modelEntry) {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
-            save(modelEntry, os);
+            saveModel(modelEntry, os);
         } catch (SerialisationException e) {
             throw new RuntimeException(e);
         }
         return new Memento(os.toByteArray());
     }
 
-    public ModelEntry importFile(String path) throws DeserialisationException {
+    public ModelEntry importModel(String path) throws DeserialisationException {
         File file = getFileByAbsoluteOrRelativePath(path);
-        return importFile(file);
+        return importModel(file);
     }
 
-    public ModelEntry importFile(File file) throws DeserialisationException {
+    public ModelEntry importModel(File file) throws DeserialisationException {
         try {
             final Importer importer = Import.chooseBestImporter(getPluginManager(), file);
             return Import.importFromFile(importer, file);
@@ -813,18 +709,18 @@ public final class Framework {
         }
     }
 
-    public void exportFile(ModelEntry modelEntry, String path, String format) throws SerialisationException {
+    public void exportModel(ModelEntry modelEntry, String path, String format) throws SerialisationException {
         if (modelEntry == null) return;
         File file = getFileByAbsoluteOrRelativePath(path);
         UUID uuid = Format.getUUID(format);
         if (uuid == null) {
             LogUtils.logErrorLine("'" + format + "' format is not supported.");
         } else {
-            exportFile(modelEntry, file, uuid);
+            exportModel(modelEntry, file, uuid);
         }
     }
 
-    public void exportFile(ModelEntry modelEntry, File file, UUID uuid) throws SerialisationException {
+    public void exportModel(ModelEntry modelEntry, File file, UUID uuid) throws SerialisationException {
         if (modelEntry == null) return;
         Exporter exporter = Export.chooseBestExporter(getPluginManager(), modelEntry.getMathModel(), uuid);
         if (exporter == null) {
@@ -840,11 +736,17 @@ public final class Framework {
         }
     }
 
-    public ModelEntry runTool(ModelEntry me, String className) {
+    public ModelEntry runCommand(ModelEntry me, String className) {
         if (className != null) {
             for (Command tool: Commands.getApplicableCommands(me)) {
                 if (className.equals(tool.getClass().getSimpleName())) {
-                    return tool.run(me);
+                    WorkspaceEntry we = getWorkspaceEntry(me);
+                    if (we == null) {
+                        we = new WorkspaceEntry(null);
+                        we.setModelEntry(me);
+                    }
+                    tool.run(we);
+                    break;
                 }
             }
         }

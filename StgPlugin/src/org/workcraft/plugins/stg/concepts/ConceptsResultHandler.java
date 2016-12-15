@@ -75,7 +75,7 @@ public class ConceptsResultHandler extends DummyProgressMonitor<ExternalProcessR
                                         VisualModelDescriptor v = stgModel.getVisualModelDescriptor();
                                         try {
                                             VisualStg visualStg = (VisualStg) v.create(mathModel);
-                                            me.setModel(visualStg);
+                                            me = new ModelEntry(me.getDescriptor(), visualStg);
                                         } catch (VisualModelInstantiationException e) {
                                             System.out.println("Expected");
                                             e.printStackTrace();

@@ -8,43 +8,34 @@ function print(msg) {
 	System.out.print(msg);
 }
 
-function println(msg) {
-	System.out.println(msg);
-}
-
-function printerr(msg) {
+function printErr(msg) {
 	System.err.print(msg);
 }
 
-function printlnerr(msg) {
-	System.err.println(msg);
+// Model file operations
+
+function loadModel(path) {
+	return framework.loadModel(path);
 }
 
-// File operations
-
-function load(path) {
-	return framework.load(path);
+function saveModel(model, path) {
+	framework.saveModel(model, path);
 }
 
-function save(model, path) {
-	framework.save(model, path);
-}
-
-function import(path) {
+function importModel(path) {
 	return framework.importFile(path);
 }
 
-function export(model, path, format) {
+function exportModel(model, path, format) {
 	return framework.exportFile(model, path, format);
 }
 
 // Tool execution
 
-function applyTool(me, toolClassName) {
-	println(me);
-	println(toolClassName);
-	println(framework);
-	framework.runTool(me, toolClass);
+function runCommand(model, commandName) {
+	print(model + "\n");
+	print(commandName + "\n");
+	framework.runCommand(model, commandName);
 }
 
 // Script execution

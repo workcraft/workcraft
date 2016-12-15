@@ -12,7 +12,6 @@ import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.converter.SignalStg;
 import org.workcraft.workspace.ModelEntry;
-import org.workcraft.workspace.WorkspaceUtils;
 
 public class CircuitToStgConversionCommand extends AbstractConversionCommand {
 
@@ -23,7 +22,7 @@ public class CircuitToStgConversionCommand extends AbstractConversionCommand {
 
     @Override
     public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicableExact(me, VisualCircuit.class);
+        return me.isApplicableExact(VisualCircuit.class);
     }
 
     @Override

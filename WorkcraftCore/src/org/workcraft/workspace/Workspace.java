@@ -109,12 +109,12 @@ public class Workspace {
         we.setChanged(false);
         final Framework framework = Framework.getInstance();
         if (file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
-            we.setModelEntry(framework.load(file));
+            we.setModelEntry(framework.loadModel(file));
             if (workspacePath == null) {
                 workspacePath = tempMountExternalFile(file);
             }
         } else {
-            we.setModelEntry(framework.importFile(file));
+            we.setModelEntry(framework.importModel(file));
             Path<String> parent;
             if (workspacePath == null) {
                 parent = Path.empty();
@@ -131,7 +131,7 @@ public class Workspace {
     public WorkspaceEntry merge(WorkspaceEntry we, File file) throws DeserialisationException {
         if ((we != null) && file.exists() && file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
             final Framework framework = Framework.getInstance();
-            we.insert(framework.load(file));
+            we.insert(framework.loadModel(file));
         }
         return we;
     }

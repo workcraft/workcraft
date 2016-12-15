@@ -76,7 +76,7 @@ public class SaveLoadTests {
 
         final CompatibilityManager compatibilityManager = framework.getCompatibilityManager();
         ByteArrayInputStream bis = compatibilityManager.process(new Base16Reader(testDataMathModel));
-        ModelEntry modelEntry = framework.load(bis);
+        ModelEntry modelEntry = framework.loadModel(bis);
         PetriNet petri = (PetriNet) modelEntry.getModel();
 
         Assert.assertNotNull(petri);
@@ -91,7 +91,7 @@ public class SaveLoadTests {
 
         final CompatibilityManager compatibilityManager = framework.getCompatibilityManager();
         ByteArrayInputStream bis = compatibilityManager.process(new Base16Reader(testDataVisualModel));
-        ModelEntry modelEntry = framework.load(bis);
+        ModelEntry modelEntry = framework.loadModel(bis);
         VisualPetriNet petriVisual = (VisualPetriNet) modelEntry.getModel();
         PetriNet petri = (PetriNet) petriVisual.getMathModel();
 
@@ -119,7 +119,7 @@ public class SaveLoadTests {
         pm.reconfigureManifest(false);
 
         StringWriter writer = new StringWriter();
-        framework.save(new ModelEntry(new PetriNetDescriptor(), model), new Base16Writer(writer));
+        framework.saveModel(new ModelEntry(new PetriNetDescriptor(), model), new Base16Writer(writer));
         String generatedValue = writer.toString();
         if (currentValue.equals(generatedValue)) {
             return;

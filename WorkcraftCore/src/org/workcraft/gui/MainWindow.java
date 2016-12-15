@@ -273,7 +273,7 @@ public class MainWindow extends JFrame {
             }
             try {
                 visualModel = vmd.create((MathModel) modelEntry.getModel());
-                modelEntry.setModel(visualModel);
+                modelEntry = new ModelEntry(descriptor, visualModel);
             } catch (VisualModelInstantiationException e) {
                 JOptionPane.showMessageDialog(this,
                         "A visual model could not be created for the selected model.\nPlease refer to the Problems window for details.\n",
@@ -1018,7 +1018,7 @@ public class MainWindow extends JFrame {
             try {
                 if (we.getModelEntry() != null) {
                     final Framework framework = Framework.getInstance();
-                    framework.save(we.getModelEntry(), we.getFile().getPath());
+                    framework.saveModel(we.getModelEntry(), we.getFile().getPath());
                 } else {
                     throw new RuntimeException(
                             "Cannot save workspace entry - it does not have an associated Workcraft model.");
@@ -1067,7 +1067,7 @@ public class MainWindow extends JFrame {
             }
 
             if (we.getModelEntry() != null) {
-                framework.save(we.getModelEntry(), path);
+                framework.saveModel(we.getModelEntry(), path);
             } else {
                 throw new RuntimeException(
                         "Cannot save workspace entry - it does not have an associated Workcraft model.");
