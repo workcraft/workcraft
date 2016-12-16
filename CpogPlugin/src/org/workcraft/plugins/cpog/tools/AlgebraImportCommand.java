@@ -10,15 +10,14 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.ToolboxPanel;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.util.LogUtils;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class AlgebraImportCommand implements Command {
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, VisualCpog.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, VisualCpog.class);
     }
 
     @Override
@@ -32,12 +31,11 @@ public class AlgebraImportCommand implements Command {
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
+    public void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         if (!framework.isInGuiMode()) {
             LogUtils.logErrorLine("Tool '" + getClass().getSimpleName() + "' only works in GUI mode.");
         } else {
-            final WorkspaceEntry we = framework.getWorkspaceEntry(me);
             we.captureMemento();
             JFileChooser chooser = new JFileChooser();
             if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
@@ -52,13 +50,6 @@ public class AlgebraImportCommand implements Command {
                 }
             }
         }
-        return me;
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
-        run(we.getModelEntry());
-        return we;
     }
 
 }

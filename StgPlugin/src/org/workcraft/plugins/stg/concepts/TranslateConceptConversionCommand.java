@@ -9,14 +9,15 @@ import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public class TranslateConceptConversionCommand extends AbstractConversionCommand {
 
     private boolean dotLayout;
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return me == null ? false : me.getVisualModel() instanceof VisualStg;
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, VisualStg.class);
     }
 
     @Override
@@ -30,12 +31,7 @@ public class TranslateConceptConversionCommand extends AbstractConversionCommand
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
-        return null; // !!!
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
+    public void run(WorkspaceEntry we) {
         ConceptsWriterDialog dialog = new ConceptsWriterDialog();
         dialog.setVisible(true);
         if (dialog.getTranslate()) {
@@ -49,7 +45,6 @@ public class TranslateConceptConversionCommand extends AbstractConversionCommand
             TaskManager taskManager = framework.getTaskManager();
             taskManager.queue(task, "Translating concepts", resultHandler);
         }
-        return null;
     }
 
     @Override

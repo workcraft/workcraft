@@ -56,9 +56,9 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
+import org.workcraft.Command;
 import org.workcraft.Framework;
 import org.workcraft.NodeTransformer;
-import org.workcraft.Command;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.BoundingBoxHelper;
@@ -83,10 +83,11 @@ import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.Viewport;
 import org.workcraft.gui.layouts.WrapLayout;
+import org.workcraft.util.Commands;
 import org.workcraft.util.GUI;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.util.Commands;
 import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class SelectionTool extends AbstractGraphEditorTool {
 
@@ -396,14 +397,15 @@ public class SelectionTool extends AbstractGraphEditorTool {
 
     public JPopupMenu createPopupMenu(Node node, final GraphEditor editor) {
         JPopupMenu popup = null;
-        ModelEntry me = editor.getWorkspaceEntry().getModelEntry();
+        WorkspaceEntry we = editor.getWorkspaceEntry();
         List<Command> applicableTools = new ArrayList<>();
         HashSet<Command> enabledTools = new HashSet<>();
-        for (Command tool: Commands.getApplicableCommands(me)) {
+        for (Command tool: Commands.getApplicableCommands(we)) {
             if (tool instanceof NodeTransformer) {
                 NodeTransformer nodeTransformer = (NodeTransformer) tool;
                 if (nodeTransformer.isApplicableTo(node)) {
                     applicableTools.add(tool);
+                    ModelEntry me = we.getModelEntry();
                     if (nodeTransformer.isEnabled(me, node)) {
                         enabledTools.add(tool);
                     }

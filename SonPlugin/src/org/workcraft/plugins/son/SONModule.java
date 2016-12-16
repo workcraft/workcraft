@@ -10,13 +10,13 @@ import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.son.tools.ColorResetCommand;
 import org.workcraft.plugins.son.tools.ErrTracingDisableCommand;
 import org.workcraft.plugins.son.tools.ErrTracingResetCommand;
-import org.workcraft.plugins.son.tools.ReachabilityTool;
-import org.workcraft.plugins.son.tools.StructurePropertyChecker;
+import org.workcraft.plugins.son.tools.ReachabilityCommand;
+import org.workcraft.plugins.son.tools.StructurePropertyCheckerCommand;
 import org.workcraft.plugins.son.tools.TestTool;
-import org.workcraft.plugins.son.tools.TimeConsistencyChecker;
-import org.workcraft.plugins.son.tools.TimeValueDisable;
+import org.workcraft.plugins.son.tools.TimeConsistencyCheckerCommand;
+import org.workcraft.plugins.son.tools.TimeValueDisablerCommand;
 import org.workcraft.plugins.son.tools.ClearMarkingCommand;
-import org.workcraft.plugins.son.tools.TimeValueSetter;
+import org.workcraft.plugins.son.tools.TimeValueSetterCommand;
 
 public class SONModule implements Module {
 
@@ -37,8 +37,8 @@ public class SONModule implements Module {
         pm.registerClass(Settings.class, SONSettings.class);
         pm.registerClass(Command.class, TestTool.class);
         //verification
-        pm.registerClass(Command.class, StructurePropertyChecker.class);
-        pm.registerClass(Command.class, ReachabilityTool.class);
+        pm.registerClass(Command.class, StructurePropertyCheckerCommand.class);
+        pm.registerClass(Command.class, ReachabilityCommand.class);
         //Custom tools
         pm.registerClass(Command.class, ColorResetCommand.class);
         pm.registerClass(Command.class, ClearMarkingCommand.class);
@@ -46,10 +46,10 @@ public class SONModule implements Module {
         pm.registerClass(Command.class, ErrTracingResetCommand.class);
         pm.registerClass(Command.class, ErrTracingDisableCommand.class);
         //time analysis
-        pm.registerClass(Command.class, TimeValueSetter.class);
-        pm.registerClass(Command.class, TimeValueDisable.class);
+        pm.registerClass(Command.class, TimeValueSetterCommand.class);
+        pm.registerClass(Command.class, TimeValueDisablerCommand.class);
         //pm.registerClass(Tool.class, TimeValueEstimator.class);
-        pm.registerClass(Command.class, TimeConsistencyChecker.class);
+        pm.registerClass(Command.class, TimeConsistencyCheckerCommand.class);
     }
 
     private void initCompatibilityManager() {

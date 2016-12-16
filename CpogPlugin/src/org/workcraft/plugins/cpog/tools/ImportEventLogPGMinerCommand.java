@@ -3,18 +3,19 @@ package org.workcraft.plugins.cpog.tools;
 import java.io.File;
 import java.util.Scanner;
 
-import org.workcraft.Framework;
 import org.workcraft.Command;
+import org.workcraft.Framework;
 import org.workcraft.gui.ToolboxPanel;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.gui.PGMinerImportDialog;
 import org.workcraft.plugins.cpog.tasks.PGMinerResultHandler;
 import org.workcraft.plugins.cpog.tasks.PGMinerTask;
-import org.workcraft.workspace.ModelEntry;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
-public class PGMinerImportTool implements Command {
+public class ImportEventLogPGMinerCommand implements Command {
 
     boolean split = false;
     PGMinerImportDialog dialog;
@@ -30,62 +31,52 @@ public class PGMinerImportTool implements Command {
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return me.getVisualModel() instanceof VisualCpog;
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, VisualCpog.class);
     }
 
     public File getInputFile(WorkspaceEntry we) {
         dialog = new PGMinerImportDialog();
         dialog.setVisible(true);
-
         if (!dialog.getCanImport()) {
             return null;
         }
-
-
         return new File(dialog.getFilePath());
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
-        return null; // !!!
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
+    public void run(WorkspaceEntry we) {
         File inputFile = getInputFile(we);
         final Framework framework = Framework.getInstance();
         final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
         final ToolboxPanel toolbox = editor.getToolBox();
         final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
-
+        VisualCpog visualCpog = WorkspaceUtils.getAs(we, VisualCpog.class);
         try {
             if (inputFile != null) {
                 if (dialog.getExtractConcurrency()) {
+                    TaskManager taskManager = framework.getTaskManager();
                     PGMinerTask task = new PGMinerTask(inputFile, dialog.getSplit());
-
-                    PGMinerResultHandler result = new PGMinerResultHandler((VisualCpog) we.getModelEntry().getVisualModel(), we, false);
-                    framework.getTaskManager().queue(task, "PGMiner", result);
+                    PGMinerResultHandler result = new PGMinerResultHandler(visualCpog, we, false);
+                    taskManager.queue(task, "PGMiner", result);
                 } else {
-                    Scanner k;
-                    k = new Scanner(inputFile);
+                    Scanner k = new Scanner(inputFile);
                     int i = 0;
-                    double yPos = tool.getLowestVertex((VisualCpog) editor.getWorkspaceEntry().getModelEntry().getVisualModel()).getY() + 3;
-                    editor.getWorkspaceEntry().captureMemento();
+                    double yPos = tool.getLowestVertex(visualCpog).getY() + 3;
+                    we.captureMemento();
                     while (k.hasNext()) {
                         String line = k.nextLine();
-                        tool.insertEventLog((VisualCpog) editor.getWorkspaceEntry().getModelEntry().getVisualModel(), i++, line.split(" "), yPos);
+                        tool.insertEventLog(visualCpog, i++, line.split(" "), yPos);
                         yPos = yPos + 5;
                     }
                     k.close();
-                    editor.getWorkspaceEntry().saveMemento();
+                    we.saveMemento();
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-            editor.getWorkspaceEntry().cancelMemento();
+            we.cancelMemento();
         }
-        return we;
     }
 
 }

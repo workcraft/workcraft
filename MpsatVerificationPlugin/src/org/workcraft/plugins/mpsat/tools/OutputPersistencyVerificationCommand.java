@@ -2,7 +2,7 @@ package org.workcraft.plugins.mpsat.tools;
 
 import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class OutputPersistencyVerificationCommand extends AbstractMpsatVerificationCommand {
@@ -13,8 +13,8 @@ public class OutputPersistencyVerificationCommand extends AbstractMpsatVerificat
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, StgModel.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, StgModel.class);
     }
 
     @Override

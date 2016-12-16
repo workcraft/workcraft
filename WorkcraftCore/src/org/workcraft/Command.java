@@ -21,13 +21,11 @@
 
 package org.workcraft;
 
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public interface Command {
     String getSection();
     String getDisplayName();
-    boolean isApplicableTo(ModelEntry me);
-    ModelEntry run(ModelEntry me);
-    WorkspaceEntry run(WorkspaceEntry we);
+    boolean isApplicableTo(WorkspaceEntry we);
+    void run(WorkspaceEntry we);
 }

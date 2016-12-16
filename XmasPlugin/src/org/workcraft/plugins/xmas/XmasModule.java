@@ -8,13 +8,13 @@ import org.workcraft.Command;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.xmas.tools.JsonExportCommand;
-import org.workcraft.plugins.xmas.tools.PNetGen;
+import org.workcraft.plugins.xmas.tools.XmasPNetGenCommand;
 import org.workcraft.plugins.xmas.tools.XmasToStgConversionCommand;
-import org.workcraft.plugins.xmas.tools.SyncTool;
-import org.workcraft.plugins.xmas.tools.VerAnalysis;
-import org.workcraft.plugins.xmas.tools.VerConfTool;
-import org.workcraft.plugins.xmas.tools.VerQuery;
-import org.workcraft.plugins.xmas.tools.VerTool;
+import org.workcraft.plugins.xmas.tools.XmasSyncCommand;
+import org.workcraft.plugins.xmas.tools.XmasAnalysisTool;
+import org.workcraft.plugins.xmas.tools.XmasConfigureCommand;
+import org.workcraft.plugins.xmas.tools.XmasQueryTool;
+import org.workcraft.plugins.xmas.tools.XmasVerificationTool;
 
 public class XmasModule implements Module {
 
@@ -37,13 +37,13 @@ public class XmasModule implements Module {
         pm.registerClass(Settings.class, XmasSettings.class);
 
         pm.registerClass(Command.class, JsonExportCommand.class);
-        pm.registerClass(Command.class, PNetGen.class);
-        pm.registerClass(Command.class, SyncTool.class);
-        pm.registerClass(Command.class, VerConfTool.class);
+        pm.registerClass(Command.class, XmasPNetGenCommand.class);
+        pm.registerClass(Command.class, XmasSyncCommand.class);
+        pm.registerClass(Command.class, XmasConfigureCommand.class);
         pm.registerClass(Command.class, XmasToStgConversionCommand.class);
-        pm.registerClass(Command.class, VerTool.class);
-        pm.registerClass(Command.class, VerAnalysis.class);
-        pm.registerClass(Command.class, VerQuery.class);
+        pm.registerClass(Command.class, XmasVerificationTool.class);
+        pm.registerClass(Command.class, XmasAnalysisTool.class);
+        pm.registerClass(Command.class, XmasQueryTool.class);
     }
 
     private void initCompatibilityManager() {

@@ -18,7 +18,6 @@ import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.VisualFsm;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -32,20 +31,15 @@ public class FsmReachabilityVerificationCommand extends AbstractVerificationComm
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, Fsm.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, Fsm.class);
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
-        return null; // !!!
-    }
-
-    @Override
-    public final WorkspaceEntry run(WorkspaceEntry we) {
+    public final void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
-        final Fsm fsm = (Fsm) we.getModelEntry().getMathModel();
+        final Fsm fsm = WorkspaceUtils.getAs(we, Fsm.class);
         HashSet<State> unreachableState = checkReachability(fsm);
         if (unreachableState.isEmpty()) {
             JOptionPane.showMessageDialog(mainWindow, "The model does not have unreachable states.",
@@ -61,7 +55,6 @@ public class FsmReachabilityVerificationCommand extends AbstractVerificationComm
                 SelectionHelper.selectByReferencedComponents(visualFsm, (HashSet) unreachableState);
             }
         }
-        return we;
     }
 
     private HashSet<State> checkReachability(final Fsm fsm) {

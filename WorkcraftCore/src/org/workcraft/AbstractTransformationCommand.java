@@ -6,7 +6,6 @@ import java.util.HashSet;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -28,23 +27,15 @@ public abstract class AbstractTransformationCommand extends AbstractPromotedComm
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
-        VisualModel visualModel = WorkspaceUtils.getAs(me, VisualModel.class);
+    public void run(WorkspaceEntry we) {
+        VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
         Collection<Node> nodes = collect(visualModel);
         if (!nodes.isEmpty()) {
-            final Framework framework = Framework.getInstance();
-            final WorkspaceEntry we = framework.getWorkspaceEntry(me);
             we.saveMemento();
             transform(visualModel, nodes);
-            framework.repaintCurrentEditor();
+            final Framework framework = Framework.getInstance();
+            framework.repaintCurrentEditor(); // !!!
         }
-        return me;
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
-        run(we.getModelEntry());
-        return we;
     }
 
     public Collection<Node> collect(Model model) {

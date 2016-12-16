@@ -7,6 +7,7 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class PetriToStgConversionCommand extends AbstractConversionCommand {
@@ -17,13 +18,13 @@ public class PetriToStgConversionCommand extends AbstractConversionCommand {
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicableExact(me, PetriNet.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicableExact(we, PetriNet.class);
     }
 
     @Override
     public ModelEntry convert(ModelEntry me) {
-        final VisualPetriNet petri = (VisualPetriNet) me.getVisualModel();
+        final VisualPetriNet petri = me.getAs(VisualPetriNet.class);
         final VisualStg stg = new VisualStg(new Stg());
         final PetriToStgConverter converter = new PetriToStgConverter(petri, stg);
         return new ModelEntry(new StgDescriptor(), converter.getDstModel());

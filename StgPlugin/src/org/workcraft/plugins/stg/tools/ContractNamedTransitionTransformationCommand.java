@@ -21,7 +21,7 @@ import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Pair;
-import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class ContractNamedTransitionTransformationCommand extends ContractTransitionTransformationCommand {
@@ -29,8 +29,8 @@ public class ContractNamedTransitionTransformationCommand extends ContractTransi
     HashSet<VisualPlace> convertedImplicitPlaces = new HashSet<>();
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, VisualStg.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, VisualStg.class);
     }
 
     @Override

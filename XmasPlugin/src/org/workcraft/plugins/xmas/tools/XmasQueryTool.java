@@ -46,11 +46,10 @@ import org.workcraft.plugins.xmas.gui.SolutionsDialog2;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class VerQuery extends AbstractGraphEditorTool implements Command {
+public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
 
     @Override
     public String getSection() {
@@ -414,8 +413,8 @@ public class VerQuery extends AbstractGraphEditorTool implements Command {
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, Xmas.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, Xmas.class);
     }
 
     GraphEditorPanel editor1;
@@ -558,12 +557,11 @@ public class VerQuery extends AbstractGraphEditorTool implements Command {
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
+    public void run(WorkspaceEntry we) {
         System.out.println("Query is undergoing implemention");
 
-        final Xmas xnet = (Xmas) me.getMathModel();
-        final VisualXmas vnet = (VisualXmas) me.getVisualModel();
-        Xmas cnet = (Xmas) me.getMathModel();
+        final VisualXmas vnet = WorkspaceUtils.getAs(we, VisualXmas.class);
+        final Xmas xnet = WorkspaceUtils.getAs(we, Xmas.class);
 
         int grnum = Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualGroup.class).size();
 
@@ -580,7 +578,7 @@ public class VerQuery extends AbstractGraphEditorTool implements Command {
         panelmain.add(panela);
 
         jcbn.clear();
-        createPanel(panellist, cnet, vnet, grnum);
+        createPanel(panellist, xnet, vnet, grnum);
         for (JPanel plist : panellist) {
             panelmain.add(plist);
         }
@@ -604,7 +602,7 @@ public class VerQuery extends AbstractGraphEditorTool implements Command {
         });
 
         okButton.addActionListener(new ActionListener() {
-
+            @Override
             public void actionPerformed(ActionEvent e) {
                 dispose();
                 if (index != 0) {
@@ -681,13 +679,6 @@ public class VerQuery extends AbstractGraphEditorTool implements Command {
                 }
             }
         });
-        return me;
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
-        run(we.getModelEntry());
-        return we;
     }
 
     @Override

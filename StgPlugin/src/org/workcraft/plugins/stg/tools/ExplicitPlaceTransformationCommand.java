@@ -3,14 +3,15 @@ package org.workcraft.plugins.stg.tools;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.workcraft.NodeTransformer;
 import org.workcraft.AbstractTransformationCommand;
+import org.workcraft.NodeTransformer;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
-import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public class ExplicitPlaceTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
@@ -25,8 +26,8 @@ public class ExplicitPlaceTransformationCommand extends AbstractTransformationCo
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return me.getMathModel() instanceof Stg;
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, VisualStg.class);
     }
 
     @Override

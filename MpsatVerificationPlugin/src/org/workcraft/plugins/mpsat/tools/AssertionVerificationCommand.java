@@ -13,7 +13,6 @@ import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.GUI;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -27,8 +26,8 @@ public class AssertionVerificationCommand extends AbstractVerificationCommand {
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, StgModel.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, StgModel.class);
     }
 
     @Override
@@ -37,12 +36,7 @@ public class AssertionVerificationCommand extends AbstractVerificationCommand {
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
-        return null; // !!!
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
+    public void run(WorkspaceEntry we) {
         File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, MPSAT_ASSERTION_PRESETS_FILE);
         MpsatPresetManager pmgr = new MpsatPresetManager(presetFile, new MpsatSettingsSerialiser(), true);
         final Framework framework = Framework.getInstance();
@@ -57,7 +51,6 @@ public class AssertionVerificationCommand extends AbstractVerificationCommand {
             final MpsatChainResultHandler monitor = new MpsatChainResultHandler(mpsatTask);
             taskManager.queue(mpsatTask, "MPSat tool chain", monitor);
         }
-        return we;
     }
 
 }

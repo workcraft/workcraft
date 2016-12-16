@@ -5,8 +5,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-import org.workcraft.NodeTransformer;
 import org.workcraft.AbstractTransformationCommand;
+import org.workcraft.NodeTransformer;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
@@ -14,12 +14,12 @@ import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.PetriNetUtils;
-import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualDummyTransition;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public final class InsertDummyTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
@@ -35,8 +35,8 @@ public final class InsertDummyTransformationCommand extends AbstractTransformati
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, Stg.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, VisualStg.class);
     }
 
     @Override

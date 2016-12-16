@@ -6,7 +6,6 @@ import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.plugins.policy.PolicyNet;
 import org.workcraft.plugins.policy.tasks.CheckDeadlockTask;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -17,17 +16,12 @@ public class PolicyDeadlockVerificationCommand extends AbstractVerificationComma
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, PolicyNet.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, PolicyNet.class);
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
-        return null; // !!!
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
+    public void run(WorkspaceEntry we) {
         final CheckDeadlockTask task = new CheckDeadlockTask(we);
         String description = "MPSat tool chain";
         String title = we.getTitle();
@@ -38,7 +32,6 @@ public class PolicyDeadlockVerificationCommand extends AbstractVerificationComma
         final TaskManager taskManager = framework.getTaskManager();
         final MpsatChainResultHandler monitor = new MpsatChainResultHandler(task);
         taskManager.queue(task, description, monitor);
-        return we;
     }
 
 }

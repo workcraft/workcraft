@@ -6,7 +6,7 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.graph.tools.AbstractMergeTransformationCommand;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public final class MergePlaceTransformationCommand extends AbstractMergeTransformationCommand {
@@ -17,8 +17,8 @@ public final class MergePlaceTransformationCommand extends AbstractMergeTransfor
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, PetriNetModel.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, PetriNetModel.class);
     }
 
     @Override

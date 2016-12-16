@@ -4,15 +4,16 @@ import java.util.Set;
 
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.graph.tools.AbstractMergeTransformationCommand;
-import org.workcraft.plugins.dfs.Dfs;
 import org.workcraft.plugins.dfs.VisualControlRegister;
 import org.workcraft.plugins.dfs.VisualCounterflowLogic;
 import org.workcraft.plugins.dfs.VisualCounterflowRegister;
+import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.plugins.dfs.VisualLogic;
 import org.workcraft.plugins.dfs.VisualPopRegister;
 import org.workcraft.plugins.dfs.VisualPushRegister;
 import org.workcraft.plugins.dfs.VisualRegister;
-import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public final class MergeComponentTransformationCommand extends AbstractMergeTransformationCommand {
 
@@ -22,8 +23,8 @@ public final class MergeComponentTransformationCommand extends AbstractMergeTran
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return me.getMathModel() instanceof Dfs;
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, VisualDfs.class);
     }
 
     @Override

@@ -2,16 +2,37 @@ package org.workcraft.workspace;
 
 public class WorkspaceUtils {
 
-    public static boolean isApplicable(ModelEntry me, Class<?> cls) {
-        return (me != null) && me.isApplicable(cls);
+    public static boolean isApplicable(WorkspaceEntry we, Class<?> cls) {
+        boolean result = false;
+        if (we != null) {
+            ModelEntry me = we.getModelEntry();
+            if (me != null) {
+                result = me.isApplicable(cls);
+            }
+        }
+        return result;
     }
 
-    public static boolean isApplicableExact(ModelEntry me, Class<?> cls) {
-        return (me != null) && me.isApplicableExact(cls);
+    public static boolean isApplicableExact(WorkspaceEntry we, Class<?> cls) {
+        boolean result = false;
+        if (we != null) {
+            ModelEntry me = we.getModelEntry();
+            if (me != null) {
+                result = me.isApplicableExact(cls);
+            }
+        }
+        return result;
     }
 
-    public static <T> T getAs(ModelEntry me, Class<T> cls) {
-        return (me == null) ? null : me.getAs(cls);
+    public static <T> T getAs(WorkspaceEntry we, Class<T> cls) {
+        T result = null;
+        if (we != null) {
+            ModelEntry me = we.getModelEntry();
+            if (me != null) {
+                result = me.getAs(cls);
+            }
+        }
+        return result;
     }
 
 }

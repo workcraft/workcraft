@@ -4,8 +4,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-import org.workcraft.NodeTransformer;
 import org.workcraft.AbstractTransformationCommand;
+import org.workcraft.NodeTransformer;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
@@ -14,6 +14,7 @@ import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class DirectedArcToReadArcTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
@@ -31,8 +32,8 @@ public class DirectedArcToReadArcTransformationCommand extends AbstractTransform
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, PetriNetModel.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, PetriNetModel.class);
     }
 
     @Override

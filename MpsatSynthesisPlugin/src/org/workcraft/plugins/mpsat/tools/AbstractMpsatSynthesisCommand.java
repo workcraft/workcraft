@@ -8,7 +8,6 @@ import org.workcraft.plugins.mpsat.tasks.MpsatSynthesisChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatSynthesisResultHandler;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 /*
   To get Verilog from mpsat, just specify the output file with the extension *.v:
@@ -25,24 +24,18 @@ import org.workcraft.workspace.WorkspaceUtils;
 public abstract class AbstractMpsatSynthesisCommand extends AbstractSynthesisCommand {
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, StgModel.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, StgModel.class);
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
-        return null; // !!!
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
+    public void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
         final MpsatSynthesisSettings settings = new MpsatSynthesisSettings("Logic synthesis", getSynthesisMode(), 0);
         final MpsatSynthesisChainTask task = new MpsatSynthesisChainTask(we, settings);
         final MpsatSynthesisResultHandler monitor = new MpsatSynthesisResultHandler(task);
         taskManager.queue(task, "MPSat logic synthesis", monitor);
-        return null;
     }
 
     public abstract MpsatSynthesisMode getSynthesisMode();

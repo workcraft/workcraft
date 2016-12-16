@@ -9,7 +9,6 @@ import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainTask;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -21,8 +20,8 @@ public class CombinedVerificationCommand extends AbstractVerificationCommand {
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, StgModel.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, StgModel.class);
     }
 
     @Override
@@ -36,12 +35,7 @@ public class CombinedVerificationCommand extends AbstractVerificationCommand {
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
-        return null; // !!!
-    }
-
-    @Override
-    public final WorkspaceEntry run(WorkspaceEntry we) {
+    public final void run(WorkspaceEntry we) {
         final ArrayList<MpsatSettings> settingsList = new ArrayList<>();
         settingsList.add(MpsatSettings.getConsistencySettings());
         settingsList.add(MpsatSettings.getDeadlockSettings());
@@ -59,7 +53,6 @@ public class CombinedVerificationCommand extends AbstractVerificationCommand {
         final TaskManager taskManager = framework.getTaskManager();
         final MpsatCombinedChainResultHandler monitor = new MpsatCombinedChainResultHandler(mpsatTask);
         taskManager.queue(mpsatTask, description, monitor);
-        return we;
     }
 
 }

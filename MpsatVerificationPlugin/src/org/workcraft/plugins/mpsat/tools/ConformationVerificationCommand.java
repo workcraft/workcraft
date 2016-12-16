@@ -16,7 +16,6 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.plugins.stg.interop.DotGImporter;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -30,8 +29,8 @@ public class ConformationVerificationCommand extends AbstractVerificationCommand
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, StgModel.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, StgModel.class);
     }
 
     @Override
@@ -40,35 +39,30 @@ public class ConformationVerificationCommand extends AbstractVerificationCommand
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
-        return null; // !!!
-    }
-
-    @Override
-    public final WorkspaceEntry run(WorkspaceEntry we) {
+    public final void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
-        Stg stg = (Stg) we.getModelEntry().getMathModel();
+        Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         // Check for limitations:
         if (stg.getPlaces().isEmpty()) {
             // - The set of device STG place names is non-empty (this limitation can be easily removed).
             JOptionPane.showMessageDialog(mainWindow, "Error: The STG must have places.",
                     TITLE, JOptionPane.ERROR_MESSAGE);
-            return we;
+            return;
         }
 
         if (hasDisconnectedTransitions(stg)) {
             // - Each transition in the device STG must have some arcs, i.e. its preset or postset is non-empty.
             JOptionPane.showMessageDialog(mainWindow, "Error: The STG must have no disconnected transitions.",
                     TITLE, JOptionPane.ERROR_MESSAGE);
-            return we;
+            return;
         }
 
         if (!stg.getDummyTransitions().isEmpty()) {
             // - The device STG must have no dummies.
             JOptionPane.showMessageDialog(mainWindow, "Error: The STG must have no dummies.",
                     TITLE, JOptionPane.ERROR_MESSAGE);
-            return we;
+            return;
         }
 
         Importer[] importers = {new DotGImporter()};
@@ -94,7 +88,6 @@ public class ConformationVerificationCommand extends AbstractVerificationCommand
                 }
             }
         }
-        return we;
     }
 
     private boolean hasDisconnectedTransitions(Stg stg) {

@@ -8,19 +8,18 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
+import org.workcraft.Command;
 import org.workcraft.Framework;
 import org.workcraft.MenuOrdering;
 import org.workcraft.MenuOrdering.Position;
 import org.workcraft.PluginManager;
-import org.workcraft.Command;
 import org.workcraft.plugins.PluginInfo;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class Commands {
 
     public static void run(WorkspaceEntry we, Command command) {
-        if (command.isApplicableTo(we.getModelEntry())) {
+        if (command.isApplicableTo(we)) {
             command.run(we);
         } else {
             String errorMessage = "Attempt to run incompatible command " +
@@ -30,14 +29,14 @@ public class Commands {
         }
     }
 
-    public static List<Command> getApplicableCommands(ModelEntry me) {
+    public static List<Command> getApplicableCommands(WorkspaceEntry we) {
         ArrayList<Command> commands = new ArrayList<>();
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
         Collection<PluginInfo<? extends Command>> commandPlugins = pm.getPlugins(Command.class);
         for (PluginInfo<? extends Command> info : commandPlugins) {
             Command command = info.getSingleton();
-            if (command.isApplicableTo(me)) {
+            if (command.isApplicableTo(we)) {
                 commands.add(command);
             }
         }

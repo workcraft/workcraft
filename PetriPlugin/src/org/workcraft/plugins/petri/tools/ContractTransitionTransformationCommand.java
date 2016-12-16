@@ -62,8 +62,8 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, VisualPetriNet.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, VisualPetriNet.class);
     }
 
     @Override
@@ -82,20 +82,8 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
-        VisualModel visualModel = WorkspaceUtils.getAs(me, VisualModel.class);
-        Collection<Node> nodes = collect(visualModel);
-        if (nodes.size() > 1) {
-            LogUtils.logErrorLine(ERROR_MORE_THAN_ONE_TRANSITION);
-        } else if (!nodes.isEmpty()) {
-            transform(visualModel, nodes);
-        }
-        return me;
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
-        VisualModel visualModel = WorkspaceUtils.getAs(we.getModelEntry(), VisualModel.class);
+    public void run(WorkspaceEntry we) {
+        VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
         Collection<Node> nodes = collect(visualModel);
         if (nodes.size() > 1) {
             JOptionPane.showMessageDialog(null, ERROR_MORE_THAN_ONE_TRANSITION,
@@ -105,7 +93,6 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
             transform(visualModel, nodes);
             visualModel.selectNone();
         }
-        return we;
     }
 
     @Override

@@ -736,15 +736,10 @@ public final class Framework {
         }
     }
 
-    public ModelEntry runCommand(ModelEntry me, String className) {
+    public ModelEntry runCommand(WorkspaceEntry we, String className) {
         if (className != null) {
-            for (Command tool: Commands.getApplicableCommands(me)) {
+            for (Command tool: Commands.getApplicableCommands(we)) {
                 if (className.equals(tool.getClass().getSimpleName())) {
-                    WorkspaceEntry we = getWorkspaceEntry(me);
-                    if (we == null) {
-                        we = new WorkspaceEntry(null);
-                        we.setModelEntry(me);
-                    }
                     tool.run(we);
                     break;
                 }

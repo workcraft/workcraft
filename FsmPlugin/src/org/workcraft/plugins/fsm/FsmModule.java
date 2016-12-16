@@ -1,34 +1,34 @@
 package org.workcraft.plugins.fsm;
 
+import org.workcraft.Command;
 import org.workcraft.CompatibilityManager;
 import org.workcraft.Framework;
 import org.workcraft.Initialiser;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
-import org.workcraft.Command;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.graph.tools.AbstractContractTransformationCommand;
 import org.workcraft.plugins.fsm.serialisation.EventDeserialiser;
 import org.workcraft.plugins.fsm.serialisation.EventSerialiser;
 import org.workcraft.plugins.fsm.tools.FsmDeadlockVerificationCommand;
 import org.workcraft.plugins.fsm.tools.FsmDeterminismVerificationCommand;
+import org.workcraft.plugins.fsm.tools.FsmReachabilityVerificationCommand;
+import org.workcraft.plugins.fsm.tools.FsmReversibilityVerificationCommand;
 import org.workcraft.plugins.fsm.tools.FsmToGraphConversionCommand;
 import org.workcraft.plugins.fsm.tools.FsmToPetriConversionCommand;
 import org.workcraft.plugins.fsm.tools.GraphToFsmConversionCommand;
-import org.workcraft.plugins.fsm.tools.FsmReachabilityVerificationCommand;
-import org.workcraft.plugins.fsm.tools.FsmReversibilityVerificationCommand;
 import org.workcraft.plugins.fsm.tools.MergeStateTransformationCommand;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
 import org.workcraft.serialisation.xml.XMLSerialiser;
-import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class FsmModule  implements Module {
 
     private final class ContractStateTransformationCommand extends AbstractContractTransformationCommand {
         @Override
-        public boolean isApplicableTo(ModelEntry me) {
-            return WorkspaceUtils.isApplicable(me, Fsm.class);
+        public boolean isApplicableTo(WorkspaceEntry we) {
+            return WorkspaceUtils.isApplicable(we, Fsm.class);
         }
     }
 

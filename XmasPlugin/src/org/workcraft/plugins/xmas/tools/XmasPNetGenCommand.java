@@ -21,11 +21,10 @@ import org.workcraft.plugins.xmas.components.SinkComponent;
 import org.workcraft.plugins.xmas.components.SourceComponent;
 import org.workcraft.plugins.xmas.components.SwitchComponent;
 import org.workcraft.util.LogUtils;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class PNetGen implements Command {
+public class XmasPNetGenCommand implements Command {
 
     private static int syncflag = 0;
     private static int dl = 1;
@@ -43,7 +42,6 @@ public class PNetGen implements Command {
     }
 
     private static class Info {
-
         String a;
         String b;
         String c;
@@ -123,8 +121,8 @@ public class PNetGen implements Command {
         return "GenCPNet";
     }
 
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, Xmas.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, Xmas.class);
     }
 
     private static String searchList(String id) {
@@ -978,9 +976,9 @@ public class PNetGen implements Command {
     public Collection<SinkComponent> snkNodes;
 
     @Override
-    public ModelEntry run(ModelEntry me) {
+    public void run(WorkspaceEntry we) {
         System.out.println("");
-        Xmas cnet = (Xmas) me.getMathModel();
+        final Xmas cnet = WorkspaceUtils.getAs(we, Xmas.class);
         srcNodes = cnet.getSourceComponents();
         //funNodes = Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualFunctionComponent.class);
         funNodes = cnet.getFunctionComponents();
@@ -1007,7 +1005,7 @@ public class PNetGen implements Command {
             current = jp.nextToken();
             if (current != JsonToken.START_OBJECT) {
                 LogUtils.logErrorLine("Root should be object: quiting.");
-                return me;
+                return;
             }
 
             while (jp.nextToken() != JsonToken.END_OBJECT) {
@@ -1145,14 +1143,6 @@ public class PNetGen implements Command {
             }
         }
         System.out.println("");
-        return me;
-    }
-
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
-        run(we.getModelEntry());
-        return we;
     }
 
 }

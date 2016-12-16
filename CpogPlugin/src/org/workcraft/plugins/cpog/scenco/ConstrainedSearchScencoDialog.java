@@ -1,6 +1,4 @@
-package org.workcraft.plugins.cpog.gui;
-
-import info.clearthought.layout.TableLayout;
+package org.workcraft.plugins.cpog.scenco;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -20,7 +18,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -36,20 +33,20 @@ import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.VisualCpog;
+import org.workcraft.plugins.cpog.gui.MyTableCellRenderer;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
-import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.util.GUI;
 import org.workcraft.util.IntDocument;
-import org.workcraft.workspace.WorkspaceEntry;
+
+import info.clearthought.layout.TableLayout;
 
 @SuppressWarnings("serial")
-public class ScencoConstrainedSearchDialog extends JDialog {
+public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
 
     private JLabel circuitSizeLabel;
     private JCheckBox verboseModeCheck, customEncodings, abcCheck;
     private JComboBox<String> optimiseBox;
-    private JPanel generationPanel, buttonsPanel, customPanel,
-            standardPanel;
+    private JPanel generationPanel, buttonsPanel, customPanel, standardPanel;
     private JTextField numberOfSolutionsText, bitsText, circuitSizeText;
     private JTable encodingTable;
     JScrollPane scrollPane;
@@ -57,24 +54,11 @@ public class ScencoConstrainedSearchDialog extends JDialog {
     private int bits;
     private JRadioButton normal, fast;
 
-    // Core variables
-    private final EncoderSettings settings;
-    private int modalResult;
-
-    public EncoderSettings getSettings() {
-        return settings;
-    }
-
-    public ScencoConstrainedSearchDialog(Window owner,
-            PresetManager<EncoderSettings> presetManager,
-            EncoderSettings settings, WorkspaceEntry we, String approach, int mode) {
-        super(owner, approach, ModalityType.APPLICATION_MODAL);
-        this.settings = settings;
+    public ConstrainedSearchScencoDialog(Window owner, String title, EncoderSettings settings, VisualCpog model, int mode) {
+        super(owner, title, settings, model);
         int height;
-        modalResult = 0;
 
-        VisualCpog cpog = (VisualCpog) (we.getModelEntry().getVisualModel());
-        ArrayList<VisualTransformableNode> scenarios = CpogParsingTool.getScenarios(cpog);
+        ArrayList<VisualTransformableNode> scenarios = CpogParsingTool.getScenarios(model);
         m = scenarios.size();
 
         /*MODE:
@@ -89,7 +73,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
         createButtonPanel(mode);
 
         if (mode != 1) {
-            if (m < ScencoDialogSupport.MAX_POS_FOR_SEVERAL_SYNTHESIS) {
+            if (m < ScencoHelper.MAX_POS_FOR_SEVERAL_SYNTHESIS) {
                 height = 135;
             } else {
                 height = 110;
@@ -136,11 +120,11 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 
         // TABLE OF ENCODINGS
         JLabel exampleLabel = new JLabel(
-                ScencoDialogSupport.normalBitText +
-                ScencoDialogSupport.dontCareBit + ScencoDialogSupport.dontCareBitText +
-                ScencoDialogSupport.reservedBit + ScencoDialogSupport.reservedBitText);
+                ScencoHelper.normalBitText +
+                ScencoHelper.dontCareBit + ScencoHelper.dontCareBitText +
+                ScencoHelper.reservedBit + ScencoHelper.reservedBitText);
 
-        JLabel customEncLabel = new JLabel(ScencoDialogSupport.textCustomiseLabel);
+        JLabel customEncLabel = new JLabel(ScencoHelper.textCustomiseLabel);
         customEncodings = new JCheckBox("", false);
         customEncLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
@@ -177,8 +161,8 @@ public class ScencoConstrainedSearchDialog extends JDialog {
             }
         });
 
-        JLabel bitsLabel = new JLabel(ScencoDialogSupport.textEncodingBitWidth);
-        circuitSizeLabel = new JLabel(ScencoDialogSupport.textCircuitSizeLabel);
+        JLabel bitsLabel = new JLabel(ScencoHelper.textEncodingBitWidth);
+        circuitSizeLabel = new JLabel(ScencoHelper.textCircuitSizeLabel);
         int value = 2;
         while (value < m) {
             value *= 2;
@@ -188,7 +172,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
         bitsText = new JTextField();
         bitsText.setDocument(new IntDocument(2));
         bitsText.setText(String.valueOf(bits + 1));
-        bitsText.setPreferredSize(ScencoDialogSupport.dimensionBitEncodingWidthText);
+        bitsText.setPreferredSize(ScencoHelper.dimensionBitEncodingWidthText);
         bitsText.setBackground(Color.LIGHT_GRAY);
         bitsText.setEnabled(false);
         bitsText.addActionListener(new ActionListener() {
@@ -208,7 +192,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
                 for (int i = 0; i < m; i++) {
                     String data = "";
                     for (int j = 0; j < Integer.parseInt(bitsText.getText()); j++) {
-                        data = data + ScencoDialogSupport.dontCareBit;
+                        data = data + ScencoHelper.dontCareBit;
                     }
                     encodingTable.getModel().setValueAt(data, i, 1);
                 }
@@ -216,10 +200,10 @@ public class ScencoConstrainedSearchDialog extends JDialog {
         });
         circuitSizeText = new JTextField();
         circuitSizeText.setText(String.valueOf(bits + 2));
-        circuitSizeText.setPreferredSize(ScencoDialogSupport.dimensionCircuitSizeText);
+        circuitSizeText.setPreferredSize(ScencoHelper.dimensionCircuitSizeText);
         modifyCircuitSize(false);
 
-        String[] columnNames = {ScencoDialogSupport.textFirstColumnTable, ScencoDialogSupport.textSecondColumnTable };
+        String[] columnNames = {ScencoHelper.textFirstColumnTable, ScencoHelper.textSecondColumnTable };
         Object[][] data = new Object[m][3];
         for (int i = 0; i < m; i++) {
             String name;
@@ -231,7 +215,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
             data[i][0] = name;
             data[i][1] = "";
             for (int j = 0; j < Integer.parseInt(bitsText.getText()); j++) {
-                data[i][1] = data[i][1] + ScencoDialogSupport.dontCareBit;
+                data[i][1] = data[i][1] + ScencoHelper.dontCareBit;
             }
         }
         encodingTable = new JTable(data, columnNames);
@@ -270,18 +254,18 @@ public class ScencoConstrainedSearchDialog extends JDialog {
         standardPanel = new JPanel(new SimpleFlowLayout());
 
         // OPTIMISE FOR MICROCONTROLLER/CPOG SIZE
-        JLabel optimiseLabel = new JLabel(ScencoDialogSupport.textOptimiseForLabel);
+        JLabel optimiseLabel = new JLabel(ScencoHelper.textOptimiseForLabel);
         optimiseBox = new JComboBox<String>();
         optimiseBox.setEditable(false);
-        optimiseBox.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForBox);
-        optimiseBox.addItem(ScencoDialogSupport.textOptimiseForFirstElement);
-        optimiseBox.addItem(ScencoDialogSupport.textOptimiseForSecondElement);
-        optimiseBox.setSelectedIndex(settings.isCpogSize() ? 0 : 1);
+        optimiseBox.setPreferredSize(ScencoHelper.dimensionOptimiseForBox);
+        optimiseBox.addItem(ScencoHelper.textOptimiseForFirstElement);
+        optimiseBox.addItem(ScencoHelper.textOptimiseForSecondElement);
+        optimiseBox.setSelectedIndex(getSettings().isCpogSize() ? 0 : 1);
         optimiseBox.setBackground(Color.WHITE);
 
         // ABC TOOL DISABLE FLAG
-        abcCheck = new JCheckBox("", settings.isAbcFlag());
-        JLabel abcLabel = new JLabel(ScencoDialogSupport.textAbcLabel);
+        abcCheck = new JCheckBox("", getSettings().isAbcFlag());
+        JLabel abcLabel = new JLabel(ScencoHelper.textAbcLabel);
         abcLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
                 abcCheck.setSelected(abcCheck.isSelected() ? false : true);
@@ -289,7 +273,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
         });
 
         // VERBOSE MODE INSTANTIATION
-        JLabel verboseModeLabel = new JLabel(ScencoDialogSupport.textVerboseMode);
+        JLabel verboseModeLabel = new JLabel(ScencoHelper.textVerboseMode);
         verboseModeCheck = new JCheckBox("", false);
         verboseModeLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
@@ -316,7 +300,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
         // SPEED UP MODE
         fast = new JRadioButton("Synthesise only optimal (w.r.t. heuristic function) solutions (fast)");
         ButtonGroup group = new ButtonGroup();
-        if (m < ScencoDialogSupport.MAX_POS_FOR_SEVERAL_SYNTHESIS) {
+        if (m < ScencoHelper.MAX_POS_FOR_SEVERAL_SYNTHESIS) {
             normal = new JRadioButton("Synthesise all generated solutions (slow)", true);
             group.add(normal);
         } else {
@@ -326,19 +310,18 @@ public class ScencoConstrainedSearchDialog extends JDialog {
 
         if (mode != 1) {
             // NUMBER OF SOLUTIONS TO GENERATE
-            JLabel numberOfSolutionsLabel = new JLabel(ScencoDialogSupport.textNumberSolutionLabel);
+            JLabel numberOfSolutionsLabel = new JLabel(ScencoHelper.textNumberSolutionLabel);
             numberOfSolutionsText = new JTextField();
             numberOfSolutionsText.setDocument(new IntDocument(3));
-            numberOfSolutionsText.setText(String.valueOf(settings
-                    .getSolutionNumber()));
-            numberOfSolutionsText.setPreferredSize(ScencoDialogSupport.dimensionNumberSolutionText);
+            numberOfSolutionsText.setText(String.valueOf(getSettings().getSolutionNumber()));
+            numberOfSolutionsText.setPreferredSize(ScencoHelper.dimensionNumberSolutionText);
             numberOfSolutionsText.setBackground(Color.WHITE);
 
             generationPanel.add(numberOfSolutionsLabel);
             generationPanel.add(numberOfSolutionsText);
             generationPanel.add(new SimpleFlowLayout.LineBreak());
         }
-        if (m < ScencoDialogSupport.MAX_POS_FOR_SEVERAL_SYNTHESIS) {
+        if (m < ScencoHelper.MAX_POS_FOR_SEVERAL_SYNTHESIS) {
             generationPanel.add(normal);
             generationPanel.add(new SimpleFlowLayout.LineBreak());
         }
@@ -356,6 +339,7 @@ public class ScencoConstrainedSearchDialog extends JDialog {
                 setVisible(false);
 
                 // ENCODER EXECUTION
+                EncoderSettings settings = getSettings();
 
                 // abc disabled
                 settings.setAbcFlag(abcCheck.isSelected() ? true : false);
@@ -365,16 +349,14 @@ public class ScencoConstrainedSearchDialog extends JDialog {
                 settings.setCostFunc(false);
 
                 // optimise for option
-                settings.setCpogSize(optimiseBox.getSelectedIndex() == 0 ? false
-                        : true);
+                settings.setCpogSize(optimiseBox.getSelectedIndex() == 0 ? false : true);
 
                 // verbose mode
                 settings.setVerboseMode(verboseModeCheck.isSelected());
 
                 // continuous mode or number of solutions
                 if (mode != 1) {
-                    settings.setSolutionNumber(Integer
-                            .parseInt(numberOfSolutionsText.getText()));
+                    settings.setSolutionNumber(Integer.parseInt(numberOfSolutionsText.getText()));
                 } else {
                     // dummy value
                     settings.setSolutionNumber(10);
@@ -392,21 +374,18 @@ public class ScencoConstrainedSearchDialog extends JDialog {
                     settings.setCustomEncMode(true);
                     String[] encodings = new String[m];
                     for (int i = 0; i < m; i++) {
-                        encodings[i] = (String) encodingTable.getModel()
-                                .getValueAt(i, 1);
+                        encodings[i] = (String) encodingTable.getModel().getValueAt(i, 1);
                     }
                     for (int i = 0; i < m; i++) {
-                        encodings[i] = encodings[i].replace(ScencoDialogSupport.reservedBit, "-");
-                        encodings[i] = encodings[i].replace(ScencoDialogSupport.dontCareBit, "X");
+                        encodings[i] = encodings[i].replace(ScencoHelper.reservedBit, "-");
+                        encodings[i] = encodings[i].replace(ScencoHelper.dontCareBit, "X");
                     }
                     settings.setCustomEnc(encodings);
                 } else {
                     settings.setBits(bits + 1);
                     settings.setCustomEncMode(false);
                 }
-
-                // execute scenco
-                modalResult = 1;
+                setDone();
             }
         });
 
@@ -432,10 +411,6 @@ public class ScencoConstrainedSearchDialog extends JDialog {
         circuitSizeText.setEnabled(b);
         circuitSizeLabel.setVisible(b);
         circuitSizeText.setVisible(b);
-    }
-
-    public int getModalResult() {
-        return modalResult;
     }
 
 }

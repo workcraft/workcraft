@@ -5,6 +5,8 @@ import org.workcraft.plugins.petri.PetriNetDescriptor;
 import org.workcraft.plugins.policy.PolicyNet;
 import org.workcraft.plugins.policy.VisualPolicyNet;
 import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public class PolicyToPetriConversionCommand extends AbstractConversionCommand {
 
@@ -14,13 +16,13 @@ public class PolicyToPetriConversionCommand extends AbstractConversionCommand {
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return me.getMathModel() instanceof PolicyNet;
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, PolicyNet.class);
     }
 
     @Override
     public ModelEntry convert(ModelEntry me) {
-        final VisualPolicyNet visualModel = (VisualPolicyNet) me.getVisualModel();
+        final VisualPolicyNet visualModel = me.getAs(VisualPolicyNet.class);
         final PolicyToPetriConverter converter = new PolicyToPetriConverter(visualModel);
         return new ModelEntry(new PetriNetDescriptor(), converter.getPetriNet());
     }

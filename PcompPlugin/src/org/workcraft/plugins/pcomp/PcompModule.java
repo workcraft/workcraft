@@ -5,7 +5,7 @@ import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Command;
 import org.workcraft.gui.propertyeditor.Settings;
-import org.workcraft.plugins.pcomp.tools.PcompTool;
+import org.workcraft.plugins.pcomp.tools.ParallelCompositionCommand;
 
 public class PcompModule implements Module {
 
@@ -14,7 +14,7 @@ public class PcompModule implements Module {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
 
-        pm.registerClass(Command.class, PcompTool.class);
+        pm.registerClass(Command.class, ParallelCompositionCommand.class);
         pm.registerClass(Settings.class, PcompUtilitySettings.class);
     }
 

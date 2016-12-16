@@ -23,11 +23,10 @@ import org.workcraft.Command;
 import org.workcraft.plugins.xmas.Xmas;
 import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.util.LogUtils;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class VerConfTool implements Command {
+public class XmasConfigureCommand implements Command {
 
     //private final Framework framework;
 
@@ -45,8 +44,8 @@ public class VerConfTool implements Command {
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, Xmas.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, Xmas.class);
     }
 
     int cntSyncNodes = 0;
@@ -159,12 +158,9 @@ public class VerConfTool implements Command {
     public List<String> slist2;
 
     @Override
-    public ModelEntry run(ModelEntry me) {
+    public void run(WorkspaceEntry we) {
         System.out.println("Running tests");
         cntSyncNodes = 0;
-
-        //SyncMenu dialog = new SyncMenu();
-
         mainFrame = new JFrame("Configure Verification");
         JPanel panelmain = new JPanel();
         mainFrame.getContentPane().add(panelmain, BorderLayout.PAGE_START);
@@ -238,13 +234,6 @@ public class VerConfTool implements Command {
 
         mainFrame.pack();
         mainFrame.setVisible(true);
-        return me;
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
-        run(we.getModelEntry());
-        return we;
     }
 
 }

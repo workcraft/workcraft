@@ -31,7 +31,6 @@ import org.workcraft.plugins.son.exception.UnboundedException;
 import org.workcraft.plugins.son.util.Marking;
 import org.workcraft.plugins.son.util.Phase;
 import org.workcraft.util.GUI;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -40,8 +39,8 @@ public class TestTool extends AbstractGraphEditorTool implements Command {
     private String message = "";
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, SON.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, SON.class);
     }
 
     @Override
@@ -57,10 +56,10 @@ public class TestTool extends AbstractGraphEditorTool implements Command {
     GraphEditor editor1;
 
     @Override
-    public ModelEntry run(ModelEntry me) {
+    public void run(WorkspaceEntry we) {
         System.out.println("================================================================================");
-        SON net = (SON) me.getMathModel();
-        // VisualSON vnet = (VisualSON) we.getModelEntry().getVisualModel();
+        SON net = WorkspaceUtils.getAs(we, SON.class);
+        // VisualSON vnet = WorkspaceUtils.getAs(we, VisualSON.class);
         // reachableMarkingsTest(net);
         esitmationTest(net);
         // timeTest(net);
@@ -79,13 +78,6 @@ public class TestTool extends AbstractGraphEditorTool implements Command {
         // this.convertBlockTest(net, vnet);
         // relation(net, vnet);
         // conditionOutputTest(vnet);
-        return me;
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
-        run(we.getModelEntry());
-        return we;
     }
 
     private void reachableMarkingsTest(SON net) {

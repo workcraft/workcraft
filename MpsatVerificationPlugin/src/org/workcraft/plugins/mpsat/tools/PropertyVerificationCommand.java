@@ -14,7 +14,6 @@ import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.GUI;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -28,8 +27,8 @@ public class PropertyVerificationCommand extends AbstractVerificationCommand {
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, PetriNetModel.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, PetriNetModel.class);
     }
 
     @Override
@@ -38,14 +37,9 @@ public class PropertyVerificationCommand extends AbstractVerificationCommand {
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
-        return null; // !!!
-    }
-
-    @Override
-    public final WorkspaceEntry run(WorkspaceEntry we) {
+    public final void run(WorkspaceEntry we) {
         File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, MPSAT_PROPERTY_PRESETS_FILE);
-        boolean allowStgPresets = WorkspaceUtils.isApplicable(we.getModelEntry(), StgModel.class);
+        boolean allowStgPresets = WorkspaceUtils.isApplicable(we, StgModel.class);
         MpsatPresetManager pmgr = new MpsatPresetManager(presetFile, new MpsatSettingsSerialiser(), allowStgPresets);
         final Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
@@ -59,7 +53,6 @@ public class PropertyVerificationCommand extends AbstractVerificationCommand {
             final MpsatChainResultHandler monitor = new MpsatChainResultHandler(mpsatTask);
             taskManager.queue(mpsatTask, "MPSat tool chain", monitor);
         }
-        return we;
     }
 
 }

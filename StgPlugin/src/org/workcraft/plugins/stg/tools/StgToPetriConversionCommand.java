@@ -24,8 +24,8 @@ public class StgToPetriConversionCommand extends AbstractConversionCommand {
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, Stg.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, Stg.class);
     }
 
     @Override
@@ -37,7 +37,7 @@ public class StgToPetriConversionCommand extends AbstractConversionCommand {
         }
         we.captureMemento();
         try {
-            final VisualStg stg = WorkspaceUtils.getAs(me, VisualStg.class);
+            final VisualStg stg = me.getAs(VisualStg.class);
             final VisualPetriNet petri = new VisualPetriNet(new PetriNet());
             final StgToPetriConverter converter = new StgToPetriConverter(stg, petri);
             return new ModelEntry(new PetriNetDescriptor(), converter.getDstModel());

@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 
 import org.workcraft.AbstractTransformationCommand;
-import org.workcraft.Framework;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
@@ -14,7 +13,6 @@ import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.util.Pair;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -31,22 +29,19 @@ public class DualArcToReadArcTransformationCommand extends AbstractTransformatio
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, PetriNetModel.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, PetriNetModel.class);
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
-        final VisualModel model = me.getVisualModel();
+    public void run(WorkspaceEntry we) {
+        final VisualModel model = we.getModelEntry().getVisualModel();
         HashSet<Pair<VisualConnection, VisualConnection>> dualArcs = PetriNetUtils.getSelectedOrAllDualArcs(model);
         if (!dualArcs.isEmpty()) {
-            final Framework framework = Framework.getInstance();
-            final WorkspaceEntry we = framework.getWorkspaceEntry(me);
             we.saveMemento();
             HashSet<VisualReadArc> readArcs = PetriNetUtils.convertDualArcsToReadArcs(model, dualArcs);
             model.select(new LinkedList<Node>(readArcs));
         }
-        return me;
     }
 
     @Override

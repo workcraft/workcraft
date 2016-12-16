@@ -1,23 +1,23 @@
 package org.workcraft.plugins.dfs;
 
+import org.workcraft.Command;
 import org.workcraft.CompatibilityManager;
 import org.workcraft.Framework;
 import org.workcraft.Initialiser;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
-import org.workcraft.Command;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.graph.tools.AbstractContractTransformationCommand;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.dfs.interop.VerilogExporter;
+import org.workcraft.plugins.dfs.tools.DfsCombinedVerificationCommand;
 import org.workcraft.plugins.dfs.tools.DfsDeadlockVerificationCommand;
 import org.workcraft.plugins.dfs.tools.DfsPersisitencyVerificationCommand;
-import org.workcraft.plugins.dfs.tools.DfsCombinedVerificationCommand;
-import org.workcraft.plugins.dfs.tools.MergeComponentTransformationCommand;
 import org.workcraft.plugins.dfs.tools.DfsToStgConversionCommand;
+import org.workcraft.plugins.dfs.tools.MergeComponentTransformationCommand;
 import org.workcraft.plugins.dfs.tools.WaggingGeneratorCommand;
-import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class DfsModule implements Module {
@@ -60,8 +60,8 @@ public class DfsModule implements Module {
 
     private final class ContractComponentTransformationCommand extends AbstractContractTransformationCommand {
         @Override
-        public boolean isApplicableTo(ModelEntry me) {
-            return WorkspaceUtils.isApplicable(me, Dfs.class);
+        public boolean isApplicableTo(WorkspaceEntry we) {
+            return WorkspaceUtils.isApplicable(we, Dfs.class);
         }
     }
 

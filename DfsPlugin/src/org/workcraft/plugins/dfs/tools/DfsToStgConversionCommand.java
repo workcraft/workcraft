@@ -6,6 +6,7 @@ import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.plugins.dfs.stg.DfsToStgConverter;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class DfsToStgConversionCommand extends AbstractConversionCommand {
@@ -16,8 +17,8 @@ public class DfsToStgConversionCommand extends AbstractConversionCommand {
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicableExact(me, Dfs.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicableExact(we, Dfs.class);
     }
 
     @Override

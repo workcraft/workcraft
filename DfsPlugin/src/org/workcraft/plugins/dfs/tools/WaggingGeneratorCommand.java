@@ -8,7 +8,6 @@ import org.workcraft.dom.Node;
 import org.workcraft.plugins.dfs.Dfs;
 import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.plugins.dfs.VisualRegister;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -25,18 +24,13 @@ public class WaggingGeneratorCommand implements Command {
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicableExact(me, Dfs.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicableExact(we, Dfs.class);
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
-        return me; // !!!
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
-        final VisualDfs dfs = (VisualDfs) we.getModelEntry().getVisualModel();
+    public void run(WorkspaceEntry we) {
+        final VisualDfs dfs = WorkspaceUtils.getAs(we, VisualDfs.class);
         int selectedRegisterCount = 0;
         for (Node node: dfs.getSelection()) {
             if (node instanceof VisualRegister) {
@@ -55,7 +49,6 @@ public class WaggingGeneratorCommand implements Command {
                 generator.run();
             }
         }
-        return we;
     }
 
     public int getWayCount() {

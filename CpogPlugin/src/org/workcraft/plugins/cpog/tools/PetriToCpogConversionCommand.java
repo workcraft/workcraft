@@ -17,8 +17,8 @@ import org.workcraft.workspace.WorkspaceUtils;
 public class PetriToCpogConversionCommand extends AbstractConversionCommand {
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, PetriNet.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, PetriNet.class);
     }
 
     @Override
@@ -27,12 +27,7 @@ public class PetriToCpogConversionCommand extends AbstractConversionCommand {
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
-        return null; // !!!
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
+    public void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
         PetriToCpogSettings settings = new PetriToCpogSettings();
@@ -48,7 +43,6 @@ public class PetriToCpogConversionCommand extends AbstractConversionCommand {
             final TaskManager taskManager = framework.getTaskManager();
             taskManager.queue(task, "Converting Petri net into CPOG...", result);
         }
-        return null;
     }
 
     @Override

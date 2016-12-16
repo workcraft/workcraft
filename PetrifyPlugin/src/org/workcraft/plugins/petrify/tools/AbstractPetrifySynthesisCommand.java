@@ -6,24 +6,18 @@ import org.workcraft.plugins.petrify.tasks.SynthesisResultHandler;
 import org.workcraft.plugins.petrify.tasks.SynthesisTask;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public abstract class AbstractPetrifySynthesisCommand extends AbstractSynthesisCommand {
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, StgModel.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, StgModel.class);
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
-        return null; // !!!
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
+    public void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
         final SynthesisTask task = new SynthesisTask(we, getSynthesisParameter());
@@ -31,7 +25,6 @@ public abstract class AbstractPetrifySynthesisCommand extends AbstractSynthesisC
                 boxSequentialComponents(), boxCombinationalComponents(), sequentialAssign());
 
         taskManager.queue(task, "Petrify logic synthesis", monitor);
-        return null;
     }
 
     public boolean boxSequentialComponents() {

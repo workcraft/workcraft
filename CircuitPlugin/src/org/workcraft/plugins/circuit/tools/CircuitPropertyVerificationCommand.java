@@ -19,7 +19,6 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.GUI;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -33,8 +32,8 @@ public class CircuitPropertyVerificationCommand extends AbstractVerificationComm
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, Circuit.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, Circuit.class);
     }
 
     @Override
@@ -43,12 +42,7 @@ public class CircuitPropertyVerificationCommand extends AbstractVerificationComm
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
-        return null; // !!!
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
+    public void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
 
@@ -87,7 +81,6 @@ public class CircuitPropertyVerificationCommand extends AbstractVerificationComm
                 taskManager.queue(task, description, monitor);
             }
         }
-        return we;
     }
 
 }

@@ -4,9 +4,9 @@ import java.util.Set;
 
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.graph.tools.AbstractMergeTransformationCommand;
-import org.workcraft.plugins.petri.PetriNet;
+import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.petri.VisualTransition;
-import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public final class MergeTransitionTransformationCommand extends AbstractMergeTransformationCommand {
@@ -17,8 +17,8 @@ public final class MergeTransitionTransformationCommand extends AbstractMergeTra
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, PetriNet.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, VisualPetriNet.class);
     }
 
     @Override

@@ -3,8 +3,8 @@ package org.workcraft.plugins.petri.tools;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.workcraft.NodeTransformer;
 import org.workcraft.AbstractTransformationCommand;
+import org.workcraft.NodeTransformer;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
@@ -14,6 +14,8 @@ import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public class ProxyReadArcPlaceTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
@@ -28,8 +30,8 @@ public class ProxyReadArcPlaceTransformationCommand extends AbstractTransformati
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return me.getMathModel() instanceof PetriNetModel;
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, PetriNetModel.class);
     }
 
     @Override

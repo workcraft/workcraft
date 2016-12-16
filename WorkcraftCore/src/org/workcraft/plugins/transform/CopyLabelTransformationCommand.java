@@ -31,7 +31,7 @@ import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class CopyLabelTransformationCommand extends AbstractTransformationCommand {
@@ -42,8 +42,8 @@ public class CopyLabelTransformationCommand extends AbstractTransformationComman
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, VisualModel.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, VisualModel.class);
     }
 
     @Override

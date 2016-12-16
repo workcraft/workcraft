@@ -27,8 +27,8 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
-import org.workcraft.NodeTransformer;
 import org.workcraft.AbstractTransformationCommand;
+import org.workcraft.NodeTransformer;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
@@ -41,6 +41,7 @@ import org.workcraft.plugins.circuit.VisualJoint;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class SplitJointTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
@@ -56,8 +57,8 @@ public class SplitJointTransformationCommand extends AbstractTransformationComma
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, VisualCircuit.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, VisualCircuit.class);
     }
 
     @Override

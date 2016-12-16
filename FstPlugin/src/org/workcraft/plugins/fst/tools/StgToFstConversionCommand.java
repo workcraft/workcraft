@@ -30,23 +30,17 @@ public class StgToFstConversionCommand extends AbstractConversionCommand {
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, Stg.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, Stg.class);
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
-        return null; // !!!
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
+    public void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
         final WriteSgConversionTask task = new WriteSgConversionTask(we, isBinary());
         final StgToFstConversionResultHandler monitor = new StgToFstConversionResultHandler(task);
         taskManager.queue(task, "Building state graph", monitor);
-        return null;
     }
 
     @Override

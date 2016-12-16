@@ -24,28 +24,14 @@ public abstract class AbstractConversionCommand extends AbstractPromotedCommand 
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
-        final ModelEntry meDst = convert(me);
+    public void run(WorkspaceEntry we) {
+        final ModelEntry meDst = convert(we.getModelEntry());
         final Framework framework = Framework.getInstance();
         final Workspace workspace = framework.getWorkspace();
-        final WorkspaceEntry we = workspace.getWorkspaceEntry(me);
-        addToWorkspace(meDst, we);
-        return meDst;
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
-        final ModelEntry me = convert(we.getModelEntry());
-        return addToWorkspace(me, we);
-    }
-
-    private WorkspaceEntry addToWorkspace(final ModelEntry meDst, WorkspaceEntry weSrc) {
-        final Framework framework = Framework.getInstance();
-        final Workspace workspace = framework.getWorkspace();
-        final Path<String> directory = weSrc.getWorkspacePath().getParent();
-        final String name = weSrc.getWorkspacePath().getNode();
+        final Path<String> directory = we.getWorkspacePath().getParent();
+        final String name = we.getWorkspacePath().getNode();
         final boolean openInEditor = meDst.isVisual() || CommonEditorSettings.getOpenNonvisual();
-        return workspace.add(directory, name, meDst, false, openInEditor);
+        workspace.add(directory, name, meDst, false, openInEditor);
     }
 
     public abstract ModelEntry convert(ModelEntry me);

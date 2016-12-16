@@ -26,8 +26,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-import org.workcraft.NodeTransformer;
 import org.workcraft.AbstractTransformationCommand;
+import org.workcraft.NodeTransformer;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
@@ -45,6 +45,7 @@ import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class InsertBufferTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
@@ -60,8 +61,8 @@ public class InsertBufferTransformationCommand extends AbstractTransformationCom
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, VisualCircuit.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, VisualCircuit.class);
     }
 
     @Override

@@ -24,8 +24,8 @@ package org.workcraft.plugins.transform;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.workcraft.NodeTransformer;
 import org.workcraft.AbstractTransformationCommand;
+import org.workcraft.NodeTransformer;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
@@ -36,6 +36,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class StraightenConnectionTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
@@ -51,8 +52,8 @@ public class StraightenConnectionTransformationCommand extends AbstractTransform
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, VisualModel.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, VisualModel.class);
     }
 
     @Override

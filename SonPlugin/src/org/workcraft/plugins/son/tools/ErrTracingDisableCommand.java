@@ -3,15 +3,14 @@ package org.workcraft.plugins.son.tools;
 import org.workcraft.Command;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONSettings;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class ErrTracingDisableCommand implements Command {
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, SON.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, SON.class);
     }
 
     @Override
@@ -25,15 +24,8 @@ public class ErrTracingDisableCommand implements Command {
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
+    public void run(WorkspaceEntry we) {
         SONSettings.setErrorTracing(!SONSettings.isErrorTracing());
-        return me;
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
-        run(we.getModelEntry());
-        return we;
     }
 
 }

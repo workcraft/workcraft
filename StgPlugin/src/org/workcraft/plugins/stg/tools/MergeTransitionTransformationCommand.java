@@ -9,7 +9,8 @@ import org.workcraft.gui.graph.tools.AbstractMergeTransformationCommand;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualDummyTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
-import org.workcraft.workspace.ModelEntry;
+import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public final class MergeTransitionTransformationCommand extends AbstractMergeTransformationCommand {
@@ -20,8 +21,8 @@ public final class MergeTransitionTransformationCommand extends AbstractMergeTra
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, Stg.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, VisualStg.class);
     }
 
     @Override

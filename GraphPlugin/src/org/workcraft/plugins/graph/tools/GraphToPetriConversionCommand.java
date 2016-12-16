@@ -7,6 +7,7 @@ import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.PetriNetDescriptor;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class GraphToPetriConversionCommand extends AbstractConversionCommand {
@@ -17,13 +18,13 @@ public class GraphToPetriConversionCommand extends AbstractConversionCommand {
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicableExact(me, Graph.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicableExact(we, Graph.class);
     }
 
     @Override
     public ModelEntry convert(ModelEntry me) {
-        final VisualGraph graph = (VisualGraph) me.getVisualModel();
+        final VisualGraph graph = me.getAs(VisualGraph.class);
         final VisualPetriNet petri = new VisualPetriNet(new PetriNet());
         final GraphToPetriConverter converter = new GraphToPetriConverter(graph, petri);
         return new ModelEntry(new PetriNetDescriptor(), converter.getDstModel());

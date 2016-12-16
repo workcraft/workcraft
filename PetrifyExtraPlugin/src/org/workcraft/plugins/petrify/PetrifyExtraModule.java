@@ -1,16 +1,16 @@
 package org.workcraft.plugins.petrify;
 
+import org.workcraft.Command;
 import org.workcraft.Framework;
 import org.workcraft.Initialiser;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
-import org.workcraft.Command;
 import org.workcraft.interop.Exporter;
-import org.workcraft.plugins.petrify.tools.ShowSg;
+import org.workcraft.plugins.petrify.tools.ShowSgCommand;
 
 public class PetrifyExtraModule implements Module {
 
-    private final class ShowBinarySg extends ShowSg {
+    private final class ShowBinarySgCommand extends ShowSgCommand {
         @Override
         public boolean isBinary() {
             return true;
@@ -23,12 +23,12 @@ public class PetrifyExtraModule implements Module {
         PluginManager pm = framework.getPluginManager();
         pm.registerClass(Exporter.class, AstgExporter.class);
 
-        pm.registerClass(Command.class, ShowSg.class);
+        pm.registerClass(Command.class, ShowSgCommand.class);
 
         pm.registerClass(Command.class, new Initialiser<Command>() {
             @Override
             public Command create() {
-                return new ShowBinarySg();
+                return new ShowBinarySgCommand();
             }
         });
     }

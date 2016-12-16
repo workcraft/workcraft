@@ -51,11 +51,10 @@ import org.workcraft.plugins.xmas.components.VisualSwitchComponent;
 import org.workcraft.plugins.xmas.components.VisualSyncComponent;
 import org.workcraft.plugins.xmas.components.XmasContact;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class SyncTool implements Command {
+public class XmasSyncCommand implements Command {
 
     @Override
     public String getDisplayName() {
@@ -68,8 +67,8 @@ public class SyncTool implements Command {
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, Xmas.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, VisualXmas.class);
     }
 
     int cntSyncnodes = 0;
@@ -81,7 +80,6 @@ public class SyncTool implements Command {
     }
 
     private static class Sync {
-
         String name1;
         String name2;
         String name3;
@@ -312,14 +310,14 @@ public class SyncTool implements Command {
     public List<String> slist2 = new ArrayList<>();
 
     @Override
-    public ModelEntry run(ModelEntry me) {
+    public void run(WorkspaceEntry we) {
         System.out.println("Running tests");
-        final VisualXmas vnet = (VisualXmas) me.getVisualModel();
+        final VisualXmas vnet = WorkspaceUtils.getAs(we, VisualXmas.class);
+        final Xmas cnet = WorkspaceUtils.getAs(we, Xmas.class);
         if (vnet != vnet1) {
             loaded = 0;
         }
         vnet1 = vnet;
-        Xmas cnet = (Xmas) me.getMathModel();
 
         cntSyncnodes = 0;
         if (loaded == 0) {
@@ -845,13 +843,6 @@ public class SyncTool implements Command {
         });
         mainFrame.pack();
         mainFrame.setVisible(true);
-        return me;
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
-        run(we.getModelEntry());
-        return we;
     }
 
 }

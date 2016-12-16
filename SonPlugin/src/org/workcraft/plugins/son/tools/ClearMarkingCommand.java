@@ -2,15 +2,14 @@ package org.workcraft.plugins.son.tools;
 
 import org.workcraft.Command;
 import org.workcraft.plugins.son.SON;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class ClearMarkingCommand implements Command {
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, SON.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, SON.class);
     }
 
     @Override
@@ -24,16 +23,9 @@ public class ClearMarkingCommand implements Command {
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
-        SON net = (SON) me.getMathModel();
+    public void run(WorkspaceEntry we) {
+        SON net = WorkspaceUtils.getAs(we,  SON.class);
         net.clearMarking();
-        return me;
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
-        run(we.getModelEntry());
-        return we;
     }
 
 }

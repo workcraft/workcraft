@@ -4,9 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import org.workcraft.Command;
 import org.workcraft.Framework;
 import org.workcraft.PluginManager;
-import org.workcraft.Command;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.gui.MainWindow;
@@ -22,19 +22,18 @@ import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.GUI;
 import org.workcraft.util.LogUtils;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class PcompTool implements Command {
+public class ParallelCompositionCommand implements Command {
 
-    public final String getSection() {
+    public String getSection() {
         return "Composition";
     }
 
-    public final boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, StgModel.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, StgModel.class);
     }
 
     @Override
@@ -43,7 +42,7 @@ public class PcompTool implements Command {
     }
 
     @Override
-    public final ModelEntry run(ModelEntry me) {
+    public final void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         if (!framework.isInGuiMode()) {
             LogUtils.logErrorLine("Tool '" + getClass().getSimpleName() + "' only works in GUI mode.");
@@ -73,22 +72,13 @@ public class PcompTool implements Command {
                 taskManager.queue(pcompTask, "Running parallel composition [PComp]", pcompResult);
             }
         }
-        return me;
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
-        run(we.getModelEntry());
-        return we;
     }
 
     public File exportStg(WorkspaceEntry we, File directory) {
-        StgModel model;
-        ModelEntry modelEntry = we.getModelEntry();
-        if (modelEntry.getMathModel() instanceof StgModel) {
-            model = (StgModel) modelEntry.getMathModel();
-        } else {
-            throw new RuntimeException("Unexpected model class " + we.getClass().getName());
+        StgModel model = WorkspaceUtils.getAs(we, StgModel.class);
+        if (model == null) {
+            String modelClassName = we.getModelEntry().getMathModel().getClass().getName();
+            throw new RuntimeException("Unexpected model class " + modelClassName);
         }
         try {
             String prefix = we.getFileName() + "-";

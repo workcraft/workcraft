@@ -18,23 +18,17 @@ public class PetriToFsmConversionCommand extends AbstractConversionCommand {
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, PetriNet.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, PetriNet.class);
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
-        return null; // !!!
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
+    public void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
         final WriteSgConversionTask task = new WriteSgConversionTask(we, false);
         final PetriToFsmConversionResultHandler monitor = new PetriToFsmConversionResultHandler(task);
         taskManager.queue(task, "Building state graph", monitor);
-        return null;
     }
 
     @Override

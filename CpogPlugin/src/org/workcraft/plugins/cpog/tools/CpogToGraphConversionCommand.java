@@ -7,6 +7,7 @@ import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.graph.Graph;
 import org.workcraft.plugins.graph.VisualGraph;
 import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class CpogToGraphConversionCommand extends AbstractConversionCommand {
@@ -17,8 +18,8 @@ public class CpogToGraphConversionCommand extends AbstractConversionCommand {
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicableExact(me, Cpog.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicableExact(we, Cpog.class);
     }
 
     @Override

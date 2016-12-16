@@ -2,8 +2,8 @@ package org.workcraft.plugins.petrify.tools;
 
 import javax.swing.JOptionPane;
 
-import org.workcraft.Framework;
 import org.workcraft.Command;
+import org.workcraft.Framework;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.petri.PetriNetModel;
@@ -13,11 +13,10 @@ import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class ShowSg implements Command {
+public class ShowSgCommand implements Command {
     private static final String TITLE = "State graph synthesis";
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
 
@@ -26,8 +25,8 @@ public class ShowSg implements Command {
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, PetriNetModel.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, PetriNetModel.class);
     }
 
     @Override
@@ -41,8 +40,8 @@ public class ShowSg implements Command {
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
-        DrawSgTask task = new DrawSgTask(me, isBinary());
+    public void run(WorkspaceEntry we) {
+        DrawSgTask task = new DrawSgTask(we, isBinary());
         final Framework framework = Framework.getInstance();
 
         ProgressMonitor<DrawSgResult> monitor = new ProgressMonitor<DrawSgResult>() {
@@ -86,13 +85,6 @@ public class ShowSg implements Command {
 
         final TaskManager taskManager = framework.getTaskManager();
         taskManager.queue(task, "Show state graph", monitor);
-        return me;
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
-        run(we.getModelEntry());
-        return we;
     }
 
 }

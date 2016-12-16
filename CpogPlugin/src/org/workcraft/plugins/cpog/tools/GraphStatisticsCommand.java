@@ -14,8 +14,8 @@ import org.workcraft.plugins.cpog.VisualArc;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.VisualScenario;
 import org.workcraft.plugins.cpog.VisualVertex;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public class GraphStatisticsCommand implements Command {
 
@@ -30,14 +30,13 @@ public class GraphStatisticsCommand implements Command {
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return me.getVisualModel() instanceof VisualCpog;
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, VisualCpog.class);
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
-        final VisualCpog cpog = (VisualCpog) me.getVisualModel();
-
+    public void run(WorkspaceEntry we) {
+        final VisualCpog cpog = WorkspaceUtils.getAs(we, VisualCpog.class);
         ArrayList<Container> scenarios = new ArrayList<>();
         for (Node cur: cpog.getSelection()) {
             if (cur instanceof VisualScenario) {
@@ -51,13 +50,6 @@ public class GraphStatisticsCommand implements Command {
             printHeaderSelected();
         }
         printStatistics(cpog, scenarios);
-        return me;
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
-        run(we.getModelEntry());
-        return we;
     }
 
     private void printHeaderCurrent() {

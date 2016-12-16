@@ -41,7 +41,7 @@ import org.workcraft.plugins.circuit.VisualCircuitComponent;
 import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.layout.AbstractLayoutCommand;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class CircuitLayoutCommand extends AbstractLayoutCommand {
@@ -55,8 +55,8 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, VisualCircuit.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, VisualCircuit.class);
     }
 
     @Override

@@ -1,6 +1,4 @@
-package org.workcraft.plugins.cpog.gui;
-
-import info.clearthought.layout.TableLayout;
+package org.workcraft.plugins.cpog.scenco;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -18,7 +16,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -30,13 +27,13 @@ import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
-import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.util.GUI;
 import org.workcraft.util.IntDocument;
-import org.workcraft.workspace.WorkspaceEntry;
+
+import info.clearthought.layout.TableLayout;
 
 @SuppressWarnings("serial")
-public class ScencoSatBasedDialog extends JDialog {
+public class SatBasedScencoDialog extends AbstractScencoDialog {
 
     private JCheckBox verboseModeCheck, abcCheck;
     private JComboBox<String> optimiseBox;
@@ -44,25 +41,9 @@ public class ScencoSatBasedDialog extends JDialog {
     private JTextField bitsText, circuitSizeText;
     JScrollPane scrollPane;
     private int m, bits;
-    // Core variables
-    private final EncoderSettings settings;
-    private final WorkspaceEntry we;
-    private int modalResult;
 
-    // generationPanel.getPreferredSize().height
-
-    public EncoderSettings getSettings() {
-        return settings;
-    }
-
-    public ScencoSatBasedDialog(Window owner,
-            PresetManager<EncoderSettings> presetManager,
-            EncoderSettings settings, WorkspaceEntry we) {
-        super(owner, "SAT-based optimal encoding",
-                ModalityType.APPLICATION_MODAL);
-        this.settings = settings;
-        this.we = we;
-        modalResult = 0;
+    public SatBasedScencoDialog(Window owner, String title, EncoderSettings settings, VisualCpog model) {
+        super(owner, title, settings, model);
 
         createStandardPanel();
         createGenerationPanel();
@@ -102,13 +83,13 @@ public class ScencoSatBasedDialog extends JDialog {
         standardPanel.setLayout(new BoxLayout(standardPanel, BoxLayout.PAGE_AXIS));
 
         // OPTIMISE FOR MICROCONTROLLER/CPOG SIZE
-        JLabel optimiseLabel = new JLabel(ScencoDialogSupport.textOptimiseForLabel);
+        JLabel optimiseLabel = new JLabel(ScencoHelper.textOptimiseForLabel);
         optimiseBox = new JComboBox<String>();
         optimiseBox.setEditable(false);
-        optimiseBox.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForBox);
-        optimiseBox.addItem(ScencoDialogSupport.textOptimiseForFirstElement);
-        optimiseBox.addItem(ScencoDialogSupport.textOptimiseForSecondElement);
-        optimiseBox.setSelectedIndex(settings.isCpogSize() ? 0 : 1);
+        optimiseBox.setPreferredSize(ScencoHelper.dimensionOptimiseForBox);
+        optimiseBox.addItem(ScencoHelper.textOptimiseForFirstElement);
+        optimiseBox.addItem(ScencoHelper.textOptimiseForSecondElement);
+        optimiseBox.setSelectedIndex(getSettings().isCpogSize() ? 0 : 1);
         optimiseBox.setBackground(Color.WHITE);
 
         JPanel optimisePanel = new JPanel();
@@ -116,10 +97,10 @@ public class ScencoSatBasedDialog extends JDialog {
         optimisePanel.add(optimiseBox);
 
         // ABC TOOL DISABLE FLAG
-        abcCheck = new JCheckBox("Use ABC for logic synthesis", settings.isAbcFlag());
+        abcCheck = new JCheckBox("Use ABC for logic synthesis", getSettings().isAbcFlag());
 
         // VERBOSE MODE INSTANTIATION
-        verboseModeCheck = new JCheckBox(ScencoDialogSupport.textVerboseMode, false);
+        verboseModeCheck = new JCheckBox(ScencoHelper.textVerboseMode, false);
 
         JPanel checkPanel = new JPanel();
         checkPanel.add(abcCheck);
@@ -131,17 +112,16 @@ public class ScencoSatBasedDialog extends JDialog {
     }
 
     private void createGenerationPanel() {
-        VisualCpog cpog = (VisualCpog) (we.getModelEntry().getVisualModel());
-        ArrayList<VisualTransformableNode> scenarios = CpogParsingTool.getScenarios(cpog);
+        ArrayList<VisualTransformableNode> scenarios = CpogParsingTool.getScenarios(getModel());
         m = scenarios.size();
 
         generationPanel = new JPanel(new SimpleFlowLayout());
         generationPanel.setBorder(BorderFactory
                 .createTitledBorder("Encoding parameters"));
 
-        JLabel bitsLabel = new JLabel(ScencoDialogSupport.textEncodingBitWidth);
+        JLabel bitsLabel = new JLabel(ScencoHelper.textEncodingBitWidth);
         //bitsLabel.setPreferredSize(ScencoDialogSupport.dimensionBitEncodingWidthLabel);
-        JLabel circuitSizeLabel = new JLabel(ScencoDialogSupport.textCircuitSizeLabel);
+        JLabel circuitSizeLabel = new JLabel(ScencoHelper.textCircuitSizeLabel);
         //circuitSizeLabel.setPreferredSize(ScencoDialogSupport.dimensionCircuitSizeLabel);
         int value = 2;
         while (value < m) {
@@ -158,7 +138,7 @@ public class ScencoSatBasedDialog extends JDialog {
 
         circuitSizeText = new JTextField();
         circuitSizeText.setText(String.valueOf(bits + 2));
-        circuitSizeText.setPreferredSize(ScencoDialogSupport.dimensionCircuitSizeText);
+        circuitSizeText.setPreferredSize(ScencoHelper.dimensionCircuitSizeText);
 
         generationPanel.add(bitsLabel);
         generationPanel.add(bitsText);
@@ -179,6 +159,7 @@ public class ScencoSatBasedDialog extends JDialog {
                 setVisible(false);
 
                 // ENCODER EXECUTION
+                EncoderSettings settings = getSettings();
 
                 // abc disabled
                 settings.setAbcFlag(abcCheck.isSelected() ? true : false);
@@ -210,8 +191,7 @@ public class ScencoSatBasedDialog extends JDialog {
                 // custom encodings
                 settings.setNumPO(m);
                 settings.setCustomEncMode(true);
-
-                modalResult = 1;
+                setDone();
             }
         });
 
@@ -225,16 +205,6 @@ public class ScencoSatBasedDialog extends JDialog {
 
         buttonsPanel.add(saveButton);
         buttonsPanel.add(closeButton);
-
-    }
-
-    private void sizeWindow(int width, int height, int row1, int row2) {
-        setMinimumSize(new Dimension(width, height));
-        pack();
-    }
-
-    public int getModalResult() {
-        return modalResult;
     }
 
 }

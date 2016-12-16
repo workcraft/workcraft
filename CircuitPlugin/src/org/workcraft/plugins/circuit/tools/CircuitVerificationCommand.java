@@ -14,7 +14,6 @@ import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -27,8 +26,8 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, Circuit.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, Circuit.class);
     }
 
     @Override
@@ -37,12 +36,7 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
-        return null; // !!!
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
+    public void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
 
@@ -50,7 +44,7 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
         if (circuit.getFunctionComponents().isEmpty()) {
             JOptionPane.showMessageDialog(mainWindow, "The circuit must have components.",
                     "Error", JOptionPane.ERROR_MESSAGE);
-            return we;
+            return;
         }
 
         boolean checkConformation = checkConformation();
@@ -79,7 +73,7 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
                     JOptionPane.showMessageDialog(mainWindow, "Error: " + messagePrefix
                             + "The circuit conformation cannot be checked without environment STG.\n",
                             TITLE, JOptionPane.ERROR_MESSAGE);
-                    return we;
+                    return;
                 }
                 checkConformation = false;
             } else {
@@ -100,7 +94,6 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
             final MpsatChainResultHandler monitor = new MpsatChainResultHandler(task);
             taskManager.queue(task, description, monitor);
         }
-        return we;
     }
 
     public boolean checkConformation() {

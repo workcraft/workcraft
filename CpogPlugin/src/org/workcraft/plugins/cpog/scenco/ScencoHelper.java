@@ -1,8 +1,8 @@
-package org.workcraft.plugins.cpog.gui;
+package org.workcraft.plugins.cpog.scenco;
 
 import java.awt.Dimension;
 
-public class ScencoDialogSupport {
+public class ScencoHelper {
 
     // Above this number, allows to synthesise the circuit once
     public static final int MAX_POS_FOR_SEVERAL_SYNTHESIS = 50;

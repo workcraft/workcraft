@@ -32,7 +32,6 @@ import org.workcraft.plugins.xmas.components.VisualSwitchComponent;
 import org.workcraft.plugins.xmas.components.VisualSyncComponent;
 import org.workcraft.plugins.xmas.components.XmasContact;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -47,11 +46,10 @@ public class JsonExportCommand implements Command {
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, Xmas.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, Xmas.class);
     }
 
-    //public Collection<String> srcNodes;
     public Collection<VisualSourceComponent> srcNodes;
 
     public void syncReset() {
@@ -70,10 +68,10 @@ public class JsonExportCommand implements Command {
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
+    public void run(WorkspaceEntry we) {
         System.out.println("Running tests");
-        VisualXmas vnet = (VisualXmas) me.getVisualModel();
-        Xmas cnet = (Xmas) me.getMathModel();
+        final VisualXmas vnet = WorkspaceUtils.getAs(we, VisualXmas.class);
+        final Xmas cnet = WorkspaceUtils.getAs(we, Xmas.class);
 
         //srcNodes = cnet.getSourceComponent();
         int no = 1;
@@ -443,13 +441,6 @@ public class JsonExportCommand implements Command {
                 writer.close();
             }
         }
-        return me;
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
-        run(we.getModelEntry());
-        return we;
     }
 
 }

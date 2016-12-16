@@ -1,10 +1,7 @@
-package org.workcraft.plugins.cpog.gui;
-
-import info.clearthought.layout.TableLayout;
+package org.workcraft.plugins.cpog.scenco;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -18,7 +15,6 @@ import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -29,30 +25,24 @@ import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
-import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.util.GUI;
-import org.workcraft.workspace.WorkspaceEntry;
+
+import info.clearthought.layout.TableLayout;
 
 @SuppressWarnings("serial")
-public class ScencoSingleSequentialDialog extends JDialog {
+public class SingleSequentialScencoDialog extends AbstractScencoDialog {
 
     private JCheckBox verboseModeCheck, abcCheck;
     private JComboBox<String> optimiseBox;
     private JPanel buttonsPanel, standardPanel;
     JScrollPane scrollPane;
     private int m, bits;
-    private final EncoderSettings settings;
-    private final WorkspaceEntry we;
-    private int modalResult;
 
-    public ScencoSingleSequentialDialog(Window owner, PresetManager<EncoderSettings> presetManager, EncoderSettings settings, WorkspaceEntry we, String string) {
-        super(owner, string, ModalityType.APPLICATION_MODAL);
-        this.settings = settings;
-        this.we = we;
-        modalResult = 0;
+    public SingleSequentialScencoDialog(Window owner, String title, EncoderSettings settings, VisualCpog model) {
+        super(owner, title, settings, model);
 
         createStandardPanel();
-        createButtonPanel(string);
+        createButtonPanel(title);
 
         double[][] size = new double[][] {
             {TableLayout.FILL},
@@ -90,23 +80,23 @@ public class ScencoSingleSequentialDialog extends JDialog {
 
         // OPTIMISE FOR MICROCONTROLLER/CPOG SIZE
         JPanel optimisePanel = new JPanel();
-        JLabel optimiseLabel = new JLabel(ScencoDialogSupport.textOptimiseForLabel);
+        JLabel optimiseLabel = new JLabel(ScencoHelper.textOptimiseForLabel);
         //optimiseLabel.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForLabel);
         optimiseBox = new JComboBox<String>();
         optimiseBox.setEditable(false);
-        optimiseBox.setPreferredSize(ScencoDialogSupport.dimensionOptimiseForBox);
-        optimiseBox.addItem(ScencoDialogSupport.textOptimiseForFirstElement);
-        optimiseBox.addItem(ScencoDialogSupport.textOptimiseForSecondElement);
-        optimiseBox.setSelectedIndex(settings.isCpogSize() ? 0 : 1);
+        optimiseBox.setPreferredSize(ScencoHelper.dimensionOptimiseForBox);
+        optimiseBox.addItem(ScencoHelper.textOptimiseForFirstElement);
+        optimiseBox.addItem(ScencoHelper.textOptimiseForSecondElement);
+        optimiseBox.setSelectedIndex(getSettings().isCpogSize() ? 0 : 1);
         optimiseBox.setBackground(Color.WHITE);
         optimisePanel.add(optimiseLabel);
         optimisePanel.add(optimiseBox);
 
         // ABC TOOL DISABLE FLAG
-        abcCheck = new JCheckBox(ScencoDialogSupport.textAbcLabel, settings.isAbcFlag());
+        abcCheck = new JCheckBox(ScencoHelper.textAbcLabel, getSettings().isAbcFlag());
 
         // VERBOSE MODE INSTANTIATION
-        verboseModeCheck = new JCheckBox(ScencoDialogSupport.textVerboseMode, false);
+        verboseModeCheck = new JCheckBox(ScencoHelper.textVerboseMode, false);
 
         JPanel checkPanel = new JPanel();
         checkPanel.add(abcCheck);
@@ -119,8 +109,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
     }
 
     private void createButtonPanel(final String string) {
-        VisualCpog cpog = (VisualCpog) (we.getModelEntry().getVisualModel());
-        ArrayList<VisualTransformableNode> scenarios = CpogParsingTool.getScenarios(cpog);
+        ArrayList<VisualTransformableNode> scenarios = CpogParsingTool.getScenarios(getModel());
         m = scenarios.size();
 
         int value = 2;
@@ -136,6 +125,9 @@ public class ScencoSingleSequentialDialog extends JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 setVisible(false);
+
+                // ENCODER EXECUTION
+                EncoderSettings settings = getSettings();
 
                 // abc disabled
                 settings.setAbcFlag(abcCheck.isSelected() ? true : false);
@@ -165,9 +157,7 @@ public class ScencoSingleSequentialDialog extends JDialog {
                     settings.setBits(bits + 1);
                     settings.setCustomEncMode(false);
                 }
-
-                // Execute scenco
-                modalResult = 1;
+                setDone();
             }
         });
 
@@ -181,24 +171,6 @@ public class ScencoSingleSequentialDialog extends JDialog {
 
         buttonsPanel.add(saveButton);
         buttonsPanel.add(closeButton);
-
     }
 
-    private void sizeWindow(int width, int height, int row1, int row2) {
-        setMinimumSize(new Dimension(width, height));
-        pack();
-
-    }
-
-    public int getModalResult() {
-        return modalResult;
-    }
-
-    public void setModalResult(int modalResult) {
-        this.modalResult = modalResult;
-    }
-
-    public EncoderSettings getSettings() {
-        return settings;
-    }
 }

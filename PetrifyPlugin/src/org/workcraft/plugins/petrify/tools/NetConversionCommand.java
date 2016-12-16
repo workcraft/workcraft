@@ -28,29 +28,19 @@ public class NetConversionCommand extends AbstractConversionCommand {
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, PetriNetModel.class) || WorkspaceUtils.isApplicable(me, Fsm.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, PetriNetModel.class) || WorkspaceUtils.isApplicable(we, Fsm.class);
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
-        return null; // !!!
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
+    public void run(WorkspaceEntry we) {
         ArrayList<String> args = getArgs();
         final TransformationTask task = new TransformationTask(we, "Net synthesis", args.toArray(new String[args.size()]));
-
-        ModelEntry me = we.getModelEntry();
-        boolean hasSignals = WorkspaceUtils.isApplicable(me, StgModel.class)
-                || WorkspaceUtils.isApplicable(me, Fst.class);
-
+        boolean hasSignals = WorkspaceUtils.isApplicable(we, StgModel.class) || WorkspaceUtils.isApplicable(we, Fst.class);
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
         final TransformationResultHandler monitor = new TransformationResultHandler(we, hasSignals);
         taskManager.queue(task, "Petrify net synthesis", monitor);
-        return null;
     }
 
     @Override

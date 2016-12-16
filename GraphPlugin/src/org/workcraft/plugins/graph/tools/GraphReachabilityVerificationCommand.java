@@ -17,9 +17,8 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.graph.Graph;
 import org.workcraft.plugins.graph.Vertex;
-import org.workcraft.util.LogUtils;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public class GraphReachabilityVerificationCommand extends AbstractVerificationCommand {
 
@@ -31,28 +30,15 @@ public class GraphReachabilityVerificationCommand extends AbstractVerificationCo
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return me.getMathModel() instanceof Graph;
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, Graph.class);
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
-        final Graph graph = (Graph) me.getMathModel();
-        HashSet<Vertex> unreachable = checkReachability(graph);
-        if (unreachable.isEmpty()) {
-            LogUtils.logInfoLine("The graph does not have unreachable vertices.");
-        } else {
-            String refStr = ReferenceHelper.getNodesAsString(graph, (Collection) unreachable);
-            LogUtils.logWarningLine("The graph has unreachable vertices:\n" + refStr);
-        }
-        return me; // !!!
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
+    public void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
-        final Graph graph = (Graph) we.getModelEntry().getMathModel();
+        final Graph graph = WorkspaceUtils.getAs(we, Graph.class);
         HashSet<Vertex> unreachable = checkReachability(graph);
         if (unreachable.isEmpty()) {
             JOptionPane.showMessageDialog(mainWindow, "The graph does not have unreachable vertices.",
@@ -68,7 +54,6 @@ public class GraphReachabilityVerificationCommand extends AbstractVerificationCo
                 SelectionHelper.selectByReferencedComponents(visualGraph, (HashSet) unreachable);
             }
         }
-        return we;
     }
 
     private HashSet<Vertex> checkReachability(final Graph graph) {

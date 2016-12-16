@@ -127,8 +127,8 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 
         if (WorkspaceTree.isLeaf(workspace, path)) {
             popup.addSeparator();
-            final WorkspaceEntry openFile = workspace.getOpenFile(path);
-            if (openFile == null) {
+            final WorkspaceEntry we = workspace.getOpenFile(path);
+            if (we == null) {
                 if (file.exists()) {
                     if (file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
                         final JMenuItem miOpen = new JMenuItem("Open");
@@ -160,9 +160,9 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                     }
                 }
             } else {
-                ModelEntry modelEntry = openFile.getModelEntry();
-                if (modelEntry != null) {
-                    final Model model = modelEntry.getModel();
+                ModelEntry me = we.getModelEntry();
+                if (me != null) {
+                    final Model model = me.getModel();
                     String title = model.getTitle();
                     JLabel label = new JLabel(model.getDisplayName() + " " + (title.isEmpty() ? "" : ("'" + title + "'")));
                     popup.add(label);
@@ -172,7 +172,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                     miOpenView.addActionListener(new ActionListener() {
                         @Override
                         public void actionPerformed(ActionEvent e) {
-                            mainWindow.createEditorWindow(openFile);
+                            mainWindow.createEditorWindow(we);
                         }
                     });
 
@@ -181,7 +181,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             try {
-                                mainWindow.save(openFile);
+                                mainWindow.save(we);
                             } catch (OperationCancelledException e1) {
                             }
                         }
@@ -192,7 +192,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             try {
-                                mainWindow.saveAs(openFile);
+                                mainWindow.saveAs(we);
                             } catch (OperationCancelledException e1) {
                             }
                         }
@@ -202,7 +202,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                     popup.add(miSaveAs);
                     popup.add(miOpenView);
 
-                    List<Command> applicableCommands = Commands.getApplicableCommands(modelEntry);
+                    List<Command> applicableCommands = Commands.getApplicableCommands(we);
                     List<String> sections = Commands.getSections(applicableCommands);
 
                     if (!sections.isEmpty()) {
@@ -231,7 +231,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                                 commands.put(item, command);
                                 item.addActionListener(new ActionListener() {
                                     public void actionPerformed(ActionEvent e) {
-                                        Commands.run(openFile, commands.get(e.getSource()));
+                                        Commands.run(we, commands.get(e.getSource()));
                                     }
                                 });
                                 sectionMenu.add(item);

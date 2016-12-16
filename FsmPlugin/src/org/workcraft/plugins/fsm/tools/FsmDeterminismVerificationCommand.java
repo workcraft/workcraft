@@ -17,7 +17,6 @@ import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.Symbol;
 import org.workcraft.plugins.fsm.VisualFsm;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -31,20 +30,15 @@ public class FsmDeterminismVerificationCommand extends AbstractVerificationComma
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, Fsm.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, Fsm.class);
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
-        return null; // !!!
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
+    public void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
-        final Fsm fsm = (Fsm) we.getModelEntry().getMathModel();
+        final Fsm fsm = WorkspaceUtils.getAs(we, Fsm.class);
         HashSet<State> nondeterministicStates = checkDeterminism(fsm);
         if (nondeterministicStates.isEmpty()) {
             JOptionPane.showMessageDialog(mainWindow, "The model is deterministic.",
@@ -60,7 +54,6 @@ public class FsmDeterminismVerificationCommand extends AbstractVerificationComma
                 SelectionHelper.selectByReferencedComponents(visualFsm, (HashSet) nondeterministicStates);
             }
         }
-        return we;
     }
 
     private HashSet<State> checkDeterminism(final Fsm fsm) {

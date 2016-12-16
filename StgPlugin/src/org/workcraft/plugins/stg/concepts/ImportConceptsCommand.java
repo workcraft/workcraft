@@ -7,12 +7,11 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.workcraft.Framework;
 import org.workcraft.Command;
+import org.workcraft.Framework;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.FileUtils;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -26,8 +25,8 @@ public class ImportConceptsCommand implements Command {
         return "Import concepts...";
     }
 
-    public boolean isApplicableTo(ModelEntry me) {
-        return WorkspaceUtils.isApplicable(me, Stg.class);
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, Stg.class);
     }
 
     public File getInputFile() {
@@ -52,12 +51,7 @@ public class ImportConceptsCommand implements Command {
     }
 
     @Override
-    public ModelEntry run(ModelEntry me) {
-        return null; // !!!
-    }
-
-    @Override
-    public WorkspaceEntry run(WorkspaceEntry we) {
+    public void run(WorkspaceEntry we) {
         File inputFile = getInputFile();
         if (inputFile != null) {
             final Framework framework = Framework.getInstance();
@@ -67,7 +61,6 @@ public class ImportConceptsCommand implements Command {
             final ConceptsResultHandler result = new ConceptsResultHandler(this, inputName, we);
             taskManager.queue(task, "Translating concepts", result);
         }
-        return we;
     }
 
 }

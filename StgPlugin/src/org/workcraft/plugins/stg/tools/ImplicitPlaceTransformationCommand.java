@@ -3,8 +3,8 @@ package org.workcraft.plugins.stg.tools;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.workcraft.NodeTransformer;
 import org.workcraft.AbstractTransformationCommand;
+import org.workcraft.NodeTransformer;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Replica;
@@ -12,9 +12,10 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public class ImplicitPlaceTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
@@ -29,8 +30,8 @@ public class ImplicitPlaceTransformationCommand extends AbstractTransformationCo
     }
 
     @Override
-    public boolean isApplicableTo(ModelEntry me) {
-        return me.getMathModel() instanceof Stg;
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return WorkspaceUtils.isApplicable(we, VisualStg.class);
     }
 
     @Override
