@@ -3,9 +3,9 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath 'ca.coglinc:javacc-gradle-plugin:2.3.1'
+        classpath 'ca.coglinc:javacc-gradle-plugin:2.4.0'
         classpath 'de.aaschmid:gradle-cpd-plugin:1.0'
-        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.6.3'
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.7.1'
     }
 }
 
@@ -14,9 +14,9 @@ repositories {
 }
 
 ext {
-    checkstyleVersion = '7.2'
+    checkstyleVersion = '7.3'
     pmdVersion = '5.5.2'
-    jacocoVersion = '0.7.7.201606060606'
+    jacocoVersion = '0.7.8'
 }
 
 subprojects {
