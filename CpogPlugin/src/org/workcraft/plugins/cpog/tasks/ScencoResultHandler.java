@@ -60,7 +60,7 @@ public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
                     final Framework framework = Framework.getInstance();
                     final MainWindow mainWindow = framework.getMainWindow();
                     final Workspace workspace = framework.getWorkspace();
-                    final WorkspaceEntry newWorkspaceEntry = workspace.add(directory, name, me, true, openInEditor);
+                    final WorkspaceEntry newWorkspaceEntry = workspace.addWork(directory, name, me, true, openInEditor);
                     VisualModel visualModel = newWorkspaceEntry.getModelEntry().getVisualModel();
                     if (visualModel instanceof VisualCircuit) {
                         VisualCircuit visualCircuit = (VisualCircuit) visualModel;

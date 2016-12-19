@@ -47,7 +47,7 @@ public class PetriToFsmConversionResultHandler extends DummyProgressMonitor<Writ
             final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
             final ModelEntry me = new ModelEntry(new FsmDescriptor(), model);
             boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
-            workspace.add(directory, name, me, true, openInEditor);
+            workspace.addWork(directory, name, me, true, openInEditor);
         } else if (result.getOutcome() != Outcome.CANCELLED) {
             MainWindow mainWindow = framework.getMainWindow();
             if (result.getCause() == null) {

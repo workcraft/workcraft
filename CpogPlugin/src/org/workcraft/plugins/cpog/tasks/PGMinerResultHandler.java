@@ -66,7 +66,7 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
                                 final Path<String> directory = workspace.getPath(we).getParent();
                                 final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
                                 final ModelEntry me = new ModelEntry(cpogModel, visualCpog);
-                                workspace.add(directory, name, me, true, true);
+                                workspace.addWork(directory, name, me, true, true);
                             } catch (VisualModelInstantiationException e) {
                                 e.printStackTrace();
                             }

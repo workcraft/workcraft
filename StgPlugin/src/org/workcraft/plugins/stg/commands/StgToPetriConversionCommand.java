@@ -9,6 +9,7 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.converters.StgToPetriConverter;
 import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -32,19 +33,20 @@ public class StgToPetriConversionCommand extends AbstractConversionCommand {
     @Override
     public ModelEntry convert(ModelEntry me) {
         final Framework framework = Framework.getInstance();
-        final WorkspaceEntry we = framework.getWorkspaceEntry(me);
-        if (we == null) {
-            return null;
+        final Workspace workspace = framework.getWorkspace();
+        for (WorkspaceEntry we: workspace.getWorks()) {
+            if (we.getModelEntry() != me) continue;
+            we.captureMemento();
+            try {
+                final VisualStg stg = me.getAs(VisualStg.class);
+                final VisualPetriNet petri = new VisualPetriNet(new PetriNet());
+                final StgToPetriConverter converter = new StgToPetriConverter(stg, petri);
+                return new ModelEntry(new PetriNetDescriptor(), converter.getDstModel());
+            } finally {
+                we.cancelMemento();
+            }
         }
-        we.captureMemento();
-        try {
-            final VisualStg stg = me.getAs(VisualStg.class);
-            final VisualPetriNet petri = new VisualPetriNet(new PetriNet());
-            final StgToPetriConverter converter = new StgToPetriConverter(stg, petri);
-            return new ModelEntry(new PetriNetDescriptor(), converter.getDstModel());
-        } finally {
-            we.cancelMemento();
-        }
+        return null;
     }
 
 }

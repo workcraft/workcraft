@@ -71,6 +71,7 @@ import org.flexdock.plaf.common.border.ShadowBorder;
 import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.api.SubstanceConstants.TabContentPaneBorderKind;
 import org.workcraft.Framework;
+import org.workcraft.PluginManager;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
@@ -100,13 +101,13 @@ import org.workcraft.plugins.layout.RandomLayoutCommand;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.TaskManager;
+import org.workcraft.util.Commands;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.GUI;
 import org.workcraft.util.Import;
 import org.workcraft.util.ListMap;
 import org.workcraft.util.LogUtils;
-import org.workcraft.util.Commands;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -471,7 +472,7 @@ public class MainWindow extends JFrame {
 
                 switch (result) {
                 case JOptionPane.YES_OPTION:
-                    save(we);
+                    saveWork(we);
                     break;
                 case JOptionPane.NO_OPTION:
                     break;
@@ -494,7 +495,7 @@ public class MainWindow extends JFrame {
             editorWindows.remove(we, dockableWindow);
             if (editorWindows.get(we).isEmpty()) {
                 final Framework framework = Framework.getInstance();
-                framework.getWorkspace().close(we);
+                framework.closeWork(we);
             }
 
             if (editorWindows.isEmpty()) {
@@ -765,6 +766,7 @@ public class MainWindow extends JFrame {
                     mathModel.setTitle(title);
                 }
                 WorkspaceEntry we = null;
+                Workspace workspace = framework.getWorkspace();
                 if (dialog.createVisualSelected()) {
                     VisualModelDescriptor v = info.getVisualModelDescriptor();
                     if (v == null) {
@@ -773,10 +775,10 @@ public class MainWindow extends JFrame {
                     }
                     VisualModel visualModel = v.create(mathModel);
                     ModelEntry me = new ModelEntry(info, visualModel);
-                    we = framework.getWorkspace().add(path, title, me, false, dialog.openInEditorSelected());
+                    we = workspace.addWork(path, title, me, false, dialog.openInEditorSelected());
                 } else {
                     ModelEntry me = new ModelEntry(info, mathModel);
-                    we = framework.getWorkspace().add(path, title, me, false, false);
+                    we = workspace.addWork(path, title, me, false, false);
                 }
                 if (we != null) {
                     we.setChanged(false);
@@ -899,6 +901,11 @@ public class MainWindow extends JFrame {
         return path;
     }
 
+    public void runCommand(Command command) {
+        WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
+        Commands.run(we, command);
+    }
+
     public void openWork() throws OperationCancelledException {
         JFileChooser fc = createOpenDialog("Open work file(s)", true, null);
         if (fc.showDialog(this, "Open") == JFileChooser.APPROVE_OPTION) {
@@ -914,21 +921,17 @@ public class MainWindow extends JFrame {
                     newWorkspaceEntries.add(we);
                 }
             }
-            // FIXME: Go through the newly open works and update their zoom, in
-            // case tabs appeared and changed the viewport size.
+            // FIXME: Go through the newly open works and update their zoom,
+            // in case tabs appeared and changed the viewport size.
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
                     for (WorkspaceEntry we : newWorkspaceEntries) {
-                        zoomFitWorkspaceEntryEditors(we);
-                    }
-                }
-
-                private void zoomFitWorkspaceEntryEditors(WorkspaceEntry we) {
-                    for (DockableWindow w : editorWindows.get(we)) {
-                        GraphEditor editor = getGraphEditorPanel(w);
-                        if (editor != null) {
-                            editor.zoomFit();
+                        for (DockableWindow window : editorWindows.get(we)) {
+                            GraphEditor editor = getGraphEditorPanel(window);
+                            if (editor != null) {
+                                editor.zoomFit();
+                            }
                         }
                     }
                 }
@@ -938,23 +941,22 @@ public class MainWindow extends JFrame {
         }
     }
 
-    public WorkspaceEntry openWork(File f) {
+    public WorkspaceEntry openWork(File file) {
         final Framework framework = Framework.getInstance();
         WorkspaceEntry we = null;
-        if (checkFileMessageDialog(f, null)) {
+        if (checkFileMessageDialog(file, null)) {
             try {
-                we = framework.getWorkspace().open(f, false);
+                we = framework.loadWork(file, false);
                 if (we.getModelEntry().isVisual()) {
                     createEditorWindow(we);
                 }
-                pushRecentFile(f.getPath(), true);
-                lastOpenPath = f.getParent();
+                pushRecentFile(file.getPath(), true);
+                lastOpenPath = file.getParent();
             } catch (DeserialisationException e) {
-                JOptionPane
-                        .showMessageDialog(this,
-                                "A problem was encountered while trying to load '" + f.getPath() + "'.\n"
-                                        + "Please see Problems window for details.",
-                                "Load failed", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(this,
+                        "A problem was encountered while trying to load '" + file.getPath() + "'.\n"
+                        + "Please see Problems window for details.",
+                        "Load failed", JOptionPane.ERROR_MESSAGE);
                 printCause(e);
             }
         }
@@ -977,17 +979,17 @@ public class MainWindow extends JFrame {
         }
     }
 
-    public void mergeWork(File f) {
+    public void mergeWork(File file) {
         if (editorInFocus == null) {
-            openWork(f);
+            openWork(file);
         } else {
             try {
                 final Framework framework = Framework.getInstance();
                 WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
-                framework.getWorkspace().merge(we, f);
+                framework.mergeWork(we, file);
             } catch (DeserialisationException e) {
                 JOptionPane.showMessageDialog(this,
-                        "A problem was encountered while trying to merge '" + f.getPath()
+                        "A problem was encountered while trying to merge '" + file.getPath()
                                 + "'.\nPlease see Problems window for details.",
                         "Load failed", JOptionPane.ERROR_MESSAGE);
                 printCause(e);
@@ -997,7 +999,7 @@ public class MainWindow extends JFrame {
 
     public void saveWork() throws OperationCancelledException {
         if (editorInFocus != null) {
-            save(editorInFocus.getWorkspaceEntry());
+            saveWork(editorInFocus.getWorkspaceEntry());
         } else {
             System.out.println("No editor in focus");
         }
@@ -1005,20 +1007,21 @@ public class MainWindow extends JFrame {
 
     public void saveWorkAs() throws OperationCancelledException {
         if (editorInFocus != null) {
-            saveAs(editorInFocus.getWorkspaceEntry());
+            saveWorkAs(editorInFocus.getWorkspaceEntry());
         } else {
             System.err.println("No editor in focus");
         }
     }
 
-    public void save(WorkspaceEntry we) throws OperationCancelledException {
+    public void saveWork(WorkspaceEntry we) throws OperationCancelledException {
         if (!we.getFile().exists()) {
-            saveAs(we);
+            saveWorkAs(we);
         } else {
+            String path = we.getFile().getPath();
             try {
                 if (we.getModelEntry() != null) {
                     final Framework framework = Framework.getInstance();
-                    framework.saveModel(we.getModelEntry(), we.getFile().getPath());
+                    framework.saveWork(we, path);
                 } else {
                     throw new RuntimeException(
                             "Cannot save workspace entry - it does not have an associated Workcraft model.");
@@ -1030,22 +1033,11 @@ public class MainWindow extends JFrame {
             we.setChanged(false);
             refreshWorkspaceEntryTitle(we, true);
             lastSavePath = we.getFile().getParent();
-            pushRecentFile(we.getFile().getPath(), true);
+            pushRecentFile(path, true);
         }
     }
 
-    private String getFileNameForCurrentWork() {
-        String fileName = TITLE_PLACEHOLDER;
-        if (editorInFocus != null) {
-            WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
-            if (we != null) {
-                fileName = we.getFileName();
-            }
-        }
-        return fileName;
-    }
-
-    public void saveAs(WorkspaceEntry we) throws OperationCancelledException {
+    public void saveWorkAs(WorkspaceEntry we) throws OperationCancelledException {
         File file = we.getFile();
         if (file == null) {
             file = new File(getFileNameForCurrentWork());
@@ -1058,16 +1050,16 @@ public class MainWindow extends JFrame {
             Workspace ws = framework.getWorkspace();
 
             Path<String> wsFrom = we.getWorkspacePath();
-            Path<String> wsTo = ws.getWorkspacePath(destination);
+            Path<String> wsTo = ws.getPath(destination);
             if (wsTo == null) {
                 wsTo = ws.tempMountExternalFile(destination);
             }
             if (wsFrom != wsTo) {
-                ws.moved(wsFrom, wsTo);
+                ws.moveEntry(wsFrom, wsTo);
             }
 
             if (we.getModelEntry() != null) {
-                framework.saveModel(we.getModelEntry(), path);
+                framework.saveWork(we, path);
             } else {
                 throw new RuntimeException(
                         "Cannot save workspace entry - it does not have an associated Workcraft model.");
@@ -1086,8 +1078,8 @@ public class MainWindow extends JFrame {
 
     public void importFrom() {
         final Framework framework = Framework.getInstance();
-        Collection<PluginInfo<? extends Importer>> importerInfo = framework.getPluginManager()
-                .getPlugins(Importer.class);
+        PluginManager pm = framework.getPluginManager();
+        Collection<PluginInfo<? extends Importer>> importerInfo = pm.getPlugins(Importer.class);
         Importer[] importers = new Importer[importerInfo.size()];
         int cnt = 0;
         for (PluginInfo<? extends Importer> info : importerInfo) {
@@ -1102,18 +1094,18 @@ public class MainWindow extends JFrame {
         }
     }
 
-    public void importFrom(File f, Importer[] importers) {
+    public void importFrom(File file, Importer[] importers) {
         final Framework framework = Framework.getInstance();
-        if (checkFileMessageDialog(f, null)) {
+        if (checkFileMessageDialog(file, null)) {
             for (Importer importer : importers) {
-                if (importer.accept(f)) {
+                if (importer.accept(file)) {
                     try {
-                        ModelEntry me = Import.importFromFile(importer, f);
-                        String title = FileUtils.getFileNameWithoutExtension(f);
+                        ModelEntry me = Import.importFromFile(importer, file);
+                        String title = FileUtils.getFileNameWithoutExtension(file);
                         me.getModel().setTitle(title);
                         boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
-                        framework.getWorkspace().add(Path.<String>empty(), f.getName(), me, false, openInEditor);
-                        lastOpenPath = f.getParent();
+                        framework.getWorkspace().addWork(Path.<String>empty(), file.getName(), me, false, openInEditor);
+                        lastOpenPath = file.getParent();
                         break;
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -1125,11 +1117,6 @@ public class MainWindow extends JFrame {
                 }
             }
         }
-    }
-
-    public void runCommand(Command tool) {
-        WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
-        Commands.run(we, tool);
     }
 
     public void export(Exporter exporter) throws OperationCancelledException {
@@ -1144,6 +1131,17 @@ public class MainWindow extends JFrame {
         final TaskFailureNotifier monitor = new TaskFailureNotifier();
         taskManager.queue(exportTask, "Exporting " + title, monitor);
         lastSavePath = fc.getCurrentDirectory().getPath();
+    }
+
+    private String getFileNameForCurrentWork() {
+        String fileName = TITLE_PLACEHOLDER;
+        if (editorInFocus != null) {
+            WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
+            if (we != null) {
+                fileName = we.getFileName();
+            }
+        }
+        return fileName;
     }
 
     private String getTitle(WorkspaceEntry we) {

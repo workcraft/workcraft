@@ -488,7 +488,7 @@ public class StgSimulationTool extends PetriSimulationTool {
             final String desiredName = we.getWorkspacePath().getNode();
             final ModelEntry me = new ModelEntry(new DtdDescriptor(), dtd);
             final Workspace workspace = framework.getWorkspace();
-            workspace.add(directory, desiredName, me, true, true);
+            workspace.addWork(directory, desiredName, me, true, true);
         }
     }
 

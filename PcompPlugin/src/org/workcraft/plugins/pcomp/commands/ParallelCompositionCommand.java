@@ -56,7 +56,7 @@ public class ParallelCompositionCommand implements Command {
                 ArrayList<File> inputFiles = new ArrayList<>();
                 for (Path<String> path : dialog.getSourcePaths()) {
                     Workspace workspace = framework.getWorkspace();
-                    File stgFile = exportStg(workspace.getOpenFile(path), tmpDirectory);
+                    File stgFile = exportStg(workspace.getWork(path), tmpDirectory);
                     inputFiles.add(stgFile);
                 }
 

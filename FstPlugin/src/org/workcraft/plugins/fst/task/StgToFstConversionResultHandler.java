@@ -51,7 +51,7 @@ public class StgToFstConversionResultHandler extends DummyProgressMonitor<WriteS
             final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
             final ModelEntry me = new ModelEntry(new FstDescriptor(), model);
             boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
-            workspace.add(directory, name, me, true, openInEditor);
+            workspace.addWork(directory, name, me, true, openInEditor);
             VisualModel visualModel = me.getVisualModel();
             if (visualModel instanceof VisualFst) {
                 highlightCscConflicts((VisualFst) visualModel);

@@ -114,7 +114,7 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
 
                 final Framework framework = Framework.getInstance();
                 final Workspace workspace = framework.getWorkspace();
-                WorkspaceEntry newWorkspaceEntry = workspace.add(directory, name, me, true, openInEditor);
+                WorkspaceEntry newWorkspaceEntry = workspace.addWork(directory, name, me, true, openInEditor);
                 VisualModel visualModel = newWorkspaceEntry.getModelEntry().getVisualModel();
                 if (visualModel instanceof VisualCircuit) {
                     VisualCircuit visualCircuit = (VisualCircuit) visualModel;

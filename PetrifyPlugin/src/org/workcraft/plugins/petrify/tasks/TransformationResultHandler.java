@@ -60,7 +60,7 @@ public class TransformationResultHandler extends DummyProgressMonitor<Transforma
             final ModelDescriptor modelDescriptor = convertResultStgToPetriNet ? new StgDescriptor() : new PetriNetDescriptor();
             final ModelEntry me = new ModelEntry(modelDescriptor, model);
             boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
-            workspace.add(directory, name, me, true, openInEditor);
+            workspace.addWork(directory, name, me, true, openInEditor);
         } else if (result.getOutcome() == Outcome.FAILED) {
             MainWindow mainWindow = framework.getMainWindow();
             if (result.getCause() == null) {

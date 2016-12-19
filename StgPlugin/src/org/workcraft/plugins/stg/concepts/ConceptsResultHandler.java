@@ -81,10 +81,10 @@ public class ConceptsResultHandler extends DummyProgressMonitor<ExternalProcessR
                                             e.printStackTrace();
                                         }
                                         final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
-                                        framework.getWorkspace().add(Path.<String>empty(), title + name, me, false, true);
+                                        framework.getWorkspace().addWork(Path.<String>empty(), title + name, me, false, true);
                                         ConceptsLayout.layout((VisualStg) me.getVisualModel());
                                     } else {
-                                        framework.getWorkspace().add(Path.<String>empty(), title + name, me, false, true);
+                                        framework.getWorkspace().addWork(Path.<String>empty(), title + name, me, false, true);
                                         VisualStg newVisualStg = (VisualStg) me.getVisualModel();
                                         newVisualStg.selectAll();
                                         editor.zoomFit();

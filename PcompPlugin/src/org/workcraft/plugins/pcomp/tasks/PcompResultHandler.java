@@ -9,6 +9,7 @@ import javax.swing.SwingUtilities;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -33,7 +34,6 @@ public class PcompResultHandler extends DummyProgressMonitor<ExternalProcessResu
                 public void run() {
 
                     final Framework framework = Framework.getInstance();
-                    Workspace workspace = framework.getWorkspace();
                     MainWindow mainWindow = framework.getMainWindow();
                     if (result.getOutcome() == Outcome.FAILED) {
                         String message;
@@ -47,10 +47,12 @@ public class PcompResultHandler extends DummyProgressMonitor<ExternalProcessResu
                     } else if (result.getOutcome() == Outcome.FINISHED) {
                         try {
                             if (showInEditor) {
-                                WorkspaceEntry we = workspace.open(outputFile, false);
+                                WorkspaceEntry we = framework.loadWork(outputFile, false);
                                 mainWindow.createEditorWindow(we);
                             } else {
-                                workspace.add(outputFile.getName(), outputFile, true);
+                                final Workspace workspace = framework.getWorkspace();
+                                Path<String> path = Path.fromString(outputFile.getName());
+                                workspace.addMount(path, outputFile, true);
                             }
                         } catch (DeserialisationException e) {
                             JOptionPane.showMessageDialog(mainWindow, e.getMessage(), "Parallel composition failed", JOptionPane.ERROR_MESSAGE);

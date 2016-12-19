@@ -180,12 +180,9 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (Integer.parseInt(bitsText.getText()) < bits + 1) {
-                    JOptionPane
-                            .showMessageDialog(
-                                    null,
-                                    "Bits selected are not enough to encode all scenarios.",
-                                    "Not enough bits",
-                                    JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(null,
+                            "Bits selected are not enough to encode all scenarios.",
+                            "Not enough bits", JOptionPane.ERROR_MESSAGE);
 
                     bitsText.setText(String.valueOf(bits + 1));
                 }
@@ -229,13 +226,11 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
         encodingTable.setBackground(Color.LIGHT_GRAY);
         DefaultTableCellRenderer leftRenderer = new DefaultTableCellRenderer();
         leftRenderer.setHorizontalAlignment(JLabel.LEFT);
-        encodingTable.getColumnModel().getColumn(0)
-                .setCellRenderer(leftRenderer);
+        encodingTable.getColumnModel().getColumn(0).setCellRenderer(leftRenderer);
         scrollPane = new JScrollPane(encodingTable);
 
         customPanel = new JPanel(new BorderLayout());
-        customPanel.setBorder(BorderFactory
-                .createTitledBorder("Custom encoding"));
+        customPanel.setBorder(BorderFactory.createTitledBorder("Custom encoding"));
 
         JPanel propertyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
         propertyPanel.add(customEncodings);

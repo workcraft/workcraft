@@ -116,8 +116,7 @@ public class SatBasedScencoDialog extends AbstractScencoDialog {
         m = scenarios.size();
 
         generationPanel = new JPanel(new SimpleFlowLayout());
-        generationPanel.setBorder(BorderFactory
-                .createTitledBorder("Encoding parameters"));
+        generationPanel.setBorder(BorderFactory.createTitledBorder("Encoding parameters"));
 
         JLabel bitsLabel = new JLabel(ScencoHelper.textEncodingBitWidth);
         //bitsLabel.setPreferredSize(ScencoDialogSupport.dimensionBitEncodingWidthLabel);
@@ -172,12 +171,10 @@ public class SatBasedScencoDialog extends AbstractScencoDialog {
                 settings.setBits(Integer.parseInt(bitsText.getText()));
 
                 // circuit size selection
-                settings.setCircuitSize(Integer.valueOf(circuitSizeText
-                        .getText()));
+                settings.setCircuitSize(Integer.valueOf(circuitSizeText.getText()));
 
                 // optimise for option
-                settings.setCpogSize(optimiseBox.getSelectedIndex() == 0 ? false
-                        : true);
+                settings.setCpogSize(optimiseBox.getSelectedIndex() == 0 ? false : true);
 
                 // verbose mode
                 settings.setVerboseMode(verboseModeCheck.isSelected());

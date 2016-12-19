@@ -127,7 +127,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 
         if (WorkspaceTree.isLeaf(workspace, path)) {
             popup.addSeparator();
-            final WorkspaceEntry we = workspace.getOpenFile(path);
+            final WorkspaceEntry we = workspace.getWork(path);
             if (we == null) {
                 if (file.exists()) {
                     if (file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
@@ -181,7 +181,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             try {
-                                mainWindow.save(we);
+                                mainWindow.saveWork(we);
                             } catch (OperationCancelledException e1) {
                             }
                         }
@@ -192,7 +192,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                         @Override
                         public void actionPerformed(ActionEvent e) {
                             try {
-                                mainWindow.saveAs(we);
+                                mainWindow.saveWorkAs(we);
                             } catch (OperationCancelledException e1) {
                             }
                         }
@@ -248,7 +248,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
-                        workspace.delete(path);
+                        workspace.deleteEntry(path);
                     } catch (OperationCancelledException e1) { }
                 }
             });

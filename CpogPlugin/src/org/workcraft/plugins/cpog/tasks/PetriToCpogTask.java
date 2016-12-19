@@ -57,7 +57,7 @@ public class PetriToCpogTask implements Task<PetriToCpogResult> {
             final Path<String> directory = we.getWorkspacePath().getParent();
             final ModelEntry me = new ModelEntry(new CpogDescriptor(), cpog);
             boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
-            workspace.add(directory, we.getTitle().concat("_cpog"), me, false, openInEditor);
+            workspace.addWork(directory, we.getTitle().concat("_cpog"), me, false, openInEditor);
         }
 
         return new Result<PetriToCpogResult>(outcome, result);

@@ -99,8 +99,7 @@ public class DefaultNodeSerialiser {
             IllegalArgumentException, IntrospectionException,
             SerialisationException, InvocationTargetException {
 
-        Element curLevelElement = parentElement.getOwnerDocument()
-                .createElement(currentLevel.getSimpleName());
+        Element curLevelElement = parentElement.getOwnerDocument().createElement(currentLevel.getSimpleName());
 
         autoSerialiseProperties(curLevelElement, object, currentLevel);
 

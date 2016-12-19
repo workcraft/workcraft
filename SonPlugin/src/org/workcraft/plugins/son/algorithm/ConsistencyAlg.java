@@ -213,17 +213,14 @@ public class ConsistencyAlg extends TimeAlg {
 
                 // Equation 18
                 if (!(input.getStartTime().equals(output.getStartTime()))) {
-
-                    subResult
-                            .add("Sync inconsistency: start" + nodeStr(input) + timeStr(input.getStartTime().toString())
-                                    + " != start" + nodeStr(output) + timeStr(output.getStartTime().toString()));
+                    subResult.add("Sync inconsistency: start" + nodeStr(input) + timeStr(input.getStartTime().toString())
+                            + " != start" + nodeStr(output) + timeStr(output.getStartTime().toString()));
 
                 }
                 if (!(input.getDuration().equals(output.getDuration()))) {
 
-                    subResult.add(
-                            "Sync inconsistency: duration" + nodeStr(input) + timeStr(input.getDuration().toString())
-                                    + " != duration" + nodeStr(output) + timeStr(output.getDuration().toString()));
+                    subResult.add("Sync inconsistency: duration" + nodeStr(input) + timeStr(input.getDuration().toString())
+                            + " != duration" + nodeStr(output) + timeStr(output.getDuration().toString()));
 
                 }
                 if (!(input.getEndTime().equals(output.getEndTime()))) {

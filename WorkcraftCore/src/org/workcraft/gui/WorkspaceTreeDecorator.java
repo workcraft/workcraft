@@ -36,19 +36,12 @@ public class WorkspaceTreeDecorator implements TreeDecorator<Path<String>> {
 
     @Override
     public Icon getIcon(Path<String> node) {
-
-/*        try {
-            return GUI.loadIconFromResource("images/place.png");
-        } catch (IOException e) {
-            System.out.println(e.getLocalizedMessage());
-            return null;
-        }*/
         return null;
     }
 
     @Override
     public String getName(Path<String> node) {
-        final WorkspaceEntry openFile = workspace.getOpenFile(node);
+        final WorkspaceEntry openFile = workspace.getWork(node);
         String name = node.isEmpty() ? "!Workspace" : node.getNode();
         if (openFile != null && openFile.isChanged()) {
             name += " *";

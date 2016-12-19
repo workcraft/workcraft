@@ -1,4 +1,5 @@
 // Standard function shortcuts
+
 importPackage(java.lang);
 
 
@@ -8,35 +9,46 @@ function print(msg) {
 	System.out.print(msg);
 }
 
+function println(msg) {
+	System.out.println(msg);
+}
+
 function printErr(msg) {
 	System.err.print(msg);
 }
 
+function printlnErr(msg) {
+	System.err.println(msg);
+}
+
+
 // Model file operations
 
-function loadModel(path) {
-	return framework.loadModel(path);
+function load(path) {
+	return framework.loadWork(path);
 }
 
-function saveModel(model, path) {
-	framework.saveModel(model, path);
+function import(path) {
+	return framework.loadWork(path);
 }
 
-function importModel(path) {
-	return framework.importFile(path);
+function save(work, path) {
+	framework.saveWork(work, path);
 }
 
-function exportModel(model, path, format) {
-	return framework.exportFile(model, path, format);
+function export(work, path, format) {
+	return framework.exportWork(work, path, format);
 }
 
-// Tool execution
+
+// Command execution
 
 function runCommand(model, commandName) {
 	print(model + "\n");
 	print(commandName + "\n");
 	framework.runCommand(model, commandName);
 }
+
 
 // Script execution
 
@@ -47,6 +59,7 @@ function execResource(x) {
 function execFile(x) {
 	framework.execJavaScriptFile(x);
 }
+
 
 // Configuration
 
@@ -66,15 +79,21 @@ function loadConfig() {
 	framework.loadConfig();
 }
 
+
 // GUI
 
 function startGUI() {
 	framework.startGUI();
 }
 
+function stopGUI() {
+	framework.shutdownGUI();
+}
+
 function shutdownGUI() {
 	framework.shutdownGUI();
 }
+
 
 // Exit
 

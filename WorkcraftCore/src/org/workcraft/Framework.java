@@ -65,10 +65,12 @@ import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.gui.DesktopApi;
+import org.workcraft.gui.FileFilters;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.gui.workspace.Path;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.PluginInfo;
@@ -521,14 +523,78 @@ public final class Framework {
         return inGuiMode;
     }
 
-    public WorkspaceEntry getWorkspaceEntry(ModelEntry me) {
-        return getWorkspace().getWorkspaceEntry(me);
-    }
-
     public void setArgs(List<String> args) {
         SetArgs setargs = new SetArgs();
         setargs.setArgs(args.toArray());
         contextFactory.call(setargs);
+    }
+
+    public ModelEntry runCommand(WorkspaceEntry we, String className) {
+        if (className != null) {
+            for (Command command: Commands.getApplicableCommands(we)) {
+                String commandClassName = command.getClass().getSimpleName();
+                if (commandClassName.equals(className)) {
+                    Commands.run(we, command);
+                    break;
+                }
+            }
+        }
+        return null;
+    }
+
+    public WorkspaceEntry loadWork(String path) throws DeserialisationException {
+        File file = getFileByAbsoluteOrRelativePath(path);
+        if (checkFileMessageLog(file, null)) {
+            return loadWork(file);
+        }
+        return null;
+    }
+
+    public WorkspaceEntry loadWork(File file) throws DeserialisationException {
+        return loadWork(file, false);
+    }
+
+    public WorkspaceEntry loadWork(File file, boolean temporary) throws DeserialisationException {
+        // Check if work is already loaded
+        Path<String> workspacePath = getWorkspace().getPath(file);
+        for (WorkspaceEntry we : getWorkspace().getWorks()) {
+            if (we.getWorkspacePath().equals(workspacePath)) {
+                return we;
+            }
+        }
+
+        // Load (from *.work) or import (other extensions) work
+        WorkspaceEntry we = new WorkspaceEntry(getWorkspace());
+        we.setTemporary(temporary);
+        we.setChanged(false);
+        if (file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+            we.setModelEntry(loadModel(file));
+            if (workspacePath == null) {
+                workspacePath = getWorkspace().tempMountExternalFile(file);
+            }
+        } else {
+            we.setModelEntry(importModel(file));
+            Path<String> parent;
+            if (workspacePath == null) {
+                parent = Path.empty();
+            } else {
+                parent = workspacePath.getParent();
+            }
+            workspacePath = getWorkspace().getNewWorkName(parent, FileUtils.getFileNameWithoutExtension(file));
+        }
+        getWorkspace().addWork(workspacePath, we);
+        return we;
+    }
+
+    public WorkspaceEntry mergeWork(WorkspaceEntry we, File file) throws DeserialisationException {
+        if ((we != null) && file.exists() && file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+            we.insert(loadModel(file));
+        }
+        return we;
+    }
+
+    public void closeWork(WorkspaceEntry we) {
+        getWorkspace().removeWork(we);
     }
 
     public ModelEntry loadModel(String path) throws DeserialisationException {
@@ -610,6 +676,11 @@ public final class Framework {
         // FIXME: Dirty hack to avoid any hanging observers (serialise and deserialise the model).
         Memento memo = saveModel(me1);
         return loadModel(memo);
+    }
+
+    public void saveWork(WorkspaceEntry we, String path) throws SerialisationException {
+        if (we == null) return;
+        saveModel(we.getModelEntry(), path);
     }
 
     public void saveModel(ModelEntry modelEntry, String path) throws SerialisationException {
@@ -710,6 +781,10 @@ public final class Framework {
         }
     }
 
+    public void exportWork(WorkspaceEntry we, String path, String format) throws SerialisationException {
+        exportModel(we.getModelEntry(), path, format);
+    }
+
     public void exportModel(ModelEntry modelEntry, String path, String format) throws SerialisationException {
         if (modelEntry == null) return;
         File file = getFileByAbsoluteOrRelativePath(path);
@@ -735,18 +810,6 @@ public final class Framework {
                 throw new SerialisationException(e);
             }
         }
-    }
-
-    public ModelEntry runCommand(WorkspaceEntry we, String className) {
-        if (className != null) {
-            for (Command tool: Commands.getApplicableCommands(we)) {
-                if (className.equals(tool.getClass().getSimpleName())) {
-                    tool.run(we);
-                    break;
-                }
-            }
-        }
-        return null;
     }
 
     public void initPlugins() {
