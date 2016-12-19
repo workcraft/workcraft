@@ -16,6 +16,7 @@ import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.graph.VisualGraph;
 import org.workcraft.plugins.graph.VisualVertex;
+import org.workcraft.plugins.graph.converters.GraphToPetriConverter;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPetriNet;

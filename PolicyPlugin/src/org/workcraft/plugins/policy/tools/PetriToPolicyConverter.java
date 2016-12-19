@@ -3,7 +3,7 @@ package org.workcraft.plugins.policy.tools;
 import java.util.Map;
 
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.gui.graph.tools.DefaultModelConverter;
+import org.workcraft.gui.graph.converters.DefaultModelConverter;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPetriNet;

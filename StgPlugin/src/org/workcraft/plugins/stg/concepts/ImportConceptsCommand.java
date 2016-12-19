@@ -7,8 +7,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.workcraft.Command;
 import org.workcraft.Framework;
+import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.FileUtils;

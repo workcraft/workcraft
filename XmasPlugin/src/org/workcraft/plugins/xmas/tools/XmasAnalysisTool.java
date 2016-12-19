@@ -27,9 +27,9 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
-import org.workcraft.Command;
 import org.workcraft.dom.Node;
 import org.workcraft.gui.graph.GraphEditorPanel;
+import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;

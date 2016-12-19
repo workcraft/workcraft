@@ -30,8 +30,8 @@ import org.workcraft.plugins.dfs.VisualRegister;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
-import org.workcraft.plugins.stg.converter.AbstractToStgConverter;
-import org.workcraft.plugins.stg.converter.NodeStg;
+import org.workcraft.plugins.stg.converters.AbstractToStgConverter;
+import org.workcraft.plugins.stg.converters.NodeStg;
 import org.workcraft.util.ColorGenerator;
 import org.workcraft.util.ColorUtils;
 

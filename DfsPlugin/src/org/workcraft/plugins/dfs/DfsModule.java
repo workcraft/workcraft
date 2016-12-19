@@ -1,22 +1,22 @@
 package org.workcraft.plugins.dfs;
 
-import org.workcraft.Command;
 import org.workcraft.CompatibilityManager;
 import org.workcraft.Framework;
 import org.workcraft.Initialiser;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.gui.graph.tools.AbstractContractTransformationCommand;
+import org.workcraft.gui.graph.commands.AbstractContractTransformationCommand;
+import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Exporter;
+import org.workcraft.plugins.dfs.commands.DfsCombinedVerificationCommand;
+import org.workcraft.plugins.dfs.commands.DfsDeadlockVerificationCommand;
+import org.workcraft.plugins.dfs.commands.DfsPersisitencyVerificationCommand;
+import org.workcraft.plugins.dfs.commands.DfsToStgConversionCommand;
+import org.workcraft.plugins.dfs.commands.MergeComponentTransformationCommand;
+import org.workcraft.plugins.dfs.commands.WaggingGeneratorCommand;
 import org.workcraft.plugins.dfs.interop.VerilogExporter;
-import org.workcraft.plugins.dfs.tools.DfsCombinedVerificationCommand;
-import org.workcraft.plugins.dfs.tools.DfsDeadlockVerificationCommand;
-import org.workcraft.plugins.dfs.tools.DfsPersisitencyVerificationCommand;
-import org.workcraft.plugins.dfs.tools.DfsToStgConversionCommand;
-import org.workcraft.plugins.dfs.tools.MergeComponentTransformationCommand;
-import org.workcraft.plugins.dfs.tools.WaggingGeneratorCommand;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 

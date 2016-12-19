@@ -6,17 +6,17 @@ import org.workcraft.Framework;
 import org.workcraft.Initialiser;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
-import org.workcraft.Command;
+import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.propertyeditor.Settings;
-import org.workcraft.plugins.petrify.tools.CscConflictResolutionCommand;
-import org.workcraft.plugins.petrify.tools.HideDummyConversionCommand;
-import org.workcraft.plugins.petrify.tools.NetConversionCommand;
-import org.workcraft.plugins.petrify.tools.HideConversionCommand;
-import org.workcraft.plugins.petrify.tools.ComplexGateSynthesisCommand;
-import org.workcraft.plugins.petrify.tools.GeneralisedCelementSynthesisCommand;
-import org.workcraft.plugins.petrify.tools.StandardCelementSynthesisCommand;
-import org.workcraft.plugins.petrify.tools.TechnologyMappingSynthesisCommand;
-import org.workcraft.plugins.petrify.tools.UntoggleConversionCommand;
+import org.workcraft.plugins.petrify.commands.ComplexGateSynthesisCommand;
+import org.workcraft.plugins.petrify.commands.CscConflictResolutionCommand;
+import org.workcraft.plugins.petrify.commands.GeneralisedCelementSynthesisCommand;
+import org.workcraft.plugins.petrify.commands.HideConversionCommand;
+import org.workcraft.plugins.petrify.commands.HideDummyConversionCommand;
+import org.workcraft.plugins.petrify.commands.NetConversionCommand;
+import org.workcraft.plugins.petrify.commands.StandardCelementSynthesisCommand;
+import org.workcraft.plugins.petrify.commands.TechnologyMappingSynthesisCommand;
+import org.workcraft.plugins.petrify.commands.UntoggleConversionCommand;
 
 public class PetrifyModule implements Module {
 

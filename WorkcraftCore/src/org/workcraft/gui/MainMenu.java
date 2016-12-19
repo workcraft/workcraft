@@ -41,7 +41,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.KeyStroke;
 
-import org.workcraft.Command;
 import org.workcraft.Framework;
 import org.workcraft.MenuOrdering.Position;
 import org.workcraft.PluginManager;
@@ -51,6 +50,7 @@ import org.workcraft.gui.actions.ActionMenuItem;
 import org.workcraft.gui.actions.CommandAction;
 import org.workcraft.gui.actions.ExportAction;
 import org.workcraft.gui.actions.ToggleWindowAction;
+import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.PluginInfo;

@@ -3,7 +3,7 @@ package org.workcraft.plugins;
 import org.workcraft.Framework;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
-import org.workcraft.Command;
+import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.layout.DotLayoutSettings;
 import org.workcraft.plugins.layout.DotLayoutCommand;

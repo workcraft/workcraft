@@ -19,6 +19,7 @@ import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.fsm.VisualState;
+import org.workcraft.plugins.fsm.converters.FsmToPetriConverter;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;

@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.workcraft.Command;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;

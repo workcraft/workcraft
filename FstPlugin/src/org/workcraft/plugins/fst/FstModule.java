@@ -5,18 +5,18 @@ import org.workcraft.Framework;
 import org.workcraft.Initialiser;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
-import org.workcraft.Command;
 import org.workcraft.dom.ModelDescriptor;
+import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
+import org.workcraft.plugins.fst.commands.FsmToFstConversionCommand;
+import org.workcraft.plugins.fst.commands.FstToFsmConversionCommand;
+import org.workcraft.plugins.fst.commands.FstToStgConversionCommand;
+import org.workcraft.plugins.fst.commands.PetriToFsmConversionCommand;
+import org.workcraft.plugins.fst.commands.StgToFstConversionCommand;
 import org.workcraft.plugins.fst.interop.DotGExporter;
 import org.workcraft.plugins.fst.interop.DotGImporter;
 import org.workcraft.plugins.fst.serialisation.DotGSerialiser;
-import org.workcraft.plugins.fst.tools.FsmToFstConversionCommand;
-import org.workcraft.plugins.fst.tools.FstToFsmConversionCommand;
-import org.workcraft.plugins.fst.tools.FstToStgConversionCommand;
-import org.workcraft.plugins.fst.tools.PetriToFsmConversionCommand;
-import org.workcraft.plugins.fst.tools.StgToFstConversionCommand;
 import org.workcraft.serialisation.ModelSerialiser;
 
 public class FstModule implements Module {

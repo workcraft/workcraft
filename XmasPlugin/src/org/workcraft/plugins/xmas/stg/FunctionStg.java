@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
-import org.workcraft.plugins.stg.converter.NodeStg;
+import org.workcraft.plugins.stg.converters.NodeStg;
 
 public class FunctionStg extends NodeStg {
     public final ContactStg i;

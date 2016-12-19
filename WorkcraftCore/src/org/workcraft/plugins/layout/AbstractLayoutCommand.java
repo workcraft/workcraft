@@ -1,10 +1,10 @@
 package org.workcraft.plugins.layout;
 
-import org.workcraft.Command;
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.GraphEditorPanel;
+import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;

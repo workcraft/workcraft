@@ -8,10 +8,10 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.workcraft.Command;
 import org.workcraft.Framework;
 import org.workcraft.MenuOrdering;
 import org.workcraft.MenuOrdering.Position;
+import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.PluginManager;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.workspace.WorkspaceEntry;

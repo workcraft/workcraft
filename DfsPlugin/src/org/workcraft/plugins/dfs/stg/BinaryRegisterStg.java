@@ -10,7 +10,7 @@ import java.util.Set;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
-import org.workcraft.plugins.stg.converter.NodeStg;
+import org.workcraft.plugins.stg.converters.NodeStg;
 
 public class BinaryRegisterStg extends NodeStg {
     public final VisualPlace m0;                // M=0

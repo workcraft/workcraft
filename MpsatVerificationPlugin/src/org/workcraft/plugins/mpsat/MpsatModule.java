@@ -3,21 +3,21 @@ package org.workcraft.plugins.mpsat;
 import org.workcraft.Framework;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
-import org.workcraft.Command;
+import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.propertyeditor.Settings;
-import org.workcraft.plugins.mpsat.tools.CscResolutionCommand;
-import org.workcraft.plugins.mpsat.tools.CombinedVerificationCommand;
-import org.workcraft.plugins.mpsat.tools.ConformationVerificationCommand;
-import org.workcraft.plugins.mpsat.tools.ConsistencyVerificationCommand;
-import org.workcraft.plugins.mpsat.tools.CscVerificationCommand;
-import org.workcraft.plugins.mpsat.tools.PropertyVerificationCommand;
-import org.workcraft.plugins.mpsat.tools.AssertionVerificationCommand;
-import org.workcraft.plugins.mpsat.tools.DeadlockVerificationCommand;
-import org.workcraft.plugins.mpsat.tools.DiInterfaceVerificationCommand;
-import org.workcraft.plugins.mpsat.tools.InputPropernessVerificationCommand;
-import org.workcraft.plugins.mpsat.tools.NormalcyVerificationCommand;
-import org.workcraft.plugins.mpsat.tools.OutputPersistencyVerificationCommand;
-import org.workcraft.plugins.mpsat.tools.UscVerificationCommand;
+import org.workcraft.plugins.mpsat.commands.AssertionVerificationCommand;
+import org.workcraft.plugins.mpsat.commands.CombinedVerificationCommand;
+import org.workcraft.plugins.mpsat.commands.ConformationVerificationCommand;
+import org.workcraft.plugins.mpsat.commands.ConsistencyVerificationCommand;
+import org.workcraft.plugins.mpsat.commands.CscResolutionCommand;
+import org.workcraft.plugins.mpsat.commands.CscVerificationCommand;
+import org.workcraft.plugins.mpsat.commands.DeadlockVerificationCommand;
+import org.workcraft.plugins.mpsat.commands.DiInterfaceVerificationCommand;
+import org.workcraft.plugins.mpsat.commands.InputPropernessVerificationCommand;
+import org.workcraft.plugins.mpsat.commands.NormalcyVerificationCommand;
+import org.workcraft.plugins.mpsat.commands.OutputPersistencyVerificationCommand;
+import org.workcraft.plugins.mpsat.commands.PropertyVerificationCommand;
+import org.workcraft.plugins.mpsat.commands.UscVerificationCommand;
 
 public class MpsatModule implements Module {
 

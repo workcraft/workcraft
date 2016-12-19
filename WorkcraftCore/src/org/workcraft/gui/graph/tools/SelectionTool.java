@@ -56,7 +56,6 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
-import org.workcraft.Command;
 import org.workcraft.Framework;
 import org.workcraft.NodeTransformer;
 import org.workcraft.dom.Container;
@@ -82,6 +81,7 @@ import org.workcraft.gui.actions.PopupToolAction;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.Viewport;
+import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.util.Commands;
 import org.workcraft.util.GUI;

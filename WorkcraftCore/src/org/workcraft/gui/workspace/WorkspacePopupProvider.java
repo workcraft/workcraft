@@ -36,7 +36,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 import org.workcraft.Framework;
-import org.workcraft.Command;
 import org.workcraft.MenuOrdering.Position;
 import org.workcraft.PluginManager;
 import org.workcraft.dom.Model;
@@ -44,6 +43,7 @@ import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.FileFilters;
 import org.workcraft.gui.MainMenu;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.trees.TreePopupProvider;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.util.Commands;

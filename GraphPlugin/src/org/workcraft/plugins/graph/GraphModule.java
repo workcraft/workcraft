@@ -3,12 +3,12 @@ package org.workcraft.plugins.graph;
 import org.workcraft.Framework;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
-import org.workcraft.Command;
 import org.workcraft.dom.ModelDescriptor;
+import org.workcraft.gui.graph.commands.Command;
+import org.workcraft.plugins.graph.commands.GraphReachabilityVerificationCommand;
+import org.workcraft.plugins.graph.commands.GraphToPetriConversionCommand;
 import org.workcraft.plugins.graph.serialisation.VertexDeserialiser;
 import org.workcraft.plugins.graph.serialisation.VertexSerialiser;
-import org.workcraft.plugins.graph.tools.GraphToPetriConversionCommand;
-import org.workcraft.plugins.graph.tools.GraphReachabilityVerificationCommand;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
 import org.workcraft.serialisation.xml.XMLSerialiser;
 

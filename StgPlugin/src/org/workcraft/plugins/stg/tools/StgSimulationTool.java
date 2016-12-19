@@ -54,6 +54,7 @@ import org.workcraft.plugins.shared.CommonSignalSettings;
 import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.converters.StgToDtdConverter;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualStg;

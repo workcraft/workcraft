@@ -24,7 +24,6 @@ package org.workcraft.plugins.transform;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.workcraft.AbstractTransformationCommand;
 import org.workcraft.NodeTransformer;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
@@ -34,6 +33,7 @@ import org.workcraft.dom.visual.connections.ConnectionGraphic;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
+import org.workcraft.gui.graph.commands.AbstractTransformationCommand;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;

@@ -40,7 +40,7 @@ import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
-import org.workcraft.plugins.stg.converter.SignalStg;
+import org.workcraft.plugins.stg.converters.SignalStg;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgSettings;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;

@@ -37,7 +37,7 @@ import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
-import org.workcraft.plugins.stg.converter.SignalStg;
+import org.workcraft.plugins.stg.converters.SignalStg;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
 import org.workcraft.util.Func;
 import org.workcraft.util.LogUtils;

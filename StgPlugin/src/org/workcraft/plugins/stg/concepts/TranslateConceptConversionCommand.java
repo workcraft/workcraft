@@ -2,8 +2,8 @@ package org.workcraft.plugins.stg.concepts;
 
 import java.io.File;
 
-import org.workcraft.AbstractConversionCommand;
 import org.workcraft.Framework;
+import org.workcraft.gui.graph.commands.AbstractConversionCommand;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.FileUtils;

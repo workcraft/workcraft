@@ -21,13 +21,11 @@
 
 package org.workcraft.gui.graph.tools;
 
-import java.awt.Cursor;
 import java.awt.Graphics2D;
 
-import javax.swing.Icon;
 import javax.swing.JPanel;
 
-public interface GraphEditorTool extends GraphEditorKeyListener, GraphEditorMouseListener {
+public interface GraphEditorTool extends Tool, GraphEditorKeyListener, GraphEditorMouseListener {
     void activated(GraphEditor editor);
     void deactivated(GraphEditor editor);
     void reactivated(GraphEditor editor);
@@ -39,13 +37,6 @@ public interface GraphEditorTool extends GraphEditorKeyListener, GraphEditorMous
 
     void createInterfacePanel(GraphEditor editor);
     JPanel getInterfacePanel();
-
-    String getLabel();
-    Icon getIcon();
-    int getHotKeyCode();
-    String getHintText();
-    Cursor getCursor();
-    boolean requiresButton();
 
     void flashIssue(GraphEditor editor, String message);
     void showIssue(GraphEditor editor, String message);

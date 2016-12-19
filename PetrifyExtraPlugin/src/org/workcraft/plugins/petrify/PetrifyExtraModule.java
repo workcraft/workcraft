@@ -1,12 +1,12 @@
 package org.workcraft.plugins.petrify;
 
-import org.workcraft.Command;
 import org.workcraft.Framework;
 import org.workcraft.Initialiser;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
+import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.interop.Exporter;
-import org.workcraft.plugins.petrify.tools.ShowSgCommand;
+import org.workcraft.plugins.petrify.commands.ShowSgCommand;
 
 public class PetrifyExtraModule implements Module {
 
