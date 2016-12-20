@@ -9,7 +9,7 @@ import org.workcraft.plugins.mpsat.commands.AssertionVerificationCommand;
 import org.workcraft.plugins.mpsat.commands.CombinedVerificationCommand;
 import org.workcraft.plugins.mpsat.commands.ConformationVerificationCommand;
 import org.workcraft.plugins.mpsat.commands.ConsistencyVerificationCommand;
-import org.workcraft.plugins.mpsat.commands.CscResolutionCommand;
+import org.workcraft.plugins.mpsat.commands.CscConflictResolutionCommand;
 import org.workcraft.plugins.mpsat.commands.CscVerificationCommand;
 import org.workcraft.plugins.mpsat.commands.DeadlockVerificationCommand;
 import org.workcraft.plugins.mpsat.commands.DiInterfaceVerificationCommand;
@@ -26,7 +26,7 @@ public class MpsatModule implements Module {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
 
-        pm.registerClass(Command.class, CscResolutionCommand.class);
+        pm.registerClass(Command.class, CscConflictResolutionCommand.class);
         pm.registerClass(Command.class, ConsistencyVerificationCommand.class);
         pm.registerClass(Command.class, DeadlockVerificationCommand.class);
         pm.registerClass(Command.class, InputPropernessVerificationCommand.class);

@@ -1,12 +1,11 @@
 package org.workcraft.gui.graph.commands;
 
 import org.workcraft.MenuOrdering;
-import org.workcraft.MenuOrdering.Position;
 
-public abstract class AbstractSynthesisCommand extends AbstractPromotedCommand implements MenuOrdering {
+public abstract class AbstractSynthesisCommand implements Command, MenuOrdering {
 
     @Override
-    public String getSection() {
+    public final String getSection() {
         return "! Synthesis";  // 1 space - positions 4th
     }
 

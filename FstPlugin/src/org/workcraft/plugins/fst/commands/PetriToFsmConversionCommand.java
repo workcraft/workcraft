@@ -23,12 +23,13 @@ public class PetriToFsmConversionCommand extends AbstractConversionCommand {
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public WorkspaceEntry execute(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
         final WriteSgConversionTask task = new WriteSgConversionTask(we, false);
         final PetriToFsmConversionResultHandler monitor = new PetriToFsmConversionResultHandler(task);
-        taskManager.queue(task, "Building state graph", monitor);
+        taskManager.execute(task, "Building state graph", monitor);
+        return monitor.getResult();
     }
 
     @Override

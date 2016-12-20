@@ -27,6 +27,7 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualTransformableNode;
+import org.workcraft.gui.graph.commands.AbstractLayoutCommand;
 
 public class NullLayoutCommand extends AbstractLayoutCommand {
 

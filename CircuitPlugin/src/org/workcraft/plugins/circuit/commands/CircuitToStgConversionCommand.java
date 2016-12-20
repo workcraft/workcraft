@@ -41,8 +41,8 @@ public class CircuitToStgConversionCommand extends AbstractConversionCommand {
             String zeroName = SignalStg.getLowName(signalName);
             if (interfaceSignalNames.contains(oneName) || interfaceSignalNames.contains(zeroName)) {
                 JOptionPane.showMessageDialog(null, // !!!
-                        "Complimentary STG places cannot be created for the interface signal `"
-                                + signalName + "` because of a name clash.\n"
+                        "Complimentary STG places cannot be created for the interface signal '"
+                                + signalName + "' because of a name clash.\n"
                                 + "Either rename the port or change the signal level suffix in the STG plugin settings.",
                         "Error", JOptionPane.ERROR_MESSAGE);
                 return null;

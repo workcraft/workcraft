@@ -1,12 +1,11 @@
 package org.workcraft.gui.graph.commands;
 
 import org.workcraft.MenuOrdering;
-import org.workcraft.MenuOrdering.Position;
 
-public abstract class AbstractVerificationCommand extends AbstractPromotedCommand implements MenuOrdering {
+public abstract class AbstractVerificationCommand implements Command, MenuOrdering {
 
     @Override
-    public String getSection() {
+    public final String getSection() {
         return "!  Verification"; // 2 spaces - positions 3nd
     }
 

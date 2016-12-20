@@ -142,8 +142,10 @@ public class Workspace {
         fireEntryAdded(we);
         if (open) {
             final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
-            mainWindow.createEditorWindow(we);
+            if (framework.isInGuiMode()) {
+                final MainWindow mainWindow = framework.getMainWindow();
+                mainWindow.createEditorWindow(we);
+            }
         }
         return we;
     }

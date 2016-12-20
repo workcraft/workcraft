@@ -35,12 +35,13 @@ public class StgToFstConversionCommand extends AbstractConversionCommand {
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public WorkspaceEntry execute(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
         final WriteSgConversionTask task = new WriteSgConversionTask(we, isBinary());
         final StgToFstConversionResultHandler monitor = new StgToFstConversionResultHandler(task);
-        taskManager.queue(task, "Building state graph", monitor);
+        taskManager.execute(task, "Building state graph", monitor);
+        return monitor.getResult();
     }
 
     @Override

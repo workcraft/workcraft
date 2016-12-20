@@ -33,14 +33,15 @@ public class NetConversionCommand extends AbstractConversionCommand {
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public WorkspaceEntry execute(WorkspaceEntry we) {
         ArrayList<String> args = getArgs();
         final TransformationTask task = new TransformationTask(we, "Net synthesis", args.toArray(new String[args.size()]));
         boolean hasSignals = WorkspaceUtils.isApplicable(we, StgModel.class) || WorkspaceUtils.isApplicable(we, Fst.class);
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
         final TransformationResultHandler monitor = new TransformationResultHandler(we, hasSignals);
-        taskManager.queue(task, "Petrify net synthesis", monitor);
+        taskManager.execute(task, "Petrify net synthesis", monitor);
+        return monitor.getResult();
     }
 
     @Override

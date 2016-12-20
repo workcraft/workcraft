@@ -34,9 +34,9 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
+import org.workcraft.gui.graph.commands.AbstractLayoutCommand;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.observation.ObservableState;
-import org.workcraft.plugins.layout.AbstractLayoutCommand;
 
 public interface VisualModel extends Model, ObservableState {
     void createDefaultFlatStructure() throws NodeCreationException;

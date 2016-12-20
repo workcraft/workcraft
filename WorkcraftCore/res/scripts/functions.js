@@ -22,7 +22,7 @@ function printlnErr(msg) {
 }
 
 
-// Model file operations
+// Work file operations
 
 function load(path) {
 	return framework.loadWork(path);
@@ -43,10 +43,12 @@ function export(work, path, format) {
 
 // Command execution
 
-function runCommand(model, commandName) {
-	print(model + "\n");
-	print(commandName + "\n");
-	framework.runCommand(model, commandName);
+function runCommand(work, commandName) {
+	framework.runCommand(work, commandName);
+}
+
+function executeCommand(work, commandName) {
+	return framework.executeCommand(work, commandName);
 }
 
 

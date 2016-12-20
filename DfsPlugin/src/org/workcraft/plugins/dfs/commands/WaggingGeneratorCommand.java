@@ -4,14 +4,14 @@ import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.Node;
-import org.workcraft.gui.graph.commands.Command;
+import org.workcraft.gui.graph.commands.ExecutableCommand;
 import org.workcraft.plugins.dfs.Dfs;
 import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.plugins.dfs.VisualRegister;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class WaggingGeneratorCommand implements Command {
+public class WaggingGeneratorCommand implements ExecutableCommand {
 
     @Override
     public String getDisplayName() {
@@ -29,7 +29,7 @@ public class WaggingGeneratorCommand implements Command {
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public final WorkspaceEntry execute(WorkspaceEntry we) {
         final VisualDfs dfs = WorkspaceUtils.getAs(we, VisualDfs.class);
         int selectedRegisterCount = 0;
         for (Node node: dfs.getSelection()) {
@@ -49,6 +49,12 @@ public class WaggingGeneratorCommand implements Command {
                 generator.run();
             }
         }
+        return we;
+    }
+
+    @Override
+    public final void run(WorkspaceEntry we) {
+        execute(we);
     }
 
     public int getWayCount() {

@@ -45,6 +45,7 @@ import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
 import org.workcraft.exceptions.LayoutException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.gui.graph.commands.AbstractLayoutCommand;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.layout.jj.DotParser;
 import org.workcraft.plugins.layout.jj.ParseException;
@@ -54,6 +55,7 @@ import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.ToolUtils;
@@ -207,7 +209,8 @@ public class DotLayoutCommand extends AbstractLayoutCommand {
 
             Task<ExternalProcessResult> task = new ExternalProcessTask(args, directory);
             final Framework framework = Framework.getInstance();
-            Result<? extends ExternalProcessResult> res = framework.getTaskManager().execute(task, "Laying out the graph...");
+            final TaskManager taskManager = framework.getTaskManager();
+            Result<? extends ExternalProcessResult> res = taskManager.execute(task, "Laying out the graph...");
 
             if (res.getOutcome() == Outcome.CANCELLED) {
                 return;

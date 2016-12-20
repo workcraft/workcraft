@@ -18,6 +18,7 @@ import org.jbpt.petri.untangling.ReductionBasedRepresentativeUntangling;
 import org.jbpt.petri.untangling.SignificanceCheckType;
 import org.jbpt.petri.untangling.UntanglingSetup;
 import org.workcraft.plugins.cpog.PetriToCpogSettings;
+import org.workcraft.util.LogUtils;
 
 public class Untanglings {
 
@@ -150,7 +151,7 @@ public class Untanglings {
 
         // if Petri Net is not safe, stop the conversion
         if (untangling.isSafe() == false) {
-            System.out.println("Untangling cannot be constructed because the Petri Net is not safe.");
+            LogUtils.logErrorLine("Untangling cannot be constructed because the Petri Net is not safe.");
             return false;
         }
         // checking correct execution of conversion
@@ -159,7 +160,7 @@ public class Untanglings {
             if (pi.getOccurrenceNet().getVertices().isEmpty() == false) {
 
                 // printing out how many processes are needed to represent the untangling representation
-                System.out.println("Number of untangled processes: " + untangling.getProcesses().size());
+                LogUtils.logInfoLine("Number of untangled processes: " + untangling.getProcesses().size());
 
                 return true;
             }

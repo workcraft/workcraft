@@ -84,6 +84,7 @@ import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.graph.GraphEditorPanel;
+import org.workcraft.gui.graph.commands.AbstractLayoutCommand;
 import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
@@ -95,7 +96,6 @@ import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.PluginInfo;
-import org.workcraft.plugins.layout.AbstractLayoutCommand;
 import org.workcraft.plugins.layout.DotLayoutCommand;
 import org.workcraft.plugins.layout.RandomLayoutCommand;
 import org.workcraft.plugins.shared.CommonEditorSettings;
@@ -282,12 +282,8 @@ public class MainWindow extends JFrame {
                 e.printStackTrace();
                 return null;
             }
-            try {
-                applyDefaultLayout(visualModel);
-                we.setModelEntry(modelEntry);
-            } catch (LayoutException e) {
-                // Layout failed for whatever reason, ignore
-            }
+            applyDefaultLayout(visualModel);
+            we.setModelEntry(modelEntry);
         }
 
         final GraphEditorPanel editor = new GraphEditorPanel(we);
@@ -315,15 +311,15 @@ public class MainWindow extends JFrame {
     }
 
     private void applyDefaultLayout(VisualModel visualModel) {
-        AbstractLayoutCommand layoutCommand = visualModel.getBestLayouter();
-        if (layoutCommand == null) {
-            layoutCommand = new DotLayoutCommand();
+        AbstractLayoutCommand layoutTool = visualModel.getBestLayouter();
+        if (layoutTool == null) {
+            layoutTool = new DotLayoutCommand();
         }
         try {
-            layoutCommand.layout(visualModel);
+            layoutTool.layout(visualModel);
         } catch (LayoutException e) {
-            layoutCommand = new RandomLayoutCommand();
-            layoutCommand.layout(visualModel);
+            layoutTool = new RandomLayoutCommand();
+            layoutTool.layout(visualModel);
         }
     }
 

@@ -82,7 +82,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public WorkspaceEntry execute(WorkspaceEntry we) {
         VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
         Collection<Node> nodes = collect(visualModel);
         if (nodes.size() > 1) {
@@ -93,6 +93,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
             transform(visualModel, nodes);
             visualModel.selectNone();
         }
+        return we;
     }
 
     @Override

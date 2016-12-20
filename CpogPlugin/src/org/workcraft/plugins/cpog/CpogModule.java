@@ -15,12 +15,13 @@ import org.workcraft.plugins.cpog.commands.ExtractSelectedGraphsPGMinerCommand;
 import org.workcraft.plugins.cpog.commands.GraphStatisticsCommand;
 import org.workcraft.plugins.cpog.commands.GraphToCpogConversionCommand;
 import org.workcraft.plugins.cpog.commands.ImportEventLogPGMinerCommand;
+import org.workcraft.plugins.cpog.commands.PetriToCpogConversionCommand;
 import org.workcraft.plugins.cpog.scenco.ExhaustiveSearchScencoCommand;
 import org.workcraft.plugins.cpog.scenco.HeuristicSearchScencoCommand;
 import org.workcraft.plugins.cpog.scenco.RandomSearchScencoCommand;
 import org.workcraft.plugins.cpog.scenco.SatBasedScencoCommand;
-import org.workcraft.plugins.cpog.scenco.SingleLiteralScencoCommand;
 import org.workcraft.plugins.cpog.scenco.SequentialScencoCommand;
+import org.workcraft.plugins.cpog.scenco.SingleLiteralScencoCommand;
 import org.workcraft.plugins.cpog.serialisation.ArcDeserialiser;
 import org.workcraft.plugins.cpog.serialisation.ArcSerialiser;
 import org.workcraft.plugins.cpog.serialisation.RhoClauseDeserialiser;
@@ -77,6 +78,7 @@ public class CpogModule implements Module {
         pm.registerClass(Command.class, ExtractSelectedGraphsPGMinerCommand.class);
         pm.registerClass(Command.class, AlgebraImportCommand.class);
         pm.registerClass(Command.class, AlgebraExpressionFromGraphsCommand.class);
+        pm.registerClass(Command.class, PetriToCpogConversionCommand.class);
     }
 
     private void initCompatibilityManager() {

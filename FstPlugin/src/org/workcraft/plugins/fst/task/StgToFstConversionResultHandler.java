@@ -34,9 +34,11 @@ public class StgToFstConversionResultHandler extends DummyProgressMonitor<WriteS
             new float[]{0.30f}, new float[]{0.9f, 0.7f, 0.5f}));
 
     private final WriteSgConversionTask task;
+    private WorkspaceEntry result;
 
     public StgToFstConversionResultHandler(WriteSgConversionTask task) {
         this.task = task;
+        this.result = null;
     }
 
     @Override
@@ -51,7 +53,7 @@ public class StgToFstConversionResultHandler extends DummyProgressMonitor<WriteS
             final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
             final ModelEntry me = new ModelEntry(new FstDescriptor(), model);
             boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
-            workspace.addWork(directory, name, me, true, openInEditor);
+            this.result = workspace.addWork(directory, name, me, true, openInEditor);
             VisualModel visualModel = me.getVisualModel();
             if (visualModel instanceof VisualFst) {
                 highlightCscConflicts((VisualFst) visualModel);
@@ -89,6 +91,10 @@ public class StgToFstConversionResultHandler extends DummyProgressMonitor<WriteS
                 }
             }
         }
-
     }
+
+    public WorkspaceEntry getResult() {
+        return result;
+    }
+
 }

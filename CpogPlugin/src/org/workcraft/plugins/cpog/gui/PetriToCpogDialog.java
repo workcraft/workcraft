@@ -1,7 +1,5 @@
 package org.workcraft.plugins.cpog.gui;
 
-import info.clearthought.layout.TableLayout;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -25,7 +23,8 @@ import javax.swing.KeyStroke;
 import org.workcraft.gui.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.PetriToCpogSettings;
 import org.workcraft.util.GUI;
-import org.workcraft.workspace.WorkspaceEntry;
+
+import info.clearthought.layout.TableLayout;
 
 @SuppressWarnings("serial")
 public class PetriToCpogDialog extends JDialog {
@@ -40,7 +39,7 @@ public class PetriToCpogDialog extends JDialog {
     private JPanel buttonPanel, settingPanel;
     protected int modalResult;
 
-    public PetriToCpogDialog(Window owner, PetriToCpogSettings settings, WorkspaceEntry we) {
+    public PetriToCpogDialog(Window owner, PetriToCpogSettings settings) {
         super(owner, "Petri Net to CPOG conversion [Untanglings]", ModalityType.APPLICATION_MODAL);
         modalResult = 0;
 
@@ -136,7 +135,6 @@ public class PetriToCpogDialog extends JDialog {
 
     /** creates panel containing the buttons for running or closing the converter **/
     private void createButtonPanel(final PetriToCpogSettings settings) {
-
         buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
         // run the converter
@@ -145,12 +143,10 @@ public class PetriToCpogDialog extends JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 setVisible(false);
-
                 settings.setReduce(reduceCheck.isSelected() ? true : false);
                 settings.setIsomorphism(isomorphismCheck.isSelected() ? true : false);
                 settings.setSignificance(significanceBox.getSelectedIndex());
                 settings.setRemoveNodes(removeNodesCheck.isSelected() ? true : false);
-
                 modalResult = 1;
             }
         });
@@ -163,10 +159,8 @@ public class PetriToCpogDialog extends JDialog {
                 setVisible(false);
             }
         });
-
         buttonPanel.add(runButton);
         buttonPanel.add(closeButton);
-
     }
 
     private void sizeWindow(int width, int height, int row1, int row2) {
@@ -177,4 +171,5 @@ public class PetriToCpogDialog extends JDialog {
     public int getModalResult() {
         return modalResult;
     }
+
 }

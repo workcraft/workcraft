@@ -27,12 +27,13 @@ public class UntoggleConversionCommand extends AbstractConversionCommand {
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public WorkspaceEntry execute(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
         final TransformationTask task = new TransformationTask(we, "Signal transition untoggle", new String[] {"-untog"});
         final TransformationResultHandler monitor = new TransformationResultHandler(we);
-        taskManager.queue(task, "Petrify signal transition untoggle", monitor);
+        taskManager.execute(task, "Petrify signal transition untoggle", monitor);
+        return monitor.getResult();
     }
 
     @Override

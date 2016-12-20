@@ -25,7 +25,6 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
         this.task = task;
     }
 
-
     @Override
     public void finished(final Result<? extends MpsatChainResult> result, String description) {
         switch (result.getOutcome()) {

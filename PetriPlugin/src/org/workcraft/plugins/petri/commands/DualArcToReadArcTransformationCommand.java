@@ -34,7 +34,7 @@ public class DualArcToReadArcTransformationCommand extends AbstractTransformatio
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public WorkspaceEntry execute(WorkspaceEntry we) {
         final VisualModel model = we.getModelEntry().getVisualModel();
         HashSet<Pair<VisualConnection, VisualConnection>> dualArcs = PetriNetUtils.getSelectedOrAllDualArcs(model);
         if (!dualArcs.isEmpty()) {
@@ -42,6 +42,7 @@ public class DualArcToReadArcTransformationCommand extends AbstractTransformatio
             HashSet<VisualReadArc> readArcs = PetriNetUtils.convertDualArcsToReadArcs(model, dualArcs);
             model.select(new LinkedList<Node>(readArcs));
         }
+        return we;
     }
 
     @Override

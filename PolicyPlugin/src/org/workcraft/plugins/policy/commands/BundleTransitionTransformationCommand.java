@@ -27,7 +27,7 @@ public class BundleTransitionTransformationCommand extends AbstractTransformatio
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public WorkspaceEntry execute(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         we.saveMemento();
         final VisualPolicyNet policy = WorkspaceUtils.getAs(we, VisualPolicyNet.class);
@@ -36,6 +36,7 @@ public class BundleTransitionTransformationCommand extends AbstractTransformatio
         final TransitionBundler bundler = new TransitionBundler(converter);
         bundler.run();
         framework.repaintCurrentEditor();
+        return we;
     }
 
     @Override

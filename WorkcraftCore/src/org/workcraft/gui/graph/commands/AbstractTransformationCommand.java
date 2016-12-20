@@ -3,19 +3,17 @@ package org.workcraft.gui.graph.commands;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.workcraft.Framework;
 import org.workcraft.MenuOrdering;
-import org.workcraft.MenuOrdering.Position;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public abstract class AbstractTransformationCommand extends AbstractPromotedCommand implements MenuOrdering {
+public abstract class AbstractTransformationCommand implements ExecutableCommand, MenuOrdering {
 
     @Override
-    public String getSection() {
+    public final String getSection() {
         return "!   Transformations";  // 3 spaces - positions 2nd
     }
 
@@ -30,15 +28,19 @@ public abstract class AbstractTransformationCommand extends AbstractPromotedComm
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public WorkspaceEntry execute(WorkspaceEntry we) {
         VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
         Collection<Node> nodes = collect(visualModel);
         if (!nodes.isEmpty()) {
             we.saveMemento();
             transform(visualModel, nodes);
-            final Framework framework = Framework.getInstance();
-            framework.repaintCurrentEditor(); // !!!
         }
+        return we;
+    }
+
+    @Override
+    public final void run(WorkspaceEntry we) {
+        execute(we);
     }
 
     public Collection<Node> collect(Model model) {

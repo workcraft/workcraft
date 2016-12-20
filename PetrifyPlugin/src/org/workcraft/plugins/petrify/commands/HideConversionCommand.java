@@ -37,7 +37,7 @@ public class HideConversionCommand extends AbstractConversionCommand {
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public WorkspaceEntry execute(WorkspaceEntry we) {
         VisualModel visualModel = we.getModelEntry().getVisualModel();
         HashSet<VisualTransition> transitions = PetriNetUtils.getVisualTransitions(visualModel);
         transitions.retainAll(visualModel.getSelection());
@@ -74,7 +74,8 @@ public class HideConversionCommand extends AbstractConversionCommand {
         final TransformationTask task = new TransformationTask(we, "Net synthesis", args.toArray(new String[args.size()]));
         boolean hasSignals = WorkspaceUtils.isApplicable(we, StgModel.class);
         final TransformationResultHandler monitor = new TransformationResultHandler(we, hasSignals);
-        taskManager.queue(task, "Petrify net synthesis", monitor);
+        taskManager.execute(task, "Petrify net synthesis", monitor);
+        return monitor.getResult();
     }
 
     @Override

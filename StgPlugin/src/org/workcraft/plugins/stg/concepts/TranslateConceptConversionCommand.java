@@ -31,19 +31,21 @@ public class TranslateConceptConversionCommand extends AbstractConversionCommand
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public WorkspaceEntry execute(WorkspaceEntry we) {
         ConceptsWriterDialog dialog = new ConceptsWriterDialog();
         dialog.setVisible(true);
-        if (dialog.getTranslate()) {
+        if (!dialog.getTranslate()) {
+            return null;
+        } else {
+            final Framework framework = Framework.getInstance();
+            final TaskManager taskManager = framework.getTaskManager();
             File inputFile = dialog.getFile();
             dotLayout = dialog.getDotLayoutState();
             ConceptsTask task = new ConceptsTask(inputFile);
             String name = FileUtils.getFileNameWithoutExtension(inputFile);
             ConceptsResultHandler resultHandler = new ConceptsResultHandler(this, name, we);
-
-            Framework framework = Framework.getInstance();
-            TaskManager taskManager = framework.getTaskManager();
             taskManager.queue(task, "Translating concepts", resultHandler);
+            return resultHandler.getResult();
         }
     }
 

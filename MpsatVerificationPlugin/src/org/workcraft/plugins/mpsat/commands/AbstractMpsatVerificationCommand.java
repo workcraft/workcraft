@@ -22,7 +22,7 @@ public abstract class AbstractMpsatVerificationCommand extends AbstractVerificat
         }
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
-        MpsatChainResultHandler monitor = new MpsatChainResultHandler(mpsatTask);
+        final MpsatChainResultHandler monitor = new MpsatChainResultHandler(mpsatTask);
         taskManager.queue(mpsatTask, description, monitor);
     }
 

@@ -28,12 +28,13 @@ public class HideDummyConversionCommand extends AbstractConversionCommand {
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public WorkspaceEntry execute(WorkspaceEntry we) {
         final TransformationTask task = new TransformationTask(we, "Dummy contraction", new String[] {"-hide", ".dummy" });
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
         final TransformationResultHandler monitor = new TransformationResultHandler(we);
-        taskManager.queue(task, "Petrify dummy contraction", monitor);
+        taskManager.execute(task, "Petrify dummy contraction", monitor);
+        return monitor.getResult();
     }
 
     @Override

@@ -26,9 +26,11 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class PetriToFsmConversionResultHandler extends DummyProgressMonitor<WriteSgConversionResult> {
     private final WriteSgConversionTask task;
+    private WorkspaceEntry result;
 
     public PetriToFsmConversionResultHandler(WriteSgConversionTask task) {
         this.task = task;
+        this.result = null;
     }
 
     @Override
@@ -47,7 +49,7 @@ public class PetriToFsmConversionResultHandler extends DummyProgressMonitor<Writ
             final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
             final ModelEntry me = new ModelEntry(new FsmDescriptor(), model);
             boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
-            workspace.addWork(directory, name, me, true, openInEditor);
+            this.result = workspace.addWork(directory, name, me, true, openInEditor);
         } else if (result.getOutcome() != Outcome.CANCELLED) {
             MainWindow mainWindow = framework.getMainWindow();
             if (result.getCause() == null) {
@@ -60,4 +62,9 @@ public class PetriToFsmConversionResultHandler extends DummyProgressMonitor<Writ
             }
         }
     }
+
+    public WorkspaceEntry getResult() {
+        return result;
+    }
+
 }

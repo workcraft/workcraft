@@ -39,6 +39,7 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -56,24 +57,30 @@ import org.w3c.dom.Element;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
+import org.workcraft.exceptions.LayoutException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.FileFilters;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.GraphEditorPanel;
+import org.workcraft.gui.graph.commands.AbstractLayoutCommand;
 import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.PluginInfo;
+import org.workcraft.plugins.layout.DotLayoutCommand;
+import org.workcraft.plugins.layout.RandomLayoutCommand;
 import org.workcraft.plugins.serialisation.XMLModelDeserialiser;
 import org.workcraft.plugins.serialisation.XMLModelSerialiser;
 import org.workcraft.serialisation.DeserialisationResult;
@@ -111,6 +118,25 @@ public final class Framework {
     public static final String UILAYOUT_FILE_PATH = SETTINGS_DIRECTORY_PATH + File.separator + UILAYOUT_FILE_NAME;
 
     private static Framework instance = null;
+
+    private final class ExtendedTaskManager extends DefaultTaskManager {
+        @Override
+        public <T> Result<? extends T> rawExecute(Task<T> task, String description, ProgressMonitor<? super T> observer) {
+            if (!SwingUtilities.isEventDispatchThread()) {
+                return super.rawExecute(task, description, observer);
+            } else {
+                OperationCancelDialog<T> cancelDialog = new OperationCancelDialog<>(mainWindow, description);
+                ProgressMonitorArray<T> observers = new ProgressMonitorArray<>();
+                if (observer != null) {
+                    observers.add(observer);
+                }
+                observers.add(cancelDialog);
+                this.queue(task, description, observers);
+                cancelDialog.setVisible(true);
+                return cancelDialog.getResult();
+            }
+        }
+    }
 
     class ExecuteScriptAction implements ContextAction {
         private final String script;
@@ -211,26 +237,7 @@ public final class Framework {
 
     private Framework() {
         pluginManager = new PluginManager();
-        taskManager = new DefaultTaskManager() {
-            @Override
-            public <T> Result<? extends T> execute(Task<T> task, String description, ProgressMonitor<? super T> observer) {
-                if (SwingUtilities.isEventDispatchThread()) {
-                    OperationCancelDialog<T> cancelDialog = new OperationCancelDialog<>(mainWindow, description);
-
-                    ProgressMonitorArray<T> observers = new ProgressMonitorArray<>();
-                    if (observer != null) {
-                        observers.add(observer);
-                    }
-                    observers.add(cancelDialog);
-
-                    this.queue(task, description, observers);
-                    cancelDialog.setVisible(true);
-                    return cancelDialog.result;
-                } else {
-                    return super.execute(task, description, observer);
-                }
-            }
-        };
+        taskManager = new ExtendedTaskManager();
         compatibilityManager = new CompatibilityManager();
         config = new Config();
         workspace = new Workspace();
@@ -529,17 +536,79 @@ public final class Framework {
         contextFactory.call(setargs);
     }
 
-    public ModelEntry runCommand(WorkspaceEntry we, String className) {
+    public void runCommand(WorkspaceEntry we, String className) {
         if (className != null) {
             for (Command command: Commands.getApplicableCommands(we)) {
                 String commandClassName = command.getClass().getSimpleName();
-                if (commandClassName.equals(className)) {
+                if (className.equals(commandClassName)) {
                     Commands.run(we, command);
                     break;
                 }
             }
         }
+    }
+
+    public WorkspaceEntry executeCommand(WorkspaceEntry we, String className) {
+        if (className != null) {
+            for (Command command: Commands.getApplicableCommands(we)) {
+                String commandClassName = command.getClass().getSimpleName();
+                if (className.equals(commandClassName)) {
+                    return Commands.execute(we, command);
+                }
+            }
+        }
         return null;
+    }
+
+    public WorkspaceEntry createWork(Path<String> directory, String desiredName, ModelEntry me, boolean temporary, boolean open) {
+        final Path<String> path = getWorkspace().getNewWorkName(directory, desiredName);
+        WorkspaceEntry we = new WorkspaceEntry(getWorkspace());
+        we.setTemporary(temporary);
+        we.setChanged(true);
+        if (open) {
+            createVisual(me);
+        }
+        we.setModelEntry(me);
+        getWorkspace().addWork(path, we);
+        final Framework framework = Framework.getInstance();
+        if (open && framework.isInGuiMode()) {
+            getMainWindow().createEditorWindow(we);
+        }
+        return we;
+    }
+
+    private void createVisual(ModelEntry me) {
+        VisualModel visualModel = me.getVisualModel();
+        if (visualModel == null) {
+            ModelDescriptor descriptor = me.getDescriptor();
+            VisualModelDescriptor vmd = descriptor.getVisualModelDescriptor();
+            if (vmd == null) {
+                JOptionPane.showMessageDialog(getMainWindow(),
+                        "A visual model could not be created for the selected model.\n"
+                        + "Model '" + descriptor.getDisplayName() + "' does not have visual model support.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            try {
+                visualModel = vmd.create((MathModel) me.getModel());
+                me = new ModelEntry(descriptor, visualModel);
+            } catch (VisualModelInstantiationException e) {
+                JOptionPane.showMessageDialog(getMainWindow(),
+                        "A visual model could not be created for the selected model.\n"
+                        + "Please refer to the Problems window for details.\n",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+            }
+            AbstractLayoutCommand layoutCommand = visualModel.getBestLayouter();
+            if (layoutCommand == null) {
+                layoutCommand = new DotLayoutCommand();
+            }
+            try {
+                layoutCommand.layout(visualModel);
+            } catch (LayoutException e) {
+                layoutCommand = new RandomLayoutCommand();
+                layoutCommand.layout(visualModel);
+            }
+        }
     }
 
     public WorkspaceEntry loadWork(String path) throws DeserialisationException {

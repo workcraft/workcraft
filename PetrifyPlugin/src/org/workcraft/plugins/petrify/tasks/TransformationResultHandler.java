@@ -37,6 +37,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class TransformationResultHandler extends DummyProgressMonitor<TransformationResult> {
     private final WorkspaceEntry we;
     private final boolean convertResultStgToPetriNet;
+    private WorkspaceEntry result;
 
     public TransformationResultHandler(WorkspaceEntry we) {
         this(we, true);
@@ -45,6 +46,7 @@ public class TransformationResultHandler extends DummyProgressMonitor<Transforma
     public TransformationResultHandler(WorkspaceEntry we, boolean convertResultStgToPetriNet) {
         this.we = we;
         this.convertResultStgToPetriNet = convertResultStgToPetriNet;
+        this.result = null;
     }
 
     @Override
@@ -60,7 +62,7 @@ public class TransformationResultHandler extends DummyProgressMonitor<Transforma
             final ModelDescriptor modelDescriptor = convertResultStgToPetriNet ? new StgDescriptor() : new PetriNetDescriptor();
             final ModelEntry me = new ModelEntry(modelDescriptor, model);
             boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
-            workspace.addWork(directory, name, me, true, openInEditor);
+            this.result = workspace.addWork(directory, name, me, true, openInEditor);
         } else if (result.getOutcome() == Outcome.FAILED) {
             MainWindow mainWindow = framework.getMainWindow();
             if (result.getCause() == null) {
@@ -115,6 +117,10 @@ public class TransformationResultHandler extends DummyProgressMonitor<Transforma
         NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(dstModel.getRoot());
         NameManager nameManagerer = refManager.getNameManager(namespaceProvider);
         return nameManagerer.getDerivedName(null, candidateName);
+    }
+
+    public WorkspaceEntry getResult() {
+        return result;
     }
 
 }

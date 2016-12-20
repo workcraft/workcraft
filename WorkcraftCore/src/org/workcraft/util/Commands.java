@@ -11,8 +11,10 @@ import java.util.List;
 import org.workcraft.Framework;
 import org.workcraft.MenuOrdering;
 import org.workcraft.MenuOrdering.Position;
-import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.PluginManager;
+import org.workcraft.gui.graph.commands.AbstractTransformationCommand;
+import org.workcraft.gui.graph.commands.Command;
+import org.workcraft.gui.graph.commands.ExecutableCommand;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -22,20 +24,27 @@ public class Commands {
         if (command.isApplicableTo(we)) {
             command.run(we);
         } else {
-            String errorMessage = "Attempt to run incompatible command " +
-                    command.getClass().getName() + " to a workspace entry " + we.getWorkspacePath();
-
-            throw new RuntimeException(errorMessage);
+            String commandName = command.getClass().getSimpleName();
+            throw new RuntimeException("Attempt to run incompatible command '" + commandName + "'"
+                    + " to a workspace entry '" + we.getWorkspacePath() + "'");
         }
     }
 
     public static List<Command> getApplicableCommands(WorkspaceEntry we) {
-        ArrayList<Command> commands = new ArrayList<>();
+        return getApplicableCommands(we, Command.class);
+    }
+
+    public static List<AbstractTransformationCommand> getApplicableTransformationCommands(WorkspaceEntry we) {
+        return getApplicableCommands(we, AbstractTransformationCommand.class);
+    }
+
+    private static <T extends Command> List<T> getApplicableCommands(WorkspaceEntry we, Class<T> type) {
+        ArrayList<T> commands = new ArrayList<>();
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
-        Collection<PluginInfo<? extends Command>> commandPlugins = pm.getPlugins(Command.class);
-        for (PluginInfo<? extends Command> info : commandPlugins) {
-            Command command = info.getSingleton();
+        Collection<PluginInfo<? extends T>> commandPlugins = pm.getPlugins(type);
+        for (PluginInfo<? extends T> info : commandPlugins) {
+            T command = info.getSingleton();
             if (command.isApplicableTo(we)) {
                 commands.add(command);
             }
@@ -101,6 +110,16 @@ public class Commands {
             }
         }
         return result;
+    }
+
+    public static WorkspaceEntry execute(WorkspaceEntry we, Command command) {
+        if (command.isApplicableTo(we) && (command instanceof ExecutableCommand)) {
+            return ((ExecutableCommand) command).execute(we);
+        } else {
+            String commandName = command.getClass().getSimpleName();
+            throw new RuntimeException("Attempt to execute incompatible command '" + commandName + "'"
+                    + " to a workspace entry '" + we.getWorkspacePath() + "'");
+        }
     }
 
 }

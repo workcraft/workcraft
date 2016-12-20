@@ -3,6 +3,7 @@ package org.workcraft.tasks;
 import java.util.ArrayList;
 
 public class ProgressMonitorArray<T> extends ArrayList<ProgressMonitor<? super T>> implements ProgressMonitor<T> {
+
     private static final long serialVersionUID = 1L;
 
     @Override
@@ -41,4 +42,5 @@ public class ProgressMonitorArray<T> extends ArrayList<ProgressMonitor<? super T
             o.stderr(data);
         }
     }
+
 }

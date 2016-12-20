@@ -12,7 +12,7 @@ import org.workcraft.tasks.TaskManager;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class CscResolutionCommand implements Command {
+public class CscConflictResolutionCommand implements Command {
 
     @Override
     public String getSection() {

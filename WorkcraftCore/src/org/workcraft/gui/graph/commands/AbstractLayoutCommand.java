@@ -1,18 +1,17 @@
-package org.workcraft.plugins.layout;
+package org.workcraft.gui.graph.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.GraphEditorPanel;
-import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public abstract class AbstractLayoutCommand implements Command {
+public abstract class AbstractLayoutCommand implements ExecutableCommand {
 
     @Override
-    public String getSection() {
+    public final String getSection() {
         return "Graph layout";
     }
 
@@ -22,7 +21,7 @@ public abstract class AbstractLayoutCommand implements Command {
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public final WorkspaceEntry execute(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         if (!framework.isInGuiMode()) {
             LogUtils.logErrorLine("Tool '" + getClass().getSimpleName() + "' only works in GUI mode.");
@@ -34,6 +33,12 @@ public abstract class AbstractLayoutCommand implements Command {
             layout(model);
             editor.zoomFit();
         }
+        return we;
+    }
+
+    @Override
+    public final void run(WorkspaceEntry we) {
+        execute(we);
     }
 
     public abstract void layout(VisualModel model);
