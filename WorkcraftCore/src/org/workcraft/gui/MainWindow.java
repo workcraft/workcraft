@@ -77,14 +77,12 @@ import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.exceptions.LayoutException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.graph.GraphEditorPanel;
-import org.workcraft.gui.graph.commands.AbstractLayoutCommand;
 import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
@@ -96,8 +94,6 @@ import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.PluginInfo;
-import org.workcraft.plugins.layout.DotLayoutCommand;
-import org.workcraft.plugins.layout.RandomLayoutCommand;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.TaskManager;
@@ -251,41 +247,6 @@ public class MainWindow extends JFrame {
     }
 
     public GraphEditorPanel createEditorWindow(final WorkspaceEntry we) {
-        if (we.getModelEntry() == null) {
-            throw new RuntimeException("Cannot open editor: the selected entry is not a Workcraft model.");
-        }
-        ModelEntry modelEntry = we.getModelEntry();
-        ModelDescriptor descriptor = modelEntry.getDescriptor();
-        VisualModel visualModel = null;
-        if (modelEntry.getModel() instanceof VisualModel) {
-            visualModel = (VisualModel) modelEntry.getModel();
-            // Ignore saved selection (it is only useful for copy-paste)
-            visualModel.selectNone();
-        }
-
-        if (visualModel == null) {
-            VisualModelDescriptor vmd = descriptor.getVisualModelDescriptor();
-            if (vmd == null) {
-                JOptionPane.showMessageDialog(this,
-                        "A visual model could not be created for the selected model.\n" + "Model '"
-                                + descriptor.getDisplayName() + "' does not have visual model support.",
-                        "Error", JOptionPane.ERROR_MESSAGE);
-                return null;
-            }
-            try {
-                visualModel = vmd.create((MathModel) modelEntry.getModel());
-                modelEntry = new ModelEntry(descriptor, visualModel);
-            } catch (VisualModelInstantiationException e) {
-                JOptionPane.showMessageDialog(this,
-                        "A visual model could not be created for the selected model.\nPlease refer to the Problems window for details.\n",
-                        "Error", JOptionPane.ERROR_MESSAGE);
-                e.printStackTrace();
-                return null;
-            }
-            applyDefaultLayout(visualModel);
-            we.setModelEntry(modelEntry);
-        }
-
         final GraphEditorPanel editor = new GraphEditorPanel(we);
         String title = getTitle(we);
         final DockableWindow editorWindow;
@@ -308,19 +269,6 @@ public class MainWindow extends JFrame {
         setWorkActionsEnableness(true);
         editor.zoomFit();
         return editor;
-    }
-
-    private void applyDefaultLayout(VisualModel visualModel) {
-        AbstractLayoutCommand layoutTool = visualModel.getBestLayouter();
-        if (layoutTool == null) {
-            layoutTool = new DotLayoutCommand();
-        }
-        try {
-            layoutTool.layout(visualModel);
-        } catch (LayoutException e) {
-            layoutTool = new RandomLayoutCommand();
-            layoutTool.layout(visualModel);
-        }
     }
 
     private void registerUtilityWindow(DockableWindow dockableWindow) {
@@ -762,7 +710,6 @@ public class MainWindow extends JFrame {
                     mathModel.setTitle(title);
                 }
                 WorkspaceEntry we = null;
-                Workspace workspace = framework.getWorkspace();
                 if (dialog.createVisualSelected()) {
                     VisualModelDescriptor v = info.getVisualModelDescriptor();
                     if (v == null) {
@@ -771,10 +718,13 @@ public class MainWindow extends JFrame {
                     }
                     VisualModel visualModel = v.create(mathModel);
                     ModelEntry me = new ModelEntry(info, visualModel);
-                    we = workspace.addWork(path, title, me, false, dialog.openInEditorSelected());
+                    we = framework.createWork(me, path, title);
+                    if (dialog.openInEditorSelected()) {
+                        createEditorWindow(we);
+                    }
                 } else {
                     ModelEntry me = new ModelEntry(info, mathModel);
-                    we = workspace.addWork(path, title, me, false, false);
+                    we = framework.createWork(me, path, title);
                 }
                 if (we != null) {
                     we.setChanged(false);
@@ -942,7 +892,7 @@ public class MainWindow extends JFrame {
         WorkspaceEntry we = null;
         if (checkFileMessageDialog(file, null)) {
             try {
-                we = framework.loadWork(file, false);
+                we = framework.loadWork(file);
                 if (we.getModelEntry().isVisual()) {
                     createEditorWindow(we);
                 }
@@ -1099,8 +1049,7 @@ public class MainWindow extends JFrame {
                         ModelEntry me = Import.importFromFile(importer, file);
                         String title = FileUtils.getFileNameWithoutExtension(file);
                         me.getModel().setTitle(title);
-                        boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
-                        framework.getWorkspace().addWork(Path.<String>empty(), file.getName(), me, false, openInEditor);
+                        framework.createWork(me, Path.<String>empty(), file.getName());
                         lastOpenPath = file.getParent();
                         break;
                     } catch (IOException e) {

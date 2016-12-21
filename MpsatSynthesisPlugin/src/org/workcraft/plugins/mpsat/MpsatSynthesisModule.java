@@ -5,10 +5,10 @@ import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.propertyeditor.Settings;
-import org.workcraft.plugins.mpsat.commands.ComplexGateSynthesisCommand;
-import org.workcraft.plugins.mpsat.commands.GeneralisedCelementSynthesisCommand;
-import org.workcraft.plugins.mpsat.commands.StandardCelementSynthesisCommand;
-import org.workcraft.plugins.mpsat.commands.TechnologyMappingSynthesisCommand;
+import org.workcraft.plugins.mpsat.commands.MpsatComplexGateSynthesisCommand;
+import org.workcraft.plugins.mpsat.commands.MpsatGeneralisedCelementSynthesisCommand;
+import org.workcraft.plugins.mpsat.commands.MpsatStandardCelementSynthesisCommand;
+import org.workcraft.plugins.mpsat.commands.MpsatTechnologyMappingSynthesisCommand;
 
 public class MpsatSynthesisModule implements Module {
 
@@ -17,10 +17,10 @@ public class MpsatSynthesisModule implements Module {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
 
-        pm.registerClass(Command.class, ComplexGateSynthesisCommand.class);
-        pm.registerClass(Command.class, GeneralisedCelementSynthesisCommand.class);
-        pm.registerClass(Command.class, StandardCelementSynthesisCommand.class);
-        pm.registerClass(Command.class, TechnologyMappingSynthesisCommand.class);
+        pm.registerClass(Command.class, MpsatComplexGateSynthesisCommand.class);
+        pm.registerClass(Command.class, MpsatGeneralisedCelementSynthesisCommand.class);
+        pm.registerClass(Command.class, MpsatStandardCelementSynthesisCommand.class);
+        pm.registerClass(Command.class, MpsatTechnologyMappingSynthesisCommand.class);
         pm.registerClass(Settings.class, MpsatSynthesisUtilitySettings.class);
     }
 

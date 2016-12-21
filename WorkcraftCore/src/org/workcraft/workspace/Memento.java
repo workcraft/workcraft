@@ -1,7 +1,7 @@
 package org.workcraft.workspace;
 
-import java.io.InputStream;
 import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 public class Memento {
     private final byte[] data;

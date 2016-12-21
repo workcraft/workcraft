@@ -15,7 +15,6 @@ import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.FstDescriptor;
 import org.workcraft.plugins.fst.VisualFst;
-import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -24,7 +23,6 @@ import org.workcraft.util.ColorGenerator;
 import org.workcraft.util.ColorUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.ModelEntry;
-import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class StgToFstConversionResultHandler extends DummyProgressMonitor<WriteSgConversionResult> {
@@ -48,12 +46,10 @@ public class StgToFstConversionResultHandler extends DummyProgressMonitor<WriteS
         Path<String> path = we.getWorkspacePath();
         if (result.getOutcome() == Outcome.FINISHED) {
             Fst model = result.getReturnValue().getConversionResult();
-            final Workspace workspace = framework.getWorkspace();
             final Path<String> directory = path.getParent();
             final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
             final ModelEntry me = new ModelEntry(new FstDescriptor(), model);
-            boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
-            this.result = workspace.addWork(directory, name, me, true, openInEditor);
+            this.result = framework.createWork(me, directory, name);
             VisualModel visualModel = me.getVisualModel();
             if (visualModel instanceof VisualFst) {
                 highlightCscConflicts((VisualFst) visualModel);

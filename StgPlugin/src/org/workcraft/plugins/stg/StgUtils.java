@@ -128,7 +128,7 @@ public class StgUtils {
             Framework framework = Framework.getInstance();
             try {
                 // FIXME: Why not to use Framework.load(file) instead?
-                WorkspaceEntry we = framework.loadWork(file, true);
+                WorkspaceEntry we = framework.loadWork(file);
                 ModelEntry me = we.getModelEntry();
                 MathModel model = me.getMathModel();
                 if (model instanceof Stg) {

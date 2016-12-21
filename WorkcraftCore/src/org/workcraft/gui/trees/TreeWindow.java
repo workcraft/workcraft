@@ -20,8 +20,6 @@
  */
 package org.workcraft.gui.trees;
 
-import info.clearthought.layout.TableLayout;
-
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Font;
@@ -46,6 +44,8 @@ import javax.swing.tree.TreePath;
 
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.workspace.Workspace;
+
+import info.clearthought.layout.TableLayout;
 
 public class TreeWindow<Node> extends JPanel {
     public enum CheckBoxMode {

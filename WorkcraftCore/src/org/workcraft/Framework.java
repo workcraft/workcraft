@@ -71,9 +71,9 @@ import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.FileFilters;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.commands.AbstractLayoutCommand;
 import org.workcraft.gui.graph.commands.Command;
+import org.workcraft.gui.graph.commands.ScriptableCommand;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.interop.Exporter;
@@ -83,6 +83,7 @@ import org.workcraft.plugins.layout.DotLayoutCommand;
 import org.workcraft.plugins.layout.RandomLayoutCommand;
 import org.workcraft.plugins.serialisation.XMLModelDeserialiser;
 import org.workcraft.plugins.serialisation.XMLModelSerialiser;
+import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.serialisation.DeserialisationResult;
 import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelSerialiser;
@@ -549,35 +550,54 @@ public final class Framework {
     }
 
     public WorkspaceEntry executeCommand(WorkspaceEntry we, String className) {
-        if (className != null) {
-            for (Command command: Commands.getApplicableCommands(we)) {
+        if ((className == null) || className.isEmpty()) {
+            LogUtils.logErrorLine("Undefined command name.");
+        } else {
+            boolean found = false;
+            boolean scriptable = false;
+            for (Command command: Commands.getCommands()) {
                 String commandClassName = command.getClass().getSimpleName();
                 if (className.equals(commandClassName)) {
-                    return Commands.execute(we, command);
+                    found = true;
+                    if (command instanceof ScriptableCommand) {
+                        scriptable = true;
+                        if (command.isApplicableTo(we)) {
+                            return Commands.execute(we, (ScriptableCommand) command);
+                        }
+                    }
                 }
+            }
+            if (!found) {
+                LogUtils.logErrorLine("Command '" + className + "' is not found.");
+            } else if (!scriptable) {
+                LogUtils.logErrorLine("Command '" + className + "' cannot be used in scripts.");
+            } else {
+                LogUtils.logErrorLine("Command '" + className + "' is incompatible"
+                        + " with workspace entry '" + we.getWorkspacePath() + "'.");
             }
         }
         return null;
     }
 
-    public WorkspaceEntry createWork(Path<String> directory, String desiredName, ModelEntry me, boolean temporary, boolean open) {
-        final Path<String> path = getWorkspace().getNewWorkName(directory, desiredName);
+    public WorkspaceEntry createWork(ModelEntry me, Path<String> path) {
         WorkspaceEntry we = new WorkspaceEntry(getWorkspace());
-        we.setTemporary(temporary);
         we.setChanged(true);
-        if (open) {
-            createVisual(me);
-        }
-        we.setModelEntry(me);
+        we.setModelEntry(createVisual(me));
         getWorkspace().addWork(path, we);
-        final Framework framework = Framework.getInstance();
-        if (open && framework.isInGuiMode()) {
+        boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
+        if (openInEditor && isInGuiMode()) {
             getMainWindow().createEditorWindow(we);
         }
         return we;
     }
 
-    private void createVisual(ModelEntry me) {
+    public WorkspaceEntry createWork(ModelEntry me, Path<String> directory, String desiredName) {
+        final Path<String> path = getWorkspace().createWorkPath(directory, desiredName);
+        return createWork(me, path);
+    }
+
+    private ModelEntry createVisual(ModelEntry me) {
+        ModelEntry result = me;
         VisualModel visualModel = me.getVisualModel();
         if (visualModel == null) {
             ModelDescriptor descriptor = me.getDescriptor();
@@ -590,7 +610,7 @@ public final class Framework {
             }
             try {
                 visualModel = vmd.create((MathModel) me.getModel());
-                me = new ModelEntry(descriptor, visualModel);
+                result = new ModelEntry(descriptor, visualModel);
             } catch (VisualModelInstantiationException e) {
                 JOptionPane.showMessageDialog(getMainWindow(),
                         "A visual model could not be created for the selected model.\n"
@@ -609,6 +629,7 @@ public final class Framework {
                 layoutCommand.layout(visualModel);
             }
         }
+        return result;
     }
 
     public WorkspaceEntry loadWork(String path) throws DeserialisationException {
@@ -620,10 +641,6 @@ public final class Framework {
     }
 
     public WorkspaceEntry loadWork(File file) throws DeserialisationException {
-        return loadWork(file, false);
-    }
-
-    public WorkspaceEntry loadWork(File file, boolean temporary) throws DeserialisationException {
         // Check if work is already loaded
         Path<String> workspacePath = getWorkspace().getPath(file);
         for (WorkspaceEntry we : getWorkspace().getWorks()) {
@@ -634,7 +651,6 @@ public final class Framework {
 
         // Load (from *.work) or import (other extensions) work
         WorkspaceEntry we = new WorkspaceEntry(getWorkspace());
-        we.setTemporary(temporary);
         we.setChanged(false);
         if (file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
             we.setModelEntry(loadModel(file));
@@ -649,7 +665,8 @@ public final class Framework {
             } else {
                 parent = workspacePath.getParent();
             }
-            workspacePath = getWorkspace().getNewWorkName(parent, FileUtils.getFileNameWithoutExtension(file));
+            String desiredName = FileUtils.getFileNameWithoutExtension(file);
+            workspacePath = getWorkspace().createWorkPath(parent, desiredName);
         }
         getWorkspace().addWork(workspacePath, we);
         return we;
@@ -881,9 +898,13 @@ public final class Framework {
         }
     }
 
-    public void initPlugins() {
+    public void initPlugins(boolean load) {
         try {
-            pluginManager.loadManifest();
+            if (load) {
+                pluginManager.loadManifest();
+            } else {
+                pluginManager.reconfigureManifest(false);
+            }
         } catch (IOException | FormatException | PluginInstantiationException e) {
             e.printStackTrace();
         }
@@ -938,13 +959,6 @@ public final class Framework {
 
     public File getWorkingDirectory() {
         return workingDirectory;
-    }
-
-    public void repaintCurrentEditor() {
-        if (isInGuiMode()) {
-            final GraphEditorPanel editor = mainWindow.getCurrentEditor();
-            editor.repaint();
-        }
     }
 
 }

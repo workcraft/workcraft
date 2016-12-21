@@ -10,7 +10,7 @@ import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.plugins.mpsat.gui.Solution;
+import org.workcraft.plugins.mpsat.gui.MpsatSolution;
 import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
@@ -54,8 +54,8 @@ public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatC
             Result<? extends ExternalProcessResult> mpsatResult = mpsatResultList.get(index);
             MpsatSettings mpsatSettings = mpsatSettingsList.get(index);
             MpsatResultParser mdp = new MpsatResultParser(mpsatResult.getReturnValue());
-            List<Solution> solutions = mdp.getSolutions();
-            if (!Solution.hasTraces(solutions)) {
+            List<MpsatSolution> solutions = mdp.getSolutions();
+            if (!MpsatSolution.hasTraces(solutions)) {
                 verifiedMessageDetailes += "\n * " + mpsatSettings.getName();
             } else {
                 violationMpsatResult = mpsatResult;
@@ -94,7 +94,7 @@ public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatC
                 SwingUtilities.invokeLater(new MpsatDeadlockResultHandler(we, violationMpsatResult));
                 break;
             case RESOLVE_ENCODING_CONFLICTS:
-                SwingUtilities.invokeLater(new MpsatCscResolutionResultHandler(we, violationMpsatResult));
+                SwingUtilities.invokeLater(new MpsatCscConflictResolutionResultHandler(we, violationMpsatResult));
                 break;
             default:
                 MainWindow mainWindow = Framework.getInstance().getMainWindow();

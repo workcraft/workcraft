@@ -8,7 +8,7 @@ import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public abstract class AbstractLayoutCommand implements ExecutableCommand {
+public abstract class AbstractLayoutCommand implements ScriptableCommand {
 
     @Override
     public final String getSection() {

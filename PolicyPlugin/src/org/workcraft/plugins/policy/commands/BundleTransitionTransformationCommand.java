@@ -3,6 +3,8 @@ package org.workcraft.plugins.policy.commands;
 import org.workcraft.Framework;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
+import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.commands.AbstractTransformationCommand;
 import org.workcraft.plugins.policy.VisualPolicyNet;
 import org.workcraft.plugins.policy.tools.PolicyToPetriConverter;
@@ -35,7 +37,11 @@ public class BundleTransitionTransformationCommand extends AbstractTransformatio
         final PolicyToPetriConverter converter = new PolicyToPetriConverter(policy);
         final TransitionBundler bundler = new TransitionBundler(converter);
         bundler.run();
-        framework.repaintCurrentEditor();
+        if (framework.isInGuiMode()) {
+            final MainWindow mainWindow = framework.getMainWindow();
+            final GraphEditorPanel editor = mainWindow.getCurrentEditor();
+            editor.repaint();
+        }
         return we;
     }
 

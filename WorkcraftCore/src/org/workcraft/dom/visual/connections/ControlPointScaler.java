@@ -21,10 +21,16 @@
 
 package org.workcraft.dom.visual.connections;
 
+import static org.workcraft.util.Geometry.add;
+import static org.workcraft.util.Geometry.changeBasis;
+import static org.workcraft.util.Geometry.multiply;
+import static org.workcraft.util.Geometry.normalize;
+import static org.workcraft.util.Geometry.reduce;
+import static org.workcraft.util.Geometry.rotate90CCW;
+import static org.workcraft.util.Geometry.subtract;
+
 import java.awt.geom.Point2D;
 import java.util.Collection;
-
-import static org.workcraft.util.Geometry.*;
 
 public class ControlPointScaler {
     private static final double THRESHOLD = 0.00001;

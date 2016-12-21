@@ -33,8 +33,8 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.serialisation.ReferenceResolver;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.ListMap;
 import org.workcraft.util.GeneralTwoWayMap;
+import org.workcraft.util.ListMap;
 import org.workcraft.util.TwoWayMap;
 
 class XMLDeserialiserState implements References {

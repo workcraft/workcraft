@@ -58,7 +58,6 @@ import org.workcraft.util.Hierarchy;
 public class WorkspaceEntry implements ObservableState {
     private ModelEntry modelEntry = null;
     private boolean changed = true;
-    private boolean temporary = true;
     private final Workspace workspace;
     private final MementoManager history = new MementoManager();
     private boolean canSelect = true;
@@ -152,29 +151,6 @@ public class WorkspaceEntry implements ObservableState {
             fileName = "Untitled";
         }
         return fileName.replace('\\', '_').replace('/', '_').replace(':', '_').replace('"', '_').replace('<', '_').replace('>', '_').replace('|', '_');
-    }
-
-    @Override
-    public String toString() {
-        String res = getTitle();
-        if (modelEntry != null && modelEntry.isVisual()) {
-            res = res + " [V]";
-        }
-        if (changed) {
-            res = "* " + res;
-        }
-        if (temporary) {
-            res = res + " (not in workspace)";
-        }
-        return res;
-    }
-
-    public boolean isTemporary() {
-        return temporary;
-    }
-
-    public void setTemporary(boolean temporary) {
-        this.temporary = temporary;
     }
 
     public Path<String> getWorkspacePath() {

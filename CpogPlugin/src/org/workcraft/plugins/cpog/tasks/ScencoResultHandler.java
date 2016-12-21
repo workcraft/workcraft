@@ -15,13 +15,11 @@ import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitDescriptor;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
-import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.ModelEntry;
-import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
@@ -55,13 +53,11 @@ public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
                     final Path<String> directory = path.getParent();
                     final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
                     final ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
-                    boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
 
                     final Framework framework = Framework.getInstance();
                     final MainWindow mainWindow = framework.getMainWindow();
-                    final Workspace workspace = framework.getWorkspace();
-                    final WorkspaceEntry newWorkspaceEntry = workspace.addWork(directory, name, me, true, openInEditor);
-                    VisualModel visualModel = newWorkspaceEntry.getModelEntry().getVisualModel();
+                    WorkspaceEntry weCircuit = framework.createWork(me, directory, name);
+                    VisualModel visualModel = weCircuit.getModelEntry().getVisualModel();
                     if (visualModel instanceof VisualCircuit) {
                         VisualCircuit visualCircuit = (VisualCircuit) visualModel;
                         String title = we.getModelEntry().getModel().getTitle();

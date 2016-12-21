@@ -91,7 +91,7 @@ public class Console {
         // NOTE: JavaScript needs to be initilised before GUI
         framework.initJavaScript();
         // NOTE: Plugins need to be loaded before GUI (because of assigning PropertyProviders)
-        framework.initPlugins();
+        framework.initPlugins(true);
         // NOTE: Config needs to be loaded before GUI
         framework.loadConfig();
         if (startGUI) {

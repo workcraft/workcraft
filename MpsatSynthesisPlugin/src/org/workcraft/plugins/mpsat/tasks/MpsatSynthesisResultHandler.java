@@ -13,6 +13,7 @@ import org.workcraft.Framework;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitDescriptor;
@@ -22,7 +23,6 @@ import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.mpsat.MpsatSynthesisMode;
 import org.workcraft.plugins.mpsat.MpsatSynthesisUtilitySettings;
-import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -30,16 +30,17 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
-import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynthesisChainResult> {
     private static final String TITLE = "MPSat synthesis";
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
     private final MpsatSynthesisChainTask task;
+    private WorkspaceEntry result;
 
     public MpsatSynthesisResultHandler(MpsatSynthesisChainTask task) {
         this.task = task;
+        this.result = null;
     }
 
     @Override
@@ -110,12 +111,10 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
                 final Path<String> directory = path.getParent();
                 final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
                 final ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
-                boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
 
                 final Framework framework = Framework.getInstance();
-                final Workspace workspace = framework.getWorkspace();
-                WorkspaceEntry newWorkspaceEntry = workspace.addWork(directory, name, me, true, openInEditor);
-                VisualModel visualModel = newWorkspaceEntry.getModelEntry().getVisualModel();
+                result = framework.createWork(me, directory, name);
+                VisualModel visualModel = result.getModelEntry().getVisualModel();
                 if (visualModel instanceof VisualCircuit) {
                     VisualCircuit visualCircuit = (VisualCircuit) visualModel;
                     for (VisualFunctionComponent component: visualCircuit.getVisualFunctionComponents()) {
@@ -138,7 +137,11 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            framework.getMainWindow().getCurrentEditor().updatePropertyView();
+                            if (framework.isInGuiMode()) {
+                                final MainWindow mainWindow = framework.getMainWindow();
+                                final GraphEditorPanel editor = mainWindow.getCurrentEditor();
+                                editor.updatePropertyView();
+                            }
                         }
                     });
                 }
@@ -194,6 +197,10 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
         }
         MainWindow mainWindow = Framework.getInstance().getMainWindow();
         JOptionPane.showMessageDialog(mainWindow, errorMessage, TITLE, JOptionPane.ERROR_MESSAGE);
+    }
+
+    public WorkspaceEntry getResult() {
+        return result;
     }
 
 }

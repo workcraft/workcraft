@@ -8,19 +8,19 @@ import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.propertyeditor.Settings;
-import org.workcraft.plugins.petrify.commands.ComplexGateSynthesisCommand;
-import org.workcraft.plugins.petrify.commands.CscConflictResolutionCommand;
-import org.workcraft.plugins.petrify.commands.GeneralisedCelementSynthesisCommand;
-import org.workcraft.plugins.petrify.commands.HideConversionCommand;
-import org.workcraft.plugins.petrify.commands.HideDummyConversionCommand;
-import org.workcraft.plugins.petrify.commands.NetConversionCommand;
-import org.workcraft.plugins.petrify.commands.StandardCelementSynthesisCommand;
-import org.workcraft.plugins.petrify.commands.TechnologyMappingSynthesisCommand;
-import org.workcraft.plugins.petrify.commands.UntoggleConversionCommand;
+import org.workcraft.plugins.petrify.commands.PetrifyComplexGateSynthesisCommand;
+import org.workcraft.plugins.petrify.commands.PetrifyCscConflictResolutionCommand;
+import org.workcraft.plugins.petrify.commands.PetrifyGeneralisedCelementSynthesisCommand;
+import org.workcraft.plugins.petrify.commands.PetrifyHideConversionCommand;
+import org.workcraft.plugins.petrify.commands.PetrifyHideDummyConversionCommand;
+import org.workcraft.plugins.petrify.commands.PetrifyNetConversionCommand;
+import org.workcraft.plugins.petrify.commands.PetrifyStandardCelementSynthesisCommand;
+import org.workcraft.plugins.petrify.commands.PetrifyTechnologyMappingSynthesisCommand;
+import org.workcraft.plugins.petrify.commands.PetrifyUntoggleConversionCommand;
 
 public class PetrifyModule implements Module {
 
-    private final class PetrifyNetErConversionCommand extends NetConversionCommand {
+    private final class PetrifyNetErConversionCommand extends PetrifyNetConversionCommand {
         @Override
         public String getDisplayName() {
             return "Net synthesis [Petrify with -er option]";
@@ -34,7 +34,7 @@ public class PetrifyModule implements Module {
         }
     }
 
-    private final class PetrifyHideErConversionCommand extends HideConversionCommand {
+    private final class PetrifyHideErConversionCommand extends PetrifyHideConversionCommand {
         @Override
         public String getDisplayName() {
             return "Net synthesis hiding selected signals and dummies [Petrify with -er option]";
@@ -55,15 +55,15 @@ public class PetrifyModule implements Module {
 
         pm.registerClass(Settings.class, PetrifyUtilitySettings.class);
 
-        pm.registerClass(Command.class, UntoggleConversionCommand.class);
-        pm.registerClass(Command.class, CscConflictResolutionCommand.class);
-        pm.registerClass(Command.class, ComplexGateSynthesisCommand.class);
-        pm.registerClass(Command.class, GeneralisedCelementSynthesisCommand.class);
-        pm.registerClass(Command.class, StandardCelementSynthesisCommand.class);
-        pm.registerClass(Command.class, TechnologyMappingSynthesisCommand.class);
-        pm.registerClass(Command.class, HideDummyConversionCommand.class);
-        pm.registerClass(Command.class, NetConversionCommand.class);
-        pm.registerClass(Command.class, HideConversionCommand.class);
+        pm.registerClass(Command.class, PetrifyUntoggleConversionCommand.class);
+        pm.registerClass(Command.class, PetrifyCscConflictResolutionCommand.class);
+        pm.registerClass(Command.class, PetrifyComplexGateSynthesisCommand.class);
+        pm.registerClass(Command.class, PetrifyGeneralisedCelementSynthesisCommand.class);
+        pm.registerClass(Command.class, PetrifyStandardCelementSynthesisCommand.class);
+        pm.registerClass(Command.class, PetrifyTechnologyMappingSynthesisCommand.class);
+        pm.registerClass(Command.class, PetrifyHideDummyConversionCommand.class);
+        pm.registerClass(Command.class, PetrifyNetConversionCommand.class);
+        pm.registerClass(Command.class, PetrifyHideConversionCommand.class);
 
         pm.registerClass(Command.class, new Initialiser<Command>() {
             @Override

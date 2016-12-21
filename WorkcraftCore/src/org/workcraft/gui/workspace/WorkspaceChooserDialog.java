@@ -1,7 +1,5 @@
 package org.workcraft.gui.workspace;
 
-import info.clearthought.layout.TableLayout;
-
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.Window;
@@ -13,10 +11,13 @@ import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JPanel;
+
 import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
+
+import info.clearthought.layout.TableLayout;
 
 @SuppressWarnings("serial")
 public class WorkspaceChooserDialog extends JDialog {

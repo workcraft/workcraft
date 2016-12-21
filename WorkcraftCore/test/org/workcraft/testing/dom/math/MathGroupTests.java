@@ -21,6 +21,9 @@
 
 package org.workcraft.testing.dom.math;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import org.junit.Test;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
@@ -28,8 +31,6 @@ import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.NodesAddedEvent;
 import org.workcraft.observation.NodesDeletedEvent;
-
-import static org.junit.Assert.*;
 
 public class MathGroupTests {
     class MockNode extends MathNode {

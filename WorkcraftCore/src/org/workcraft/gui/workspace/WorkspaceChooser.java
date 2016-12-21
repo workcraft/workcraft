@@ -2,8 +2,6 @@ package org.workcraft.gui.workspace;
 
 import java.util.Set;
 
-import info.clearthought.layout.TableLayout;
-
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -18,6 +16,8 @@ import org.workcraft.gui.trees.TreeWindow.CheckBoxMode;
 import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.Workspace;
+
+import info.clearthought.layout.TableLayout;
 
 @SuppressWarnings("serial")
 public class WorkspaceChooser extends JPanel {

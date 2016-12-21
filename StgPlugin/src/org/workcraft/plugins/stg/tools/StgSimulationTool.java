@@ -54,14 +54,13 @@ import org.workcraft.plugins.shared.CommonSignalSettings;
 import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Type;
-import org.workcraft.plugins.stg.converters.StgToDtdConverter;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.plugins.stg.converters.StgToDtdConverter;
 import org.workcraft.util.ColorGenerator;
 import org.workcraft.util.Pair;
 import org.workcraft.workspace.ModelEntry;
-import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class StgSimulationTool extends PetriSimulationTool {
@@ -487,8 +486,7 @@ public class StgSimulationTool extends PetriSimulationTool {
             final Path<String> directory = we.getWorkspacePath().getParent();
             final String desiredName = we.getWorkspacePath().getNode();
             final ModelEntry me = new ModelEntry(new DtdDescriptor(), dtd);
-            final Workspace workspace = framework.getWorkspace();
-            workspace.addWork(directory, desiredName, me, true, true);
+            framework.createWork(me, directory, desiredName);
         }
     }
 

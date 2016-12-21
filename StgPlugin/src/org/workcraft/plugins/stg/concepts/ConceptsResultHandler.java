@@ -28,7 +28,6 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.Import;
 import org.workcraft.workspace.ModelEntry;
-import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class ConceptsResultHandler extends DummyProgressMonitor<ExternalProcessResult> {
@@ -54,7 +53,6 @@ public class ConceptsResultHandler extends DummyProgressMonitor<ExternalProcessR
                             ModelEntry me = Import.importFromByteArray(new DotGImporter(), result.getReturnValue().getOutput());
                             String title = "Concepts - ";
                             me.getModel().setTitle(title + name);
-                            final Workspace workspace = framework.getWorkspace();
                             if (sender instanceof TranslateConceptConversionCommand && !((TranslateConceptConversionCommand) sender).getDotLayout()) {
                                 StgDescriptor stgModel = new StgDescriptor();
                                 MathModel mathModel = me.getMathModel();
@@ -68,10 +66,10 @@ public class ConceptsResultHandler extends DummyProgressMonitor<ExternalProcessR
                                     e.printStackTrace();
                                 }
                                 final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
-                                weResult = workspace.addWork(Path.<String>empty(), title + name, me, false, true);
+                                weResult = framework.createWork(me, Path.<String>empty(), title + name);
                                 ConceptsLayout.layout((VisualStg) me.getVisualModel());
                             } else {
-                                weResult = workspace.addWork(Path.<String>empty(), title + name, me, false, true);
+                                weResult = framework.createWork(me, Path.<String>empty(), title + name);
                                 VisualStg newVisualStg = (VisualStg) me.getVisualModel();
                                 newVisualStg.selectAll();
                                 editor.zoomFit();

@@ -13,7 +13,7 @@ import org.workcraft.plugins.circuit.tasks.CustomCheckCircuitTask;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
 import org.workcraft.plugins.mpsat.MpsatSettingsSerialiser;
-import org.workcraft.plugins.mpsat.commands.AssertionVerificationCommand;
+import org.workcraft.plugins.mpsat.commands.MpsatAssertionVerificationCommand;
 import org.workcraft.plugins.mpsat.gui.MpsatAssertionDialog;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
@@ -63,7 +63,7 @@ public class CircuitAssertionVerificationCommand extends AbstractVerificationCom
                         + "The circuit will be verified without environment STG.",
                         TITLE, JOptionPane.WARNING_MESSAGE);
             }
-            File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, AssertionVerificationCommand.MPSAT_ASSERTION_PRESETS_FILE);
+            File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, MpsatAssertionVerificationCommand.MPSAT_ASSERTION_PRESETS_FILE);
             MpsatPresetManager pmgr = new MpsatPresetManager(presetFile, new MpsatSettingsSerialiser(), true);
             MpsatAssertionDialog dialog = new MpsatAssertionDialog(mainWindow, pmgr);
             dialog.pack();

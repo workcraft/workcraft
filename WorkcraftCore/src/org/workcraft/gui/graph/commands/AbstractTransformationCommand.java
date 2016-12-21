@@ -10,7 +10,7 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public abstract class AbstractTransformationCommand implements ExecutableCommand, MenuOrdering {
+public abstract class AbstractTransformationCommand implements ScriptableCommand, MenuOrdering {
 
     @Override
     public final String getSection() {

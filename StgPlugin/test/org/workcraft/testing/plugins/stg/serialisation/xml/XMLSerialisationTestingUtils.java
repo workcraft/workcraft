@@ -56,6 +56,7 @@ import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcDeserialiser;
 import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcSerialiser;
 
 public class XMLSerialisationTestingUtils {
+
     static class MockPluginManager implements PluginProvider {
         @SuppressWarnings("unchecked")
         @Override

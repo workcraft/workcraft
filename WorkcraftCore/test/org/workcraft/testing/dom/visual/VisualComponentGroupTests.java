@@ -27,8 +27,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathNode;
@@ -42,6 +40,8 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnectionProperties;
 import org.workcraft.observation.TransformEvent;
 import org.workcraft.observation.TransformObserver;
+
+import junit.framework.Assert;
 
 public class VisualComponentGroupTests {
     class MockTransformObservingNode implements Node, TransformObserver {

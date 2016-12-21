@@ -13,7 +13,7 @@ import org.workcraft.plugins.circuit.tasks.CustomCheckCircuitTask;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
 import org.workcraft.plugins.mpsat.MpsatSettingsSerialiser;
-import org.workcraft.plugins.mpsat.commands.PropertyVerificationCommand;
+import org.workcraft.plugins.mpsat.commands.MpsatPropertyVerificationCommand;
 import org.workcraft.plugins.mpsat.gui.MpsatPropertyDialog;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
@@ -63,7 +63,7 @@ public class CircuitPropertyVerificationCommand extends AbstractVerificationComm
                         + "The circuit will be verified without environment STG.",
                         TITLE, JOptionPane.WARNING_MESSAGE);
             }
-            File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, PropertyVerificationCommand.MPSAT_PROPERTY_PRESETS_FILE);
+            File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, MpsatPropertyVerificationCommand.MPSAT_PROPERTY_PRESETS_FILE);
             MpsatPresetManager pmgr = new MpsatPresetManager(presetFile, new MpsatSettingsSerialiser(), true);
             MpsatPropertyDialog dialog = new MpsatPropertyDialog(mainWindow, pmgr);
             dialog.pack();

@@ -4,14 +4,14 @@ import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.Node;
-import org.workcraft.gui.graph.commands.ExecutableCommand;
+import org.workcraft.gui.graph.commands.ScriptableCommand;
 import org.workcraft.plugins.dfs.Dfs;
 import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.plugins.dfs.VisualRegister;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class WaggingGeneratorCommand implements ExecutableCommand {
+public class WaggingGeneratorCommand implements ScriptableCommand {
 
     @Override
     public String getDisplayName() {

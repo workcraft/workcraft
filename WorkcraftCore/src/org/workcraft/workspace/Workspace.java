@@ -40,7 +40,6 @@ import org.w3c.dom.Element;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.OperationCancelledException;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.LinkedTwoWayMap;
@@ -132,24 +131,6 @@ public class Workspace {
         return null;
     }
 
-    public WorkspaceEntry addWork(Path<String> directory, String desiredName, ModelEntry modelEntry, boolean temporary, boolean open) {
-        final Path<String> path = getNewWorkName(directory, desiredName);
-        WorkspaceEntry we = new WorkspaceEntry(this);
-        we.setTemporary(temporary);
-        we.setChanged(true);
-        we.setModelEntry(modelEntry);
-        openFiles.put(path, we);
-        fireEntryAdded(we);
-        if (open) {
-            final Framework framework = Framework.getInstance();
-            if (framework.isInGuiMode()) {
-                final MainWindow mainWindow = framework.getMainWindow();
-                mainWindow.createEditorWindow(we);
-            }
-        }
-        return we;
-    }
-
     public void addMount(Path<String> path, File file, boolean temporary) {
         final Path<String> wsPath = getPath(file);
         if (wsPath != null) {
@@ -173,7 +154,7 @@ public class Workspace {
         }
     }
 
-    public Path<String> getNewWorkName(Path<String> dir, String desiredName) {
+    public Path<String> createWorkPath(Path<String> dir, String desiredName) {
         if ((desiredName == null) || desiredName.isEmpty()) {
             desiredName = "Untitled";
         }
@@ -188,19 +169,19 @@ public class Workspace {
             name = desiredName.substring(0, dotIndex);
             ext = desiredName.substring(dotIndex + 1);
         }
-        Path<String> desiredPath = Path.append(dir, desiredName);
-        while (!isFreePath(desiredPath)) {
-            desiredPath = Path.append(dir, name + " " + i++ + (ext == null ? "" : "." + ext));
+        Path<String> path = Path.append(dir, desiredName);
+        while (!isFreePath(path)) {
+            path = Path.append(dir, name + " " + i++ + (ext == null ? "" : "." + ext));
         }
-        return desiredPath;
+        return path;
     }
 
     private boolean isFreePath(Path<String> path) {
         return !mounts.containsKey(path) && !openFiles.containsKey(path) && !getFile(path).exists();
     }
 
-    public void addWork(Path<String> workspacePath, WorkspaceEntry we) {
-        openFiles.put(workspacePath, we);
+    public void addWork(Path<String> path, WorkspaceEntry we) {
+        openFiles.put(path, we);
         fireEntryAdded(we);
     }
 
@@ -384,7 +365,7 @@ public class Workspace {
     }
 
     public Path<String> tempMountExternalFile(File file) {
-        final Path<String> path = getNewWorkName(Path.root(EXTERNAL_PATH), file.getName());
+        final Path<String> path = createWorkPath(Path.root(EXTERNAL_PATH), file.getName());
         addMount(path, file, true);
         return path;
     }
@@ -412,7 +393,7 @@ public class Workspace {
         final WorkspaceEntry openFileFrom = openFiles.getValue(from);
         final WorkspaceEntry openFileTo = openFiles.getValue(to);
         if (openFileTo != null) {
-            final Path<String> newName = getNewWorkName(to.getParent(), to.getNode());
+            final Path<String> newName = createWorkPath(to.getParent(), to.getNode());
             final File toDelete = openFileTo.getFile();
             if (toDelete.exists() && !toDelete.delete()) {
                 throw new IOException("Unable to delete '" + toDelete.getAbsolutePath() + "'");
