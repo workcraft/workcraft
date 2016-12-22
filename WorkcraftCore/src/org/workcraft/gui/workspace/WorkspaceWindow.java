@@ -57,8 +57,9 @@ public class WorkspaceWindow extends JPanel {
             @Override
             public void run() {
                 final Framework framework = Framework.getInstance();
-                framework.getMainWindow().getWorkspaceView()
-                        .addToWorkspace(Path.root(""));
+                final MainWindow mainWindow = framework.getMainWindow();
+                final WorkspaceWindow workspaceView = mainWindow.getWorkspaceView();
+                workspaceView.addToWorkspace(Path.root(""));
             }
 
             public String getText() {
@@ -70,7 +71,9 @@ public class WorkspaceWindow extends JPanel {
             @Override
             public void run() {
                 final Framework framework = Framework.getInstance();
-                framework.getMainWindow().getWorkspaceView().openWorkspace();
+                final MainWindow mainWindow = framework.getMainWindow();
+                final WorkspaceWindow workspaceView = mainWindow.getWorkspaceView();
+                workspaceView.openWorkspace();
             }
 
             public String getText() {
@@ -83,7 +86,9 @@ public class WorkspaceWindow extends JPanel {
             public void run() {
                 try {
                     final Framework framework = Framework.getInstance();
-                    framework.getMainWindow().getWorkspaceView().saveWorkspace();
+                    final MainWindow mainWindow = framework.getMainWindow();
+                    final WorkspaceWindow workspaceView = mainWindow.getWorkspaceView();
+                    workspaceView.saveWorkspace();
                 } catch (OperationCancelledException e) {
                 }
             }
@@ -97,7 +102,9 @@ public class WorkspaceWindow extends JPanel {
             public void run() {
                 try {
                     final Framework framework = Framework.getInstance();
-                    framework.getMainWindow().getWorkspaceView().saveWorkspaceAs();
+                    final MainWindow mainWindow = framework.getMainWindow();
+                    final WorkspaceWindow workspaceView = mainWindow.getWorkspaceView();
+                    workspaceView.saveWorkspaceAs();
                 } catch (OperationCancelledException e) {
                 }
             }
@@ -110,7 +117,9 @@ public class WorkspaceWindow extends JPanel {
             @Override
             public void run() {
                 final Framework framework = Framework.getInstance();
-                framework.getMainWindow().getWorkspaceView().newWorkspace();
+                final MainWindow mainWindow = framework.getMainWindow();
+                final WorkspaceWindow workspaceView = mainWindow.getWorkspaceView();
+                workspaceView.newWorkspace();
             }
 
             public String getText() {
@@ -173,12 +182,13 @@ public class WorkspaceWindow extends JPanel {
 
     public void workspaceSaved() {
         final Framework framework = Framework.getInstance();
-        String title = framework.getWorkspace().getWorkspaceFile().getAbsolutePath();
+        final Workspace workspace = framework.getWorkspace();
+        String title = workspace.getWorkspaceFile().getAbsolutePath();
         if (title.isEmpty()) {
             title = "new workspace";
         }
         title = "(" + title + ")";
-        if (framework.getWorkspace().isChanged()) {
+        if (workspace.isChanged()) {
             title = "*" + title;
         }
         repaint();
@@ -188,7 +198,8 @@ public class WorkspaceWindow extends JPanel {
         JMenu menu = new JMenu("Workspace");
 
         final Framework framework = Framework.getInstance();
-        final ScriptedActionListener listener = framework.getMainWindow().getDefaultActionListener();
+        final MainWindow mainWindow = framework.getMainWindow();
+        final ScriptedActionListener listener = mainWindow.getDefaultActionListener();
 
         ActionMenuItem miNewModel = new ActionMenuItem(
                 MainWindowActions.CREATE_WORK_ACTION);

@@ -4,17 +4,17 @@ import org.workcraft.CompatibilityManager;
 import org.workcraft.Framework;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
-import org.workcraft.Tool;
 import org.workcraft.dom.ModelDescriptor;
+import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.propertyeditor.Settings;
-import org.workcraft.plugins.xmas.tools.JsonExport;
-import org.workcraft.plugins.xmas.tools.PNetGen;
-import org.workcraft.plugins.xmas.tools.StgGeneratorTool;
-import org.workcraft.plugins.xmas.tools.SyncTool;
-import org.workcraft.plugins.xmas.tools.VerAnalysis;
-import org.workcraft.plugins.xmas.tools.VerConfTool;
-import org.workcraft.plugins.xmas.tools.VerQuery;
-import org.workcraft.plugins.xmas.tools.VerTool;
+import org.workcraft.plugins.xmas.commands.JsonExportCommand;
+import org.workcraft.plugins.xmas.commands.XmasConfigureCommand;
+import org.workcraft.plugins.xmas.commands.XmasPNetGenCommand;
+import org.workcraft.plugins.xmas.commands.XmasSyncCommand;
+import org.workcraft.plugins.xmas.commands.XmasToStgConversionCommand;
+import org.workcraft.plugins.xmas.tools.XmasAnalysisTool;
+import org.workcraft.plugins.xmas.tools.XmasQueryTool;
+import org.workcraft.plugins.xmas.tools.XmasVerificationTool;
 
 public class XmasModule implements Module {
 
@@ -36,14 +36,14 @@ public class XmasModule implements Module {
         pm.registerClass(ModelDescriptor.class, XmasDescriptor.class);
         pm.registerClass(Settings.class, XmasSettings.class);
 
-        pm.registerClass(Tool.class, JsonExport.class);
-        pm.registerClass(Tool.class, PNetGen.class);
-        pm.registerClass(Tool.class, SyncTool.class);
-        pm.registerClass(Tool.class, VerConfTool.class);
-        pm.registerClass(Tool.class, StgGeneratorTool.class);
-        pm.registerClass(Tool.class, VerTool.class);
-        pm.registerClass(Tool.class, VerAnalysis.class);
-        pm.registerClass(Tool.class, VerQuery.class);
+        pm.registerClass(Command.class, JsonExportCommand.class);
+        pm.registerClass(Command.class, XmasPNetGenCommand.class);
+        pm.registerClass(Command.class, XmasSyncCommand.class);
+        pm.registerClass(Command.class, XmasConfigureCommand.class);
+        pm.registerClass(Command.class, XmasToStgConversionCommand.class);
+        pm.registerClass(Command.class, XmasVerificationTool.class);
+        pm.registerClass(Command.class, XmasAnalysisTool.class);
+        pm.registerClass(Command.class, XmasQueryTool.class);
     }
 
     private void initCompatibilityManager() {

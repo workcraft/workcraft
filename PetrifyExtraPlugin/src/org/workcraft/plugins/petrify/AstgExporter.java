@@ -40,6 +40,7 @@ import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
@@ -64,9 +65,10 @@ public class AstgExporter implements Exporter {
         File stgFile = new File(directory, STG_FILE_NAME);
 
         final Framework framework = Framework.getInstance();
-        PluginManager pluginManager = framework.getPluginManager();
-        ExportTask exportTask = Export.createExportTask(model, stgFile, Format.STG, pluginManager);
-        final Result<? extends Object> result = framework.getTaskManager().execute(exportTask, "Exporting to .g");
+        final PluginManager pluginManager = framework.getPluginManager();
+        final ExportTask exportTask = Export.createExportTask(model, stgFile, Format.STG, pluginManager);
+        final TaskManager taskManager = framework.getTaskManager();
+        final Result<? extends Object> result = taskManager.execute(exportTask, "Exporting to .g");
 
         if (result.getOutcome() != Outcome.FINISHED) {
             if (result.getOutcome() == Outcome.CANCELLED) {
@@ -84,7 +86,7 @@ public class AstgExporter implements Exporter {
 
         DrawAstgTask task = new DrawAstgTask(new ArrayList<String>(), stgFile, resultFile, directory);
 
-        final Result<? extends ExternalProcessResult> drawAstgResult = framework.getTaskManager().execute(task, "Executing Petrify");
+        final Result<? extends ExternalProcessResult> drawAstgResult = taskManager.execute(task, "Executing Petrify");
 
         if (drawAstgResult.getOutcome() != Outcome.FINISHED) {
             if (drawAstgResult.getOutcome() == Outcome.CANCELLED) {

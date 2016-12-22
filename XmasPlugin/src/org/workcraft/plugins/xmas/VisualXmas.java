@@ -60,7 +60,7 @@ public class VisualXmas extends AbstractVisualModel {
     private final Xmas circuit;
 
     @Override
-    public void validateConnection(Node first, Node second)    throws InvalidConnectionException {
+    public void validateConnection(Node first, Node second) throws InvalidConnectionException {
         if (!(first instanceof VisualXmasContact) || !(second instanceof VisualXmasContact)) {
             throw new InvalidConnectionException("Connection is only allowed between ports");
         } else {

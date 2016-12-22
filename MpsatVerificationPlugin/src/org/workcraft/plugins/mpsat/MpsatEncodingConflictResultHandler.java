@@ -12,7 +12,7 @@ import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.ToolboxPanel;
 import org.workcraft.gui.graph.GraphEditorPanel;
-import org.workcraft.plugins.mpsat.gui.Solution;
+import org.workcraft.plugins.mpsat.gui.MpsatSolution;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.tools.Core;
 import org.workcraft.plugins.stg.tools.EncodingConflictAnalyserTool;
@@ -38,8 +38,8 @@ final class MpsatEncodingConflictResultHandler implements Runnable {
     @Override
     public void run() {
         MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue());
-        List<Solution> solutions = mdp.getSolutions();
-        if (!Solution.hasTraces(solutions)) {
+        List<MpsatSolution> solutions = mdp.getSolutions();
+        if (!MpsatSolution.hasTraces(solutions)) {
             MainWindow mainWindow = Framework.getInstance().getMainWindow();
             JOptionPane.showMessageDialog(mainWindow, "No encoding conflicts.",
                     "Verification results", JOptionPane.INFORMATION_MESSAGE);
@@ -65,9 +65,9 @@ final class MpsatEncodingConflictResultHandler implements Runnable {
         }
     }
 
-    private LinkedHashSet<Core> convertSolutionsToCores(List<Solution> solutions) {
+    private LinkedHashSet<Core> convertSolutionsToCores(List<MpsatSolution> solutions) {
         LinkedHashSet<Core> cores = new LinkedHashSet<>();
-        for (Solution solution: solutions) {
+        for (MpsatSolution solution: solutions) {
             Core core = new Core(solution.getMainTrace(), solution.getBranchTrace(), solution.getComment());
             boolean isDuplicateCore = cores.contains(core);
             if (!isDuplicateCore) {

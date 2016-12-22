@@ -21,11 +21,14 @@
 
 package org.workcraft.testing.dom.visual;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
-import static org.junit.Assert.*;
 import org.junit.Test;
 import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.TouchableTransformer;

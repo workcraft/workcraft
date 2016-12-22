@@ -22,8 +22,8 @@ import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
-import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public class DrawSgTask implements Task<DrawSgResult> {
 
@@ -68,8 +68,7 @@ public class DrawSgTask implements Task<DrawSgResult> {
     @Override
     public Result<? extends DrawSgResult> run(ProgressMonitor<? super DrawSgResult> monitor) {
         final Framework framework = Framework.getInstance();
-        String prefix = FileUtils.getTempPrefix(we.getTitle());
-        File directory = FileUtils.createTempDirectory(prefix);
+        File directory = FileUtils.createTempDirectory();
         try {
             File stgFile = new File(directory, STG_FILE_NAME);
             stgFile.deleteOnExit();

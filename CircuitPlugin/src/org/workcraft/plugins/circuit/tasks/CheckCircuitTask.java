@@ -29,6 +29,7 @@ import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -67,8 +68,8 @@ public class CheckCircuitTask extends MpsatChainTask {
             File envFile = visualCircuit.getEnvironmentFile();
 
             // Load device STG
-            CircuitToStgConverter generator = new CircuitToStgConverter(visualCircuit);
-            Stg devStg = (Stg) generator.getStg().getMathModel();
+            CircuitToStgConverter converter = new CircuitToStgConverter(visualCircuit);
+            Stg devStg = (Stg) converter.getStg().getMathModel();
 
             // Load environment STG
             Stg envStg = StgUtils.loadStg(envFile);
@@ -168,11 +169,12 @@ public class CheckCircuitTask extends MpsatChainTask {
             File unfoldingFile = null;
             PunfTask punfTask = null;
             Result<? extends ExternalProcessResult> punfResult = null;
+            final TaskManager taskManager = framework.getTaskManager();
             if (checkDeadlock || checkPersistency) {
                 unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + PunfUtilitySettings.getUnfoldingExtension(true));
                 punfTask = new PunfTask(sysStgFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
                 SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<>(monitor);
-                punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", punfMonitor);
+                punfResult = taskManager.execute(punfTask, "Unfolding .g", punfMonitor);
 
                 if (punfResult.getOutcome() != Outcome.FINISHED) {
                     if (punfResult.getOutcome() == Outcome.CANCELLED) {
@@ -192,7 +194,7 @@ public class CheckCircuitTask extends MpsatChainTask {
                     unfoldingModFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + fileSuffix + PunfUtilitySettings.getUnfoldingExtension(true));
                     punfModTask = new PunfTask(sysModStgFile.getAbsolutePath(), unfoldingModFile.getAbsolutePath());
                     SubtaskMonitor<Object> punfModMonitor = new SubtaskMonitor<>(monitor);
-                    punfModResult = framework.getTaskManager().execute(punfModTask, "Unfolding .g", punfModMonitor);
+                    punfModResult = taskManager.execute(punfModTask, "Unfolding .g", punfModMonitor);
 
                     if (punfModResult.getOutcome() != Outcome.FINISHED) {
                         if (punfModResult.getOutcome() == Outcome.CANCELLED) {
@@ -210,7 +212,7 @@ public class CheckCircuitTask extends MpsatChainTask {
                 MpsatTask mpsatDeadlockTask = new MpsatTask(deadlockSettings.getMpsatArguments(directory),
                         unfoldingFile, directory);
                 SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
-                Result<? extends ExternalProcessResult> mpsatDeadlockResult = framework.getTaskManager().execute(
+                Result<? extends ExternalProcessResult> mpsatDeadlockResult = taskManager.execute(
                         mpsatDeadlockTask, "Running deadlock check [MPSat]", mpsatMonitor);
 
                 if (mpsatDeadlockResult.getOutcome() != Outcome.FINISHED) {
@@ -236,7 +238,7 @@ public class CheckCircuitTask extends MpsatChainTask {
                 MpsatTask mpsatPersistencyTask = new MpsatTask(persistencySettings.getMpsatArguments(directory),
                         unfoldingFile, directory, true, sysStgFile);
                 SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
-                Result<? extends ExternalProcessResult>  mpsatPersistencyResult = framework.getTaskManager().execute(
+                Result<? extends ExternalProcessResult>  mpsatPersistencyResult = taskManager.execute(
                         mpsatPersistencyTask, "Running output persistency check [MPSat]", mpsatMonitor);
 
                 if (mpsatPersistencyResult.getOutcome() != Outcome.FINISHED) {
@@ -266,7 +268,7 @@ public class CheckCircuitTask extends MpsatChainTask {
                 MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
                         unfoldingModFile, directory, true, sysModStgFile, placesModFile);
                 SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
-                Result<? extends ExternalProcessResult>  mpsatConformationResult = framework.getTaskManager().execute(
+                Result<? extends ExternalProcessResult>  mpsatConformationResult = taskManager.execute(
                         mpsatConformationTask, "Running conformation check [MPSat]", mpsatMonitor);
 
                 if (mpsatConformationResult.getOutcome() != Outcome.FINISHED) {

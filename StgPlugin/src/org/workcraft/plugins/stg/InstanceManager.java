@@ -16,9 +16,9 @@ public class InstanceManager {
     private final GeneralTwoWayMap<Node, Pair<String, Integer>> instances = new TwoWayMap<>();
     private final Map<String, IDGenerator> generators = new HashMap<>();
 
-    private IDGenerator getGenerator(String label)    {
+    private IDGenerator getGenerator(String label) {
         IDGenerator result = generators.get(label);
-        if (result == null)     {
+        if (result == null) {
             result = new IDGenerator();
             generators.put(label, result);
         }

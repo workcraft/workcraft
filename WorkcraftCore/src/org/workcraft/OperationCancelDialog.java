@@ -3,6 +3,8 @@ package org.workcraft;
 import java.awt.BorderLayout;
 import java.awt.Container;
 import java.awt.Window;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 import javax.swing.JDialog;
 import javax.swing.SwingUtilities;
@@ -12,11 +14,11 @@ import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.util.GUI;
 
-final class OperationCancelDialog<T> extends JDialog implements
-        ProgressMonitor<T> {
+final class OperationCancelDialog<T> extends JDialog implements ProgressMonitor<T> {
 
     private static final long serialVersionUID = 4633136071864781499L;
-    TaskControl taskControl;
+    private final TaskControl taskControl;
+    private Result<? extends T> result;
 
     OperationCancelDialog(Window parent, String description) {
         setModal(true);
@@ -24,19 +26,16 @@ final class OperationCancelDialog<T> extends JDialog implements
         Container content = this.getContentPane();
         content.setLayout(new BorderLayout(2, 2));
         content.add(taskControl, BorderLayout.CENTER);
-
         pack();
-
         GUI.centerToParent(this, parent);
-
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-        addWindowListener(new java.awt.event.WindowAdapter() {
-            public void windowClosing(java.awt.event.WindowEvent evt) {
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent evt) {
                 taskControl.cancel();
             }
         });
-
         doLayout();
     }
 
@@ -69,5 +68,8 @@ final class OperationCancelDialog<T> extends JDialog implements
         });
     }
 
-    public Result<? extends T> result;
+    public Result<? extends T> getResult() {
+        return result;
+    }
+
 }

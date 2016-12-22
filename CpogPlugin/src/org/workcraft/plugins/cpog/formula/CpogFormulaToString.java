@@ -138,10 +138,12 @@ public class CpogFormulaToString implements CpogVisitor<String> {
     }
 
     public static class ParenthesesPrinter extends DelegatingPrinter {
-        @Override public Void visit(Overlay node) {
+        @Override
+        public Void visit(Overlay node) {
             return enclose(node);
         }
-        @Override public Void visit(Sequence node) {
+        @Override
+        public Void visit(Sequence node) {
             return enclose(node);
         }
         Void enclose(CpogFormula node) {

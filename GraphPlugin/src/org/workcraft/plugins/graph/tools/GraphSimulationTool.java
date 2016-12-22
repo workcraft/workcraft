@@ -16,6 +16,7 @@ import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.graph.VisualGraph;
 import org.workcraft.plugins.graph.VisualVertex;
+import org.workcraft.plugins.graph.converters.GraphToPetriConverter;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPetriNet;
@@ -27,7 +28,7 @@ import org.workcraft.util.Func;
 
 public class GraphSimulationTool extends PetriSimulationTool {
 
-    private GraphToPetriConverter generator;
+    private GraphToPetriConverter converter;
 
     @Override
     public void activated(final GraphEditor editor) {
@@ -39,7 +40,7 @@ public class GraphSimulationTool extends PetriSimulationTool {
     public String getTraceLabelByReference(String ref) {
         String label = null;
         if (ref != null) {
-            label = generator.getSymbol(ref);
+            label = converter.getSymbol(ref);
             if (label == "") {
                 label = Character.toString(VisualVertex.EPSILON_SYMBOL);
             }
@@ -54,8 +55,8 @@ public class GraphSimulationTool extends PetriSimulationTool {
     public void generateUnderlyingModel(VisualModel model) {
         final VisualGraph graph = (VisualGraph) model;
         final VisualPetriNet petri = new VisualPetriNet(new PetriNet());
-        generator = new GraphToPetriConverter(graph, petri);
-        setUnderlyingModel(generator.getDstModel());
+        converter = new GraphToPetriConverter(graph, petri);
+        setUnderlyingModel(converter.getDstModel());
     }
 
     @Override
@@ -90,7 +91,7 @@ public class GraphSimulationTool extends PetriSimulationTool {
         return new Decorator() {
             @Override
             public Decoration getDecoration(Node node) {
-                if (generator == null) return null;
+                if (converter == null) return null;
                 if (node instanceof VisualVertex) {
                     return getVertexDecoration((VisualVertex) node);
                 } else if (node instanceof VisualConnection) {
@@ -107,7 +108,7 @@ public class GraphSimulationTool extends PetriSimulationTool {
     private Decoration getVertexDecoration(VisualVertex vertex) {
         Node transition = getTraceCurrentNode();
         final boolean isExcited = isVertexExcited(vertex);
-        final boolean isSuggested = isExcited && generator.isRelated(vertex, transition);
+        final boolean isSuggested = isExcited && converter.isRelated(vertex, transition);
         return new Decoration() {
             @Override
             public Color getColorisation() {
@@ -138,18 +139,18 @@ public class GraphSimulationTool extends PetriSimulationTool {
 
     @Override
     public boolean isConnectionExcited(VisualConnection connection) {
-        VisualPlace place = generator.getRelatedPlace(connection);
+        VisualPlace place = converter.getRelatedPlace(connection);
         return (place == null) ? false : place.getReferencedPlace().getTokens() != 0;
     }
 
     private boolean isVertexExcited(VisualVertex vertex) {
-        VisualTransition transition = generator.getRelatedTransition(vertex);
+        VisualTransition transition = converter.getRelatedTransition(vertex);
         return (transition == null) ? false : isEnabledNode(transition.getReferencedTransition());
     }
 
     private Transition getExcitedTransitionOfNode(Node node) {
         if ((node != null) && (node instanceof VisualVertex)) {
-            VisualTransition vTransition = generator.getRelatedTransition((VisualVertex) node);
+            VisualTransition vTransition = converter.getRelatedTransition((VisualVertex) node);
             if (vTransition != null) {
                 Transition transition = vTransition.getReferencedTransition();
                 if (isEnabledNode(transition)) {

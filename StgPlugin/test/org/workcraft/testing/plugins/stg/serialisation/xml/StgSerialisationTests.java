@@ -23,7 +23,7 @@ package org.workcraft.testing.plugins.stg.serialisation.xml;
 
 import org.junit.Test;
 import org.workcraft.PluginProvider;
-import org.workcraft.plugins.layout.RandomLayoutTool;
+import org.workcraft.plugins.layout.RandomLayoutCommand;
 import org.workcraft.plugins.serialisation.XMLModelDeserialiser;
 import org.workcraft.plugins.serialisation.XMLModelSerialiser;
 import org.workcraft.plugins.stg.StgDescriptor;
@@ -42,7 +42,7 @@ public class StgSerialisationTests {
 
         VisualStg stg = XMLSerialisationTestingUtils.createTestSTG3();
 
-        RandomLayoutTool layout = new RandomLayoutTool();
+        RandomLayoutCommand layout = new RandomLayoutCommand();
         WorkspaceEntry we = new WorkspaceEntry(null);
         we.setModelEntry(new ModelEntry(new StgDescriptor(), stg));
         layout.run(we);

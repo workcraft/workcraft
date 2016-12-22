@@ -53,7 +53,7 @@ import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.util.GUI;
 
-public class ConnectionTool extends AbstractTool {
+public class ConnectionTool extends AbstractGraphEditorTool {
 
     public enum ContinuousConnectionMode { FAN, FOLD }
 

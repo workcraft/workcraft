@@ -51,8 +51,8 @@ public class GUI {
 
     public static JPanel createWideLabeledComponent(JComponent component, String labelText) {
         double[][] sizes = {
-                {TableLayout.PREFERRED, TableLayout.FILL},
-                {TableLayout.PREFERRED},
+            {TableLayout.PREFERRED, TableLayout.FILL},
+            {TableLayout.PREFERRED},
         };
 
         JPanel result = new JPanel(new TableLayout(sizes));

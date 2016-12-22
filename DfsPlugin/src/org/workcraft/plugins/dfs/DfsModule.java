@@ -5,23 +5,24 @@ import org.workcraft.Framework;
 import org.workcraft.Initialiser;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
-import org.workcraft.Tool;
 import org.workcraft.dom.ModelDescriptor;
-import org.workcraft.gui.graph.tools.AbstractContractorTool;
+import org.workcraft.gui.graph.commands.AbstractContractTransformationCommand;
+import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Exporter;
+import org.workcraft.plugins.dfs.commands.DfsCombinedVerificationCommand;
+import org.workcraft.plugins.dfs.commands.DfsDeadlockVerificationCommand;
+import org.workcraft.plugins.dfs.commands.DfsPersisitencyVerificationCommand;
+import org.workcraft.plugins.dfs.commands.DfsToStgConversionCommand;
+import org.workcraft.plugins.dfs.commands.MergeComponentTransformationCommand;
+import org.workcraft.plugins.dfs.commands.WaggingGeneratorCommand;
 import org.workcraft.plugins.dfs.interop.VerilogExporter;
-import org.workcraft.plugins.dfs.tools.CheckDataflowDeadlockTool;
-import org.workcraft.plugins.dfs.tools.CheckDataflowPersisitencyTool;
-import org.workcraft.plugins.dfs.tools.CheckDataflowTool;
-import org.workcraft.plugins.dfs.tools.ComponentMergerTool;
-import org.workcraft.plugins.dfs.tools.StgGeneratorTool;
-import org.workcraft.plugins.dfs.tools.WaggingGeneratorTool;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public class DfsModule implements Module {
 
-    private final class WaggingGenerator2WayTool extends WaggingGeneratorTool {
+    private final class WaggingGenerator2WayCommand extends WaggingGeneratorCommand {
         @Override
         public String getDisplayName() {
             return "2-way wagging";
@@ -33,7 +34,7 @@ public class DfsModule implements Module {
         }
     }
 
-    private final class WaggingGenerator3WayTool extends WaggingGeneratorTool {
+    private final class WaggingGenerator3WayCommand extends WaggingGeneratorCommand {
         @Override
         public String getDisplayName() {
             return "3-way wagging";
@@ -45,7 +46,7 @@ public class DfsModule implements Module {
         }
     }
 
-    private final class WaggingGenerator4WayTool extends WaggingGeneratorTool {
+    private final class WaggingGenerator4WayCommand extends WaggingGeneratorCommand {
         @Override
         public String getDisplayName() {
             return "4-way wagging";
@@ -57,10 +58,10 @@ public class DfsModule implements Module {
         }
     }
 
-    private final class DfsContractorTool extends AbstractContractorTool {
+    private final class ContractComponentTransformationCommand extends AbstractContractTransformationCommand {
         @Override
         public boolean isApplicableTo(WorkspaceEntry we) {
-            return we.getModelEntry().getMathModel() instanceof Dfs;
+            return WorkspaceUtils.isApplicable(we, Dfs.class);
         }
     }
 
@@ -79,42 +80,42 @@ public class DfsModule implements Module {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
 
-        pm.registerClass(Tool.class, StgGeneratorTool.class);
+        pm.registerClass(Command.class, DfsToStgConversionCommand.class);
 
-        pm.registerClass(Tool.class, WaggingGeneratorTool.class);
-        pm.registerClass(Tool.class, CheckDataflowDeadlockTool.class);
-        pm.registerClass(Tool.class, CheckDataflowPersisitencyTool.class);
-        pm.registerClass(Tool.class, CheckDataflowTool.class);
-        pm.registerClass(Tool.class, ComponentMergerTool.class);
+        pm.registerClass(Command.class, WaggingGeneratorCommand.class);
+        pm.registerClass(Command.class, DfsDeadlockVerificationCommand.class);
+        pm.registerClass(Command.class, DfsPersisitencyVerificationCommand.class);
+        pm.registerClass(Command.class, DfsCombinedVerificationCommand.class);
+        pm.registerClass(Command.class, MergeComponentTransformationCommand.class);
 
         pm.registerClass(ModelDescriptor.class, DfsDescriptor.class);
         pm.registerClass(Settings.class, DfsSettings.class);
 
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+        pm.registerClass(Command.class, new Initialiser<Command>() {
             @Override
-            public Tool create() {
-                return new WaggingGenerator2WayTool();
+            public Command create() {
+                return new WaggingGenerator2WayCommand();
             }
         });
 
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+        pm.registerClass(Command.class, new Initialiser<Command>() {
             @Override
-            public Tool create() {
-                return new WaggingGenerator3WayTool();
+            public Command create() {
+                return new WaggingGenerator3WayCommand();
             }
         });
 
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+        pm.registerClass(Command.class, new Initialiser<Command>() {
             @Override
-            public Tool create() {
-                return new WaggingGenerator4WayTool();
+            public Command create() {
+                return new WaggingGenerator4WayCommand();
             }
         });
 
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+        pm.registerClass(Command.class, new Initialiser<Command>() {
             @Override
-            public Tool create() {
-                return new DfsContractorTool();
+            public Command create() {
+                return new ContractComponentTransformationCommand();
             }
         });
 

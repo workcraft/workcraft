@@ -19,7 +19,8 @@ public class InstanceManagerTests {
     @Test
     public void testConstructor() {
         new InstanceManager() {
-            @Override public String getLabel(Node node) {
+            @Override
+            public String getLabel(Node node) {
                 throw new RuntimeException("this method should not be called");
             }
         };
@@ -27,7 +28,8 @@ public class InstanceManagerTests {
 
     InstanceManager make(final Map<Node, String> expectedRequests) {
         return new InstanceManager() {
-            @Override public String getLabel(Node node) {
+            @Override
+            public String getLabel(Node node) {
                 final String label = expectedRequests.get(node);
                 if (label == null) {
                     throw new RuntimeException("unexpected request: " + node);

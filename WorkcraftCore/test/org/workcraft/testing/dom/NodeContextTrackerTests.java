@@ -21,6 +21,9 @@
 
 package org.workcraft.testing.dom;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
 import java.util.Set;
 
 import org.junit.Test;
@@ -29,8 +32,6 @@ import org.workcraft.dom.NodeContextTracker;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.dom.math.MathNode;
-
-import static org.junit.Assert.*;
 
 public class NodeContextTrackerTests {
     class MockNode extends MathNode {

@@ -13,22 +13,22 @@ import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.FsmDescriptor;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.fst.VisualFst;
-import org.workcraft.plugins.fst.tools.FstToFsmConverter;
-import org.workcraft.plugins.shared.CommonEditorSettings;
+import org.workcraft.plugins.fst.converters.FstToFsmConverter;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.ModelEntry;
-import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class PetriToFsmConversionResultHandler extends DummyProgressMonitor<WriteSgConversionResult> {
     private final WriteSgConversionTask task;
+    private WorkspaceEntry result;
 
     public PetriToFsmConversionResultHandler(WriteSgConversionTask task) {
         this.task = task;
+        this.result = null;
     }
 
     @Override
@@ -42,12 +42,10 @@ public class PetriToFsmConversionResultHandler extends DummyProgressMonitor<Writ
             final FstToFsmConverter converter = new FstToFsmConverter(fst, fsm);
 
             MathModel model = converter.getDstModel().getMathModel();
-            final Workspace workspace = framework.getWorkspace();
             final Path<String> directory = path.getParent();
             final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
             final ModelEntry me = new ModelEntry(new FsmDescriptor(), model);
-            boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
-            workspace.add(directory, name, me, true, openInEditor);
+            this.result = framework.createWork(me, directory, name);
         } else if (result.getOutcome() != Outcome.CANCELLED) {
             MainWindow mainWindow = framework.getMainWindow();
             if (result.getCause() == null) {
@@ -60,4 +58,9 @@ public class PetriToFsmConversionResultHandler extends DummyProgressMonitor<Writ
             }
         }
     }
+
+    public WorkspaceEntry getResult() {
+        return result;
+    }
+
 }

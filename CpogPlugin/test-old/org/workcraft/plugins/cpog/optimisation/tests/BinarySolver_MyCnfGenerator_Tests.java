@@ -29,12 +29,14 @@ import org.workcraft.plugins.cpog.optimisation.LegacyDefaultCpogSolver;
 import org.workcraft.plugins.cpog.optimisation.Optimiser;
 
 public class BinarySolver_MyCnfGenerator_Tests extends SolverTests {
-    public BinarySolver_MyCnfGenerator_Tests()
-    {
+
+    public BinarySolver_MyCnfGenerator_Tests() {
     }
 
-    protected LegacyCpogSolver createSolver()
-    {
-        return new LegacyDefaultCpogSolver<BooleanFormula>(new Optimiser<BinaryIntBooleanFormula>(new BinaryNumberProvider()), new CleverCnfGenerator());
+    protected LegacyCpogSolver createSolver() {
+        return new LegacyDefaultCpogSolver<BooleanFormula>(
+                new Optimiser<BinaryIntBooleanFormula>(new BinaryNumberProvider()),
+                new CleverCnfGenerator());
     }
+
 }

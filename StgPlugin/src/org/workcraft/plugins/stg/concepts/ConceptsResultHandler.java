@@ -32,88 +32,89 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class ConceptsResultHandler extends DummyProgressMonitor<ExternalProcessResult> {
 
+    private final class ProcessConceptsResult implements Runnable {
+        private final Result<? extends ExternalProcessResult> result;
+
+        private ProcessConceptsResult(Result<? extends ExternalProcessResult> result) {
+            this.result = result;
+        }
+
+        @Override
+        public void run() {
+            try {
+                String output = new String(result.getReturnValue().getOutput());
+                if ((result.getOutcome() == Outcome.FINISHED) && (output.startsWith(".model out"))) {
+                    if (!(sender instanceof ConceptsImporter)) {
+                        final Framework framework = Framework.getInstance();
+                        final MainWindow mainWindow = framework.getMainWindow();
+                        final GraphEditorPanel editor = mainWindow.getEditor(we);
+                        if (output.startsWith(".model out")) {
+                            we.captureMemento();
+                            ModelEntry me = Import.importFromByteArray(new DotGImporter(), result.getReturnValue().getOutput());
+                            String title = "Concepts - ";
+                            me.getModel().setTitle(title + name);
+                            if (sender instanceof TranslateConceptConversionCommand && !((TranslateConceptConversionCommand) sender).getDotLayout()) {
+                                StgDescriptor stgModel = new StgDescriptor();
+                                MathModel mathModel = me.getMathModel();
+                                Path<String> path = we.getWorkspacePath();
+                                VisualModelDescriptor v = stgModel.getVisualModelDescriptor();
+                                try {
+                                    VisualStg visualStg = (VisualStg) v.create(mathModel);
+                                    me = new ModelEntry(me.getDescriptor(), visualStg);
+                                } catch (VisualModelInstantiationException e) {
+                                    System.out.println("Expected");
+                                    e.printStackTrace();
+                                }
+                                final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
+                                weResult = framework.createWork(me, Path.<String>empty(), title + name);
+                                ConceptsLayout.layout((VisualStg) me.getVisualModel());
+                            } else {
+                                weResult = framework.createWork(me, Path.<String>empty(), title + name);
+                                VisualStg newVisualStg = (VisualStg) me.getVisualModel();
+                                newVisualStg.selectAll();
+                                editor.zoomFit();
+                            }
+
+                            if (isCurrentWorkEmpty(editor)) {
+                                closeWork(editor);
+                            }
+                            we.saveMemento();
+                        }
+                    }
+                } else {
+                    throw new ConceptsToolException(result);
+                }
+            } catch (IOException | DeserialisationException e) {
+                e.printStackTrace();
+                we.cancelMemento();
+            } catch (NullPointerException e) {
+                new ConceptsToolException(result).handleConceptsError();
+                we.cancelMemento();
+            } catch (ConceptsToolException e) {
+                e.handleConceptsError();
+                we.cancelMemento();
+            }
+        }
+    }
+
     private final String name;
     private final Object sender;
     private final WorkspaceEntry we;
+    private WorkspaceEntry weResult;
 
-    public ConceptsResultHandler(Object sender, String inputName, WorkspaceEntry we) {
+    public ConceptsResultHandler(Object sender, String name, WorkspaceEntry we) {
         this.sender = sender;
-        name = inputName;
+        this.name = name;
         this.we = we;
     }
 
     public ConceptsResultHandler(Object sender) {
-        this.sender = sender;
-        name = null;
-        we = null;
+        this(sender, null, null);
     }
 
     public void finished(final Result<? extends ExternalProcessResult> result, String description) {
         try {
-            SwingUtilities.invokeAndWait(new Runnable() {
-
-                @Override
-                public void run() {
-
-                    try {
-                        String output = new String(result.getReturnValue().getOutput());
-                        if ((result.getOutcome() == Outcome.FINISHED) && (output.startsWith(".model out"))) {
-                            if (!(sender instanceof ConceptsImporter)) {
-                                final Framework framework = Framework.getInstance();
-                                MainWindow mainWindow = framework.getMainWindow();
-                                GraphEditorPanel editor = mainWindow.getEditor(we);
-
-                                if (output.startsWith(".model out")) {
-                                    we.captureMemento();
-                                    ModelEntry me = Import.importFromByteArray(new DotGImporter(), result.getReturnValue().getOutput());
-                                    String title = "Concepts - ";
-                                    me.getModel().setTitle(title + name);
-                                    if (sender instanceof ConceptsWritingTool && !((ConceptsWritingTool) sender).getDotLayout()) {
-                                        StgDescriptor stgModel = new StgDescriptor();
-                                        MathModel mathModel = me.getMathModel();
-                                        Path<String> path = we.getWorkspacePath();
-                                        VisualModelDescriptor v = stgModel.getVisualModelDescriptor();
-                                        try {
-                                            VisualStg visualStg = (VisualStg) v.create(mathModel);
-                                            me.setModel(visualStg);
-                                        } catch (VisualModelInstantiationException e) {
-                                            System.out.println("Expected");
-                                            e.printStackTrace();
-                                        }
-                                        final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
-                                        framework.getWorkspace().add(Path.<String>empty(), title + name, me, false, true);
-                                        ConceptsLayout.layout((VisualStg) me.getVisualModel());
-                                    } else {
-                                        framework.getWorkspace().add(Path.<String>empty(), title + name, me, false, true);
-                                        VisualStg newVisualStg = (VisualStg) me.getVisualModel();
-                                        newVisualStg.selectAll();
-                                        editor.zoomFit();
-                                    }
-
-                                    if (isCurrentWorkEmpty(editor)) {
-                                        closeWork(editor);
-                                    }
-                                    we.saveMemento();
-                                }
-                            }
-                        } else {
-                            throw new ConceptsToolException(result);
-                        }
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        we.cancelMemento();
-                    } catch (DeserialisationException e) {
-                        e.printStackTrace();
-                        we.cancelMemento();
-                    } catch (NullPointerException e) {
-                        new ConceptsToolException(result).handleConceptsError();
-                        we.cancelMemento();
-                    } catch (ConceptsToolException e) {
-                        e.handleConceptsError();
-                        we.cancelMemento();
-                    }
-                }
-            });
+            SwingUtilities.invokeAndWait(new ProcessConceptsResult(result));
         } catch (InvocationTargetException | InterruptedException e) {
             e.printStackTrace();
             we.cancelMemento();
@@ -141,6 +142,10 @@ public class ConceptsResultHandler extends DummyProgressMonitor<ExternalProcessR
         }
         visualStg.selectNone();
         return false;
+    }
+
+    public WorkspaceEntry getResult() {
+        return weResult;
     }
 
 }

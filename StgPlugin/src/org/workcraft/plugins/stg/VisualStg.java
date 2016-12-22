@@ -103,7 +103,7 @@ public class VisualStg extends AbstractVisualModel {
     }
 
     @Override
-    public void validateConnection(Node first, Node second)    throws InvalidConnectionException {
+    public void validateConnection(Node first, Node second) throws InvalidConnectionException {
         if (first == second) {
             throw new InvalidConnectionException("Self-loops are not allowed.");
         }
@@ -184,7 +184,7 @@ public class VisualStg extends AbstractVisualModel {
     }
 
     @Override
-    public void validateUndirectedConnection(Node first, Node second)    throws InvalidConnectionException {
+    public void validateUndirectedConnection(Node first, Node second) throws InvalidConnectionException {
         if (first == second) {
             throw new InvalidConnectionException("Self-loops are not allowed.");
         }

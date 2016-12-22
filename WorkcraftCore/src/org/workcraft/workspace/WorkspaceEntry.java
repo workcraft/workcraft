@@ -58,7 +58,6 @@ import org.workcraft.util.Hierarchy;
 public class WorkspaceEntry implements ObservableState {
     private ModelEntry modelEntry = null;
     private boolean changed = true;
-    private boolean temporary = true;
     private final Workspace workspace;
     private final MementoManager history = new MementoManager();
     private boolean canSelect = true;
@@ -77,9 +76,14 @@ public class WorkspaceEntry implements ObservableState {
             if (changed == false) {
                 savedMemento = null;
             }
-            workspace.fireEntryChanged(this);
+            if (workspace != null) {
+                workspace.fireEntryChanged(this);
+            }
             final Framework framework = Framework.getInstance();
-            framework.getMainWindow().refreshWorkspaceEntryTitle(this, true);
+            final MainWindow mainWindow = framework.getMainWindow();
+            if (mainWindow != null) {
+                mainWindow.refreshWorkspaceEntryTitle(this, true);
+            }
         }
     }
 
@@ -149,35 +153,12 @@ public class WorkspaceEntry implements ObservableState {
         return fileName.replace('\\', '_').replace('/', '_').replace(':', '_').replace('"', '_').replace('<', '_').replace('>', '_').replace('|', '_');
     }
 
-    @Override
-    public String toString() {
-        String res = getTitle();
-        if (modelEntry != null && modelEntry.isVisual()) {
-            res = res + " [V]";
-        }
-        if (changed) {
-            res = "* " + res;
-        }
-        if (temporary) {
-            res = res + " (not in workspace)";
-        }
-        return res;
-    }
-
-    public boolean isTemporary() {
-        return temporary;
-    }
-
-    public void setTemporary(boolean temporary) {
-        this.temporary = temporary;
-    }
-
     public Path<String> getWorkspacePath() {
-        return workspace.getPath(this);
+        return workspace == null ? null : workspace.getPath(this);
     }
 
     public File getFile() {
-        return workspace.getFile(this);
+        return workspace == null ? null : workspace.getFile(this);
     }
 
     ObservableStateImpl observableState = new ObservableStateImpl();
@@ -208,9 +189,10 @@ public class WorkspaceEntry implements ObservableState {
         MainWindowActions.EDIT_SELECT_ALL_ACTION.setEnabled(canModify && canSelect);
         MainWindowActions.EDIT_SELECT_INVERSE_ACTION.setEnabled(canModify && canSelect);
         MainWindowActions.EDIT_SELECT_NONE_ACTION.setEnabled(canModify && canSelect);
-        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        final Framework instance = Framework.getInstance();
+        final MainWindow mainWindow = instance.getMainWindow();
         if (mainWindow != null) {
-            mainWindow.getMainMenu().updateToolsMenuState(canModify);
+            mainWindow.getMainMenu().updateCommandsMenuState(canModify);
             mainWindow.getPropertyView().setVisible(canModify);
         }
     }
@@ -232,7 +214,7 @@ public class WorkspaceEntry implements ObservableState {
 
     public void captureMemento() {
         final Framework framework = Framework.getInstance();
-        capturedMemento = framework.save(modelEntry);
+        capturedMemento = framework.saveModel(modelEntry);
         if (changed == false) {
             savedMemento = capturedMemento;
         }
@@ -247,7 +229,7 @@ public class WorkspaceEntry implements ObservableState {
     public void cancelMemento() {
         final Framework framework = Framework.getInstance();
         if (capturedMemento != null) {
-            setModelEntry(framework.load(capturedMemento));
+            setModelEntry(framework.loadModel(capturedMemento));
             setChanged(savedMemento != capturedMemento);
         }
         capturedMemento = null;
@@ -258,7 +240,7 @@ public class WorkspaceEntry implements ObservableState {
         capturedMemento = null;
         if (currentMemento == null) {
             final Framework framework = Framework.getInstance();
-            currentMemento = framework.save(modelEntry);
+            currentMemento = framework.saveModel(modelEntry);
         }
         if (changed == false) {
             savedMemento = currentMemento;
@@ -273,12 +255,12 @@ public class WorkspaceEntry implements ObservableState {
             Memento undoMemento = history.pullUndo();
             if (undoMemento != null) {
                 final Framework framework = Framework.getInstance();
-                Memento currentMemento = framework.save(modelEntry);
+                Memento currentMemento = framework.saveModel(modelEntry);
                 if (changed == false) {
                     savedMemento = currentMemento;
                 }
                 history.pushRedo(currentMemento);
-                setModelEntry(framework.load(undoMemento));
+                setModelEntry(framework.loadModel(undoMemento));
                 setChanged(undoMemento != savedMemento);
             }
         }
@@ -290,12 +272,12 @@ public class WorkspaceEntry implements ObservableState {
             Memento redoMemento = history.pullRedo();
             if (redoMemento != null) {
                 final Framework framework = Framework.getInstance();
-                Memento currentMemento = framework.save(modelEntry);
+                Memento currentMemento = framework.saveModel(modelEntry);
                 if (changed == false) {
                     savedMemento = currentMemento;
                 }
                 history.pushUndo(currentMemento);
-                setModelEntry(framework.load(redoMemento));
+                setModelEntry(framework.loadModel(redoMemento));
                 setChanged(redoMemento != savedMemento);
             }
         }
@@ -305,9 +287,9 @@ public class WorkspaceEntry implements ObservableState {
     public void insert(ModelEntry me) {
         final Framework framework = Framework.getInstance();
         try {
-            Memento currentMemento = framework.save(modelEntry);
-            Memento insertMemento = framework.save(me);
-            ModelEntry result = framework.load(currentMemento.getStream(), insertMemento.getStream());
+            Memento currentMemento = framework.saveModel(modelEntry);
+            Memento insertMemento = framework.saveModel(me);
+            ModelEntry result = framework.loadModel(currentMemento.getStream(), insertMemento.getStream());
             saveMemento();
             setModelEntry(result);
             setChanged(true);
@@ -365,7 +347,7 @@ public class WorkspaceEntry implements ObservableState {
                 model.selectInverse();
                 model.deleteSelection();
                 final Framework framework = Framework.getInstance();
-                framework.clipboard = framework.save(modelEntry);
+                framework.clipboard = framework.saveModel(modelEntry);
                 if (CommonDebugSettings.getCopyModelOnChange()) {
                     // copy the memento clipboard into the system-wide clipboard
                     // as a string
@@ -387,8 +369,8 @@ public class WorkspaceEntry implements ObservableState {
         final Framework framework = Framework.getInstance();
         if (framework.clipboard != null) {
             try {
-                Memento memento = framework.save(modelEntry);
-                ModelEntry result = framework.load(memento.getStream(), framework.clipboard.getStream());
+                Memento memento = framework.saveModel(modelEntry);
+                ModelEntry result = framework.loadModel(memento.getStream(), framework.clipboard.getStream());
                 saveMemento();
                 setModelEntry(result);
                 setChanged(true);

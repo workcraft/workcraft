@@ -99,7 +99,7 @@ public class VisualPlace extends VisualComponent {
     }
 
     @Override
-    public void draw(DrawRequest r)    {
+    public void draw(DrawRequest r) {
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
 
@@ -186,7 +186,7 @@ public class VisualPlace extends VisualComponent {
                     g.setColor(Coloriser.colorise(color, d.getColorisation()));
                     g.fill(shape);
                 }
-            } else if (count > 7)    {
+            } else if (count > 7) {
                 String tokenString = Integer.toString(count);
                 Font superFont = g.getFont().deriveFont((float) CommonVisualSettings.getNodeSize() / 2);
                 Rectangle2D rect = superFont.getStringBounds(tokenString, g.getFontRenderContext());

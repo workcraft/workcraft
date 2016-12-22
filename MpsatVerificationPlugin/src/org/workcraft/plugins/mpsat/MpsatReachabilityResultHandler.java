@@ -17,8 +17,8 @@ import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.plugins.mpsat.gui.ReachibilityDialog;
-import org.workcraft.plugins.mpsat.gui.Solution;
+import org.workcraft.plugins.mpsat.gui.MpsatReachibilityDialog;
+import org.workcraft.plugins.mpsat.gui.MpsatSolution;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
@@ -150,7 +150,7 @@ final class MpsatReachabilityResultHandler implements Runnable {
         return result;
     }
 
-    private void improveOutputPersistencySolution(Solution solution) {
+    private void improveOutputPersistencySolution(MpsatSolution solution) {
         StgModel stg = getInputStg();
         if ((solution != null) && (stg != null)) {
             Trace mainTrace = solution.getMainTrace();
@@ -182,7 +182,7 @@ final class MpsatReachabilityResultHandler implements Runnable {
         }
     }
 
-    private void improveConformationSolution(Solution solution) {
+    private void improveConformationSolution(MpsatSolution solution) {
         StgModel stg = getInputStg();
         HashSet<StgPlace> devPlaces = getDevPlaces(stg);
         if ((solution != null) && (stg != null)) {
@@ -222,29 +222,29 @@ final class MpsatReachabilityResultHandler implements Runnable {
     @Override
     public void run() {
         MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue());
-        List<Solution> solutions = mdp.getSolutions();
+        List<MpsatSolution> solutions = mdp.getSolutions();
         boolean isOutputPersistency = settings.getMode() == MpsatMode.STG_REACHABILITY_OUTPUT_PERSISTENCY;
         boolean isConformation = settings.getMode() == MpsatMode.STG_REACHABILITY_CONFORMATION;
         if (isOutputPersistency) {
-            for (Solution solution: solutions) {
+            for (MpsatSolution solution: solutions) {
                 improveOutputPersistencySolution(solution);
             }
         } else if (isConformation) {
-            for (Solution solution: solutions) {
+            for (MpsatSolution solution: solutions) {
                 improveConformationSolution(solution);
             }
         }
         String title = "Verification results";
         String message = getMessage(!solutions.isEmpty());
         MainWindow mainWindow = Framework.getInstance().getMainWindow();
-        if (Solution.hasTraces(solutions)) {
+        if (MpsatSolution.hasTraces(solutions)) {
             String traceInfo = "";
             if (!isOutputPersistency) {
                 String traceChearacteristic = settings.getInversePredicate() ? "problematic" : "sought";
                 traceInfo = "&#160;Trace(s) leading to the " + traceChearacteristic + " state(s):<br><br>";
             }
             String extendedMessage = "<html><br>&#160;" + message + "<br><br>" + traceInfo + "</html>";
-            final ReachibilityDialog solutionsDialog = new ReachibilityDialog(we, title, extendedMessage, solutions);
+            final MpsatReachibilityDialog solutionsDialog = new MpsatReachibilityDialog(we, title, extendedMessage, solutions);
             GUI.centerToParent(solutionsDialog, mainWindow);
             solutionsDialog.setVisible(true);
         } else {

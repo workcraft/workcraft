@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
-import org.workcraft.plugins.stg.generator.NodeStg;
-import org.workcraft.plugins.stg.generator.SignalStg;
+import org.workcraft.plugins.stg.converters.NodeStg;
+import org.workcraft.plugins.stg.converters.SignalStg;
 
 public class SinkStg extends NodeStg {
     public final ContactStg i;

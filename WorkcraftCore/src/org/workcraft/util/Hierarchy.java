@@ -25,11 +25,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import net.sf.jga.fn.UnaryFunctor;
-
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.NodeHelper;
+
+import net.sf.jga.fn.UnaryFunctor;
 
 public class Hierarchy {
     public static <T> Func<Node, Boolean> getTypeFilter(final Class<T> type) {

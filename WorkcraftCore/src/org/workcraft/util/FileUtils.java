@@ -132,6 +132,10 @@ public class FileUtils {
         return tempFile;
     }
 
+    public static File createTempDirectory() {
+        return createTempDirectory(getCorrectTempPrefix(null));
+    }
+
     public static File createTempDirectory(String prefix) {
         File tempDir = null;
         String errorMessage = "Cannot create a temporary directory with prefix '" + prefix + "'.";

@@ -10,8 +10,8 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="2" language="java" name="org.workcraft.gui.graph.tools.AbstractNodeGenerator" project="WorkcraftCore" 
-    file="/WorkcraftCore/src/org/workcraft/gui/graph/tools/AbstractNodeGenerator.java" binary="false" 
+  <class id="2" language="java" name="org.workcraft.gui.graph.generators.AbstractNodeGenerator" project="WorkcraftCore" 
+    file="/WorkcraftCore/src/org/workcraft/gui/graph/generators/AbstractNodeGenerator.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="711" y="125"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
@@ -20,8 +20,8 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <class id="3" language="java" name="org.workcraft.gui.graph.tools.DefaultNodeGenerator" project="WorkcraftCore" 
-    file="/WorkcraftCore/src/org/workcraft/gui/graph/tools/DefaultNodeGenerator.java" binary="false" 
+  <class id="3" language="java" name="org.workcraft.gui.graph.generators.DefaultNodeGenerator" project="WorkcraftCore" 
+    file="/WorkcraftCore/src/org/workcraft/gui/graph/generators/DefaultNodeGenerator.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="789" y="370"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
@@ -39,8 +39,8 @@
       <operations public="true" package="true" protected="true" private="true" static="true"/>    
     </display>  
   </class>  
-  <interface id="5" language="java" name="org.workcraft.gui.graph.tools.NodeGenerator" project="WorkcraftCore" 
-    file="/WorkcraftCore/src/org/workcraft/gui/graph/tools/NodeGenerator.java" binary="false" corner="BOTTOM_RIGHT">    
+  <interface id="5" language="java" name="org.workcraft.gui.graph.generators.NodeGenerator" project="WorkcraftCore" 
+    file="/WorkcraftCore/src/org/workcraft/gui/graph/generators/NodeGenerator.java" binary="false" corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="419" y="121"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 
       visibility="true">      
@@ -109,67 +109,67 @@
     <end type="SOURCE" refId="11"/>    
     <end type="TARGET" refId="6"/>  
   </generalization>  
-  <generalization id="13">    
-    <end type="SOURCE" refId="9"/>    
-    <end type="TARGET" refId="6"/>  
-  </generalization>  
-  <generalization id="14">    
-    <end type="SOURCE" refId="3"/>    
-    <end type="TARGET" refId="2"/>  
-  </generalization>  
-  <dependency id="15">    
-    <end type="SOURCE" refId="7"/>    
-    <end type="TARGET" refId="3"/>  
-  </dependency>  
-  <generalization id="16">    
-    <end type="SOURCE" refId="7"/>    
-    <end type="TARGET" refId="6"/>  
-  </generalization>  
-  <dependency id="17">    
-    <end type="SOURCE" refId="10"/>    
-    <end type="TARGET" refId="11"/>  
-  </dependency>  
-  <dependency id="18">    
-    <end type="SOURCE" refId="7"/>    
-    <end type="TARGET" refId="5"/>  
-  </dependency>  
-  <association id="19">    
-    <end type="SOURCE" refId="6" navigable="false">      
-      <attribute id="20" name="generator"/>      
-      <multiplicity id="21" minimum="0" maximum="1"/>    
-    </end>    
-    <end type="TARGET" refId="5" navigable="true"/>    
-    <display labels="true" multiplicity="true"/>  
-  </association>  
-  <dependency id="22">    
+  <dependency id="13">    
     <end type="SOURCE" refId="8"/>    
     <end type="TARGET" refId="6"/>  
   </dependency>  
-  <dependency id="23">    
-    <end type="SOURCE" refId="3"/>    
-    <end type="TARGET" refId="1"/>  
+  <generalization id="14">    
+    <end type="SOURCE" refId="7"/>    
+    <end type="TARGET" refId="6"/>  
+  </generalization>  
+  <dependency id="15">    
+    <end type="SOURCE" refId="10"/>    
+    <end type="TARGET" refId="11"/>  
   </dependency>  
-  <realization id="24">    
+  <dependency id="16">    
+    <end type="SOURCE" refId="8"/>    
+    <end type="TARGET" refId="3"/>  
+  </dependency>  
+  <dependency id="17">    
+    <end type="SOURCE" refId="7"/>    
+    <end type="TARGET" refId="5"/>  
+  </dependency>  
+  <realization id="18">    
     <end type="SOURCE" refId="2"/>    
     <end type="TARGET" refId="5"/>  
   </realization>  
-  <dependency id="25">    
-    <end type="SOURCE" refId="11"/>    
-    <end type="TARGET" refId="3"/>  
-  </dependency>  
-  <dependency id="26">    
+  <dependency id="19">    
     <bendpoint x="874" y="647"/>    
     <end type="SOURCE" refId="9"/>    
     <end type="TARGET" refId="3"/>  
   </dependency>  
-  <dependency id="27">    
+  <dependency id="20">    
     <end type="SOURCE" refId="10"/>    
     <end type="TARGET" refId="9"/>  
   </dependency>  
-  <dependency id="28">    
-    <end type="SOURCE" refId="8"/>    
+  <dependency id="21">    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="1"/>  
+  </dependency>  
+  <generalization id="22">    
+    <end type="SOURCE" refId="3"/>    
+    <end type="TARGET" refId="2"/>  
+  </generalization>  
+  <dependency id="23">    
+    <end type="SOURCE" refId="11"/>    
     <end type="TARGET" refId="3"/>  
   </dependency>  
+  <dependency id="24">    
+    <end type="SOURCE" refId="7"/>    
+    <end type="TARGET" refId="3"/>  
+  </dependency>  
+  <generalization id="25">    
+    <end type="SOURCE" refId="9"/>    
+    <end type="TARGET" refId="6"/>  
+  </generalization>  
+  <association id="26">    
+    <end type="SOURCE" refId="6" navigable="false">      
+      <attribute id="27" name="generator"/>      
+      <multiplicity id="28" minimum="0" maximum="1"/>    
+    </end>    
+    <end type="TARGET" refId="5" navigable="true"/>    
+    <display labels="true" multiplicity="true"/>  
+  </association>  
   <classifier-display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" 
     accessors="true" visibility="true">    
     <attributes public="true" package="true" protected="true" private="true" static="true"/>    

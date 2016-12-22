@@ -33,6 +33,7 @@ import org.mozilla.javascript.WrappedException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.FileFilters;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.LogUtils;
 
@@ -90,7 +91,7 @@ public class Console {
         // NOTE: JavaScript needs to be initilised before GUI
         framework.initJavaScript();
         // NOTE: Plugins need to be loaded before GUI (because of assigning PropertyProviders)
-        framework.initPlugins();
+        framework.initPlugins(true);
         // NOTE: Config needs to be loaded before GUI
         framework.loadConfig();
         if (startGUI) {
@@ -112,8 +113,9 @@ public class Console {
         if (framework.isInGuiMode()) {
             for (String arg: arglist) {
                 if (arg.endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+                    MainWindow mainWindow = framework.getMainWindow();
                     File file = framework.getFileByAbsoluteOrRelativePath(arg);
-                    framework.getMainWindow().openWork(file);
+                    mainWindow.openWork(file);
                 }
             }
         }

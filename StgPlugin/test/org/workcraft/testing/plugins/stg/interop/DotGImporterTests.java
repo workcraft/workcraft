@@ -27,20 +27,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 
-import junit.framework.Assert;
-
 import org.junit.Test;
 import org.workcraft.dom.Connection;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.plugins.stg.interop.DotGImporter;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.StgPlace;
+import org.workcraft.plugins.stg.interop.DotGImporter;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Import;
 import org.workcraft.workspace.ModelEntry;
+
+import junit.framework.Assert;
 
 public class DotGImporterTests {
     @Test
@@ -84,8 +84,9 @@ public class DotGImporterTests {
 
     @Test
     public void test2() throws Throwable {
-        final InputStream test = ClassLoader.getSystemClassLoader().getResourceAsStream("org/workcraft/testing/plugins/stg/interop/test2.g");
-        StgModel imported = new DotGImporter().importSTG(test); //DotGImporterTests.class.getClassLoader().getResourceAsStream("test2.g"));
+        final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        final InputStream test = classLoader.getResourceAsStream("org/workcraft/testing/plugins/stg/interop/test2.g");
+        StgModel imported = new DotGImporter().importSTG(test);
         Assert.assertEquals(17, imported.getTransitions().size());
         Assert.assertEquals(0, imported.getDummyTransitions().size());
 

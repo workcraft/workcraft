@@ -9,11 +9,11 @@ import java.util.regex.Pattern;
 
 import org.workcraft.Trace;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
-import org.workcraft.plugins.mpsat.gui.Solution;
+import org.workcraft.plugins.mpsat.gui.MpsatSolution;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 
 public class MpsatResultParser {
-    private final LinkedList<Solution> solutions;
+    private final LinkedList<MpsatSolution> solutions;
 
     private static final Pattern patternReachability0 =
             Pattern.compile("SOLUTION .+\ntotal cost of all paths: .+\n", Pattern.UNIX_LINES);
@@ -35,16 +35,16 @@ public class MpsatResultParser {
             throw new RuntimeException(e);
         }
 
-        solutions = new LinkedList<Solution>();
+        solutions = new LinkedList<MpsatSolution>();
         Matcher matcherReachability0 = patternReachability0.matcher(mpsatOutput);
         while (matcherReachability0.find()) {
-            Solution solution = new Solution(null, null);
+            MpsatSolution solution = new MpsatSolution(null, null);
             solutions.add(solution);
         }
         Matcher matcherReachability1 = patternReachability1.matcher(mpsatOutput);
         while (matcherReachability1.find()) {
             Trace trace = getTrace(matcherReachability1.group(1));
-            Solution solution = new Solution(trace, null);
+            MpsatSolution solution = new MpsatSolution(trace, null);
             solutions.add(solution);
         }
         Matcher matcherRreachability2 = patternReachability2.matcher(mpsatOutput);
@@ -52,14 +52,14 @@ public class MpsatResultParser {
             Trace mainTrace = getTrace(matcherRreachability2.group(1));
             Trace branchTrace = getTrace(matcherRreachability2.group(2));
             String signalName = matcherRreachability2.group(4);
-            Solution solution = new Solution(mainTrace, branchTrace);
+            MpsatSolution solution = new MpsatSolution(mainTrace, branchTrace);
             solution.setComment(signalName);
             solutions.add(solution);
         }
         Matcher matcherNormalcy = patternNormalcy1.matcher(mpsatOutput);
         while (matcherNormalcy.find()) {
             Trace trace = getTrace(matcherNormalcy.group(1));
-            Solution solution = new Solution(trace, null);
+            MpsatSolution solution = new MpsatSolution(trace, null);
             solutions.add(solution);
         }
     }
@@ -80,7 +80,7 @@ public class MpsatResultParser {
         return trace;
     }
 
-    public List<Solution> getSolutions() {
+    public List<MpsatSolution> getSolutions() {
         return Collections.unmodifiableList(solutions);
     }
 

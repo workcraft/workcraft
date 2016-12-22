@@ -72,7 +72,7 @@ public class VisualTransition extends VisualComponent {
     }
 
     @Override
-    public boolean hitTestInLocalSpace(Point2D pointInLocalSpace)    {
+    public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
         return (Math.abs(pointInLocalSpace.getX()) <= 0.5 * size) && (Math.abs(pointInLocalSpace.getY()) <= 0.5 * size);
     }
 

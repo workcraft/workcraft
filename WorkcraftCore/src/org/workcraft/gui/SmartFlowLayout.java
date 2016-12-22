@@ -5,12 +5,12 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Insets;
 import java.awt.LayoutManager;
-import java.io.ObjectInputStream;
 import java.io.IOException;
-
-import net.sf.jga.fn.UnaryFunctor;
+import java.io.ObjectInputStream;
 
 import org.workcraft.exceptions.NotSupportedException;
+
+import net.sf.jga.fn.UnaryFunctor;
 
 public class SmartFlowLayout implements LayoutManager, java.io.Serializable {
     public static final int LEFT     = 0;

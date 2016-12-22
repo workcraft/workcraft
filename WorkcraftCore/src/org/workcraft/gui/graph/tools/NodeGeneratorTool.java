@@ -39,9 +39,10 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.gui.graph.generators.NodeGenerator;
 import org.workcraft.util.GUI;
 
-public class NodeGeneratorTool extends AbstractTool {
+public class NodeGeneratorTool extends AbstractGraphEditorTool {
     private final NodeGenerator generator;
     private VisualNode templateNode = null;
     private VisualNode lastGeneratedNode = null;

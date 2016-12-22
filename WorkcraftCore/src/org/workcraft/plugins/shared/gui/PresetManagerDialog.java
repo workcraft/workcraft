@@ -1,7 +1,5 @@
 package org.workcraft.plugins.shared.gui;
 
-import info.clearthought.layout.TableLayout;
-
 import java.awt.BorderLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -20,6 +18,8 @@ import javax.swing.ListSelectionModel;
 import org.workcraft.plugins.shared.presets.Preset;
 import org.workcraft.plugins.shared.presets.PresetManager;
 
+import info.clearthought.layout.TableLayout;
+
 @SuppressWarnings("serial")
 public class PresetManagerDialog<T> extends JDialog {
     private static final String DIALOG_DELETE_PRESET = "Delete preset";
@@ -30,8 +30,8 @@ public class PresetManagerDialog<T> extends JDialog {
         super(owner, "Manage presets");
 
         double[][] size = {
-                {TableLayout.FILL, 100 },
-                {20, 20, TableLayout.FILL, 20 },
+            {TableLayout.FILL, 100},
+            {20, 20, TableLayout.FILL, 20},
         };
 
         TableLayout layout = new TableLayout(size);

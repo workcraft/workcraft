@@ -9,7 +9,6 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.util.Import;
 import org.workcraft.workspace.FileHandler;
-import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class WorkcraftOpen implements FileHandler {
@@ -23,12 +22,11 @@ public class WorkcraftOpen implements FileHandler {
         }
     }
 
-    public void execute(File f) {
+    public void execute(File file) {
         final Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
         try {
-            final Workspace workspace = framework.getWorkspace();
-            WorkspaceEntry we = workspace.open(f, false);
+            WorkspaceEntry we = framework.loadWork(file);
             mainWindow.createEditorWindow(we);
         } catch (DeserialisationException e) {
             e.printStackTrace();

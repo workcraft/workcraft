@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualSignalTransition;
-import org.workcraft.plugins.stg.generator.NodeStg;
+import org.workcraft.plugins.stg.converters.NodeStg;
 
 public class CounterflowRegisterStg extends NodeStg {
     public final VisualPlace orM0;                // orM=0

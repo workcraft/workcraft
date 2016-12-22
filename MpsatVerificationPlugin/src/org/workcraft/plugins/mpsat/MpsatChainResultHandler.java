@@ -25,7 +25,6 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
         this.task = task;
     }
 
-
     @Override
     public void finished(final Result<? extends MpsatChainResult> result, String description) {
         switch (result.getOutcome()) {
@@ -69,7 +68,7 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
             SwingUtilities.invokeLater(new MpsatDeadlockResultHandler(we, mpsatResult));
             break;
         case RESOLVE_ENCODING_CONFLICTS:
-            SwingUtilities.invokeLater(new MpsatCscResolutionResultHandler(we, mpsatResult));
+            SwingUtilities.invokeLater(new MpsatCscConflictResolutionResultHandler(we, mpsatResult));
             break;
         default:
             MainWindow mainWindow = Framework.getInstance().getMainWindow();

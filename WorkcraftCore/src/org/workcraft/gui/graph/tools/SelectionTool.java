@@ -58,7 +58,6 @@ import javax.swing.text.StyledDocument;
 
 import org.workcraft.Framework;
 import org.workcraft.NodeTransformer;
-import org.workcraft.Tool;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.BoundingBoxHelper;
@@ -82,13 +81,15 @@ import org.workcraft.gui.actions.PopupToolAction;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.Viewport;
+import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.layouts.WrapLayout;
+import org.workcraft.util.Commands;
 import org.workcraft.util.GUI;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.util.Tools;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class SelectionTool extends AbstractTool {
+public class SelectionTool extends AbstractGraphEditorTool {
 
     private enum DrugState { NONE, MOVE, SELECT };
     private enum SelectionMode { NONE, ADD, REMOVE, REPLACE };
@@ -397,14 +398,15 @@ public class SelectionTool extends AbstractTool {
     public JPopupMenu createPopupMenu(Node node, final GraphEditor editor) {
         JPopupMenu popup = null;
         WorkspaceEntry we = editor.getWorkspaceEntry();
-        List<Tool> applicableTools = new ArrayList<>();
-        HashSet<Tool> enabledTools = new HashSet<>();
-        for (Tool tool: Tools.getApplicableTools(we)) {
+        List<Command> applicableTools = new ArrayList<>();
+        HashSet<Command> enabledTools = new HashSet<>();
+        for (Command tool: Commands.getApplicableCommands(we)) {
             if (tool instanceof NodeTransformer) {
                 NodeTransformer nodeTransformer = (NodeTransformer) tool;
                 if (nodeTransformer.isApplicableTo(node)) {
                     applicableTools.add(tool);
-                    if (nodeTransformer.isEnabled(we, node)) {
+                    ModelEntry me = we.getModelEntry();
+                    if (nodeTransformer.isEnabled(me, node)) {
                         enabledTools.add(tool);
                     }
                 }
@@ -415,7 +417,7 @@ public class SelectionTool extends AbstractTool {
             popup.setFocusable(false);
             final Framework framework = Framework.getInstance();
             final MainWindow mainWindow = framework.getMainWindow();
-            for (Tool tool: applicableTools) {
+            for (Command tool: applicableTools) {
                 PopupToolAction toolAction = new PopupToolAction(tool);
                 ActionMenuItem miTool = new ActionMenuItem(toolAction);
                 miTool.addScriptedActionListener(mainWindow.getDefaultActionListener());
@@ -484,7 +486,7 @@ public class SelectionTool extends AbstractTool {
                     }
                     break;
                 case MouseEvent.META_DOWN_MASK:
-                    if (DesktopApi.getMenuKeyMouseMask() == MouseEvent.META_DOWN_MASK)  {
+                    if (DesktopApi.getMenuKeyMouseMask() == MouseEvent.META_DOWN_MASK) {
                         selectionMode = SelectionMode.REMOVE;
                     }
                     break;

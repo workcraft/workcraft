@@ -53,7 +53,7 @@ public class VisualFsm extends AbstractVisualModel {
     }
 
     @Override
-    public void validateConnection(Node first, Node second)    throws InvalidConnectionException {
+    public void validateConnection(Node first, Node second) throws InvalidConnectionException {
     }
 
     @Override

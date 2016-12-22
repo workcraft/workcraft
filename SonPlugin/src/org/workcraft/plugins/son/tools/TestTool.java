@@ -6,10 +6,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.workcraft.Tool;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.gui.graph.tools.AbstractTool;
+import org.workcraft.gui.graph.commands.Command;
+import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.son.ONGroup;
@@ -31,38 +31,40 @@ import org.workcraft.plugins.son.exception.UnboundedException;
 import org.workcraft.plugins.son.util.Marking;
 import org.workcraft.plugins.son.util.Phase;
 import org.workcraft.util.GUI;
-import org.workcraft.util.WorkspaceUtils;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
-public class TestTool extends AbstractTool implements Tool {
+public class TestTool extends AbstractGraphEditorTool implements Command {
 
     private String message = "";
 
+    @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.isApplicable(we, SON.class);
-
     }
 
+    @Override
     public String getSection() {
         return "test";
     }
 
+    @Override
     public String getDisplayName() {
         return "Test";
     }
 
     GraphEditor editor1;
 
+    @Override
     public void run(WorkspaceEntry we) {
         System.out.println("================================================================================");
-        SON net = (SON) we.getModelEntry().getMathModel();
-        // VisualSON vnet = (VisualSON) we.getModelEntry().getVisualModel();
+        SON net = WorkspaceUtils.getAs(we, SON.class);
+        // VisualSON vnet = WorkspaceUtils.getAs(we, VisualSON.class);
         // reachableMarkingsTest(net);
         esitmationTest(net);
         // timeTest(net);
         // bhvTimeTest(net);
         // getScenario(net);
-
         // dfsTest(net);
         // outputBefore(net);
         // phaseTest(net);

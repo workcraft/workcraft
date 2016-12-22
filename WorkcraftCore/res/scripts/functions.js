@@ -1,50 +1,67 @@
 // Standard function shortcuts
 
+importPackage(java.lang);
+
+
 // Printing
 
 function print(msg) {
-	java.lang.System.out.print(msg);
+	System.out.print(msg);
 }
 
 function println(msg) {
-	java.lang.System.out.println(msg);
+	System.out.println(msg);
 }
 
-function printerr(msg) {
-	java.lang.System.err.print(msg);
+function printErr(msg) {
+	System.err.print(msg);
 }
 
-function printlnerr(msg) {
-	java.lang.System.err.println(msg);
+function printlnErr(msg) {
+	System.err.println(msg);
 }
 
-// File operations
+
+// Work file operations
 
 function load(path) {
-	return framework.load(path);
-}
-
-function save(model, path) {
-	framework.save(model, path);
+	return framework.loadWork(path);
 }
 
 function import(path) {
-	return framework.importFile(path);
+	return framework.loadWork(path);
 }
 
-function export(model, path, format) {
-	return framework.exportFile(model, path, format);
+function save(work, path) {
+	framework.saveWork(work, path);
 }
+
+function export(work, path, format) {
+	return framework.exportWork(work, path, format);
+}
+
+
+// Command execution
+
+function runCommand(work, commandName) {
+	framework.runCommand(work, commandName);
+}
+
+function executeCommand(work, commandName) {
+	return framework.executeCommand(work, commandName);
+}
+
 
 // Script execution
 
 function execResource(x) {
-	framework.execJSResource(x);
+	framework.execJavaScriptResource(x);
 }
 
 function execFile(x) {
-	framework.execJSFile(x);
+	framework.execJavaScriptFile(x);
 }
+
 
 // Configuration
 
@@ -64,15 +81,21 @@ function loadConfig() {
 	framework.loadConfig();
 }
 
+
 // GUI
 
 function startGUI() {
 	framework.startGUI();
 }
 
+function stopGUI() {
+	framework.shutdownGUI();
+}
+
 function shutdownGUI() {
 	framework.shutdownGUI();
 }
+
 
 // Exit
 

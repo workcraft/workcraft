@@ -36,21 +36,25 @@ import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 import org.workcraft.Framework;
-import org.workcraft.Tool;
 import org.workcraft.MenuOrdering.Position;
+import org.workcraft.PluginManager;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.FileFilters;
 import org.workcraft.gui.MainMenu;
+import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.trees.TreePopupProvider;
 import org.workcraft.plugins.PluginInfo;
-import org.workcraft.util.Tools;
+import org.workcraft.util.Commands;
 import org.workcraft.workspace.FileHandler;
+import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceTree;
 
 public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
+
     private final WorkspaceWindow wsWindow;
 
     public WorkspacePopupProvider(WorkspaceWindow wsWindow) {
@@ -61,10 +65,11 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
         JPopupMenu popup = new JPopupMenu();
 
         final HashMap<JMenuItem, FileHandler> handlers = new HashMap<>();
-        final HashMap<JMenuItem, Tool> tools = new HashMap<>();
+        final HashMap<JMenuItem, Command> commands = new HashMap<>();
 
         final Framework framework = Framework.getInstance();
         final Workspace workspace = framework.getWorkspace();
+        final MainWindow mainWindow = framework.getMainWindow();
 
         final File file = workspace.getFile(path);
 
@@ -72,14 +77,16 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
             popup.addSeparator();
             final JMenuItem miLink = new JMenuItem("Link external files or directories...");
             miLink.addActionListener(new ActionListener() {
-                @Override public void actionPerformed(ActionEvent e) {
+                @Override
+                public void actionPerformed(ActionEvent e) {
                     wsWindow.addToWorkspace(path);
                 }
             });
             popup.add(miLink);
             final JMenuItem miCreateWork = new JMenuItem("Create work...");
             miCreateWork.addActionListener(new ActionListener() {
-                @Override public void actionPerformed(ActionEvent e) {
+                @Override
+                public void actionPerformed(ActionEvent e) {
                     try {
                         framework.getMainWindow().createWork(path);
                     } catch (OperationCancelledException e1) { }
@@ -88,7 +95,8 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
             popup.add(miCreateWork);
             final JMenuItem miCreateFolder = new JMenuItem("Create folder...");
             miCreateFolder.addActionListener(new ActionListener() {
-                @Override public void actionPerformed(ActionEvent e) {
+                @Override
+                public void actionPerformed(ActionEvent e) {
                     try {
                         createFolder(path);
                     } catch (OperationCancelledException e1) { }
@@ -103,10 +111,9 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                         }
                         File newDir = workspace.getFile(Path.append(path, name));
                         if (!newDir.mkdir()) {
-                            JOptionPane
-                                    .showMessageDialog(
-                                            framework.getMainWindow(),
-                                            "The directory could not be created. Please check that the name does not contain any special characters.");
+                            JOptionPane.showMessageDialog(mainWindow,
+                                    "The directory could not be created.\n"
+                                    + "Please check that the name does not contain any special characters.");
                         } else {
                             break;
                         }
@@ -120,21 +127,22 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
 
         if (WorkspaceTree.isLeaf(workspace, path)) {
             popup.addSeparator();
-            final WorkspaceEntry openFile = workspace.getOpenFile(path);
-            if (openFile == null) {
+            final WorkspaceEntry we = workspace.getWork(path);
+            if (we == null) {
                 if (file.exists()) {
                     if (file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
                         final JMenuItem miOpen = new JMenuItem("Open");
                         miOpen.addActionListener(new ActionListener() {
                             @Override
                             public void actionPerformed(ActionEvent e) {
-                                framework.getMainWindow().openWork(file);
+                                mainWindow.openWork(file);
                             }
                         });
                         popup.add(miOpen);
                     }
 
-                    for (PluginInfo<? extends FileHandler> info : framework.getPluginManager().getPlugins(FileHandler.class)) {
+                    final PluginManager pluginManager = framework.getPluginManager();
+                    for (PluginInfo<? extends FileHandler> info : pluginManager.getPlugins(FileHandler.class)) {
                         FileHandler handler = info.getSingleton();
 
                         if (!handler.accept(file)) {
@@ -151,82 +159,86 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                         popup.add(mi);
                     }
                 }
-            } else if (openFile.getModelEntry() != null) {
-                final Model model = openFile.getModelEntry().getModel();
-                JLabel label = new JLabel(model.getDisplayName() + " " + (model.getTitle().isEmpty() ? "" : ("'" + model.getTitle() + "'")));
-                popup.add(label);
-                popup.addSeparator();
-
-                JMenuItem miOpenView = new JMenuItem("Open editor");
-                miOpenView.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        framework.getMainWindow().createEditorWindow(openFile);
-                    }
-                });
-
-                JMenuItem miSave = new JMenuItem("Save");
-                miSave.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        try {
-                            framework.getMainWindow().save(openFile);
-                        } catch (OperationCancelledException e1) {
-                        }
-                    }
-                });
-
-                JMenuItem miSaveAs = new JMenuItem("Save as...");
-                miSaveAs.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        try {
-                            framework.getMainWindow().saveAs(openFile);
-                        } catch (OperationCancelledException e1) {
-                        }
-                    }
-                });
-
-                popup.add(miSave);
-                popup.add(miSaveAs);
-                popup.add(miOpenView);
-
-                List<Tool> applicableTools = Tools.getApplicableTools(openFile);
-                List<String> sections = Tools.getSections(applicableTools);
-
-                if (!sections.isEmpty()) {
+            } else {
+                ModelEntry me = we.getModelEntry();
+                if (me != null) {
+                    final Model model = me.getModel();
+                    String title = model.getTitle();
+                    JLabel label = new JLabel(model.getDisplayName() + " " + (title.isEmpty() ? "" : ("'" + title + "'")));
+                    popup.add(label);
                     popup.addSeparator();
-                }
-                for (String section : sections) {
-                    String sectionMenuName = MainMenu.getMenuNameFromSection(section);
-                    JMenu sectionMenu = new JMenu(sectionMenuName);
 
-                    List<Tool> sectionTools = Tools.getSectionTools(section, applicableTools);
-                    List<List<Tool>> sectionToolsPartitions = new LinkedList<>();
-                    sectionToolsPartitions.add(Tools.getUnpositionedTools(sectionTools));
-                    sectionToolsPartitions.add(Tools.getPositionedTools(sectionTools, Position.TOP));
-                    sectionToolsPartitions.add(Tools.getPositionedTools(sectionTools, Position.MIDDLE));
-                    sectionToolsPartitions.add(Tools.getPositionedTools(sectionTools, Position.BOTTOM));
-                    boolean needSeparator = false;
-                    for (List<Tool> sectionToolsPartition: sectionToolsPartitions) {
-                        boolean isFirstItem = true;
-                        for (Tool tool : sectionToolsPartition) {
-                            if (needSeparator && isFirstItem) {
-                                sectionMenu.addSeparator();
-                            }
-                            needSeparator = true;
-                            isFirstItem = false;
-                            JMenuItem item = new JMenuItem(tool.getDisplayName().trim());
-                            tools.put(item, tool);
-                            item.addActionListener(new ActionListener() {
-                                public void actionPerformed(ActionEvent e) {
-                                    Tools.run(openFile, tools.get(e.getSource()));
-                                }
-                            });
-                            sectionMenu.add(item);
+                    JMenuItem miOpenView = new JMenuItem("Open editor");
+                    miOpenView.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            mainWindow.createEditorWindow(we);
                         }
+                    });
+
+                    JMenuItem miSave = new JMenuItem("Save");
+                    miSave.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            try {
+                                mainWindow.saveWork(we);
+                            } catch (OperationCancelledException e1) {
+                            }
+                        }
+                    });
+
+                    JMenuItem miSaveAs = new JMenuItem("Save as...");
+                    miSaveAs.addActionListener(new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            try {
+                                mainWindow.saveWorkAs(we);
+                            } catch (OperationCancelledException e1) {
+                            }
+                        }
+                    });
+
+                    popup.add(miSave);
+                    popup.add(miSaveAs);
+                    popup.add(miOpenView);
+
+                    List<Command> applicableCommands = Commands.getApplicableCommands(we);
+                    List<String> sections = Commands.getSections(applicableCommands);
+
+                    if (!sections.isEmpty()) {
+                        popup.addSeparator();
                     }
-                    popup.add(sectionMenu);
+                    for (String section : sections) {
+                        String sectionMenuName = MainMenu.getMenuNameFromSection(section);
+                        JMenu sectionMenu = new JMenu(sectionMenuName);
+
+                        List<Command> sectionCommands = Commands.getSectionCommands(section, applicableCommands);
+                        List<List<Command>> sectionCommandsPartitions = new LinkedList<>();
+                        sectionCommandsPartitions.add(Commands.getUnpositionedCommands(sectionCommands));
+                        sectionCommandsPartitions.add(Commands.getPositionedCommands(sectionCommands, Position.TOP));
+                        sectionCommandsPartitions.add(Commands.getPositionedCommands(sectionCommands, Position.MIDDLE));
+                        sectionCommandsPartitions.add(Commands.getPositionedCommands(sectionCommands, Position.BOTTOM));
+                        boolean needSeparator = false;
+                        for (List<Command> sectionCommandsPartition: sectionCommandsPartitions) {
+                            boolean isFirstItem = true;
+                            for (Command command : sectionCommandsPartition) {
+                                if (needSeparator && isFirstItem) {
+                                    sectionMenu.addSeparator();
+                                }
+                                needSeparator = true;
+                                isFirstItem = false;
+                                JMenuItem item = new JMenuItem(command.getDisplayName().trim());
+                                commands.put(item, command);
+                                item.addActionListener(new ActionListener() {
+                                    public void actionPerformed(ActionEvent e) {
+                                        Commands.run(we, commands.get(e.getSource()));
+                                    }
+                                });
+                                sectionMenu.add(item);
+                            }
+                        }
+                        popup.add(sectionMenu);
+                    }
                 }
             }
             popup.addSeparator();
@@ -236,7 +248,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     try {
-                        workspace.delete(path);
+                        workspace.deleteEntry(path);
                     } catch (OperationCancelledException e1) { }
                 }
             });

@@ -23,7 +23,6 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.ModelEntry;
-import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessResult> {
@@ -31,11 +30,13 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
     private VisualCpog visualCpog;
     private final WorkspaceEntry we;
     private final boolean createNewWindow;
+    private WorkspaceEntry weResult;
 
     public PGMinerResultHandler(VisualCpog visualCpog, WorkspaceEntry we, boolean createNewWindow) {
         this.visualCpog = visualCpog;
         this.we = we;
         this.createNewWindow = createNewWindow;
+        this.weResult = null;
     }
 
     public void finished(final Result<? extends ExternalProcessResult> result, String description) {
@@ -62,11 +63,10 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
                                     throw new VisualModelInstantiationException("visual model is not defined for \"" + cpogModel.getDisplayName() + "\".");
                                 }
                                 visualCpog = (VisualCpog) v.create(mathModel);
-                                final Workspace workspace = framework.getWorkspace();
-                                final Path<String> directory = workspace.getPath(we).getParent();
+                                final Path<String> directory = we.getWorkspacePath().getParent();
                                 final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
                                 final ModelEntry me = new ModelEntry(cpogModel, visualCpog);
-                                workspace.add(directory, name, me, true, true);
+                                weResult = framework.createWork(me, directory, name);
                             } catch (VisualModelInstantiationException e) {
                                 e.printStackTrace();
                             }
@@ -90,6 +90,10 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
         } catch (InvocationTargetException | InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public WorkspaceEntry getResult() {
+        return weResult;
     }
 
 }

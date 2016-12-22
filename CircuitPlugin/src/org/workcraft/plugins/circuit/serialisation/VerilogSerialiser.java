@@ -112,7 +112,7 @@ public class VerilogSerialiser implements ModelSerialiser {
         String topName = circuit.getTitle();
         if ((topName == null) || topName.isEmpty()) {
             topName = "UNTITLED";
-            LogUtils.logWarningLine("The top module does not have a name. Exporting as `" + topName + "` module.");
+            LogUtils.logWarningLine("The top module does not have a name. Exporting as '" + topName + "' module.");
         }
         out.print(KEYWORD_MODULE + " " + topName + " (");
         String inputPorts = "";

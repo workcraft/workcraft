@@ -14,7 +14,6 @@ import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
-import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class StgUtils {
@@ -127,15 +126,15 @@ public class StgUtils {
         Stg result = null;
         if ((file != null) && file.exists()) {
             Framework framework = Framework.getInstance();
-            Workspace workspace = framework.getWorkspace();
             try {
-                WorkspaceEntry we = workspace.open(file, true);
+                // FIXME: Why not to use Framework.load(file) instead?
+                WorkspaceEntry we = framework.loadWork(file);
                 ModelEntry me = we.getModelEntry();
                 MathModel model = me.getMathModel();
                 if (model instanceof Stg) {
                     result = (Stg) model;
                 }
-                workspace.close(we);
+                framework.closeWork(we);
             } catch (DeserialisationException e) {
                 LogUtils.logErrorLine("Cannot read STG model from file '" + file.getAbsolutePath() + "': "
                         + e.getMessage());

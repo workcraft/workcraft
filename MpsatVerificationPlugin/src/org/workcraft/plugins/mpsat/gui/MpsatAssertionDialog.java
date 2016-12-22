@@ -58,8 +58,8 @@ public class MpsatAssertionDialog extends JDialog {
         int hGap = SizeHelper.getCompactLayoutHGap();
         int vGap = SizeHelper.getCompactLayoutVGap();
         double[][] size = new double[][] {
-                {TableLayout.FILL},
-                {TableLayout.PREFERRED, TableLayout.FILL, buttonPanelHeight},
+            {TableLayout.FILL},
+            {TableLayout.PREFERRED, TableLayout.FILL, buttonPanelHeight},
         };
 
         final TableLayout layout = new TableLayout(size);

@@ -305,7 +305,8 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
     public Literal visit(And node) {
         return visit(node,
             new BinaryGateImplementer() {
-                @Override public void implement(Literal res, Literal x, Literal y) {
+                @Override
+                public void implement(Literal res, Literal x, Literal y) {
                     result.add(or(res, not(x), not(y)));
                     result.add(or(not(res), x));
                     result.add(or(not(res), y));
@@ -318,7 +319,8 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
     public Literal visit(Iff node) {
         return visit(node,
                 new BinaryGateImplementer() {
-                    @Override public void implement(Literal res, Literal x, Literal y) {
+                    @Override
+                    public void implement(Literal res, Literal x, Literal y) {
                         result.add(or(not(res), not(x), y));
                         result.add(or(not(res), x, not(y)));
                         result.add(or(res, not(x), not(y)));
@@ -347,7 +349,8 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
     public Literal visit(Imply node) {
         return visit(node,
                 new BinaryGateImplementer() {
-                    @Override public void implement(Literal res, Literal x, Literal y) {
+                    @Override
+                    public void implement(Literal res, Literal x, Literal y) {
                         result.add(or(not(res), not(x), y));
                         result.add(or(res, not(y)));
                         result.add(or(res, x));
@@ -365,7 +368,8 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
     public Literal visit(Or node) {
         return visit(node,
                 new BinaryGateImplementer() {
-                    @Override public void implement(Literal res, Literal x, Literal y) {
+                    @Override
+                    public void implement(Literal res, Literal x, Literal y) {
                         result.add(or(not(res), x, y));
                         result.add(or(res, not(y)));
                         result.add(or(res, not(x)));
@@ -378,7 +382,8 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
     public Literal visit(Xor node) {
         return visit(node,
                 new BinaryGateImplementer() {
-                    @Override public void implement(Literal res, Literal x, Literal y) {
+                    @Override
+                    public void implement(Literal res, Literal x, Literal y) {
                         result.add(or(res, not(x), y));
                         result.add(or(res, x, not(y)));
                         result.add(or(not(res), not(x), not(y)));
@@ -387,4 +392,5 @@ public class CleverCnfGenerator implements RawCnfGenerator<BooleanFormula>, Bool
                 }
             );
     }
+
 }

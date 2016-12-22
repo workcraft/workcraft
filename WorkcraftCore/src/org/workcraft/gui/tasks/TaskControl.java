@@ -21,8 +21,6 @@
 
 package org.workcraft.gui.tasks;
 
-import info.clearthought.layout.TableLayout;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
@@ -35,6 +33,8 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.border.Border;
 
+import info.clearthought.layout.TableLayout;
+
 @SuppressWarnings("serial")
 public class TaskControl extends JPanel {
     JLabel label;
@@ -45,8 +45,8 @@ public class TaskControl extends JPanel {
 
     public TaskControl(String taskDescription) {
         double[][] size = {
-                {TableLayout.FILL, 80, 100},
-                {20, 20, 20},
+            {TableLayout.FILL, 80, 100},
+            {20, 20, 20},
         };
 
         Border outsideBorder = BorderFactory.createLineBorder(Color.LIGHT_GRAY);

@@ -34,14 +34,12 @@ import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 import java.util.zip.ZipEntry;
-import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -56,36 +54,47 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.VisualModelDescriptor;
+import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
+import org.workcraft.exceptions.LayoutException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.DesktopApi;
+import org.workcraft.gui.FileFilters;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.graph.commands.AbstractLayoutCommand;
+import org.workcraft.gui.graph.commands.Command;
+import org.workcraft.gui.graph.commands.ScriptableCommand;
 import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.gui.workspace.Path;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.PluginInfo;
+import org.workcraft.plugins.layout.DotLayoutCommand;
+import org.workcraft.plugins.layout.RandomLayoutCommand;
 import org.workcraft.plugins.serialisation.XMLModelDeserialiser;
 import org.workcraft.plugins.serialisation.XMLModelSerialiser;
+import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.serialisation.DeserialisationResult;
 import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
-import org.workcraft.serialisation.References;
 import org.workcraft.tasks.DefaultTaskManager;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.ProgressMonitorArray;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.TaskManager;
+import org.workcraft.util.Commands;
 import org.workcraft.util.DataAccumulator;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
@@ -95,6 +104,7 @@ import org.workcraft.util.XmlUtil;
 import org.workcraft.workspace.Memento;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
+import org.workcraft.workspace.WorkspaceEntry;
 import org.xml.sax.SAXException;
 
 public final class Framework {
@@ -110,6 +120,25 @@ public final class Framework {
 
     private static Framework instance = null;
 
+    private final class ExtendedTaskManager extends DefaultTaskManager {
+        @Override
+        public <T> Result<? extends T> rawExecute(Task<T> task, String description, ProgressMonitor<? super T> observer) {
+            if (!SwingUtilities.isEventDispatchThread()) {
+                return super.rawExecute(task, description, observer);
+            } else {
+                OperationCancelDialog<T> cancelDialog = new OperationCancelDialog<>(mainWindow, description);
+                ProgressMonitorArray<T> observers = new ProgressMonitorArray<>();
+                if (observer != null) {
+                    observers.add(observer);
+                }
+                observers.add(cancelDialog);
+                this.queue(task, description, observers);
+                cancelDialog.setVisible(true);
+                return cancelDialog.getResult();
+            }
+        }
+    }
+
     class ExecuteScriptAction implements ContextAction {
         private final String script;
         private final Scriptable scope;
@@ -119,6 +148,7 @@ public final class Framework {
             this.scope = scope;
         }
 
+        @Override
         public Object run(Context cx) {
             return cx.evaluateString(scope, script, "<string>", 1, null);
         }
@@ -133,6 +163,7 @@ public final class Framework {
             this.scope = scope;
         }
 
+        @Override
         public Object run(Context cx) {
             return script.exec(cx, scope);
         }
@@ -147,6 +178,7 @@ public final class Framework {
             this.reader = reader;
         }
 
+        @Override
         public Object run(Context cx) {
             try {
                 return cx.compileReader(reader, sourceName, 1, null);
@@ -164,6 +196,7 @@ public final class Framework {
             this.sourceName = sourceName;
         }
 
+        @Override
         public Object run(Context cx) {
             return cx.compileString(source, sourceName, 1, null);
         }
@@ -176,6 +209,7 @@ public final class Framework {
             this.args = args;
         }
 
+        @Override
         public Object run(Context cx) {
             Object scriptable = Context.javaToJS(args, systemScope);
             ScriptableObject.putProperty(systemScope, "args", scriptable);
@@ -186,16 +220,15 @@ public final class Framework {
     }
 
     private final PluginManager pluginManager;
-    private final ModelManager modelManager;
     private final TaskManager taskManager;
     private final CompatibilityManager compatibilityManager;
-    private Config config;
     private final Workspace workspace;
 
+    private Config config;
     private ScriptableObject systemScope;
     private ScriptableObject globalScope;
 
-    private boolean inGUIMode = false;
+    private boolean inGuiMode = false;
     private boolean shutdownRequested = false;
     private boolean guiRestartRequested = false;
     private final ContextFactory contextFactory = new ContextFactory();
@@ -205,28 +238,7 @@ public final class Framework {
 
     private Framework() {
         pluginManager = new PluginManager();
-        taskManager = new DefaultTaskManager() {
-            public <T> Result<? extends T> execute(Task<T> task, String description, ProgressMonitor<? super T> observer) {
-                if (SwingUtilities.isEventDispatchThread()) {
-                    OperationCancelDialog<T> cancelDialog = new OperationCancelDialog<>(mainWindow, description);
-
-                    ProgressMonitorArray<T> observers = new ProgressMonitorArray<>();
-                    if (observer != null) {
-                        observers.add(observer);
-                    }
-                    observers.add(cancelDialog);
-
-                    this.queue(task, description, observers);
-
-                    cancelDialog.setVisible(true);
-
-                    return cancelDialog.result;
-                } else {
-                    return super.execute(task, description, observer);
-                }
-            }
-        };
-        modelManager = new ModelManager();
+        taskManager = new ExtendedTaskManager();
         compatibilityManager = new CompatibilityManager();
         config = new Config();
         workspace = new Workspace();
@@ -292,19 +304,10 @@ public final class Framework {
         return getConfigCoreVar(key);
     }
 
-    public String[] getModelNames() {
-        LinkedList<Class<?>> list = modelManager.getModelList();
-        String[] a = new String[list.size()];
-        int i = 0;
-        for (Class<?> cls : list) {
-            a[i++] = cls.getName();
-        }
-        return a;
-    }
-
     public void initJavaScript() {
         LogUtils.logMessageLine("Initialising javascript...");
         contextFactory.call(new ContextAction() {
+            @Override
             public Object run(Context cx) {
                 ImporterTopLevel importer = new ImporterTopLevel();
                 importer.initStandardObjects(cx, false);
@@ -312,7 +315,6 @@ public final class Framework {
 
                 Object frameworkScriptable = Context.javaToJS(Framework.this, systemScope);
                 ScriptableObject.putProperty(systemScope, "framework", frameworkScriptable);
-                //ScriptableObject.putProperty(systemScope, "importer", );
                 systemScope.setAttributes("framework", ScriptableObject.READONLY);
 
                 globalScope = (ScriptableObject) cx.newObject(systemScope);
@@ -324,12 +326,28 @@ public final class Framework {
         });
     }
 
+    public void updateJavaScript(WorkspaceEntry we) {
+        ScriptableObject jsGlobalScope = getJavaScriptGlobalScope();
+        ModelEntry modelEntry = we.getModelEntry();
+
+        VisualModel visualModel = modelEntry.getVisualModel();
+        setJavaScriptProperty("visualModel", visualModel, jsGlobalScope, true);
+
+        MathModel mathModel = modelEntry.getMathModel();
+        setJavaScriptProperty("mathModel", mathModel, jsGlobalScope, true);
+    }
+
     public ScriptableObject getJavaScriptGlobalScope() {
         return globalScope;
     }
 
-    public void setJavaScriptProperty(final String name, final Object object, final ScriptableObject scope, final boolean readOnly) {
+    public void setJavaScriptProperty(final String name, final Object object,
+            final ScriptableObject scope, final boolean readOnly) {
+
+        deleteJavaScriptProperty(name, scope);
+
         contextFactory.call(new ContextAction() {
+            @Override
             public Object run(Context arg0) {
                 Object scriptable = Context.javaToJS(object, scope);
                 ScriptableObject.putProperty(scope, name, scriptable);
@@ -406,11 +424,11 @@ public final class Framework {
         }
     }
 
-    public void execJSResource(String resourceName) throws IOException {
+    public void execJavaScriptResource(String resourceName) throws IOException {
         execJavaScript(FileUtils.readAllTextFromSystemResource(resourceName));
     }
 
-    public void execJSFile(String filePath) throws IOException {
+    public void execJavaScriptFile(String filePath) throws IOException {
         execJavaScript(FileUtils.readAllText(new File(filePath)), globalScope);
     }
 
@@ -423,7 +441,7 @@ public final class Framework {
     }
 
     public void startGUI() {
-        if (inGUIMode) {
+        if (inGuiMode) {
             System.out.println("Already in GUI mode");
             return;
         }
@@ -457,15 +475,15 @@ public final class Framework {
             }
         });
 
-        inGUIMode = true;
+        inGuiMode = true;
     }
 
     public void shutdownGUI() throws OperationCancelledException {
-        if (inGUIMode) {
+        if (isInGuiMode()) {
             mainWindow.shutdown();
             mainWindow.dispose();
             mainWindow = null;
-            inGUIMode = false;
+            inGuiMode = false;
 
             contextFactory.call(new ContextAction() {
                 @Override
@@ -493,10 +511,6 @@ public final class Framework {
         return mainWindow;
     }
 
-    public ModelManager getModelManager() {
-        return modelManager;
-    }
-
     public PluginManager getPluginManager() {
         return pluginManager;
     }
@@ -514,7 +528,7 @@ public final class Framework {
     }
 
     public boolean isInGuiMode() {
-        return inGUIMode;
+        return inGuiMode;
     }
 
     public void setArgs(List<String> args) {
@@ -523,115 +537,185 @@ public final class Framework {
         contextFactory.call(setargs);
     }
 
-    private InputStream getUncompressedEntry(String name, InputStream zippedData) throws IOException {
-        ZipInputStream zis = new ZipInputStream(zippedData);
-        ZipEntry ze;
-        while ((ze = zis.getNextEntry()) != null) {
-            if (ze.getName().equals(name)) {
-                return zis;
-            }
-            zis.closeEntry();
-        }
-        zis.close();
-        return null;
-    }
-
-    private InputStream getMathData(byte[] bufferedInput, Document metaDoc) throws IOException {
-        Element mathElement = XmlUtil.getChildElement("math", metaDoc.getDocumentElement());
-        InputStream mathData = null;
-        if (mathElement != null) {
-            InputStream is = new ByteArrayInputStream(bufferedInput);
-            mathData = getUncompressedEntry(mathElement.getAttribute("entry-name"), is);
-        }
-        return mathData;
-    }
-
-    private InputStream getVisualData(byte[] bufferedInput, Document metaDoc)    throws IOException {
-        Element visualElement = XmlUtil.getChildElement("visual", metaDoc.getDocumentElement());
-        InputStream visualData = null;
-        if (visualElement  != null) {
-            InputStream is = new ByteArrayInputStream(bufferedInput);
-            visualData = getUncompressedEntry(visualElement.getAttribute("entry-name"), is);
-        }
-        return visualData;
-    }
-
-    private ModelDescriptor loadMetaDescriptor(Document metaDoc)
-            throws InstantiationException, IllegalAccessException, ClassNotFoundException {
-        Element descriptorElement = XmlUtil.getChildElement("descriptor", metaDoc.getDocumentElement());
-        String descriptorClass = XmlUtil.readStringAttr(descriptorElement, "class");
-        return (ModelDescriptor) Class.forName(descriptorClass).newInstance();
-    }
-
-    private Document loadMetaDoc(byte[] bufferedInput)
-            throws IOException, DeserialisationException, ParserConfigurationException, SAXException {
-        InputStream metaData = getUncompressedEntry("meta", new ByteArrayInputStream(bufferedInput));
-        if (metaData == null) {
-            throw new DeserialisationException("meta entry is missing in the ZIP file");
-        }
-        Document metaDoc = XmlUtil.loadDocument(metaData);
-        metaData.close();
-        return metaDoc;
-    }
-
-    private void loadVisualModelState(byte[] bi, VisualModel model, References references)
-            throws IOException, ParserConfigurationException, SAXException {
-        InputStream stateData = getUncompressedEntry("state.xml", new ByteArrayInputStream(bi));
-        if (stateData != null) {
-            Document stateDoc = XmlUtil.loadDocument(stateData);
-            Element stateElement = stateDoc.getDocumentElement();
-            // level
-            Element levelElement = XmlUtil.getChildElement("level", stateElement);
-            Object currentLevel = references.getObject(levelElement.getAttribute("ref"));
-            if (currentLevel instanceof Container) {
-                model.setCurrentLevel((Container) currentLevel);
-            }
-            // selection
-            Element selectionElement = XmlUtil.getChildElement("selection", stateElement);
-            Set<Node> nodes = new HashSet<>();
-            for (Element nodeElement: XmlUtil.getChildElements("node", selectionElement)) {
-                Object node = references.getObject(nodeElement.getAttribute("ref"));
-                if (node instanceof Node) {
-                    nodes.add((Node) node);
+    public void runCommand(WorkspaceEntry we, String className) {
+        if (className != null) {
+            for (Command command: Commands.getApplicableCommands(we)) {
+                String commandClassName = command.getClass().getSimpleName();
+                if (className.equals(commandClassName)) {
+                    Commands.run(we, command);
+                    break;
                 }
             }
-            model.addToSelection(nodes);
         }
     }
 
-    public ModelEntry load(String path) throws DeserialisationException {
-        File file = getFileByAbsoluteOrRelativePath(path);
-        if (checkFileMessageLog(file, null)) {
-            return load(file);
+    public WorkspaceEntry executeCommand(WorkspaceEntry we, String className) {
+        if ((className == null) || className.isEmpty()) {
+            LogUtils.logErrorLine("Undefined command name.");
+        } else {
+            boolean found = false;
+            boolean scriptable = false;
+            for (Command command: Commands.getCommands()) {
+                String commandClassName = command.getClass().getSimpleName();
+                if (className.equals(commandClassName)) {
+                    found = true;
+                    if (command instanceof ScriptableCommand) {
+                        scriptable = true;
+                        if (command.isApplicableTo(we)) {
+                            return Commands.execute(we, (ScriptableCommand) command);
+                        }
+                    }
+                }
+            }
+            if (!found) {
+                LogUtils.logErrorLine("Command '" + className + "' is not found.");
+            } else if (!scriptable) {
+                LogUtils.logErrorLine("Command '" + className + "' cannot be used in scripts.");
+            } else {
+                LogUtils.logErrorLine("Command '" + className + "' is incompatible"
+                        + " with workspace entry '" + we.getWorkspacePath() + "'.");
+            }
         }
         return null;
     }
 
-    public ModelEntry load(File file) throws DeserialisationException {
+    public WorkspaceEntry createWork(ModelEntry me, Path<String> path) {
+        WorkspaceEntry we = new WorkspaceEntry(getWorkspace());
+        we.setChanged(true);
+        we.setModelEntry(createVisual(me));
+        getWorkspace().addWork(path, we);
+        boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
+        if (openInEditor && isInGuiMode()) {
+            getMainWindow().createEditorWindow(we);
+        }
+        return we;
+    }
+
+    public WorkspaceEntry createWork(ModelEntry me, Path<String> directory, String desiredName) {
+        final Path<String> path = getWorkspace().createWorkPath(directory, desiredName);
+        return createWork(me, path);
+    }
+
+    private ModelEntry createVisual(ModelEntry me) {
+        ModelEntry result = me;
+        VisualModel visualModel = me.getVisualModel();
+        if (visualModel == null) {
+            ModelDescriptor descriptor = me.getDescriptor();
+            VisualModelDescriptor vmd = descriptor.getVisualModelDescriptor();
+            if (vmd == null) {
+                JOptionPane.showMessageDialog(getMainWindow(),
+                        "A visual model could not be created for the selected model.\n"
+                        + "Model '" + descriptor.getDisplayName() + "' does not have visual model support.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+            }
+            try {
+                visualModel = vmd.create((MathModel) me.getModel());
+                result = new ModelEntry(descriptor, visualModel);
+            } catch (VisualModelInstantiationException e) {
+                JOptionPane.showMessageDialog(getMainWindow(),
+                        "A visual model could not be created for the selected model.\n"
+                        + "Please refer to the Problems window for details.\n",
+                        "Error", JOptionPane.ERROR_MESSAGE);
+                e.printStackTrace();
+            }
+            AbstractLayoutCommand layoutCommand = visualModel.getBestLayouter();
+            if (layoutCommand == null) {
+                layoutCommand = new DotLayoutCommand();
+            }
+            try {
+                layoutCommand.layout(visualModel);
+            } catch (LayoutException e) {
+                layoutCommand = new RandomLayoutCommand();
+                layoutCommand.layout(visualModel);
+            }
+        }
+        return result;
+    }
+
+    public WorkspaceEntry loadWork(String path) throws DeserialisationException {
+        File file = getFileByAbsoluteOrRelativePath(path);
+        if (checkFileMessageLog(file, null)) {
+            return loadWork(file);
+        }
+        return null;
+    }
+
+    public WorkspaceEntry loadWork(File file) throws DeserialisationException {
+        // Check if work is already loaded
+        Path<String> workspacePath = getWorkspace().getPath(file);
+        for (WorkspaceEntry we : getWorkspace().getWorks()) {
+            if (we.getWorkspacePath().equals(workspacePath)) {
+                return we;
+            }
+        }
+
+        // Load (from *.work) or import (other extensions) work
+        WorkspaceEntry we = new WorkspaceEntry(getWorkspace());
+        we.setChanged(false);
+        if (file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+            we.setModelEntry(loadModel(file));
+            if (workspacePath == null) {
+                workspacePath = getWorkspace().tempMountExternalFile(file);
+            }
+        } else {
+            we.setModelEntry(importModel(file));
+            Path<String> parent;
+            if (workspacePath == null) {
+                parent = Path.empty();
+            } else {
+                parent = workspacePath.getParent();
+            }
+            String desiredName = FileUtils.getFileNameWithoutExtension(file);
+            workspacePath = getWorkspace().createWorkPath(parent, desiredName);
+        }
+        getWorkspace().addWork(workspacePath, we);
+        return we;
+    }
+
+    public WorkspaceEntry mergeWork(WorkspaceEntry we, File file) throws DeserialisationException {
+        if ((we != null) && file.exists() && file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+            we.insert(loadModel(file));
+        }
+        return we;
+    }
+
+    public void closeWork(WorkspaceEntry we) {
+        getWorkspace().removeWork(we);
+    }
+
+    public ModelEntry loadModel(String path) throws DeserialisationException {
+        File file = getFileByAbsoluteOrRelativePath(path);
+        if (checkFileMessageLog(file, null)) {
+            return loadModel(file);
+        }
+        return null;
+    }
+
+    public ModelEntry loadModel(File file) throws DeserialisationException {
         try {
             FileInputStream fis = new FileInputStream(file);
             ByteArrayInputStream bis = compatibilityManager.process(fis);
-            return load(bis);
+            return loadModel(bis);
         } catch (FileNotFoundException e) {
             throw new DeserialisationException(e);
         }
     }
 
-    public ModelEntry load(InputStream is) throws DeserialisationException {
+    public ModelEntry loadModel(InputStream is) throws DeserialisationException {
         try {
             // load meta data
             byte[] bi = DataAccumulator.loadStream(is);
-            Document metaDoc = loadMetaDoc(bi);
-            ModelDescriptor descriptor = loadMetaDescriptor(metaDoc);
+            Document metaDoc = FrameworkUtils.loadMetaDoc(bi);
+            ModelDescriptor descriptor = FrameworkUtils.loadMetaDescriptor(metaDoc);
 
             // load math model
-            InputStream mathData = getMathData(bi, metaDoc);
+            InputStream mathData = FrameworkUtils.getMathData(bi, metaDoc);
             XMLModelDeserialiser mathDeserialiser = new XMLModelDeserialiser(getPluginManager());
             DeserialisationResult mathResult = mathDeserialiser.deserialise(mathData, null, null);
             mathData.close();
 
             // load visual model (if present)
-            InputStream visualData = getVisualData(bi, metaDoc);
+            InputStream visualData = FrameworkUtils.getVisualData(bi, metaDoc);
             if (visualData == null) {
                 return new ModelEntry(descriptor, mathResult.model);
             }
@@ -641,7 +725,7 @@ public final class Framework {
 
             // load current level and selection
             if (visualResult.model instanceof VisualModel) {
-                loadVisualModelState(bi, (VisualModel) visualResult.model, visualResult.references);
+                FrameworkUtils.loadVisualModelState(bi, (VisualModel) visualResult.model, visualResult.references);
             }
             return new ModelEntry(descriptor, visualResult.model);
         } catch (IOException | ParserConfigurationException | SAXException |
@@ -650,17 +734,17 @@ public final class Framework {
         }
     }
 
-    public ModelEntry load(Memento memento) {
+    public ModelEntry loadModel(Memento memento) {
         try {
-            return load(memento.getStream());
+            return loadModel(memento.getStream());
         } catch (DeserialisationException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public ModelEntry load(InputStream is1, InputStream is2) throws DeserialisationException {
-        ModelEntry me1 = load(is1);
-        ModelEntry me2 = load(is2);
+    public ModelEntry loadModel(InputStream is1, InputStream is2) throws DeserialisationException {
+        ModelEntry me1 = loadModel(is1);
+        ModelEntry me2 = loadModel(is2);
 
         VisualModel vmodel1 = me1.getVisualModel();
         VisualModel vmodel2 = me2.getVisualModel();
@@ -676,48 +760,33 @@ public final class Framework {
         vmodel1.select(children);
 
         // FIXME: Dirty hack to avoid any hanging observers (serialise and deserialise the model).
-        Memento memo = save(me1);
-        return load(memo);
+        Memento memo = saveModel(me1);
+        return loadModel(memo);
     }
 
-    public void save(ModelEntry modelEntry, String path) throws SerialisationException {
+    public void saveWork(WorkspaceEntry we, String path) throws SerialisationException {
+        if (we == null) return;
+        saveModel(we.getModelEntry(), path);
+    }
+
+    public void saveModel(ModelEntry modelEntry, String path) throws SerialisationException {
         if (modelEntry == null) return;
         File file = getFileByAbsoluteOrRelativePath(path);
-        save(modelEntry, file);
+        saveModel(modelEntry, file);
     }
 
-    public void save(ModelEntry modelEntry, File file) throws SerialisationException {
+    public void saveModel(ModelEntry modelEntry, File file) throws SerialisationException {
         if (modelEntry == null) return;
         try {
             FileOutputStream stream = new FileOutputStream(file);
-            save(modelEntry, stream);
+            saveModel(modelEntry, stream);
             stream.close();
         } catch (IOException e) {
             throw new SerialisationException(e);
         }
     }
 
-    private void saveSelectionState(VisualModel visualModel, OutputStream os, ReferenceProducer visualRefs)
-            throws ParserConfigurationException, IOException {
-        Document stateDoc = XmlUtil.createDocument();
-        Element stateRoot = stateDoc.createElement("workcraft-state");
-        stateDoc.appendChild(stateRoot);
-        // level
-        Element levelElement = stateDoc.createElement("level");
-        levelElement.setAttribute("ref", visualRefs.getReference(visualModel.getCurrentLevel()));
-        stateRoot.appendChild(levelElement);
-        // selection
-        Element selectionElement = stateDoc.createElement("selection");
-        for (Node node: visualModel.getSelection()) {
-            Element nodeElement = stateDoc.createElement("node");
-            nodeElement.setAttribute("ref", visualRefs.getReference(node));
-            selectionElement.appendChild(nodeElement);
-        }
-        stateRoot.appendChild(selectionElement);
-        XmlUtil.writeDocument(stateDoc, os);
-    }
-
-    public void save(ModelEntry modelEntry, OutputStream out) throws SerialisationException {
+    public void saveModel(ModelEntry modelEntry, OutputStream out) throws SerialisationException {
         Model model = modelEntry.getModel();
         VisualModel visualModel = (model instanceof VisualModel) ? (VisualModel) model : null;
         Model mathModel = (visualModel == null) ? model : visualModel.getMathModel();
@@ -741,7 +810,7 @@ public final class Framework {
                 zos.closeEntry();
                 // serialise visual model selection state
                 zos.putNextEntry(new ZipEntry("state.xml"));
-                saveSelectionState(visualModel, zos, visualRefs);
+                FrameworkUtils.saveSelectionState(visualModel, zos, visualRefs);
                 zos.closeEntry();
             }
             // serialise meta data
@@ -774,22 +843,22 @@ public final class Framework {
         }
     }
 
-    public Memento save(ModelEntry modelEntry) {
+    public Memento saveModel(ModelEntry modelEntry) {
         ByteArrayOutputStream os = new ByteArrayOutputStream();
         try {
-            save(modelEntry, os);
+            saveModel(modelEntry, os);
         } catch (SerialisationException e) {
             throw new RuntimeException(e);
         }
         return new Memento(os.toByteArray());
     }
 
-    public ModelEntry importFile(String path) throws DeserialisationException {
+    public ModelEntry importModel(String path) throws DeserialisationException {
         File file = getFileByAbsoluteOrRelativePath(path);
-        return importFile(file);
+        return importModel(file);
     }
 
-    public ModelEntry importFile(File file) throws DeserialisationException {
+    public ModelEntry importModel(File file) throws DeserialisationException {
         try {
             final Importer importer = Import.chooseBestImporter(getPluginManager(), file);
             return Import.importFromFile(importer, file);
@@ -798,18 +867,22 @@ public final class Framework {
         }
     }
 
-    public void exportFile(ModelEntry modelEntry, String path, String format) throws SerialisationException {
+    public void exportWork(WorkspaceEntry we, String path, String format) throws SerialisationException {
+        exportModel(we.getModelEntry(), path, format);
+    }
+
+    public void exportModel(ModelEntry modelEntry, String path, String format) throws SerialisationException {
         if (modelEntry == null) return;
         File file = getFileByAbsoluteOrRelativePath(path);
         UUID uuid = Format.getUUID(format);
         if (uuid == null) {
             LogUtils.logErrorLine("'" + format + "' format is not supported.");
         } else {
-            exportFile(modelEntry, file, uuid);
+            exportModel(modelEntry, file, uuid);
         }
     }
 
-    public void exportFile(ModelEntry modelEntry, File file, UUID uuid) throws SerialisationException {
+    public void exportModel(ModelEntry modelEntry, File file, UUID uuid) throws SerialisationException {
         if (modelEntry == null) return;
         Exporter exporter = Export.chooseBestExporter(getPluginManager(), modelEntry.getMathModel(), uuid);
         if (exporter == null) {
@@ -825,9 +898,13 @@ public final class Framework {
         }
     }
 
-    public void initPlugins() {
+    public void initPlugins(boolean load) {
         try {
-            pluginManager.loadManifest();
+            if (load) {
+                pluginManager.loadManifest();
+            } else {
+                pluginManager.reconfigureManifest(false);
+            }
         } catch (IOException | FormatException | PluginInstantiationException e) {
             e.printStackTrace();
         }

@@ -5,7 +5,7 @@ import java.awt.event.MouseEvent;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.tools.DefaultNodeGenerator;
+import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.plugins.circuit.FunctionContact;
 

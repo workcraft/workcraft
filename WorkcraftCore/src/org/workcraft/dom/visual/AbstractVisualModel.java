@@ -50,6 +50,7 @@ import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
+import org.workcraft.gui.graph.commands.AbstractLayoutCommand;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.TitlePropertyDescriptor;
@@ -59,8 +60,7 @@ import org.workcraft.observation.SelectionChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.StateSupervisor;
-import org.workcraft.plugins.layout.AbstractLayoutTool;
-import org.workcraft.plugins.layout.DotLayoutTool;
+import org.workcraft.plugins.layout.DotLayoutCommand;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
@@ -682,8 +682,8 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     }
 
     @Override
-    public AbstractLayoutTool getBestLayoutTool() {
-        return new DotLayoutTool();
+    public AbstractLayoutCommand getBestLayouter() {
+        return new DotLayoutCommand();
     }
 
 }

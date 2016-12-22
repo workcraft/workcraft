@@ -10,6 +10,7 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.ToolboxPanel;
+import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
 
 public class CommentGeneratorTool extends NodeGeneratorTool {
 

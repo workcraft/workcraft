@@ -6,21 +6,21 @@ import org.workcraft.Framework;
 import org.workcraft.Initialiser;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
-import org.workcraft.Tool;
+import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.propertyeditor.Settings;
-import org.workcraft.plugins.petrify.tools.PetrifyCscConflictResolution;
-import org.workcraft.plugins.petrify.tools.PetrifyDummyContraction;
-import org.workcraft.plugins.petrify.tools.PetrifyNetSynthesis;
-import org.workcraft.plugins.petrify.tools.PetrifyNetSynthesisHide;
-import org.workcraft.plugins.petrify.tools.PetrifySynthesisComplexGate;
-import org.workcraft.plugins.petrify.tools.PetrifySynthesisGeneralisedCelement;
-import org.workcraft.plugins.petrify.tools.PetrifySynthesisStandardCelement;
-import org.workcraft.plugins.petrify.tools.PetrifySynthesisTechnologyMapping;
-import org.workcraft.plugins.petrify.tools.PetrifyUntoggle;
+import org.workcraft.plugins.petrify.commands.PetrifyComplexGateSynthesisCommand;
+import org.workcraft.plugins.petrify.commands.PetrifyCscConflictResolutionCommand;
+import org.workcraft.plugins.petrify.commands.PetrifyGeneralisedCelementSynthesisCommand;
+import org.workcraft.plugins.petrify.commands.PetrifyHideConversionCommand;
+import org.workcraft.plugins.petrify.commands.PetrifyHideDummyConversionCommand;
+import org.workcraft.plugins.petrify.commands.PetrifyNetConversionCommand;
+import org.workcraft.plugins.petrify.commands.PetrifyStandardCelementSynthesisCommand;
+import org.workcraft.plugins.petrify.commands.PetrifyTechnologyMappingSynthesisCommand;
+import org.workcraft.plugins.petrify.commands.PetrifyUntoggleConversionCommand;
 
 public class PetrifyModule implements Module {
 
-    private final class PetrifyNetSynthesisEr extends PetrifyNetSynthesis {
+    private final class PetrifyNetErConversionCommand extends PetrifyNetConversionCommand {
         @Override
         public String getDisplayName() {
             return "Net synthesis [Petrify with -er option]";
@@ -34,7 +34,7 @@ public class PetrifyModule implements Module {
         }
     }
 
-    private final class PetrifyNetSynthesisHideEr extends PetrifyNetSynthesisHide {
+    private final class PetrifyHideErConversionCommand extends PetrifyHideConversionCommand {
         @Override
         public String getDisplayName() {
             return "Net synthesis hiding selected signals and dummies [Petrify with -er option]";
@@ -55,27 +55,27 @@ public class PetrifyModule implements Module {
 
         pm.registerClass(Settings.class, PetrifyUtilitySettings.class);
 
-        pm.registerClass(Tool.class, PetrifyUntoggle.class);
-        pm.registerClass(Tool.class, PetrifyCscConflictResolution.class);
-        pm.registerClass(Tool.class, PetrifySynthesisComplexGate.class);
-        pm.registerClass(Tool.class, PetrifySynthesisGeneralisedCelement.class);
-        pm.registerClass(Tool.class, PetrifySynthesisStandardCelement.class);
-        pm.registerClass(Tool.class, PetrifySynthesisTechnologyMapping.class);
-        pm.registerClass(Tool.class, PetrifyDummyContraction.class);
-        pm.registerClass(Tool.class, PetrifyNetSynthesis.class);
-        pm.registerClass(Tool.class, PetrifyNetSynthesisHide.class);
+        pm.registerClass(Command.class, PetrifyUntoggleConversionCommand.class);
+        pm.registerClass(Command.class, PetrifyCscConflictResolutionCommand.class);
+        pm.registerClass(Command.class, PetrifyComplexGateSynthesisCommand.class);
+        pm.registerClass(Command.class, PetrifyGeneralisedCelementSynthesisCommand.class);
+        pm.registerClass(Command.class, PetrifyStandardCelementSynthesisCommand.class);
+        pm.registerClass(Command.class, PetrifyTechnologyMappingSynthesisCommand.class);
+        pm.registerClass(Command.class, PetrifyHideDummyConversionCommand.class);
+        pm.registerClass(Command.class, PetrifyNetConversionCommand.class);
+        pm.registerClass(Command.class, PetrifyHideConversionCommand.class);
 
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+        pm.registerClass(Command.class, new Initialiser<Command>() {
             @Override
-            public Tool create() {
-                return new PetrifyNetSynthesisEr();
+            public Command create() {
+                return new PetrifyNetErConversionCommand();
             }
         });
 
-        pm.registerClass(Tool.class, new Initialiser<Tool>() {
+        pm.registerClass(Command.class, new Initialiser<Command>() {
             @Override
-            public Tool create() {
-                return new PetrifyNetSynthesisHideEr();
+            public Command create() {
+                return new PetrifyHideErConversionCommand();
             }
         });
     }

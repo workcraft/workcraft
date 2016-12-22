@@ -2,12 +2,12 @@ package org.workcraft.gui.actions;
 
 import org.workcraft.Framework;
 import org.workcraft.NodeTransformer;
-import org.workcraft.Tool;
+import org.workcraft.gui.graph.commands.Command;
 
 public class PopupToolAction extends Action {
-    Tool tool;
+    Command tool;
 
-    public PopupToolAction(Tool tool) {
+    public PopupToolAction(Command tool) {
         this.tool = tool;
     }
 
@@ -19,7 +19,7 @@ public class PopupToolAction extends Action {
     @Override
     public void run() {
         final Framework framework = Framework.getInstance();
-        framework.getMainWindow().runTool(tool);
+        framework.getMainWindow().runCommand(tool);
     }
 
 }

@@ -50,8 +50,8 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
             File envFile = visualCircuit.getEnvironmentFile();
 
             // Load device STG
-            CircuitToStgConverter generator = new CircuitToStgConverter(visualCircuit);
-            Stg devStg = (Stg) generator.getStg().getMathModel();
+            CircuitToStgConverter converter = new CircuitToStgConverter(visualCircuit);
+            Stg devStg = (Stg) converter.getStg().getMathModel();
 
             // Load environment STG
             Stg envStg = StgUtils.loadStg(envFile);
