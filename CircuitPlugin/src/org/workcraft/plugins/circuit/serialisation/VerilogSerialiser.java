@@ -58,6 +58,7 @@ public class VerilogSerialiser implements ModelSerialiser {
     private static final String KEYWORD_INPUT = "input";
     private static final String KEYWORD_MODULE = "module";
     private static final String KEYWORD_ENDMODULE = "endmodule";
+    private static final String KEYWORD_ASSIGN = "assign";
 
     class ReferenceResolver implements ReferenceProducer {
         HashMap<Object, String> refMap = new HashMap<>();
@@ -195,6 +196,11 @@ public class VerilogSerialiser implements ModelSerialiser {
             if (contact.isInput()) continue;
             String formula = null;
             String wireName = CircuitUtils.getWireName(circuit, contact);
+            if ((wireName == null) || wireName.isEmpty()) {
+                String contactName = contact.getName();
+                LogUtils.logWarningLine("In component '" + instanceFlatName + "' contact '" + contactName + "' is disconnected.");
+                continue;
+            }
             BooleanFormula setFunction = BooleanUtils.cleverReplace(contact.getSetFunction(), variables, values);
             String setFormula = FormulaToString.toString(setFunction, Style.VERILOG);
             BooleanFormula resetFunction = BooleanUtils.cleverReplace(contact.getResetFunction(), variables, values);
@@ -203,14 +209,14 @@ public class VerilogSerialiser implements ModelSerialiser {
             }
             String resetFormula = FormulaToString.toString(resetFunction, Style.VERILOG);
             if (!setFormula.isEmpty() && !resetFormula.isEmpty()) {
-                formula = setFormula + wireName + "& (" + resetFormula + ")";
+                formula = setFormula + " | " + wireName + " & (" + resetFormula + ")";
             } else if (!setFormula.isEmpty()) {
                 formula = setFormula;
             } else if (!resetFormula.isEmpty()) {
                 formula = resetFormula;
             }
             if ((formula != null) && !formula.isEmpty()) {
-                out.println("    assign " + wireName + " = " + formula + ";");
+                out.println("    " + KEYWORD_ASSIGN + " " + wireName + " = " + formula + ";");
                 result = true;
             }
         }

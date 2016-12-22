@@ -187,7 +187,7 @@ public class CircuitUtils {
         String result = null;
         if (!circuit.getPreset(contact).isEmpty() || !circuit.getPostset(contact).isEmpty()) {
             Contact signal = findSignal(circuit, contact, false);
-            result = getContactName(circuit, signal);
+            result = getSignalName(circuit, signal);
         }
         return result;
     }

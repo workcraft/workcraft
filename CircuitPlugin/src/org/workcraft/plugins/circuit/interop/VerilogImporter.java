@@ -39,7 +39,10 @@ import java.util.Set;
 import org.workcraft.Framework;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
+import org.workcraft.dom.references.NameManager;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
@@ -93,7 +96,6 @@ public class VerilogImporter implements Importer {
 
     private static final String PRIMITIVE_GATE_INPUT_PREFIX = "i";
     private static final String PRIMITIVE_GATE_OUTPUT_NAME = "o";
-    private static final String ASSIGN_GATE_PREFIX = "assign_";
 
     private final boolean sequentialAssign;
 
@@ -252,12 +254,7 @@ public class VerilogImporter implements Importer {
     private FunctionComponent createAssignGate(Circuit circuit, Assign assign, HashMap<String, Wire> wires) {
         final FunctionComponent component = new FunctionComponent();
         circuit.add(component);
-        String componentName = getAssignComponentName(assign.name);
-        try {
-            circuit.setName(component, componentName);
-        } catch (ArgumentException e) {
-            LogUtils.logWarningLine("Cannot set name '" + componentName + "' for component '" + circuit.getName(component) + "'.");
-        }
+        setAssignComponentName(circuit, component, assign.name);
 
         AssignGate assignGate = null;
         if (sequentialAssign && isSequentialAssign(assign)) {
@@ -300,8 +297,19 @@ public class VerilogImporter implements Importer {
         return component;
     }
 
-    private String getAssignComponentName(String name) {
-        return ASSIGN_GATE_PREFIX + removeLeadingAndTrailingSymbol(name, '_');
+    private void setAssignComponentName(Circuit circuit, FunctionComponent component, String name) {
+        HierarchicalUniqueNameReferenceManager refManager
+                = (HierarchicalUniqueNameReferenceManager) circuit.getReferenceManager();
+
+        NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(circuit.getRoot());
+        NameManager nameManagerer = refManager.getNameManager(namespaceProvider);
+        String candidateName = removeLeadingAndTrailingSymbol(name, '_');
+        String componentName = nameManagerer.getDerivedName(component, candidateName);
+        try {
+            circuit.setName(component, componentName);
+        } catch (ArgumentException e) {
+            LogUtils.logWarningLine("Cannot set name '" + componentName + "' for component '" + circuit.getName(component) + "'.");
+        }
     }
 
     private String removeLeadingAndTrailingSymbol(String s, char c) {
