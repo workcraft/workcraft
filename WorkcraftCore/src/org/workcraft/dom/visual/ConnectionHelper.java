@@ -199,6 +199,17 @@ public class ConnectionHelper {
         }
     }
 
+    public static void moveControlPoints(VisualConnection connection, Point2D offset) {
+        if ((connection != null) && (offset != null)) {
+            ConnectionGraphic graphic = connection.getGraphic();
+            for (ControlPoint cp:  graphic.getControlPoints()) {
+                Point2D p1 = cp.getPosition();
+                Point2D p2 = new Point2D.Double(p1.getX() + offset.getX(), p1.getY() + offset.getY());
+                cp.setPosition(p2);
+            }
+        }
+    }
+
     public static void removeControlPointsByDistance(Polyline polyline, Point2D pos, double threshold) {
         List<ControlPoint> controlPoints = new LinkedList<>(polyline.getControlPoints());
         for (ControlPoint cp:  controlPoints) {

@@ -11,6 +11,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.BoundingBoxHelper;
+import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.ControlPoint;
@@ -81,7 +82,8 @@ public class WaggingGenerator {
         if (hasInterface.getSecond()) {
             insertPopControl();
         }
-        createGroups();
+        cleanup();
+        group();
     }
 
     private void replicateSelection() {
@@ -151,6 +153,9 @@ public class WaggingGenerator {
             }
             replica.copyStyle(connection);
             replica.copyShape(connection);
+            Point2D p = connection.getFirstCenter();
+            Point2D offset = new Point2D.Double(first.getX() - p.getX(), first.getY() - p.getY());
+            ConnectionHelper.moveControlPoints(replica, offset);
         }
         return replica;
     }
@@ -281,12 +286,15 @@ public class WaggingGenerator {
         }
     }
 
-    private void createGroups() {
+    private void cleanup() {
         dfs.selectNone();
         for (VisualComponent component: selectedComponents) {
             dfs.addToSelection(component);
         }
         dfs.deleteSelection();
+    }
+
+    private void group() {
         // data components
         ArrayList<Node> dataNodes = new ArrayList<>();
         for (WaggingData waggingData: wagging) {

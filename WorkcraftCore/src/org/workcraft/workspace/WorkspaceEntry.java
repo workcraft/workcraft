@@ -332,7 +332,7 @@ public class WorkspaceEntry implements ObservableState {
         if (model.getSelection().size() > 0) {
             captureMemento();
             try {
-                // copy selected nodes inside a group as if it was the root
+                // Copy selected nodes inside a group as if it was the root.
                 while (model.getCurrentLevel() != model.getRoot()) {
                     Collection<Node> nodes = new HashSet<>(model.getSelection());
                     Container level = model.getCurrentLevel();
@@ -349,8 +349,7 @@ public class WorkspaceEntry implements ObservableState {
                 final Framework framework = Framework.getInstance();
                 framework.clipboard = framework.saveModel(modelEntry);
                 if (CommonDebugSettings.getCopyModelOnChange()) {
-                    // copy the memento clipboard into the system-wide clipboard
-                    // as a string
+                    // Copy the memento clipboard into the system-wide clipboard as a string.
                     Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
                     clipboard.setContents(new StringSelection(getClipboardAsString()), null);
                 }
