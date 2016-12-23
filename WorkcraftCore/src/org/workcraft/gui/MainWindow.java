@@ -139,8 +139,8 @@ public class MainWindow extends JFrame {
     private static final String DIALOG_RESET_LAYOUT = "Reset layout";
 
     private final ScriptedActionListener defaultActionListener = new ScriptedActionListener() {
-        public void actionPerformed(Action e) {
-            e.run();
+        public void actionPerformed(Action action) {
+            action.run();
         }
     };
 
@@ -784,8 +784,9 @@ public class MainWindow extends JFrame {
         }
         // Set file filters
         fc.setAcceptAllFileFilterUsed(false);
-        fc.setFileFilter(FileFilters.DOCUMENT_FILES);
-        if (importers != null) {
+        if ((importers == null) || (importers.length == 0)) {
+            fc.setFileFilter(FileFilters.DOCUMENT_FILES);
+        } else {
             for (Importer importer : importers) {
                 fc.addChoosableFileFilter(new ImporterFileFilter(importer));
             }
@@ -1034,8 +1035,8 @@ public class MainWindow extends JFrame {
 
         JFileChooser fc = createOpenDialog("Import model(s)", true, importers);
         if (fc.showDialog(this, "Open") == JFileChooser.APPROVE_OPTION) {
-            for (File f : fc.getSelectedFiles()) {
-                importFrom(f, importers);
+            for (File file : fc.getSelectedFiles()) {
+                importFrom(file, importers);
             }
         }
     }
