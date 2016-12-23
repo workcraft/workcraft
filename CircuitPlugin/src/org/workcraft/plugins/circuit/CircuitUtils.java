@@ -183,19 +183,6 @@ public class CircuitUtils {
         return circuit.getVisualComponent(mathSignal, VisualContact.class);
     }
 
-    public static String getWireName(Circuit circuit, Contact contact) {
-        String result = null;
-        if (!circuit.getPreset(contact).isEmpty() || !circuit.getPostset(contact).isEmpty()) {
-            Contact signal = findSignal(circuit, contact, false);
-            result = getSignalName(circuit, signal);
-        }
-        return result;
-    }
-
-    public static String getWireName(VisualCircuit circuit, VisualContact contact) {
-        return getWireName((Circuit) circuit.getMathModel(), contact.getReferencedContact());
-    }
-
     public static String getSignalName(Circuit circuit, Contact contact) {
         String result = null;
         if (contact.isPort() || contact.isInput()) {
