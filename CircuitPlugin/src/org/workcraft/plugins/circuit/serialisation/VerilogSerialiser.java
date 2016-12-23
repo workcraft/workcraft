@@ -29,6 +29,7 @@ import java.util.LinkedList;
 import java.util.UUID;
 
 import org.workcraft.dom.Model;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.formula.BooleanFormula;
@@ -58,6 +59,7 @@ public class VerilogSerialiser implements ModelSerialiser {
     private static final String KEYWORD_INPUT = "input";
     private static final String KEYWORD_MODULE = "module";
     private static final String KEYWORD_ENDMODULE = "endmodule";
+    private static final String KEYWORD_ASSIGN = "assign";
 
     class ReferenceResolver implements ReferenceProducer {
         HashMap<Object, String> refMap = new HashMap<>();
@@ -101,7 +103,34 @@ public class VerilogSerialiser implements ModelSerialiser {
         return Format.VERILOG;
     }
 
+    private final HashMap<Contact, String> contactWires = new HashMap<>();
+
+    private String getWireName(Circuit circuit, Contact contact) {
+        String result = contactWires.get(contact);
+        if (result == null) {
+            if (!circuit.getPreset(contact).isEmpty() || !circuit.getPostset(contact).isEmpty()) {
+                Contact signal = CircuitUtils.findSignal(circuit, contact, false);
+                Node parent = signal.getParent();
+                boolean isAssignOutput = false;
+                if (parent instanceof FunctionComponent) {
+                    FunctionComponent component = (FunctionComponent) parent;
+                    isAssignOutput = signal.isOutput() && !component.isMapped();
+                }
+                if (isAssignOutput) {
+                    result = CircuitUtils.getSignalName(circuit, signal);
+                } else {
+                    result = CircuitUtils.getContactName(circuit, signal);
+                }
+            }
+            if (result != null) {
+                contactWires.put(contact, result);
+            }
+        }
+        return result;
+    }
+
     private void writeCircuit(PrintWriter out, Circuit circuit) {
+        contactWires.clear();
         writeHeader(out, circuit);
         writeInstances(out, circuit);
         writeInitialState(out, circuit);
@@ -184,7 +213,7 @@ public class VerilogSerialiser implements ModelSerialiser {
         LinkedList<BooleanFormula> values = new LinkedList<>();
         for (FunctionContact contact: component.getFunctionContacts()) {
             if (contact.isOutput()) continue;
-            String wireName = CircuitUtils.getWireName(circuit, contact);
+            String wireName = getWireName(circuit, contact);
             BooleanFormula wire = signals.get(wireName);
             if (wire != null) {
                 variables.add(contact);
@@ -194,7 +223,12 @@ public class VerilogSerialiser implements ModelSerialiser {
         for (FunctionContact contact: component.getFunctionContacts()) {
             if (contact.isInput()) continue;
             String formula = null;
-            String wireName = CircuitUtils.getWireName(circuit, contact);
+            String wireName = getWireName(circuit, contact);
+            if ((wireName == null) || wireName.isEmpty()) {
+                String contactName = contact.getName();
+                LogUtils.logWarningLine("In component '" + instanceFlatName + "' contact '" + contactName + "' is disconnected.");
+                continue;
+            }
             BooleanFormula setFunction = BooleanUtils.cleverReplace(contact.getSetFunction(), variables, values);
             String setFormula = FormulaToString.toString(setFunction, Style.VERILOG);
             BooleanFormula resetFunction = BooleanUtils.cleverReplace(contact.getResetFunction(), variables, values);
@@ -203,14 +237,14 @@ public class VerilogSerialiser implements ModelSerialiser {
             }
             String resetFormula = FormulaToString.toString(resetFunction, Style.VERILOG);
             if (!setFormula.isEmpty() && !resetFormula.isEmpty()) {
-                formula = setFormula + wireName + "& (" + resetFormula + ")";
+                formula = setFormula + " | " + wireName + " & (" + resetFormula + ")";
             } else if (!setFormula.isEmpty()) {
                 formula = setFormula;
             } else if (!resetFormula.isEmpty()) {
                 formula = resetFormula;
             }
             if ((formula != null) && !formula.isEmpty()) {
-                out.println("    assign " + wireName + " = " + formula + ";");
+                out.println("    " + KEYWORD_ASSIGN + " " + wireName + " = " + formula + ";");
                 result = true;
             }
         }
@@ -223,7 +257,7 @@ public class VerilogSerialiser implements ModelSerialiser {
             String signalName = null;
             BooleanFormula signal = null;
             if (contact.isDriver()) {
-                signalName = CircuitUtils.getWireName(circuit, contact);
+                signalName = getWireName(circuit, contact);
                 if (contact.isPort()) {
                     signal = contact;
                 } else {
@@ -261,7 +295,7 @@ public class VerilogSerialiser implements ModelSerialiser {
             } else {
                 out.print(", ");
             }
-            String wireName = CircuitUtils.getWireName(circuit, contact);
+            String wireName = getWireName(circuit, contact);
             if ((wireName == null) || wireName.isEmpty()) {
                 String contactName = contact.getName();
                 LogUtils.logWarningLine("In component '" + instanceFlatName + "' contact '" + contactName + "' is disconnected.");
@@ -287,7 +321,7 @@ public class VerilogSerialiser implements ModelSerialiser {
         out.println("    // signal values at the initial state:");
         out.print("    //");
         for (Contact contact: contacts) {
-            String wireName = CircuitUtils.getWireName(circuit, contact);
+            String wireName = getWireName(circuit, contact);
             if ((wireName != null) && !wireName.isEmpty()) {
                 out.print(" ");
                 if (!contact.getInitToOne()) {

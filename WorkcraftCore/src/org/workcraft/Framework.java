@@ -579,27 +579,29 @@ public final class Framework {
         return null;
     }
 
-    public WorkspaceEntry createWork(ModelEntry me, Path<String> path) {
+    public WorkspaceEntry createWork(ModelEntry me, Path<String> directory, String desiredName) {
+        final Path<String> path = getWorkspace().createWorkPath(directory, desiredName);
+        boolean open = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
+        return createWork(me, path, open, true);
+    }
+
+    private WorkspaceEntry createWork(ModelEntry me, Path<String> path, boolean open, boolean changed) {
         WorkspaceEntry we = new WorkspaceEntry(getWorkspace());
-        we.setChanged(true);
+        we.setChanged(changed);
         we.setModelEntry(createVisual(me));
         getWorkspace().addWork(path, we);
-        boolean openInEditor = me.isVisual() || CommonEditorSettings.getOpenNonvisual();
-        if (openInEditor && isInGuiMode()) {
+        if (open && isInGuiMode()) {
             getMainWindow().createEditorWindow(we);
         }
         return we;
     }
 
-    public WorkspaceEntry createWork(ModelEntry me, Path<String> directory, String desiredName) {
-        final Path<String> path = getWorkspace().createWorkPath(directory, desiredName);
-        return createWork(me, path);
-    }
-
     private ModelEntry createVisual(ModelEntry me) {
         ModelEntry result = me;
         VisualModel visualModel = me.getVisualModel();
-        if (visualModel == null) {
+        if (visualModel != null) {
+            visualModel.selectNone();
+        } else {
             ModelDescriptor descriptor = me.getDescriptor();
             VisualModelDescriptor vmd = descriptor.getVisualModelDescriptor();
             if (vmd == null) {
@@ -642,33 +644,35 @@ public final class Framework {
 
     public WorkspaceEntry loadWork(File file) throws DeserialisationException {
         // Check if work is already loaded
-        Path<String> workspacePath = getWorkspace().getPath(file);
+        Path<String> path = getWorkspace().getPath(file);
         for (WorkspaceEntry we : getWorkspace().getWorks()) {
-            if (we.getWorkspacePath().equals(workspacePath)) {
+            if (we.getWorkspacePath().equals(path)) {
                 return we;
             }
         }
 
         // Load (from *.work) or import (other extensions) work
-        WorkspaceEntry we = new WorkspaceEntry(getWorkspace());
-        we.setChanged(false);
+        ModelEntry me = null;
         if (file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
-            we.setModelEntry(loadModel(file));
-            if (workspacePath == null) {
-                workspacePath = getWorkspace().tempMountExternalFile(file);
+            if (path == null) {
+                path = getWorkspace().tempMountExternalFile(file);
             }
+            me = loadModel(file);
         } else {
-            we.setModelEntry(importModel(file));
             Path<String> parent;
-            if (workspacePath == null) {
+            if (path == null) {
                 parent = Path.empty();
             } else {
-                parent = workspacePath.getParent();
+                parent = path.getParent();
             }
             String desiredName = FileUtils.getFileNameWithoutExtension(file);
-            workspacePath = getWorkspace().createWorkPath(parent, desiredName);
+            path = getWorkspace().createWorkPath(parent, desiredName);
+            me = importModel(file);
         }
-        getWorkspace().addWork(workspacePath, we);
+        WorkspaceEntry we = null;
+        if (me != null) {
+            we = createWork(me, path, false, false);
+        }
         return we;
     }
 
