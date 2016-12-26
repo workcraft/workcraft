@@ -1,6 +1,3 @@
-/**
- *
- */
 package org.workcraft.plugins.mpsat;
 
 public enum MpsatSynthesisMode {

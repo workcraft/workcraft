@@ -1,9 +1,3 @@
-/*
- * This code is a simplified version of DesktopApi class provided by MightyPork, all credits to him.
- *
- * http://stackoverflow.com/questions/18004150/desktop-api-is-not-supported-on-the-current-platform
- */
-
 package org.workcraft.gui;
 
 import java.awt.Desktop;

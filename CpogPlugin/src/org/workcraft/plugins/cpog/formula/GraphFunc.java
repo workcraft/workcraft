@@ -1,8 +1,3 @@
-/* J. R. Beaumont
- * 25/06/2014
- * Class extension of Func, to allow PGs options to remove graph names
- */
-
 package org.workcraft.plugins.cpog.formula;
 
 import org.workcraft.util.Func;

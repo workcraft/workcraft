@@ -1,6 +1,3 @@
-/**
- *
- */
 package org.workcraft.plugins.mpsat.tasks;
 
 import java.io.ByteArrayInputStream;

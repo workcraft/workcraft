@@ -1,4 +1,3 @@
-
 package org.workcraft.plugins.policy.propertydescriptors;
 
 import java.awt.Color;

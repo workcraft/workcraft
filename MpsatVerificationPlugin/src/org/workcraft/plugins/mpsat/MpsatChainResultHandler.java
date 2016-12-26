@@ -1,6 +1,3 @@
-/**
- *
- */
 package org.workcraft.plugins.mpsat;
 
 import javax.swing.JOptionPane;
