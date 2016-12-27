@@ -4,6 +4,7 @@ import java.awt.geom.AffineTransform;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -20,8 +21,6 @@ import org.workcraft.plugins.serialisation.xml.IntSerialiser;
 import org.workcraft.plugins.serialisation.xml.StringDeserialiser;
 import org.workcraft.plugins.serialisation.xml.StringSerialiser;
 import org.workcraft.util.XmlUtil;
-
-import junit.framework.Assert;
 
 public class BasicTypesSerialisation {
     public enum TestEnum {

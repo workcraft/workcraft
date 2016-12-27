@@ -2,8 +2,7 @@ package org.workcraft.testing.plugins.petri;
 
 import java.awt.geom.Point2D;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPlace;

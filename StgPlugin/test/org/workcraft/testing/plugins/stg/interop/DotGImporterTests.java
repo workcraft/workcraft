@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStreamWriter;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.dom.Connection;
 import org.workcraft.exceptions.DeserialisationException;
@@ -18,8 +19,6 @@ import org.workcraft.plugins.stg.interop.DotGImporter;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Import;
 import org.workcraft.workspace.ModelEntry;
-
-import junit.framework.Assert;
 
 public class DotGImporterTests {
     @Test

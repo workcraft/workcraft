@@ -8,7 +8,6 @@ public class ConsoleBooleanSolver {
     public BooleanSolution solve(CnfTask task) {
         String cnf = task.getBody();
         String solution = solve(cnf);
-
         return SolutionReader.readSolution(task, solution);
     }
 

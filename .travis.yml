@@ -18,6 +18,15 @@ matrix:
       osx_image: xcode8.2
       env: TARGET=test
 
+before_install:
+  - if [ $TARGET == test ]; then
+        if [ $TRAVIS_OS_NAME == osx ]; then
+            brew update; brew install clasp;
+        else
+            sudo apt-get -qq update; sudo apt-get install -y clasp;
+        fi
+    fi
+
 install:
   - ./gradlew assemble
 
