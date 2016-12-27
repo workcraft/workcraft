@@ -21,9 +21,9 @@ matrix:
 before_install:
   - if [ $TARGET == test ]; then
         if [ $TRAVIS_OS_NAME == osx ]; then
-            brew update; brew install clasp; brew install minisat;
+            brew update; brew install clasp;
         else
-            sudo apt-get -qq update; sudo apt-get install -y clasp minisat;
+            sudo apt-get -qq update; sudo apt-get install -y clasp;
         fi
     fi
 
