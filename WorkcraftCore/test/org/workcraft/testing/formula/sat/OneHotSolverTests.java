@@ -1,6 +1,5 @@
 package org.workcraft.testing.formula.sat;
 
-import org.junit.Ignore;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.encoding.onehot.OneHotIntBooleanFormula;
 import org.workcraft.formula.encoding.onehot.OneHotNumberProvider;
@@ -8,7 +7,6 @@ import org.workcraft.formula.sat.CleverCnfGenerator;
 import org.workcraft.formula.sat.LegacySolver;
 import org.workcraft.formula.sat.Optimiser;
 
-@Ignore
 public class OneHotSolverTests extends SolverTests {
 
     @Override

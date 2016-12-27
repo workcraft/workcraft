@@ -3,11 +3,15 @@ package org.workcraft.testing.formula.sat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.encoding.Encoding;
 import org.workcraft.formula.sat.LegacySolver;
 import org.workcraft.formula.utils.FormulaToString;
+import org.workcraft.plugins.shared.CommonSatSettings;
+import org.workcraft.plugins.shared.CommonSatSettings.SatSolver;
 
 public abstract class SolverTests {
 
@@ -90,84 +94,9 @@ public abstract class SolverTests {
         }
     }
 
-    @Test
-    public void testProcessor5Levels3() {
-        testSolve(processor, 5, new int[] {3}, true);
-    }
-
-    @Test
-    public void testProcessor3Levels44() {
-        testSolve(processor, 3, new int[] {4, 4}, true);
-    }
-
-    @Test
-    public void testProcessor3Levels61() {
-        testSolve(processor, 3, new int[] {6, 1}, true);
-    }
-
-    @Test
-    public void testProcessor3Levels52() {
-        testSolve(processor, 3, new int[] {5, 2}, true);
-    }
-
-    @Test
-    public void testProcessor4Levels1() {
-        testSolve(processor, 3, 8, true);
-    }
-
-    @Test
-    public void testProcessor4Levels5() {
-        testSolve(processor, 4, new int[] {5}, true);
-    }
-
-    @Test
-    public void testProcessor36() {
-        testSolve(processor, 3, 6, true);
-    }
-
-    @Test
-    public void testProcessor37() {
-        testSolve(processor, 3, 7, true);
-    }
-
-    @Test
-    public void testProcessor38() {
-        testSolve(processor, 3, 8, true);
-    }
-
-    @Test
-    public void testProcessor39() {
-        testSolve(processor, 3, 9, true);
-    }
-
-    @Test
-    public void testProcessor310() {
-        testSolve(processor, 3, 10, true);
-    }
-
-    @Test
-    public void testProcessor41() {
-        testSolve(processor, 4, 1, false);
-    }
-
-    @Test
-    public void testProcessor520() {
-        testSolve(processor, 5, 20, true);
-    }
-
-    @Test
-    public void testProcessor43() {
-        testSolve(processor, 4, 3, false);
-    }
-
-    @Test
-    public void testProcessor44() {
-        testSolve(processor, 4, 4, false);
-    }
-
-    @Test
-    public void testProcessor45() {
-        testSolve(processor, 4, 5, true);
+    @BeforeClass
+    public static void setSatSolver() {
+        CommonSatSettings.setSatSolver(SatSolver.MINISAT);
     }
 
     @Test
@@ -207,8 +136,143 @@ public abstract class SolverTests {
     }
 
     @Test
-    public void testProcessor80() {
-        testSolve(processor, 8, 0, true);
+    public void testXor() {
+        testSolve(xorscenarios, 2, 1, false);
+    }
+
+    @Ignore @Test
+    public void testProcessor3Levels44() {
+        testSolve(processor, 3, new int[] {4, 4}, true);
+    }
+
+    @Ignore @Test
+    public void testProcessor3Levels52() {
+        testSolve(processor, 3, new int[] {5, 2}, true);
+    }
+
+    @Ignore @Test
+    public void testProcessor3Levels61() {
+        testSolve(processor, 3, new int[] {6, 1}, true);
+    }
+
+    @Ignore @Test
+    public void testProcessor4Levels1() {
+        testSolve(processor, 3, 8, true);
+    }
+
+    @Ignore @Test
+    public void testProcessor4Levels5() {
+        testSolve(processor, 4, new int[] {5}, true);
+    }
+
+    @Ignore @Test
+    public void testProcessor5Levels3() {
+        testSolve(processor, 5, new int[] {3}, true);
+    }
+
+    @Ignore @Test
+    public void testProcessor36() {
+        testSolve(processor, 3, 6, true);
+    }
+
+    @Ignore @Test
+    public void testProcessor37() {
+        testSolve(processor, 3, 7, true);
+    }
+
+    @Ignore @Test
+    public void testProcessor38() {
+        testSolve(processor, 3, 8, true);
+    }
+
+    @Ignore @Test
+    public void testProcessor39() {
+        testSolve(processor, 3, 9, true);
+    }
+
+    @Ignore @Test
+    public void testProcessor310() {
+        testSolve(processor, 3, 10, true);
+    }
+
+    @Test
+    public void testProcessor41() {
+        testSolve(processor, 4, 1, false);
+    }
+
+    @Ignore @Test
+    public void testProcessor43() {
+        testSolve(processor, 4, 3, false);
+    }
+
+    @Ignore @Test
+    public void testProcessor44() {
+        testSolve(processor, 4, 4, false);
+    }
+
+    @Ignore @Test
+    public void testProcessor45() {
+        testSolve(processor, 4, 5, true);
+    }
+
+    @Ignore @Test
+    public void testProcessor46() {
+        testSolve(processor, 4, 6, false);
+    }
+
+    @Ignore @Test
+    public void testProcessor48() {
+        testSolve(processor, 4, 8, false);
+    }
+
+    @Ignore @Test
+    public void testProcessor49() {
+        testSolve(processor, 4, 9, true);
+    }
+
+    @Ignore @Test
+    public void testProcessor52() {
+        testSolve(processor, 5, 2, false);
+    }
+
+    @Test
+    public void testProcessor53() {
+        testSolve(processor, 5, 3, true);
+    }
+
+    @Ignore @Test
+    public void testProcessor54() {
+        testSolve(processor, 5, 4, false);
+    }
+
+    @Test
+    public void testProcessor55() {
+        testSolve(processor, 5, 5, true);
+    }
+
+    @Ignore @Test
+    public void testProcessor56() {
+        testSolve(processor, 5, 6, true);
+    }
+
+    @Ignore @Test
+    public void testProcessor520() {
+        testSolve(processor, 5, 20, true);
+    }
+
+    @Test
+    public void testProcessor61() {
+        testSolve(processor, 6, 1, false);
+    }
+
+    @Test
+    public void testProcessor62() {
+        testSolve(processor, 6, 2, true);
+    }
+
+    @Test
+    public void testProcessor63() {
+        testSolve(processor, 6, 3, true);
     }
 
     @Test
@@ -222,63 +286,8 @@ public abstract class SolverTests {
     }
 
     @Test
-    public void testProcessor61() {
-        testSolve(processor, 6, 1, false);
-    }
-
-    @Test
-    public void testProcessor63() {
-        testSolve(processor, 6, 3, true);
-    }
-
-    @Test
-    public void testProcessor62() {
-        testSolve(processor, 6, 2, true);
-    }
-
-    @Test
-    public void testProcessor55() {
-        testSolve(processor, 5, 5, true);
-    }
-
-    @Test
-    public void testProcessor56() {
-        testSolve(processor, 5, 6, true);
-    }
-
-    @Test
-    public void testProcessor52() {
-        testSolve(processor, 5, 2, false);
-    }
-
-    @Test
-    public void testProcessor53() {
-        testSolve(processor, 5, 3, true);
-    }
-
-    @Test
-    public void testProcessor54() {
-        testSolve(processor, 5, 4, false);
-    }
-
-    @Test
-    public void testProcessor46() {
-        testSolve(processor, 4, 6, false);
-    }
-
-    @Test
-    public void testProcessor49() {
-        testSolve(processor, 4, 9, true);
-    }
-
-    @Test
-    public void testProcessor48() {
-        testSolve(processor, 4, 8, false);
-    }
-
-    @Test
-    public void testXor() {
-        testSolve(xorscenarios, 2, 1, false);
+    public void testProcessor80() {
+        testSolve(processor, 8, 0, true);
     }
 
 }

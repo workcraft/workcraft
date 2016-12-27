@@ -3,6 +3,7 @@ package org.workcraft.testing.formula.sat;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.workcraft.formula.BooleanFormula;
@@ -13,8 +14,9 @@ import org.workcraft.formula.sat.CleverCnfGenerator;
 import org.workcraft.formula.sat.LegacySolver;
 import org.workcraft.formula.sat.Optimiser;
 import org.workcraft.formula.utils.FormulaToString;
+import org.workcraft.plugins.shared.CommonSatSettings;
+import org.workcraft.plugins.shared.CommonSatSettings.SatSolver;
 
-@Ignore
 public class SolverTestsWithForcedVars {
     private static final boolean DEBUG = false;
     String[] smallTest1 = new String[] {"a"};
@@ -88,49 +90,9 @@ public class SolverTestsWithForcedVars {
         }
     }
 
-    @Test
-    public void solveProcessor34332Solvable() {
-        testSolve(processor, 3, new int[] {4, 3, 3, 2}, true);
-    }
-
-    @Test
-    public void solveProcessor34331Solvable() {
-        testSolve(processor, 3, new int[] {4, 3, 3, 1}, true);
-    }
-
-    @Test
-    public void solveProcessor3533Solvable() {
-        testSolve(processor, 3, new int[] {5, 3, 3}, true);
-    }
-
-    @Test
-    public void solveProcessor311Solvable() {
-        testSolve(processor, 3, 11, true);
-    }
-
-    @Test
-    public void solveProcessor310Unsolvable() {
-        testSolve(processor, 3, 10, false);
-    }
-
-    @Test
-    public void solveProcessor444Solvable() {
-        testSolve(processor, 4, new int[] {4, 4}, true);
-    }
-
-    @Test
-    public void solveProcessor47Unsolvable() {
-        testSolve(processor, 4, 7, false);
-    }
-
-    @Test
-    public void solveProcessor48Solvable() {
-        testSolve(processor, 4, 8, true);
-    }
-
-    @Test
-    public void solveProcessor3443Solvable() {
-        testSolve(processor, 3, new int[] {4, 4, 3}, true);
+    @BeforeClass
+    public static void setSatSolver() {
+        CommonSatSettings.setSatSolver(SatSolver.MINISAT);
     }
 
     @Test
@@ -198,6 +160,111 @@ public class SolverTestsWithForcedVars {
         testSolve(smallTest6, 2, 3, true);
     }
 
+    @Ignore @Test
+    public void solveProcessor310Unsolvable() {
+        testSolve(processor, 3, 10, false);
+    }
+
+    @Ignore @Test
+    public void solveProcessor311Solvable() {
+        testSolve(processor, 3, 11, true);
+    }
+
+    @Ignore @Test
+    public void solveProcessor34331Solvable() {
+        testSolve(processor, 3, new int[] {4, 3, 3, 1}, true);
+    }
+
+    @Ignore @Test
+    public void solveProcessor34332Solvable() {
+        testSolve(processor, 3, new int[] {4, 3, 3, 2}, true);
+    }
+
+    @Ignore @Test
+    public void solveProcessor3443Solvable() {
+        testSolve(processor, 3, new int[] {4, 4, 3}, true);
+    }
+
+    @Ignore @Test
+    public void solveProcessor3533Solvable() {
+        testSolve(processor, 3, new int[] {5, 3, 3}, true);
+    }
+
+    @Ignore @Test
+    public void solveProcessor444Solvable() {
+        testSolve(processor, 4, new int[] {4, 4}, true);
+    }
+
+    @Ignore @Test
+    public void solveProcessor47Unsolvable() {
+        testSolve(processor, 4, 7, false);
+    }
+
+    @Ignore @Test
+    public void solveProcessor48Solvable() {
+        testSolve(processor, 4, 8, true);
+    }
+
+    @Ignore @Test
+    public void solveProcessor55Unsolvable() {
+        testSolve(processor, 5, 5, false);
+    }
+
+    @Ignore @Test
+    public void solveProcessor56Solvable() {
+        testSolve(processor, 5, new int[] {2, 3, 1}, true);
+    }
+
+    @Ignore @Test
+    public void solveProcessor59Solvable() {
+        testSolve(processor, 5, 9, true);
+    }
+
+    @Ignore @Test
+    public void solveProcessor65Solvable() {
+        testSolve(processor, 6, 5, true);
+    }
+
+    @Ignore @Test
+    public void solveProcessor67Solvable() {
+        testSolve(processor, 6, 7, true);
+    }
+
+    @Ignore @Test
+    public void solveProcessor68Solvable() {
+        testSolve(processor, 6, 8, true);
+    }
+
+    @Ignore @Test
+    public void solveProcessor69Solvable() {
+        testSolve(processor, 6, 9, true);
+    }
+
+    @Ignore @Test
+    public void solveProcessor64Unsolvable() {
+        testSolve(processor, 6, 4, false);
+    }
+
+    @Test
+    public void solveProcessor73Unsolvable() {
+        testSolve(processor, 7, 3, false);
+    }
+
+    @Test
+    public void solveProcessor74Solvable() {
+        testSolve(processor, 7, 4, true);
+    }
+
+    @Test
+    public void solveProcessor76Solvable() {
+        testSolve(processor, 7, 6, true);
+    }
+
+    @Ignore @Test
+    public void solveProcessor77Solvable() {
+        testSolve(processor, 7, 7, true);
+    }
+
     @Test
     public void solveProcessor81Unsolvable() {
         testSolve(processor, 8, 1, false);
@@ -218,12 +285,12 @@ public class SolverTestsWithForcedVars {
         testSolve(processor, 8, 4, true);
     }
 
-    @Test  // 9sec -- too long
+    @Test
     public void solveProcessor85Solvable() {
         testSolve(processor, 8, 5, true);
     }
 
-    @Test  // 5sec -- too long
+    @Test
     public void solveProcessor86Solvable() {
         testSolve(processor, 8, 6, true);
     }
@@ -233,69 +300,9 @@ public class SolverTestsWithForcedVars {
         testSolve(processor, 8, 7, true);
     }
 
-    @Test  // 41sec -- too long
+    @Ignore @Test
     public void solveProcessor88Solvable() {
         testSolve(processor, 8, 8, true);
-    }
-
-    @Test
-    public void solveProcessor55Unsolvable() {
-        testSolve(processor, 5, 5, false);
-    }
-
-    @Test
-    public void solveProcessor56Solvable() {
-        testSolve(processor, 5, new int[] {2, 3, 1}, true);
-    }
-
-    @Test
-    public void solveProcessor59Solvable() {
-        testSolve(processor, 5, 9, true);
-    }
-
-    @Test  // 23sec -- too long
-    public void solveProcessor65Solvable() {
-        testSolve(processor, 6, 5, true);
-    }
-
-    @Test
-    public void solveProcessor67Solvable() {
-        testSolve(processor, 6, 7, true);
-    }
-
-    @Test  // 101sec -- too long
-    public void solveProcessor68Solvable() {
-        testSolve(processor, 6, 8, true);
-    }
-
-    @Test
-    public void solveProcessor69Solvable() {
-        testSolve(processor, 6, 9, true);
-    }
-
-    @Test
-    public void solveProcessor64Unsolvable() {
-        testSolve(processor, 6, 4, false);
-    }
-
-    @Test
-    public void solveProcessor74Solvable() {
-        testSolve(processor, 7, 4, true);
-    }
-
-    @Test
-    public void solveProcessor76Solvable() {
-        testSolve(processor, 7, 6, true);
-    }
-
-    @Test
-    public void solveProcessor77Solvable() {
-        testSolve(processor, 7, 7, true);
-    }
-
-    @Test  // 15sec - too long
-    public void solveProcessor73Unsolvable() {
-        testSolve(processor, 7, 3, false);
     }
 
 }
