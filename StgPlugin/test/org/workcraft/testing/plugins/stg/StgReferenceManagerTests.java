@@ -2,14 +2,13 @@ package org.workcraft.testing.plugins.stg;
 
 import java.util.Arrays;
 
-import junit.framework.Assert;
-
+import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.observation.NodesAddedEvent;
-import org.workcraft.plugins.stg.StgReferenceManager;
 import org.workcraft.plugins.stg.SignalTransition;
+import org.workcraft.plugins.stg.StgReferenceManager;
 
 public class StgReferenceManagerTests {
 
