@@ -107,7 +107,9 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            mainWindow.getCurrentEditor().updatePropertyView();
+                            if (mainWindow != null) {
+                                mainWindow.getCurrentEditor().updatePropertyView();
+                            }
                         }
                     });
                 }
