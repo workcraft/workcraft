@@ -25,6 +25,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.commands.AbstractLayoutCommand;
 import org.workcraft.gui.propertyeditor.ModelProperties;
@@ -291,9 +292,15 @@ public class VisualCircuit extends AbstractVisualModel {
     }
 
     private WorkspaceEntry getWorkspaceEntry() {
-        Framework framework = Framework.getInstance();
-        GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
-        return editor == null ? null : editor.getWorkspaceEntry();
+        final Framework framework = Framework.getInstance();
+        final MainWindow mainWindow = framework.getMainWindow();
+        if (mainWindow != null) {
+            GraphEditorPanel editor = mainWindow.getCurrentEditor();
+            if (editor != null) {
+                return editor.getWorkspaceEntry();
+            }
+        }
+        return null;
     }
 
     @NoAutoSerialisation
@@ -331,8 +338,8 @@ public class VisualCircuit extends AbstractVisualModel {
             file = env.getFile();
         }
         boolean envChanged = ((file == null) && (value != null)) || ((file != null) && !file.equals(value));
-        if (envChanged) {
-            WorkspaceEntry we = getWorkspaceEntry();
+        WorkspaceEntry we = getWorkspaceEntry();
+        if (envChanged && (we != null)) {
             we.saveMemento();
             we.setChanged(true);
             for (Environment env: environments) {
