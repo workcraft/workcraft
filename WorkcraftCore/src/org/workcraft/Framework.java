@@ -379,11 +379,11 @@ public final class Framework {
         return execJavaScript(script, globalScope);
     }
 
-    public Object execJavaScript(Script script, Scriptable scope) {
+    private Object execJavaScript(Script script, Scriptable scope) {
         return doContextAction(new ExecuteCompiledScriptAction(script, scope));
     }
 
-    public Object execJavaScript(String script, Scriptable scope) {
+    private Object execJavaScript(String script, Scriptable scope) {
         return doContextAction(new ExecuteScriptAction(script, scope));
     }
 

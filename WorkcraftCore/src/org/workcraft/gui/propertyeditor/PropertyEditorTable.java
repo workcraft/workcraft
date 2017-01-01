@@ -154,7 +154,6 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
                 setValueAt(value, editingRow, editingColumn);
                 removeEditor();
             } catch (Throwable t) {
-                t.printStackTrace();
                 JOptionPane.showMessageDialog(null, t.getMessage(), "Cannot change property", JOptionPane.WARNING_MESSAGE);
             }
         }

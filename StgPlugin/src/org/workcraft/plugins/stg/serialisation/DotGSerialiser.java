@@ -8,6 +8,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Set;
 import java.util.UUID;
 
 import org.workcraft.dom.Model;
@@ -18,9 +19,9 @@ import org.workcraft.exceptions.FormatException;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
+import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.StgPlace;
-import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
@@ -63,26 +64,32 @@ public class DotGSerialiser implements ModelSerialiser {
 
     private void writeGraphEntry(PrintWriter out, Model model, Node node) {
         if (node instanceof StgPlace) {
-            if (((StgPlace) node).isImplicit()) {
+            StgPlace stgPlace = (StgPlace) node;
+            if (stgPlace.isImplicit()) {
                 return;
             }
         }
-        if (model.getPostset(node).size() > 0) {
-            out.write(NamespaceHelper.hierarchicalToFlatName(model.getNodeReference(node)));
-
-            for (Node n : sortNodes(model.getPostset(node), model)) {
-                if (n instanceof StgPlace) {
-                    if (((StgPlace) n).isImplicit()) {
-                        Collection<Node> postset = model.getPostset(n);
-                        if (postset.size() > 1) {
+        Set<Node> postset = model.getPostset(node);
+        if (!postset.isEmpty()) {
+            String nodeRef = model.getNodeReference(node);
+            out.write(NamespaceHelper.hierarchicalToFlatName(nodeRef));
+            for (Node succNode : sortNodes(postset, model)) {
+                String succNodeRef = model.getNodeReference(succNode);
+                if (succNode instanceof StgPlace) {
+                    StgPlace succPlace = (StgPlace) succNode;
+                    if (succPlace.isImplicit()) {
+                        Collection<Node> succPostset = model.getPostset(succNode);
+                        if (succPostset.size() > 1) {
                             throw new FormatException("Implicit place cannot have more than one node in postset");
                         }
-                        out.write(" " + NamespaceHelper.hierarchicalToFlatName(model.getNodeReference(postset.iterator().next())));
+                        Node succTransition = succPostset.iterator().next();
+                        String succTransitionRef = model.getNodeReference(succTransition);
+                        out.write(" " + NamespaceHelper.hierarchicalToFlatName(succTransitionRef));
                     } else {
-                        out.write(" " + NamespaceHelper.hierarchicalToFlatName(model.getNodeReference(n)));
+                        out.write(" " + NamespaceHelper.hierarchicalToFlatName(succNodeRef));
                     }
                 } else {
-                    out.write(" " + NamespaceHelper.hierarchicalToFlatName(model.getNodeReference(n)));
+                    out.write(" " + NamespaceHelper.hierarchicalToFlatName(succNodeRef));
                 }
             }
             out.write("\n");

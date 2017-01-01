@@ -14,7 +14,6 @@ public class Format {
     public static final UUID PNG = UUID.fromString("c09714a6-cae9-4744-95cb-17ba4d28f5ef");
     public static final UUID EMF = UUID.fromString("c8f9fe37-87d2-42bd-8a25-9e1d38813549");
     public static final UUID DOT = UUID.fromString("f1596b60-e294-11de-8a39-0800200c9a66");
-    public static final UUID EQN = UUID.fromString("58b3c8d0-e297-11de-8a39-0800200c9a66");
     public static final UUID VERILOG = UUID.fromString("fdd4414e-fd02-4702-b143-09b24430fdd1");
     public static final UUID SDC = UUID.fromString("fd92a9c6-e13a-4785-83ff-1fb6f666b8ed");
 
@@ -41,8 +40,6 @@ public class Format {
             return ".emf (Enhanced Mediafile)";
         } else if (format.equals(DOT)) {
             return ".dot (GraphViz dot)";
-        } else if (format.equals(EQN)) {
-            return ".eqn (Signal equations)";
         } else if (format.equals(VERILOG)) {
             return ".v (Verilog netlist)";
         } else if (format.equals(SDC)) {
@@ -64,7 +61,6 @@ public class Format {
         if ("PNG".equals(name)) return PNG;
         if ("EMF".equals(name)) return EMF;
         if ("DOT".equals(name)) return DOT;
-        if ("EQN".equals(name)) return EQN;
         if ("VERILOG".equals(name)) return VERILOG;
         if ("SDC".equals(name)) return SDC;
         return null;

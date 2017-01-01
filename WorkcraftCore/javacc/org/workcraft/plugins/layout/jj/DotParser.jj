@@ -31,21 +31,21 @@ PARSER_END(DotParser)
 
 SKIP :
 {
-     " "
-|    "\t"
-|    "\r"
-|    "\n"
-|    <"#" (~["\r","\n"])* (["\r", "\n"])*>
-|    <"//" (~["\r","\n"])* (["\r", "\n"])*>
+    " "
+|   "\t"
+|   "\r"
+|   "\n"
+|   <"#" (~["\r","\n"])* (["\r", "\n"])*>
+|   <"//" (~["\r","\n"])* (["\r", "\n"])*>
 }
 
 TOKEN :
 {
     "strict" | "graph" | "digraph" | "node" | "edge"
-      | <NAME: (["_","A"-"Z","a"-"z","0"-"9"])+>
-      | <INTEGER: (["0"-"9"])+>
-      | <QUOTED: "\""(~["\""] | "\\\"")*"\"" >
-      | <NUMERAL: (["-"])?("."(["0"-"9"])+ | (["0"-"9"])+ ("."(["0"-"9"])*)?)>
+|   <NAME: (["_","A"-"Z","a"-"z","0"-"9"])+>
+|   <INTEGER: (["0"-"9"])+>
+|   <QUOTED: "\""(~["\""] | "\\\"")*"\"" >
+|   <NUMERAL: (["-"])?("."(["0"-"9"])+ | (["0"-"9"])+ ("."(["0"-"9"])*)?)>
 }
 
 String id() :
@@ -53,23 +53,23 @@ String id() :
   Token t;
 }
 {
-  t=< QUOTED >
-  {
-    return t.image.substring(1, t.image.length()-1);
-  }
+    t=< QUOTED >
+    {
+        return t.image.substring(1, t.image.length()-1);
+    }
 |
-  (
-    t = "strict"
-  | t = "graph"
-  | t = "digraph"
-  | t = "node"
-  | t = "edge"
-  | t = < NAME >
-  | t = < NUMERAL >
-  )
-  {
-    return t.image;
-  }
+    (
+      t = "strict"
+    | t = "graph"
+    | t = "digraph"
+    | t = "node"
+    | t = "edge"
+    | t = < NAME >
+    | t = < NUMERAL >
+    )
+    {
+        return t.image;
+    }
 }
 
 void graph(DotListener listener) :
@@ -93,8 +93,8 @@ int integer() :
 
 void attr(Map<String, String> attrs):
 {
-  String name;
-  String value = null;
+    String name;
+    String value = null;
 }
 {
     name=id()
@@ -102,7 +102,6 @@ void attr(Map<String, String> attrs):
     (value=id())
     ]
     [","]
-
     {
         attrs.put(name, value);
     }
@@ -110,10 +109,10 @@ void attr(Map<String, String> attrs):
 
 Map<String, String> attr_list() :
 {
-  Map<String, String> result = new HashMap<String, String>();
+      Map<String, String> result = new HashMap<String, String>();
 }
 {
-  "["
+    "["
     (
       attr(result)
     )*
@@ -132,24 +131,24 @@ void attr_statement() :
 
 void statement(DotListener listener) :
 {
-  Token name;
-  Map < String, String > prop;
-  String i, j;
+    Token name;
+    Map < String, String > prop;
+    String i, j;
 }
 {
-  (
-    attr_statement()
-      | i = id()
     (
-      prop = attr_list()
-      {
-        listener.node(i, prop);
-      }
-    | "->" j = id() prop = attr_list()
-      {
-        listener.arc(i, j, prop);
-      }
+        attr_statement()
+    | i = id()
+        (
+            prop = attr_list()
+            {
+                listener.node(i, prop);
+            }
+        | "->" j = id() prop = attr_list()
+            {
+                listener.arc(i, j, prop);
+            }
+        )
     )
-  )
-  ";"
+    ";"
 }

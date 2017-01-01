@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.w3c.dom.Element;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.Dependent;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.serialisation.ReferenceResolver;
@@ -141,7 +142,7 @@ class DefaultNodeDeserialiser {
 
                     if (Dependent.class.isAssignableFrom(cls)) {
                         // Check for the simple case when there is only one reference to the underlying model.
-                        String ref = currentLevelElement.getAttribute("ref");
+                        String ref = NamespaceHelper.convertLegacyHierarchySeparators(currentLevelElement.getAttribute("ref"));
                         if (ref.isEmpty()) {
                             // Bad luck, we probably can't do anything.
                             // But let's try a default constructor just in case.
@@ -201,8 +202,9 @@ class DefaultNodeDeserialiser {
             try {
                 XMLDeserialiser deserialiser = fac.getDeserialiserFor(currentLevel.getName());
                 if (deserialiser instanceof CustomXMLDeserialiser) {
-                    //System.out.println("Using custom deserialiser " + deserialiser);
-                    ((CustomXMLDeserialiser) deserialiser).finaliseInstance(currentLevelElement, instance, internalReferenceResolver, externalReferenceResolver, finaliser);
+                    CustomXMLDeserialiser customDeserialiser = (CustomXMLDeserialiser) deserialiser;
+                    customDeserialiser.finaliseInstance(currentLevelElement, instance,
+                            internalReferenceResolver, externalReferenceResolver, finaliser);
                 }
             } catch (InstantiationException e) {
                 throw new DeserialisationException(e);
