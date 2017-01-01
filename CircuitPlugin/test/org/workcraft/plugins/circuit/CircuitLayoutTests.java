@@ -1,7 +1,5 @@
 package org.workcraft.plugins.circuit;
 
-import java.io.File;
-import java.io.IOException;
 import java.net.URL;
 import java.util.HashSet;
 import java.util.Set;
@@ -11,17 +9,14 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.gui.DesktopApi;
-import org.workcraft.serialisation.Format;
+import org.workcraft.plugins.circuit.commands.CircuitLayoutCommand;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class CircuitImportExportTests {
+public class CircuitLayoutTests {
 
     private static final String[] TEST_CIRCUIT_WORKS = {
-        "org/workcraft/plugins/circuit/buffer.circuit.work",
-        "org/workcraft/plugins/circuit/celement.circuit.work",
         "org/workcraft/plugins/circuit/buffer-tm.circuit.work",
         "org/workcraft/plugins/circuit/celement-tm.circuit.work",
         "org/workcraft/plugins/circuit/vme-tm.circuit.work",
@@ -50,28 +45,24 @@ public class CircuitImportExportTests {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         for (String testCircuitWork: TEST_CIRCUIT_WORKS) {
-            URL wUrl = classLoader.getResource(testCircuitWork);
+            URL srcUrl = classLoader.getResource(testCircuitWork);
 
-            WorkspaceEntry wWe = framework.loadWork(wUrl.getFile());
-            Set<String> wInputs = new HashSet<>();
-            Set<String> wOutputs = new HashSet<>();
-            Set<String> wGates = new HashSet<>();
-            countCircuitNodes(wWe, wInputs, wOutputs, wGates);
+            WorkspaceEntry srcWe = framework.loadWork(srcUrl.getFile());
+            Set<String> srcInputs = new HashSet<>();
+            Set<String> srcOutputs = new HashSet<>();
+            Set<String> srcGates = new HashSet<>();
+            countCircuitNodes(srcWe, srcInputs, srcOutputs, srcGates);
 
-            Set<String> vInputs = new HashSet<>();
-            Set<String> vOutputs = new HashSet<>();
-            Set<String> vGates = new HashSet<>();
-            try {
-                File vFile = File.createTempFile("workcraft-", ".v");
-                framework.exportModel(wWe.getModelEntry(), vFile, Format.VERILOG);
-                WorkspaceEntry vWe = framework.loadWork(vFile);
-                countCircuitNodes(vWe, vInputs, vOutputs, vGates);
-            } catch (IOException | SerialisationException e) {
-            }
+            CircuitLayoutCommand command = new CircuitLayoutCommand();
+            WorkspaceEntry dstWe = command.execute(srcWe);
+            Set<String> dstInputs = new HashSet<>();
+            Set<String> dstOutputs = new HashSet<>();
+            Set<String> dstGates = new HashSet<>();
+            countCircuitNodes(dstWe, dstInputs, dstOutputs, dstGates);
 
-            Assert.assertEquals(wInputs, vInputs);
-            Assert.assertEquals(wOutputs, vOutputs);
-            Assert.assertEquals(wGates, vGates);
+            Assert.assertEquals(srcInputs, dstInputs);
+            Assert.assertEquals(srcOutputs, dstOutputs);
+            Assert.assertEquals(srcGates, dstGates);
         }
     }
 
