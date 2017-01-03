@@ -198,6 +198,26 @@ public final class Framework {
         }
     }
 
+    static class JavascriptPassThroughException extends RuntimeException {
+        private static final long serialVersionUID = 8906492547355596206L;
+        private final String scriptTrace;
+
+        JavascriptPassThroughException(Throwable wrapped, String scriptTrace) {
+            super(wrapped);
+            this.scriptTrace = scriptTrace;
+        }
+
+        @Override
+        public String getMessage() {
+            return String.format("Java %s was unhandled in javascript. \nJavascript stack trace: %s",
+                    getCause().getClass().getSimpleName(), getScriptTrace());
+        }
+
+        public String getScriptTrace() {
+            return scriptTrace;
+        }
+    }
+
     private final PluginManager pluginManager;
     private final TaskManager taskManager;
     private final CompatibilityManager compatibilityManager;
@@ -353,26 +373,6 @@ public final class Framework {
 
     public Object execJavaScript(Script script) {
         return execJavaScript(script, globalScope);
-    }
-
-    static class JavascriptPassThroughException extends RuntimeException {
-        private static final long serialVersionUID = 8906492547355596206L;
-        private final String scriptTrace;
-
-        JavascriptPassThroughException(Throwable wrapped, String scriptTrace) {
-            super(wrapped);
-            this.scriptTrace = scriptTrace;
-        }
-
-        @Override
-        public String getMessage() {
-            return String.format("Java %s was unhandled in javascript. \nJavascript stack trace: %s",
-                    getCause().getClass().getSimpleName(), getScriptTrace());
-        }
-
-        public String getScriptTrace() {
-            return scriptTrace;
-        }
     }
 
     public Object execJavaScript(String script) {

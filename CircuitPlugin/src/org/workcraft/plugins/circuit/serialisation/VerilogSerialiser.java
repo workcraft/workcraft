@@ -102,6 +102,7 @@ public class VerilogSerialiser implements ModelSerialiser {
                 }
             }
             if (result != null) {
+                result = result.replaceAll("\\.", "__");
                 contactWires.put(contact, result);
             }
         }

@@ -1,3 +1,3 @@
 // Startup actions
 
-execResource("scripts/editor.js");
+framework.execJavaScriptResource("scripts/editor.js");

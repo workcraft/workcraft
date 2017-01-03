@@ -371,11 +371,9 @@ public class Stg extends AbstractMathModel implements StgModel {
     public Node getNodeByReference(NamespaceProvider provider, String reference) {
         Pair<String, String> implicitPlaceTransitions = LabelParser.parseImplicitPlaceReference(reference);
         if (implicitPlaceTransitions != null) {
-            Node t1 = referenceManager.getNodeByReference(provider,
-                    NamespaceHelper.flatToHierarchicalName(implicitPlaceTransitions.getFirst()));
+            Node t1 = referenceManager.getNodeByReference(provider, implicitPlaceTransitions.getFirst());
 
-            Node t2 = referenceManager.getNodeByReference(provider,
-                    NamespaceHelper.flatToHierarchicalName(implicitPlaceTransitions.getSecond()));
+            Node t2 = referenceManager.getNodeByReference(provider, implicitPlaceTransitions.getSecond());
             if ((t1 != null) && (t2 != null)) {
                 Set<Node> implicitPlaceCandidates = SetUtils.intersection(getPreset(t2), getPostset(t1));
 

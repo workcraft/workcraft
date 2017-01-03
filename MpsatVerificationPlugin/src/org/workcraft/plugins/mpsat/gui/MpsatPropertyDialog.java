@@ -202,7 +202,7 @@ public class MpsatPropertyDialog extends JDialog {
 
     private void createPropertyPanel() {
         predicatePanel = new JPanel(new BorderLayout());
-        String title = "Reach predicate (use '" + NamespaceHelper.getFlatNameSeparator() + "' as hierarchy separator)";
+        String title = "Reach predicate (use '" + NamespaceHelper.getHierarchySeparator() + "' as hierarchy separator)";
         predicatePanel.setBorder(BorderFactory.createTitledBorder(title));
 
         propertyText = new JTextArea();

@@ -118,7 +118,7 @@ public class MpsatAssertionDialog extends JDialog {
 
     private void createAssertionPanel() {
         predicatePanel = new JPanel(new BorderLayout());
-        String title = "Assertion (use '" + NamespaceHelper.getFlatNameSeparator() + "' as hierarchy separator)";
+        String title = "Assertion (use '" + NamespaceHelper.getHierarchySeparator() + "' as hierarchy separator)";
         predicatePanel.setBorder(BorderFactory.createTitledBorder(title));
 
         assertionText = new JTextArea();

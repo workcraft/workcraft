@@ -1,7 +1,6 @@
 package org.workcraft.formula.serialisation;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
@@ -36,14 +35,11 @@ public abstract class BooleanFormulaSerialiser implements CustomXMLSerialiser {
             public Void visit(BooleanVariable node) {
 
                 String ref = internalReferences.getReference(node);
-                // use full path to a flattened name
-                String flat = NamespaceHelper.hierarchicalToFlatName(ref);
-
                 // old style naming, if number is used as an ID for a contact
                 if (Identifier.isNumber(ref)) {
                     append("var_" + ref);
                 } else {
-                    append(flat);
+                    append(ref);
                 }
 
                 return null;

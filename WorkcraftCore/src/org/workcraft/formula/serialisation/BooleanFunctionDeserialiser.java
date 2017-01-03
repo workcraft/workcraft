@@ -1,7 +1,6 @@
 package org.workcraft.formula.serialisation;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
@@ -24,6 +23,7 @@ public abstract class BooleanFunctionDeserialiser implements CustomXMLDeserialis
 
         @Override
         public BooleanVariable eval(String ref) {
+            // FIXME: get rid of the need for var_ prefix
             if (ref.startsWith("var_")) {
                 ref = ref.substring("var_".length());
                 BooleanVariable bv = (BooleanVariable) internalReferenceResolver.getObject(ref);
@@ -31,8 +31,7 @@ public abstract class BooleanFunctionDeserialiser implements CustomXMLDeserialis
                     return bv;
                 }
             }
-            String hier = NamespaceHelper.flatToHierarchicalName(ref);
-            return (BooleanVariable) internalReferenceResolver.getObject(hier);
+            return (BooleanVariable) internalReferenceResolver.getObject(ref);
         }
     }
 

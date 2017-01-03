@@ -9,7 +9,6 @@ import org.workcraft.PluginProvider;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.serialisation.ReferenceResolver;
@@ -48,7 +47,7 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
         Object instance = nodeDeserialiser.initInstance(element, state.getExternalReferences(), constructorParameters);
 
         state.setInstanceElement(instance, element);
-        String ref = NamespaceHelper.convertLegacyHierarchySeparators(element.getAttribute("ref"));
+        String ref = element.getAttribute("ref");
         state.setObject(ref, instance);
 
         if (instance instanceof Container) {

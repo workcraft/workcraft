@@ -38,12 +38,12 @@ function executeCommand(work, commandName) {
 
 // Configuration
 
-function setConfigVar(var, val) {
-	framework.setConfigVar(var, val);
+function setConfigVar(key, val) {
+	framework.setConfigVar(key, val);
 }
 
-function getConfigVar(var) {
-	return framework.getConfigVar(var);
+function getConfigVar(key) {
+	return framework.getConfigVar(key);
 }
 
 function saveConfig() {

@@ -11,7 +11,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import org.w3c.dom.Element;
-import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.Dependent;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.serialisation.ReferenceResolver;
@@ -142,7 +141,7 @@ class DefaultNodeDeserialiser {
 
                     if (Dependent.class.isAssignableFrom(cls)) {
                         // Check for the simple case when there is only one reference to the underlying model.
-                        String ref = NamespaceHelper.convertLegacyHierarchySeparators(currentLevelElement.getAttribute("ref"));
+                        String ref = currentLevelElement.getAttribute("ref");
                         if (ref.isEmpty()) {
                             // Bad luck, we probably can't do anything.
                             // But let's try a default constructor just in case.
