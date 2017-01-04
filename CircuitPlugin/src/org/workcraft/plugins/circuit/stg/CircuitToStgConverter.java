@@ -15,10 +15,12 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
+import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.visual.Movable;
 import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
@@ -40,12 +42,12 @@ import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
-import org.workcraft.plugins.stg.converters.SignalStg;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgSettings;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.plugins.stg.converters.SignalStg;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.Pair;
 import org.workcraft.util.TwoWayMap;
@@ -139,6 +141,18 @@ public class CircuitToStgConverter {
 
     private HashMap<String, Container> convertPages() {
         NamespaceHelper.copyPageStructure(circuit, stg);
+        for (VisualFunctionComponent component: circuit.getVisualFunctionComponents()) {
+            String name = circuit.getMathName(component);
+
+            VisualPage dstPage = new VisualPage(new PageNode());
+            stg.getRoot().add(dstPage);
+            dstPage.copyPosition(component);
+            dstPage.copyStyle(component);
+
+            Container dstMathContainer = NamespaceHelper.getMathContainer(stg, stg.getRoot());
+            dstMathContainer.add(dstPage.getReferencedComponent());
+            stg.setMathName(dstPage, name);
+        }
         return NamespaceHelper.getRefToPageMapping(stg);
     }
 
@@ -215,7 +229,7 @@ public class CircuitToStgConverter {
             VisualContact signal = CircuitUtils.findSignal(circuit, driver, true);
             boolean initToOne = signal.getReferencedContact().getInitToOne();
             Container container = getContainer(signal);
-            String signalName = CircuitUtils.getSignalName(circuit, signal);
+            String signalName = NamespaceHelper.getReferenceName(CircuitUtils.getSignalName(circuit, signal));
 
             String zeroName = SignalStg.getLowName(signalName);
             VisualPlace zeroPlace = stg.createPlace(zeroName, container);
@@ -281,7 +295,7 @@ public class CircuitToStgConverter {
 
         VisualContact signal = CircuitUtils.findSignal(circuit, driver, true);
         Container container = getContainer(signal);
-        String signalName = CircuitUtils.getSignalName(circuit, signal);
+        String signalName = NamespaceHelper.getReferenceName(CircuitUtils.getSignalName(circuit, signal));
         SignalTransition.Type signalType = CircuitUtils.getSignalType(circuit, signal);
         for (DnfClause clause : clauses) {
             // In self-looped signals the read-arcs will clash with producing/consuming arcs:

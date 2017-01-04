@@ -18,10 +18,12 @@ import java.util.Set;
 import org.workcraft.Framework;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.NameManager;
+import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.FormatException;
@@ -81,6 +83,7 @@ public class VerilogImporter implements Importer {
     private class Wire {
         public FunctionContact source = null;
         public HashSet<FunctionContact> sinks = new HashSet<>();
+        public HashSet<FunctionContact> undefined = new HashSet<>();
     }
 
     public VerilogImporter() {
@@ -243,11 +246,7 @@ public class VerilogImporter implements Importer {
         }
         FunctionContact outContact = null;
         for (Map.Entry<String, String> connection: assignGate.connections.entrySet()) {
-            Wire wire = wires.get(connection.getValue());
-            if (wire == null) {
-                wire = new Wire();
-                wires.put(connection.getValue(), wire);
-            }
+            Wire wire = getOrCreateWire(connection.getValue(), wires);
             FunctionContact contact = new FunctionContact();
             if (connection.getKey().equals(assignGate.outputName)) {
                 contact.setIOType(IOType.OUTPUT);
@@ -282,17 +281,14 @@ public class VerilogImporter implements Importer {
 
         NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(circuit.getRoot());
         NameManager nameManagerer = refManager.getNameManager(namespaceProvider);
-        String candidateName = removeLeadingAndTrailingSymbol(name, '_');
+        String candidateName = NamespaceHelper.getFlatNameCandidate(name);
         String componentName = nameManagerer.getDerivedName(component, candidateName);
         try {
             circuit.setName(component, componentName);
         } catch (ArgumentException e) {
-            LogUtils.logWarningLine("Cannot set name '" + componentName + "' for component '" + circuit.getName(component) + "'.");
+            String oldComponentName = circuit.getName(component);
+            LogUtils.logWarningLine("Cannot set name '" + componentName + "' for component '" + oldComponentName + "'.");
         }
-    }
-
-    private String removeLeadingAndTrailingSymbol(String s, char c) {
-        return s.replaceAll("^" + c + "+", "").replaceAll(c + "+$", "");
     }
 
     private boolean isSequentialAssign(Assign assign) {
@@ -409,18 +405,49 @@ public class VerilogImporter implements Importer {
     private HashMap<String, Wire> createPorts(Circuit circuit, Module module) {
         HashMap<String, Wire> wires = new HashMap<>();
         for (Port verilogPort: module.ports) {
-            FunctionContact contact = new FunctionContact();
-            Wire wire = new Wire();
-            if (verilogPort.isInput()) {
-                contact.setIOType(IOType.INPUT);
-                wire.source = contact;
-            } else if (verilogPort.isOutput()) {
-                contact.setIOType(IOType.OUTPUT);
-                wire.sinks.add(contact);
+            LinkedList<String> portPath = NamespaceHelper.splitReference(verilogPort.name);
+            if (portPath.size() == 1) {
+                // Primary port
+                FunctionContact contact = new FunctionContact();
+                Wire wire = getOrCreateWire(verilogPort.name, wires);
+                if (verilogPort.isInput()) {
+                    contact.setIOType(IOType.INPUT);
+                    wire.source = contact;
+                } else if (verilogPort.isOutput()) {
+                    contact.setIOType(IOType.OUTPUT);
+                    wire.sinks.add(contact);
+                }
+                circuit.setName(contact, verilogPort.name);
+                circuit.add(contact);
+            } else if (portPath.size() == 2) {
+                // Environment component pin
+                String componentName = portPath.get(0);
+                String contactName = portPath.get(1);
+                FunctionComponent component = null;
+                Node parent = circuit.getNodeByReference(componentName);
+                if (parent instanceof FunctionComponent) {
+                    component = (FunctionComponent) parent;
+                } else {
+                    component = new FunctionComponent();
+                    circuit.add(component);
+                    circuit.setName(component, componentName);
+                    component.setIsEnvironment(true);
+                }
+                FunctionContact contact = new FunctionContact();
+                Wire wire = getOrCreateWire(verilogPort.name, wires);
+                if (verilogPort.isInput()) {
+                    contact.setIOType(IOType.OUTPUT);
+                    wire.source = contact;
+                } else if (verilogPort.isOutput()) {
+                    contact.setIOType(IOType.INPUT);
+                    wire.sinks.add(contact);
+                }
+                component.add(contact);
+                circuit.setName(contact, contactName);
+            } else {
+                // Neither primary port nor environment component pin
+                throw new RuntimeException("Port '" + verilogPort.name + "' cannot be imported.");
             }
-            wires.put(verilogPort.name, wire);
-            circuit.setName(contact, verilogPort.name);
-            circuit.add(contact);
         }
         return wires;
     }
@@ -517,11 +544,13 @@ public class VerilogImporter implements Importer {
             HashMap<String, Wire> wires, HashMap<String, Module> modules) {
         final FunctionComponent component = new FunctionComponent();
         component.setModule(verilogInstance.moduleName);
+        component.setIsEnvironment(true);
         circuit.add(component);
         try {
             circuit.setName(component, verilogInstance.name);
         } catch (ArgumentException e) {
-            LogUtils.logWarningLine("Cannot set name '" + verilogInstance.name + "' for component '" + circuit.getName(component) + "'.");
+            String componentRef = circuit.getNodeReference(component);
+            LogUtils.logWarningLine("Cannot set name '" + verilogInstance.name + "' for component '" + componentRef + "'.");
         }
         Module module = modules.get(verilogInstance.moduleName);
         HashMap<String, Port> instancePorts = getModulePortMap(module);
@@ -529,12 +558,16 @@ public class VerilogImporter implements Importer {
             Port verilogPort = instancePorts.get(verilogPin.name);
             Wire wire = getOrCreateWire(verilogPin.netName, wires);
             FunctionContact contact = new FunctionContact();
-            if ((verilogPort != null) && (verilogPort.isInput())) {
-                contact.setIOType(IOType.INPUT);
-                wire.sinks.add(contact);
+            if (verilogPort == null) {
+                wire.undefined.add(contact);
             } else {
-                contact.setIOType(IOType.OUTPUT);
-                wire.source = contact;
+                if (verilogPort.isInput()) {
+                    contact.setIOType(IOType.INPUT);
+                    wire.sinks.add(contact);
+                } else {
+                    contact.setIOType(IOType.OUTPUT);
+                    wire.source = contact;
+                }
             }
             component.add(contact);
             if (verilogPin.name != null) {
@@ -554,11 +587,85 @@ public class VerilogImporter implements Importer {
     }
 
     private void createConnections(Circuit circuit, Map<String, Wire> wires) {
+        boolean finalised = false;
+        while (!finalised) {
+            finalised = true;
+            for (Wire wire: wires.values()) {
+                finalised &= finaliseWire(circuit, wire);
+            }
+        }
         for (Wire wire: wires.values()) {
-            if (wire.source == null) continue;
-            for (FunctionContact sink: wire.sinks) {
+            createConnection(circuit, wire);
+        }
+    }
+
+    private boolean finaliseWire(Circuit circuit, Wire wire) {
+        boolean result = true;
+        if (wire.source == null) {
+            if (wire.undefined.size() == 1) {
+                wire.source = wire.undefined.iterator().next();
+                if (wire.source.isPort()) {
+                    wire.source.setIOType(IOType.INPUT);
+                } else {
+                    wire.source.setIOType(IOType.OUTPUT);
+                }
+                String contactRef = circuit.getNodeReference(wire.source);
+                LogUtils.logInfoLine("Source contact detected: " + contactRef);
+                wire.undefined.clear();
+                result = false;
+            }
+        } else if (!wire.undefined.isEmpty()) {
+            wire.sinks.addAll(wire.undefined);
+            for (FunctionContact contact: wire.undefined) {
+                if (contact.isPort()) {
+                    contact.setIOType(IOType.OUTPUT);
+                } else {
+                    contact.setIOType(IOType.INPUT);
+                }
+            }
+            String contactRefs = ReferenceHelper.getNodesAsString(circuit, (Collection) wire.undefined);
+            LogUtils.logInfoLine("Sink contacts detected: " + contactRefs);
+            wire.undefined.clear();
+            result = false;
+        }
+        return result;
+    }
+
+    private void createConnection(Circuit circuit, Wire wire) {
+        Contact sourceContact = wire.source;
+        if (sourceContact == null) {
+            HashSet<FunctionContact> contacts = new HashSet<>();
+            contacts.addAll(wire.sinks);
+            contacts.addAll(wire.undefined);
+            if (!contacts.isEmpty()) {
+                String contactRefs = ReferenceHelper.getNodesAsString(circuit, (Collection) wire.undefined);
+                LogUtils.logErrorLine("Wire without a source is connected to the following contacts: " + contactRefs);
+            }
+        } else {
+            String sourceRef = circuit.getNodeReference(sourceContact);
+            if (!wire.undefined.isEmpty()) {
+                String contactRefs = ReferenceHelper.getNodesAsString(circuit, (Collection) wire.undefined);
+                LogUtils.logErrorLine("Wire from contact '" + sourceRef + "' has undefined sinks: " + contactRefs);
+            }
+            if (sourceContact.isPort() && sourceContact.isOutput()) {
+                sourceContact.setIOType(IOType.INPUT);
+                LogUtils.logWarningLine("Source contact '" + sourceRef + "' is changed to input port.");
+            }
+            if (!sourceContact.isPort() && sourceContact.isInput()) {
+                sourceContact.setIOType(IOType.OUTPUT);
+                LogUtils.logWarningLine("Source contact '" + sourceRef + "' is changed to output pin.");
+            }
+            for (FunctionContact sinkContact: wire.sinks) {
+                if (sinkContact.isPort() && sinkContact.isInput()) {
+                    sinkContact.setIOType(IOType.OUTPUT);
+                    LogUtils.logWarningLine("Sink contact '" + circuit.getNodeReference(sinkContact) + "' is changed to output port.");
+                }
+                if (!sinkContact.isPort() && sinkContact.isOutput()) {
+                    sinkContact.setIOType(IOType.INPUT);
+                    LogUtils.logWarningLine("Sink contact '" + circuit.getNodeReference(sinkContact) + "' is changed to input pin.");
+                }
                 try {
-                    circuit.connect(wire.source, sink);
+                    circuit.connect(sourceContact, sinkContact);
                 } catch (InvalidConnectionException e) {
                 }
             }

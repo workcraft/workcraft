@@ -51,7 +51,7 @@ public class ParallelCompositionCommand implements Command {
             PcompDialog dialog = new PcompDialog(mainWindow);
             GUI.centerAndSizeToParent(dialog, mainWindow);
             if (dialog.run()) {
-                String tmpPrefix = FileUtils.getTempPrefix("pcomp");
+                String tmpPrefix = FileUtils.getTempPrefix(we.getTitle());
                 File tmpDirectory = FileUtils.createTempDirectory(tmpPrefix);
                 ArrayList<File> inputFiles = new ArrayList<>();
                 for (Path<String> path : dialog.getSourcePaths()) {

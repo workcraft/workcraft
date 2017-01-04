@@ -11,6 +11,7 @@ import org.workcraft.dom.visual.NodeHelper;
 import net.sf.jga.fn.UnaryFunctor;
 
 public class Hierarchy {
+
     public static <T> Func<Node, Boolean> getTypeFilter(final Class<T> type) {
         return new Func<Node, Boolean>() {
             public Boolean eval(Node node) {

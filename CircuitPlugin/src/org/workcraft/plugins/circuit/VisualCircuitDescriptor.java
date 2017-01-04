@@ -14,7 +14,11 @@ public class VisualCircuitDescriptor implements VisualModelDescriptor {
     public VisualModel create(MathModel mathModel) throws VisualModelInstantiationException {
         VisualCircuit result = new VisualCircuit((Circuit) mathModel);
         for (VisualFunctionComponent component: Hierarchy.getDescendantsOfType(result.getRoot(), VisualFunctionComponent.class)) {
-            component.setRenderType(RenderType.GATE);
+            if (component.getIsEnvironment()) {
+                component.setRenderType(RenderType.BOX);
+            } else {
+                component.setRenderType(RenderType.GATE);
+            }
         }
         return result;
     }

@@ -43,23 +43,27 @@ public class NamespaceHelper {
         return reference;
     }
 
-    public static void splitReference(String reference, LinkedList<String> path) {
+    public static String getFlatNameCandidate(String reference) {
+        return reference.replaceAll(Pattern.quote(HIERARCHY_SEPARATOR), "");
+    }
+
+    public static LinkedList<String> splitReference(String reference) {
+        LinkedList<String> result = new LinkedList<>();
         if (!reference.isEmpty()) {
             Matcher matcher = HIERARCHY_PATTERN.matcher(reference);
             if (matcher.find()) {
-                path.add(matcher.group(2));
-                splitReference(matcher.group(6), path);
+                result.add(matcher.group(2));
+                result.addAll(splitReference(matcher.group(6)));
             }
         }
+        return result;
     }
 
     public static String getParentReference(String reference) {
         String result = "";
         // legacy reference support
         if (!Identifier.isNumber(reference)) {
-            LinkedList<String> path = new LinkedList<>();
-            splitReference(reference, path);
-
+            LinkedList<String> path = splitReference(reference);
             for (int i = 0; i < path.size() - 1; i++) {
                 result += path.get(i);
                 if (i < path.size() - 2) {
@@ -71,11 +75,11 @@ public class NamespaceHelper {
     }
 
     public static String getReferencePath(String reference) {
-        String ret = getParentReference(reference);
-        if (ret.length() > 0) {
-            ret += getHierarchySeparator();
+        String result = getParentReference(reference);
+        if (result.length() > 0) {
+            result += getHierarchySeparator();
         }
-        return ret;
+        return result;
     }
 
     public static String getReferenceHead(String reference) {
@@ -83,7 +87,6 @@ public class NamespaceHelper {
         if (Identifier.isNumber(reference)) {
             return reference;
         }
-
         Matcher matcher = HIERARCHY_PATTERN.matcher(reference);
         if (matcher.find()) {
             return matcher.group(2);
@@ -96,7 +99,6 @@ public class NamespaceHelper {
         if (Identifier.isNumber(reference)) {
             return "";
         }
-
         Matcher matcher = HIERARCHY_PATTERN.matcher(reference);
         if (matcher.find()) {
             return matcher.group(6);
