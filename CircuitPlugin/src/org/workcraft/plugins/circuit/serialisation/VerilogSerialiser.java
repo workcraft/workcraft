@@ -111,7 +111,7 @@ public class VerilogSerialiser implements ModelSerialiser {
 
                     NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(circuit.getRoot());
                     NameManager nameManagerer = refManager.getNameManager(namespaceProvider);
-                    String candidateName = NamespaceHelper.getFlatNameCandidate(result);
+                    String candidateName = NamespaceHelper.flattenReference(result);
                     result = nameManagerer.getDerivedName(contact, candidateName);
                 }
                 contactWires.put(contact, result);

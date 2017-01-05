@@ -281,7 +281,7 @@ public class VerilogImporter implements Importer {
 
         NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(circuit.getRoot());
         NameManager nameManagerer = refManager.getNameManager(namespaceProvider);
-        String candidateName = NamespaceHelper.getFlatNameCandidate(name);
+        String candidateName = NamespaceHelper.flattenReference(name);
         String componentName = nameManagerer.getDerivedName(component, candidateName);
         try {
             circuit.setName(component, componentName);

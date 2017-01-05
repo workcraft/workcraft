@@ -20,19 +20,20 @@ import org.workcraft.util.Identifier;
 public class NamespaceHelper {
     // Use negative lookahead (?![0-9]) to make sure that hierarchy separator is not followed by a number.
     // "/[0-9]" is used in in STG for transition instances.
-    private static final String LEGACY_HIERARCHY_SEPARATOR_PATTERN = "/(?![0-9])";
-    private static final String LEGACY_FLATNAME_SEPARATOR_PATTERN = "__";
+    private static final String LEGACY_HIERARCHY_SEPARATOR_REGEXP = "/(?![0-9])";
+    private static final String LEGACY_FLATNAME_SEPARATOR_REGEXP = "__";
     private static final String HIERARCHY_SEPARATOR = ".";
+    private static final String FLATNAME_SEPARATOR = "_";
     private static final Pattern HIERARCHY_PATTERN = Pattern.compile(
             "(" + Pattern.quote(HIERARCHY_SEPARATOR) + ")?" +
             "(([_A-Za-z][_A-Za-z0-9]*)([\\+\\-\\~])?(/[0-9]+)?)(.*)");
 
     public static String convertLegacyHierarchySeparators(String ref) {
-        return ref.replaceAll(LEGACY_HIERARCHY_SEPARATOR_PATTERN, HIERARCHY_SEPARATOR);
+        return ref.replaceAll(LEGACY_HIERARCHY_SEPARATOR_REGEXP, HIERARCHY_SEPARATOR);
     }
 
     public static String convertLegacyFlatnameSeparators(String ref) {
-        return ref.replaceAll(LEGACY_FLATNAME_SEPARATOR_PATTERN, HIERARCHY_SEPARATOR);
+        return ref.replaceAll(LEGACY_FLATNAME_SEPARATOR_REGEXP, HIERARCHY_SEPARATOR);
     }
 
     public static String getHierarchySeparator() {
@@ -43,8 +44,8 @@ public class NamespaceHelper {
         return reference;
     }
 
-    public static String getFlatNameCandidate(String reference) {
-        return reference.replaceAll(Pattern.quote(HIERARCHY_SEPARATOR), "");
+    public static String flattenReference(String reference) {
+        return reference.replaceAll(Pattern.quote(HIERARCHY_SEPARATOR), FLATNAME_SEPARATOR);
     }
 
     public static LinkedList<String> splitReference(String reference) {
