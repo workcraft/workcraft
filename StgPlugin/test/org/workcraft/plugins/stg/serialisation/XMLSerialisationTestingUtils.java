@@ -92,8 +92,8 @@ public class XMLSerialisationTestingUtils {
             Place p1 = stg.createPlace();
             Place p2 = stg.createPlace();
 
-            SignalTransition t1 = stg.createSignalTransition();
-            SignalTransition t2 = stg.createSignalTransition();
+            SignalTransition t1 = stg.createSignalTransition(null, null);
+            SignalTransition t2 = stg.createSignalTransition(null, null);
 
             stg.connect(t1, p1);
 
@@ -114,8 +114,8 @@ public class XMLSerialisationTestingUtils {
             Place p1 = stg.createPlace();
             Place p2 = stg.createPlace();
 
-            SignalTransition t1 = stg.createSignalTransition();
-            SignalTransition t2 = stg.createSignalTransition();
+            SignalTransition t1 = stg.createSignalTransition(null, null);
+            SignalTransition t2 = stg.createSignalTransition(null, null);
 
             stg.connect(t1, p1);
 
@@ -143,10 +143,10 @@ public class XMLSerialisationTestingUtils {
         try {
             Stg stg = new Stg();
 
-            SignalTransition t1 = stg.createSignalTransition();
-            SignalTransition t2 = stg.createSignalTransition();
-            SignalTransition t3 = stg.createSignalTransition();
-            SignalTransition t4 = stg.createSignalTransition();
+            SignalTransition t1 = stg.createSignalTransition(null, null);
+            SignalTransition t2 = stg.createSignalTransition(null, null);
+            SignalTransition t3 = stg.createSignalTransition(null, null);
+            SignalTransition t4 = stg.createSignalTransition(null, null);
 
             VisualStg visualSTG = new VisualStg(stg);
 

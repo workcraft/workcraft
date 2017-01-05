@@ -85,13 +85,13 @@ public class CircuitToStgConverter {
             simplifyDriverStgs(drivers);
         }
         positionDriverStgs(drivers);
-        groupDriverStgs(drivers);
+        //groupDriverStgs(drivers);
     }
 
     public CircuitToStgConverter(VisualCircuit circuit, VisualStg stg) {
         this.circuit = circuit;
         this.stg = stg;
-        this.refToPageMap = convertPages();
+        this.refToPageMap = NamespaceHelper.getRefToPageMapping(stg);
         HashSet<VisualContact> drivers = identifyDrivers();
         this.nodeToDriverMap = associateNodesToDrivers(drivers);
         // STGs already exist, just associate them with the drivers
@@ -101,7 +101,7 @@ public class CircuitToStgConverter {
             simplifyDriverStgs(drivers);
         }
         positionDriverStgs(drivers);
-        groupDriverStgs(drivers);
+        //groupDriverStgs(drivers);
     }
 
     public VisualStg getStg() {
@@ -143,7 +143,6 @@ public class CircuitToStgConverter {
         NamespaceHelper.copyPageStructure(circuit, stg);
         for (VisualFunctionComponent component: circuit.getVisualFunctionComponents()) {
             String name = circuit.getMathName(component);
-
             VisualPage dstPage = new VisualPage(new PageNode());
             stg.getRoot().add(dstPage);
             dstPage.copyPosition(component);

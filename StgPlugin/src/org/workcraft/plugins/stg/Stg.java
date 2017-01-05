@@ -55,29 +55,35 @@ public class Stg extends AbstractMathModel implements StgModel {
         return createPlace(null, null);
     }
 
-    public final StgPlace createPlace(String name, Container container) {
-        return createNode(name, container, StgPlace.class);
+    public final StgPlace createPlace(String ref, Container container) {
+        return createNode(ref, container, StgPlace.class);
     }
 
-    public final DummyTransition createDummyTransition(String name, Container container) {
-        DummyTransition transition = createNode(name, container, DummyTransition.class);
-        if (name == null) {
-            name = transition.getName();
+    public final DummyTransition createDummyTransition(String ref, Container container) {
+        return createDummyTransition(ref, container, false);
+    }
+
+    public final DummyTransition createDummyTransition(String ref, Container container, boolean forceInstance) {
+        DummyTransition transition = createNode(ref, container, DummyTransition.class);
+        if (ref == null) {
+            ref = transition.getName();
         }
-        setName(transition, name);
+        String name = NamespaceHelper.getReferenceName(ref);
+        setName(transition, name, forceInstance);
         return transition;
     }
 
-    public final SignalTransition createSignalTransition() {
-        return createSignalTransition(null, null);
+    public final SignalTransition createSignalTransition(String ref, Container container) {
+        return createSignalTransition(ref, container, false);
     }
 
-    public final SignalTransition createSignalTransition(String name, Container container) {
-        SignalTransition transition = createNode(name, container, SignalTransition.class);
-        if (name == null) {
-            name = transition.getName();
+    public final SignalTransition createSignalTransition(String ref, Container container, boolean forceInstance) {
+        SignalTransition transition = createNode(ref, container, SignalTransition.class);
+        if (ref == null) {
+            ref = transition.getName();
         }
-        setName(transition, name);
+        String name = NamespaceHelper.getReferenceName(ref);
+        setName(transition, name, forceInstance);
         return transition;
     }
 
@@ -257,18 +263,6 @@ public class Stg extends AbstractMathModel implements StgModel {
         referenceManager.setName(t, old.getFirst() + direction.toString());
     }
 
-    public String makeReference(Pair<String, Integer> label) {
-        String name = label.getFirst();
-        Integer instance = label.getSecond();
-        return name + "/" + ((instance == null) ? 0 : instance);
-    }
-
-    public String makeReference(Triple<String, Direction, Integer> label) {
-        String name = label.getFirst();
-        Integer instance = label.getThird();
-        return name + label.getSecond() + "/" + ((instance == null) ? 0 : instance);
-    }
-
     @Override
     public String getName(Node node) {
         return referenceManager.getName(node);
@@ -279,7 +273,7 @@ public class Stg extends AbstractMathModel implements StgModel {
         this.setName(node, name, false);
     }
 
-    public void setName(Node node, String name, boolean forceInstance) {
+    private void setName(Node node, String name, boolean forceInstance) {
         referenceManager.setName(node, name, forceInstance);
     }
 

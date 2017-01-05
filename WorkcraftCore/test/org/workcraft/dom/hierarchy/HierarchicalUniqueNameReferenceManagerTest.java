@@ -14,10 +14,10 @@ public class HierarchicalUniqueNameReferenceManagerTest {
         private static final long serialVersionUID = -2931077011392124649L;
         {
             put("abc", new Pair<String, String>("abc", ""));
-            put("abc.def", new Pair<String, String>("abc", ".def"));
-            put("abc.def.ghi", new Pair<String, String>("abc", ".def.ghi"));
-            put("abc/123.def.ghi", new Pair<String, String>("abc/123", ".def.ghi"));
-            put("a.b.c+/123", new Pair<String, String>("a", ".b.c+/123"));
+            put("abc.def", new Pair<String, String>("abc", "def"));
+            put("abc.def.ghi", new Pair<String, String>("abc", "def.ghi"));
+            put("abc/123.def.ghi", new Pair<String, String>("abc/123", "def.ghi"));
+            put("a.b.c+/123", new Pair<String, String>("a", "b.c+/123"));
         }
     };
 
@@ -27,7 +27,7 @@ public class HierarchicalUniqueNameReferenceManagerTest {
             String reference = en.getKey();
             String head = en.getValue().getFirst();
             String answer = NamespaceHelper.getReferenceHead(reference);
-            assertEquals(answer, head);
+            assertEquals(head, answer);
         }
     }
 
@@ -37,7 +37,7 @@ public class HierarchicalUniqueNameReferenceManagerTest {
             String reference = en.getKey();
             String tail = en.getValue().getSecond();
             String answer = NamespaceHelper.getReferenceTail(reference);
-            assertEquals(answer, tail);
+            assertEquals(tail, answer);
         }
     }
 
@@ -59,7 +59,7 @@ public class HierarchicalUniqueNameReferenceManagerTest {
             String reference = en.getKey();
             String path = en.getValue();
             String answer = NamespaceHelper.getReferencePath(reference);
-            assertEquals(answer, path);
+            assertEquals(path, answer);
         }
     }
 

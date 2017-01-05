@@ -105,7 +105,7 @@ public class VerilogSerialiser implements ModelSerialiser {
                 }
             }
             if (result != null) {
-                if (NamespaceHelper.getReferencePath(result).length() > 1) {
+                if (NamespaceHelper.isHierarchical(result)) {
                     HierarchicalUniqueNameReferenceManager refManager
                             = (HierarchicalUniqueNameReferenceManager) circuit.getReferenceManager();
 

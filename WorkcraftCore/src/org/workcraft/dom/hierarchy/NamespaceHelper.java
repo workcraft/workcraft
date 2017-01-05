@@ -19,14 +19,18 @@ import org.workcraft.util.Identifier;
 
 public class NamespaceHelper {
     // Use negative lookahead (?![0-9]) to make sure that hierarchy separator is not followed by a number.
-    // "/[0-9]" is used in in STG for transition instances.
+    // This is because "/[0-9]" is used in in STG for transition instances.
     private static final String LEGACY_HIERARCHY_SEPARATOR_REGEXP = "/(?![0-9])";
     private static final String LEGACY_FLATNAME_SEPARATOR_REGEXP = "__";
+
     private static final String HIERARCHY_SEPARATOR = ".";
     private static final String FLATNAME_SEPARATOR = "_";
-    private static final Pattern HIERARCHY_PATTERN = Pattern.compile(
-            "(" + Pattern.quote(HIERARCHY_SEPARATOR) + ")?" +
-            "(([_A-Za-z][_A-Za-z0-9]*)([\\+\\-\\~])?(/[0-9]+)?)(.*)");
+
+    private static final Pattern HEAD_TAIL_PATTERN = Pattern.compile(
+            "([^" + HIERARCHY_SEPARATOR + "]+)" + "(" + Pattern.quote(HIERARCHY_SEPARATOR) + "(.+))?");
+
+    private static final int HEAD_GROUP = 1;
+    private static final int TAIL_GROUP = 3;
 
     public static String convertLegacyHierarchySeparators(String ref) {
         return ref.replaceAll(LEGACY_HIERARCHY_SEPARATOR_REGEXP, HIERARCHY_SEPARATOR);
@@ -50,11 +54,15 @@ public class NamespaceHelper {
 
     public static LinkedList<String> splitReference(String reference) {
         LinkedList<String> result = new LinkedList<>();
-        if (!reference.isEmpty()) {
-            Matcher matcher = HIERARCHY_PATTERN.matcher(reference);
+        if ((reference != null) && !reference.isEmpty()) {
+            Matcher matcher = HEAD_TAIL_PATTERN.matcher(reference);
             if (matcher.find()) {
-                result.add(matcher.group(2));
-                result.addAll(splitReference(matcher.group(6)));
+                String head = matcher.group(HEAD_GROUP);
+                result.add(head);
+                String tail = matcher.group(TAIL_GROUP);
+                if (tail != null) {
+                    result.addAll(splitReference(tail));
+                }
             }
         }
         return result;
@@ -85,26 +93,25 @@ public class NamespaceHelper {
 
     public static String getReferenceHead(String reference) {
         // legacy reference support
-        if (Identifier.isNumber(reference)) {
-            return reference;
+        if (!Identifier.isNumber(reference)) {
+            Matcher matcher = HEAD_TAIL_PATTERN.matcher(reference);
+            if (matcher.find()) {
+                return matcher.group(HEAD_GROUP);
+            }
         }
-        Matcher matcher = HIERARCHY_PATTERN.matcher(reference);
-        if (matcher.find()) {
-            return matcher.group(2);
-        }
-        return null;
+        return reference;
     }
 
     public static String getReferenceTail(String reference) {
         // legacy reference support
-        if (Identifier.isNumber(reference)) {
-            return "";
+        if (!Identifier.isNumber(reference)) {
+            Matcher matcher = HEAD_TAIL_PATTERN.matcher(reference);
+            if (matcher.find()) {
+                String result = matcher.group(TAIL_GROUP);
+                return (result == null) ? "" : result;
+            }
         }
-        Matcher matcher = HIERARCHY_PATTERN.matcher(reference);
-        if (matcher.find()) {
-            return matcher.group(6);
-        }
-        return null;
+        return "";
     }
 
     public static String getReferenceName(String reference) {
@@ -181,6 +188,10 @@ public class NamespaceHelper {
             result.put(ref, page);
         }
         return result;
+    }
+
+    public static boolean isHierarchical(String ref) {
+        return (ref != null) && ref.substring(1).contains(HIERARCHY_SEPARATOR);
     }
 
 }

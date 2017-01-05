@@ -17,11 +17,11 @@ public class ConnectionRemoverTest {
     public void removeMany() throws InvalidConnectionException {
         Stg stg = new Stg();
 
-        SignalTransition t1 = stg.createSignalTransition();
+        SignalTransition t1 = stg.createSignalTransition(null, null);
         Place p1 = stg.createPlace();
-        SignalTransition t2 = stg.createSignalTransition();
+        SignalTransition t2 = stg.createSignalTransition(null, null);
         Place p2 = stg.createPlace();
-        SignalTransition t3 = stg.createSignalTransition();
+        SignalTransition t3 = stg.createSignalTransition(null, null);
 
         stg.connect(t3, p2);
         stg.connect(p2, t2);

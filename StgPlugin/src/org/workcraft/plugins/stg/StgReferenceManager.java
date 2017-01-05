@@ -61,9 +61,9 @@ public class StgReferenceManager extends HierarchicalUniqueNameReferenceManager 
         mgr.setDefaultNameIfUnnamed(node);
     }
 
-    public void setName(Node node, String s, boolean forceInstance) {
+    public void setName(Node node, String name, boolean forceInstance) {
         StgNameManager mgr = getNameManager(node);
-        mgr.setName(node, s, forceInstance);
+        mgr.setName(node, name, forceInstance);
     }
 
     @Override
