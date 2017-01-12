@@ -19,11 +19,11 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
+import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgSettings;
-import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.VisualSignalTransition;
+import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.util.Hierarchy;
 
 public abstract class AbstractToStgConverter {
@@ -141,7 +141,7 @@ public abstract class AbstractToStgConverter {
             for (VisualSignalTransition t: ts) {
                 if (replicaPlace == null) {
                     Container container = Hierarchy.getNearestContainer(new HashSet<Node>(ts));
-                    replicaPlace = stg.createVisualReplica(p, container, VisualReplicaPlace.class);
+                    replicaPlace = stg.createVisualReplica(p, VisualReplicaPlace.class, container);
                     Point2D pos = new Point2D.Double(t.getRootSpaceX() + xOffset, t.getRootSpaceY() + yOffset);
                     replicaPlace.setRootSpacePosition(pos);
                 }
@@ -153,7 +153,7 @@ public abstract class AbstractToStgConverter {
     public void createReplicaReadArcs(VisualPlace p, Collection<VisualSignalTransition> ts, Point2D replicaPosition) throws InvalidConnectionException {
         if ((p != null) && (ts != null)) {
             Container container = Hierarchy.getNearestContainer(new HashSet<Node>(ts));
-            VisualReplicaPlace replicaPlace = stg.createVisualReplica(p, container, VisualReplicaPlace.class);
+            VisualReplicaPlace replicaPlace = stg.createVisualReplica(p, VisualReplicaPlace.class, container);
             if (replicaPosition != null) {
                 replicaPlace.setRootSpacePosition(replicaPosition);
             }
@@ -190,24 +190,24 @@ public abstract class AbstractToStgConverter {
     }
 
     public SignalStg generateBasicSignalStg(String signalName, double x, double y, SignalTransition.Type type) throws InvalidConnectionException {
-        VisualPlace zero = stg.createPlace(SignalStg.getLowName(signalName), null);
+        VisualPlace zero = stg.createVisualPlace(SignalStg.getLowName(signalName));
         zero.getReferencedPlace().setTokens(1);
         zero.setNamePositioning(Positioning.BOTTOM);
         zero.setLabelPositioning(Positioning.TOP);
         setPosition(zero, x + 0.0, y + 2.0);
 
-        VisualPlace one = stg.createPlace(SignalStg.getHighName(signalName), null);
+        VisualPlace one = stg.createVisualPlace(SignalStg.getHighName(signalName));
         one.getReferencedPlace().setTokens(0);
         one.setNamePositioning(Positioning.TOP);
         one.setLabelPositioning(Positioning.BOTTOM);
         setPosition(one, x + 0.0, y - 2.0);
 
-        VisualSignalTransition fall = stg.createSignalTransition(signalName, type, SignalTransition.Direction.MINUS, null);
+        VisualSignalTransition fall = stg.createVisualSignalTransition(signalName, type, SignalTransition.Direction.MINUS);
         createConsumingArc(one, fall);
         createProducingArc(fall, zero);
         setPosition(fall, x + 4.0, y + 0.0);
 
-        VisualSignalTransition rise = stg.createSignalTransition(signalName, type, SignalTransition.Direction.PLUS, null);
+        VisualSignalTransition rise = stg.createVisualSignalTransition(signalName, type, SignalTransition.Direction.PLUS);
         createConsumingArc(zero, rise);
         createProducingArc(rise, one);
         setPosition(rise, x - 4.0, y - 0.0);
@@ -227,13 +227,13 @@ public abstract class AbstractToStgConverter {
             ySign = -1;
         }
 
-        VisualPlace zero = stg.createPlace(SignalStg.getLowName(signalName), null);
+        VisualPlace zero = stg.createVisualPlace(SignalStg.getLowName(signalName));
         zero.getReferencedPlace().setTokens(1);
         zero.setNamePositioning((ySign < 0) ? Positioning.BOTTOM : Positioning.TOP);
         zero.setLabelPositioning((ySign < 0) ? Positioning.TOP : Positioning.BOTTOM);
         setPosition(zero, x + xSign * 4.0, y + ySign * 2.0);
 
-        VisualPlace one = stg.createPlace(SignalStg.getHighName(signalName), null);
+        VisualPlace one = stg.createVisualPlace(SignalStg.getHighName(signalName));
         one.getReferencedPlace().setTokens(0);
         one.setNamePositioning((ySign < 0) ? Positioning.TOP : Positioning.BOTTOM);
         one.setLabelPositioning((ySign < 0) ? Positioning.BOTTOM : Positioning.TOP);
@@ -241,7 +241,7 @@ public abstract class AbstractToStgConverter {
 
         ArrayList<VisualSignalTransition> fallList = new ArrayList<>(fallCount);
         for (int i = fallCount - 1; i >= 0; --i) {
-            VisualSignalTransition fall = stg.createSignalTransition(signalName, type, SignalTransition.Direction.MINUS, null);
+            VisualSignalTransition fall = stg.createVisualSignalTransition(signalName, type, SignalTransition.Direction.MINUS);
             createConsumingArc(one, fall);
             createProducingArc(fall, zero);
             setPosition(fall, x + 0.0, y + ySign * (2.0 + i));
@@ -250,7 +250,7 @@ public abstract class AbstractToStgConverter {
 
         ArrayList<VisualSignalTransition> riseList = new ArrayList<>(riseCount);
         for (int i = riseCount - 1; i >= 0; --i) {
-            VisualSignalTransition rise = stg.createSignalTransition(signalName, type, SignalTransition.Direction.PLUS, null);
+            VisualSignalTransition rise = stg.createVisualSignalTransition(signalName, type, SignalTransition.Direction.PLUS);
             createConsumingArc(zero, rise);
             createProducingArc(rise, one);
             setPosition(rise, x + 0.0, y - ySign * (2.0 + i));

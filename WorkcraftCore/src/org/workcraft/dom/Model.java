@@ -9,6 +9,7 @@ import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.util.Func;
 
 public interface Model extends NodeContext {
+
     void setTitle(String title);
     String getTitle();
 
@@ -26,12 +27,13 @@ public interface Model extends NodeContext {
      */
     String getShortName();
 
-    /// methods for work with referenced component names
+    // Methods for work with node references
     ReferenceManager getReferenceManager();
     Node getNodeByReference(NamespaceProvider provider, String reference);
     String getNodeReference(NamespaceProvider provider, Node node);
     Node getNodeByReference(String reference);
     String getNodeReference(Node node);
+
     String getName(Node node);
     void setName(Node node, String name);
 
@@ -48,4 +50,5 @@ public interface Model extends NodeContext {
     void remove(Collection<Node> nodes);
 
     ModelProperties getProperties(Node node);
+
 }

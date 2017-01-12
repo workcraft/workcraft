@@ -332,7 +332,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
         String succName = visualModel.getMathName(succPlace);
         String productName = nameManagerer.getDerivedName(null, predName + succName);
         Place mathPlace = mathModel.createNode(productName, mathContainer, Place.class);
-        return visualModel.createVisualComponent(mathPlace, visualContainer, VisualPlace.class);
+        return visualModel.createVisualComponent(mathPlace, VisualPlace.class, visualContainer);
     }
 
     public void initialiseProductPlace(VisualModel visualModel, VisualPlace predPlace, VisualPlace succPlace, VisualPlace productPlace) {

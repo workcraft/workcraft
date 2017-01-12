@@ -35,6 +35,7 @@ import org.workcraft.util.Triple;
 
 @VisualClass(org.workcraft.plugins.stg.VisualStg.class)
 public class Stg extends AbstractMathModel implements StgModel {
+
     private StgReferenceManager referenceManager;
 
     public Stg() {
@@ -56,7 +57,7 @@ public class Stg extends AbstractMathModel implements StgModel {
     }
 
     public final StgPlace createPlace(String ref, Container container) {
-        return createNode(ref, container, StgPlace.class);
+        return createNodeWithHierarchy(ref, container, StgPlace.class);
     }
 
     public final DummyTransition createDummyTransition(String ref, Container container) {
@@ -64,7 +65,7 @@ public class Stg extends AbstractMathModel implements StgModel {
     }
 
     public final DummyTransition createDummyTransition(String ref, Container container, boolean forceInstance) {
-        DummyTransition transition = createNode(ref, container, DummyTransition.class);
+        DummyTransition transition = createNodeWithHierarchy(ref, container, DummyTransition.class);
         if (ref == null) {
             ref = transition.getName();
         }
@@ -78,7 +79,7 @@ public class Stg extends AbstractMathModel implements StgModel {
     }
 
     public final SignalTransition createSignalTransition(String ref, Container container, boolean forceInstance) {
-        SignalTransition transition = createNode(ref, container, SignalTransition.class);
+        SignalTransition transition = createNodeWithHierarchy(ref, container, SignalTransition.class);
         if (ref == null) {
             ref = transition.getName();
         }
@@ -391,8 +392,8 @@ public class Stg extends AbstractMathModel implements StgModel {
     }
 
     @Override
-    public <T extends MathNode> T createNode(Collection<MathNode> srcNodes, Container container, Class<T> type) {
-        T result = super.createNode(srcNodes, container, type);
+    public <T extends MathNode> T createMergedNode(Collection<MathNode> srcNodes, Container container, Class<T> type) {
+        T result = super.createMergedNode(srcNodes, container, type);
         if (result instanceof SignalTransition) {
             SignalTransition signalTransition = (SignalTransition) result;
             // Type priority: OUTPUT > INPUT > INTERNAL

@@ -8,6 +8,7 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.CommentNode;
+import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
@@ -78,9 +79,10 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
                     String srcName = NamespaceHelper.getReferenceName(srcRef);
                     String dstName = convertNodeName(srcName, container);
                     Container mathContainer = NamespaceHelper.getMathContainer(getDstModel(), container);
-                    MathNode dstMathNode = getDstModel().getMathModel().createNode(dstName, mathContainer, dstMathNodeClass);
+                    MathModel dstMathModel = getDstModel().getMathModel();
+                    MathNode dstMathNode = dstMathModel.createNode(dstName, mathContainer, dstMathNodeClass);
 
-                    dstComponent = getDstModel().createVisualComponent(dstMathNode, container, dstVisualComponentClass);
+                    dstComponent = getDstModel().createVisualComponent(dstMathNode, dstVisualComponentClass, container);
                     dstComponent.copyPosition(srcComponent);
                     dstComponent.copyStyle(srcComponent);
                 }
@@ -111,7 +113,7 @@ public class DefaultModelConverter<TSrcModel extends VisualModel, TDstModel exte
                 dstMasterComponent = (VisualComponent) dstMasterNode;
             }
 
-            dstReplica = getDstModel().createVisualReplica(dstMasterComponent, dstContainer, dstVisualReplicaClass);
+            dstReplica = getDstModel().createVisualReplica(dstMasterComponent, dstVisualReplicaClass, dstContainer);
             dstReplica.copyPosition(srcReplica);
             dstReplica.copyStyle(srcReplica);
         }

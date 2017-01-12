@@ -80,8 +80,8 @@ public abstract class AbstractMergeTransformationCommand extends AbstractTransfo
                 Container mContainer = NamespaceHelper.getMathContainer(model, vContainer);
                 Class<? extends MathNode> mathNodeClass = components.iterator().next().getReferencedComponent().getClass();
                 MathModel mathModel = model.getMathModel();
-                MathNode mathNode = mathModel.createNode(nodes, mContainer, mathNodeClass);
-                result = model.createVisualComponent(mathNode, vContainer, type);
+                MathNode mathNode = mathModel.createMergedNode(nodes, mContainer, mathNodeClass);
+                result = model.createVisualComponent(mathNode, type, vContainer);
                 int n = components.size();
                 result.setRootSpacePosition(new Point2D.Double(x / n, y / n));
                 result.mixStyle(components.toArray(new VisualComponent[components.size()]));

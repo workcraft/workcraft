@@ -178,7 +178,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
 
         Container curContainer = null;
 
-        VisualPlace c0 = getStgModel().createPlace(nameC + name + name0, curContainer);
+        VisualPlace c0 = getStgModel().createVisualPlace(nameC + name + name0, curContainer);
         c0.setLabel(labelC + name + label0);
         c0.setLabelPositioning(Positioning.BOTTOM);
         if (!l.getReferencedLogic().isComputed()) {
@@ -189,7 +189,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         setPosition(c0, x + 2.0, y + 1.0);
         nodes.add(c0);
 
-        VisualPlace c1 = getStgModel().createPlace(nameC + name + name1, curContainer);
+        VisualPlace c1 = getStgModel().createVisualPlace(nameC + name + name1, curContainer);
         c1.setLabel(labelC + name + label1);
         c1.setLabelPositioning(Positioning.TOP);
         if (l.getReferencedLogic().isComputed()) {
@@ -216,7 +216,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         double dy = 0.0;
         for (Node n: preset) {
             if (cR == null || l.getReferencedLogic().isEarlyEvaluation()) {
-                cR = getStgModel().createSignalTransition(nameC + name, type, SignalTransition.Direction.PLUS, curContainer);
+                cR = getStgModel().createVisualSignalTransition(nameC + name, type, SignalTransition.Direction.PLUS, curContainer);
                 cR.setTokenColorGenerator(tokenColorGenerator);
                 createConsumingArc(c0, cR, false);
                 createProducingArc(cR, c1, true);
@@ -225,7 +225,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
             }
             cRs.put(n, cR);
             if (cF == null) {
-                cF = getStgModel().createSignalTransition(nameC + name, type, SignalTransition.Direction.MINUS, curContainer);
+                cF = getStgModel().createVisualSignalTransition(nameC + name, type, SignalTransition.Direction.MINUS, curContainer);
                 createConsumingArc(c1, cF, false);
                 createProducingArc(cF, c0, false);
                 setPosition(cF, x - 2.0, y - 1.0 - dy);
@@ -293,7 +293,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         ColorGenerator tokenColorGenerator = createColorGenerator(getDfsModel().getPreset(r).size() == 0);
         Container curContainer = null;
 
-        VisualPlace m0 = getStgModel().createPlace(nameM + name + name0, curContainer);
+        VisualPlace m0 = getStgModel().createVisualPlace(nameM + name + name0, curContainer);
         m0.setLabel(labelM + name + label0);
         m0.setLabelPositioning(Positioning.BOTTOM);
         if (!r.getReferencedRegister().isMarked()) {
@@ -304,7 +304,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         setPosition(m0, x + 2.0, y + 1.0);
         nodes.add(m0);
 
-        VisualPlace m1 = getStgModel().createPlace(nameM + name + name1, curContainer);
+        VisualPlace m1 = getStgModel().createVisualPlace(nameM + name + name1, curContainer);
         m1.setLabel(labelM + name + label1);
         m1.setLabelPositioning(Positioning.TOP);
         if (r.getReferencedRegister().isMarked()) {
@@ -314,7 +314,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         setPosition(m1, x + 2.0, y - 1.0);
         nodes.add(m1);
 
-        VisualSignalTransition mR = getStgModel().createSignalTransition(nameM + name, type,
+        VisualSignalTransition mR = getStgModel().createVisualSignalTransition(nameM + name, type,
                 SignalTransition.Direction.PLUS, curContainer);
         mR.setTokenColorGenerator(tokenColorGenerator);
         createConsumingArc(m0, mR, false);
@@ -322,7 +322,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         setPosition(mR, x - 2.0, y + 1.0);
         nodes.add(mR);
 
-        VisualSignalTransition mF = getStgModel().createSignalTransition(nameM + name, type,
+        VisualSignalTransition mF = getStgModel().createVisualSignalTransition(nameM + name, type,
                 SignalTransition.Direction.MINUS, curContainer);
         createConsumingArc(m1, mF, false);
         createProducingArc(mF, m0, false);
@@ -419,7 +419,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
 
         Container curContainer = null;
 
-        VisualPlace fwC0 = getStgModel().createPlace(nameFwC + name + name0, curContainer);
+        VisualPlace fwC0 = getStgModel().createVisualPlace(nameFwC + name + name0, curContainer);
         fwC0.setLabel(labelFwC + name + label0);
         fwC0.setLabelPositioning(Positioning.BOTTOM);
         if (!l.getReferencedCounterflowLogic().isForwardComputed()) {
@@ -430,7 +430,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         setPosition(fwC0, x + 2.0, y - 2.0);
         nodes.add(fwC0);
 
-        VisualPlace fwC1 = getStgModel().createPlace(nameFwC + name + name1, curContainer);
+        VisualPlace fwC1 = getStgModel().createVisualPlace(nameFwC + name + name1, curContainer);
         fwC1.setLabel(labelFwC + name + label1);
         fwC1.setLabelPositioning(Positioning.TOP);
         if (l.getReferencedCounterflowLogic().isForwardComputed()) {
@@ -454,7 +454,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         double dy = 0.0;
         for (Node n: preset) {
             if (fwCR == null || l.getReferencedCounterflowLogic().isForwardEarlyEvaluation()) {
-                fwCR = getStgModel().createSignalTransition(nameFwC + name, type,
+                fwCR = getStgModel().createVisualSignalTransition(nameFwC + name, type,
                         SignalTransition.Direction.PLUS, curContainer);
                 fwCR.setTokenColorGenerator(presetTokenColorGenerator);
                 createConsumingArc(fwC0, fwCR, false);
@@ -464,7 +464,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
             }
             fwCRs.put(n, fwCR);
             if (fwCF == null) {
-                fwCF = getStgModel().createSignalTransition(nameFwC + name, type,
+                fwCF = getStgModel().createVisualSignalTransition(nameFwC + name, type,
                         SignalTransition.Direction.MINUS, curContainer);
                 createConsumingArc(fwC1, fwCF, false);
                 createProducingArc(fwCF, fwC0, false);
@@ -475,7 +475,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
             dy += 1.0;
         }
 
-        VisualPlace bwC0 = getStgModel().createPlace(nameBwC + name + name0, curContainer);
+        VisualPlace bwC0 = getStgModel().createVisualPlace(nameBwC + name + name0, curContainer);
         bwC0.setLabel(labelBwC + name + label0);
         bwC0.setLabelPositioning(Positioning.BOTTOM);
         if (!l.getReferencedCounterflowLogic().isBackwardComputed()) {
@@ -486,7 +486,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         setPosition(bwC0, x + 2.0, y + 4.0);
         nodes.add(bwC0);
 
-        VisualPlace bwC1 = getStgModel().createPlace(nameBwC + name + name1, curContainer);
+        VisualPlace bwC1 = getStgModel().createVisualPlace(nameBwC + name + name1, curContainer);
         bwC1.setLabel(labelBwC + name + label1);
         bwC1.setLabelPositioning(Positioning.TOP);
         if (l.getReferencedCounterflowLogic().isBackwardComputed()) {
@@ -510,7 +510,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         dy = 0.0;
         for (Node n: postset) {
             if (bwCR == null || l.getReferencedCounterflowLogic().isBackwardEarlyEvaluation()) {
-                bwCR = getStgModel().createSignalTransition(nameBwC + name, type,
+                bwCR = getStgModel().createVisualSignalTransition(nameBwC + name, type,
                         SignalTransition.Direction.PLUS, curContainer);
                 bwCR.setTokenColorGenerator(postsetTokenColorGenerator);
                 createConsumingArc(bwC0, bwCR, false);
@@ -520,7 +520,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
             }
             bwCRs.put(n, bwCR);
             if (bwCF == null) {
-                bwCF = getStgModel().createSignalTransition(nameBwC + name, type,
+                bwCF = getStgModel().createVisualSignalTransition(nameBwC + name, type,
                         SignalTransition.Direction.MINUS, curContainer);
                 createConsumingArc(bwC1, bwCF, false);
                 createProducingArc(bwCF, bwC0, false);
@@ -586,7 +586,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
 
         Container curContainer = null;
 
-        VisualPlace orM0 = getStgModel().createPlace(nameOrM + name + name0, curContainer);
+        VisualPlace orM0 = getStgModel().createVisualPlace(nameOrM + name + name0, curContainer);
         orM0.setLabel(labelOrM + name + label0);
         orM0.setLabelPositioning(Positioning.BOTTOM);
         if (!r.getReferencedCounterflowRegister().isOrMarked()) {
@@ -597,7 +597,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         setPosition(orM0, x + 2.0, y - 2.0);
         nodes.add(orM0);
 
-        VisualPlace orM1 = getStgModel().createPlace(nameOrM + name + name1, curContainer);
+        VisualPlace orM1 = getStgModel().createVisualPlace(nameOrM + name + name1, curContainer);
         orM1.setLabel(labelOrM + name + label1);
         orM1.setLabelPositioning(Positioning.TOP);
         if (r.getReferencedCounterflowRegister().isOrMarked()) {
@@ -608,7 +608,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         setPosition(orM1, x + 2.0, y - 4.0);
         nodes.add(orM1);
 
-        VisualSignalTransition orMRfw = getStgModel().createSignalTransition(nameOrM + name, type,
+        VisualSignalTransition orMRfw = getStgModel().createVisualSignalTransition(nameOrM + name, type,
                 SignalTransition.Direction.PLUS, curContainer);
         orMRfw.setTokenColorGenerator(presetTokenColorGenerator);
         createConsumingArc(orM0, orMRfw, false);
@@ -616,7 +616,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         setPosition(orMRfw, x - 2.0, y - 2.5);
         nodes.add(orMRfw);
 
-        VisualSignalTransition orMRbw = getStgModel().createSignalTransition(nameOrM + name, type,
+        VisualSignalTransition orMRbw = getStgModel().createVisualSignalTransition(nameOrM + name, type,
                 SignalTransition.Direction.PLUS, curContainer);
         orMRbw.setTokenColorGenerator(postsetTokenColorGenerator);
         createConsumingArc(orM0, orMRbw, false);
@@ -624,21 +624,21 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         setPosition(orMRbw, x - 2.0, y - 1.5);
         nodes.add(orMRbw);
 
-        VisualSignalTransition orMFfw = getStgModel().createSignalTransition(nameOrM + name, type,
+        VisualSignalTransition orMFfw = getStgModel().createVisualSignalTransition(nameOrM + name, type,
                 SignalTransition.Direction.MINUS, curContainer);
         createConsumingArc(orM1, orMFfw, false);
         createProducingArc(orMFfw, orM0, false);
         setPosition(orMFfw, x - 2.0, y - 4.5);
         nodes.add(orMFfw);
 
-        VisualSignalTransition orMFbw = getStgModel().createSignalTransition(nameOrM + name, type,
+        VisualSignalTransition orMFbw = getStgModel().createVisualSignalTransition(nameOrM + name, type,
                 SignalTransition.Direction.MINUS, curContainer);
         createConsumingArc(orM1, orMFbw, false);
         createProducingArc(orMFbw, orM0, false);
         setPosition(orMFbw, x - 2.0, y - 3.5);
         nodes.add(orMFbw);
 
-        VisualPlace andM0 = getStgModel().createPlace(nameAndM + name + name0, curContainer);
+        VisualPlace andM0 = getStgModel().createVisualPlace(nameAndM + name + name0, curContainer);
         andM0.setLabel(labelAndM + name + label0);
         andM0.setLabelPositioning(Positioning.BOTTOM);
         if (!r.getReferencedCounterflowRegister().isAndMarked()) {
@@ -649,7 +649,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         setPosition(andM0, x + 2.0, y + 4.0);
         nodes.add(andM0);
 
-        VisualPlace andM1 = getStgModel().createPlace(nameAndM + name + name1, curContainer);
+        VisualPlace andM1 = getStgModel().createVisualPlace(nameAndM + name + name1, curContainer);
         andM1.setLabel(labelAndM + name + label1);
         andM1.setLabelPositioning(Positioning.TOP);
         if (r.getReferencedCounterflowRegister().isAndMarked()) {
@@ -660,14 +660,14 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         setPosition(andM1, x + 2.0, y + 2.0);
         nodes.add(andM1);
 
-        VisualSignalTransition andMR = getStgModel().createSignalTransition(nameAndM + name, type,
+        VisualSignalTransition andMR = getStgModel().createVisualSignalTransition(nameAndM + name, type,
                 SignalTransition.Direction.PLUS, curContainer);
         createConsumingArc(andM0, andMR, false);
         createProducingArc(andMR, andM1, false);
         setPosition(andMR, x - 2.0, y + 4.0);
         nodes.add(andMR);
 
-        VisualSignalTransition andMF = getStgModel().createSignalTransition(nameAndM + name, type,
+        VisualSignalTransition andMF = getStgModel().createVisualSignalTransition(nameAndM + name, type,
                 SignalTransition.Direction.MINUS, curContainer);
         createConsumingArc(andM1, andMF, false);
         createProducingArc(andMF, andM0, false);
@@ -763,7 +763,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         ColorGenerator tokenColorGenerator = createColorGenerator(getDfsModel().getPreset(r).size() == 0);
         Container curContainer = null;
 
-        VisualPlace m0 = getStgModel().createPlace(nameM + name + name0, curContainer);
+        VisualPlace m0 = getStgModel().createVisualPlace(nameM + name + name0, curContainer);
         m0.setLabel(labelM + name + label0);
         m0.setLabelPositioning(Positioning.BOTTOM);
         if (!r.getReferencedBinaryRegister().isTrueMarked() && !r.getReferencedBinaryRegister().isFalseMarked()) {
@@ -774,7 +774,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         setPosition(m0, x - 4.0, y + 1.0);
         nodes.add(m0);
 
-        VisualPlace m1 = getStgModel().createPlace(nameM + name + name1, curContainer);
+        VisualPlace m1 = getStgModel().createVisualPlace(nameM + name + name1, curContainer);
         m1.setLabel(labelM + name + label1);
         m1.setLabelPositioning(Positioning.TOP);
         if (r.getReferencedBinaryRegister().isTrueMarked() || r.getReferencedBinaryRegister().isFalseMarked()) {
@@ -785,7 +785,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         setPosition(m1, x - 4.0, y - 1.0);
         nodes.add(m1);
 
-        VisualPlace tM0 = getStgModel().createPlace(nameTrueM + name + name0, curContainer);
+        VisualPlace tM0 = getStgModel().createVisualPlace(nameTrueM + name + name0, curContainer);
         tM0.setLabel(labelTrueM + name + label0);
         tM0.setLabelPositioning(Positioning.BOTTOM);
         if (!r.getReferencedBinaryRegister().isTrueMarked()) {
@@ -796,7 +796,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         setPosition(tM0, x + 4.0, y - 2.0);
         nodes.add(tM0);
 
-        VisualPlace tM1 = getStgModel().createPlace(nameTrueM + name + name1, curContainer);
+        VisualPlace tM1 = getStgModel().createVisualPlace(nameTrueM + name + name1, curContainer);
         tM1.setLabel(labelTrueM + name + label1);
         tM1.setLabelPositioning(Positioning.TOP);
         if (r.getReferencedBinaryRegister().isTrueMarked()) {
@@ -818,7 +818,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         double dy = 0.0;
         for (Node n: preset) {
             if (tMR == null || orSync) {
-                tMR = getStgModel().createSignalTransition(nameTrueM + name, type,
+                tMR = getStgModel().createVisualSignalTransition(nameTrueM + name, type,
                         SignalTransition.Direction.PLUS, curContainer);
                 tMR.setTokenColorGenerator(tokenColorGenerator);
                 createConsumingArc(tM0, tMR, false);
@@ -831,7 +831,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
             tMRs.put(n, tMR);
             dy += 1.0;
         }
-        VisualSignalTransition tMF = getStgModel().createSignalTransition(nameTrueM + name, type,
+        VisualSignalTransition tMF = getStgModel().createVisualSignalTransition(nameTrueM + name, type,
                 SignalTransition.Direction.MINUS, curContainer);
         createConsumingArc(tM1, tMF, false);
         createProducingArc(tMF, tM0, false);
@@ -840,7 +840,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         setPosition(tMF, x, y - 4.0 - dy);
         nodes.add(tMF);
 
-        VisualPlace fM0 = getStgModel().createPlace(nameFalseM + name + name0, curContainer);
+        VisualPlace fM0 = getStgModel().createVisualPlace(nameFalseM + name + name0, curContainer);
         fM0.setLabel(labelFalseM + name + label0);
         fM0.setLabelPositioning(Positioning.BOTTOM);
         if (!r.getReferencedBinaryRegister().isFalseMarked()) {
@@ -851,7 +851,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         setPosition(fM0, x + 4.0, y + 4.0);
         nodes.add(fM0);
 
-        VisualPlace fM1 = getStgModel().createPlace(nameFalseM + name + name1, curContainer);
+        VisualPlace fM1 = getStgModel().createVisualPlace(nameFalseM + name + name1, curContainer);
         fM1.setLabel(labelFalseM + name + label1);
         fM1.setLabelPositioning(Positioning.TOP);
         if (r.getReferencedBinaryRegister().isFalseMarked()) {
@@ -867,7 +867,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         dy = 0.0;
         for (Node n: preset) {
             if (fMR == null || andSync) {
-                fMR = getStgModel().createSignalTransition(nameFalseM + name, type,
+                fMR = getStgModel().createVisualSignalTransition(nameFalseM + name, type,
                         SignalTransition.Direction.PLUS, curContainer);
                 fMR.setTokenColorGenerator(tokenColorGenerator);
                 createConsumingArc(fM0, fMR, false);
@@ -880,7 +880,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
             fMRs.put(n, fMR);
             dy += 1.0;
         }
-        VisualSignalTransition fMF = getStgModel().createSignalTransition(nameFalseM + name, type,
+        VisualSignalTransition fMF = getStgModel().createVisualSignalTransition(nameFalseM + name, type,
                 SignalTransition.Direction.MINUS, curContainer);
         createConsumingArc(fM1, fMF, false);
         createProducingArc(fMF, fM0, false);

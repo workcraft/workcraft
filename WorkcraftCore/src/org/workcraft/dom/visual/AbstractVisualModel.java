@@ -164,11 +164,31 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends VisualComponent> T createVisualComponent(MathNode mathNode, Container container, Class<T> type) {
+    public <T extends VisualComponent> T createVisualComponent(MathNode mathNode, Class<T> type) {
+        VisualComponent component = null;
+        Node mathParent = mathNode.getParent();
+        Container container = getRoot();
+        if (mathParent instanceof PageNode) {
+            PageNode mathPage = (PageNode) mathParent;
+            container = getVisualComponent(mathPage, VisualPage.class);
+        }
+        try {
+            component = NodeFactory.createVisualComponent(mathNode);
+            container.add(component);
+        } catch (NodeCreationException e) {
+            String mathName = getMathName(mathNode);
+            throw new RuntimeException("Cannot create visual component for math node '" + mathName + "' of class '" + type + "'");
+        }
+        return (T) component;
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    public <T extends VisualComponent> T createVisualComponent(MathNode mathNode, Class<T> type, Container container) {
+        VisualComponent component = null;
         if (container == null) {
             container = getRoot();
         }
-        VisualComponent component = null;
         try {
             component = NodeFactory.createVisualComponent(mathNode);
             container.add(component);
@@ -196,7 +216,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends VisualReplica> T createVisualReplica(VisualComponent masterComponent, Container container, Class<T> type) {
+    public <T extends VisualReplica> T createVisualReplica(VisualComponent masterComponent, Class<T> type, Container container) {
         T replica = null;
         try {
             replica = NodeFactory.createNode(type);
