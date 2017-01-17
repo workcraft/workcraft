@@ -13,19 +13,14 @@ import java.util.Collection;
 import java.util.Collections;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
-import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JSplitPane;
-import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 
@@ -39,13 +34,10 @@ import org.workcraft.util.GUI;
 public class CreateWorkDialog extends JDialog {
 
     private static final long serialVersionUID = 1L;
-    private JList modelList;
+    private JList workTypeList;
     private JButton okButton;
     private JButton cancelButton;
-    private JCheckBox chkVisual;
-    private JCheckBox chkOpen;
-    private JTextField txtTitle;
-    private int modalResult = 0;
+    private int modalResult;
 
     public CreateWorkDialog(MainWindow owner) {
         super(owner);
@@ -54,8 +46,9 @@ public class CreateWorkDialog extends JDialog {
         setModal(true);
         setTitle("New work");
 
-        setMinimumSize(new Dimension(300, 200));
-        GUI.centerAndSizeToParent(this, owner);
+        setSize(new Dimension(300, 400));
+        setMinimumSize(new Dimension(250, 200));
+        GUI.centerToParent(this, owner);
 
         initComponents();
     }
@@ -79,21 +72,24 @@ public class CreateWorkDialog extends JDialog {
     }
 
     private void initComponents() {
+        int hGap = SizeHelper.getLayoutHGap();
+        int vGap = SizeHelper.getLayoutVGap();
         JPanel contentPane = new JPanel(new BorderLayout());
+        contentPane.setBorder(BorderFactory.createEmptyBorder(hGap, vGap, hGap, vGap));
         setContentPane(contentPane);
 
         JScrollPane modelScroll = new JScrollPane();
         DefaultListModel listModel = new DefaultListModel();
+        workTypeList = new JList(listModel);
+        workTypeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        workTypeList.setLayoutOrientation(JList.VERTICAL_WRAP);
+        workTypeList.setVisibleRowCount(0);
+        workTypeList.setBorder(BorderFactory.createEmptyBorder(hGap, vGap, hGap, vGap));
 
-        modelList = new JList(listModel);
-        modelList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        modelList.setLayoutOrientation(JList.VERTICAL_WRAP);
-        modelList.setVisibleRowCount(0);
-
-        modelList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+        workTypeList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             @Override
             public void valueChanged(javax.swing.event.ListSelectionEvent e) {
-                if (modelList.getSelectedIndex() == -1) {
+                if (workTypeList.getSelectedIndex() == -1) {
                     okButton.setEnabled(false);
                 } else {
                     okButton.setEnabled(true);
@@ -102,10 +98,10 @@ public class CreateWorkDialog extends JDialog {
         }
         );
 
-        modelList.addMouseListener(new MouseListener() {
+        workTypeList.addMouseListener(new MouseListener() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if ((e.getClickCount() == 2) && (modelList.getSelectedIndex() != -1)) {
+                if ((e.getClickCount() == 2) && (workTypeList.getSelectedIndex() != -1)) {
                     ok();
                 }
             }
@@ -137,41 +133,12 @@ public class CreateWorkDialog extends JDialog {
             listModel.addElement(element);
         }
 
-        modelScroll.setViewportView(modelList);
-        modelScroll.setBorder(BorderFactory.createTitledBorder("Type"));
+        modelScroll.setViewportView(workTypeList);
+        //modelScroll.setBorder(BorderFactory.createTitledBorder("Model type"));
         modelScroll.setMinimumSize(new Dimension(150, 0));
         modelScroll.setPreferredSize(new Dimension(250, 0));
 
-        JPanel optionsPane = new JPanel();
-        optionsPane.setBorder(BorderFactory.createTitledBorder("Creation options"));
-        optionsPane.setLayout(new BoxLayout(optionsPane, BoxLayout.Y_AXIS));
-        optionsPane.setMinimumSize(new Dimension(150, 0));
-        optionsPane.setPreferredSize(new Dimension(250, 0));
-
-        chkVisual = new JCheckBox("create visual model");
-        chkVisual.setSelected(true);
-
-        chkOpen = new JCheckBox("open in editor");
-        chkOpen.setSelected(true);
-
-        optionsPane.add(chkVisual);
-        optionsPane.add(chkOpen);
-        optionsPane.add(new JLabel("Title: "));
-        txtTitle = new JTextField();
-        //txtTitle.setMaximumSize(new Dimension(1000, 20));
-        optionsPane.add(txtTitle);
-
-        JPanel dummy = new JPanel();
-        dummy.setPreferredSize(new Dimension(200, 1000));
-        dummy.setMaximumSize(new Dimension(200, 1000));
-        optionsPane.add(dummy);
-
-        JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, optionsPane, modelScroll);
-        splitPane.setOneTouchExpandable(true);
-        splitPane.setDividerLocation((int) Math.round(0.3 * getWidth()));
-        splitPane.setResizeWeight(0.1);
-
-        JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
+        JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, hGap, vGap));
 
         okButton = GUI.createDialogButton("OK");
         okButton.setEnabled(false);
@@ -190,7 +157,7 @@ public class CreateWorkDialog extends JDialog {
 
         buttonsPane.add(okButton);
         buttonsPane.add(cancelButton);
-        contentPane.add(splitPane, BorderLayout.CENTER);
+        contentPane.add(modelScroll, BorderLayout.CENTER);
         contentPane.add(buttonsPane, BorderLayout.SOUTH);
         getRootPane().setDefaultButton(okButton);
 
@@ -227,23 +194,12 @@ public class CreateWorkDialog extends JDialog {
         }
     }
 
-    public ModelDescriptor getSelectedModel() {
-        return ((ListElement) modelList.getSelectedValue()).descriptor;
-    }
-
     public int getModalResult() {
         return modalResult;
     }
 
-    public boolean createVisualSelected() {
-        return chkVisual.isSelected();
+    public ModelDescriptor getSelectedModel() {
+        return ((ListElement) workTypeList.getSelectedValue()).descriptor;
     }
 
-    public boolean openInEditorSelected() {
-        return chkOpen.isSelected();
-    }
-
-    public String getModelTitle() {
-        return txtTitle.getText();
-    }
 }
