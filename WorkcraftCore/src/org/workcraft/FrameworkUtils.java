@@ -21,6 +21,7 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.XmlUtil;
+import org.workcraft.workspace.Stamp;
 import org.xml.sax.SAXException;
 
 public class FrameworkUtils {
@@ -65,11 +66,26 @@ public class FrameworkUtils {
         return (ModelDescriptor) Class.forName(descriptorClass).newInstance();
     }
 
+    static Stamp loadMetaStamp(Document metaDoc)
+            throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+        Stamp stamp = null;
+        Element stampElement = XmlUtil.getChildElement("stamp", metaDoc.getDocumentElement());
+        if (stampElement != null) {
+            String time = XmlUtil.readStringAttr(stampElement, "time");
+            String uuid = XmlUtil.readStringAttr(stampElement, "uuid");
+            if ((time != null) && (uuid != null)) {
+                stamp = new Stamp(time, uuid);
+            }
+        }
+        return stamp;
+    }
+
     static Document loadMetaDoc(byte[] bufferedInput)
             throws IOException, DeserialisationException, ParserConfigurationException, SAXException {
-        InputStream metaData = getUncompressedEntry("meta", new ByteArrayInputStream(bufferedInput));
+        ByteArrayInputStream zippedData = new ByteArrayInputStream(bufferedInput);
+        InputStream metaData = getUncompressedEntry("meta", zippedData);
         if (metaData == null) {
-            throw new DeserialisationException("meta entry is missing in the ZIP file");
+            throw new DeserialisationException("meta entry is missing in the work file");
         }
         Document metaDoc = XmlUtil.loadDocument(metaData);
         metaData.close();

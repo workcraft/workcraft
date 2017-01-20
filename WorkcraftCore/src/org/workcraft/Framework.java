@@ -82,6 +82,7 @@ import org.workcraft.util.LogUtils;
 import org.workcraft.util.XmlUtil;
 import org.workcraft.workspace.Memento;
 import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.Stamp;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.xml.sax.SAXException;
@@ -690,6 +691,7 @@ public final class Framework {
             byte[] bi = DataAccumulator.loadStream(is);
             Document metaDoc = FrameworkUtils.loadMetaDoc(bi);
             ModelDescriptor descriptor = FrameworkUtils.loadMetaDescriptor(metaDoc);
+            Stamp stamp = FrameworkUtils.loadMetaStamp(metaDoc);
 
             // load math model
             InputStream mathData = FrameworkUtils.getMathData(bi, metaDoc);
@@ -710,7 +712,9 @@ public final class Framework {
             if (visualResult.model instanceof VisualModel) {
                 FrameworkUtils.loadVisualModelState(bi, (VisualModel) visualResult.model, visualResult.references);
             }
-            return new ModelEntry(descriptor, visualResult.model);
+            ModelEntry modelEntry = new ModelEntry(descriptor, visualResult.model);
+            modelEntry.setStamp(stamp);
+            return modelEntry;
         } catch (IOException | ParserConfigurationException | SAXException |
                 InstantiationException | IllegalAccessException | ClassNotFoundException e) {
             throw new DeserialisationException(e);
@@ -802,6 +806,14 @@ public final class Framework {
             Element metaRoot = metaDoc.createElement("workcraft-meta");
             metaDoc.appendChild(metaRoot);
 
+            extracted(metaDoc, metaRoot);
+
+            Element metaStamp = metaDoc.createElement("stamp");
+            Stamp stamp = modelEntry.getStamp();
+            metaStamp.setAttribute("time", stamp.time);
+            metaStamp.setAttribute("uuid", stamp.uuid);
+            metaRoot.appendChild(metaStamp);
+
             Element metaDescriptor = metaDoc.createElement("descriptor");
             metaDescriptor.setAttribute("class", modelEntry.getDescriptor().getClass().getCanonicalName());
             metaRoot.appendChild(metaDescriptor);
@@ -824,6 +836,15 @@ public final class Framework {
         } catch (ParserConfigurationException | IOException e) {
             throw new SerialisationException(e);
         }
+    }
+
+    private void extracted(Document metaDoc, Element metaRoot) {
+        Element metaVersion = metaDoc.createElement("version");
+        metaVersion.setAttribute("major", Info.getVersionMajor());
+        metaVersion.setAttribute("minor", Info.getVersionMinor());
+        metaVersion.setAttribute("revision", Info.getVersionRevision());
+        metaVersion.setAttribute("status", Info.getVersionStatus());
+        metaRoot.appendChild(metaVersion);
     }
 
     public Memento saveModel(ModelEntry modelEntry) {

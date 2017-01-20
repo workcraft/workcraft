@@ -1,5 +1,8 @@
 package org.workcraft.workspace;
 
+import java.sql.Timestamp;
+import java.util.UUID;
+
 import org.workcraft.dom.Model;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.math.MathModel;
@@ -8,6 +11,7 @@ import org.workcraft.dom.visual.VisualModel;
 public class ModelEntry {
     private final ModelDescriptor descriptor;
     private final Model model;
+    private Stamp stamp;
 
     public ModelEntry(ModelDescriptor descriptor, Model model) {
         this.descriptor = descriptor;
@@ -70,6 +74,20 @@ public class ModelEntry {
             }
         }
         return null;
+    }
+
+    public void setStamp(Stamp stamp) {
+        this.stamp = stamp;
+    }
+
+    public Stamp getStamp() {
+        if (stamp == null) {
+            long currentTime = System.currentTimeMillis();
+            String time = new Timestamp(currentTime).toString();
+            String uuid = UUID.randomUUID().toString();
+            stamp = new Stamp(time, uuid);
+        }
+        return stamp;
     }
 
 }
