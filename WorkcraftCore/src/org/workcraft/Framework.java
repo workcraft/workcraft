@@ -806,7 +806,12 @@ public final class Framework {
             Element metaRoot = metaDoc.createElement("workcraft-meta");
             metaDoc.appendChild(metaRoot);
 
-            extracted(metaDoc, metaRoot);
+            Element metaVersion = metaDoc.createElement("version");
+            metaVersion.setAttribute("major", Info.getVersionMajor());
+            metaVersion.setAttribute("minor", Info.getVersionMinor());
+            metaVersion.setAttribute("revision", Info.getVersionRevision());
+            metaVersion.setAttribute("status", Info.getVersionStatus());
+            metaRoot.appendChild(metaVersion);
 
             Element metaStamp = metaDoc.createElement("stamp");
             Stamp stamp = modelEntry.getStamp();
@@ -836,15 +841,6 @@ public final class Framework {
         } catch (ParserConfigurationException | IOException e) {
             throw new SerialisationException(e);
         }
-    }
-
-    private void extracted(Document metaDoc, Element metaRoot) {
-        Element metaVersion = metaDoc.createElement("version");
-        metaVersion.setAttribute("major", Info.getVersionMajor());
-        metaVersion.setAttribute("minor", Info.getVersionMinor());
-        metaVersion.setAttribute("revision", Info.getVersionRevision());
-        metaVersion.setAttribute("status", Info.getVersionStatus());
-        metaRoot.appendChild(metaVersion);
     }
 
     public Memento saveModel(ModelEntry modelEntry) {

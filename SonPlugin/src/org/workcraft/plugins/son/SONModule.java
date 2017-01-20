@@ -4,6 +4,7 @@ import org.workcraft.CompatibilityManager;
 import org.workcraft.Framework;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
+import org.workcraft.Version;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.propertyeditor.Settings;
@@ -55,44 +56,45 @@ public class SONModule implements Module {
     private void initCompatibilityManager() {
         final Framework framework = Framework.getInstance();
         final CompatibilityManager cm = framework.getCompatibilityManager();
+        Version v310 = new Version(3, 1, 0, Version.Status.RELEASE);
 
-        cm.registerMetaReplacement(
+        cm.registerMetaReplacement(v310,
                 "<descriptor class=\"org.workcraft.plugins.son.SONModelDescriptor\"/>",
                 "<descriptor class=\"org.workcraft.plugins.son.SONDescriptor\"/>");
 
-        cm.registerGlobalReplacement(VisualSON.class.getName(),
+        cm.registerGlobalReplacement(v310, VisualSON.class.getName(),
                 "<VisualONGroup mathGroup=",
                 "<VisualONGroup ref=");
 
         // PNLINE
-        cm.registerContextualReplacement(VisualSON.class.getName(), "VisualSONConnection",
+        cm.registerContextualReplacement(v310, VisualSON.class.getName(), "VisualSONConnection",
                 "<graphic class=\"org.workcraft.dom.visual.connections.Polyline\" ref=\"(.*?)\"/>",
                 "<property class=\"org.workcraft.plugins.son.connections.SONConnection\\$Semantics\" enum-class=\"org.workcraft.plugins.son.connections.SONConnection\\$Semantics\" name=\"semantics\" value=\"PNLINE\"/>");
 
         // SYNCLINE
-        cm.registerContextualReplacement(VisualSON.class.getName(), "VisualSONConnection",
+        cm.registerContextualReplacement(v310, VisualSON.class.getName(), "VisualSONConnection",
                 "<graphic class=\"org.workcraft.plugins.son.connections.SyncLine\" ref=\"(.*?)\"/>",
                 "<property class=\"org.workcraft.plugins.son.connections.SONConnection\\$Semantics\" enum-class=\"org.workcraft.plugins.son.connections.SONConnection\\$Semantics\" name=\"semantics\" value=\"SYNCLINE\"/>");
 
-        cm.registerContextualReplacement(VisualSON.class.getName(), "VisualConnection",
+        cm.registerContextualReplacement(v310, VisualSON.class.getName(), "VisualConnection",
                 "<graphic class=\"org.workcraft.plugins.son.connections.SyncLine\" ref=\"(.*?)\"/>",
                 "<graphic class=\"org.workcraft.dom.visual.connections.Polyline\" ref=\"$1\"/>");
 
         // ASYNLINE
-        cm.registerContextualReplacement(VisualSON.class.getName(), "VisualSONConnection",
+        cm.registerContextualReplacement(v310, VisualSON.class.getName(), "VisualSONConnection",
                 "<graphic class=\"org.workcraft.plugins.son.connections.AsynLine\" ref=\"(.*?)\"/>",
                 "<property class=\"org.workcraft.plugins.son.connections.SONConnection\\$Semantics\" enum-class=\"org.workcraft.plugins.son.connections.SONConnection\\$Semantics\" name=\"semantics\" value=\"ASYNLINE\"/>");
 
-        cm.registerContextualReplacement(VisualSON.class.getName(), "VisualConnection",
+        cm.registerContextualReplacement(v310, VisualSON.class.getName(), "VisualConnection",
                 "<graphic class=\"org.workcraft.plugins.son.connections.AsynLine\" ref=\"(.*?)\"/>",
                 "<graphic class=\"org.workcraft.dom.visual.connections.Polyline\" ref=\"$1\"/>");
 
         // BHVLINE
-        cm.registerContextualReplacement(VisualSON.class.getName(), "VisualSONConnection",
+        cm.registerContextualReplacement(v310, VisualSON.class.getName(), "VisualSONConnection",
                 "<graphic class=\"org.workcraft.plugins.son.connections.BhvLine\" ref=\"(.*?)\"/>",
                 "<property class=\"org.workcraft.plugins.son.connections.SONConnection\\$Semantics\" enum-class=\"org.workcraft.plugins.son.connections.SONConnection\\$Semantics\" name=\"semantics\" value=\"BHVLINE\"/>");
 
-        cm.registerContextualReplacement(VisualSON.class.getName(), "VisualConnection",
+        cm.registerContextualReplacement(v310, VisualSON.class.getName(), "VisualConnection",
                 "<graphic class=\"org.workcraft.plugins.son.connections.BhvLine\" ref=\"(.*?)\"/>",
                 "<graphic class=\"org.workcraft.dom.visual.connections.Polyline\" ref=\"$1\"/>");
     }

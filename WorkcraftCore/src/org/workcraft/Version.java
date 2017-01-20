@@ -1,5 +1,7 @@
 package org.workcraft;
 
+import org.workcraft.exceptions.ArgumentException;
+
 public class Version implements Comparable<Version> {
 
     public enum Status {
@@ -19,6 +21,15 @@ public class Version implements Comparable<Version> {
         @Override
         public String toString() {
             return name;
+        }
+
+        public static Status fromString(String s) {
+            for (Status item : Status.values()) {
+                if ((s != null) && (s.equals(item.name))) {
+                    return item;
+                }
+            }
+            throw new ArgumentException("Unexpected string: " + s);
         }
     };
 

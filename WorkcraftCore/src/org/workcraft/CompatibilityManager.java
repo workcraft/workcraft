@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -18,43 +19,81 @@ import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.util.LogUtils;
 
 public class CompatibilityManager {
+    private static final Pattern versionPattern = Pattern.compile("<version major=\"([0-9]+)\" minor=\"([0-9]+)\" revision=\"([0-9]+)\" status=\"(.+?)\"/>");
     private static final Pattern modelNamePattern = Pattern.compile("<model class=\"(.+?)\" ref=\"\">");
     private static final Pattern classNamePattern = Pattern.compile("<([A-Z]\\S*).*>");
 
     @SuppressWarnings("serial")
-    private class CompatibilityMap extends HashMap<String, String> { }
+    private class Replacement extends HashMap<String, String> { }
 
-    private final CompatibilityMap metaCompatibilityMap = new CompatibilityMap();
-    private final CompatibilityMap modelCompatibilityMap = new CompatibilityMap();
-    private final HashMap<String, CompatibilityMap> globalReplacementMap = new HashMap<>();
-    private final HashMap<String, HashMap<String, CompatibilityMap>> contextualReplacementMap = new HashMap<>();
+    @SuppressWarnings("serial")
+    private class ContextualReplacement extends HashMap<String, Replacement> { }
 
-    public void registerMetaReplacement(String oldMetaData, String metaData) {
-        metaCompatibilityMap.put(oldMetaData, metaData);
+    @SuppressWarnings("serial")
+    private class NestedContextualReplacement extends HashMap<String, ContextualReplacement> { }
+
+    private class ReplacementData {
+        private final Replacement meta = new Replacement();
+        private final Replacement model = new Replacement();
+        private final ContextualReplacement global = new ContextualReplacement();
+        private final NestedContextualReplacement local = new NestedContextualReplacement();
     }
 
-    public void registerModelReplacement(String oldModelName, String modelName) {
-        modelCompatibilityMap.put(oldModelName, modelName);
+    @SuppressWarnings("serial")
+    private class VersionedReplacementData extends HashMap<Version, ReplacementData> { }
+
+    private final VersionedReplacementData versionedReplacementData = new VersionedReplacementData();
+
+    private ReplacementData getReplacementData(Version version) {
+        ReplacementData result = versionedReplacementData.get(version);
+        if (result == null) {
+            result = new ReplacementData();
+            versionedReplacementData.put(version, result);
+        }
+        return result;
     }
 
-    public void registerGlobalReplacement(String modelName, String pattern, String replacement) {
-        CompatibilityMap replacementMap = globalReplacementMap.get(modelName);
+    private HashSet<ReplacementData> getApplicableData(Version version) {
+        HashSet<ReplacementData> result = new HashSet<>();
+        for (Version sinceVersion: versionedReplacementData.keySet()) {
+            if ((version == null) || (version.compareTo(sinceVersion) < 0)) {
+                ReplacementData data = getReplacementData(sinceVersion);
+                result.add(data);
+            }
+        }
+        return result;
+    }
+
+    public void registerMetaReplacement(Version version, String oldMetaData, String metaData) {
+        ReplacementData replacementData = getReplacementData(version);
+        replacementData.meta.put(oldMetaData, metaData);
+    }
+
+    public void registerModelReplacement(Version version, String oldModelName, String modelName) {
+        ReplacementData replacementData = getReplacementData(version);
+        replacementData.model.put(oldModelName, modelName);
+    }
+
+    public void registerGlobalReplacement(Version version, String modelName, String pattern, String replacement) {
+        ReplacementData replacementData = getReplacementData(version);
+        Replacement replacementMap = replacementData.global.get(modelName);
         if (replacementMap == null) {
-            replacementMap = new CompatibilityMap();
-            globalReplacementMap.put(modelName, replacementMap);
+            replacementMap = new Replacement();
+            replacementData.global.put(modelName, replacementMap);
         }
         replacementMap.put(pattern, replacement);
     }
 
-    public void registerContextualReplacement(String modelName, String className, String pattern, String replacement) {
-        HashMap<String, CompatibilityMap> contextualMap = contextualReplacementMap.get(modelName);
+    public void registerContextualReplacement(Version version, String modelName, String className, String pattern, String replacement) {
+        ReplacementData replacementData = getReplacementData(version);
+        ContextualReplacement contextualMap = replacementData.local.get(modelName);
         if (contextualMap == null) {
-            contextualMap = new HashMap<String, CompatibilityMap>();
-            contextualReplacementMap.put(modelName, contextualMap);
+            contextualMap = new ContextualReplacement();
+            replacementData.local.put(modelName, contextualMap);
         }
-        CompatibilityMap replacementMap = contextualMap.get(className);
+        Replacement replacementMap = contextualMap.get(className);
         if (replacementMap == null) {
-            replacementMap = new CompatibilityMap();
+            replacementMap = new Replacement();
             contextualMap.put(className, replacementMap);
         }
         replacementMap.put(pattern, replacement);
@@ -71,51 +110,72 @@ public class CompatibilityManager {
         return newline;
     }
 
-    private String replaceMetaData(String line) {
-        for (Map.Entry<String, String> replacement: metaCompatibilityMap.entrySet()) {
-            if (line.contains(replacement.getKey())) {
-                line = replace(line, replacement, "legacy meta data");
-            }
-        }
-        return line;
-    }
-
-    private String replaceModelName(String line) {
-        for (Map.Entry<String, String> replacement: modelCompatibilityMap.entrySet()) {
-            if (line.contains(replacement.getKey())) {
-                line = replace(line, replacement, "legacy model class");
-            }
-        }
-        return line;
-    }
-
-    private String replaceGlobalEntry(String modelName, String line) {
-        CompatibilityMap replacementMap = globalReplacementMap.get(modelName);
-        if (replacementMap != null) {
-            for (Map.Entry<String, String> replacement: replacementMap.entrySet()) {
-                line = replace(line, replacement, "global replacement");
-            }
-        }
-        return line;
-    }
-
-    private String replaceContextualEntry(String modelName, String className, String line) {
-        HashMap<String, CompatibilityMap> contextualMap = contextualReplacementMap.get(modelName);
-        if (contextualMap != null) {
-            CompatibilityMap replacementMap = contextualMap.get(className);
-            if (replacementMap != null) {
-                for (Map.Entry<String, String> replacement: replacementMap.entrySet()) {
-                    line = replace(line, replacement, "contextual replacement for " + className);
+    private String replaceMetaData(Version version, String line) {
+        for (ReplacementData data: getApplicableData(version)) {
+            for (Map.Entry<String, String> replacement: data.meta.entrySet()) {
+                if (line.contains(replacement.getKey())) {
+                    line = replace(line, replacement, "legacy meta data");
                 }
             }
         }
         return line;
     }
 
-    private String replaceEntry(String modelName, String className, String line) {
-        line = replaceGlobalEntry(modelName, line);
-        line = replaceContextualEntry(modelName, className, line);
+    private String replaceModelName(Version version, String line) {
+        for (ReplacementData data: getApplicableData(version)) {
+            for (Map.Entry<String, String> replacement: data.model.entrySet()) {
+                if (line.contains(replacement.getKey())) {
+                    line = replace(line, replacement, "legacy model class");
+                }
+            }
+        }
         return line;
+    }
+
+    private String replaceGlobalEntry(Version version, String modelName, String line) {
+        for (ReplacementData data: getApplicableData(version)) {
+            Replacement replacementMap = data.global.get(modelName);
+            if (replacementMap != null) {
+                for (Map.Entry<String, String> replacement: replacementMap.entrySet()) {
+                    line = replace(line, replacement, "global replacement");
+                }
+            }
+        }
+        return line;
+    }
+
+    private String replaceContextualEntry(Version version, String modelName, String className, String line) {
+        for (ReplacementData data: getApplicableData(version)) {
+            HashMap<String, Replacement> contextualMap = data.local.get(modelName);
+            if (contextualMap != null) {
+                Replacement replacementMap = contextualMap.get(className);
+                if (replacementMap != null) {
+                    for (Map.Entry<String, String> replacement: replacementMap.entrySet()) {
+                        line = replace(line, replacement, "contextual replacement for " + className);
+                    }
+                }
+            }
+        }
+        return line;
+    }
+
+    private String replaceEntry(Version version, String modelName, String className, String line) {
+        line = replaceGlobalEntry(version, modelName, line);
+        line = replaceContextualEntry(version, modelName, className, line);
+        return line;
+    }
+
+    private Version extractVersion(String line) {
+        Version result = null;
+        Matcher matcher = versionPattern.matcher(line);
+        if (matcher.find()) {
+            int major = Integer.parseInt(matcher.group(1));
+            int minor = Integer.parseInt(matcher.group(2));
+            int revision = Integer.parseInt(matcher.group(3));
+            Version.Status status = Version.Status.fromString(matcher.group(4));
+            result = new Version(major, minor, revision, status);
+        }
+        return result;
     }
 
     private String extractModelName(String line) {
@@ -147,15 +207,19 @@ public class CompatibilityManager {
                 ZipEntry zeo = new ZipEntry(zei.getName());
                 boolean isMetaEntry = "meta".equals(zei.getName());
                 zos.putNextEntry(zeo);
+                Version version = null;
                 String modelName = null;
                 String className = null;
                 String line = null;
                 while ((line = br.readLine()) != null) {
                     if (isMetaEntry) {
-                        byte[] data = replaceMetaData(line).getBytes();
+                        if (version == null) {
+                            version = extractVersion(line);
+                        }
+                        byte[] data = replaceMetaData(version, line).getBytes();
                         zos.write(data, 0, data.length);
                     } else if (modelName == null) {
-                        String processedLine = replaceModelName(line);
+                        String processedLine = replaceModelName(version, line);
                         byte[] data = processedLine.getBytes();
                         zos.write(data, 0, data.length);
                         modelName = extractModelName(processedLine);
@@ -164,7 +228,7 @@ public class CompatibilityManager {
                         if (s != null) {
                             className = s;
                         }
-                        byte[] data = replaceEntry(modelName, className, line).getBytes();
+                        byte[] data = replaceEntry(version, modelName, className, line).getBytes();
                         zos.write(data, 0, data.length);
                     }
                 }

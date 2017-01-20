@@ -4,6 +4,7 @@ import org.workcraft.CompatibilityManager;
 import org.workcraft.Framework;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
+import org.workcraft.Version;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.plugins.policy.commands.BundleTransitionTransformationCommand;
@@ -49,8 +50,9 @@ public class PolicyNetModule implements Module {
     private void initCompatibilityManager() {
         final Framework framework = Framework.getInstance();
         final CompatibilityManager cm = framework.getCompatibilityManager();
+        Version v310 = new Version(3, 1, 0, Version.Status.RELEASE);
 
-        cm.registerMetaReplacement(
+        cm.registerMetaReplacement(v310,
                 "<descriptor class=\"org.workcraft.plugins.policy.PolicyNetModelDescriptor\"/>",
                 "<descriptor class=\"org.workcraft.plugins.policy.PolicyNetDescriptor\"/>");
     }
