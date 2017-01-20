@@ -2,6 +2,8 @@ package org.workcraft;
 
 import java.util.Calendar;
 
+import org.workcraft.Version.Status;
+
 public class Info {
 
     private static final String title = "Workcraft";
@@ -10,10 +12,7 @@ public class Info {
     private static final String subtitle3 = "Return of the Hazard";
     private static final String subtitle4 = "Revenge of the Timing Assumption";
 
-    private static final int majorVersion = 3;
-    private static final int minorVersion = 1;
-    private static final int revisionVersion = 3;
-    private static final String statusVersion = "alpha"; // "alpha", "beta", "rc1", null (for release)
+    private static final Version version = new Version(3, 2, 0, Status.ALPHA);
 
     private static final int startYear = 2006;
     private static final int currentYear = Calendar.getInstance().get(Calendar.YEAR);
@@ -32,20 +31,32 @@ public class Info {
             "    " + OPTION_VERSION + "\t - report the version information and exit\n" +
             "    " + OPTION_HELP + "\t - display this help message and exit\n";
 
-    public static String getVersion() {
-        String version = majorVersion + "." + minorVersion + "." + revisionVersion;
-        if ((statusVersion != null) && !statusVersion.isEmpty()) {
-            version += " (" + statusVersion + ")";
-        }
+    public static Version getVersion() {
         return version;
     }
 
+    public static String getVersionMajor() {
+        return String.valueOf(getVersion().major);
+    }
+
+    public static String getVersionMinor() {
+        return String.valueOf(getVersion().minor);
+    }
+
+    public static String getVersionRevision() {
+        return String.valueOf(getVersion().revision);
+    }
+
+    public static String getVersionStatus() {
+        return getVersion().status.toString();
+    }
+
     public static String getTitle() {
-        return title + " " + majorVersion;
+        return title + " " + version.major;
     }
 
     public static String getSubtitle() {
-        switch (majorVersion) {
+        switch (version.major) {
         case 1: return subtitle1;
         case 2: return subtitle2;
         case 3: return subtitle3;
