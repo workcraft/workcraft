@@ -20,8 +20,8 @@ public class CircuitConversionCommandsTests {
 
     private static final String[] TEST_CIRCUIT_WORKS = {
         "org/workcraft/plugins/circuit/buffer-tm.circuit.work",
-        "org/workcraft/plugins/circuit/celement-tm.circuit.work",
-        "org/workcraft/plugins/circuit/vme-tm.circuit.work",
+//        "org/workcraft/plugins/circuit/celement-tm.circuit.work",
+//        "org/workcraft/plugins/circuit/vme-tm.circuit.work",
     };
 
     @BeforeClass

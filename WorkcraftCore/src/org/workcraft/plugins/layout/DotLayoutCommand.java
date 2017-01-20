@@ -106,8 +106,8 @@ public class DotLayoutCommand extends AbstractLayoutCommand {
                             String[] posParts = posStr.split(",");
                             if (posParts.length == 2) {
                                 // FIXME: MovableHelper.translate does not work with groups and pages. setRootSpacePosition may be a solution.
-                                double x = Double.parseDouble(posParts[0]) * 1.0 / 72;
-                                double y = -Double.parseDouble(posParts[1]) * 1.0 / 72;
+                                double x = Double.parseDouble(posParts[0]) / 72.0;
+                                double y = -Double.parseDouble(posParts[1]) / 72.0;
                                 m.setRootSpacePosition(new Point2D.Double(x, y));
 //                                MovableHelper.resetTransform(m);
 //                                MovableHelper.translate(m, x, y);

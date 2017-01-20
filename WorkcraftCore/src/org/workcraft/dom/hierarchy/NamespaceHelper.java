@@ -14,120 +14,104 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualPage;
-import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Identifier;
 
 public class NamespaceHelper {
-    // TODO: make it work with the embedded ' characters
-    private static final Pattern HIERARCHY_PATTERN = Pattern.compile("(/)?(((\\'([^\\']+)\\')|([_A-Za-z][_A-Za-z0-9]*))([\\+\\-\\~])?(/[0-9]+)?)(.*)");
-    private static final String HIERARCHY_SEPARATOR = "/";
+    // Use negative lookahead (?![0-9]) to make sure that hierarchy separator is not followed by a number.
+    // This is because "/[0-9]" is used in in STG for transition instances.
+    private static final String LEGACY_HIERARCHY_SEPARATOR_REGEXP = "/(?![0-9])";
+    private static final String LEGACY_FLATNAME_SEPARATOR_REGEXP = "__";
+
+    private static final String HIERARCHY_SEPARATOR = ".";
+    private static final String FLATNAME_SEPARATOR = "_";
+
+    private static final Pattern HEAD_TAIL_PATTERN = Pattern.compile(
+            "([^" + HIERARCHY_SEPARATOR + "]+)" + "(" + Pattern.quote(HIERARCHY_SEPARATOR) + "(.+))?");
+
+    private static final int HEAD_GROUP = 1;
+    private static final int TAIL_GROUP = 3;
+
+    public static String convertLegacyHierarchySeparators(String ref) {
+        return ref.replaceAll(LEGACY_HIERARCHY_SEPARATOR_REGEXP, HIERARCHY_SEPARATOR);
+    }
+
+    public static String convertLegacyFlatnameSeparators(String ref) {
+        return ref.replaceAll(LEGACY_FLATNAME_SEPARATOR_REGEXP, HIERARCHY_SEPARATOR);
+    }
 
     public static String getHierarchySeparator() {
         return HIERARCHY_SEPARATOR;
     }
 
-    public static String getFlatNameSeparator() {
-        return CommonEditorSettings.getFlatNameSeparator();
-    }
-
     public static String hierarchicalToFlatName(String reference) {
-        return hierarchicalToFlatName(reference, getFlatNameSeparator(), true);
+        return reference;
     }
 
-    private static String hierarchicalToFlatName(String reference, String flatNameSeparator, boolean suppressLeadingSeparator) {
-        if (flatNameSeparator == null) {
-            flatNameSeparator = getFlatNameSeparator();
-        }
-
-        // Do not work with implicit places(?)
-        if (reference.startsWith("<")) {
-            return reference;
-        }
-        String ret = "";
-        // In this version the first separator is suppressed
-        if (!suppressLeadingSeparator && reference.startsWith(getHierarchySeparator())) {
-            ret = flatNameSeparator;
-        }
-
-        String head = getReferenceHead(reference);
-        String tail = getReferenceTail(reference);
-        if (tail.isEmpty()) {
-            return ret + head;
-        }
-        return ret + head + hierarchicalToFlatName(tail, flatNameSeparator, false);
+    public static String flattenReference(String reference) {
+        return reference.replaceAll(Pattern.quote(HIERARCHY_SEPARATOR), FLATNAME_SEPARATOR);
     }
 
-    public static String flatToHierarchicalName(String flatName) {
-        return flatToHierarchicalName(flatName, getFlatNameSeparator());
-    }
-
-    private static String flatToHierarchicalName(String reference, String flatSeparator) {
-        if (flatSeparator == null) {
-            flatSeparator = getFlatNameSeparator();
+    public static LinkedList<String> splitReference(String reference) {
+        LinkedList<String> result = new LinkedList<>();
+        if ((reference != null) && !reference.isEmpty()) {
+            Matcher matcher = HEAD_TAIL_PATTERN.matcher(reference);
+            if (matcher.find()) {
+                String head = matcher.group(HEAD_GROUP);
+                result.add(head);
+                String tail = matcher.group(TAIL_GROUP);
+                if (tail != null) {
+                    result.addAll(splitReference(tail));
+                }
+            }
         }
-        return reference.replaceAll(flatSeparator, getHierarchySeparator());
-    }
-
-    public static void splitReference(String reference, LinkedList<String> path) {
-        if (reference.isEmpty()) return;
-
-        Matcher matcher = HIERARCHY_PATTERN.matcher(reference);
-        if (matcher.find()) {
-            String str = matcher.group(2);
-            str = str.replace("'", "");
-            path.add(str);
-            splitReference(matcher.group(9), path);
-        }
+        return result;
     }
 
     public static String getParentReference(String reference) {
+        String result = "";
         // legacy reference support
-        if (Identifier.isNumber(reference)) return "";
-
-        LinkedList<String> path = new LinkedList<>();
-        splitReference(reference, path);
-
-        String ret = "";
-        for (int i = 0; i < path.size() - 1; i++) {
-            ret += path.get(i);
-            if (i < path.size() - 2) {
-                ret += getHierarchySeparator();
+        if (!Identifier.isNumber(reference)) {
+            LinkedList<String> path = splitReference(reference);
+            for (int i = 0; i < path.size() - 1; i++) {
+                result += path.get(i);
+                if (i < path.size() - 2) {
+                    result += getHierarchySeparator();
+                }
             }
         }
-        return ret;
+        return result;
     }
 
     public static String getReferencePath(String reference) {
-        String ret = getParentReference(reference);
-        if (ret.length() > 0) {
-            ret += getHierarchySeparator();
+        String result = getParentReference(reference);
+        if (result.length() > 0) {
+            result += getHierarchySeparator();
         }
-        return ret;
+        return result;
     }
 
     public static String getReferenceHead(String reference) {
         // legacy reference support
-        if (Identifier.isNumber(reference)) return reference;
-
-        Matcher matcher = HIERARCHY_PATTERN.matcher(reference);
-        if (matcher.find()) {
-            String head = matcher.group(2);
-            head = head.replace("'", "");
-            return head;
+        if (!Identifier.isNumber(reference)) {
+            Matcher matcher = HEAD_TAIL_PATTERN.matcher(reference);
+            if (matcher.find()) {
+                return matcher.group(HEAD_GROUP);
+            }
         }
-        return null;
+        return reference;
     }
 
     public static String getReferenceTail(String reference) {
         // legacy reference support
-        if (Identifier.isNumber(reference)) return "";
-
-        Matcher matcher = HIERARCHY_PATTERN.matcher(reference);
-        if (matcher.find()) {
-            return matcher.group(9);
+        if (!Identifier.isNumber(reference)) {
+            Matcher matcher = HEAD_TAIL_PATTERN.matcher(reference);
+            if (matcher.find()) {
+                String result = matcher.group(TAIL_GROUP);
+                return (result == null) ? "" : result;
+            }
         }
-        return null;
+        return "";
     }
 
     public static String getReferenceName(String reference) {
@@ -137,6 +121,22 @@ public class NamespaceHelper {
             return head;
         }
         return getReferenceName(tail);
+    }
+
+    public static String getReference(String path, String name) {
+        String result = "";
+        boolean needsSeparator = false;
+        if ((path != null) && !path.isEmpty()) {
+            result += path;
+            needsSeparator = true;
+        }
+        if ((name != null) && !name.isEmpty()) {
+            if (needsSeparator) {
+                result += getHierarchySeparator();
+            }
+            result += name;
+        }
+        return result;
     }
 
     public static Container getMathContainer(VisualModel visualModel, Container visualContainer) {
@@ -161,7 +161,9 @@ public class NamespaceHelper {
         return mathTargetContainer;
     }
 
-    private static void copyPageStructure(VisualModel srcModel, Container srcContainer, VisualModel dstModel, Container dstContainer) {
+    private static void copyPageStructure(VisualModel srcModel, Container srcContainer,
+            VisualModel dstModel, Container dstContainer) {
+
         HashMap<Container, Container> toProcess = new HashMap<>();
         for (Node srcNode: srcContainer.getChildren()) {
             if (srcNode instanceof VisualPage) {
@@ -205,4 +207,9 @@ public class NamespaceHelper {
         }
         return result;
     }
+
+    public static boolean isHierarchical(String ref) {
+        return (ref != null) && ref.substring(1).contains(HIERARCHY_SEPARATOR);
+    }
+
 }

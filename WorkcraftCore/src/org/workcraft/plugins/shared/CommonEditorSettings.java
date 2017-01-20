@@ -3,8 +3,6 @@ import java.awt.Color;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.Config;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
@@ -45,7 +43,6 @@ public class CommonEditorSettings implements Settings {
     private static final String keyTitleStyle = prefix + ".titleStyle";
     private static final String keyShowAbsolutePaths = prefix + ".showAbsolutePaths";
     private static final String keyOpenNonvisual = prefix + ".openNonvisual";
-    private static final String keyFlatNameSeparator = prefix + ".flatNameSeparator";
     private static final String keyRedrawInterval = prefix + ".redrawInterval";
 
     private static final Color defaultBackgroundColor = Color.WHITE;
@@ -61,7 +58,6 @@ public class CommonEditorSettings implements Settings {
     private static final TitleStyle defaultTitleStyle = TitleStyle.SHORT;
     private static final boolean defaultShowAbsolutePaths = false;
     private static final boolean defaultOpenNonvisual = true;
-    private static String defaultFlatNameSeparator = "__";
     private static final Integer defaultRedrawInterval = 20;
 
     private static Color backgroundColor = defaultBackgroundColor;
@@ -77,7 +73,6 @@ public class CommonEditorSettings implements Settings {
     private static TitleStyle titleStyle = defaultTitleStyle;
     private static boolean showAbsolutePaths = defaultShowAbsolutePaths;
     private static boolean openNonvisual = defaultOpenNonvisual;
-    private static String flatNameSeparator = defaultFlatNameSeparator;
     private static Integer redrawInterval = defaultRedrawInterval;
 
     public CommonEditorSettings() {
@@ -211,37 +206,6 @@ public class CommonEditorSettings implements Settings {
             }
         });
 
-        properties.add(new PropertyDeclaration<CommonEditorSettings, String>(
-                this, "Flat name separator", String.class, true, false, false) {
-            protected void setter(CommonEditorSettings object, String value) {
-                if (value.length() < 2) {
-                    JOptionPane.showMessageDialog(null,
-                            "Short flat name separator increases the risk of name clashing.\n"
-                             + "Consider making it at least two characters long.",
-                            "Common editor settings", JOptionPane.WARNING_MESSAGE);
-                }
-                boolean badValue = false;
-                for (int i = 0; i < value.length(); ++i) {
-                    char c = value.charAt(i);
-                    if (!Character.isDigit(c) && !Character.isLetter(c) && (c != '_')) {
-                        badValue = true;
-                        break;
-                    }
-                }
-                if (badValue) {
-                    JOptionPane.showMessageDialog(null,
-                            "Flat name separator must only consist of letters, numbers and underscores.",
-                            "Common editor settings", JOptionPane.ERROR_MESSAGE);
-
-                } else {
-                    setFlatNameSeparator(value);
-                }
-            }
-            protected String getter(CommonEditorSettings object) {
-                return getFlatNameSeparator();
-            }
-        });
-
         properties.add(new PropertyDeclaration<CommonEditorSettings, Integer>(
                 this, "Minimal redraw interval (ms)", Integer.class, true, false, false) {
             protected void setter(CommonEditorSettings object, Integer value) {
@@ -273,7 +237,6 @@ public class CommonEditorSettings implements Settings {
         setTitleStyle(config.getEnum(keyTitleStyle, TitleStyle.class, defaultTitleStyle));
         setShowAbsolutePaths(config.getBoolean(keyShowAbsolutePaths, defaultShowAbsolutePaths));
         setOpenNonvisual(config.getBoolean(keyOpenNonvisual, defaultOpenNonvisual));
-        setFlatNameSeparator(config.getString(keyFlatNameSeparator, defaultFlatNameSeparator));
         setRedrawInterval(config.getInt(keyRedrawInterval, defaultRedrawInterval));
     }
 
@@ -292,7 +255,6 @@ public class CommonEditorSettings implements Settings {
         config.setEnum(keyTitleStyle, TitleStyle.class, getTitleStyle());
         config.setBoolean(keyShowAbsolutePaths, getShowAbsolutePaths());
         config.setBoolean(keyOpenNonvisual, getOpenNonvisual());
-        config.set(keyFlatNameSeparator, getFlatNameSeparator());
         config.setInt(keyRedrawInterval, getRedrawInterval());
     }
 
@@ -414,16 +376,6 @@ public class CommonEditorSettings implements Settings {
 
     public static void setOpenNonvisual(Boolean value) {
         openNonvisual = value;
-    }
-
-    public static String getFlatNameSeparator() {
-        return flatNameSeparator;
-    }
-
-    public static void setFlatNameSeparator(String value) {
-        if (value.length() > 0) {
-            flatNameSeparator = value;
-        }
     }
 
     public static void setRedrawInterval(Integer value) {

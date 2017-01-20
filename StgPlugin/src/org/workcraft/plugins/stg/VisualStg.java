@@ -296,30 +296,52 @@ public class VisualStg extends AbstractVisualModel {
         return connection;
     }
 
-    public VisualPlace createPlace(String mathName, Container container) {
+    public VisualPlace createVisualPlace(String mathRef) {
         Stg stg = (Stg) getMathModel();
-        Container mathContainer = NamespaceHelper.getMathContainer(this, container);
-        StgPlace mathPlace = stg.createPlace(mathName, mathContainer);
-        return createVisualComponent(mathPlace, container, VisualPlace.class);
+        StgPlace mathPlace = stg.createPlace(mathRef, null);
+        return createVisualComponent(mathPlace, VisualPlace.class);
     }
 
-    public VisualDummyTransition createDummyTransition(String mathName, Container container) {
+    public VisualPlace createVisualPlace(String mathRef, Container container) {
         Stg stg = (Stg) getMathModel();
-        Container mathContainer = NamespaceHelper.getMathContainer(this, container);
-        DummyTransition mathTransition = stg.createDummyTransition(mathName, mathContainer);
-        return createVisualComponent(mathTransition, container, VisualDummyTransition.class);
+        StgPlace mathPlace = stg.createPlace(mathRef, null);
+        return createVisualComponent(mathPlace, VisualPlace.class, container);
     }
 
-    public VisualSignalTransition createSignalTransition(String signalName, SignalTransition.Type type, Direction direction, Container container) {
+    public VisualDummyTransition createVisualDummyTransition(String mathRef) {
         Stg stg = (Stg) getMathModel();
-        Container mathContainer = NamespaceHelper.getMathContainer(this, container);
+        DummyTransition mathTransition = stg.createDummyTransition(mathRef, null);
+        return createVisualComponent(mathTransition, VisualDummyTransition.class);
+    }
+
+    public VisualDummyTransition createVisualDummyTransition(String mathRef, Container container) {
+        Stg stg = (Stg) getMathModel();
+        DummyTransition mathTransition = stg.createDummyTransition(mathRef, null);
+        return createVisualComponent(mathTransition, VisualDummyTransition.class, container);
+    }
+
+    public VisualSignalTransition createVisualSignalTransition(String signalRef, SignalTransition.Type type,
+            Direction direction) {
+        Stg stg = (Stg) getMathModel();
         String mathName = null;
-        if ((signalName != null) && (direction != null)) {
-            mathName = signalName + direction.toString();
+        if ((signalRef != null) && (direction != null)) {
+            mathName = signalRef + direction.toString();
         }
-        SignalTransition mathTransition = stg.createSignalTransition(mathName, mathContainer);
+        SignalTransition mathTransition = stg.createSignalTransition(mathName, null);
         mathTransition.setSignalType(type);
-        return createVisualComponent(mathTransition, container, VisualSignalTransition.class);
+        return createVisualComponent(mathTransition, VisualSignalTransition.class);
+    }
+
+    public VisualSignalTransition createVisualSignalTransition(String signalRef, SignalTransition.Type type,
+            Direction direction, Container container) {
+        Stg stg = (Stg) getMathModel();
+        String mathName = null;
+        if ((signalRef != null) && (direction != null)) {
+            mathName = signalRef + direction.toString();
+        }
+        SignalTransition mathTransition = stg.createSignalTransition(mathName, null);
+        mathTransition.setSignalType(type);
+        return createVisualComponent(mathTransition, VisualSignalTransition.class, container);
     }
 
     public Collection<VisualPlace> getVisualPlaces() {
@@ -407,6 +429,13 @@ public class VisualStg extends AbstractVisualModel {
             }
         }
         return properties;
+    }
+
+    public String getSignalReference(VisualSignalTransition transition) {
+        String ref = getNodeMathReference(transition);
+        String signalName = transition.getSignalName();
+        String signalPath = NamespaceHelper.getParentReference(ref);
+        return NamespaceHelper.getReference(signalPath, signalName);
     }
 
 }

@@ -80,7 +80,7 @@ public final class InsertDummyTransformationCommand extends AbstractTransformati
             VisualStg stg = (VisualStg) model;
             VisualConnection connection = (VisualConnection) node;
             Container container = (Container) connection.getParent();
-            VisualDummyTransition dummy = stg.createDummyTransition(null, container);
+            VisualDummyTransition dummy = stg.createVisualDummyTransition(null, container);
             Point2D splitPoint = connection.getSplitPoint();
             dummy.setPosition(splitPoint);
             try {

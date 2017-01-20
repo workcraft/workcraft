@@ -9,6 +9,7 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultHangingConnectionRemover;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
@@ -30,26 +31,57 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
         new DefaultHangingConnectionRemover(this).attach(getRoot());
     }
 
-    @SuppressWarnings("unchecked")
-    public <T extends MathNode> T createNode(String name, Container container, Class<T> type) {
+    @Override
+    public <T extends MathNode> T createNode(String ref, Container container, Class<T> type) {
         if (container == null) {
             container = getRoot();
         }
-        MathNode node = null;
+        T node = null;
         try {
             node = NodeFactory.createNode(type);
             container.add(node);
-            if (name != null) {
-                setName(node, name);
+            if (ref != null) {
+                setName(node, ref);
             }
         } catch (NodeCreationException e) {
-            throw new RuntimeException("Cannot create math node '" + name + "' of class '" + type + "'");
+            String containerRef = getNodeReference(container);
+            throw new RuntimeException("Cannot create math node '" + ref + "'"
+                    + " of class '" + type + "' in container '" + containerRef + "'.");
         }
-        return (T) node;
+        return node;
     }
 
-    public <T extends MathNode> T createNode(Collection<MathNode> srcNodes, Container container, Class<T> type) {
-        return createNode((String) null, container, type);
+    @Override
+    public <T extends MathNode> T createNodeWithHierarchy(String ref, Container container, Class<T> type) {
+        if (container == null) {
+            container = getRoot();
+        }
+        if (!NamespaceHelper.isHierarchical(ref)) {
+            return createNode(ref, container, type);
+        } else {
+            if (container instanceof NamespaceProvider) {
+                String pageName = NamespaceHelper.getReferenceHead(ref);
+                Node pageNode = getNodeByReference((NamespaceProvider) container, pageName);
+                if (pageNode == null) {
+                    pageNode = createNode(pageName, container, PageNode.class);
+                }
+                if (pageNode instanceof Container) {
+                    Container parentContainer = (Container) pageNode;
+                    String tailRef = NamespaceHelper.getReferenceTail(ref);
+                    return createNodeWithHierarchy(tailRef, parentContainer, type);
+                } else {
+                    throw new RuntimeException("Node '" + pageName + "' is not a valid container.");
+                }
+            } else {
+                String containerRef = getNodeReference(container);
+                throw new RuntimeException("Container '" + containerRef + "' is not a valid namespace provider.");
+            }
+        }
+    }
+
+    @Override
+    public <T extends MathNode> T createMergedNode(Collection<MathNode> srcNodes, Container container, Class<T> type) {
+        return createNode(null, container, type);
     }
 
     private void setNamespaceRecursively(HierarchicalUniqueNameReferenceManager dstRefManager, Container dstContainer,

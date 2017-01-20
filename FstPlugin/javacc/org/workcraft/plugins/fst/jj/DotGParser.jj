@@ -86,7 +86,7 @@ TOKEN :
 |   <MARKING : ".marking">
 |   <END : ".end"> : IGNORE_ALL
 |   <UNSUPPORTED_HEADER : "." <NAME>> : IGNORE_LINE
-|   <NAME : ["A"-"Z", "a"-"z", "_"] (["_", "A"-"Z", "a"-"z", "0"-"9"])*>
+|   <NAME : ["A"-"Z", "a"-"z", "_"] (["_", "A"-"Z", "a"-"z", "0"-"9", "."])*>
 |   <DIRECTION : ["+", "-", "~"]>
 |   <INTEGER : (["0"-"9"])+>
 |   "{"

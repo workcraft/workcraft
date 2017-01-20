@@ -201,8 +201,9 @@ class DefaultNodeDeserialiser {
             try {
                 XMLDeserialiser deserialiser = fac.getDeserialiserFor(currentLevel.getName());
                 if (deserialiser instanceof CustomXMLDeserialiser) {
-                    //System.out.println("Using custom deserialiser " + deserialiser);
-                    ((CustomXMLDeserialiser) deserialiser).finaliseInstance(currentLevelElement, instance, internalReferenceResolver, externalReferenceResolver, finaliser);
+                    CustomXMLDeserialiser customDeserialiser = (CustomXMLDeserialiser) deserialiser;
+                    customDeserialiser.finaliseInstance(currentLevelElement, instance,
+                            internalReferenceResolver, externalReferenceResolver, finaliser);
                 }
             } catch (InstantiationException e) {
                 throw new DeserialisationException(e);

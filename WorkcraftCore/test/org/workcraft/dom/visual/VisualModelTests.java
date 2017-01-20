@@ -40,7 +40,12 @@ public class VisualModelTests {
         }
 
         @Override
-        public <T extends MathNode> T createNode(Collection<MathNode> srcNodes, Container container, Class<T> type) {
+        public <T extends MathNode> T createMergedNode(Collection<MathNode> srcNodes, Container container, Class<T> type) {
+            return null;
+        }
+
+        @Override
+        public <T extends MathNode> T createNodeWithHierarchy(String ref, Container container, Class<T> type) {
             return null;
         }
     }

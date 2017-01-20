@@ -80,7 +80,7 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
 
         // Petrify uses the full name of the file as the name of the Verilog module (with _net suffix).
         // As there may be non-alpha-numerical symbols in the model title, it is better not to include it to the directory name.
-        String prefix = FileUtils.getTempPrefix(null/* we.getTitle() */);
+        String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
 
         File outFile = new File(directory, "result.g");

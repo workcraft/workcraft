@@ -203,10 +203,6 @@ public class VisualCircuit extends AbstractVisualModel {
         return vConnection;
     }
 
-    public String getMathName(VisualComponent component) {
-        return getMathModel().getName(component.getReferencedComponent());
-    }
-
     public Collection<VisualFunctionContact> getVisualFunctionContacts() {
         return Hierarchy.getDescendantsOfType(getRoot(), VisualFunctionContact.class);
     }

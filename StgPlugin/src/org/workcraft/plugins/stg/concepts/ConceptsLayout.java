@@ -191,7 +191,7 @@ public class ConceptsLayout {
                     VisualReadArc a = (VisualReadArc) c;
                     VisualNode first = a.getFirst();
                     VisualReplicaPlace replicaPlace;
-                    replicaPlace = visualStg.createVisualReplica((VisualPlace) first, container, VisualReplicaPlace.class);
+                    replicaPlace = visualStg.createVisualReplica((VisualPlace) first, VisualReplicaPlace.class, container);
                     replicas.add(replicaPlace);
                     if (side) {
                         right.add(replicaPlace);

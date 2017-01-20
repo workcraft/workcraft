@@ -78,7 +78,7 @@ public class ContractNamedTransitionTransformationCommand extends ContractTransi
         String succName = visualModel.getMathName(succPlace);
         String productName = nameManagerer.getDerivedName(null, predName + succName);
         StgPlace mathPlace = mathModel.createNode(productName, mathContainer, StgPlace.class);
-        return visualModel.createVisualComponent(mathPlace, visualContainer, VisualPlace.class);
+        return visualModel.createVisualComponent(mathPlace, VisualPlace.class, visualContainer);
     }
 
 }

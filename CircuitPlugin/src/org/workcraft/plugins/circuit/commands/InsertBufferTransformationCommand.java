@@ -83,7 +83,7 @@ public class InsertBufferTransformationCommand extends AbstractTransformationCom
             Container mathContainer = NamespaceHelper.getMathContainer(circuit, container);
             mathContainer.add(mathComponent);
 
-            VisualFunctionComponent component = circuit.createVisualComponent(mathComponent, container, VisualFunctionComponent.class);
+            VisualFunctionComponent component = circuit.createVisualComponent(mathComponent, VisualFunctionComponent.class, container);
             Point2D pos = connection.getMiddleSegmentCenterPoint();
             component.setPosition(pos);
 

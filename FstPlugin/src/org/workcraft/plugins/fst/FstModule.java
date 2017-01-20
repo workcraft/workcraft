@@ -13,6 +13,7 @@ import org.workcraft.plugins.fst.commands.FsmToFstConversionCommand;
 import org.workcraft.plugins.fst.commands.FstToFsmConversionCommand;
 import org.workcraft.plugins.fst.commands.FstToStgConversionCommand;
 import org.workcraft.plugins.fst.commands.PetriToFsmConversionCommand;
+import org.workcraft.plugins.fst.commands.StgToBinaryFstConversionCommand;
 import org.workcraft.plugins.fst.commands.StgToFstConversionCommand;
 import org.workcraft.plugins.fst.interop.DotGExporter;
 import org.workcraft.plugins.fst.interop.DotGImporter;
@@ -20,13 +21,6 @@ import org.workcraft.plugins.fst.serialisation.DotGSerialiser;
 import org.workcraft.serialisation.ModelSerialiser;
 
 public class FstModule implements Module {
-
-    private final class StgToBinaryFstConversionCommand extends StgToFstConversionCommand {
-        @Override
-        public boolean isBinary() {
-            return true;
-        }
-    }
 
     @Override
     public String getDescription() {

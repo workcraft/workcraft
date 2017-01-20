@@ -10,6 +10,9 @@ import java.util.UUID;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
+import org.workcraft.dom.hierarchy.NamespaceProvider;
+import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
+import org.workcraft.dom.references.NameManager;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
@@ -102,6 +105,15 @@ public class VerilogSerialiser implements ModelSerialiser {
                 }
             }
             if (result != null) {
+                if (NamespaceHelper.isHierarchical(result)) {
+                    HierarchicalUniqueNameReferenceManager refManager
+                            = (HierarchicalUniqueNameReferenceManager) circuit.getReferenceManager();
+
+                    NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(circuit.getRoot());
+                    NameManager nameManagerer = refManager.getNameManager(namespaceProvider);
+                    String candidateName = NamespaceHelper.flattenReference(result);
+                    result = nameManagerer.getDerivedName(contact, candidateName);
+                }
                 contactWires.put(contact, result);
             }
         }

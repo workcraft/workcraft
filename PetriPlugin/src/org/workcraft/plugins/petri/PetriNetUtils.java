@@ -208,7 +208,7 @@ public class PetriNetUtils {
     private static VisualReplicaPlace copyReplicaPlace(VisualModel visualModel, VisualReplicaPlace replica) {
         Container container = Hierarchy.getNearestContainer(replica);
         VisualComponent master = replica.getMaster();
-        VisualReplicaPlace result = visualModel.createVisualReplica(master, container, VisualReplicaPlace.class);
+        VisualReplicaPlace result = visualModel.createVisualReplica(master, VisualReplicaPlace.class, container);
         result.copyPosition(replica);
         result.copyStyle(replica);
         return result;
@@ -264,7 +264,7 @@ public class PetriNetUtils {
         }
         if ((place != null) && (transition != null)) {
             Container container = Hierarchy.getNearestContainer(transition);
-            VisualReplicaPlace replica = visualModel.createVisualReplica(place, container, VisualReplicaPlace.class);
+            VisualReplicaPlace replica = visualModel.createVisualReplica(place, VisualReplicaPlace.class, container);
             Point2D splitPointInRootSpace = getReplicaPositionInRootSpace(connection);
             replica.setRootSpacePosition(splitPointInRootSpace);
             LinkedList<Point2D> locationsInRootSpace = ConnectionHelper.getSuffixControlPoints(connection, splitPointInRootSpace);

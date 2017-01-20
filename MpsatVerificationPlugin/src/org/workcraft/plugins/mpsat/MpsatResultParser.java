@@ -8,7 +8,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.workcraft.Trace;
-import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.plugins.mpsat.gui.MpsatSolution;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 
@@ -68,10 +67,9 @@ public class MpsatResultParser {
         Trace trace = null;
         if (mpsatTrace != null) {
             trace = new Trace();
-            String[] mpsatFlatTransitions = mpsatTrace.replaceAll("\\s", "").split(",");
-            for (String mpsatFlatTransition: mpsatFlatTransitions) {
-                String mpsatTransition = mpsatFlatTransition.replace(NamespaceHelper.getFlatNameSeparator(), NamespaceHelper.getHierarchySeparator());
-                String transition = mpsatTransition.substring(mpsatTransition.indexOf('.') + 1);
+            String[] mpsatTransitions = mpsatTrace.replaceAll("\\s", "").split(",");
+            for (String mpsatTransition: mpsatTransitions) {
+                String transition = mpsatTransition.substring(mpsatTransition.indexOf(':') + 1);
                 if (!transition.isEmpty()) {
                     trace.add(transition);
                 }

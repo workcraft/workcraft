@@ -35,6 +35,7 @@ import org.workcraft.util.Triple;
 
 @VisualClass(org.workcraft.plugins.stg.VisualStg.class)
 public class Stg extends AbstractMathModel implements StgModel {
+
     private StgReferenceManager referenceManager;
 
     public Stg() {
@@ -55,29 +56,35 @@ public class Stg extends AbstractMathModel implements StgModel {
         return createPlace(null, null);
     }
 
-    public final StgPlace createPlace(String name, Container container) {
-        return createNode(name, container, StgPlace.class);
+    public final StgPlace createPlace(String ref, Container container) {
+        return createNodeWithHierarchy(ref, container, StgPlace.class);
     }
 
-    public final DummyTransition createDummyTransition(String name, Container container) {
-        DummyTransition transition = createNode(name, container, DummyTransition.class);
-        if (name == null) {
-            name = transition.getName();
+    public final DummyTransition createDummyTransition(String ref, Container container) {
+        return createDummyTransition(ref, container, false);
+    }
+
+    public final DummyTransition createDummyTransition(String ref, Container container, boolean forceInstance) {
+        DummyTransition transition = createNodeWithHierarchy(ref, container, DummyTransition.class);
+        if (ref == null) {
+            ref = transition.getName();
         }
-        setName(transition, name);
+        String name = NamespaceHelper.getReferenceName(ref);
+        setName(transition, name, forceInstance);
         return transition;
     }
 
-    public final SignalTransition createSignalTransition() {
-        return createSignalTransition(null, null);
+    public final SignalTransition createSignalTransition(String ref, Container container) {
+        return createSignalTransition(ref, container, false);
     }
 
-    public final SignalTransition createSignalTransition(String name, Container container) {
-        SignalTransition transition = createNode(name, container, SignalTransition.class);
-        if (name == null) {
-            name = transition.getName();
+    public final SignalTransition createSignalTransition(String ref, Container container, boolean forceInstance) {
+        SignalTransition transition = createNodeWithHierarchy(ref, container, SignalTransition.class);
+        if (ref == null) {
+            ref = transition.getName();
         }
-        setName(transition, name);
+        String name = NamespaceHelper.getReferenceName(ref);
+        setName(transition, name, forceInstance);
         return transition;
     }
 
@@ -257,18 +264,6 @@ public class Stg extends AbstractMathModel implements StgModel {
         referenceManager.setName(t, old.getFirst() + direction.toString());
     }
 
-    public String makeReference(Pair<String, Integer> label) {
-        String name = label.getFirst();
-        Integer instance = label.getSecond();
-        return name + "/" + ((instance == null) ? 0 : instance);
-    }
-
-    public String makeReference(Triple<String, Direction, Integer> label) {
-        String name = label.getFirst();
-        Integer instance = label.getThird();
-        return name + label.getSecond() + "/" + ((instance == null) ? 0 : instance);
-    }
-
     @Override
     public String getName(Node node) {
         return referenceManager.getName(node);
@@ -279,7 +274,7 @@ public class Stg extends AbstractMathModel implements StgModel {
         this.setName(node, name, false);
     }
 
-    public void setName(Node node, String name, boolean forceInstance) {
+    private void setName(Node node, String name, boolean forceInstance) {
         referenceManager.setName(node, name, forceInstance);
     }
 
@@ -371,11 +366,9 @@ public class Stg extends AbstractMathModel implements StgModel {
     public Node getNodeByReference(NamespaceProvider provider, String reference) {
         Pair<String, String> implicitPlaceTransitions = LabelParser.parseImplicitPlaceReference(reference);
         if (implicitPlaceTransitions != null) {
-            Node t1 = referenceManager.getNodeByReference(provider,
-                    NamespaceHelper.flatToHierarchicalName(implicitPlaceTransitions.getFirst()));
+            Node t1 = referenceManager.getNodeByReference(provider, implicitPlaceTransitions.getFirst());
 
-            Node t2 = referenceManager.getNodeByReference(provider,
-                    NamespaceHelper.flatToHierarchicalName(implicitPlaceTransitions.getSecond()));
+            Node t2 = referenceManager.getNodeByReference(provider, implicitPlaceTransitions.getSecond());
             if ((t1 != null) && (t2 != null)) {
                 Set<Node> implicitPlaceCandidates = SetUtils.intersection(getPreset(t2), getPostset(t1));
 
@@ -399,8 +392,8 @@ public class Stg extends AbstractMathModel implements StgModel {
     }
 
     @Override
-    public <T extends MathNode> T createNode(Collection<MathNode> srcNodes, Container container, Class<T> type) {
-        T result = super.createNode(srcNodes, container, type);
+    public <T extends MathNode> T createMergedNode(Collection<MathNode> srcNodes, Container container, Class<T> type) {
+        T result = super.createMergedNode(srcNodes, container, type);
         if (result instanceof SignalTransition) {
             SignalTransition signalTransition = (SignalTransition) result;
             // Type priority: OUTPUT > INPUT > INTERNAL

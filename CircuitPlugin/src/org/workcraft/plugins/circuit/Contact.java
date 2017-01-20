@@ -123,6 +123,10 @@ public class Contact extends MathNode implements BooleanVariable {
         return !(getParent() instanceof CircuitComponent);
     }
 
+    public boolean isEnv() {
+        return (getParent() instanceof CircuitComponent) && ((CircuitComponent) getParent()).getIsEnvironment();
+    }
+
     public boolean isDriver() {
         return isInput() == isPort();
     }

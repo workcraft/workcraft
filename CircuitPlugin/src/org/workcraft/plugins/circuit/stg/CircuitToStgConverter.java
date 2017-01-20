@@ -1,12 +1,11 @@
 package org.workcraft.plugins.circuit.stg;
 
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -15,10 +14,12 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
-import org.workcraft.dom.visual.Movable;
+import org.workcraft.dom.math.PageNode;
+import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.Positioning;
-import org.workcraft.dom.visual.TransformHelper;
+import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
@@ -38,15 +39,16 @@ import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
-import org.workcraft.plugins.stg.converters.SignalStg;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.StgSettings;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.plugins.stg.converters.SignalStg;
 import org.workcraft.util.Geometry;
+import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Pair;
 import org.workcraft.util.TwoWayMap;
 
@@ -66,14 +68,13 @@ public class CircuitToStgConverter {
     private final VisualCircuit circuit;
     private final VisualStg stg;
 
-    private final HashMap<String, Container> refToPageMap;
     private final Map<VisualNode, Pair<VisualContact, Boolean>> nodeToDriverMap;
     private final TwoWayMap<VisualContact, SignalStg> driverToStgMap;
 
     public CircuitToStgConverter(VisualCircuit circuit) {
         this.circuit = circuit;
         this.stg = new VisualStg(new Stg());
-        this.refToPageMap = convertPages();
+        convertPages();
         HashSet<VisualContact> drivers = identifyDrivers();
         this.nodeToDriverMap = associateNodesToDrivers(drivers);
         this.driverToStgMap = convertDriversToStgs(drivers);
@@ -83,23 +84,17 @@ public class CircuitToStgConverter {
             simplifyDriverStgs(drivers);
         }
         positionDriverStgs(drivers);
-        groupDriverStgs(drivers);
+        cleanupPages();
     }
 
     public CircuitToStgConverter(VisualCircuit circuit, VisualStg stg) {
         this.circuit = circuit;
         this.stg = stg;
-        this.refToPageMap = convertPages();
         HashSet<VisualContact> drivers = identifyDrivers();
         this.nodeToDriverMap = associateNodesToDrivers(drivers);
         // STGs already exist, just associate them with the drivers
         this.driverToStgMap = associateDriversToStgs(drivers);
-        if (CircuitSettings.getSimplifyStg()) {
-            // Remove dead transitions
-            simplifyDriverStgs(drivers);
-        }
         positionDriverStgs(drivers);
-        groupDriverStgs(drivers);
     }
 
     public VisualStg getStg() {
@@ -137,20 +132,28 @@ public class CircuitToStgConverter {
         return result;
     }
 
-    private HashMap<String, Container> convertPages() {
+    private void convertPages() {
         NamespaceHelper.copyPageStructure(circuit, stg);
-        return NamespaceHelper.getRefToPageMapping(stg);
-    }
+        HashMap<String, Container> refToPageMapping = NamespaceHelper.getRefToPageMapping(stg);
+        // Create pages for all circuit components (empty pages can be removed later)
+        for (VisualFunctionComponent srcComponent: circuit.getVisualFunctionComponents()) {
+            Container dstContainer = null;
+            Node srcParent = srcComponent.getParent();
+            if (srcParent instanceof VisualPage) {
+                String containerRef = circuit.getNodeMathReference(srcParent);
+                dstContainer = refToPageMapping.get(containerRef);
+            }
+            if (dstContainer == null) {
+                dstContainer = stg.getRoot();
+            }
+            String name = circuit.getMathName(srcComponent);
+            VisualPage dstPage = new VisualPage(new PageNode());
+            dstContainer.add(dstPage);
 
-    private Container getContainer(VisualContact contact) {
-        String nodeReference = circuit.getMathModel().getNodeReference(contact.getReferencedComponent());
-        String parentReference = NamespaceHelper.getParentReference(nodeReference);
-        Container container = refToPageMap.get(parentReference);
-        while (container == null) {
-            parentReference = NamespaceHelper.getParentReference(parentReference);
-            container = refToPageMap.get(parentReference);
+            Container dstMathContainer = NamespaceHelper.getMathContainer(stg, dstContainer);
+            dstMathContainer.add(dstPage.getReferencedComponent());
+            stg.setMathName(dstPage, name);
         }
-        return container;
     }
 
     private HashSet<VisualContact> identifyDrivers() {
@@ -175,7 +178,9 @@ public class CircuitToStgConverter {
         return result;
     }
 
-    private HashMap<VisualNode, Pair<VisualContact, Boolean>> propagateDriverInversion(VisualNode node, Pair<VisualContact, Boolean> driverAndInversion) {
+    private HashMap<VisualNode, Pair<VisualContact, Boolean>> propagateDriverInversion(
+            VisualNode node, Pair<VisualContact, Boolean> driverAndInversion) {
+
         HashMap<VisualNode, Pair<VisualContact, Boolean>> result = new HashMap<>();
         result.put(node, driverAndInversion);
         // Support for zero-delay buffers and inverters.
@@ -214,21 +219,16 @@ public class CircuitToStgConverter {
         for (VisualContact driver: drivers) {
             VisualContact signal = CircuitUtils.findSignal(circuit, driver, true);
             boolean initToOne = signal.getReferencedContact().getInitToOne();
-            Container container = getContainer(signal);
-            String signalName = CircuitUtils.getSignalName(circuit, signal);
+            String signalName = circuit.getNodeMathReference(signal);
 
             String zeroName = SignalStg.getLowName(signalName);
-            VisualPlace zeroPlace = stg.createPlace(zeroName, container);
-            zeroPlace.setNamePositioning(Positioning.TOP);
-            zeroPlace.setLabelPositioning(Positioning.BOTTOM);
+            VisualPlace zeroPlace = stg.createVisualPlace(zeroName);
             if (!initToOne) {
                 zeroPlace.getReferencedPlace().setTokens(1);
             }
 
             String oneName = SignalStg.getHighName(signalName);
-            VisualPlace onePlace = stg.createPlace(oneName, container);
-            onePlace.setNamePositioning(Positioning.BOTTOM);
-            onePlace.setLabelPositioning(Positioning.TOP);
+            VisualPlace onePlace = stg.createVisualPlace(oneName);
             if (initToOne) {
                 onePlace.getReferencedPlace().setTokens(1);
             }
@@ -280,8 +280,7 @@ public class CircuitToStgConverter {
         clauses.addAll(dnf.getClauses());
 
         VisualContact signal = CircuitUtils.findSignal(circuit, driver, true);
-        Container container = getContainer(signal);
-        String signalName = CircuitUtils.getSignalName(circuit, signal);
+        String signalName = circuit.getNodeMathReference(signal);
         SignalTransition.Type signalType = CircuitUtils.getSignalType(circuit, signal);
         for (DnfClause clause : clauses) {
             // In self-looped signals the read-arcs will clash with producing/consuming arcs:
@@ -312,7 +311,7 @@ public class CircuitToStgConverter {
             }
 
             if (!isDeadTransition) {
-                VisualSignalTransition transition = stg.createSignalTransition(signalName, signalType, direction, container);
+                VisualSignalTransition transition = stg.createVisualSignalTransition(signalName, signalType, direction);
                 transition.setLabel(FormulaToString.toString(clause));
                 transitions.add(transition);
                 // Create read-arcs.
@@ -338,48 +337,44 @@ public class CircuitToStgConverter {
         TwoWayMap<VisualContact, SignalStg> result = new TwoWayMap<>();
 
         for (VisualContact driver: drivers) {
-            String signalName = CircuitUtils.getSignalName(circuit, driver);
+            String signalRef = CircuitUtils.getSignalName(circuit, driver);
 
-            VisualPlace zeroPlace = null;
-            VisualPlace onePlace = null;
-            String zeroName = SignalStg.getLowName(signalName);
-            String oneName = SignalStg.getHighName(signalName);
-            for (VisualPlace place: stg.getVisualPlaces()) {
-                if (zeroName.equals(stg.getMathName(place))) {
-                    zeroPlace = place;
-                }
-                if (oneName.equals(stg.getMathName(place))) {
-                    onePlace = place;
-                }
-            }
+            String zeroRef = SignalStg.getLowName(signalRef);
+            VisualPlace zeroPlace = stg.getVisualComponentByMathReference(zeroRef, VisualPlace.class);
+            String oneRef = SignalStg.getHighName(signalRef);
+            VisualPlace onePlace = stg.getVisualComponentByMathReference(oneRef, VisualPlace.class);
 
-            VisualSignalTransition plusTransition = null;
-            VisualSignalTransition minusTransition = null;
-            for (VisualSignalTransition transition: stg.getVisualSignalTransitions()) {
-                if (signalName.equals(transition.getSignalName())) {
-                    if (transition.getDirection() == Direction.PLUS) {
-                        plusTransition = transition;
-                    }
-                    if (transition.getDirection() == Direction.MINUS) {
-                        minusTransition = transition;
+            if ((zeroPlace == null) || (onePlace == null)) {
+                VisualSignalTransition plusTransition = null;
+                VisualSignalTransition minusTransition = null;
+                for (VisualSignalTransition transition: stg.getVisualSignalTransitions()) {
+                    String transitionSignalRef = stg.getSignalReference(transition);
+                    if (signalRef.equals(transitionSignalRef)) {
+                        if (transition.getDirection() == Direction.PLUS) {
+                            plusTransition = transition;
+                        }
+                        if (transition.getDirection() == Direction.MINUS) {
+                            minusTransition = transition;
+                        }
                     }
                 }
-            }
-            if (zeroPlace == null) {
-                Connection connection = stg.getConnection(minusTransition, plusTransition);
-                if (connection instanceof VisualImplicitPlaceArc) {
-                    VisualImplicitPlaceArc implicitPlace = (VisualImplicitPlaceArc) connection;
-                    zeroPlace = stg.makeExplicit(implicitPlace);
-                    stg.setMathName(zeroPlace, zeroName);
+                if (zeroPlace == null) {
+                    Connection connection = stg.getConnection(minusTransition, plusTransition);
+                    if (connection instanceof VisualImplicitPlaceArc) {
+                        VisualImplicitPlaceArc implicitPlace = (VisualImplicitPlaceArc) connection;
+                        zeroPlace = stg.makeExplicit(implicitPlace);
+                        String zeroName = NamespaceHelper.getReferenceName(zeroRef);
+                        stg.setMathName(zeroPlace, zeroName);
+                    }
                 }
-            }
-
-            if (onePlace == null) {
-                Connection connection = stg.getConnection(plusTransition, minusTransition);
-                if (connection instanceof VisualImplicitPlaceArc) {
-                    VisualImplicitPlaceArc implicitPlace = (VisualImplicitPlaceArc) connection;
-                    onePlace = stg.makeExplicit(implicitPlace);
-                    stg.setMathName(onePlace, oneName);
+                if (onePlace == null) {
+                    Connection connection = stg.getConnection(plusTransition, minusTransition);
+                    if (connection instanceof VisualImplicitPlaceArc) {
+                        VisualImplicitPlaceArc implicitPlace = (VisualImplicitPlaceArc) connection;
+                        onePlace = stg.makeExplicit(implicitPlace);
+                        String oneName = NamespaceHelper.getReferenceName(oneRef);
+                        stg.setMathName(onePlace, oneName);
+                    }
                 }
             }
 
@@ -387,7 +382,8 @@ public class CircuitToStgConverter {
                 SignalStg signalStg = new SignalStg(zeroPlace, onePlace);
                 result.put(driver, signalStg);
                 for (VisualSignalTransition transition: stg.getVisualSignalTransitions()) {
-                    if (signalName.equals(transition.getSignalName())) {
+                    String transitionSignalRef = stg.getSignalReference(transition);
+                    if (signalRef.equals(transitionSignalRef)) {
                         if (transition.getDirection() == Direction.PLUS) {
                             signalStg.riseList.add(transition);
                         }
@@ -458,41 +454,71 @@ public class CircuitToStgConverter {
     }
 
     private void positionDriverStgs(HashSet<VisualContact> drivers) {
+        HashSet<VisualPlace> unmovedPlaces = new HashSet<>(
+                Hierarchy.getChildrenOfType(stg.getRoot(), VisualPlace.class));
+        HashSet<VisualTransition> unmovedTransition = new HashSet<>(
+                Hierarchy.getChildrenOfType(stg.getRoot(), VisualTransition.class));
+        // Position STG places and transitions according to the location circuit ports and pins.
         for (VisualContact driver: drivers) {
             SignalStg signalStg = driverToStgMap.getValue(driver);
             if (signalStg != null) {
                 VisualContact signal = CircuitUtils.findSignal(circuit, driver, true);
-                Point2D centerPosition = getPosition(signal);
-                setPosition(signalStg.zero, Geometry.add(centerPosition, OFFSET_P0));
-                setPosition(signalStg.one, Geometry.add(centerPosition, OFFSET_P1));
+                Point2D centerPosition = new Point2D.Double(SCALE_X * signal.getX(), SCALE_Y * signal.getY());
+                signalStg.zero.setPosition(Geometry.add(centerPosition, OFFSET_P0));
+                signalStg.zero.setNamePositioning(Positioning.TOP);
+                signalStg.zero.setLabelPositioning(Positioning.BOTTOM);
+                signalStg.one.setPosition(Geometry.add(centerPosition, OFFSET_P1));
+                signalStg.one.setNamePositioning(Positioning.BOTTOM);
+                signalStg.one.setLabelPositioning(Positioning.TOP);
+                unmovedPlaces.remove(signalStg.zero);
+                unmovedPlaces.remove(signalStg.one);
 
                 centerPosition = Geometry.add(centerPosition, getDirectionOffset(signal));
                 Point2D plusPosition = Geometry.add(centerPosition, OFFSET_INIT_PLUS);
                 for (VisualSignalTransition transition: signalStg.riseList) {
-                    setPosition(transition, plusPosition);
+                    transition.setPosition(plusPosition);
                     plusPosition = Geometry.add(plusPosition, OFFSET_INC_PLUS);
+                    unmovedTransition.remove(transition);
                 }
 
                 Point2D minusPosition = Geometry.add(centerPosition, OFFSET_INIT_MINUS);
                 for (VisualSignalTransition transition: signalStg.fallList) {
-                    setPosition(transition, minusPosition);
+                    transition.setPosition(minusPosition);
                     minusPosition = Geometry.add(minusPosition, OFFSET_INC_MINUS);
+                    unmovedTransition.remove(transition);
                 }
             }
         }
-    }
-
-    private Point2D getPosition(VisualContact contact) {
-        AffineTransform transform = TransformHelper.getTransformToRoot(contact);
-        Point2D position = new Point2D.Double(
-                SCALE_X * (transform.getTranslateX() + contact.getX()),
-                SCALE_Y * (transform.getTranslateY() + contact.getY()));
-        return position;
-    }
-
-    private void setPosition(Movable node, Point2D point) {
-        AffineTransform t = AffineTransform.getTranslateInstance(point.getX(), point.getY());
-        TransformHelper.applyTransform(node, t);
+        // Position STG pages according to the location circuit pages and components.
+        for (VisualPage page: Hierarchy.getDescendantsOfType(stg.getRoot(), VisualPage.class)) {
+            String pageRef = stg.getNodeMathReference(page);
+            VisualComponent circuitComponent = circuit.getVisualComponentByMathReference(pageRef, VisualComponent.class);
+            if (circuitComponent != null) {
+                Point2D pos = circuitComponent.getPosition();
+                page.setPosition(new Point2D.Double(SCALE_X * pos.getX(), SCALE_Y * pos.getY()));
+                page.copyStyle(circuitComponent);
+            }
+        }
+        // Position remaining top-level places and transitions.
+        HashSet<VisualComponent> movedComponents = new HashSet<>(
+                Hierarchy.getChildrenOfType(stg.getRoot(), VisualComponent.class));
+        movedComponents.removeAll(unmovedPlaces);
+        movedComponents.removeAll(unmovedTransition);
+        Rectangle2D bb = BoundingBoxHelper.mergeBoundingBoxes((Collection) movedComponents);
+        double xPlace = bb.getCenterX() - SCALE_X * 0.5 * unmovedPlaces.size();
+        double yPlace = bb.getMinY() - 2.0 * SCALE_Y;
+        for (VisualComponent component: unmovedPlaces) {
+            Point2D pos = new Point2D.Double(xPlace, yPlace);
+            component.setPosition(pos);
+            xPlace += SCALE_X;
+        }
+        double xTransition = bb.getCenterX() - SCALE_X * 0.5 * unmovedTransition.size();
+        double yTransition = bb.getMinY() - SCALE_Y;
+        for (VisualComponent component: unmovedTransition) {
+            Point2D pos = new Point2D.Double(xTransition, yTransition);
+            component.setPosition(pos);
+            xTransition += SCALE_X;
+        }
     }
 
     private Point2D getDirectionOffset(VisualContact contact) {
@@ -509,34 +535,18 @@ public class CircuitToStgConverter {
         }
     }
 
-    private void groupDriverStgs(HashSet<VisualContact> drivers) {
-        if (StgSettings.getGroupSignalConversion()) {
-            for (VisualContact driver: drivers) {
-                SignalStg signalStg = driverToStgMap.getValue(driver);
-                groupSignalStg(signalStg);
-            }
-        }
-    }
-
-    private void groupSignalStg(SignalStg signalStg) {
-        if ((signalStg != null) && StgSettings.getGroupSignalConversion()) {
-            Collection<Node> nodesToGroup = new LinkedList<>();
-            nodesToGroup.addAll(signalStg.getAllNodes());
-            Container currentLevel = null;
-            Container oldLevel = stg.getCurrentLevel();
-            for (Node node: nodesToGroup) {
-                if (currentLevel == null) {
-                    currentLevel = (Container) node.getParent();
-                }
-                if (currentLevel != node.getParent()) {
-                    throw new RuntimeException("Current level is not the same among the processed nodes");
+    private void cleanupPages() {
+        boolean progress = false;
+        do {
+            progress = false;
+            for (VisualPage page: Hierarchy.getDescendantsOfType(stg.getRoot(), VisualPage.class)) {
+                if (page.getChildren().isEmpty()) {
+                    stg.addToSelection(page);
+                    stg.deleteSelection();
+                    progress = true;
                 }
             }
-            stg.setCurrentLevel(currentLevel);
-            stg.select(nodesToGroup);
-            stg.groupSelection();
-            stg.setCurrentLevel(oldLevel);
-        }
+        } while (progress);
     }
 
 }

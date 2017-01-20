@@ -36,10 +36,12 @@ public interface VisualModel extends Model, ObservableState {
     void validateUndirectedConnection(Node first, Node second) throws InvalidConnectionException;
     VisualConnection connectUndirected(Node first, Node second) throws InvalidConnectionException;
 
-    <T extends VisualComponent> T createVisualComponent(MathNode refNode, Container container, Class<T> type);
+    <T extends VisualComponent> T createVisualComponent(MathNode refNode, Class<T> type, Container container);
+    <T extends VisualComponent> T createVisualComponent(MathNode refNode, Class<T> type);
     <T extends VisualComponent> T getVisualComponent(MathNode refNode, Class<T> type);
+    <T extends VisualComponent> T getVisualComponentByMathReference(String ref, Class<T> type);
 
-    <T extends VisualReplica> T createVisualReplica(VisualComponent master, Container container, Class<T> type);
+    <T extends VisualReplica> T createVisualReplica(VisualComponent master, Class<T> type, Container container);
 
     void selectAll();
     void selectNone();

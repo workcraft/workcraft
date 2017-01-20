@@ -47,7 +47,8 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
         Object instance = nodeDeserialiser.initInstance(element, state.getExternalReferences(), constructorParameters);
 
         state.setInstanceElement(instance, element);
-        state.setObject(element.getAttribute("ref"), instance);
+        String ref = element.getAttribute("ref");
+        state.setObject(ref, instance);
 
         if (instance instanceof Container) {
             for (Element subNodeElement : XmlUtil.getChildElements("node", element)) {

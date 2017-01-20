@@ -676,47 +676,32 @@ public class MainWindow extends JFrame {
         createWork(Path.<String>empty());
     }
 
-    public void createWork(Path<String> path) throws OperationCancelledException {
+    public void createWork(Path<String> directory) throws OperationCancelledException {
         final Framework framework = Framework.getInstance();
         CreateWorkDialog dialog = new CreateWorkDialog(this);
         dialog.setVisible(true);
-        if (dialog.getModalResult() == 1) {
+        if (dialog.getModalResult() == 0) {
+            throw new OperationCancelledException("Create operation cancelled by user.");
+        } else {
             ModelDescriptor info = dialog.getSelectedModel();
             try {
                 MathModel mathModel = info.createMathModel();
-                String title = dialog.getModelTitle();
-                if (!title.isEmpty()) {
-                    mathModel.setTitle(title);
+                VisualModelDescriptor visualModelDescriptor = info.getVisualModelDescriptor();
+                if (visualModelDescriptor == null) {
+                    throw new VisualModelInstantiationException(
+                            "visual model is not defined for '" + info.getDisplayName() + "'.");
                 }
-                WorkspaceEntry we = null;
-                if (dialog.createVisualSelected()) {
-                    VisualModelDescriptor v = info.getVisualModelDescriptor();
-                    if (v == null) {
-                        throw new VisualModelInstantiationException(
-                                "visual model is not defined for '" + info.getDisplayName() + "'.");
-                    }
-                    VisualModel visualModel = v.create(mathModel);
-                    ModelEntry me = new ModelEntry(info, visualModel);
-                    we = framework.createWork(me, path, title);
-                    if (dialog.openInEditorSelected()) {
-                        createEditorWindow(we);
-                    }
-                } else {
-                    ModelEntry me = new ModelEntry(info, mathModel);
-                    we = framework.createWork(me, path, title);
-                }
-                if (we != null) {
-                    we.setChanged(false);
-                }
+                VisualModel visualModel = visualModelDescriptor.create(mathModel);
+                ModelEntry me = new ModelEntry(info, visualModel);
+                WorkspaceEntry we = framework.createWork(me, directory, null);
+                we.setChanged(false);
             } catch (VisualModelInstantiationException e) {
                 e.printStackTrace();
                 JOptionPane.showMessageDialog(this,
                         "Visual model could not be created: " + e.getMessage()
-                                + "\n\nPlease see the Problems window for details.",
+                                + "\n\nSee the Problems window for details.",
                         "Error", JOptionPane.ERROR_MESSAGE);
             }
-        } else {
-            throw new OperationCancelledException("Create operation cancelled by user.");
         }
     }
 
