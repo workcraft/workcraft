@@ -431,4 +431,11 @@ public class VisualStg extends AbstractVisualModel {
         return properties;
     }
 
+    public String getSignalReference(VisualSignalTransition transition) {
+        String ref = getNodeMathReference(transition);
+        String signalName = transition.getSignalName();
+        String signalPath = NamespaceHelper.getParentReference(ref);
+        return NamespaceHelper.getReference(signalPath, signalName);
+    }
+
 }

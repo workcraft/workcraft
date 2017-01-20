@@ -123,6 +123,22 @@ public class NamespaceHelper {
         return getReferenceName(tail);
     }
 
+    public static String getReference(String path, String name) {
+        String result = "";
+        boolean needsSeparator = false;
+        if ((path != null) && !path.isEmpty()) {
+            result += path;
+            needsSeparator = true;
+        }
+        if ((name != null) && !name.isEmpty()) {
+            if (needsSeparator) {
+                result += getHierarchySeparator();
+            }
+            result += name;
+        }
+        return result;
+    }
+
     public static Container getMathContainer(VisualModel visualModel, Container visualContainer) {
         if (visualContainer == null) {
             visualContainer = visualModel.getRoot();

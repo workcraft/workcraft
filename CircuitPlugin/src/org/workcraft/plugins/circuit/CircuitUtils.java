@@ -210,31 +210,33 @@ public class CircuitUtils {
         String result = null;
         Node parent = contact.getParent();
         if (parent instanceof FunctionComponent) {
-            FunctionComponent component = (FunctionComponent) parent;
+//            FunctionComponent component = (FunctionComponent) parent;
 
             Contact outputPort = getDrivenOutputPort(circuit, contact);
             if (outputPort != null) {
                 // If a single output port is driven, then take its name.
-                String outputPortRef = circuit.getNodeReference(outputPort);
-                result = NamespaceHelper.hierarchicalToFlatName(outputPortRef);
+                //String outputPortRef = circuit.getNodeReference(outputPort);
+                //result = NamespaceHelper.hierarchicalToFlatName(outputPortRef);
+                result = circuit.getNodeReference(outputPort);
             } else {
                 // If the component has a single output, use the component name. Otherwise append the contact.
-                int outputCount = 0;
-                for (Node node: component.getChildren()) {
-                    if (node instanceof Contact) {
-                        Contact vc = (Contact) node;
-                        if (vc.isOutput()) {
-                            outputCount++;
-                        }
-                    }
-                }
-                if (outputCount == 1) {
-                    String componentRef = circuit.getNodeReference(component);
-                    result = NamespaceHelper.hierarchicalToFlatName(componentRef);
-                } else {
-                    String contactRef = circuit.getNodeReference(contact);
-                    result = NamespaceHelper.hierarchicalToFlatName(contactRef);
-                }
+//                int outputCount = 0;
+//                for (Node node: component.getChildren()) {
+//                    if (node instanceof Contact) {
+//                        Contact vc = (Contact) node;
+//                        if (vc.isOutput()) {
+//                            outputCount++;
+//                        }
+//                    }
+//                }
+//                if (outputCount == 1) {
+//                    String componentRef = circuit.getNodeReference(component);
+//                    result = NamespaceHelper.hierarchicalToFlatName(componentRef);
+//                } else {
+//                    String contactRef = circuit.getNodeReference(contact);
+//                    result = NamespaceHelper.hierarchicalToFlatName(contactRef);
+//                }
+                result = circuit.getNodeReference(contact);
             }
         }
         return result;

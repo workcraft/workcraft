@@ -39,6 +39,7 @@ public interface VisualModel extends Model, ObservableState {
     <T extends VisualComponent> T createVisualComponent(MathNode refNode, Class<T> type, Container container);
     <T extends VisualComponent> T createVisualComponent(MathNode refNode, Class<T> type);
     <T extends VisualComponent> T getVisualComponent(MathNode refNode, Class<T> type);
+    <T extends VisualComponent> T getVisualComponentByMathReference(String ref, Class<T> type);
 
     <T extends VisualReplica> T createVisualReplica(VisualComponent master, Class<T> type, Container container);
 

@@ -214,6 +214,16 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
         return result;
     }
 
+    public <T extends VisualComponent> T getVisualComponentByMathReference(String ref, Class<T> type) {
+        T result = null;
+        Node node = getMathModel().getNodeByReference(ref);
+        if (node instanceof MathNode) {
+            MathNode mathNode = (MathNode) node;
+            result = getVisualComponent(mathNode, type);
+        }
+        return result;
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     public <T extends VisualReplica> T createVisualReplica(VisualComponent masterComponent, Class<T> type, Container container) {
