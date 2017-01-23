@@ -709,8 +709,6 @@ public final class Framework {
     }
 
     public ModelEntry loadModel(File file) throws DeserialisationException {
-        //FileInputStream fis = new FileInputStream(file);
-        //ByteArrayInputStream bis = compatibilityManager.process(fis);
         ByteArrayInputStream bis = compatibilityManager.process(file);
         return loadModel(bis);
     }

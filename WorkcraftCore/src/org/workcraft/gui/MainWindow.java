@@ -389,8 +389,9 @@ public class MainWindow extends JFrame {
             WorkspaceEntry we = editor.getWorkspaceEntry();
 
             if (we.isChanged()) {
+                String title = we.getTitle();
                 int result = JOptionPane.showConfirmDialog(this,
-                        "Document '" + we.getTitle() + "' has unsaved changes.\n" + "Save before closing?",
+                        "Document '" + title + "' has unsaved changes.\n" + "Save before closing?",
                         DIALOG_CLOSE_WORK, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
                 switch (result) {
@@ -734,23 +735,22 @@ public class MainWindow extends JFrame {
         }
     }
 
-    public JFileChooser createOpenDialog(String title, boolean multiSelection, Importer[] importers) {
+    public JFileChooser createOpenDialog(String title, boolean multiSelection, boolean allowWorkFiles, Importer[] importers) {
         JFileChooser fc = new JFileChooser();
         fc.setDialogType(JFileChooser.OPEN_DIALOG);
-        fc.setMultiSelectionEnabled(multiSelection);
         fc.setDialogTitle(title);
         GUI.sizeFileChooserToScreen(fc, getDisplayMode());
-        // Set working directory
         if (lastOpenPath != null) {
             fc.setCurrentDirectory(new File(lastOpenPath));
         } else if (lastSavePath != null) {
             fc.setCurrentDirectory(new File(lastSavePath));
         }
-        // Set file filters
         fc.setAcceptAllFileFilterUsed(false);
-        if ((importers == null) || (importers.length == 0)) {
+        fc.setMultiSelectionEnabled(multiSelection);
+        if (allowWorkFiles) {
             fc.setFileFilter(FileFilters.DOCUMENT_FILES);
-        } else {
+        }
+        if (importers != null) {
             for (Importer importer : importers) {
                 fc.addChoosableFileFilter(new ImporterFileFilter(importer));
             }
@@ -818,7 +818,7 @@ public class MainWindow extends JFrame {
     }
 
     public void openWork() throws OperationCancelledException {
-        JFileChooser fc = createOpenDialog("Open work file(s)", true, null);
+        JFileChooser fc = createOpenDialog("Open work file(s)", true, true, null);
         if (fc.showDialog(this, "Open") == JFileChooser.APPROVE_OPTION) {
             final HashSet<WorkspaceEntry> newWorkspaceEntries = new HashSet<>();
             for (File f : fc.getSelectedFiles()) {
@@ -875,7 +875,7 @@ public class MainWindow extends JFrame {
     }
 
     public void mergeWork() throws OperationCancelledException {
-        JFileChooser fc = createOpenDialog("Merge work file(s)", true, null);
+        JFileChooser fc = createOpenDialog("Merge work file(s)", true, true, null);
         if (fc.showDialog(this, "Merge") == JFileChooser.APPROVE_OPTION) {
             for (File f : fc.getSelectedFiles()) {
                 String path = f.getPath();
@@ -997,7 +997,7 @@ public class MainWindow extends JFrame {
             importers[cnt++] = info.getSingleton();
         }
 
-        JFileChooser fc = createOpenDialog("Import model(s)", true, importers);
+        JFileChooser fc = createOpenDialog("Import model(s)", true, false, importers);
         if (fc.showDialog(this, "Open") == JFileChooser.APPROVE_OPTION) {
             for (File file : fc.getSelectedFiles()) {
                 importFrom(file, importers);

@@ -127,14 +127,12 @@ public class StgUtils {
         if ((file != null) && file.exists()) {
             Framework framework = Framework.getInstance();
             try {
-                // FIXME: Why not to use Framework.load(file) instead?
                 WorkspaceEntry we = framework.loadWork(file);
                 ModelEntry me = we.getModelEntry();
                 MathModel model = me.getMathModel();
                 if (model instanceof Stg) {
                     result = (Stg) model;
                 }
-                framework.closeWork(we);
             } catch (DeserialisationException e) {
                 LogUtils.logErrorLine("Cannot read STG model from file '" + file.getAbsolutePath() + "': "
                         + e.getMessage());

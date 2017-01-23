@@ -118,10 +118,6 @@ public class MpsatConformationTask extends MpsatChainTask {
                 return new Result<MpsatChainResult>(Outcome.FAILED,
                         new MpsatChainResult(devExportResult, pcompResult, null, null, toolchainPreparationSettings));
             }
-            // FIXME: Why do we need this? Is it to add the file reference to the workspace?
-            WorkspaceEntry stgWorkspaceEntry = framework.loadWork(stgFile);
-            stgWorkspaceEntry.getModelEntry().getMathModel();
-            framework.closeWork(stgWorkspaceEntry);
             monitor.progressUpdate(0.50);
 
             // Generate unfolding
