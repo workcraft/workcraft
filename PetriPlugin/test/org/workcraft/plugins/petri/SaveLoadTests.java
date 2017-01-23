@@ -49,7 +49,7 @@ public class SaveLoadTests {
         framework.getPluginManager().reconfigureManifest(false);
 
         final CompatibilityManager compatibilityManager = framework.getCompatibilityManager();
-        ByteArrayInputStream bis = compatibilityManager.process(new Base16Reader(testDataMathModel));
+        ByteArrayInputStream bis = compatibilityManager.process(new Base16Reader(testDataMathModel), null);
         ModelEntry modelEntry = framework.loadModel(bis);
         PetriNet petri = (PetriNet) modelEntry.getModel();
 
@@ -64,7 +64,7 @@ public class SaveLoadTests {
         framework.getPluginManager().reconfigureManifest(false);
 
         final CompatibilityManager compatibilityManager = framework.getCompatibilityManager();
-        ByteArrayInputStream bis = compatibilityManager.process(new Base16Reader(testDataVisualModel));
+        ByteArrayInputStream bis = compatibilityManager.process(new Base16Reader(testDataVisualModel), null);
         ModelEntry modelEntry = framework.loadModel(bis);
         VisualPetriNet petriVisual = (VisualPetriNet) modelEntry.getModel();
         PetriNet petri = (PetriNet) petriVisual.getMathModel();

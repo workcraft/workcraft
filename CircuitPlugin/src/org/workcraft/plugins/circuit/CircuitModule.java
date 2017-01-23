@@ -4,6 +4,7 @@ import org.workcraft.CompatibilityManager;
 import org.workcraft.Framework;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
+import org.workcraft.Version;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.propertyeditor.Settings;
@@ -78,20 +79,21 @@ public class CircuitModule implements Module {
     private void initCompatibilityManager() {
         final Framework framework = Framework.getInstance();
         final CompatibilityManager cm = framework.getCompatibilityManager();
+        Version v310 = new Version(3, 1, 0, Version.Status.RELEASE);
 
-        cm.registerMetaReplacement(
+        cm.registerMetaReplacement(v310,
                 "<descriptor class=\"org.workcraft.plugins.circuit.CircuitModelDescriptor\"/>",
                 "<descriptor class=\"org.workcraft.plugins.circuit.CircuitDescriptor\"/>");
 
-        cm.registerContextualReplacement(VisualCircuit.class.getName(), "VisualCircuitComponent",
+        cm.registerContextualReplacement(v310, VisualCircuit.class.getName(), "VisualCircuitComponent",
                 "<property class=\"org.workcraft.plugins.circuit.renderers.ComponentRenderingResult\\$RenderType\" enum-class=\"org.workcraft.plugins.circuit.renderers.ComponentRenderingResult\\$RenderType\" name=\"renderType\" value=\"C_ELEMENT\"/>",
                 "<property class=\"org.workcraft.plugins.circuit.renderers.ComponentRenderingResult\\$RenderType\" enum-class=\"org.workcraft.plugins.circuit.renderers.ComponentRenderingResult\\$RenderType\" name=\"renderType\" value=\"GATE\"/>");
 
-        cm.registerContextualReplacement(VisualCircuit.class.getName(), "VisualCircuitComponent",
+        cm.registerContextualReplacement(v310, VisualCircuit.class.getName(), "VisualCircuitComponent",
                 "<property class=\"org.workcraft.plugins.circuit.renderers.ComponentRenderingResult\\$RenderType\" enum-class=\"org.workcraft.plugins.circuit.renderers.ComponentRenderingResult\\$RenderType\" name=\"renderType\" value=\"BUFFER\"/>",
                 "<property class=\"org.workcraft.plugins.circuit.renderers.ComponentRenderingResult\\$RenderType\" enum-class=\"org.workcraft.plugins.circuit.renderers.ComponentRenderingResult\\$RenderType\" name=\"renderType\" value=\"GATE\"/>");
 
-        cm.registerContextualReplacement(Circuit.class.getName(), "Contact",
+        cm.registerContextualReplacement(v310, Circuit.class.getName(), "Contact",
                 "<property class=\"boolean\" name=\"initOne\" value=\"(.*?)\"/>",
                 "<property class=\"boolean\" name=\"initToOne\" value=\"$1\"/>");
 
