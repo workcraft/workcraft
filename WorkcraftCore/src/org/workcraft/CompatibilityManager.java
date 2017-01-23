@@ -3,6 +3,8 @@ package org.workcraft;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -12,14 +14,20 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
+import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.util.LogUtils;
 
 public class CompatibilityManager {
-    private static final Pattern versionPattern = Pattern.compile("<version major=\"([0-9]+)\" minor=\"([0-9]+)\" revision=\"([0-9]+)\" status=\"(.+?)\"/>");
+    private static final Pattern versionPattern = Pattern.compile("<" + Framework.META_VERSION_WORK_ELEMENT + " " +
+                    Framework.META_VERSION_MAJOR_WORK_ATTRIBUTE + "=\"([0-9]+)\" " +
+                    Framework.META_VERSION_MINOR_WORK_ATTRIBUTE + "=\"([0-9]+)\" " +
+                    Framework.META_VERSION_REVISION_WORK_ATTRIBUTE + "=\"([0-9]+)\" " +
+                    Framework.META_VERSION_STATUS_WORK_ATTRIBUTE + "=\"(.+?)\"/>");
     private static final Pattern modelNamePattern = Pattern.compile("<model class=\"(.+?)\" ref=\"\">");
     private static final Pattern classNamePattern = Pattern.compile("<([A-Z]\\S*).*>");
 
@@ -178,6 +186,17 @@ public class CompatibilityManager {
         return result;
     }
 
+    private Version extractVersion(InputStream is) throws IOException {
+        Version result = null;
+        InputStreamReader isr = new InputStreamReader(is);
+        BufferedReader br = new BufferedReader(isr);
+        String line = null;
+        while ((result == null) && (line = br.readLine()) != null) {
+            result = extractVersion(line);
+        }
+        return result;
+    }
+
     private String extractModelName(String line) {
         String result = null;
         Matcher matcher = modelNamePattern.matcher(line);
@@ -195,27 +214,40 @@ public class CompatibilityManager {
         }
         return result;
     }
+    public ByteArrayInputStream process(File file) throws DeserialisationException {
+        ByteArrayInputStream result = null;
+        try {
+            ZipFile zipFile = new ZipFile(file);
+            Version version = null;
+            ZipEntry metaZipEntry = zipFile.getEntry(Framework.META_WORK_ENTRY);
+            if (metaZipEntry != null) {
+                version = extractVersion(zipFile.getInputStream(metaZipEntry));
+            }
+            FileInputStream fis = new FileInputStream(file);
+            result = process(fis, version);
+            zipFile.close();
+        } catch (IOException e) {
+            throw new DeserialisationException(e);
+        }
+        return result;
+    }
 
-    public ByteArrayInputStream process(InputStream is) {
-        ByteArrayOutputStream out = new ByteArrayOutputStream();
+    public ByteArrayInputStream process(InputStream is, Version version) {
+        ByteArrayOutputStream result = new ByteArrayOutputStream();
         ZipInputStream zis = new ZipInputStream(is);
-        ZipOutputStream zos = new ZipOutputStream(out);
-        ZipEntry zei;
+        ZipOutputStream zos = new ZipOutputStream(result);
+        ZipEntry zei = null;
         BufferedReader br = new BufferedReader(new InputStreamReader(zis));
         try {
             while ((zei = zis.getNextEntry()) != null) {
                 ZipEntry zeo = new ZipEntry(zei.getName());
-                boolean isMetaEntry = "meta".equals(zei.getName());
+                boolean isMetaEntry = Framework.META_WORK_ENTRY.equals(zei.getName());
                 zos.putNextEntry(zeo);
-                Version version = null;
                 String modelName = null;
                 String className = null;
                 String line = null;
                 while ((line = br.readLine()) != null) {
                     if (isMetaEntry) {
-                        if (version == null) {
-                            version = extractVersion(line);
-                        }
                         byte[] data = replaceMetaData(version, line).getBytes();
                         zos.write(data, 0, data.length);
                     } else if (modelName == null) {
@@ -236,10 +268,10 @@ public class CompatibilityManager {
                 zos.closeEntry();
             }
             zos.close();
-            out.close();
+            result.close();
         } catch (IOException e) {
         }
-        return new ByteArrayInputStream(out.toByteArray());
+        return new ByteArrayInputStream(result.toByteArray());
     }
 
 }

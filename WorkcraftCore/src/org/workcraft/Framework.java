@@ -3,7 +3,6 @@ import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
@@ -88,6 +87,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 import org.xml.sax.SAXException;
 
 public final class Framework {
+
     private static final String SETTINGS_DIRECTORY_NAME = "workcraft";
     private static final String CONFIG_FILE_NAME = "config.xml";
     private static final String PLUGINS_FILE_NAME = "plugins.xml";
@@ -97,6 +97,39 @@ public final class Framework {
     public static final String CONFIG_FILE_PATH = SETTINGS_DIRECTORY_PATH + File.separator + CONFIG_FILE_NAME;
     public static final String PLUGINS_FILE_PATH = SETTINGS_DIRECTORY_PATH + File.separator + PLUGINS_FILE_NAME;
     public static final String UILAYOUT_FILE_PATH = SETTINGS_DIRECTORY_PATH + File.separator + UILAYOUT_FILE_NAME;
+
+    private static final String FRAMEWORK_VARIABLE = "framework";
+    private static final String MATH_MODEL_VARIABLE = "mathModel";
+    private static final String VISUAL_MODEL_VARIABLE = "visualModel";
+
+    public static final String META_WORK_ENTRY = "meta";
+    public static final String STATE_WORK_ENTRY = "state.xml";
+    public static final String MATH_MODEL_WORK_ENTRY = "model.xml";
+    public static final String VISUAL_MODEL_WORK_ENTRY = "visualModel.xml";
+
+    public static final String META_WORK_ELEMENT = "workcraft-meta";
+    public static final String META_DESCRIPTOR_WORK_ELEMENT = "descriptor";
+    public static final String META_DESCRIPTOR_CLASS_WORK_ATTRIBUTE = "class";
+    public static final String META_VERSION_WORK_ELEMENT = "version";
+    public static final String META_VERSION_MAJOR_WORK_ATTRIBUTE = "major";
+    public static final String META_VERSION_MINOR_WORK_ATTRIBUTE = "minor";
+    public static final String META_VERSION_REVISION_WORK_ATTRIBUTE = "revision";
+    public static final String META_VERSION_STATUS_WORK_ATTRIBUTE = "status";
+    public static final String META_STAMP_WORK_ELEMENT = "stamp";
+    public static final String META_STAMP_TIME_WORK_ATTRIBUTE = "time";
+    public static final String META_STAMP_UUID_WORK_ATTRIBUTE = "uuid";
+    public static final String META_MATH_MODEL_WORK_ELEMENT = "math";
+    public static final String META_VISUAL_MODEL_WORK_ELEMENT = "visual";
+    public static final String META_MODEL_ENTRY_NAME_WORK_ATTRIBUTE = "entry-name";
+    public static final String META_MODEL_FORMAT_UUID_WORK_ATTRIBUTE = "format-uuid";
+
+    public static final String STATE_WORK_ELEMENT = "workcraft-state";
+    public static final String STATE_LEVEL_WORK_ELEMENT = "level";
+    public static final String STATE_SELECTION_WORK_ELEMENT = "selection";
+
+    public static final String COMMON_CLASS_WORK_ATTRIBUTE = "class";
+    public static final String COMMON_NODE_WORK_ATTRIBUTE = "node";
+    public static final String COMMON_REF_WORK_ATTRIBUTE = "ref";
 
     private static Framework instance = null;
 
@@ -314,8 +347,8 @@ public final class Framework {
                 systemScope = importer;
 
                 Object frameworkScriptable = Context.javaToJS(Framework.this, systemScope);
-                ScriptableObject.putProperty(systemScope, "framework", frameworkScriptable);
-                systemScope.setAttributes("framework", ScriptableObject.READONLY);
+                ScriptableObject.putProperty(systemScope, FRAMEWORK_VARIABLE, frameworkScriptable);
+                systemScope.setAttributes(FRAMEWORK_VARIABLE, ScriptableObject.READONLY);
 
                 globalScope = (ScriptableObject) cx.newObject(systemScope);
                 globalScope.setPrototype(systemScope);
@@ -331,10 +364,10 @@ public final class Framework {
         ModelEntry modelEntry = we.getModelEntry();
 
         VisualModel visualModel = modelEntry.getVisualModel();
-        setJavaScriptProperty("visualModel", visualModel, jsGlobalScope, true);
+        setJavaScriptProperty(VISUAL_MODEL_VARIABLE, visualModel, jsGlobalScope, true);
 
         MathModel mathModel = modelEntry.getMathModel();
-        setJavaScriptProperty("mathModel", mathModel, jsGlobalScope, true);
+        setJavaScriptProperty(MATH_MODEL_VARIABLE, mathModel, jsGlobalScope, true);
     }
 
     public ScriptableObject getJavaScriptGlobalScope() {
@@ -676,13 +709,10 @@ public final class Framework {
     }
 
     public ModelEntry loadModel(File file) throws DeserialisationException {
-        try {
-            FileInputStream fis = new FileInputStream(file);
-            ByteArrayInputStream bis = compatibilityManager.process(fis);
-            return loadModel(bis);
-        } catch (FileNotFoundException e) {
-            throw new DeserialisationException(e);
-        }
+        //FileInputStream fis = new FileInputStream(file);
+        //ByteArrayInputStream bis = compatibilityManager.process(fis);
+        ByteArrayInputStream bis = compatibilityManager.process(file);
+        return loadModel(bis);
     }
 
     public ModelEntry loadModel(InputStream is) throws DeserialisationException {
@@ -781,57 +811,54 @@ public final class Framework {
         try {
             ModelSerialiser mathSerialiser = new XMLModelSerialiser(getPluginManager());
             // serialise math model
-            String mathEntryName = "model" + mathSerialiser.getExtension();
-            zos.putNextEntry(new ZipEntry(mathEntryName));
+            zos.putNextEntry(new ZipEntry(MATH_MODEL_WORK_ENTRY));
             ReferenceProducer refResolver = mathSerialiser.serialise(mathModel, zos, null);
             zos.closeEntry();
             // serialise visual model
-            String visualEntryName = null;
             ModelSerialiser visualSerialiser = null;
             if (visualModel != null) {
                 visualSerialiser = new XMLModelSerialiser(getPluginManager());
 
-                visualEntryName = "visualModel" + visualSerialiser.getExtension();
-                zos.putNextEntry(new ZipEntry(visualEntryName));
+                zos.putNextEntry(new ZipEntry(VISUAL_MODEL_WORK_ENTRY));
                 ReferenceProducer visualRefs = visualSerialiser.serialise(visualModel, zos, refResolver);
                 zos.closeEntry();
                 // serialise visual model selection state
-                zos.putNextEntry(new ZipEntry("state.xml"));
+                zos.putNextEntry(new ZipEntry(STATE_WORK_ENTRY));
                 FrameworkUtils.saveSelectionState(visualModel, zos, visualRefs);
                 zos.closeEntry();
             }
             // serialise meta data
-            zos.putNextEntry(new ZipEntry("meta"));
+            zos.putNextEntry(new ZipEntry(META_WORK_ENTRY));
             Document metaDoc = XmlUtil.createDocument();
-            Element metaRoot = metaDoc.createElement("workcraft-meta");
+            Element metaRoot = metaDoc.createElement(META_WORK_ELEMENT);
             metaDoc.appendChild(metaRoot);
 
-            Element metaVersion = metaDoc.createElement("version");
-            metaVersion.setAttribute("major", Info.getVersionMajor());
-            metaVersion.setAttribute("minor", Info.getVersionMinor());
-            metaVersion.setAttribute("revision", Info.getVersionRevision());
-            metaVersion.setAttribute("status", Info.getVersionStatus());
+            Element metaVersion = metaDoc.createElement(META_VERSION_WORK_ELEMENT);
+            metaVersion.setAttribute(META_VERSION_MAJOR_WORK_ATTRIBUTE, Info.getVersionMajor());
+            metaVersion.setAttribute(META_VERSION_MINOR_WORK_ATTRIBUTE, Info.getVersionMinor());
+            metaVersion.setAttribute(META_VERSION_REVISION_WORK_ATTRIBUTE, Info.getVersionRevision());
+            metaVersion.setAttribute(META_VERSION_STATUS_WORK_ATTRIBUTE, Info.getVersionStatus());
             metaRoot.appendChild(metaVersion);
 
-            Element metaStamp = metaDoc.createElement("stamp");
+            Element metaStamp = metaDoc.createElement(META_STAMP_WORK_ELEMENT);
             Stamp stamp = modelEntry.getStamp();
-            metaStamp.setAttribute("time", stamp.time);
-            metaStamp.setAttribute("uuid", stamp.uuid);
+            metaStamp.setAttribute(META_STAMP_TIME_WORK_ATTRIBUTE, stamp.time);
+            metaStamp.setAttribute(META_STAMP_UUID_WORK_ATTRIBUTE, stamp.uuid);
             metaRoot.appendChild(metaStamp);
 
-            Element metaDescriptor = metaDoc.createElement("descriptor");
-            metaDescriptor.setAttribute("class", modelEntry.getDescriptor().getClass().getCanonicalName());
+            Element metaDescriptor = metaDoc.createElement(META_DESCRIPTOR_WORK_ELEMENT);
+            metaDescriptor.setAttribute(META_DESCRIPTOR_CLASS_WORK_ATTRIBUTE, modelEntry.getDescriptor().getClass().getCanonicalName());
             metaRoot.appendChild(metaDescriptor);
 
-            Element mathElement = metaDoc.createElement("math");
-            mathElement.setAttribute("entry-name", mathEntryName);
-            mathElement.setAttribute("format-uuid", mathSerialiser.getFormatUUID().toString());
+            Element mathElement = metaDoc.createElement(META_MATH_MODEL_WORK_ELEMENT);
+            mathElement.setAttribute(META_MODEL_ENTRY_NAME_WORK_ATTRIBUTE, MATH_MODEL_WORK_ENTRY);
+            mathElement.setAttribute(META_MODEL_FORMAT_UUID_WORK_ATTRIBUTE, mathSerialiser.getFormatUUID().toString());
             metaRoot.appendChild(mathElement);
 
             if (visualModel != null) {
-                Element visualElement = metaDoc.createElement("visual");
-                visualElement.setAttribute("entry-name", visualEntryName);
-                visualElement.setAttribute("format-uuid", visualSerialiser.getFormatUUID().toString());
+                Element visualElement = metaDoc.createElement(META_VISUAL_MODEL_WORK_ELEMENT);
+                visualElement.setAttribute(META_MODEL_ENTRY_NAME_WORK_ATTRIBUTE, VISUAL_MODEL_WORK_ENTRY);
+                visualElement.setAttribute(META_MODEL_FORMAT_UUID_WORK_ATTRIBUTE, visualSerialiser.getFormatUUID().toString());
                 metaRoot.appendChild(visualElement);
             }
 
