@@ -31,7 +31,7 @@ public class DfsCombinedVerificationCommand extends AbstractVerificationCommand 
         String description = "MPSat tool chain";
         String title = we.getTitle();
         if (!title.isEmpty()) {
-            description += "(" + title + ")";
+            description += " (" + title + ")";
         }
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();

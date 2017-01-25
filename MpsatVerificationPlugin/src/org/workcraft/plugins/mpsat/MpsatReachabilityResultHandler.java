@@ -221,8 +221,8 @@ final class MpsatReachabilityResultHandler implements Runnable {
 
     @Override
     public void run() {
-        MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue());
-        List<MpsatSolution> solutions = mdp.getSolutions();
+        MpsatResultParser mrp = new MpsatResultParser(result.getReturnValue());
+        List<MpsatSolution> solutions = mrp.getSolutions();
         boolean isOutputPersistency = settings.getMode() == MpsatMode.STG_REACHABILITY_OUTPUT_PERSISTENCY;
         boolean isConformation = settings.getMode() == MpsatMode.STG_REACHABILITY_CONFORMATION;
         if (isOutputPersistency) {
