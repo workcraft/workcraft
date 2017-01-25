@@ -48,7 +48,7 @@ public class CheckDeadlockTask extends MpsatChainTask {
             PetriNet model = (PetriNet) converter.getPetriNet().getMathModel();
             Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
             if (exporter == null) {
-                throw new RuntimeException("Exporter not available: model class " + model.getClass().getName() + " to format Petri net.");
+                throw new RuntimeException("Exporter not available: model class " + model.getClass().getName() + " to format Petri Net.");
             }
             monitor.progressUpdate(0.10);
 

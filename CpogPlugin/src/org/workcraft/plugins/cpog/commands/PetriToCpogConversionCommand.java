@@ -1,5 +1,7 @@
 package org.workcraft.plugins.cpog.commands;
 
+import javax.swing.JOptionPane;
+
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.commands.AbstractConversionCommand;
@@ -10,6 +12,7 @@ import org.workcraft.plugins.cpog.gui.PetriToCpogDialog;
 import org.workcraft.plugins.cpog.untangling.PetriToCpogConverter;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.util.GUI;
+import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -30,6 +33,12 @@ public class PetriToCpogConversionCommand extends AbstractConversionCommand {
     public ModelEntry convert(ModelEntry me) {
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
+        if (Hierarchy.isHierarchical(me)) {
+            JOptionPane.showMessageDialog(mainWindow,
+                    "Conditional Partial Order Graph cannot be derived from a hierarchical Petri Net.",
+                    "Conversion error", JOptionPane.ERROR_MESSAGE);
+            return null;
+        }
         PetriToCpogSettings settings = new PetriToCpogSettings();
         PetriToCpogDialog dialog = new PetriToCpogDialog(mainWindow, settings);
         GUI.centerToParent(dialog, mainWindow);

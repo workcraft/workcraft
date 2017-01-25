@@ -114,7 +114,7 @@ public class XmasPNetGenCommand implements Command {
     }
 
     public String getDisplayName() {
-        return "Generate Circuit Petri net";
+        return "Generate Circuit Petri Net";
     }
 
     public String getSection() {
