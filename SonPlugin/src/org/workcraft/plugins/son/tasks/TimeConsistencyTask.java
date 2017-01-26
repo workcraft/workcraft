@@ -28,6 +28,7 @@ import org.workcraft.tasks.Task;
 import org.workcraft.util.LogUtils;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public class TimeConsistencyTask implements Task<VerificationResult> {
 
@@ -45,7 +46,7 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
 
     public TimeConsistencyTask(WorkspaceEntry we, TimeConsistencySettings settings) {
         this.settings = settings;
-        net = (SON) we.getModelEntry().getMathModel();
+        net = WorkspaceUtils.getAs(we, SON.class);
         initialise();
     }
 

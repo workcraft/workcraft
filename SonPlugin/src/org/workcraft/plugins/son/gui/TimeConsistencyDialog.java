@@ -39,6 +39,7 @@ import org.workcraft.plugins.son.elements.Time;
 import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.plugins.son.util.ScenarioRef;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public class TimeConsistencyDialog extends StructureVerifyDialog {
 
@@ -134,7 +135,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
     @SuppressWarnings("unchecked")
     protected void createNodeItemPanel() {
         nodeItemPanel = new JPanel();
-        vNet = (VisualSON) we.getModelEntry().getVisualModel();
+        vNet = WorkspaceUtils.getAs(we, VisualSON.class);
         selectedNodes = new ArrayList<Node>();
 
         DefaultListModel<ListItem> listModel = new DefaultListModel<>();

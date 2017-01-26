@@ -624,7 +624,7 @@ public final class Framework {
                         "Error", JOptionPane.ERROR_MESSAGE);
             }
             try {
-                visualModel = vmd.create((MathModel) me.getModel());
+                visualModel = vmd.create(me.getMathModel());
                 result = new ModelEntry(descriptor, visualModel);
             } catch (VisualModelInstantiationException e) {
                 JOptionPane.showMessageDialog(getMainWindow(),

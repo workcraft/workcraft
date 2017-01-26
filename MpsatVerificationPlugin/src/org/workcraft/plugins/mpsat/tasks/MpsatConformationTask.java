@@ -31,6 +31,7 @@ import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public class MpsatConformationTask extends MpsatChainTask {
     private final MpsatSettings toolchainPreparationSettings = new MpsatSettings("Toolchain preparation of data",
@@ -54,7 +55,7 @@ public class MpsatConformationTask extends MpsatChainTask {
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         try {
-            Stg devStg = (Stg) we.getModelEntry().getVisualModel().getMathModel();
+            Stg devStg = WorkspaceUtils.getAs(we, Stg.class);
             Exporter devStgExporter = Export.chooseBestExporter(framework.getPluginManager(), devStg, Format.STG);
             if (devStgExporter == null) {
                 throw new RuntimeException("Exporter not available: model class " + devStg.getClass().getName() + " to format STG.");

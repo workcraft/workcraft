@@ -28,6 +28,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public class ReachabilityTask implements Task<VerificationResult> {
 
@@ -42,7 +43,7 @@ public class ReachabilityTask implements Task<VerificationResult> {
 
     public ReachabilityTask(WorkspaceEntry we) {
         this.we = we;
-        net = (SON) we.getModelEntry().getMathModel();
+        net = WorkspaceUtils.getAs(we, SON.class);
 
         bsonAlg = new BSONAlg(net);
         reachAlg = new ReachabilityAlg(net);
@@ -91,7 +92,7 @@ public class ReachabilityTask implements Task<VerificationResult> {
         }
 
         if (reachabilityTask()) {
-            net = (SON) we.getModelEntry().getMathModel();
+            net = WorkspaceUtils.getAs(we, SON.class);
             int result = JOptionPane.showConfirmDialog(mainWindow,
                     "The selected marking is REACHABLE from the initial states. \n" +
                     "Select OK to analyze the trace leading to the marking in the simulation tool.",

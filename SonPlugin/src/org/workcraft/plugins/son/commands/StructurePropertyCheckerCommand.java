@@ -35,7 +35,7 @@ public class StructurePropertyCheckerCommand implements Command {
     public void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
-        VisualSON visualNet = (VisualSON) we.getModelEntry().getVisualModel();
+        VisualSON visualNet = WorkspaceUtils.getAs(we, VisualSON.class);
         SON net = WorkspaceUtils.getAs(we, SON.class);
 
         net.refreshAllColor();

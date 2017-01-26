@@ -31,6 +31,7 @@ import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public class CheckCircuitTask extends MpsatChainTask {
     private final MpsatSettings toolchainPreparationSettings = MpsatSettings.getToolchainPreparationSettings();
@@ -58,7 +59,7 @@ public class CheckCircuitTask extends MpsatChainTask {
         File directory = FileUtils.createTempDirectory(prefix);
         try {
             // Common variables
-            VisualCircuit visualCircuit = (VisualCircuit) we.getModelEntry().getVisualModel();
+            VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
             File envFile = visualCircuit.getEnvironmentFile();
 
             // Load device STG

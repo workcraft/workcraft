@@ -1013,7 +1013,7 @@ public class MainWindow extends JFrame {
                     try {
                         ModelEntry me = Import.importFromFile(importer, file);
                         String title = FileUtils.getFileNameWithoutExtension(file);
-                        me.getModel().setTitle(title);
+                        me.getMathModel().setTitle(title);
                         framework.createWork(me, Path.<String>empty(), file.getName());
                         lastOpenPath = file.getParent();
                         break;

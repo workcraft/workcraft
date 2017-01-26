@@ -37,6 +37,7 @@ import org.workcraft.plugins.cpog.VisualVariable;
 import org.workcraft.plugins.cpog.VisualVertex;
 import org.workcraft.util.Func;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public class CpogParsingTool {
 
@@ -917,13 +918,13 @@ public class CpogParsingTool {
     }
 
     public static boolean hasEnoughScenarios(WorkspaceEntry we) {
-        VisualCpog cpog = (VisualCpog) (we.getModelEntry().getVisualModel());
+        VisualCpog cpog = WorkspaceUtils.getAs(we, VisualCpog.class);
         return getScenarios(cpog).size() > 1;
     }
 
     public static boolean hasTooScenarios(WorkspaceEntry we) {
         DesktopApi.OsType os = DesktopApi.getOs();
-        VisualCpog cpog = (VisualCpog) (we.getModelEntry().getVisualModel());
+        VisualCpog cpog = WorkspaceUtils.getAs(we, VisualCpog.class);
         if (os.isLinux()) {
             return getScenarios(cpog).size() > MAX_SCENARIOS_LINUX;
         } else {

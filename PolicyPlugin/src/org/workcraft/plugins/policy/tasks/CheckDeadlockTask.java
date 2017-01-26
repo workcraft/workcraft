@@ -26,6 +26,7 @@ import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public class CheckDeadlockTask extends MpsatChainTask {
     private final MpsatSettings settings;
@@ -44,7 +45,8 @@ public class CheckDeadlockTask extends MpsatChainTask {
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         try {
-            PolicyToPetriConverter converter = new PolicyToPetriConverter((VisualPolicyNet) we.getModelEntry().getVisualModel());
+            VisualPolicyNet policy = WorkspaceUtils.getAs(we, VisualPolicyNet.class);
+            PolicyToPetriConverter converter = new PolicyToPetriConverter(policy);
             PetriNet model = (PetriNet) converter.getPetriNet().getMathModel();
             Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
             if (exporter == null) {

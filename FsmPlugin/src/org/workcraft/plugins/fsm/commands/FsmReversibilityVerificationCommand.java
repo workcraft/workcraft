@@ -50,7 +50,7 @@ public class FsmReversibilityVerificationCommand extends AbstractVerificationCom
                     "The model has irreversible states:\n" + refStr + "\n\nSelect irreversible states?\n",
                     TITLE, JOptionPane.WARNING_MESSAGE + JOptionPane.YES_NO_OPTION) == 0) {
 
-                VisualFsm visualFsm = (VisualFsm) we.getModelEntry().getVisualModel();
+                VisualFsm visualFsm = WorkspaceUtils.getAs(we, VisualFsm.class);
                 mainWindow.getToolbox(we).selectToolInstance(SelectionTool.class);
                 SelectionHelper.selectByReferencedComponents(visualFsm, (HashSet) irreversibleStates);
             }

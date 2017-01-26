@@ -29,6 +29,7 @@ import org.workcraft.util.FileUtils;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.ToolUtils;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public class ScencoSolver {
 
@@ -98,7 +99,7 @@ public class ScencoSolver {
         ArrayList<String> check;
         HashMap<String, Integer> task;
 
-        cpog = (VisualCpog) (we.getModelEntry().getVisualModel());
+        cpog = WorkspaceUtils.getAs(we, VisualCpog.class);
         scenarios = CpogParsingTool.getScenarios(cpog);
         we.captureMemento();
 
