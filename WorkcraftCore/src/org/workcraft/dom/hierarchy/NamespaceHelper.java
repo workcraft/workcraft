@@ -44,10 +44,6 @@ public class NamespaceHelper {
         return HIERARCHY_SEPARATOR;
     }
 
-    public static String hierarchicalToFlatName(String reference) {
-        return reference;
-    }
-
     public static String flattenReference(String reference) {
         return reference.replaceAll(Pattern.quote(HIERARCHY_SEPARATOR), FLATNAME_SEPARATOR);
     }

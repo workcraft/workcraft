@@ -88,7 +88,7 @@ public class SdcSerialiser implements ModelSerialiser {
             HashMap<String, SubstitutionRule> substitutionRules) {
 
         String instanceRef = circuit.getNodeReference(component);
-        String instanceFlatName = NamespaceHelper.hierarchicalToFlatName(instanceRef);
+        String instanceFlatName = NamespaceHelper.flattenReference(instanceRef);
         if ((instancePrefix != null) && !instancePrefix.isEmpty()) {
             instanceFlatName = instancePrefix + instanceFlatName;
         }

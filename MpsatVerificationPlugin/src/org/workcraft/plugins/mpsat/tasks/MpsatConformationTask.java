@@ -137,7 +137,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             monitor.progressUpdate(0.60);
 
             // Check for interface conformation
-            Set<String> devOutputNames = devStg.getSignalFlatNames(Type.OUTPUT);
+            Set<String> devOutputNames = devStg.getSignalNames(Type.OUTPUT, null);
             byte[] palcesList = FileUtils.readAllBytes(placesFile);
             Set<String> devPlaceNames = parsePlaceNames(palcesList, 0);
             MpsatSettings conformationSettings = MpsatSettings.getConformationSettings(devOutputNames, devPlaceNames);

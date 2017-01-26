@@ -8,7 +8,6 @@ import java.util.UUID;
 
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.Fsm;
@@ -70,8 +69,7 @@ public class DotGSerialiser implements ModelSerialiser {
     }
 
     private String getSrialisedNodeName(Fsm fsm, Node node) {
-        String ref = fsm.getNodeReference(node);
-        return NamespaceHelper.hierarchicalToFlatName(ref);
+        return fsm.getNodeReference(node);
     }
 
     private String getSrialisedEventName(Fsm fsm, Event event) {
@@ -91,7 +89,7 @@ public class DotGSerialiser implements ModelSerialiser {
                 result = fsm.getNodeReference(symbol);
             }
         }
-        return NamespaceHelper.hierarchicalToFlatName(result);
+        return result;
     }
 
     private void writeSignalHeader(PrintWriter out, Fst fst, Type type) {

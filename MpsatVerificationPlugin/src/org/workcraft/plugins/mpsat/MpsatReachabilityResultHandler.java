@@ -13,7 +13,6 @@ import javax.swing.JOptionPane;
 import org.workcraft.Framework;
 import org.workcraft.Trace;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
@@ -92,18 +91,17 @@ final class MpsatReachabilityResultHandler implements Runnable {
 
     private boolean fireTrace(StgModel stg, Trace trace) {
         for (String ref: trace) {
-            String flatRef = NamespaceHelper.hierarchicalToFlatName(ref);
-            Node node = stg.getNodeByReference(flatRef);
+            Node node = stg.getNodeByReference(ref);
             if (node instanceof Transition) {
                 Transition transition = (Transition) node;
                 if (stg.isEnabled(transition)) {
                     stg.fire(transition);
                 } else {
-                    LogUtils.logErrorLine("Trace transition '" + flatRef + "' is not enabled.");
+                    LogUtils.logErrorLine("Trace transition '" + ref + "' is not enabled.");
                     return false;
                 }
             } else {
-                LogUtils.logErrorLine("Trace transition '" + flatRef + "' cannot be found.");
+                LogUtils.logErrorLine("Trace transition '" + ref + "' cannot be found.");
                 return false;
             }
         }

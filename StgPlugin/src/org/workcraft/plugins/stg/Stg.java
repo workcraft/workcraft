@@ -192,16 +192,6 @@ public class Stg extends AbstractMathModel implements StgModel {
                 });
     }
 
-    public Set<String> getSignalFlatNames(Type type) {
-        Set<String> result = new HashSet<>();
-        for (SignalTransition st : getSignalTransitions(type)) {
-            String ref = getSignalReference(st);
-            String flatName = NamespaceHelper.hierarchicalToFlatName(ref);
-            result.add(flatName);
-        }
-        return result;
-    }
-
     @Override
     public Set<String> getDummyReferences() {
         Set<String> result = new HashSet<>();
@@ -355,8 +345,7 @@ public class Stg extends AbstractMathModel implements StgModel {
                 }
                 String predNodeRef = referenceManager.getNodeReference(null, preset.iterator().next());
                 String succNodeRef = referenceManager.getNodeReference(null, postset.iterator().next());
-                return "<" + NamespaceHelper.hierarchicalToFlatName(predNodeRef) + ","
-                        + NamespaceHelper.hierarchicalToFlatName(succNodeRef) + ">";
+                return "<" + predNodeRef + "," + succNodeRef + ">";
             }
         }
         return super.getNodeReference(provider, node);

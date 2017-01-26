@@ -256,7 +256,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 
             // Check for interface conformation (only if requested and if the environment is specified)
             if ((envStg != null) && checkConformation) {
-                Set<String> devOutputNames = devStg.getSignalFlatNames(Type.OUTPUT);
+                Set<String> devOutputNames = devStg.getSignalNames(Type.OUTPUT, null);
                 byte[] placesList = FileUtils.readAllBytes(placesModFile);
                 Set<String> devPlaceNames = parsePlaceNames(placesList, 0);
                 MpsatSettings conformationSettings = MpsatSettings.getConformationSettings(devOutputNames, devPlaceNames);

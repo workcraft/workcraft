@@ -13,7 +13,6 @@ import java.util.UUID;
 
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.plugins.petri.PetriNetModel;
@@ -43,9 +42,9 @@ public class DotGSerialiser implements ModelSerialiser {
             LinkedList<String> sortedNames = new LinkedList<>(signalNames);
             Collections.sort(sortedNames);
             out.print(header);
-            for (String s : sortedNames) {
+            for (String name : sortedNames) {
                 out.print(" ");
-                out.print(NamespaceHelper.hierarchicalToFlatName(s));
+                out.print(name);
             }
             out.print("\n");
         }
@@ -72,7 +71,7 @@ public class DotGSerialiser implements ModelSerialiser {
         Set<Node> postset = model.getPostset(node);
         if (!postset.isEmpty()) {
             String nodeRef = model.getNodeReference(node);
-            out.write(NamespaceHelper.hierarchicalToFlatName(nodeRef));
+            out.write(nodeRef);
             for (Node succNode : sortNodes(postset, model)) {
                 String succNodeRef = model.getNodeReference(succNode);
                 if (succNode instanceof StgPlace) {
@@ -84,12 +83,12 @@ public class DotGSerialiser implements ModelSerialiser {
                         }
                         Node succTransition = succPostset.iterator().next();
                         String succTransitionRef = model.getNodeReference(succTransition);
-                        out.write(" " + NamespaceHelper.hierarchicalToFlatName(succTransitionRef));
+                        out.write(" " + succTransitionRef);
                     } else {
-                        out.write(" " + NamespaceHelper.hierarchicalToFlatName(succNodeRef));
+                        out.write(" " + succNodeRef);
                     }
                 } else {
-                    out.write(" " + NamespaceHelper.hierarchicalToFlatName(succNodeRef));
+                    out.write(" " + succNodeRef);
                 }
             }
             out.write("\n");
@@ -160,15 +159,15 @@ public class DotGSerialiser implements ModelSerialiser {
             if (p instanceof StgPlace) {
                 if (((StgPlace) p).isImplicit()) {
                     Node predNode = model.getPreset(p).iterator().next();
-                    String predFlatName = NamespaceHelper.hierarchicalToFlatName(model.getNodeReference(predNode));
+                    String predRef = model.getNodeReference(predNode);
                     Node succNode = model.getPostset(p).iterator().next();
-                    String succFlatName = NamespaceHelper.hierarchicalToFlatName(model.getNodeReference(succNode));
-                    reference = "<" + predFlatName + "," + succFlatName + ">";
+                    String succRef = model.getNodeReference(succNode);
+                    reference = "<" + predRef + "," + succRef + ">";
                 } else {
-                    reference = NamespaceHelper.hierarchicalToFlatName(model.getNodeReference(p));
+                    reference = model.getNodeReference(p);
                 }
             } else {
-                reference = NamespaceHelper.hierarchicalToFlatName(model.getNodeReference(p));
+                reference = model.getNodeReference(p);
             }
             if (tokens == 1) {
                 markingEntries.add(reference);
@@ -193,8 +192,8 @@ public class DotGSerialiser implements ModelSerialiser {
             if (p instanceof StgPlace) {
                 StgPlace stgPlace = (StgPlace) p;
                 if (stgPlace.getCapacity() != 1) {
-                    String flatName = NamespaceHelper.hierarchicalToFlatName(model.getNodeReference(p));
-                    capacity.append(" " + flatName + "=" + stgPlace.getCapacity());
+                    String placeRef = model.getNodeReference(p);
+                    capacity.append(" " + placeRef + "=" + stgPlace.getCapacity());
                 }
             }
         }
@@ -206,8 +205,8 @@ public class DotGSerialiser implements ModelSerialiser {
     private void writePN(PetriNetModel net, PrintWriter out) {
         LinkedList<String> transitions = new LinkedList<>();
         for (Transition t : net.getTransitions()) {
-            String flatName = NamespaceHelper.hierarchicalToFlatName(net.getNodeReference(t));
-            transitions.add(flatName);
+            String transitionRef = net.getNodeReference(t);
+            transitions.add(transitionRef);
         }
         writeSignalsHeader(out, transitions, ".dummy");
         out.print(".graph\n");
