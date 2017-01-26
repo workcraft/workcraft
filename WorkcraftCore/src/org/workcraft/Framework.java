@@ -663,35 +663,35 @@ public final class Framework {
                 return we;
             }
         }
-
-        // Load (from *.work) or import (other extensions) work
-        ModelEntry me = null;
-        if (file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
-            if (path == null) {
-                path = getWorkspace().tempMountExternalFile(file);
-            }
-            me = loadModel(file);
-        } else {
-            Path<String> parent;
-            if (path == null) {
-                parent = Path.empty();
-            } else {
-                parent = path.getParent();
-            }
-            String desiredName = FileUtils.getFileNameWithoutExtension(file);
-            path = getWorkspace().createWorkPath(parent, desiredName);
-            me = importModel(file);
-        }
         WorkspaceEntry we = null;
+        ModelEntry me = loadModel(file);
         if (me != null) {
+            // Load (from *.work) or import (other extensions) work
+            if (file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+                if (path == null) {
+                    path = getWorkspace().tempMountExternalFile(file);
+                }
+            } else {
+                Path<String> parent;
+                if (path == null) {
+                    parent = Path.empty();
+                } else {
+                    parent = path.getParent();
+                }
+                String desiredName = FileUtils.getFileNameWithoutExtension(file);
+                path = getWorkspace().createWorkPath(parent, desiredName);
+            }
             we = createWork(me, path, false, false);
         }
         return we;
     }
 
     public WorkspaceEntry mergeWork(WorkspaceEntry we, File file) throws DeserialisationException {
-        if ((we != null) && file.exists() && file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
-            we.insert(loadModel(file));
+        if ((we != null) && file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+            ModelEntry me = loadModel(file);
+            if (me != null) {
+                we.insert(me);
+            }
         }
         return we;
     }
@@ -700,17 +700,24 @@ public final class Framework {
         getWorkspace().removeWork(we);
     }
 
-    public ModelEntry loadModel(String path) throws DeserialisationException {
-        File file = getFileByAbsoluteOrRelativePath(path);
-        if (checkFileMessageLog(file, null)) {
-            return loadModel(file);
-        }
-        return null;
-    }
-
     public ModelEntry loadModel(File file) throws DeserialisationException {
-        ByteArrayInputStream bis = compatibilityManager.process(file);
-        return loadModel(bis);
+        ModelEntry me = null;
+        if (checkFileMessageLog(file, null)) {
+            // Load (from *.work) or import (other extensions) work.
+            if (file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+                ByteArrayInputStream bis = compatibilityManager.process(file);
+                me = loadModel(bis);
+            } else {
+                try {
+                    final PluginManager pm = getPluginManager();
+                    final Importer importer = Import.chooseBestImporter(pm, file);
+                    me = Import.importFromFile(importer, file);
+                } catch (IOException e) {
+                    throw new DeserialisationException(e);
+                }
+            }
+        }
+        return me;
     }
 
     public ModelEntry loadModel(InputStream is) throws DeserialisationException {
