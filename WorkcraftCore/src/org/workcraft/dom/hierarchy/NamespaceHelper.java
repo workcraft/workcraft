@@ -37,7 +37,10 @@ public class NamespaceHelper {
     }
 
     public static String convertLegacyFlatnameSeparators(String ref) {
-        return ref.replaceAll(LEGACY_FLATNAME_SEPARATOR_REGEXP, HIERARCHY_SEPARATOR);
+        if (ref.contains(getHierarchySeparator())) {
+            return ref;
+        }
+        return ref.replaceAll(LEGACY_FLATNAME_SEPARATOR_REGEXP, getHierarchySeparator());
     }
 
     public static String getHierarchySeparator() {

@@ -27,7 +27,10 @@ public class Identifier {
     }
 
     public static String createInternal(String suffix) {
-        return INTENAL_PREFIX + suffix; 
+        if (suffix == null) {
+            suffix = "";
+        }
+        return INTENAL_PREFIX + suffix;
     }
 
 }

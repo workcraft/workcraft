@@ -43,6 +43,10 @@ public class Version implements Comparable<Version> {
     public final int revision;
     public final Status status;
 
+    public Version(String major, String minor, String revision, String status) {
+        this(Integer.parseInt(major), Integer.parseInt(minor), Integer.parseInt(revision), Version.Status.fromString(status));
+    }
+
     public Version(int major, int minor, int revision, Status status) {
         this.major = major;
         this.minor = minor;

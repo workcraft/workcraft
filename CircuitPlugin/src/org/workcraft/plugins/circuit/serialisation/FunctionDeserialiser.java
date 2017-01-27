@@ -1,7 +1,9 @@
 package org.workcraft.plugins.circuit.serialisation;
 
 import org.w3c.dom.Element;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.serialisation.BooleanFunctionDeserialiser;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.serialisation.ReferenceResolver;
@@ -10,6 +12,7 @@ import org.workcraft.serialisation.xml.NodeFinaliser;
 import org.workcraft.serialisation.xml.NodeInitialiser;
 
 public class FunctionDeserialiser implements CustomXMLDeserialiser {
+
     @Override
     public String getClassName() {
         return FunctionContact.class.getName();
@@ -26,13 +29,18 @@ public class FunctionDeserialiser implements CustomXMLDeserialiser {
             ReferenceResolver internalReferenceResolver,
             ReferenceResolver externalReferenceResolver,
             NodeFinaliser nodeFinaliser) throws DeserialisationException {
+
         FunctionContact function = (FunctionContact) instance;
-        function.setSetFunction(
-                BooleanFunctionDeserialiser.readFormulaFromAttribute(
-                        element, internalReferenceResolver, FunctionSerialiser.SET_FUNCTION_ATTRIBUTE_NAME));
-        function.setResetFunction(
-                BooleanFunctionDeserialiser.readFormulaFromAttribute(
-                        element, internalReferenceResolver, FunctionSerialiser.RESET_FUNCTION_ATTRIBUTE_NAME));
+
+        String setString = element.getAttribute(FunctionSerialiser.SET_FUNCTION_ATTRIBUTE_NAME);
+        String processedSetString = NamespaceHelper.convertLegacyFlatnameSeparators(setString);
+        BooleanFormula setFormula = BooleanFunctionDeserialiser.parseFormula(processedSetString, internalReferenceResolver);
+        function.setSetFunction(setFormula);
+
+        String resetString = element.getAttribute(FunctionSerialiser.RESET_FUNCTION_ATTRIBUTE_NAME);
+        String processedResetString = NamespaceHelper.convertLegacyFlatnameSeparators(resetString);
+        BooleanFormula resetFormula = BooleanFunctionDeserialiser.parseFormula(processedResetString, internalReferenceResolver);
+        function.setResetFunction(resetFormula);
     }
 
     @Override
@@ -40,4 +48,5 @@ public class FunctionDeserialiser implements CustomXMLDeserialiser {
             ReferenceResolver externalReferenceResolver,
             NodeInitialiser nodeInitialiser) throws DeserialisationException {
     }
+
 }

@@ -220,4 +220,5 @@ class DefaultNodeDeserialiser {
             ReferenceResolver externalReferenceResolver) throws DeserialisationException {
         doFinalisation(element, instance, internalReferenceResolver, externalReferenceResolver, instance.getClass());
     }
+
 }

@@ -26,6 +26,7 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.FormatException;
 
 public class DotGParser {
+
     private HashMap<String, Type> signals;
     private HashSet<String> dummies;
     private HashMap<Pair<Node, Node>, StgPlace> implicitPlaces;
@@ -44,7 +45,7 @@ public class DotGParser {
             node = stg.getNodeByReference(ref + "/0");
         }
         if (node == null) {
-              if (dummies.contains(ref)) {
+            if (dummies.contains(ref)) {
                 node = stg.createDummyTransition(ref, null);
             } else if (signals.containsKey(ref)) {
                 Pair<String, Integer> refPair = Pair.of(ref, 0);
@@ -67,7 +68,7 @@ public class DotGParser {
                 node = getOrCreate(refTriple);
             } else {
                 throw new FormatException("Undeclared transition encountered: "
-                    + refPair.getFirst() + " (" + ref + "). Possibly malformed header.");
+                        + refPair.getFirst() + " (" + ref + "). Possibly malformed header.");
             }
         }
         return node;
@@ -90,7 +91,7 @@ public class DotGParser {
                 node = st;
             } else {
                 throw new FormatException("Undeclared signal encountered: "
-                    + refTriple.getFirst() + " (" + ref + "). Possibly malformed header.");
+                        + refTriple.getFirst() + " (" + ref + "). Possibly malformed header.");
             }
         }
         return node;
@@ -112,8 +113,8 @@ public class DotGParser {
                 implicitPlace.setImplicit(true);
             }
         } catch (InvalidConnectionException e) {
-            throw new FormatException("Cannot create arc from " + stg.getNodeReference(first) +
-             " to " + stg.getNodeReference(second) + ".", e);
+            throw new FormatException("Cannot create arc from '" + stg.getNodeReference(first)
+                    + "' to '" + stg.getNodeReference(second) + "'.", e);
         }
     }
 
@@ -123,11 +124,11 @@ public class DotGParser {
                 Type prevType = signals.get(name);
                 if (!prevType.equals(type)) {
                     throw new FormatException("The " + type + " signal '" + name
-                       + "' was already listed as an " + prevType + " signal.");
+                           + "' was already listed as an " + prevType + " signal.");
                 }
             } else if (dummies.contains(name)) {
                 throw new FormatException("The " + type + " '" + name
-                    + "' was already listed as a dummy.");
+                        + "' was already listed as a dummy.");
             } else {
                 signals.put(name, type);
             }
@@ -139,12 +140,13 @@ public class DotGParser {
             if (signals.containsKey(name)) {
                 Type type = signals.get(name);
                 throw new FormatException("The dummy '" + name
-                    + "' was already listed as an " + type + " signal.");
+                        + "' was already listed as an " + type + " signal.");
             } else {
                 dummies.add(name);
             }
         }
     }
+
 }
 PARSER_END(DotGParser)
 
