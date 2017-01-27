@@ -36,13 +36,11 @@ public class UniqueNameManager implements NameManager {
         Node occupant = getNode(name);
         if (node != occupant) {
             if (isUnusedName(name)) {
-                if (Identifier.isValid(name)) {
+                if (Identifier.isName(name) || Identifier.isInternal(name)) {
                     nodes.removeValue(node);
                     nodes.put(name, node);
                 } else {
-                    throw new ArgumentException("'" + name + "' is not a valid C-style identifier.\n\n"
-                            + "The first character must be alphabetic or an underscore and\n"
-                            + "the following characters must be alphanumeric or an underscore.");
+                    throw new ArgumentException("The name '" + name + "' is invalid identifier.");
                 }
             } else {
                 throw new ArgumentException("The name '" + name + "' is already taken.");
