@@ -40,7 +40,7 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
 
-        Circuit circuit = (Circuit) we.getModelEntry().getMathModel();
+        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         if (circuit.getFunctionComponents().isEmpty()) {
             JOptionPane.showMessageDialog(mainWindow, "The circuit must have components.",
                     "Error", JOptionPane.ERROR_MESSAGE);
@@ -51,7 +51,7 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
         boolean checkDeadlock = checkDeadlock();
         boolean checkPersistency = checkPersistency();
 
-        VisualCircuit visualCircuit = (VisualCircuit) we.getModelEntry().getVisualModel();
+        VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
         File envFile = visualCircuit.getEnvironmentFile();
         Stg envStg = StgUtils.loadStg(envFile);
         if (envStg == null) {

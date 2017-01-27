@@ -46,12 +46,12 @@ public class CircuitPropertyVerificationCommand extends AbstractVerificationComm
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
 
-        Circuit circuit = (Circuit) we.getModelEntry().getMathModel();
+        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         if (circuit.getFunctionComponents().isEmpty()) {
             JOptionPane.showMessageDialog(mainWindow, "Error: The circuit must have components.",
                     TITLE, JOptionPane.ERROR_MESSAGE);
         } else {
-            VisualCircuit visualCircuit = (VisualCircuit) we.getModelEntry().getVisualModel();
+            VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
             File envFile = visualCircuit.getEnvironmentFile();
             Stg envStg = StgUtils.loadStg(envFile);
             if (envStg == null) {

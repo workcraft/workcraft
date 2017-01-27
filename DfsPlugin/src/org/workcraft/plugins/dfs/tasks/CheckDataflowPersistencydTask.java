@@ -24,6 +24,7 @@ import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public class CheckDataflowPersistencydTask extends MpsatChainTask {
     private final MpsatSettings settings;
@@ -41,7 +42,8 @@ public class CheckDataflowPersistencydTask extends MpsatChainTask {
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         try {
-            DfsToStgConverter converter = new DfsToStgConverter((VisualDfs) we.getModelEntry().getVisualModel());
+            VisualDfs dfs = WorkspaceUtils.getAs(we, VisualDfs.class);
+            DfsToStgConverter converter = new DfsToStgConverter(dfs);
             StgModel model = (StgModel) converter.getStgModel().getMathModel();
             Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
             if (exporter == null) {

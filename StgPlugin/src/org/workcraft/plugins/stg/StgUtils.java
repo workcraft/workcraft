@@ -14,7 +14,6 @@ import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
-import org.workcraft.workspace.WorkspaceEntry;
 
 public class StgUtils {
     public static final String DEVICE_FILE_NAME = "device";
@@ -124,17 +123,16 @@ public class StgUtils {
     // Load STG model from .work or .g file
     public static Stg loadStg(File file) {
         Stg result = null;
-        if ((file != null) && file.exists()) {
+        if (file != null) {
             Framework framework = Framework.getInstance();
             try {
-                // FIXME: Why not to use Framework.load(file) instead?
-                WorkspaceEntry we = framework.loadWork(file);
-                ModelEntry me = we.getModelEntry();
+                ModelEntry me = framework.loadModel(file);
                 MathModel model = me.getMathModel();
                 if (model instanceof Stg) {
                     result = (Stg) model;
+                } else {
+                    LogUtils.logErrorLine("Model in file '" + file.getAbsolutePath() + "' is not an STG.");
                 }
-                framework.closeWork(we);
             } catch (DeserialisationException e) {
                 LogUtils.logErrorLine("Cannot read STG model from file '" + file.getAbsolutePath() + "': "
                         + e.getMessage());

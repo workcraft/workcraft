@@ -109,19 +109,22 @@ public class WorkspaceEntry implements ObservableState {
     }
 
     public String getTitle() {
-        String res;
-        String name = getWorkspacePath().getNode();
-        if (isWork()) {
-            int dot = name.lastIndexOf('.');
-            if (dot == -1) {
-                res = name;
+        String result = null;
+        Path<String> workspacePath = getWorkspacePath();
+        if (workspacePath != null) {
+            String name = workspacePath.getNode();
+            if (!isWork()) {
+                result = name;
             } else {
-                res = name.substring(0, dot);
+                int dot = name.lastIndexOf('.');
+                if (dot == -1) {
+                    result = name;
+                } else {
+                    result = name.substring(0, dot);
+                }
             }
-        } else {
-            res = name;
         }
-        return res;
+        return result;
     }
 
     public String getFileName() {

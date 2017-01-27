@@ -58,7 +58,7 @@ public class SignalTransition extends NamedTransition {
 
     private Type type = Type.INTERNAL;
     private Direction direction = Direction.TOGGLE;
-    private String signalName = null;
+    private String signalName = "";
 
     public Type getSignalType() {
         return type;

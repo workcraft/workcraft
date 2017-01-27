@@ -23,6 +23,7 @@ import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.SubtaskMonitor;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
@@ -34,7 +35,8 @@ public class CircuitStgUtils {
         File envWorkFile = circuit.getEnvironmentFile();
         if ((envWorkFile != null) && envWorkFile.exists()) {
             Stg devStg = (Stg) converter.getStg().getMathModel();
-            Stg systemStg = createSystemStg(devStg, envWorkFile, circuit.getTitle());
+            String title = circuit.getTitle();
+            Stg systemStg = createSystemStg(devStg, envWorkFile, title);
             if (systemStg != null) {
                 converter = new CircuitToStgConverter(circuit, new VisualStg(systemStg));
             }
@@ -130,7 +132,8 @@ public class CircuitStgUtils {
         if (monitor != null) {
             subtaskMonitor = new SubtaskMonitor<Object>(monitor);
         }
-        return framework.getTaskManager().execute(exportTask, description, subtaskMonitor);
+        TaskManager taskManager = framework.getTaskManager();
+        return taskManager.execute(exportTask, description, subtaskMonitor);
     }
 
     public static Result<? extends ExternalProcessResult> composeDevWithEnv(File devStgFile, File envStgFile, File sysStgFile,
@@ -143,7 +146,8 @@ public class CircuitStgUtils {
         if (monitor != null) {
             subtaskMonitor = new SubtaskMonitor<Object>(monitor);
         }
-        return framework.getTaskManager().execute(pcompTask, description, subtaskMonitor);
+        TaskManager taskManager = framework.getTaskManager();
+        return taskManager.execute(pcompTask, description, subtaskMonitor);
     }
 
     public static void restoreInterfaceSignals(Stg stg, Collection<String> inputSignalNames, Collection<String> outputSignalNames) {

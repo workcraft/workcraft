@@ -66,7 +66,7 @@ public class StgToDtdConverter {
         for (Pair<String, Color> signalData: signals) {
             String ref = signalData.getFirst();
             Color color = signalData.getSecond();
-            String flatName = NamespaceHelper.hierarchicalToFlatName(ref);
+            String flatName = NamespaceHelper.flattenReference(ref);
             VisualSignal signal = dtd.createVisualSignal(flatName);
             signal.setPosition(new Point2D.Double(0.0, SIGNAL_OFFSET * result.size()));
             Type type = convertSignalType(stg.getSignalType(ref));

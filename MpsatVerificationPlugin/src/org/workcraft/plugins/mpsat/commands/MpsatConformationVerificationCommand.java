@@ -41,7 +41,7 @@ public class MpsatConformationVerificationCommand extends AbstractVerificationCo
     @Override
     public final void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
-        MainWindow mainWindow = framework.getMainWindow();
+        final MainWindow mainWindow = framework.getMainWindow();
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         // Check for limitations:
         if (stg.getPlaces().isEmpty()) {
@@ -66,13 +66,13 @@ public class MpsatConformationVerificationCommand extends AbstractVerificationCo
         }
 
         Importer[] importers = {new DotGImporter()};
-        JFileChooser fc = mainWindow.createOpenDialog("Open environment file", false, importers);
+        JFileChooser fc = mainWindow.createOpenDialog("Open environment file", false, true, importers);
         if (fc.showDialog(null, "Open") == JFileChooser.APPROVE_OPTION) {
             File envFile = fc.getSelectedFile();
             if (mainWindow.checkFileMessageDialog(envFile, null)) {
                 Stg envStg = StgUtils.loadStg(envFile);
                 if (envStg == null) {
-                    JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(),
+                    JOptionPane.showMessageDialog(mainWindow,
                             "Error: Cannot read an STG model from the file:\n" + envFile.getAbsolutePath() + "\n\n"
                             + "Conformation cannot be checked without environment STG.\n",
                             TITLE, JOptionPane.ERROR_MESSAGE);

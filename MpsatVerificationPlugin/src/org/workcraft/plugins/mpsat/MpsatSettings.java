@@ -135,6 +135,16 @@ public class MpsatSettings {
         return args.toArray(new String[args.size()]);
     }
 
+    public static MpsatSettings getToolchainPreparationSettings() {
+        return new MpsatSettings("Toolchain preparation of data",
+                MpsatMode.UNDEFINED, 0, null, 0);
+    }
+
+    public static MpsatSettings getToolchainCompletionSettings() {
+        return new MpsatSettings("Toolchain completion",
+                MpsatMode.UNDEFINED, 0, null, 0);
+    }
+
     public static MpsatSettings getDeadlockSettings() {
         return new MpsatSettings("Deadlock freeness", MpsatMode.DEADLOCK, 0,
                 MpsatUtilitySettings.getSolutionMode(), MpsatUtilitySettings.getSolutionCount());

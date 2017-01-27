@@ -31,6 +31,7 @@ import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public class MpsatConformationTask extends MpsatChainTask {
     private final MpsatSettings toolchainPreparationSettings = new MpsatSettings("Toolchain preparation of data",
@@ -54,7 +55,7 @@ public class MpsatConformationTask extends MpsatChainTask {
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         try {
-            Stg devStg = (Stg) we.getModelEntry().getVisualModel().getMathModel();
+            Stg devStg = WorkspaceUtils.getAs(we, Stg.class);
             Exporter devStgExporter = Export.chooseBestExporter(framework.getPluginManager(), devStg, Format.STG);
             if (devStgExporter == null) {
                 throw new RuntimeException("Exporter not available: model class " + devStg.getClass().getName() + " to format STG.");
@@ -118,10 +119,6 @@ public class MpsatConformationTask extends MpsatChainTask {
                 return new Result<MpsatChainResult>(Outcome.FAILED,
                         new MpsatChainResult(devExportResult, pcompResult, null, null, toolchainPreparationSettings));
             }
-            // FIXME: Why do we need this? Is it to add the file reference to the workspace?
-            WorkspaceEntry stgWorkspaceEntry = framework.loadWork(stgFile);
-            stgWorkspaceEntry.getModelEntry().getMathModel();
-            framework.closeWork(stgWorkspaceEntry);
             monitor.progressUpdate(0.50);
 
             // Generate unfolding
@@ -140,7 +137,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             monitor.progressUpdate(0.60);
 
             // Check for interface conformation
-            Set<String> devOutputNames = devStg.getSignalFlatNames(Type.OUTPUT);
+            Set<String> devOutputNames = devStg.getSignalNames(Type.OUTPUT, null);
             byte[] palcesList = FileUtils.readAllBytes(placesFile);
             Set<String> devPlaceNames = parsePlaceNames(palcesList, 0);
             MpsatSettings conformationSettings = MpsatSettings.getConformationSettings(devOutputNames, devPlaceNames);

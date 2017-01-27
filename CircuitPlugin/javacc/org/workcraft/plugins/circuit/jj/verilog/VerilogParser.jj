@@ -183,7 +183,7 @@ List<Port> parsePorts():
     (
         LOOKAHEAD(parseCompactPorts())
         ports = parseCompactPorts()
-      |   ports = parseComplexPorts()
+      | ports = parseComplexPorts()
     )
     {
         return ports;
@@ -390,7 +390,15 @@ Assign parseAssign():
 {
     <ASSIGN> nameToken = <NAME> formulaToken = <FORMULA>
     {
-        String formula = formulaToken.image.replaceAll("^=", "").replaceAll(";$", "");
+        String formula = formulaToken.image
+                .replaceAll("^=", "")       // start of assign expression
+                .replaceAll(";$", "")       // end of assign expression
+                .replaceAll("-0-", "0")     // Petrify CONST0
+                .replaceAll("-1-", "1")     // Petrify CONST1
+                .replaceAll("1b\\`0", "0")  // MPSat CONST0
+                .replaceAll("1b\\`1", "1")  // MPSat CONST1
+                .replaceAll("1'b0", "0")    // Verilog CONST0
+                .replaceAll("1'b1", "1");   // Verilog CONST1
         return new Assign(nameToken.image, formula);
     }
 }
@@ -441,7 +449,7 @@ List<Pin> parsePins():
 }
 {
     (
-           LOOKAHEAD(parseNamedPins())
+        LOOKAHEAD(parseNamedPins())
         pins = parseNamedPins()
     |   pins = parseOrderedPins()
     )
@@ -494,37 +502,3 @@ List<Pin> parseOrderedPins():
         return pins;
     }
 }
-
-/*
-List<String> parseWires():
-{
-    String wire;
-    List<String> wires = new LinkedList<String>();
-}
-{
-    (
-        wire = parseWire() [","]
-        {
-            wires.add(wire);
-        }
-    )*
-    {
-        return wires;
-    }
-}
-
-String parseWire():
-{
-    Token wireToken = null;
-}
-{
-    (
-        wireToken = <NAME>
-    |    wireToken = <LOGIC0>
-    |    wireToken = <LOGIC1>
-    )
-    {
-        return (wireToken == null ? null : wireToken.image);
-    }
-}
-*/

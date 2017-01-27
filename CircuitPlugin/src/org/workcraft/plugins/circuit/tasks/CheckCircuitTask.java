@@ -13,7 +13,6 @@ import org.workcraft.Framework;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
-import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
@@ -32,16 +31,12 @@ import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public class CheckCircuitTask extends MpsatChainTask {
-    private final MpsatSettings toolchainPreparationSettings = new MpsatSettings("Toolchain preparation of data",
-            MpsatMode.UNDEFINED, 0, null, 0);
-
-    private final MpsatSettings toolchainCompletionSettings = new MpsatSettings("Toolchain completion",
-            MpsatMode.UNDEFINED, 0, null, 0);
-
+    private final MpsatSettings toolchainPreparationSettings = MpsatSettings.getToolchainPreparationSettings();
+    private final MpsatSettings toolchainCompletionSettings = MpsatSettings.getToolchainCompletionSettings();
     private final MpsatSettings deadlockSettings = MpsatSettings.getDeadlockSettings();
-
     private final MpsatSettings persistencySettings = MpsatSettings.getOutputPersistencySettings();
 
     private final WorkspaceEntry we;
@@ -64,7 +59,7 @@ public class CheckCircuitTask extends MpsatChainTask {
         File directory = FileUtils.createTempDirectory(prefix);
         try {
             // Common variables
-            VisualCircuit visualCircuit = (VisualCircuit) we.getModelEntry().getVisualModel();
+            VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
             File envFile = visualCircuit.getEnvironmentFile();
 
             // Load device STG
@@ -261,7 +256,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 
             // Check for interface conformation (only if requested and if the environment is specified)
             if ((envStg != null) && checkConformation) {
-                Set<String> devOutputNames = devStg.getSignalFlatNames(Type.OUTPUT);
+                Set<String> devOutputNames = devStg.getSignalNames(Type.OUTPUT, null);
                 byte[] placesList = FileUtils.readAllBytes(placesModFile);
                 Set<String> devPlaceNames = parsePlaceNames(placesList, 0);
                 MpsatSettings conformationSettings = MpsatSettings.getConformationSettings(devOutputNames, devPlaceNames);

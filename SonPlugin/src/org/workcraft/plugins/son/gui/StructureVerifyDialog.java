@@ -34,6 +34,7 @@ import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.StructureVerifySettings;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 @SuppressWarnings("rawtypes")
 public class StructureVerifyDialog extends JDialog {
@@ -321,7 +322,7 @@ public class StructureVerifyDialog extends JDialog {
         //super(owner, "Structure Verification Setting", ModalityType.APPLICATION_MODAL);
         super(owner, title, modalityType);
         this.we = we;
-        net = (SON) we.getModelEntry().getMathModel();
+        net = WorkspaceUtils.getAs(we, SON.class);
         this.owner = owner;
 
         createInterface();

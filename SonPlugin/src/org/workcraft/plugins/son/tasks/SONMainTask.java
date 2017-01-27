@@ -19,6 +19,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public class SONMainTask implements Task<VerificationResult> {
 
@@ -42,8 +43,8 @@ public class SONMainTask implements Task<VerificationResult> {
     public Result<? extends VerificationResult> run(ProgressMonitor<? super VerificationResult> monitor) {
         clearConsole();
         //all tasks
-        SON net = (SON) we.getModelEntry().getMathModel();
-        VisualSON visualNet = (VisualSON) we.getModelEntry().getVisualModel();
+        SON net = WorkspaceUtils.getAs(we, SON.class);
+        VisualSON visualNet = WorkspaceUtils.getAs(we, VisualSON.class);
 
         if (settings.getType() == 0) {
 

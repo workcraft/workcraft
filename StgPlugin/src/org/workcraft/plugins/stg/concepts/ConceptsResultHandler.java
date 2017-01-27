@@ -52,10 +52,10 @@ public class ConceptsResultHandler extends DummyProgressMonitor<ExternalProcessR
                             we.captureMemento();
                             ModelEntry me = Import.importFromByteArray(new DotGImporter(), result.getReturnValue().getOutput());
                             String title = "Concepts - ";
-                            me.getModel().setTitle(title + name);
+                            MathModel mathModel = me.getMathModel();
+                            mathModel.setTitle(title + name);
                             if (sender instanceof TranslateConceptConversionCommand && !((TranslateConceptConversionCommand) sender).getDotLayout()) {
                                 StgDescriptor stgModel = new StgDescriptor();
-                                MathModel mathModel = me.getMathModel();
                                 Path<String> path = we.getWorkspacePath();
                                 VisualModelDescriptor v = stgModel.getVisualModelDescriptor();
                                 try {

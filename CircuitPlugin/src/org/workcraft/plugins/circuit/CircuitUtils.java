@@ -7,7 +7,6 @@ import java.util.Queue;
 import java.util.Set;
 
 import org.workcraft.dom.Node;
-import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
@@ -198,12 +197,7 @@ public class CircuitUtils {
     }
 
     public static String getContactName(Circuit circuit, Contact contact) {
-        String result = null;
-        if (contact != null) {
-            String contactRef = circuit.getNodeReference(contact);
-            result = NamespaceHelper.hierarchicalToFlatName(contactRef);
-        }
-        return result;
+        return circuit.getNodeReference(contact);
     }
 
     private static String getOutputContactName(Circuit circuit, Contact contact) {

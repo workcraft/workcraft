@@ -79,6 +79,7 @@ import org.workcraft.plugins.cpog.formula.jj.TokenMgrError;
 import org.workcraft.plugins.stg.VisualNamedTransition;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public class CpogSelectionTool extends SelectionTool {
 
@@ -161,7 +162,7 @@ public class CpogSelectionTool extends SelectionTool {
                         prevLineEnd = expressionText.getLineEndOffset(i);
                     }
                     WorkspaceEntry we = editor.getWorkspaceEntry();
-                    VisualCpog visualCpog = (VisualCpog) we.getModelEntry().getVisualModel();
+                    VisualCpog visualCpog = WorkspaceUtils.getAs(we, VisualCpog.class);
                     String exp = "";
                     coordinate = getLowestVertex(visualCpog);
                     coordinate.setLocation(coordinate.getX(), coordinate.getY() + 2);
@@ -619,7 +620,7 @@ public class CpogSelectionTool extends SelectionTool {
         super.mouseReleased(e);
 
         WorkspaceEntry we = e.getEditor().getWorkspaceEntry();
-        final VisualCpog visualCpog = (VisualCpog) we.getModelEntry().getVisualModel();
+        final VisualCpog visualCpog = WorkspaceUtils.getAs(we, VisualCpog.class);
 
         for (Node n : visualCpog.getSelection()) {
             if (n instanceof VisualVertex) {
@@ -631,7 +632,7 @@ public class CpogSelectionTool extends SelectionTool {
     public void startDrag(GraphEditorMouseEvent e) {
         super.startDrag(e);
         WorkspaceEntry we = e.getEditor().getWorkspaceEntry();
-        final VisualCpog visualCpog = (VisualCpog) we.getModelEntry().getVisualModel();
+        final VisualCpog visualCpog = WorkspaceUtils.getAs(we, VisualCpog.class);
 
         prevPoints.clear();
         for (Node n : visualCpog.getSelection()) {
@@ -1065,7 +1066,7 @@ public class CpogSelectionTool extends SelectionTool {
         }
 
         WorkspaceEntry we = editor.getWorkspaceEntry();
-        VisualCpog visualCpog = (VisualCpog) we.getModelEntry().getVisualModel();
+        VisualCpog visualCpog = WorkspaceUtils.getAs(we, VisualCpog.class);
 
         coordinate = getLowestVertex(visualCpog);
         coordinate.setLocation(coordinate.getX(), coordinate.getY() + 2);

@@ -145,7 +145,7 @@ public class VerilogSerialiser implements ModelSerialiser {
                 out.print(", ");
             }
             String contactRef = circuit.getNodeReference(contact);
-            String contactFlatName = NamespaceHelper.hierarchicalToFlatName(contactRef);
+            String contactFlatName = NamespaceHelper.flattenReference(contactRef);
             out.print(contactFlatName);
             if (contact.isInput()) {
                 if (!inputPorts.isEmpty()) {
@@ -197,7 +197,7 @@ public class VerilogSerialiser implements ModelSerialiser {
     private boolean writeAssigns(PrintWriter out, Circuit circuit, FunctionComponent component) {
         boolean result = false;
         String instanceRef = circuit.getNodeReference(component);
-        String instanceFlatName = NamespaceHelper.hierarchicalToFlatName(instanceRef);
+        String instanceFlatName = NamespaceHelper.flattenReference(instanceRef);
         LogUtils.logWarningLine("Component '" + instanceFlatName + "' is not associated to a module and is exported as assign statements.");
         HashMap<String, BooleanFormula> signals = getSignalMap(circuit);
         LinkedList<BooleanVariable> variables = new LinkedList<>();
@@ -265,7 +265,7 @@ public class VerilogSerialiser implements ModelSerialiser {
     private void writeInstance(PrintWriter out, Circuit circuit, FunctionComponent component,
             HashMap<String, SubstitutionRule> substitutionRules) {
         String instanceRef = circuit.getNodeReference(component);
-        String instanceFlatName = NamespaceHelper.hierarchicalToFlatName(instanceRef);
+        String instanceFlatName = NamespaceHelper.flattenReference(instanceRef);
         String moduleName = component.getModule();
         SubstitutionRule substitutionRule = substitutionRules.get(moduleName);
         if (substitutionRule != null) {

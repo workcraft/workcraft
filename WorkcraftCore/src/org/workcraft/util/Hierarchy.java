@@ -6,7 +6,10 @@ import java.util.LinkedList;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathModel;
+import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.visual.NodeHelper;
+import org.workcraft.workspace.ModelEntry;
 
 import net.sf.jga.fn.UnaryFunctor;
 
@@ -186,6 +189,12 @@ public class Hierarchy {
         }
         result.addAll(node.getChildren());
         return result;
+    }
+
+    public static boolean isHierarchical(ModelEntry me) {
+        MathModel mm = me.getMathModel();
+        Collection<PageNode> pageNodes = Hierarchy.getChildrenOfType(mm.getRoot(), PageNode.class);
+        return !pageNodes.isEmpty();
     }
 
 }
