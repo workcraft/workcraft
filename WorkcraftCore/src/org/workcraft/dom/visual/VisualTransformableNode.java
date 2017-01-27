@@ -16,12 +16,15 @@ import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
 
 public abstract class VisualTransformableNode extends VisualNode implements Movable, Rotatable, Flippable {
+    public static final String PROPERTY_X = "X";
+    public static final String PROPERTY_Y = "Y";
+
     protected AffineTransform localToParentTransform = new AffineTransform();
     protected AffineTransform parentToLocalTransform = new AffineTransform();
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualTransformableNode, Double>(
-                this, "X", Double.class, true, true, false) {
+                this, PROPERTY_X, Double.class, true, true, false) {
             @Override
             public void setter(VisualTransformableNode object, Double value) {
                 object.setRootSpaceX(value);
@@ -33,7 +36,7 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualTransformableNode, Double>(
-                this, "Y", Double.class, true, true, false) {
+                this, PROPERTY_Y, Double.class, true, true, false) {
             @Override
             public void setter(VisualTransformableNode object, Double value) {
                 object.setRootSpaceY(value);

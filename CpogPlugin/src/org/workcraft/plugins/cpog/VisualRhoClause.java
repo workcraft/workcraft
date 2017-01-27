@@ -48,8 +48,8 @@ public class VisualRhoClause extends VisualComponent {
 
     public VisualRhoClause(RhoClause rhoClause) {
         super(rhoClause);
-        removePropertyDeclarationByName("Name positioning");
-        removePropertyDeclarationByName("Name color");
+        removePropertyDeclarationByName(PROPERTY_NAME_POSITIONING);
+        removePropertyDeclarationByName(PROPERTY_NAME_COLOR);
     }
 
     public void draw(DrawRequest r) {

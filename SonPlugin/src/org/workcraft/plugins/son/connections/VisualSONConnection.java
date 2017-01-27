@@ -73,9 +73,9 @@ public class VisualSONConnection extends VisualConnection {
     public VisualSONConnection(SONConnection refConnection, VisualComponent first, VisualComponent second) {
         super(refConnection, first, second);
         addPropertyDeclarations();
-        removePropertyDeclarationByName(VisualConnection.PROPERTY_LINE_WIDTH);
-        removePropertyDeclarationByName(VisualConnection.PROPERTY_ARROW_WIDTH);
-        removePropertyDeclarationByName(VisualConnection.PROPERTY_ARROW_LENGTH);
+        removePropertyDeclarationByName(PROPERTY_LINE_WIDTH);
+        removePropertyDeclarationByName(PROPERTY_ARROW_WIDTH);
+        removePropertyDeclarationByName(PROPERTY_ARROW_LENGTH);
     }
 
     public SONConnection getReferencedSONConnection() {

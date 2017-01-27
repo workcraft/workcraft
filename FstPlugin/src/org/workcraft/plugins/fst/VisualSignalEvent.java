@@ -21,7 +21,7 @@ public class VisualSignalEvent extends VisualEvent {
 
     public VisualSignalEvent(SignalEvent mathConnection, VisualState first, VisualState second) {
         super(mathConnection, first, second);
-        removePropertyDeclarationByName("Label color");
+        removePropertyDeclarationByName(PROPERTY_LABEL_COLOR);
     }
 
     @Override
@@ -37,7 +37,6 @@ public class VisualSignalEvent extends VisualEvent {
         }
         return Color.BLACK;
     }
-
 
     public SignalEvent getReferencedSignalEvent() {
         return (SignalEvent) getReferencedEvent();

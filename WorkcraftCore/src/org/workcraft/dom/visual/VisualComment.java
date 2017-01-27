@@ -31,9 +31,9 @@ public class VisualComment extends VisualComponent {
         setForegroundColor(CommonCommentSettings.getBorderColor());
         setFillColor(CommonCommentSettings.getFillColor());
         setLabelColor(CommonCommentSettings.getTextColor());
-        removePropertyDeclarationByName("Label positioning");
-        removePropertyDeclarationByName("Name color");
-        removePropertyDeclarationByName("Name positioning");
+        removePropertyDeclarationByName(PROPERTY_NAME_POSITIONING);
+        removePropertyDeclarationByName(PROPERTY_NAME_COLOR);
+        removePropertyDeclarationByName(PROPERTY_LABEL_POSITIONING);
         addPropertyDeclarations();
     }
 

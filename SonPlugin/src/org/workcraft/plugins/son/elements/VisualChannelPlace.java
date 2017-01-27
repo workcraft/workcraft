@@ -13,7 +13,6 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 
 @DisplayName("ChannelPlace")
-//@Hotkey(KeyEvent.VK_P)
 @SVGIcon("images/son-node-channel_place.svg")
 public class VisualChannelPlace extends VisualPlaceNode {
 
@@ -22,8 +21,6 @@ public class VisualChannelPlace extends VisualPlaceNode {
 
     public VisualChannelPlace(ChannelPlace cplace) {
         super(cplace);
-        removePropertyDeclarationByName("Initial");
-        removePropertyDeclarationByName("Final");
     }
 
     @Override
@@ -50,4 +47,5 @@ public class VisualChannelPlace extends VisualPlaceNode {
     public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
         return pointInLocalSpace.distanceSq(0, 0) < size * size / 4;
     }
+
 }

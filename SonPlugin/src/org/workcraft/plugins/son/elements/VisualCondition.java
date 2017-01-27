@@ -27,6 +27,8 @@ import org.workcraft.plugins.son.SONSettings;
 @Hotkey(KeyEvent.VK_B)
 @SVGIcon("images/son-node-condition.svg")
 public class VisualCondition extends VisualPlaceNode {
+    public static final String PROPERTY_INITIAL = "Initial";
+    public static final String PROPERTY_FINAL = "Final";
 
     private static double size = 1.0;
     private static float strokeWidth = 0.1f;
@@ -45,7 +47,7 @@ public class VisualCondition extends VisualPlaceNode {
     //uneditable properties
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualCondition, Boolean>(
-                this, "Initial", Boolean.class, false, false, false) {
+                this, PROPERTY_INITIAL, Boolean.class, false, false, false) {
             public void setter(VisualCondition object, Boolean value) {
                 setInitial(value);
             }
@@ -55,7 +57,7 @@ public class VisualCondition extends VisualPlaceNode {
         });
 
         addPropertyDeclaration(new PropertyDeclaration<VisualCondition, Boolean>(
-                this, "Final", Boolean.class, false, false, false) {
+                this, PROPERTY_FINAL, Boolean.class, false, false, false) {
             public void setter(VisualCondition object, Boolean value) {
                 setFinal(value);
             }

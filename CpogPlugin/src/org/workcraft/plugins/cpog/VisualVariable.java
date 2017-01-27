@@ -68,8 +68,8 @@ public class VisualVariable extends VisualComponent {
                 return object.getState();
             }
         });
-        removePropertyDeclarationByName("Name positioning");
-        removePropertyDeclarationByName("Name color");
+        removePropertyDeclarationByName(PROPERTY_NAME_POSITIONING);
+        removePropertyDeclarationByName(PROPERTY_NAME_COLOR);
     }
 
     @Override

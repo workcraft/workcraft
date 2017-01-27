@@ -8,6 +8,7 @@ import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 
@@ -59,7 +60,7 @@ public class Cpog extends AbstractMathModel {
     public ModelProperties getProperties(Node node) {
         ModelProperties properties = super.getProperties(node);
         if (node != null) {
-            properties.removeByName("Name");
+            properties.removeByName(NamePropertyDescriptor.PROPERTY_NAME);
         }
         return properties;
     }
