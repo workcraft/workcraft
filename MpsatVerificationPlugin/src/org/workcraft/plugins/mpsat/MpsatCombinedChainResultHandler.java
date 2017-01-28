@@ -129,7 +129,8 @@ public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatC
                 } else {
                     ExternalProcessResult punfReturnValue = punfResult.getReturnValue();
                     if (punfReturnValue != null) {
-                        errorMessage += ERROR_CAUSE_PREFIX + new String(punfReturnValue.getErrors());
+                        String punfError = punfReturnValue.getErrorsHeadAndTail();
+                        errorMessage += ERROR_CAUSE_PREFIX + punfError;
                     }
                 }
             } else if (mpsatResultList != null) {
@@ -142,7 +143,7 @@ public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatC
                         } else {
                             ExternalProcessResult mpsatReturnValue = mpsatResult.getReturnValue();
                             if (mpsatReturnValue != null) {
-                                String mpsatError = new String(mpsatReturnValue.getErrors());
+                                String mpsatError = mpsatReturnValue.getErrorsHeadAndTail();
                                 errorMessage += ERROR_CAUSE_PREFIX + mpsatError;
                             }
                         }

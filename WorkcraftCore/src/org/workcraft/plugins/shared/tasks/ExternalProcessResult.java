@@ -35,4 +35,30 @@ public class ExternalProcessResult {
     public byte[] getFileData(String name) {
         return fileDataMap.get(name);
     }
+
+    public String getErrorsHeadAndTail() {
+        return getErrorsHeadAndTail(10, 10);
+    }
+
+    public String getErrorsHeadAndTail(int firstCount, int lastCount) {
+        return getHeadAndTail(new String(getErrors()), firstCount, lastCount);
+    }
+
+    private String getHeadAndTail(String text, int firstCount, int lastCount) {
+        String result = "";
+        String[] lines = text.split("\n");
+        int index = 0;
+        boolean dotsInserted = false;
+        for (String line: lines) {
+            if ((index < firstCount) || (index >= lines.length - lastCount)) {
+                result += line + "\n";
+            } else if (!dotsInserted) {
+                result += "...\n";
+                dotsInserted = true;
+            }
+            index++;
+        }
+        return result;
+    }
+
 }
