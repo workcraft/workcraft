@@ -26,7 +26,10 @@ import info.clearthought.layout.TableLayout;
 @SuppressWarnings("serial")
 public class MpsatSolutionPanel extends JPanel {
 
-    public MpsatSolutionPanel(final WorkspaceEntry we, final MpsatSolution solution, final ActionListener closeAction) {
+    private static final int MIN_COLUMN_COUNT = 25;
+    private static final int MAX_COLUMN_COUNT = 80;
+
+    public  MpsatSolutionPanel(final WorkspaceEntry we, final MpsatSolution solution, final ActionListener closeAction) {
         double[][] sizes = new double[][] {
             {TableLayout.FILL, TableLayout.PREFERRED},
             {TableLayout.PREFERRED, TableLayout.FILL},
@@ -42,9 +45,16 @@ public class MpsatSolutionPanel extends JPanel {
         if (solution.getComment() != null) {
             commentLabel.setText(solution.getComment());
         }
-        JTextArea traceText = new JTextArea();
-        traceText.setBorder(BorderFactory.createEmptyBorder(hGap, vGap, hGap, vGap));
         String solutionString = solution.toString();
+        int columnCount = solutionString.length();
+        if (columnCount < MIN_COLUMN_COUNT) {
+            columnCount = MIN_COLUMN_COUNT;
+        }
+        if (columnCount > MAX_COLUMN_COUNT) {
+            columnCount = MAX_COLUMN_COUNT;
+        }
+        JTextArea traceText = new JTextArea(1, columnCount);
+        traceText.setBorder(BorderFactory.createEmptyBorder(hGap, vGap, hGap, vGap));
         if (solutionString.isEmpty()) {
             traceText.setText("[empty trace]");
             traceText.setEnabled(false);
