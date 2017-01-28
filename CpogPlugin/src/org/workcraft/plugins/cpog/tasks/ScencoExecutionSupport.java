@@ -296,7 +296,7 @@ public class ScencoExecutionSupport {
                         if (condition != One.instance() && condition != Zero.instance()) {
 
                             // Format output by substituting ' with !
-                            String cond = FormulaToString.toString(condition).replaceAll("'", "!");
+                            String cond = FormulaToString.toString(condition).replace("'", "!");
                             String result = "";
                             String tmp = "";
                             for (int i = 0; i < cond.length(); i++) {

@@ -391,14 +391,14 @@ Assign parseAssign():
     <ASSIGN> nameToken = <NAME> formulaToken = <FORMULA>
     {
         String formula = formulaToken.image
-                .replaceAll("^=", "")       // start of assign expression
-                .replaceAll(";$", "")       // end of assign expression
-                .replaceAll("-0-", "0")     // Petrify CONST0
-                .replaceAll("-1-", "1")     // Petrify CONST1
-                .replaceAll("1b\\`0", "0")  // MPSat CONST0
-                .replaceAll("1b\\`1", "1")  // MPSat CONST1
-                .replaceAll("1'b0", "0")    // Verilog CONST0
-                .replaceAll("1'b1", "1");   // Verilog CONST1
+                .replaceAll("^=", "")  // start of assign expression
+                .replaceAll(";$", "")  // end of assign expression
+                .replace("-0-", "0")   // Petrify CONST0
+                .replace("-1-", "1")   // Petrify CONST1
+                .replace("1b`0", "0")  // MPSat CONST0
+                .replace("1b`1", "1")  // MPSat CONST1
+                .replace("1'b0", "0")  // Verilog CONST0
+                .replace("1'b1", "1"); // Verilog CONST1
         return new Assign(nameToken.image, formula);
     }
 }

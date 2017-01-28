@@ -18,7 +18,7 @@ public class LabelParser {
             Pattern.compile("^([_A-Za-z][_A-Za-z0-9]*[\\+\\-\\~]?)(\\/([0-9]+))?");
 
     public static Pair<String, String> parseImplicitPlaceReference(String ref) {
-        String[] parts = ref.replaceAll(" ", "").split(",");
+        String[] parts = ref.replace(" ", "").split(",");
         if (parts.length < 2 || !parts[0].startsWith("<") || !parts[1].endsWith(">")) {
             return null;
         }
