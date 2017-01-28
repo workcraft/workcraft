@@ -129,10 +129,8 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
         }
     }
 
+    @Override
     public Node getNodeByReference(NamespaceProvider provider, String reference) {
-        if (topProvider == null) {
-            System.err.println("HierarchicalUniqueNameReferenceManager created with topProvider==null!");
-        }
         if (provider == null) {
             provider = topProvider;
         }
@@ -142,8 +140,7 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
         String head = NamespaceHelper.getReferenceHead(reference);
         String tail = NamespaceHelper.getReferenceTail(reference);
         NameManager man = getNameManager(provider);
-        Node node;
-        node = man.getNode(head);
+        Node node = man.getNode(head);
         if ((node != null) && (node instanceof NamespaceProvider)) {
             return getNodeByReference((NamespaceProvider) node, tail);
         }
@@ -189,12 +186,12 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
                     // additional call to propagate the name data after calling setDefaultNameIfUnnamed
                     setName(node, name);
                 }
-                for (Node node2 : Hierarchy.getDescendantsOfType(node, Node.class)) {
-                    NamespaceProvider provider2 = getNamespaceProvider(node2);
-                    NameManager mgr2 = getNameManager(provider2);
-                    mgr2.setDefaultNameIfUnnamed(node2);
+                for (Node childNode : Hierarchy.getDescendantsOfType(node, Node.class)) {
+                    NamespaceProvider provider = getNamespaceProvider(childNode);
+                    NameManager mgr = getNameManager(provider);
+                    mgr.setDefaultNameIfUnnamed(childNode);
                     // additional call to propagate the name data after calling setDefaultNameIfUnnamed
-                    setName(node2, mgr2.getName(node2));
+                    setName(childNode, mgr.getName(childNode));
                 }
             }
         }
@@ -203,9 +200,9 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
             for (Node node : e.getAffectedNodes()) {
                 getNameManager(getNamespaceProvider(node)).remove(node);
                 node2namespace.remove(node);
-                for (Node node2 : Hierarchy.getDescendantsOfType(node, Node.class)) {
-                    getNameManager(getNamespaceProvider(node2)).remove(node2);
-                    node2namespace.remove(node2);
+                for (Node childNode : Hierarchy.getDescendantsOfType(node, Node.class)) {
+                    getNameManager(getNamespaceProvider(childNode)).remove(childNode);
+                    node2namespace.remove(childNode);
                 }
             }
         }

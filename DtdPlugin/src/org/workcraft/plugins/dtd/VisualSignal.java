@@ -27,19 +27,21 @@ import org.workcraft.serialisation.xml.NoAutoSerialisation;
 @SVGIcon("images/dtd-node-signal.svg")
 public class VisualSignal extends VisualComponent {
 
+    public static final String PROPERTY_COLOR = "Color";
+
     public VisualSignal(Signal signal) {
         super(signal);
         configureProperties();
     }
 
     private void configureProperties() {
-        renamePropertyDeclarationByName("Foreground color", "Color");
-        removePropertyDeclarationByName("Fill color");
-        removePropertyDeclarationByName("Name positioning");
-        removePropertyDeclarationByName("Name color");
-        removePropertyDeclarationByName("Label");
-        removePropertyDeclarationByName("Label positioning");
-        removePropertyDeclarationByName("Label color");
+        renamePropertyDeclarationByName(PROPERTY_FOREGROUND_COLOR, PROPERTY_COLOR);
+        removePropertyDeclarationByName(PROPERTY_FILL_COLOR);
+        removePropertyDeclarationByName(PROPERTY_NAME_POSITIONING);
+        removePropertyDeclarationByName(PROPERTY_NAME_COLOR);
+        removePropertyDeclarationByName(PROPERTY_LABEL);
+        removePropertyDeclarationByName(PROPERTY_LABEL_POSITIONING);
+        removePropertyDeclarationByName(PROPERTY_LABEL_COLOR);
 
         addPropertyDeclaration(new PropertyDeclaration<VisualSignal, Signal.Type>(
                 this, Signal.PROPERTY_TYPE, Signal.Type.class, true, true, true) {

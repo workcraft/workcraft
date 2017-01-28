@@ -177,10 +177,10 @@ public class CompatibilityManager {
         Version result = null;
         Matcher matcher = versionPattern.matcher(line);
         if (matcher.find()) {
-            int major = Integer.parseInt(matcher.group(1));
-            int minor = Integer.parseInt(matcher.group(2));
-            int revision = Integer.parseInt(matcher.group(3));
-            Version.Status status = Version.Status.fromString(matcher.group(4));
+            String major = matcher.group(1);
+            String minor = matcher.group(2);
+            String revision = matcher.group(3);
+            String status = matcher.group(4);
             result = new Version(major, minor, revision, status);
         }
         return result;

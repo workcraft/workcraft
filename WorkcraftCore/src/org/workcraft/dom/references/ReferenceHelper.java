@@ -10,16 +10,17 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.CommentNode;
 import org.workcraft.dom.math.PageNode;
+import org.workcraft.util.Identifier;
 
 public class ReferenceHelper {
 
     private static final int MAX_STRING_LENGTH = 50;
 
     public static String getDefaultPrefix(Node node) {
-        if (node instanceof Connection) return "con";
-        if (node instanceof CommentNode) return "comment";
         if (node instanceof PageNode) return "pg";
-        if (node instanceof Container) return "gr";
+        if (node instanceof Connection) return Identifier.createInternal("c");
+        if (node instanceof CommentNode) return Identifier.createInternal("comment");
+        if (node instanceof Container) return Identifier.createInternal("group");
         return "node";
     }
 

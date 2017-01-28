@@ -21,17 +21,15 @@ import org.workcraft.util.Hierarchy;
 
 public class VisualONGroup extends VisualPage {
     private static final float strokeWidth = 0.03f;
-//    private Positioning labelPositioning = Positioning.TOP_RIGHT;
-//    private RenderedText groupLabelRenderedText = new RenderedText("", labelFont, labelPositioning, getGroupLabelOffset());
 
     private ONGroup mathGroup = null;
 
     public VisualONGroup(ONGroup mathGroup) {
         super(mathGroup);
         this.mathGroup = mathGroup;
-        removePropertyDeclarationByName("Fill color");
-        removePropertyDeclarationByName("Label positioning");
-        removePropertyDeclarationByName("Is collapsed");
+        removePropertyDeclarationByName(PROPERTY_FILL_COLOR);
+        removePropertyDeclarationByName(PROPERTY_LABEL_POSITIONING);
+        removePropertyDeclarationByName(PROPERTY_IS_COLLAPSED);
     }
 
     @Override

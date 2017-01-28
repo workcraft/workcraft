@@ -13,6 +13,7 @@ import org.workcraft.serialisation.xml.NodeInitialiser;
 import org.workcraft.util.Func;
 
 public abstract class BooleanFunctionDeserialiser implements CustomXMLDeserialiser {
+
     private static final class VariableResolver implements
             Func<String, BooleanVariable> {
         private final ReferenceResolver internalReferenceResolver;
@@ -38,24 +39,22 @@ public abstract class BooleanFunctionDeserialiser implements CustomXMLDeserialis
     @Override
     public void finaliseInstance(Element element, Object instance, final ReferenceResolver internalReferenceResolver,
             ReferenceResolver externalReferenceResolver, NodeFinaliser nodeFinaliser) throws DeserialisationException {
-        String attributeName = "formula";
-        BooleanFormula formula = readFormulaFromAttribute(element, internalReferenceResolver, attributeName);
+        String string = element.getAttribute("formula");
+        BooleanFormula formula = parseFormula(string, internalReferenceResolver);
         setFormula(instance, formula);
     }
 
-    public static BooleanFormula readFormulaFromAttribute(Element element, final ReferenceResolver internalReferenceResolver,
-            String attributeName) throws DeserialisationException {
-        String string = element.getAttribute(attributeName);
-        BooleanFormula formula = null;
+    public static BooleanFormula parseFormula(String string, final ReferenceResolver internalReferenceResolver)
+            throws DeserialisationException {
+        if ((string == null) || string.isEmpty()) {
+            return null;
+        }
         try {
-            if (!string.isEmpty()) {
-                VariableResolver vars = new VariableResolver(internalReferenceResolver);
-                formula = BooleanFormulaParser.parse(string, vars);
-            }
+            VariableResolver vars = new VariableResolver(internalReferenceResolver);
+            return BooleanFormulaParser.parse(string, vars);
         } catch (ParseException e) {
             throw new DeserialisationException(e);
         }
-        return formula;
     }
 
     @Override

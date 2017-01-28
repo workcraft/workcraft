@@ -44,7 +44,7 @@ public class StgNameManager extends UniqueNameManager {
             signalName = r.getFirst();
             direction = r.getSecond();
             instance = r.getThird();
-        } else if (Identifier.isValid(name)) {
+        } else if (Identifier.isName(name)) {
             signalName = name;
         } else {
             throw new ArgumentException("Name '" + name + "' is not a valid signal transition label.");

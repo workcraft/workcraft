@@ -23,10 +23,10 @@ import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.Geometry;
 
 public class VisualEvent extends VisualConnection {
-    public static final String PROPERTY_LABEL_COLOR = "Label color";
-
     // Epsilon symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
     public static final char EPSILON_SYMBOL = 0x03B5;
+
+    public static final String PROPERTY_LABEL_COLOR = "Label color";
 
     public static final Font labelFont = new Font(Font.SANS_SERIF, Font.PLAIN, 1).deriveFont(0.5f);
 

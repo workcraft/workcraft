@@ -21,20 +21,20 @@ import org.workcraft.plugins.graph.VisualVertex;
 @SVGIcon("images/dtd-node-transition.svg")
 public class VisualTransition extends VisualVertex {
 
+    public static final String PROPERTY_COLOR = "Color";
+
     public VisualTransition(Transition transition) {
         super(transition);
-        renamePropertyDeclarationByName("Foreground color", "Color");
-        removePropertyDeclarationByName("Fill color");
-        removePropertyDeclarationByName("Name");
-        removePropertyDeclarationByName("Name positioning");
-        removePropertyDeclarationByName("Name color");
-        removePropertyDeclarationByName("Label");
-        removePropertyDeclarationByName("Label positioning");
-        removePropertyDeclarationByName("Label color");
-        removePropertyDeclarationByName("Symbol");
-        removePropertyDeclarationByName("Symbol positioning");
-        removePropertyDeclarationByName("Symbol color");
-        removePropertyDeclarationByName("Render type");
+        renamePropertyDeclarationByName(PROPERTY_FOREGROUND_COLOR, PROPERTY_COLOR);
+        removePropertyDeclarationByName(PROPERTY_FILL_COLOR);
+        removePropertyDeclarationByName(PROPERTY_NAME_POSITIONING);
+        removePropertyDeclarationByName(PROPERTY_NAME_COLOR);
+        removePropertyDeclarationByName(PROPERTY_LABEL);
+        removePropertyDeclarationByName(PROPERTY_LABEL_POSITIONING);
+        removePropertyDeclarationByName(PROPERTY_LABEL_COLOR);
+        removePropertyDeclarationByName(PROPERTY_SYMBOL_POSITIONING);
+        removePropertyDeclarationByName(PROPERTY_SYMBOL_COLOR);
+        removePropertyDeclarationByName(PROPERTY_RENDER_TYPE);
     }
 
     public Shape getShape() {

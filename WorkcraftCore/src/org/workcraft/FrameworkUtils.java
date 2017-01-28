@@ -80,6 +80,20 @@ public class FrameworkUtils {
         return stamp;
     }
 
+    static Version loadMetaVersion(Document metaDoc)
+            throws InstantiationException, IllegalAccessException, ClassNotFoundException {
+        Version version = null;
+        Element versionElement = XmlUtil.getChildElement(Framework.META_VERSION_WORK_ELEMENT, metaDoc.getDocumentElement());
+        if (versionElement != null) {
+            String major = XmlUtil.readStringAttr(versionElement, Framework.META_VERSION_MAJOR_WORK_ATTRIBUTE);
+            String minor = XmlUtil.readStringAttr(versionElement, Framework.META_VERSION_MINOR_WORK_ATTRIBUTE);
+            String revision = XmlUtil.readStringAttr(versionElement, Framework.META_VERSION_REVISION_WORK_ATTRIBUTE);
+            String status = XmlUtil.readStringAttr(versionElement, Framework.META_VERSION_STATUS_WORK_ATTRIBUTE);
+            version = new Version(major, minor, revision, status);
+        }
+        return version;
+    }
+
     static Document loadMetaDoc(byte[] bufferedInput)
             throws IOException, DeserialisationException, ParserConfigurationException, SAXException {
         ByteArrayInputStream zippedData = new ByteArrayInputStream(bufferedInput);

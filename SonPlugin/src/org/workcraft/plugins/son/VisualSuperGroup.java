@@ -42,7 +42,7 @@ public class VisualSuperGroup extends VisualGroup {
                 return object.getLabel();
             }
         });
-        removePropertyDeclarationByName("Is collapsed");
+        removePropertyDeclarationByName(PROPERTY_IS_COLLAPSED);
     }
 
     private Rectangle2D getContentsBoundingBox() {

@@ -17,6 +17,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NotFoundException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
@@ -441,7 +442,7 @@ public class Stg extends AbstractMathModel implements StgModel {
             if (node instanceof StgPlace) {
                 StgPlace place = (StgPlace) node;
                 if (place.isImplicit()) {
-                    properties.removeByName("Name");
+                    properties.removeByName(NamePropertyDescriptor.PROPERTY_NAME);
                 }
             } else if (node instanceof SignalTransition) {
                 SignalTransition transition = (SignalTransition) node;

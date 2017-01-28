@@ -8,12 +8,14 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.plugins.dtd.Signal.Type;
 import org.workcraft.plugins.dtd.propertydescriptors.SignalTypePropertyDescriptor;
 import org.workcraft.plugins.graph.Graph;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.Identifier;
 
 @VisualClass(org.workcraft.plugins.dtd.VisualDtd.class)
 public class Dtd extends Graph {
@@ -27,7 +29,7 @@ public class Dtd extends Graph {
             @Override
             public String getPrefix(Node node) {
                 if (node instanceof Signal) return "x";
-                if (node instanceof Transition) return "e";
+                if (node instanceof Transition) return Identifier.createInternal("e");
                 return super.getPrefix(node);
             }
         });
@@ -94,6 +96,7 @@ public class Dtd extends Graph {
             }
         } else if (node instanceof Transition) {
             properties.removeByName(Transition.PROPERTY_SYMBOL);
+            properties.removeByName(NamePropertyDescriptor.PROPERTY_NAME);
         }
         return properties;
     }

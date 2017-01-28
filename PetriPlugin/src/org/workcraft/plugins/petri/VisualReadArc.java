@@ -26,8 +26,8 @@ public class VisualReadArc extends VisualConnection implements Undirected {
     }
 
     private void removePropertyDeclarations() {
-        removePropertyDeclarationByName(VisualConnection.PROPERTY_ARROW_LENGTH);
-        removePropertyDeclarationByName(VisualConnection.PROPERTY_ARROW_WIDTH);
+        removePropertyDeclarationByName(PROPERTY_ARROW_LENGTH);
+        removePropertyDeclarationByName(PROPERTY_ARROW_WIDTH);
     }
 
     public MathConnection getMathConsumingArc() {

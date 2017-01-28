@@ -5,8 +5,10 @@ import java.util.Map;
 
 import org.workcraft.dom.AbstractModel;
 import org.workcraft.dom.Node;
+import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.util.Identifier;
 
 public class NamePropertyDescriptor implements PropertyDescriptor {
     public static final String PROPERTY_NAME = "Name";
@@ -26,9 +28,16 @@ public class NamePropertyDescriptor implements PropertyDescriptor {
 
     @Override
     public void setValue(Object value) throws InvocationTargetException {
-        model.setName(node, (String) value);
-        if (node instanceof ObservableState) {
-            ((ObservableState) node).sendNotification(new PropertyChangedEvent(node, PROPERTY_NAME));
+        String name = (String) value;
+        if (Identifier.isName(name)) {
+            model.setName(node, name);
+            if (node instanceof ObservableState) {
+                ((ObservableState) node).sendNotification(new PropertyChangedEvent(node, PROPERTY_NAME));
+            }
+        } else {
+            throw new ArgumentException("'" + name + "' is not a valid C-style identifier.\n\n"
+                    + "The first character must be alphabetic or an underscore and\n"
+                    + "the following characters must be alphanumeric or an underscore.");
         }
     }
 

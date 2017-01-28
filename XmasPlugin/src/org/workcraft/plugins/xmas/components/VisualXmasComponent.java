@@ -29,11 +29,10 @@ import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.plugins.xmas.components.XmasContact.IOType;
 
 public abstract class VisualXmasComponent extends VisualComponent implements Container, StateObserver, ObservableHierarchy {
-
-    private static final String PROPERTY_ORIENTATION = "Orientation";
-
     // Degree symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
     public static final char DEGREE_SYMBOL = 0x00B0;
+
+    private static final String PROPERTY_ORIENTATION = "Orientation";
 
     public enum Orientation {
         ORIENTATION_0("0" + Character.toString(DEGREE_SYMBOL), 0),

@@ -727,6 +727,7 @@ public final class Framework {
             Document metaDoc = FrameworkUtils.loadMetaDoc(bi);
             ModelDescriptor descriptor = FrameworkUtils.loadMetaDescriptor(metaDoc);
             Stamp stamp = FrameworkUtils.loadMetaStamp(metaDoc);
+            Version version = FrameworkUtils.loadMetaVersion(metaDoc);
 
             // load math model
             InputStream mathData = FrameworkUtils.getMathData(bi, metaDoc);
@@ -749,6 +750,7 @@ public final class Framework {
             }
             ModelEntry modelEntry = new ModelEntry(descriptor, visualResult.model);
             modelEntry.setStamp(stamp);
+            modelEntry.setVersion(version);
             return modelEntry;
         } catch (IOException | ParserConfigurationException | SAXException |
                 InstantiationException | IllegalAccessException | ClassNotFoundException e) {

@@ -17,6 +17,7 @@ import org.workcraft.plugins.circuit.references.CircuitReferenceManager;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.Identifier;
 
 public class Circuit extends AbstractMathModel {
 
@@ -33,7 +34,6 @@ public class Circuit extends AbstractMathModel {
             @Override
             public String getPrefix(Node node) {
                 if (node instanceof CircuitComponent) return "g";
-                if (node instanceof Joint) return "j";
                 if (node instanceof Contact) {
                     Contact contact = (Contact) node;
                     if (contact.getIOType() == IOType.INPUT) {
@@ -45,6 +45,7 @@ public class Circuit extends AbstractMathModel {
                         else return "out";
                     }
                 }
+                if (node instanceof Joint) return Identifier.createInternal("joint");
                 return super.getPrefix(node);
             }
         });

@@ -45,18 +45,19 @@ public class VisualVertex extends VisualComponent {
 
     // Epsilon symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
     public static final char EPSILON_SYMBOL = 0x03B5;
+
     public static final String PROPERTY_RENDER_TYPE = "Render type";
+    public static final String PROPERTY_SYMBOL_POSITIONING = "Symbol positioning";
+    public static final String PROPERTY_SYMBOL_COLOR = "Symbol color";
 
     private RenderType renderType = RenderType.CIRCLE;
 
     public VisualVertex(Vertex vertex) {
         super(vertex);
         addPropertyDeclarations();
-        //removePropertyDeclarationByName("Name positioning");
-        //removePropertyDeclarationByName("Name color");
-        removePropertyDeclarationByName("Label");
-        renamePropertyDeclarationByName("Label positioning", "Symbol positioning");
-        renamePropertyDeclarationByName("Label color", "Symbol color");
+        removePropertyDeclarationByName(PROPERTY_LABEL);
+        renamePropertyDeclarationByName(PROPERTY_LABEL_POSITIONING, PROPERTY_SYMBOL_POSITIONING);
+        renamePropertyDeclarationByName(PROPERTY_LABEL_COLOR, PROPERTY_SYMBOL_COLOR);
     }
 
     private void addPropertyDeclarations() {

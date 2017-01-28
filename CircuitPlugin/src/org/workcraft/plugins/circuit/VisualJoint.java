@@ -24,12 +24,12 @@ public class VisualJoint extends VisualComponent {
 
     public VisualJoint(Joint joint) {
         super(joint);
-        removePropertyDeclarationByName("Fill color");
-        removePropertyDeclarationByName("Label");
-        removePropertyDeclarationByName("Label color");
-        removePropertyDeclarationByName("Label positioning");
-        removePropertyDeclarationByName("Name color");
-        removePropertyDeclarationByName("Name positioning");
+        removePropertyDeclarationByName(PROPERTY_FILL_COLOR);
+        removePropertyDeclarationByName(PROPERTY_NAME_POSITIONING);
+        removePropertyDeclarationByName(PROPERTY_NAME_COLOR);
+        removePropertyDeclarationByName(PROPERTY_LABEL);
+        removePropertyDeclarationByName(PROPERTY_LABEL_POSITIONING);
+        removePropertyDeclarationByName(PROPERTY_LABEL_COLOR);
     }
 
     @Override

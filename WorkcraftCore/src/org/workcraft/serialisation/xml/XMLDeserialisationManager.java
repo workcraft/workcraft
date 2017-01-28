@@ -17,6 +17,7 @@ import org.workcraft.util.ConstructorParametersMatcher;
 import org.workcraft.util.XmlUtil;
 
 public class XMLDeserialisationManager implements DeserialiserFactory, NodeInitialiser, NodeFinaliser {
+
     private final HashMap<String, XMLDeserialiser> deserialisers = new HashMap<>();
     private final DefaultNodeDeserialiser nodeDeserialiser = new DefaultNodeDeserialiser(this, this, this);
     private XMLDeserialiserState state = null;
@@ -25,6 +26,7 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
         deserialisers.put(deserialiser.getClassName(), deserialiser);
     }
 
+    @Override
     public XMLDeserialiser getDeserialiserFor(String className) throws InstantiationException, IllegalAccessException {
         return deserialisers.get(className);
     }
@@ -43,6 +45,7 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
         }
     }
 
+    @Override
     public Object initInstance(Element element, Object ... constructorParameters) throws DeserialisationException {
         Object instance = nodeDeserialiser.initInstance(element, state.getExternalReferences(), constructorParameters);
 
@@ -65,7 +68,6 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
     public static Model createModel(Class<?> cls, Node root, Object underlyingModel, References rr) throws DeserialisationException {
         Model result;
         try {
-
             Constructor<?> ctor;
             if (underlyingModel == null) {
                 try {
@@ -75,7 +77,6 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
                     ctor = new ConstructorParametersMatcher().match(cls, root.getClass());
                     result = (Model) ctor.newInstance(root);
                 }
-
             } else {
                 try {
                     ctor = new ConstructorParametersMatcher().match(cls, underlyingModel.getClass(), root.getClass(), References.class);
@@ -91,13 +92,13 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
         } catch (NoSuchMethodException e) {
             throw new DeserialisationException("Missing appropriate constructor for model deserealisation.", e);
         }
-
         return result;
     }
 
     public void deserialiseModelProperties(Element element, Model model) throws DeserialisationException {
         nodeDeserialiser.doInitialisation(element, model, model.getClass(), state.getExternalReferences());
-        nodeDeserialiser.doFinalisation(element, model, state.getInternalReferences(), state.getExternalReferences(), model.getClass().getSuperclass());
+        nodeDeserialiser.doFinalisation(element, model, state.getInternalReferences(), state.getExternalReferences(),
+                model.getClass().getSuperclass());
     }
 
     public void finaliseInstances() throws DeserialisationException {
@@ -105,7 +106,6 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
         for (Object o : state.instanceElements.keySet()) {
             finaliseInstance(o);
         }
-
         // now add children to their respective containers
         for (Object o : state.instanceElements.keySet()) {
             if (o instanceof Container) {
@@ -115,7 +115,10 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
         }
     }
 
+    @Override
     public void finaliseInstance(Object instance) throws DeserialisationException {
-        nodeDeserialiser.finaliseInstance(state.getInstanceElement(instance), instance, state.getInternalReferences(), state.getExternalReferences());
+        nodeDeserialiser.finaliseInstance(state.getInstanceElement(instance), instance,
+                state.getInternalReferences(), state.getExternalReferences());
     }
+
 }
