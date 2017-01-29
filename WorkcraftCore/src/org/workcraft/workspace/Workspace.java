@@ -119,7 +119,7 @@ public class Workspace {
         if (!temporary) {
             final Path<String> relative = getRelative(getBaseDir(), file);
             if (relative != null) {
-                file = new File(relative.toString().replaceAll("/", File.pathSeparator));
+                file = new File(relative.toString().replace("/", File.pathSeparator));
             }
             permanentMounts.put(path, file);
         }
