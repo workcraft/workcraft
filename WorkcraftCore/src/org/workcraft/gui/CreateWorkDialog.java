@@ -41,16 +41,11 @@ public class CreateWorkDialog extends JDialog {
 
     public CreateWorkDialog(MainWindow owner) {
         super(owner);
-
         setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         setModal(true);
         setTitle("New work");
-
-        setSize(new Dimension(300, 400));
-        setMinimumSize(new Dimension(250, 200));
-        GUI.centerToParent(this, owner);
-
         initComponents();
+        setMinimumSize(new Dimension(300, 200));
     }
 
     static class ListElement implements Comparable<ListElement> {
@@ -123,9 +118,13 @@ public class CreateWorkDialog extends JDialog {
         PluginManager pm = framework.getPluginManager();
         final Collection<PluginInfo<? extends ModelDescriptor>> modelDescriptors = pm.getPlugins(ModelDescriptor.class);
         ArrayList<ListElement> elements = new ArrayList<>();
-
+        int minLength = 10;
         for (PluginInfo<? extends ModelDescriptor> plugin : modelDescriptors) {
             elements.add(new ListElement(plugin.newInstance()));
+            String displayName = plugin.getSingleton().getDisplayName();
+            if ((displayName != null) && (displayName.length() > minLength)) {
+                minLength = displayName.length();
+            }
         }
 
         Collections.sort(elements);
@@ -134,9 +133,9 @@ public class CreateWorkDialog extends JDialog {
         }
 
         modelScroll.setViewportView(workTypeList);
-        //modelScroll.setBorder(BorderFactory.createTitledBorder("Model type"));
-        modelScroll.setMinimumSize(new Dimension(150, 0));
-        modelScroll.setPreferredSize(new Dimension(250, 0));
+        int width = SizeHelper.getBaseFontSize() * minLength;
+        int height = SizeHelper.getListRowSize() * elements.size();
+        modelScroll.setPreferredSize(new Dimension(width, height));
 
         JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, hGap, vGap));
 

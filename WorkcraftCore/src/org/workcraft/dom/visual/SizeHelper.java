@@ -32,6 +32,10 @@ public class SizeHelper {
         return (int) Math.round(2.0 * getBaseSize());
     }
 
+    public static int getListRowSize() {
+        return (int) Math.round(1.8 * getBaseSize());
+    }
+
     public static int getCheckBoxIconSize() {
         return (int) Math.round(0.9 * getBaseSize());
     }
