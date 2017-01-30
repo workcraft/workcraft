@@ -682,27 +682,27 @@ public class CpogParsingTool {
             added = false;
             if (text.contains(" " + k + " ")) {
                 if (k.startsWith("[")) {
-                    text = text.replaceAll(" " + k + " ", " (" + refMap.get(k).getNormalForm() + ") ");
+                    text = text.replace(" " + k + " ", " (" + refMap.get(k).getNormalForm() + ") ");
                     added = true;
                 } else {
-                    text = text.replaceAll(" " + k + " ", " (" + refMap.get(k).getNormalForm() + ") ");
+                    text = text.replace(" " + k + " ", " (" + refMap.get(k).getNormalForm() + ") ");
                     added = true;
                 }
             }
             if (text.contains("]" + k + " ")) {
-                text = text.replaceAll("]" + k + " ", "](" + refMap.get(k).getNormalForm() + ") ");
+                text = text.replace("]" + k + " ", "](" + refMap.get(k).getNormalForm() + ") ");
                 added = true;
             }
             if (text.contains("(" + k + ")")) {
-                text = text.replaceAll("\\(" + k + "\\)", "\\(" + refMap.get(k).getNormalForm() + "\\)");
+                text = text.replace("(" + k + ")", "(" + refMap.get(k).getNormalForm() + ")");
                 added = true;
             }
             if (text.contains("(" + k + " ")) {
-                text = text.replaceAll("\\(" + k + " ", "\\(\\(" + refMap.get(k).getNormalForm() + "\\) ");
+                text = text.replace("(" + k + " ", "((" + refMap.get(k).getNormalForm() + ") ");
                 added = true;
             }
             if (text.contains(" " + k + ")")) {
-                text = text.replaceAll(" " + k + "\\)", " \\(" + refMap.get(k).getNormalForm() + "\\)\\)");
+                text = text.replace(" " + k + ")", " (" + refMap.get(k).getNormalForm() + "))");
                 added = true;
             }
             if (text.endsWith(" " + k)) {
@@ -714,7 +714,7 @@ public class CpogParsingTool {
                 added = true;
             }
             if (text.endsWith(" " + k + ")")) {
-                text = text.replace(" " + k + "\\)", " (" + refMap.get(k).getNormalForm() + "\\)\\)");
+                text = text.replace(" " + k + ")", " (" + refMap.get(k).getNormalForm() + "))");
                 added = true;
             }
 
