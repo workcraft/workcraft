@@ -680,6 +680,8 @@ public class MainWindow extends JFrame {
     public void createWork(Path<String> directory) throws OperationCancelledException {
         final Framework framework = Framework.getInstance();
         CreateWorkDialog dialog = new CreateWorkDialog(this);
+        dialog.pack();
+        GUI.centerToParent(dialog, this);
         dialog.setVisible(true);
         if (dialog.getModalResult() == 0) {
             throw new OperationCancelledException("Create operation cancelled by user.");

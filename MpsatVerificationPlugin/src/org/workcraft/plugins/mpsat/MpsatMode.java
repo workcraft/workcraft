@@ -9,7 +9,7 @@ public enum MpsatMode {
     STG_REACHABILITY_CONFORMATION("-Fs", "STG reachability analysis for conformation", true, true),
     CSC_CONFLICT_DETECTION("-C", "CSC conflict detection", false, true),
     NORMALCY("-N", "Normalcy property checking", false, true),
-    RESOLVE_ENCODING_CONFLICTS("-R -$1 -p0 -cl", "Resolve encoding conflicts", false, true),
+    RESOLVE_ENCODING_CONFLICTS("-R -$1 -p0 -cl", "Resolve encoding conflicts", false, false),
     USC_CONFLICT_DETECTION("-U", "USC conflict detection", false, true),
     COMPLEX_GATE_IMPLEMENTATION("-E", "Derive complex-gate implementation", false, true),
     GENERALISED_CELEMENT_IMPLEMENTATION("-G", "Derive gC-elements implementation", false, true),

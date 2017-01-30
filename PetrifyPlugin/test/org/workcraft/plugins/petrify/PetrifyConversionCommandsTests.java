@@ -20,16 +20,6 @@ import org.workcraft.workspace.WorkspaceUtils;
 
 public class PetrifyConversionCommandsTests {
 
-    private static final String[] TOGGLE_STG_WORKS = {
-        "org/workcraft/plugins/petrify/buffer-compact.stg.work",
-        "org/workcraft/plugins/petrify/celement-compact.stg.work",
-    };
-
-    private static final String[] CSC_CONFLICT_STG_WORKS = {
-        "org/workcraft/plugins/petrify/toggle.stg.work",
-        "org/workcraft/plugins/petrify/vme.stg.work",
-    };
-
     @BeforeClass
     public static void initPlugins() {
         final Framework framework = Framework.getInstance();
@@ -49,65 +39,79 @@ public class PetrifyConversionCommandsTests {
     }
 
     @Test
-    public void testPetrifyUntoggleConversionCommand() throws DeserialisationException {
-        final Framework framework = Framework.getInstance();
-        final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        for (String testStgWork: TOGGLE_STG_WORKS) {
-            URL srcUrl = classLoader.getResource(testStgWork);
-
-            WorkspaceEntry srcWe = framework.loadWork(srcUrl.getFile());
-            Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
-            Set<String> srcInputs = srcStg.getSignalNames(Type.INPUT, null);
-            Set<String> srcOutputs = srcStg.getSignalNames(Type.OUTPUT, null);
-            Set<String> srcInternals = srcStg.getSignalNames(Type.INTERNAL, null);
-
-            PetrifyUntoggleConversionCommand command = new PetrifyUntoggleConversionCommand();
-            WorkspaceEntry dstWe = command.execute(srcWe);
-            Stg dstStg = WorkspaceUtils.getAs(dstWe, Stg.class);
-            Set<String> dstInputs = dstStg.getSignalNames(Type.INPUT, null);
-            Set<String> dstOutputs = dstStg.getSignalNames(Type.OUTPUT, null);
-            Set<String> dstInternals = dstStg.getSignalNames(Type.INTERNAL, null);
-
-            int dstToggleCount = 0;
-            for (SignalTransition dstTransition: dstStg.getSignalTransitions()) {
-                if (dstTransition.getDirection() == Direction.TOGGLE) {
-                    dstToggleCount++;
-                }
-            }
-
-            Assert.assertEquals(srcInputs, dstInputs);
-            Assert.assertEquals(srcOutputs, dstOutputs);
-            Assert.assertEquals(srcInternals, dstInternals);
-            Assert.assertEquals(dstToggleCount, 0);
-        }
+    public void bufferUntoggleConversion() throws DeserialisationException {
+        testUntoggleConversion("org/workcraft/plugins/petrify/buffer-compact.stg.work");
     }
 
     @Test
-    public void testPetrifyCscConflictResolutionCommand() throws DeserialisationException {
+    public void celementUntoggleConversion() throws DeserialisationException {
+        testUntoggleConversion("org/workcraft/plugins/petrify/celement-compact.stg.work");
+    }
+
+    private void testUntoggleConversion(String testStgWork) throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        for (String testStgWork: CSC_CONFLICT_STG_WORKS) {
-            URL srcUrl = classLoader.getResource(testStgWork);
+        URL srcUrl = classLoader.getResource(testStgWork);
 
-            WorkspaceEntry srcWe = framework.loadWork(srcUrl.getFile());
-            Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
-            Set<String> srcInputs = srcStg.getSignalNames(Type.INPUT, null);
-            Set<String> srcOutputs = srcStg.getSignalNames(Type.OUTPUT, null);
-            Set<String> srcInternals = srcStg.getSignalNames(Type.INTERNAL, null);
+        WorkspaceEntry srcWe = framework.loadWork(srcUrl.getFile());
+        Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
+        Set<String> srcInputs = srcStg.getSignalNames(Type.INPUT, null);
+        Set<String> srcOutputs = srcStg.getSignalNames(Type.OUTPUT, null);
+        Set<String> srcInternals = srcStg.getSignalNames(Type.INTERNAL, null);
 
-            srcInternals.add("csc0");
+        PetrifyUntoggleConversionCommand command = new PetrifyUntoggleConversionCommand();
+        WorkspaceEntry dstWe = command.execute(srcWe);
+        Stg dstStg = WorkspaceUtils.getAs(dstWe, Stg.class);
+        Set<String> dstInputs = dstStg.getSignalNames(Type.INPUT, null);
+        Set<String> dstOutputs = dstStg.getSignalNames(Type.OUTPUT, null);
+        Set<String> dstInternals = dstStg.getSignalNames(Type.INTERNAL, null);
 
-            PetrifyCscConflictResolutionCommand command = new PetrifyCscConflictResolutionCommand();
-            WorkspaceEntry dstWe = command.execute(srcWe);
-            Stg dstStg = WorkspaceUtils.getAs(dstWe, Stg.class);
-            Set<String> dstInputs = dstStg.getSignalNames(Type.INPUT, null);
-            Set<String> dstOutputs = dstStg.getSignalNames(Type.OUTPUT, null);
-            Set<String> dstInternals = dstStg.getSignalNames(Type.INTERNAL, null);
-
-            Assert.assertEquals(srcInputs, dstInputs);
-            Assert.assertEquals(srcOutputs, dstOutputs);
-            Assert.assertEquals(srcInternals, dstInternals);
+        int dstToggleCount = 0;
+        for (SignalTransition dstTransition: dstStg.getSignalTransitions()) {
+            if (dstTransition.getDirection() == Direction.TOGGLE) {
+                dstToggleCount++;
+            }
         }
+
+        Assert.assertEquals(srcInputs, dstInputs);
+        Assert.assertEquals(srcOutputs, dstOutputs);
+        Assert.assertEquals(srcInternals, dstInternals);
+        Assert.assertEquals(dstToggleCount, 0);
+    }
+
+    @Test
+    public void toggleCscConflictResolution() throws DeserialisationException {
+        testCscConflictResolution("org/workcraft/plugins/petrify/toggle.stg.work");
+    }
+
+    @Test
+    public void vmeCscConflictResolution() throws DeserialisationException {
+        testCscConflictResolution("org/workcraft/plugins/petrify/vme.stg.work");
+    }
+
+    private void testCscConflictResolution(String testStgWork) throws DeserialisationException {
+        final Framework framework = Framework.getInstance();
+        final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        URL srcUrl = classLoader.getResource(testStgWork);
+
+        WorkspaceEntry srcWe = framework.loadWork(srcUrl.getFile());
+        Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
+        Set<String> srcInputs = srcStg.getSignalNames(Type.INPUT, null);
+        Set<String> srcOutputs = srcStg.getSignalNames(Type.OUTPUT, null);
+        Set<String> srcInternals = srcStg.getSignalNames(Type.INTERNAL, null);
+
+        srcInternals.add("csc0");
+
+        PetrifyCscConflictResolutionCommand command = new PetrifyCscConflictResolutionCommand();
+        WorkspaceEntry dstWe = command.execute(srcWe);
+        Stg dstStg = WorkspaceUtils.getAs(dstWe, Stg.class);
+        Set<String> dstInputs = dstStg.getSignalNames(Type.INPUT, null);
+        Set<String> dstOutputs = dstStg.getSignalNames(Type.OUTPUT, null);
+        Set<String> dstInternals = dstStg.getSignalNames(Type.INTERNAL, null);
+
+        Assert.assertEquals(srcInputs, dstInputs);
+        Assert.assertEquals(srcOutputs, dstOutputs);
+        Assert.assertEquals(srcInternals, dstInternals);
     }
 
 }
