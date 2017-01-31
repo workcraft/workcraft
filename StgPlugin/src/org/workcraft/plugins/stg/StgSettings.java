@@ -25,7 +25,7 @@ public class StgSettings implements Settings {
     private static final String defaultLowLevelSuffix = "_LOW";
     private static final String defaultHighLevelSuffix = "_HIGH";
     private static final Boolean defaultGroupSignalConversion = false;
-    private static final String defaultConceptsFolderLocation = DesktopApi.getOs().isWindows() ? "tools\\concepts\\" : "tools/concepts/";
+    private static final String defaultConceptsFolderLocation = DesktopApi.getOs().isWindows() ? "tools\\plato\\" : "tools/plato/";
 
     private static Integer densityMapLevelLimit = defaultDensityMapLevelLimit;
     private static String lowLevelSuffix = defaultLowLevelSuffix;
