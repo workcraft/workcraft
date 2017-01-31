@@ -7,12 +7,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.UUID;
 
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.PageNode;
+import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.plugins.petri.PetriNetModel;
@@ -24,6 +27,7 @@ import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
+import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
 
 public class DotGSerialiser implements ModelSerialiser {
@@ -136,7 +140,13 @@ public class DotGSerialiser implements ModelSerialiser {
         writeSignalsHeader(out, stg.getSignalReferences(Type.INTERNAL), ".internal");
         writeSignalsHeader(out, stg.getSignalReferences(Type.INPUT), ".inputs");
         writeSignalsHeader(out, stg.getSignalReferences(Type.OUTPUT), ".outputs");
-        writeSignalsHeader(out, stg.getDummyReferences(), ".dummy");
+        Set<String> pageRefs = getPageReferences(stg);
+        if (!pageRefs.isEmpty()) {
+            out.print("# Pages added as dummies: " + ReferenceHelper.getReferencesAsString((Collection) pageRefs) + "\n");
+        }
+        Set<String> dummyRefs = stg.getDummyReferences();
+        dummyRefs.addAll(pageRefs);
+        writeSignalsHeader(out, dummyRefs, ".dummy");
 
         out.print(".graph\n");
         for (Node n : sortNodes(stg.getSignalTransitions(), stg)) {
@@ -149,6 +159,14 @@ public class DotGSerialiser implements ModelSerialiser {
             writeGraphEntry(out, stg, n);
         }
         writeMarking(stg, stg.getPlaces(), out);
+    }
+
+    private Set<String> getPageReferences(StgModel stg) {
+        Set<String> result = new HashSet<>();
+        for (PageNode page: Hierarchy.getDescendantsOfType(stg.getRoot(), PageNode.class)) {
+            result.add(stg.getNodeReference(page));
+        }
+        return result;
     }
 
     private void writeMarking(Model model, Collection<Place> places, PrintWriter out) {

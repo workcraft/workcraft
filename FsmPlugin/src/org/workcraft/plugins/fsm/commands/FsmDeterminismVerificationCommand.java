@@ -44,7 +44,7 @@ public class FsmDeterminismVerificationCommand extends AbstractVerificationComma
             JOptionPane.showMessageDialog(mainWindow, "The model is deterministic.",
                     TITLE, JOptionPane.INFORMATION_MESSAGE);
         } else {
-            String refStr = ReferenceHelper.getNodesAsString(fsm, (Collection) nondeterministicStates);
+            String refStr = ReferenceHelper.getNodesAsString(fsm, (Collection) nondeterministicStates, 50);
             if (JOptionPane.showConfirmDialog(mainWindow,
                     "The model has non-deterministic state:\n" + refStr + "\n\nSelect non-deterministic states?\n",
                     TITLE, JOptionPane.WARNING_MESSAGE + JOptionPane.YES_NO_OPTION) == 0) {

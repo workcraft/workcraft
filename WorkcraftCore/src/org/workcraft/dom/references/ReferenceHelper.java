@@ -14,14 +14,16 @@ import org.workcraft.util.Identifier;
 
 public class ReferenceHelper {
 
-    private static final int MAX_STRING_LENGTH = 50;
-
     public static String getDefaultPrefix(Node node) {
         if (node instanceof PageNode) return "pg";
         if (node instanceof Connection) return Identifier.createInternal("c");
         if (node instanceof CommentNode) return Identifier.createInternal("comment");
         if (node instanceof Container) return Identifier.createInternal("group");
         return "node";
+    }
+
+    public static String getNodesAsString(final Model model, Collection<Node> nodes, int len) {
+        return wrapString(getNodesAsString(model, nodes), len);
     }
 
     public static String getNodesAsString(final Model model, Collection<Node> nodes) {
@@ -41,6 +43,10 @@ public class ReferenceHelper {
         return refs;
     }
 
+    public static String getReferencesAsString(Collection<String> refs, int len) {
+        return wrapString(getReferencesAsString(refs), len);
+    }
+
     public static String getReferencesAsString(Collection<String> refs) {
         String str = "";
         for (String ref: refs) {
@@ -49,7 +55,7 @@ public class ReferenceHelper {
             }
             str += ref;
         }
-        return wrapString(str, MAX_STRING_LENGTH);
+        return str;
     }
 
     private static String wrapString(String str, int len) {

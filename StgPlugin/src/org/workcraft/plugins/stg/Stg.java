@@ -150,7 +150,7 @@ public class Stg extends AbstractMathModel implements StgModel {
             container = getRoot();
         }
         Set<String> result = new HashSet<>();
-        for (SignalTransition st : Hierarchy.getChildrenOfType(container, SignalTransition.class)) {
+        for (SignalTransition st: Hierarchy.getChildrenOfType(container, SignalTransition.class)) {
             result.add(st.getSignalName());
         }
         return result;
@@ -161,7 +161,7 @@ public class Stg extends AbstractMathModel implements StgModel {
             container = getRoot();
         }
         Set<String> result = new HashSet<>();
-        for (SignalTransition st : getSignalTransitions(type, container)) {
+        for (SignalTransition st: getSignalTransitions(type, container)) {
             result.add(st.getSignalName());
         }
         return result;
@@ -196,7 +196,7 @@ public class Stg extends AbstractMathModel implements StgModel {
     @Override
     public Set<String> getDummyReferences() {
         Set<String> result = new HashSet<>();
-        for (DummyTransition t : getDummyTransitions()) {
+        for (DummyTransition t: getDummyTransitions()) {
             result.add(getDummyReference(t));
         }
         return result;
@@ -211,7 +211,7 @@ public class Stg extends AbstractMathModel implements StgModel {
     @Override
     public Set<String> getSignalReferences() {
         Set<String> result = new HashSet<>();
-        for (SignalTransition t : getSignalTransitions()) {
+        for (SignalTransition t: getSignalTransitions()) {
             result.add(getSignalReference(t));
         }
         return result;
@@ -220,7 +220,7 @@ public class Stg extends AbstractMathModel implements StgModel {
     @Override
     public Set<String> getSignalReferences(Type type) {
         Set<String> result = new HashSet<>();
-        for (SignalTransition t : getSignalTransitions(type)) {
+        for (SignalTransition t: getSignalTransitions(type)) {
             result.add(getSignalReference(t));
         }
         return result;
@@ -287,7 +287,7 @@ public class Stg extends AbstractMathModel implements StgModel {
     }
 
     public void setSignalType(String signalReference, Type signalType) {
-        for (SignalTransition transition : getSignalTransitions(signalReference)) {
+        for (SignalTransition transition: getSignalTransitions(signalReference)) {
             transition.setSignalType(signalType);
             // It is sufficient to change the type of a single transition
             // - all the others will be notified.
@@ -305,7 +305,7 @@ public class Stg extends AbstractMathModel implements StgModel {
     }
 
     public void setSignalType(String signalName, Type signalType, Container container) {
-        for (SignalTransition transition : getSignalTransitions(signalName, container)) {
+        for (SignalTransition transition: getSignalTransitions(signalName, container)) {
             transition.setSignalType(signalType);
             // It is sufficient to change the type of a single transition
             // - all the others will be notified.
@@ -362,7 +362,7 @@ public class Stg extends AbstractMathModel implements StgModel {
             if ((t1 != null) && (t2 != null)) {
                 Set<Node> implicitPlaceCandidates = SetUtils.intersection(getPreset(t2), getPostset(t1));
 
-                for (Node node : implicitPlaceCandidates) {
+                for (Node node: implicitPlaceCandidates) {
                     if ((node instanceof StgPlace) && ((StgPlace) node).isImplicit()) {
                         return node;
                     }

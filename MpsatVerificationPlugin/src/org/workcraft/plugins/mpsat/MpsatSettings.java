@@ -175,9 +175,15 @@ public class MpsatSettings {
                 MpsatSettings.REACH_CONSISTENCY, true);
     }
 
+    private static final String REACH_DUMMY_CHECK =
+            "exists e in EVENTS {\n" +
+            "    is_dummy e\n" +
+            "}\n";
+
     private static final String REACH_OUTPUT_PERSISTENCY =
             "// Checks whether the STG is output persistent, i.e. no local signal can be disabled by any other signal.\n" +
-            "card DUMMY != 0 ? fail \"Output persistency can be checked only for STGs without dummies\" :\n" +
+            REACH_DUMMY_CHECK +
+            "? fail \"Output persistency can currently be checked only for STGs without dummies\" :\n" +
             "let\n" +
             "    TR = tran EVENTS,\n" +
             "    TRL = tran LOCAL * TR,\n" +
@@ -209,7 +215,8 @@ public class MpsatSettings {
 
     private static final String REACH_DI_INTERFACE =
             "// Checks whether the STG's interface is delay insensitive, i.e. an input transition cannot trigger another input transition\n" +
-            "card DUMMY != 0 ? fail \"Delay insensitivity can currently be checked only for STGs without dummies\" :\n" +
+            REACH_DUMMY_CHECK +
+            "? fail \"Delay insensitivity can currently be checked only for STGs without dummies\" :\n" +
             "let TRINP = tran INPUTS * tran EVENTS {\n" +
             "    exists ti in TRINP {\n" +
             "        let pre_ti = pre ti {\n" +
@@ -233,7 +240,8 @@ public class MpsatSettings {
 
     private static final String REACH_INPUT_PROPERNESS =
             "// Checks whether the STG is input proper, i.e. no input can be triggered by an internal signal or disabled by a local signal.\n" +
-            "card DUMMY != 0 ? fail \"Input properness can currently be checked only for STGs without dummies\" :\n" +
+            REACH_DUMMY_CHECK +
+            "? fail \"Input properness can currently be checked only for STGs without dummies\" :\n" +
             "let\n" +
             "    TR = tran EVENTS,\n" +
             "    TRINP = tran INPUTS * TR,\n" +
