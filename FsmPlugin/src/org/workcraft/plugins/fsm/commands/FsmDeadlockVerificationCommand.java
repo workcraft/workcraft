@@ -54,11 +54,11 @@ public class FsmDeadlockVerificationCommand extends AbstractVerificationCommand 
             deadlockStates.removeAll(finalDeadlockStates);
             String message = "The model has a deadlock.";
             if (!deadlockStates.isEmpty()) {
-                String stateStr = ReferenceHelper.getNodesAsString(fsm, (Collection) deadlockStates);
+                String stateStr = ReferenceHelper.getNodesAsString(fsm, (Collection) deadlockStates, 50);
                 message += "\n\nNon-final deadlock states: \n" + stateStr;
             }
             if (!finalDeadlockStates.isEmpty()) {
-                String stateStr = ReferenceHelper.getNodesAsString(fsm, (Collection) finalDeadlockStates);
+                String stateStr = ReferenceHelper.getNodesAsString(fsm, (Collection) finalDeadlockStates, 50);
                 message += "\n\nFinal deadlock states: \n" + stateStr;
             }
             message += "\n\nSelect deadlock states?\n";

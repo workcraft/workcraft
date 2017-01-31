@@ -45,7 +45,7 @@ public class FsmReversibilityVerificationCommand extends AbstractVerificationCom
             JOptionPane.showMessageDialog(mainWindow, "The model is reversible.",
                     TITLE, JOptionPane.INFORMATION_MESSAGE);
         } else {
-            String refStr = ReferenceHelper.getNodesAsString(fsm, (Collection) irreversibleStates);
+            String refStr = ReferenceHelper.getNodesAsString(fsm, (Collection) irreversibleStates, 50);
             if (JOptionPane.showConfirmDialog(mainWindow,
                     "The model has irreversible states:\n" + refStr + "\n\nSelect irreversible states?\n",
                     TITLE, JOptionPane.WARNING_MESSAGE + JOptionPane.YES_NO_OPTION) == 0) {

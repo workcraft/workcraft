@@ -11,10 +11,16 @@ import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 
 public class ProcessIO {
-    public static String runViaStreams(String input, String[] process) {
+
+    public static String runViaStreams(String[] process, String input) {
         Process limboole;
         try {
-            writeFile(input, File.createTempFile("stream", "in"));
+            File inputFile = File.createTempFile("stream-", ".in");
+            inputFile.deleteOnExit();
+            File outputFile = File.createTempFile("stream-", ".out");
+            outputFile.deleteOnExit();
+
+            writeFile(input, inputFile);
 
             limboole = Runtime.getRuntime().exec(process);
 
@@ -29,32 +35,34 @@ public class ProcessIO {
             }
 
             String output = result.toString();
-            writeFile(output, File.createTempFile("stream", "out"));
+            writeFile(output, outputFile);
             return output;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    static String minisat(String minisatPath, String input) {
+    static String runViaStreams(String command, String input) {
         String result;
         try {
-            File inputFile = File.createTempFile("minisat", ".in");
-            File outputFile = File.createTempFile("minisat", ".out");
+            File inputFile = File.createTempFile("stream-", ".in");
+            inputFile.deleteOnExit();
+            File outputFile = File.createTempFile("stream-", ".out");
+            outputFile.deleteOnExit();
 
             writeFile(input, inputFile);
 
-            Process minisat = Runtime.getRuntime().exec(new String[]{minisatPath, inputFile.getAbsolutePath(), outputFile.getAbsolutePath()});
-            minisat.getOutputStream().close();
+            Process process = Runtime.getRuntime().exec(new String[]{command, inputFile.getAbsolutePath(), outputFile.getAbsolutePath()});
+            process.getOutputStream().close();
             while (true) {
-                int r = minisat.getInputStream().read();
+                int r = process.getInputStream().read();
                 if (r == -1) {
                     break;
                 }
             }
-            minisat.getInputStream().close();
+            process.getInputStream().close();
             try {
-                minisat.waitFor();
+                process.waitFor();
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }

@@ -23,7 +23,8 @@ public class DotGImporterTests {
 
     @Test
     public void test1() throws IOException, DeserialisationException {
-        File tempFile = File.createTempFile("test", ".g");
+        File tempFile = File.createTempFile("test-", ".g");
+        tempFile.deleteOnExit();
         FileOutputStream fileStream = new FileOutputStream(tempFile);
         OutputStreamWriter writer = new OutputStreamWriter(fileStream);
         writer.write(" \n");

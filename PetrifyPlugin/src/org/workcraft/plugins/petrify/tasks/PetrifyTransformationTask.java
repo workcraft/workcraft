@@ -99,7 +99,7 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationResu
                 PetriNetModel petri = (PetriNetModel) model;
                 HashSet<Place> isolatedPlaces = PetriNetUtils.getIsolatedMarkedPlaces(petri);
                 if (!isolatedPlaces.isEmpty()) {
-                    String refStr = ReferenceHelper.getNodesAsString(petri, (Collection) isolatedPlaces);
+                    String refStr = ReferenceHelper.getNodesAsString(petri, (Collection) isolatedPlaces, 50);
                     int answer = JOptionPane.showConfirmDialog(Framework.getInstance().getMainWindow(),
                             "Petrify does not support isolated marked places.\n\n"
                                     + "Problematic places are:\n" + refStr + "\n\n"
