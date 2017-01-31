@@ -63,6 +63,7 @@ public class CircuitImportExportTests {
             Set<String> vGates = new HashSet<>();
             try {
                 File vFile = File.createTempFile("workcraft-", ".v");
+                vFile.deleteOnExit();
                 framework.exportModel(wWe.getModelEntry(), vFile, Format.VERILOG);
                 WorkspaceEntry vWe = framework.loadWork(vFile);
                 countCircuitNodes(vWe, vInputs, vOutputs, vGates);
