@@ -11,6 +11,7 @@ import org.workcraft.annotations.ShortName;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.references.DefaultReferenceManager;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
+import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
@@ -257,6 +258,17 @@ public abstract class AbstractModel implements Model {
         if (mgr instanceof HierarchicalUniqueNameReferenceManager) {
             ((HierarchicalUniqueNameReferenceManager) mgr).setName(node, name);
         }
+    }
+
+    @Override
+    public String getDerivedName(Node node, Container container, String candidate) {
+        String result = candidate;
+        if ((mgr instanceof HierarchicalUniqueNameReferenceManager) && (container instanceof NamespaceProvider)) {
+            HierarchicalUniqueNameReferenceManager manager = (HierarchicalUniqueNameReferenceManager) mgr;
+            NameManager nameManager = manager.getNameManager((NamespaceProvider) container);
+            result = nameManager.getDerivedName(null, candidate);
+        }
+        return result;
     }
 
     public void reparent(Container targetContainer, Model sourceModel, Collection<Node> sourceNodes) {
