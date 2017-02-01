@@ -14,18 +14,15 @@ import org.workcraft.plugins.stg.concepts.ConceptsTask;
 import org.workcraft.plugins.stg.concepts.ConceptsToolException;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.ModelEntry;
 
 public class ConceptsImporter implements Importer {
 
-    private static final String GRAPH_KEYWORD = "module Concept where";
     private File inputFile;
 
     @Override
     public boolean accept(File file) {
-        if (file.getName().endsWith(".hs")
-                && FileUtils.fileContainsKeyword(file, GRAPH_KEYWORD)) {
+        if (file.getName().endsWith(".hs")) {
             inputFile = file;
             return true;
         }
@@ -40,7 +37,9 @@ public class ConceptsImporter implements Importer {
     @Override
     public ModelEntry importFrom(InputStream in) throws DeserialisationException {
         try {
-            Result<? extends ExternalProcessResult> result = importConcepts();
+            ConceptsTask task = new ConceptsTask(inputFile);
+            ConceptsResultHandler monitor = new ConceptsResultHandler(null);
+            Result<? extends ExternalProcessResult> result = task.run(monitor);
             if (result.getOutcome() == Outcome.FINISHED) {
                 String output = new String(result.getReturnValue().getOutput());
                 if (output.startsWith(".model")) {
@@ -55,12 +54,6 @@ public class ConceptsImporter implements Importer {
             e.handleConceptsError();
             throw new DeserialisationException();
         }
-    }
-
-    public Result<? extends ExternalProcessResult> importConcepts() throws DeserialisationException {
-        ConceptsTask task = new ConceptsTask(inputFile);
-        ConceptsResultHandler resultHandler = new ConceptsResultHandler(null);
-        return task.run(resultHandler);
     }
 
 }
