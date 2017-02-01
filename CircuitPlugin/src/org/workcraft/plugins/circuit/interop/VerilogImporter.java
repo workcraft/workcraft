@@ -75,6 +75,9 @@ public class VerilogImporter implements Importer {
         }
     }
 
+    private static final String MSG_MANY_TOP_MODULES = "More than one top module is found.";
+    private static final String MSG_NO_TOP_MODULE = "No top module found.";
+
     private static final String PRIMITIVE_GATE_INPUT_PREFIX = "i";
     private static final String PRIMITIVE_GATE_OUTPUT_NAME = "o";
 
@@ -120,13 +123,13 @@ public class VerilogImporter implements Importer {
             HashMap<String, Module> modules = getModuleMap(verilogParser.parseCircuit());
             HashSet<Module> topModules = getTopModule(modules);
             if (topModules.size() == 0) {
-                throw new RuntimeException("No top module found.");
+                throw new DeserialisationException(MSG_NO_TOP_MODULE);
             }
             if (topModules.size() > 1) {
-                throw new RuntimeException("More than one top module is found.");
+                throw new DeserialisationException(MSG_MANY_TOP_MODULES);
             }
             if (CommonDebugSettings.getVerboseImport()) {
-                LogUtils.logInfoLine("Parsed Verilog modules\n");
+                LogUtils.logInfoLine("Parsed Verilog modules");
                 for (Module module: modules.values()) {
                     if (topModules.contains(module)) {
                         System.out.print("// Top module\n");
@@ -136,9 +139,7 @@ public class VerilogImporter implements Importer {
             }
             Module topModule = topModules.iterator().next();
             return createCircuit(topModule, modules);
-        } catch (FormatException e) {
-            throw new DeserialisationException(e);
-        } catch (org.workcraft.plugins.circuit.jj.verilog.ParseException e) {
+        } catch (FormatException | org.workcraft.plugins.circuit.jj.verilog.ParseException e) {
             throw new DeserialisationException(e);
         }
     }
