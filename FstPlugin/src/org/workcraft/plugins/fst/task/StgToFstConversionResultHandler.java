@@ -59,7 +59,7 @@ public class StgToFstConversionResultHandler extends DummyProgressMonitor<WriteS
             if (result.getCause() == null) {
                 Result<? extends ExternalProcessResult> petrifyResult = result.getReturnValue().getResult();
                 JOptionPane.showMessageDialog(mainWindow,
-                        "Petrify output: \n\n" + new String(petrifyResult.getReturnValue().getErrors()),
+                        "Petrify output:\n" + petrifyResult.getReturnValue().getErrorsHeadAndTail(),
                         "Conversion failed", JOptionPane.WARNING_MESSAGE);
             } else {
                 ExceptionDialog.show(mainWindow, result.getCause());

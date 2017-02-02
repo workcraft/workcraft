@@ -140,7 +140,6 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
                     }
                 }
             }
-
         } catch (Throwable e) {
             return new Result<WriteSgConversionResult>(e);
         }

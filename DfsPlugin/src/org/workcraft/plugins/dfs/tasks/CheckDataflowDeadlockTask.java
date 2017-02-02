@@ -93,9 +93,9 @@ public class CheckDataflowDeadlockTask extends MpsatChainTask {
                 if (mpsatResult.getOutcome() == Outcome.CANCELLED) {
                     return new Result<MpsatChainResult>(Outcome.CANCELLED);
                 }
+                String errorMessage = mpsatResult.getReturnValue().getErrorsHeadAndTail();
                 return new Result<MpsatChainResult>(Outcome.FAILED,
-                        new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings,
-                                new String(mpsatResult.getReturnValue().getErrors())));
+                        new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings, errorMessage));
             }
             monitor.progressUpdate(0.90);
 

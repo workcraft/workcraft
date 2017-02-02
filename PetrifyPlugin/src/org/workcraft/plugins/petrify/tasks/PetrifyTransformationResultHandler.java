@@ -66,7 +66,7 @@ public class PetrifyTransformationResultHandler extends DummyProgressMonitor<Pet
                 Result<? extends ExternalProcessResult> petrifyResult = returnValue.getPetrifyResult();
                 ExternalProcessResult petrifyReturnValue = petrifyResult.getReturnValue();
                 JOptionPane.showMessageDialog(mainWindow,
-                        "Petrify output: \n\n" + new String(petrifyReturnValue.getErrors()),
+                        "Petrify output: \n\n" + petrifyReturnValue.getErrorsHeadAndTail(),
                         "Transformation failed", JOptionPane.WARNING_MESSAGE);
             } else {
                 ExceptionDialog.show(mainWindow, result.getCause());

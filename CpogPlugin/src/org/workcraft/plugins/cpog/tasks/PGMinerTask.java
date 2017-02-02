@@ -46,7 +46,9 @@ public class PGMinerTask implements Task<ExternalProcessResult> {
             }
 
             ExternalProcessResult retVal = result.getReturnValue();
-            ExternalProcessResult finalResult = new ExternalProcessResult(retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), null);
+            ExternalProcessResult finalResult = new ExternalProcessResult(
+                    retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), null);
+
             if (retVal.getReturnCode() == 0) {
                 return Result.finished(finalResult);
             } else {

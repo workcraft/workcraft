@@ -42,7 +42,9 @@ public class ConceptsTask implements Task<ExternalProcessResult> {
                 return result;
             }
             ExternalProcessResult retVal = result.getReturnValue();
-            ExternalProcessResult finalResult = new ExternalProcessResult(retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), null);
+            ExternalProcessResult finalResult = new ExternalProcessResult(
+                    retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), null);
+
             if (retVal.getReturnCode() == 0) {
                 return Result.finished(finalResult);
             } else {

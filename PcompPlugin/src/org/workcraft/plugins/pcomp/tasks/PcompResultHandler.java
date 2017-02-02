@@ -41,7 +41,7 @@ public class PcompResultHandler extends DummyProgressMonitor<ExternalProcessResu
                             message = result.getCause().getMessage();
                             result.getCause().printStackTrace();
                         } else {
-                            message = "Pcomp errors: \n" + new String(result.getReturnValue().getErrors());
+                            message = "Pcomp errors:\n" + result.getReturnValue().getErrorsHeadAndTail();
                         }
                         JOptionPane.showMessageDialog(mainWindow, message, "Parallel composition failed", JOptionPane.ERROR_MESSAGE);
                     } else if (result.getOutcome() == Outcome.FINISHED) {
