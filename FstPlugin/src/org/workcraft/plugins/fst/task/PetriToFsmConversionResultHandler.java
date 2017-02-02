@@ -51,7 +51,7 @@ public class PetriToFsmConversionResultHandler extends DummyProgressMonitor<Writ
             if (result.getCause() == null) {
                 Result<? extends ExternalProcessResult> writeSgResult = result.getReturnValue().getResult();
                 JOptionPane.showMessageDialog(mainWindow,
-                        "Petrify output: \n\n" + new String(writeSgResult.getReturnValue().getErrors()),
+                        "Petrify output:\n" + writeSgResult.getReturnValue().getErrorsHeadAndTail(),
                         "Conversion failed", JOptionPane.WARNING_MESSAGE);
             } else {
                 ExceptionDialog.show(mainWindow, result.getCause());

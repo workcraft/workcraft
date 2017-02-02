@@ -117,7 +117,9 @@ public class MpsatTask implements Task<ExternalProcessResult> {
             }
 
             ExternalProcessResult retVal = res.getReturnValue();
-            ExternalProcessResult result = new ExternalProcessResult(retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), fileContentMap);
+            ExternalProcessResult result = new ExternalProcessResult(
+                    retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), fileContentMap);
+
             if (retVal.getReturnCode() < 2) {
                 return Result.finished(result);
             } else {

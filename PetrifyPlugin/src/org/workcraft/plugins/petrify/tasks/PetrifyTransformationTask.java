@@ -136,11 +136,12 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationResu
                     }
                 }
                 PetrifyTransformationResult result = new PetrifyTransformationResult(res, outStg);
-                if (res.getReturnValue().getReturnCode() == 0) {
-                    return Result.finished(result);
-                } else {
+                int returnCode = res.getReturnValue().getReturnCode();
+                String errorMessage = new String(res.getReturnValue().getErrors());
+                if ((returnCode != 0) || (errorMessage.endsWith(">>> ERROR: Cannot solve CSC.\n"))) {
                     return Result.failed(result);
                 }
+                return Result.finished(result);
             }
             if (res.getOutcome() == Outcome.CANCELLED) {
                 return Result.cancelled();

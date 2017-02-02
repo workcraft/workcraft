@@ -118,7 +118,9 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
             }
 
             ExternalProcessResult retVal = res.getReturnValue();
-            ExternalProcessResult result = new ExternalProcessResult(retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), outputFiles);
+            ExternalProcessResult result = new ExternalProcessResult(
+                    retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), outputFiles);
+
             if (retVal.getReturnCode() < 2) {
                 return Result.finished(result);
             } else {

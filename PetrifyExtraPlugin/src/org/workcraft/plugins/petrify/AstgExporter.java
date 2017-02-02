@@ -74,8 +74,9 @@ public class AstgExporter implements Exporter {
                 if (drawAstgResult.getCause() != null) {
                     throw new SerialisationException(drawAstgResult.getCause());
                 } else {
-                    throw new SerialisationException("Petrify failed with return code " + drawAstgResult.getReturnValue().getReturnCode() + "\n\n" +
-                            new String(drawAstgResult.getReturnValue().getErrors()) + "\n");
+                    throw new SerialisationException("Petrify failed with return code " +
+                            drawAstgResult.getReturnValue().getReturnCode() + "\n\n" +
+                            drawAstgResult.getReturnValue().getErrorsHeadAndTail() + "\n");
                 }
             }
         }

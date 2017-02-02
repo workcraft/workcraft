@@ -50,8 +50,9 @@ public class MpsatCscConflictResolutionResultHandler implements Runnable {
 
         StgModel model = getResolvedStg();
         if (model == null) {
+            String errorMessage = result.getReturnValue().getErrorsHeadAndTail();
             JOptionPane.showMessageDialog(framework.getMainWindow(),
-                    "MPSat output: \n\n" + new String(result.getReturnValue().getErrors()),
+                    "MPSat output: \n" + errorMessage,
                     "Conflict resolution failed", JOptionPane.WARNING_MESSAGE);
         } else {
             Path<String> directory = path.getParent();
