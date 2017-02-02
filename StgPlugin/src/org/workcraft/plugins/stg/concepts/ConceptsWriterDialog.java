@@ -139,7 +139,6 @@ public class ConceptsWriterDialog extends JDialog {
                         conceptsText.setText(readFile(f));
                         updateLastDirUsed();
                     } catch (FileNotFoundException e1) {
-                        // TODO Auto-generated catch block
                         JOptionPane.showMessageDialog(null, e1.getMessage(),
                                 "File not found error", JOptionPane.ERROR_MESSAGE);
                     }
@@ -157,22 +156,20 @@ public class ConceptsWriterDialog extends JDialog {
                 chooser.setFileFilter(new FileNameExtensionFilter("Haskell/Concept file (.hs)", "hs"));
                 chooser.setCurrentDirectory(lastDirUsed);
                 if (chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-                    File f = chooser.getSelectedFile();
-                    if (!f.getName().endsWith(".hs")) {
-                        f = new File(f.getAbsolutePath() + ".hs");
+                    File file = chooser.getSelectedFile();
+                    if (!file.getName().endsWith(".hs")) {
+                        file = new File(file.getAbsolutePath() + ".hs");
                     }
                     PrintStream concepts;
                     try {
-                        concepts = new PrintStream(f);
-                        String t = conceptsText.getText();
-                        concepts.print(t);
+                        concepts = new PrintStream(file);
+                        String text = conceptsText.getText();
+                        concepts.print(text);
                         concepts.close();
-                        lastFileUsed = f;
+                        lastFileUsed = file;
                         changed = false;
                         updateLastDirUsed();
                     } catch (FileNotFoundException ex) {
-                        // TODO Auto-generated catch block
-                        ex.printStackTrace();
                     }
                 }
             }
@@ -244,20 +241,19 @@ public class ConceptsWriterDialog extends JDialog {
                 + "  where";
     }
 
-    private String readFile(File f) throws FileNotFoundException {
+    private String readFile(File file) throws FileNotFoundException {
 
-        Scanner s = new Scanner(f);
+        Scanner scanner = new Scanner(file);
         String fileText = new String();
-        if (s.hasNextLine()) {
+        if (scanner.hasNextLine()) {
             do {
-                fileText = fileText + s.nextLine() + "\n";
-            } while (s.hasNextLine());
-            s.close();
+                fileText = fileText + scanner.nextLine() + "\n";
+            } while (scanner.hasNextLine());
+            scanner.close();
             conceptsText.setText(fileText);
 
-            lastFileUsed = f;
+            lastFileUsed = file;
             changed = false;
-            //updateLastDirUsed();
         }
         return fileText == "" ? "" : fileText;
     }
@@ -271,13 +267,12 @@ public class ConceptsWriterDialog extends JDialog {
             return lastFileUsed;
         } else {
             try {
-                lastFileUsed = File.createTempFile("concepts", ".hs");
-                PrintWriter p = new PrintWriter(lastFileUsed);
-                p.print(conceptsText.getText());
-                p.close();
+                lastFileUsed = File.createTempFile("plato-", ".hs");
+                lastFileUsed.deleteOnExit();
+                PrintWriter writer = new PrintWriter(lastFileUsed);
+                writer.print(conceptsText.getText());
+                writer.close();
             } catch (IOException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
             }
         }
         return lastFileUsed;

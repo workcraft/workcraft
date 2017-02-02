@@ -32,7 +32,7 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
     }
 
     @Override
-    public <T extends MathNode> T createNode(String ref, Container container, Class<T> type) {
+    public <T extends MathNode> T createNode(String name, Container container, Class<T> type) {
         if (container == null) {
             container = getRoot();
         }
@@ -40,12 +40,12 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
         try {
             node = NodeFactory.createNode(type);
             container.add(node);
-            if (ref != null) {
-                setName(node, ref);
+            if (name != null) {
+                setName(node, name);
             }
         } catch (NodeCreationException e) {
             String containerRef = getNodeReference(container);
-            throw new RuntimeException("Cannot create math node '" + ref + "'"
+            throw new RuntimeException("Cannot create math node '" + name + "'"
                     + " of class '" + type + "' in container '" + containerRef + "'.");
         }
         return node;
