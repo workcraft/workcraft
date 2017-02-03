@@ -11,12 +11,8 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
-import org.workcraft.dom.visual.connections.Bezier;
-import org.workcraft.dom.visual.connections.BezierControlPoint;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.plugins.dtd.Transition.Direction;
 import org.workcraft.plugins.graph.VisualGraph;
 import org.workcraft.util.Hierarchy;
@@ -25,10 +21,8 @@ import org.workcraft.util.Hierarchy;
 @CustomTools(DtdToolsProvider.class)
 public class VisualDtd extends VisualGraph {
 
-    private static final double ARROW_LENGTH = 0.2;
     private static final double APPEND_EDGE_OFFSET = 2.0;
     private static final double INSERT_PULSE_OFFSET = 1.0;
-    private static final double CAUSALITY_ARC_OFFSET = 1.5;
 
     public class SignalEvent {
         public final VisualConnection level;
@@ -68,14 +62,6 @@ public class VisualDtd extends VisualGraph {
 
     public VisualDtd(Dtd model, VisualGroup root) {
         super(model, root);
-        if (root == null) {
-            try {
-                createDefaultFlatStructure();
-            } catch (NodeCreationException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
         new DtdStateSupervisor(this).attach(getRoot());
     }
 
@@ -92,7 +78,7 @@ public class VisualDtd extends VisualGraph {
         if ((first instanceof VisualComponent) && (second instanceof VisualComponent)) {
             VisualComponent firstComponent = (VisualComponent) first;
             VisualComponent secondComponent = (VisualComponent) second;
-            if (firstComponent.getX() > secondComponent.getX()) {
+            if (firstComponent.getRootSpaceX() > secondComponent.getRootSpaceX()) {
                 throw new InvalidConnectionException("Invalid order of events.");
             }
         }
@@ -131,25 +117,17 @@ public class VisualDtd extends VisualGraph {
             mConnection = ((Dtd) getMathModel()).connect(m1, m2);
         }
 
+        Container container = Hierarchy.getNearestContainer(v1, v2);
         VisualConnection vConnection;
         if (DtdUtils.isLevelConnection(mConnection)) {
             vConnection = new VisualLevelConnection(mConnection, v1, v2);
+            container.add(vConnection);
             DtdUtils.decorateVisualLevelConnection(vConnection);
         } else {
             vConnection = new VisualConnection(mConnection, v1, v2);
-            Container container = Hierarchy.getNearestContainer(v1, v2);
             container.add(vConnection);
-            vConnection.setConnectionType(ConnectionType.BEZIER);
-            vConnection.setArrowLength(ARROW_LENGTH);
-            Bezier bezier = (Bezier) vConnection.getGraphic();
-            BezierControlPoint[] cp = bezier.getBezierControlPoints();
-            Point2D p1 = new Point2D.Double(v1.getX() + CAUSALITY_ARC_OFFSET, v1.getY());
-            cp[0].setRootSpacePosition(p1);
-            Point2D p2 = new Point2D.Double(v2.getX() - CAUSALITY_ARC_OFFSET, v2.getY());
-            cp[1].setRootSpacePosition(p2);
+            DtdUtils.decorateVisualEventConnection(vConnection);
         }
-        Container container = Hierarchy.getNearestContainer(v1, v2);
-        container.add(vConnection);
         return vConnection;
     }
 
@@ -191,27 +169,26 @@ public class VisualDtd extends VisualGraph {
         return visualSignal;
     }
 
-    public VisualTransition createVisualTransition(Signal signal, Direction direction) {
-        Transition mathTransition = new Transition(signal);
+    public VisualTransition createVisualTransition(VisualSignal signal, Direction direction) {
+        Signal mathSignal = signal.getReferencedSignal();
+        Transition mathTransition = new Transition(mathSignal);
         if (direction != null) {
             mathTransition.setDirection(direction);
         }
-        getMathModel().add(mathTransition);
-        VisualTransition visualTransition = new VisualTransition(mathTransition);
-        add(visualTransition);
-        return visualTransition;
-    }
+        Container mathContainer = Hierarchy.getNearestContainer(mathSignal);
+        mathContainer.add(mathTransition);
 
-    public VisualTransition createVisualTransition(VisualSignal signal, Direction direction) {
-        VisualTransition transition = createVisualTransition(signal.getReferencedSignal(), direction);
+        VisualTransition transition = new VisualTransition(mathTransition);
+        Container container = Hierarchy.getNearestContainer(signal);
         transition.setForegroundColor(signal.getForegroundColor());
+        container.add(transition);
         return transition;
     }
 
     public SignalEvent appendSignalEvent(VisualSignal signal, Direction direction) {
         VisualTransition lastTransition = null;
         for (VisualTransition transition: getVisualTransitions(signal)) {
-            if ((lastTransition == null) || (transition.getX() > lastTransition.getX())) {
+            if ((lastTransition == null) || (transition.getRootSpaceX() > lastTransition.getRootSpaceX())) {
                 lastTransition = transition;
             }
         }
@@ -220,7 +197,7 @@ public class VisualDtd extends VisualGraph {
             direction = lastTransition.getDirection().reverse();
         }
         VisualTransition edge = createVisualTransition(signal, direction);
-        Point2D pos = new Point2D.Double(fromComponent.getX() + APPEND_EDGE_OFFSET, fromComponent.getY());
+        Point2D pos = new Point2D.Double(fromComponent.getRootSpaceX() + APPEND_EDGE_OFFSET, fromComponent.getRootSpaceY());
         edge.setRootSpacePosition(pos);
         VisualConnection level = null;
         try {
@@ -234,17 +211,17 @@ public class VisualDtd extends VisualGraph {
     public SignalPulse insetrSignalPulse(VisualLevelConnection connection) {
         VisualComponent fromComponent = (VisualComponent) connection.getFirst();
         VisualTransition toTransition = (VisualTransition) connection.getSecond();
-        Signal signal = toTransition.getSignal();
+        VisualSignal signal = getVisualSignal(toTransition);
         Direction direction = toTransition.getDirection();
         VisualTransition leadEdge = createVisualTransition(signal, direction);
         VisualTransition trailEdge = createVisualTransition(signal, direction.reverse());
 
         double y = fromComponent.getY();
         Point2D p = connection.getMiddleSegmentCenterPoint();
-        double leadX = (p.getX() - INSERT_PULSE_OFFSET < fromComponent.getX())
-                ? 0.5 * (p.getX() + fromComponent.getX()) : p.getX() - 0.5 * INSERT_PULSE_OFFSET;
-        double trailX = (p.getX() + INSERT_PULSE_OFFSET > toTransition.getX())
-                ? 0.5 * (p.getX() + toTransition.getX()) : p.getX() + 0.5 * INSERT_PULSE_OFFSET;
+        double leadX = (p.getX() - INSERT_PULSE_OFFSET < fromComponent.getRootSpaceX())
+                ? 0.5 * (p.getX() + fromComponent.getRootSpaceX()) : p.getX() - 0.5 * INSERT_PULSE_OFFSET;
+        double trailX = (p.getX() + INSERT_PULSE_OFFSET > toTransition.getRootSpaceX())
+                ? 0.5 * (p.getX() + toTransition.getRootSpaceX()) : p.getX() + 0.5 * INSERT_PULSE_OFFSET;
         leadEdge.setRootSpacePosition(new Point2D.Double(leadX, y));
         trailEdge.setRootSpacePosition(new Point2D.Double(trailX, y));
 

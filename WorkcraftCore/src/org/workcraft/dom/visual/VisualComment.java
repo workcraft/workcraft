@@ -97,7 +97,7 @@ public class VisualComment extends VisualComponent {
         g.setColor(Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation()));
         float w = (float) strokeWidth;
         float[] pattern = {10.0f * w, 10.0f * w};
-        g.setStroke(new BasicStroke(w, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
+        g.setStroke(new BasicStroke(w, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
         g.draw(shape);
         drawLabelInLocalSpace(r);
     }

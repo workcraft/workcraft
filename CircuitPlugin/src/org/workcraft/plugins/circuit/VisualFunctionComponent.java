@@ -356,9 +356,9 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
             }
         }
         if ((inputPos != null) && (outputPos != null)) {
-            float[] dash = {0.05f, 0.05f};
+            float[] pattern = {0.1f, 0.1f};
             g.setStroke(new BasicStroke((float) CircuitSettings.getBorderWidth(),
-                        BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f, dash, 0.0f));
+                        BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
 
             g.setColor(GateRenderer.foreground);
             at.transform(inputPos, inputPos);
@@ -382,16 +382,9 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
 
             // Draw the component in its coordinates
             g.transform(at);
-            if (!getIsEnvironment()) {
-                g.setStroke(new BasicStroke((float) CircuitSettings.getBorderWidth()));
-            } else {
-                float[] dash = {0.05f, 0.05f};
-                g.setStroke(new BasicStroke((float) CircuitSettings.getBorderWidth(),
-                            BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f, dash, 0.0f));
-            }
-
             GateRenderer.foreground = Coloriser.colorise(getForegroundColor(), r.getDecoration().getColorisation());
             GateRenderer.background = Coloriser.colorise(getFillColor(), r.getDecoration().getBackground());
+            setStroke(g);
             rr.draw(g);
             AffineTransform bt = getMainContactRotateTransform(true);
             g.transform(bt);

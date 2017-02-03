@@ -9,6 +9,10 @@ import org.workcraft.plugins.wtg.VisualWaveform;
 
 public class WtgConnectionTool extends ConnectionTool {
 
+    public WtgConnectionTool() {
+        super(true, true, false);
+    }
+
     @Override
     public boolean isConnectable(Node node) {
         return (node instanceof VisualState)
