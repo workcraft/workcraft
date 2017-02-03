@@ -25,6 +25,7 @@ import org.workcraft.dom.visual.VisualComment;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.DesktopApi;
@@ -107,6 +108,7 @@ public class ConnectionTool extends AbstractGraphEditorTool {
 
     public boolean isConnectable(Node node) {
         return (node != null)
+              && !(node instanceof VisualPage)
               && !(node instanceof VisualConnection)
               && !(node instanceof VisualComment);
     }

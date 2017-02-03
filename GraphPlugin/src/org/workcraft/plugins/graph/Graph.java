@@ -26,14 +26,13 @@ public class Graph extends AbstractMathModel {
     }
 
     public Graph(Container root, References refs) {
-        super(root, new HierarchicalUniqueNameReferenceManager(refs) {
+        this(root, new HierarchicalUniqueNameReferenceManager(refs) {
             @Override
             public String getPrefix(Node node) {
                 if (node instanceof Vertex) return "v";
                 return super.getPrefix(node);
             }
         });
-        new SymbolConsistencySupervisor(this).attach(getRoot());
     }
 
     public Graph(Container root, ReferenceManager man) {

@@ -34,18 +34,23 @@ public final class DtdStateSupervisor extends StateSupervisor {
 
     private void handleTransitionTransformation(VisualTransition transition) {
         VisualSignal signal = dtd.getVisualSignal(transition);
-        double y = signal.getY();
-        if ((signal != null) && (y != transition.getY())) {
-            transition.setY(y);
+        if (signal != null) {
+            double y = signal.getRootSpaceY();
+            align(transition, y);
         }
     }
 
     private void handleSignalTransformation(VisualSignal signal) {
+        double y = signal.getRootSpaceY();
         for (VisualTransition transition: dtd.getVisualTransitions(signal)) {
-            double y = signal.getY();
-            if (transition.getY() != y) {
-                transition.setY(y);
-            }
+            align(transition, y);
+        }
+    }
+
+    private void align(VisualTransition transition, double y) {
+        double d = Math.abs(y - transition.getRootSpaceY());
+        if (d > 0.001) {
+            transition.setRootSpaceY(y);
         }
     }
 

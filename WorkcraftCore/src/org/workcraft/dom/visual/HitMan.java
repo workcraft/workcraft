@@ -195,9 +195,7 @@ public class HitMan {
             public Boolean eval(Node n) {
                 boolean isMovable = n instanceof Movable;
                 boolean isShown = !((n instanceof Hidable) && ((Hidable) n).isHidden());
-                boolean isContainer = n instanceof Container;
-                boolean isExpanded = (n instanceof Collapsible) && !((Collapsible) n).getIsCollapsed();
-                return isMovable && isShown && !(isContainer && isExpanded);
+                return isMovable && isShown;
             }
         });
         if (result == null) {

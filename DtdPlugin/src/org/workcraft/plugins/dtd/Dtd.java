@@ -6,6 +6,7 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
+import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
@@ -21,11 +22,11 @@ import org.workcraft.util.Identifier;
 public class Dtd extends Graph {
 
     public Dtd() {
-        this(null, null);
+        this(null, (References) null);
     }
 
     public Dtd(Container root, References refs) {
-        super(root, new HierarchicalUniqueNameReferenceManager(refs) {
+        this(root, new HierarchicalUniqueNameReferenceManager(refs) {
             @Override
             public String getPrefix(Node node) {
                 if (node instanceof Signal) return "x";
@@ -33,6 +34,10 @@ public class Dtd extends Graph {
                 return super.getPrefix(node);
             }
         });
+    }
+
+    public Dtd(Container root, ReferenceManager man) {
+        super(root, man);
     }
 
     @Override
