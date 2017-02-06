@@ -184,7 +184,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         GraphEditor editor = e.getEditor();
         VisualModel model = editor.getModel();
         if (e.getButton() == MouseEvent.BUTTON1) {
-            VisualNode node = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
+            VisualNode node = (VisualNode) HitMan.hitTestCurrentLevelFirst(e.getPosition(), model);
             if (node instanceof VisualContact) {
                 Contact contact = ((VisualContact) node).getReferencedContact();
                 if (contact.isDriver()) {

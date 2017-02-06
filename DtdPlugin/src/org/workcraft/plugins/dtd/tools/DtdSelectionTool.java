@@ -33,7 +33,7 @@ public class DtdSelectionTool extends SelectionTool {
         boolean processed = false;
         VisualDtd model = (VisualDtd) e.getModel();
         if (e.getButton() == MouseEvent.BUTTON1) {
-            Node node = HitMan.hitTestForSelection(e.getPosition(), model);
+            Node node = HitMan.hitTestCurrentLevelFirst(e.getPosition(), model);
             if ((node instanceof VisualSignal) && (e.getClickCount() > 1)) {
                 VisualSignal signal = (VisualSignal) node;
                 processed = model.appendSignalEvent(signal, null).isValid();

@@ -68,6 +68,24 @@ public class DtdUtils {
         polyline.addControlPoint(cp2InLocalSpace);
     }
 
+    public static boolean isEventConnection(MathConnection connection) {
+        boolean result = false;
+        if (connection != null) {
+            MathNode c1 = (MathNode) connection.getFirst();
+            MathNode c2 = (MathNode) connection.getSecond();
+            if ((c1 instanceof Transition) && (c2 instanceof Transition)) {
+                Signal s1 = ((Transition) c1).getSignal();
+                Signal s2 = ((Transition) c2).getSignal();
+                result = s1 != s2;
+            }
+        }
+        return result;
+    }
+
+    public static boolean isVisualEventConnection(VisualConnection connection) {
+        return isEventConnection(connection.getReferencedConnection());
+    }
+
     public static void decorateVisualEventConnection(VisualConnection connection) {
         VisualComponent v1 = (VisualComponent) connection.getFirst();
         VisualComponent v2 = (VisualComponent) connection.getSecond();

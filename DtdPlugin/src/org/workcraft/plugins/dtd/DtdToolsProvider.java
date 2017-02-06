@@ -18,7 +18,7 @@ public class DtdToolsProvider implements CustomToolsProvider {
 
         result.add(new DtdSelectionTool());
         result.add(new CommentGeneratorTool());
-        result.add(new ConnectionTool(false, true, false));
+        result.add(new ConnectionTool(false, true, false, true));
         result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Signal.class)));
         return result;
     }

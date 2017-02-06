@@ -578,7 +578,7 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
     @Override
     public void mousePressed(GraphEditorMouseEvent e) {
         net.refreshNodeColor();
-        Node node = HitMan.hitTestForConnection(e.getPosition(), e.getModel().getRoot());
+        Node node = HitMan.hitTestRootDeepest(e.getPosition(), e.getModel());
         if (node instanceof VisualSONConnection) {
             estimatorButton.setEnabled(false);
             VisualSONConnection con = (VisualSONConnection) node;

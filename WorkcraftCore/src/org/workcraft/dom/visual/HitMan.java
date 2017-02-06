@@ -160,12 +160,44 @@ public class HitMan {
         return (T) hitDeepest(point, group, Hierarchy.getTypeFilter(type));
     }
 
-    public static Node hitTestForSelection(Point2D point, VisualModel model) {
-        AffineTransform at = TransformHelper.getTransform(model.getRoot(), model.getCurrentLevel());
-        return hitTestForSelection(at.transform(point, null), model.getCurrentLevel());
+    public static Node hitTestRootDeepest(Point2D point, VisualModel model) {
+        Point2D pt = transformToChildSpace(point, model.getRoot());
+        return hitTestDeepest(pt, model.getRoot());
     }
 
-    public static Node hitTestForSelection(Point2D point, Node node) {
+    public static Node hitTestCurrentLevelFirst(Point2D point, VisualModel model) {
+        AffineTransform at = TransformHelper.getTransform(model.getRoot(), model.getCurrentLevel());
+        Point2D pt = at.transform(point, null);
+        return hitTestFirst(pt, model.getCurrentLevel());
+    }
+
+    public static Node hitTestCurrentLevelDeepest(Point2D point, VisualModel model) {
+        AffineTransform at = TransformHelper.getTransform(model.getRoot(), model.getCurrentLevel());
+        Point2D pt = at.transform(point, null);
+        return hitTestDeepest(pt, model.getCurrentLevel());
+    }
+
+    public static Node hitTestDeepest(Point2D point, Node node) {
+        Node result = HitMan.hitDeepest(point, node, new Func<Node, Boolean>() {
+            public Boolean eval(Node n) {
+                boolean isMovable = n instanceof Movable;
+                boolean isShown = !((n instanceof Hidable) && ((Hidable) n).isHidden());
+                return isMovable && isShown;
+            }
+        });
+        if (result == null) {
+            result = HitMan.hitDeepest(point, node, new Func<Node, Boolean>() {
+                public Boolean eval(Node n) {
+                    boolean isConnection = n instanceof VisualConnection;
+                    boolean isShown = !((n instanceof Hidable) && ((Hidable) n).isHidden());
+                    return isConnection && isShown;
+                }
+            });
+        }
+        return result;
+    }
+
+    public static Node hitTestFirst(Point2D point, Node node) {
         Node result = HitMan.hitFirstChild(point, node, new Func<Node, Boolean>() {
             public Boolean eval(Node n) {
                 boolean isMovable = n instanceof Movable;
@@ -175,58 +207,6 @@ public class HitMan {
         });
         if (result == null) {
             result = HitMan.hitFirstChild(point, node, new Func<Node, Boolean>() {
-                public Boolean eval(Node n) {
-                    boolean isConnection = n instanceof VisualConnection;
-                    boolean isShown = !((n instanceof Hidable) && ((Hidable) n).isHidden());
-                    return isConnection && isShown;
-                }
-            });
-        }
-        return result;
-    }
-
-    public static Node hitTestForConnection(Point2D point, VisualModel model) {
-        Point2D pt = transformToChildSpace(point, model.getRoot());
-        return hitTestForConnection(pt, model.getRoot());
-    }
-
-    public static Node hitTestForConnection(Point2D point, Node node) {
-        Node result = HitMan.hitDeepest(point, node, new Func<Node, Boolean>() {
-            public Boolean eval(Node n) {
-                boolean isMovable = n instanceof Movable;
-                boolean isShown = !((n instanceof Hidable) && ((Hidable) n).isHidden());
-                return isMovable && isShown;
-            }
-        });
-        if (result == null) {
-            result = HitMan.hitDeepest(point, node, new Func<Node, Boolean>() {
-                public Boolean eval(Node n) {
-                    boolean isConnection = n instanceof VisualConnection;
-                    boolean isShown = !((n instanceof Hidable) && ((Hidable) n).isHidden());
-                    return isConnection && isShown;
-                }
-            });
-        }
-        return result;
-    }
-
-    public static Node hitTestForPopup(Point2D point, VisualModel model) {
-        AffineTransform at = TransformHelper.getTransform(model.getRoot(), model.getCurrentLevel());
-        return hitTestForPopup(at.transform(point, null), model.getCurrentLevel());
-    }
-
-    public static Node hitTestForPopup(Point2D point, Node node) {
-        Node result = HitMan.hitDeepest(point, node, new Func<Node, Boolean>() {
-            public Boolean eval(Node n) {
-                boolean isMovable = n instanceof Movable;
-                boolean isShown = !((n instanceof Hidable) && ((Hidable) n).isHidden());
-                boolean isContainer = n instanceof Container;
-                boolean isExpanded = (n instanceof Collapsible) && !((Collapsible) n).getIsCollapsed();
-                return isMovable && isShown && !(isContainer && isExpanded);
-            }
-        });
-        if (result == null) {
-            result = HitMan.hitDeepest(point, node, new Func<Node, Boolean>() {
                 public Boolean eval(Node n) {
                     boolean isConnection = n instanceof VisualConnection;
                     boolean isShown = !((n instanceof Hidable) && ((Hidable) n).isHidden());

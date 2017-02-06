@@ -533,11 +533,11 @@ public class VisualModelTests {
         SquareNode sq = new SquareNode(group1, new Rectangle2D.Double(0, 0, 1, 1));
         group1.add(sq);
 
-        Assert.assertNull(HitMan.hitTestForSelection(new Point2D.Double(0.5, 0.5), model));
-        Assert.assertEquals(group1, HitMan.hitTestForSelection(new Point2D.Double(101.5, 0.5), model));
+        Assert.assertNull(HitMan.hitTestCurrentLevelFirst(new Point2D.Double(0.5, 0.5), model));
+        Assert.assertEquals(group1, HitMan.hitTestCurrentLevelFirst(new Point2D.Double(101.5, 0.5), model));
         model.setCurrentLevel(group1);
-        Assert.assertNull(HitMan.hitTestForSelection(new Point2D.Double(0.5, 0.5), model));
-        Assert.assertEquals(sq, HitMan.hitTestForSelection(new Point2D.Double(101.5, 0.5), model));
+        Assert.assertNull(HitMan.hitTestCurrentLevelFirst(new Point2D.Double(0.5, 0.5), model));
+        Assert.assertEquals(sq, HitMan.hitTestCurrentLevelFirst(new Point2D.Double(101.5, 0.5), model));
     }
 
     @Test

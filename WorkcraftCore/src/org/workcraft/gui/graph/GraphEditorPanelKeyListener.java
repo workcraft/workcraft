@@ -54,7 +54,6 @@ class GraphEditorPanelKeyListener implements KeyListener {
         }
         GraphEditorKeyEvent geke = new GraphEditorKeyEvent(editor, e);
         forwardListener.keyPressed(geke);
-
     }
 
     public void keyReleased(KeyEvent e) {

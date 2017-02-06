@@ -36,28 +36,28 @@ public class WtgSelectionTool extends SelectionTool {
         WorkspaceEntry we = e.getEditor().getWorkspaceEntry();
         VisualWtg model = (VisualWtg) e.getModel();
         if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() > 1)) {
+            Node node = HitMan.hitTestCurrentLevelFirst(e.getPosition(), model);
             we.captureMemento();
-            Node node = HitMan.hitTestForSelection(e.getPosition(), model);
             if (node instanceof VisualState) {
                 VisualState state = (VisualState) node;
                 boolean isInitial = state.getReferencedState().isInitial();
                 state.getReferencedState().setInitial(!isInitial);
                 processed = true;
-            }
-            if (node instanceof VisualSignal) {
+            } else if (node instanceof VisualSignal) {
                 VisualSignal signal = (VisualSignal) node;
                 processed = model.appendSignalEvent(signal, null).isValid();
-            }
-            if (node instanceof VisualLevelConnection) {
+            } else if (node instanceof VisualLevelConnection) {
                 VisualLevelConnection connection = (VisualLevelConnection) node;
                 processed = model.insetrSignalPulse(connection).isValid();
             }
+            if (processed) {
+                we.saveMemento();
+            } else {
+                we.cancelMemento();
+            }
         }
 
-        if (processed) {
-            we.saveMemento();
-        } else {
-            we.cancelMemento();
+        if (!processed) {
             super.mouseClicked(e);
         }
     }

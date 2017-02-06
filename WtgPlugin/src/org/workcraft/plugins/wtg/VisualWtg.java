@@ -40,12 +40,26 @@ public class VisualWtg extends VisualDtd {
             throw new InvalidConnectionException("Cannot directly connect states.");
         }
 
-        if (((first instanceof VisualWaveform) && (second instanceof VisualState)) ||
-                ((first instanceof VisualState) && (second instanceof VisualWaveform))) {
+        if ((first instanceof VisualState) && (second instanceof VisualWaveform)) {
+            if (!getPreset(second).isEmpty()) {
+                throw new InvalidConnectionException("Waveform cannot have more than one preceding state.");
+            }
+            return;
+        }
+
+        if ((first instanceof VisualWaveform) && (second instanceof VisualState)) {
+            if (!getPostset(first).isEmpty()) {
+                throw new InvalidConnectionException("Waveform cannot have more than one succeeding state.");
+            }
             return;
         }
 
         if ((first instanceof VisualTransition) && (second instanceof VisualTransition)) {
+            Node firstWaveform = first.getParent();
+            Node secondWaveform = second.getParent();
+            if (firstWaveform != secondWaveform) {
+                throw new InvalidConnectionException("Cannot connect events from different waveforms.");
+            }
             VisualTransition firstTransition = (VisualTransition) first;
             VisualTransition secondTransition = (VisualTransition) second;
             if (firstTransition.getX() > secondTransition.getX()) {

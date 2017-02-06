@@ -14,6 +14,8 @@ import java.awt.image.BufferedImage;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 
+import org.workcraft.dom.Container;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.NodeCreationException;
@@ -22,13 +24,21 @@ import org.workcraft.gui.graph.generators.NodeGenerator;
 import org.workcraft.util.GUI;
 
 public class NodeGeneratorTool extends AbstractGraphEditorTool {
+
     private final NodeGenerator generator;
     private VisualNode templateNode = null;
     private VisualNode lastGeneratedNode = null;
     private String warningMessage = null;
+    private Container currentLevel = null;
+    private boolean topLevelOnly = false;
 
     public NodeGeneratorTool(NodeGenerator generator) {
+        this(generator, false);
+    }
+
+    public NodeGeneratorTool(NodeGenerator generator, boolean topLevelOnly) {
         this.generator = generator;
+        this.topLevelOnly = topLevelOnly;
     }
 
     @Override
@@ -91,13 +101,23 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
                 throw new RuntimeException(e);
             }
         }
-        editor.getModel().setTemplateNode(templateNode);
+        VisualModel model = editor.getModel();
+        model.setTemplateNode(templateNode);
+        if (topLevelOnly) {
+            currentLevel = model.getCurrentLevel();
+            model.setCurrentLevel(model.getRoot());
+        }
     }
 
     @Override
     public void deactivated(GraphEditor editor) {
         super.deactivated(editor);
         resetState(editor);
+        if (currentLevel != null) {
+            VisualModel model = editor.getModel();
+            model.setCurrentLevel(currentLevel);
+            currentLevel = null;
+        }
     }
 
     @Override
@@ -119,7 +139,7 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
     public void mousePressed(GraphEditorMouseEvent e) {
         GraphEditor editor = e.getEditor();
         if (lastGeneratedNode != null) {
-            warningMessage = "Move the mouse outside this node before creating a new node";
+            warningMessage = "Move the mouse outside this node before creating a new node.";
             editor.repaint();
         } else {
             try {
@@ -152,7 +172,19 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
 
     @Override
     public Decorator getDecorator(final GraphEditor editor) {
-        return Decorator.Empty.INSTANCE;
+        return new Decorator() {
+            @Override
+            public Decoration getDecoration(Node node) {
+                VisualModel model = editor.getModel();
+                if (node == model.getCurrentLevel()) {
+                    return Decoration.Empty.INSTANCE;
+                }
+                if (node == model.getRoot()) {
+                    return Decoration.Shaded.INSTANCE;
+                }
+                return null;
+            }
+        };
     }
 
 }

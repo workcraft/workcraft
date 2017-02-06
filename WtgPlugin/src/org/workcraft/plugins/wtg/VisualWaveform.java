@@ -37,8 +37,7 @@ public class VisualWaveform extends VisualPage {
             component.cacheRenderedText(r);
         }
 
-        Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-        if ((bb != null) && (getParent() != null)) {
+        if (getParent() != null) {
             drawOutline(r);
             drawPivot(r);
             drawNameInLocalSpace(r);
@@ -55,9 +54,11 @@ public class VisualWaveform extends VisualPage {
             if (getIsCollapsed() && !isCurrentLevelInside()) {
                 g.setColor(Coloriser.colorise(getFillColor(), d.getColorisation()));
                 g.fill(bb);
+                g.setStroke(new BasicStroke((float) strokeWidth));
+            } else {
+                float[] pattern = {0.05f, 0.05f};
+                g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
             }
-            float[] pattern = {0.05f, 0.05f};
-            g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
             g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
             g.draw(bb);
         }

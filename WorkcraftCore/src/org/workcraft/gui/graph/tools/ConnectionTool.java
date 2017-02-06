@@ -40,11 +40,11 @@ public class ConnectionTool extends AbstractGraphEditorTool {
     protected static final Color incompleteConnectionColor = Color.GREEN;
     protected static final Color validConnectionColor = Color.BLUE;
     protected static final Color invalidConnectionColor = Color.RED;
-    private static final Color highlightColor = new Color(1.0f, 0.5f, 0.0f).brighter();
 
     protected boolean forbidSelfLoops = true;
     protected boolean directedArcs = true;
     protected boolean useTemplate = true;
+    protected boolean allLevels = true;
 
     private Point2D firstPoint = null;
     private VisualNode firstNode = null;
@@ -55,13 +55,14 @@ public class ConnectionTool extends AbstractGraphEditorTool {
     private VisualConnection templateNode = null;
 
     public ConnectionTool() {
-        this(true, true, true);
+        this(true, true, true, true);
     }
 
-    public ConnectionTool(boolean forbidSelfLoops, boolean directedArcs, boolean useTemplate) {
+    public ConnectionTool(boolean forbidSelfLoops, boolean directedArcs, boolean useTemplate, boolean allLevels) {
         this.forbidSelfLoops = forbidSelfLoops;
         this.directedArcs = directedArcs;
         this.useTemplate = useTemplate;
+        this.allLevels = allLevels;
     }
 
     @Override
@@ -95,7 +96,11 @@ public class ConnectionTool extends AbstractGraphEditorTool {
     }
 
     protected void updateState(GraphEditor editor) {
-        currentNode = (VisualNode) HitMan.hitTestForConnection(currentPoint, editor.getModel());
+        if (allLevels) {
+            currentNode = (VisualNode) HitMan.hitTestRootDeepest(currentPoint, editor.getModel());
+        } else {
+            currentNode = (VisualNode) HitMan.hitTestCurrentLevelFirst(currentPoint, editor.getModel());
+        }
         if ((currentNode == null) || isConnectable(currentNode)) {
             if (currentNode != firstNode) {
                 mouseLeftFirstNode = true;
@@ -108,6 +113,7 @@ public class ConnectionTool extends AbstractGraphEditorTool {
 
     public boolean isConnectable(Node node) {
         return (node != null)
+              && !(node instanceof VisualGroup)
               && !(node instanceof VisualPage)
               && !(node instanceof VisualConnection)
               && !(node instanceof VisualComment);
@@ -317,7 +323,8 @@ public class ConnectionTool extends AbstractGraphEditorTool {
     }
 
     public String getSecondHintMessage() {
-        return "Click on a second component or create a polyline segment. Hold " + DesktopApi.getMenuKeyMaskName() + " to connect continuously.";
+        return "Click on a second component or create a polyline segment. Hold "
+                + DesktopApi.getMenuKeyMaskName() + " to connect continuously.";
     }
 
     @Override
@@ -326,16 +333,16 @@ public class ConnectionTool extends AbstractGraphEditorTool {
             @Override
             public Decoration getDecoration(Node node) {
                 if (node == currentNode) {
-                    return new Decoration() {
-                        @Override
-                        public Color getColorisation() {
-                            return highlightColor;
-                        }
-                        @Override
-                        public Color getBackground() {
-                            return null;
-                        }
-                    };
+                    return Decoration.Highlighted.INSTANCE;
+                }
+                if (!allLevels) {
+                    VisualModel model = editor.getModel();
+                    if (node == model.getCurrentLevel()) {
+                        return Decoration.Empty.INSTANCE;
+                    }
+                    if (node == model.getRoot()) {
+                        return Decoration.Shaded.INSTANCE;
+                    }
                 }
                 return null;
             }

@@ -10,7 +10,7 @@ import org.workcraft.plugins.wtg.VisualWaveform;
 public class WtgConnectionTool extends ConnectionTool {
 
     public WtgConnectionTool() {
-        super(true, true, false);
+        super(true, true, false, false);
     }
 
     @Override

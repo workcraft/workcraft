@@ -119,13 +119,17 @@ public class VisualDtd extends VisualGraph {
 
         Container container = Hierarchy.getNearestContainer(v1, v2);
         VisualConnection vConnection;
-        if (DtdUtils.isLevelConnection(mConnection)) {
+        boolean isLevelConnection = DtdUtils.isLevelConnection(mConnection);
+        boolean isEventConnection = DtdUtils.isEventConnection(mConnection);
+        if (isLevelConnection) {
             vConnection = new VisualLevelConnection(mConnection, v1, v2);
-            container.add(vConnection);
-            DtdUtils.decorateVisualLevelConnection(vConnection);
         } else {
             vConnection = new VisualConnection(mConnection, v1, v2);
-            container.add(vConnection);
+        }
+        container.add(vConnection);
+        if (isLevelConnection) {
+            DtdUtils.decorateVisualLevelConnection(vConnection);
+        } else if (isEventConnection) {
             DtdUtils.decorateVisualEventConnection(vConnection);
         }
         return vConnection;
