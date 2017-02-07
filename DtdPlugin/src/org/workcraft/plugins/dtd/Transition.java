@@ -4,6 +4,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.observation.PropertyChangedEvent;
+import org.workcraft.plugins.dtd.Signal.State;
 import org.workcraft.plugins.graph.Vertex;
 
 @DisplayName("Transition")
@@ -13,8 +14,10 @@ public class Transition extends Vertex {
     public static final String PROPERTY_DIRECTION = "Direction";
 
     public enum Direction {
-        PLUS("+"),
-        MINUS("-");
+        RISE("+ (rise)"),
+        FALL("- (fall)"),
+        DESTABILISE("switch"),
+        STABILISE("stabilise");
 
         private final String name;
 
@@ -37,11 +40,17 @@ public class Transition extends Vertex {
         }
 
         public Direction reverse() {
-            return (this == PLUS) ? MINUS : PLUS;
+            switch (this) {
+            case RISE: return FALL;
+            case FALL: return RISE;
+            case DESTABILISE: return STABILISE;
+            case STABILISE: return DESTABILISE;
+            }
+            return null;
         }
     }
 
-    private Direction direction = Direction.PLUS;
+    private Direction direction = Direction.RISE;
 
     public Transition() {
     }
@@ -61,6 +70,16 @@ public class Transition extends Vertex {
 
     public Signal getSignal() {
         return (Signal) getSymbol();
+    }
+
+    public State getNextState() {
+        switch (getDirection()) {
+        case RISE: return State.HIGH;
+        case FALL: return State.LOW;
+        case DESTABILISE:  return State.UNSTABLE;
+        case STABILISE:  return State.STABLE;
+        }
+        return null;
     }
 
 }

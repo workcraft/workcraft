@@ -6,6 +6,7 @@ import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
+import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -52,6 +53,16 @@ public class VisualSignal extends VisualComponent {
                 return object.getType();
             }
         });
+
+        addPropertyDeclaration(new PropertyDeclaration<VisualSignal, Signal.State>(
+                this, Signal.PROPERTY_INITIAL_STATE, Signal.State.class, true, true, true) {
+            protected void setter(VisualSignal object, Signal.State value) {
+                object.setInitialState(value);
+            }
+            protected Signal.State getter(VisualSignal object) {
+                return object.getInitialState();
+            }
+        });
     }
 
     public Signal getReferencedSignal() {
@@ -64,24 +75,81 @@ public class VisualSignal extends VisualComponent {
     }
 
     @NoAutoSerialisation
-    public void setType(Signal.Type type) {
-        getReferencedSignal().setType(type);
+    public void setType(Signal.Type value) {
+        getReferencedSignal().setType(value);
+    }
+
+    @NoAutoSerialisation
+    public Signal.State getInitialState() {
+        return getReferencedSignal().getInitialState();
+    }
+
+    @NoAutoSerialisation
+    public void setInitialState(Signal.State value) {
+        getReferencedSignal().setInitialState(value);
     }
 
     public Shape getShape() {
         double h = 0.2 * size;
         double w = 0.1 * size;
         double w2 = 0.5 * w;
-        // One
         Path2D shape = new Path2D.Double();
-        shape.moveTo(-w2, -0.5 * size + w2);
-        shape.lineTo(0.0, -0.5 * size);
-        shape.lineTo(0.0, -0.5 * size + h);
-        shape.moveTo(-w2, -0.5 * size + h);
-        shape.lineTo(+w2, -0.5 * size + h);
-        // Zero
+        // "1" symbol
+        Path2D oneShape = new Path2D.Double();
+        oneShape.moveTo(-w2, -0.5 * size + w2);
+        oneShape.lineTo(0.0, -0.5 * size);
+        oneShape.lineTo(0.0, -0.5 * size + h);
+        oneShape.moveTo(-w2, -0.5 * size + h);
+        oneShape.lineTo(+w2, -0.5 * size + h);
+        shape.append(oneShape, false);
+        // "0" shape
         Ellipse2D zeroShape = new Ellipse2D.Double(-w2, 0.5 * size - h, w, h);
         shape.append(zeroShape, false);
+        return shape;
+    }
+
+    public Shape getInitialStateShape() {
+        double h = 0.2 * size;
+        double w = 0.1 * size;
+        double w2 = 0.5 * w;
+        double h2 = 0.5 * h;
+        Path2D shape = new Path2D.Double();
+        if (getReferencedSignal() != null) {
+            switch (getInitialState()) {
+            case HIGH:
+                Path2D highShape = new Path2D.Double();
+                highShape.moveTo(0.0, 0.0);
+                highShape.lineTo(0.0, -h2);
+                highShape.moveTo(0.0, -h);
+                highShape.lineTo(-w2, -h2);
+                highShape.lineTo(+w2, -h2);
+                highShape.closePath();
+                shape.append(highShape, false);
+                break;
+            case LOW:
+                Path2D lowShape = new Path2D.Double();
+                lowShape.moveTo(0.0, 0.0);
+                lowShape.lineTo(0.0, +h2);
+                lowShape.moveTo(0.0, +h);
+                lowShape.lineTo(-w2, +h2);
+                lowShape.lineTo(+w2, +h2);
+                lowShape.closePath();
+                shape.append(lowShape, false);
+                break;
+            case UNSTABLE:
+                Path2D unstableShape = new Path2D.Double();
+                unstableShape.moveTo(-w2, 0.0);
+                unstableShape.lineTo(0.0, -h2);
+                unstableShape.lineTo(0.0, +h2);
+                unstableShape.lineTo(+w2, 0.0);
+                shape.append(unstableShape, false);
+                break;
+            case STABLE:
+                Line2D stableShape = new Line2D.Double(-w2, 0.0, +w2, 0.0);
+                shape.append(stableShape, false);
+                break;
+            }
+        }
         return shape;
     }
 
@@ -89,10 +157,11 @@ public class VisualSignal extends VisualComponent {
     public void draw(DrawRequest r) {
         Graphics2D g = r.getGraphics();
         Color colorisation = r.getDecoration().getColorisation();
-        Shape shape = getShape();
         g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-        g.setStroke(new BasicStroke(0.1f * (float) strokeWidth));
-        g.draw(shape);
+        g.setStroke(new BasicStroke(0.2f * (float) strokeWidth));
+        g.draw(getShape());
+        g.setStroke(new BasicStroke(0.3f * (float) strokeWidth));
+        g.draw(getInitialStateShape());
         drawLabelInLocalSpace(r);
         drawNameInLocalSpace(r);
     }

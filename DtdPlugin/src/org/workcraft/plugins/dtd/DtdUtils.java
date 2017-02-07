@@ -1,25 +1,23 @@
 package org.workcraft.plugins.dtd;
 
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
-import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.Bezier;
 import org.workcraft.dom.visual.connections.BezierControlPoint;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
-import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
+import org.workcraft.plugins.dtd.Signal.State;
 import org.workcraft.plugins.dtd.Transition.Direction;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
 public class DtdUtils {
 
     private static final double ARROW_LENGTH = 0.2;
-    private static final double CAUSALITY_ARC_OFFSET = 1.5;
+    private static final double CAUSALITY_ARC_OFFSET = 1.0;
 
     public static boolean isLevelConnection(MathConnection connection) {
         boolean result = false;
@@ -50,22 +48,30 @@ public class DtdUtils {
 
         connection.setConnectionType(ConnectionType.POLYLINE);
         Polyline polyline = (Polyline) connection.getGraphic();
-        connection.setArrow(false);
-        connection.setLineWidth(0.5 * CommonVisualSettings.getStrokeWidth());
-        connection.setScaleMode(ScaleMode.LOCK_RELATIVELY);
 
-        double offset = 0.0;
-        if (v2 instanceof VisualTransition) {
-            Transition t = ((VisualTransition) v2).getReferencedTransition();
-            offset = CommonVisualSettings.getNodeSize() * ((t.getDirection() == Direction.MINUS) ? -0.5 : 0.5);
+        State state = null;
+        if (v1 instanceof VisualSignal) {
+            VisualSignal s1 = (VisualSignal) v1;
+            state = s1.getInitialState();
+        } else if (v1 instanceof VisualTransition) {
+            VisualTransition t1 = (VisualTransition) v1;
+            state = t1.getNextState();
         }
-        AffineTransform rootToLocalTransform = TransformHelper.getTransformFromRoot(connection);
-        Point2D cp1InRootSpace = new Point2D.Double(v1.getRootSpaceX(), v1.getRootSpaceY() + offset);
-        Point2D cp1InLocalSpace = rootToLocalTransform.transform(cp1InRootSpace, null);
-        polyline.addControlPoint(cp1InLocalSpace);
-        Point2D cp2InRootSpace = new Point2D.Double(v2.getRootSpaceX(), v2.getRootSpaceY() + offset);
-        Point2D cp2InLocalSpace = rootToLocalTransform.transform(cp2InRootSpace, null);
-        polyline.addControlPoint(cp2InLocalSpace);
+        if ((state == State.HIGH) || (state == State.LOW)) {
+            double offset = CommonVisualSettings.getNodeSize() * (state == State.LOW ? 0.5 : -0.5);
+            polyline.addControlPoint(new Point2D.Double(v1.getX(), v1.getY() + offset));
+            polyline.addControlPoint(new Point2D.Double(v2.getX(), v2.getY() + offset));
+        }
+    }
+
+    public static Direction getNextDirection(State state) {
+        switch (state) {
+        case HIGH: return Direction.FALL;
+        case LOW: return Direction.RISE;
+        case UNSTABLE: return Direction.STABILISE;
+        case STABLE: return Direction.DESTABILISE;
+        }
+        return null;
     }
 
     public static boolean isEventConnection(MathConnection connection) {

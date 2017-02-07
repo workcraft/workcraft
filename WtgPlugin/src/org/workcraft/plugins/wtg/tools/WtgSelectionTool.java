@@ -12,6 +12,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
+import org.workcraft.plugins.dtd.Transition.Direction;
 import org.workcraft.plugins.dtd.VisualLevelConnection;
 import org.workcraft.plugins.dtd.VisualSignal;
 import org.workcraft.plugins.wtg.VisualState;
@@ -37,26 +38,36 @@ public class WtgSelectionTool extends SelectionTool {
         VisualWtg model = (VisualWtg) e.getModel();
         if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() > 1)) {
             Node node = HitMan.hitTestCurrentLevelFirst(e.getPosition(), model);
-            we.captureMemento();
             if (node instanceof VisualState) {
+                we.saveMemento();
                 VisualState state = (VisualState) node;
                 boolean isInitial = state.getReferencedState().isInitial();
                 state.getReferencedState().setInitial(!isInitial);
                 processed = true;
             } else if (node instanceof VisualSignal) {
-                VisualSignal signal = (VisualSignal) node;
-                processed = model.appendSignalEvent(signal, null).isValid();
-            } else if (node instanceof VisualLevelConnection) {
-                VisualLevelConnection connection = (VisualLevelConnection) node;
-                processed = model.insetrSignalPulse(connection).isValid();
-            }
-            if (processed) {
                 we.saveMemento();
-            } else {
-                we.cancelMemento();
+                VisualSignal signal = (VisualSignal) node;
+                Direction direction = null;
+                switch (e.getKeyModifiers()) {
+                case MouseEvent.SHIFT_DOWN_MASK:
+                    direction = Direction.RISE;
+                    break;
+                case MouseEvent.CTRL_DOWN_MASK:
+                    direction = Direction.FALL;
+                    break;
+                case MouseEvent.SHIFT_DOWN_MASK | MouseEvent.CTRL_DOWN_MASK:
+                    direction = Direction.DESTABILISE;
+                    break;
+                }
+                model.appendSignalEvent(signal, direction);
+                processed = true;
+            } else if (node instanceof VisualLevelConnection) {
+                we.saveMemento();
+                VisualLevelConnection connection = (VisualLevelConnection) node;
+                model.insetrSignalPulse(connection);
+                processed = true;
             }
         }
-
         if (!processed) {
             super.mouseClicked(e);
         }

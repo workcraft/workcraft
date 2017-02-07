@@ -21,7 +21,7 @@ import org.workcraft.util.Hierarchy;
 @CustomTools(DtdToolsProvider.class)
 public class VisualDtd extends VisualGraph {
 
-    private static final double APPEND_EDGE_OFFSET = 2.0;
+    private static final double APPEND_EDGE_OFFSET = 1.0;
     private static final double INSERT_PULSE_OFFSET = 1.0;
 
     public class SignalEvent {
@@ -197,8 +197,12 @@ public class VisualDtd extends VisualGraph {
             }
         }
         VisualComponent fromComponent = (lastTransition != null) ? lastTransition : signal;
-        if ((direction == null) && (lastTransition != null)) {
-            direction = lastTransition.getDirection().reverse();
+        if (direction == null) {
+            if (lastTransition != null) {
+                direction = lastTransition.getDirection().reverse();
+            } else {
+                direction = DtdUtils.getNextDirection(signal.getInitialState());
+            }
         }
         VisualTransition edge = createVisualTransition(signal, direction);
         Point2D pos = new Point2D.Double(fromComponent.getRootSpaceX() + APPEND_EDGE_OFFSET, fromComponent.getRootSpaceY());

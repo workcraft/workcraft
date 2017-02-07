@@ -55,8 +55,8 @@ public class StgToDtdConverter {
 
     private Direction getDirection(SignalTransition.Direction direction) {
         switch (direction) {
-        case PLUS:  return Direction.PLUS;
-        case MINUS: return Direction.MINUS;
+        case PLUS:  return Direction.RISE;
+        case MINUS: return Direction.FALL;
         default:    return null;
         }
     }

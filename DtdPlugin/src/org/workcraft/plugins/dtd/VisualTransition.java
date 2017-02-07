@@ -13,6 +13,7 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.plugins.dtd.Signal.State;
 import org.workcraft.plugins.dtd.Transition.Direction;
 import org.workcraft.plugins.graph.VisualVertex;
 
@@ -40,24 +41,53 @@ public class VisualTransition extends VisualVertex {
     public Shape getShape() {
         Path2D shape = new Path2D.Double();
         if (getReferencedTransition() != null) {
+            double w2 = 0.5 * strokeWidth;
+            double h = strokeWidth;
+            double h2 = 0.5 * h;
             switch (getReferencedTransition().getDirection()) {
-            case PLUS:
-                shape.moveTo(0.0, 0.5 * size);
-                shape.lineTo(0.0, -0.4 * size + 0.5 * strokeWidth);
-                shape.moveTo(0.0, -0.5 * size + strokeWidth);
-                shape.lineTo(+0.5 * strokeWidth, -0.4 * size + strokeWidth);
-                shape.lineTo(-0.5 * strokeWidth, -0.4 * size + strokeWidth);
+            case RISE:
+                shape.moveTo(0.0, +0.5 * size);
+                shape.lineTo(0.0, -0.4 * size + h2);
+                shape.moveTo(0.0, -0.5 * size + h);
+                shape.lineTo(+w2, -0.4 * size + h);
+                shape.lineTo(-w2, -0.4 * size + h);
                 shape.closePath();
                 break;
-            case MINUS:
+            case FALL:
                 shape.moveTo(0.0, -0.5 * size);
-                shape.lineTo(0.0, 0.4 * size - 0.5 * strokeWidth);
-                shape.moveTo(0.0, 0.5 * size - strokeWidth);
-                shape.lineTo(-0.5 * strokeWidth, 0.4 * size - strokeWidth);
-                shape.lineTo(+0.5 * strokeWidth, 0.4 * size - strokeWidth);
+                shape.lineTo(0.0, +0.4 * size - h2);
+                shape.moveTo(0.0, +0.5 * size - h);
+                shape.lineTo(-w2, +0.4 * size - h);
+                shape.lineTo(+w2, +0.4 * size - h);
                 shape.closePath();
                 break;
-            default:
+            case DESTABILISE:
+                shape.moveTo(0.0, +0.0);
+                shape.lineTo(0.0, -0.4 * size + h2);
+                shape.moveTo(0.0, -0.5 * size + h);
+                shape.lineTo(+w2, -0.4 * size + h);
+                shape.lineTo(-w2, -0.4 * size + h);
+                shape.closePath();
+                shape.moveTo(0.0, -0.0);
+                shape.lineTo(0.0, +0.4 * size - h2);
+                shape.moveTo(0.0, +0.5 * size - h);
+                shape.lineTo(-w2, +0.4 * size - h);
+                shape.lineTo(+w2, +0.4 * size - h);
+                shape.closePath();
+                break;
+            case STABILISE:
+                shape.moveTo(0.0, +0.5 * size);
+                shape.lineTo(0.0, +0.1 * size);
+                shape.moveTo(0.0, +0.0 * size + h2);
+                shape.lineTo(+w2, +0.1 * size + h2);
+                shape.lineTo(-w2, +0.1 * size + h2);
+                shape.closePath();
+                shape.moveTo(0.0, -0.5 * size);
+                shape.lineTo(0.0, -0.1 * size);
+                shape.moveTo(0.0, -0.0 * size - h2);
+                shape.lineTo(-w2, -0.1 * size - h2);
+                shape.lineTo(+w2, -0.1 * size - h2);
+                shape.closePath();
                 break;
             }
         }
@@ -89,6 +119,10 @@ public class VisualTransition extends VisualVertex {
 
     public Direction getDirection() {
         return getReferencedTransition().getDirection();
+    }
+
+    public State getNextState() {
+        return getReferencedTransition().getNextState();
     }
 
     @Override
