@@ -1,5 +1,7 @@
 package org.workcraft.plugins.wtg;
 
+import java.util.Collection;
+
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -9,6 +11,7 @@ import org.workcraft.plugins.dtd.Dtd;
 import org.workcraft.plugins.dtd.Signal;
 import org.workcraft.plugins.dtd.Transition;
 import org.workcraft.serialisation.References;
+import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Identifier;
 
 @VisualClass(org.workcraft.plugins.wtg.VisualWtg.class)
@@ -39,6 +42,21 @@ public class Wtg extends Dtd {
     @Override
     public boolean keepUnusedSymbols() {
         return true;
+    }
+
+    public final Collection<State> getStates() {
+        return Hierarchy.getDescendantsOfType(getRoot(), State.class);
+    }
+
+    public final Collection<Waveform> getWaveforms() {
+        return Hierarchy.getDescendantsOfType(getRoot(), Waveform.class);
+    }
+
+    public final Collection<Transition> getTransitions(Container container) {
+        if (container == null) {
+            container = getRoot();
+        }
+        return Hierarchy.getDescendantsOfType(container, Transition.class);
     }
 
 }

@@ -4,6 +4,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import org.workcraft.Framework;
+import org.workcraft.Info;
 import org.workcraft.PluginManager;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.PluginInstantiationException;
@@ -532,7 +533,7 @@ public class MainWindowActions {
         @Override
         public void run() {
             try {
-                URI uri = new URI("mailto", "support@workcraft.org", null);
+                URI uri = new URI("mailto", Info.getEmail(), null);
                 DesktopApi.browse(uri);
             } catch (URISyntaxException e) {
                 LogUtils.logErrorLine(e.getMessage());

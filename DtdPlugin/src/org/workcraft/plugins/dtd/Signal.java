@@ -14,29 +14,35 @@ public class Signal extends Symbol {
     public static final String PROPERTY_INITIAL_STATE = "Initial state";
 
     public enum State {
-        HIGH("1 (high)"),
-        LOW("0 (low)"),
-        UNSTABLE("* (unstable)"),
-        STABLE("? (stable)");
+        HIGH("1", "high"),
+        LOW("0",  "low"),
+        UNSTABLE("*", "unstable"),
+        STABLE("?", "stable");
 
-        private final String name;
+        private final String symbol;
+        private final String description;
 
-        State(String name) {
-            this.name = name;
+        State(String symbol, String description) {
+            this.symbol = symbol;
+            this.description = description;
         }
 
-        public static State fromString(String s) {
+        public String getSymbol() {
+            return symbol;
+        }
+
+        public static State fromSymbol(String symbol) {
             for (State item : State.values()) {
-                if ((s != null) && (s.equals(item.name))) {
+                if ((symbol != null) && (symbol.equals(item.symbol))) {
                     return item;
                 }
             }
-            throw new ArgumentException("Unexpected string: " + s);
+            throw new ArgumentException("Unexpected string: " + symbol);
         }
 
         @Override
         public String toString() {
-            return name;
+            return symbol + " (" + description + ")";
         }
 
         public State reverse() {

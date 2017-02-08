@@ -7,6 +7,7 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
+import org.workcraft.Info;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
@@ -23,7 +24,7 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
-    public static final String INTERNAL_ERROR_MSG = "Internal error. Contact developers at www.workcraft.org/";
+    public static final String INTERNAL_ERROR_MSG = "Internal error. Contact developers at " + Info.getHomepage();
 
     private ScencoExternalToolTask scenco;
     private final ScencoSolver solver;

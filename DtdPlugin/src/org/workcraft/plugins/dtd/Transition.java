@@ -37,12 +37,12 @@ public class Transition extends Vertex {
                     return item;
                 }
             }
-            throw new ArgumentException("Unexpected name: " + symbol);
+            throw new ArgumentException("Unexpected string: " + symbol);
         }
 
         @Override
         public String toString() {
-            return symbol + "(" + description + ")";
+            return symbol + " (" + description + ")";
         }
 
         public Direction reverse() {
