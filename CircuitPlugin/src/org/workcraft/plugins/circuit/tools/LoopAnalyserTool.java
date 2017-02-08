@@ -58,7 +58,7 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
     }
 
     @Override
-    public String getHintText() {
+    public String getHintText(final GraphEditor editor) {
         return "Click on a driven contact to toggle its break path state.";
     }
 

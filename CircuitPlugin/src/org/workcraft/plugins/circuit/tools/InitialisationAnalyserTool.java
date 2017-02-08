@@ -64,7 +64,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     }
 
     @Override
-    public String getHintText() {
+    public String getHintText(final GraphEditor editor) {
         return "Click on a driver contact to toggle its force initialisation state.";
     }
 

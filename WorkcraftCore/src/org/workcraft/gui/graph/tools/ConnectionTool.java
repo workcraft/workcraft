@@ -314,7 +314,7 @@ public class ConnectionTool extends AbstractGraphEditorTool {
     }
 
     @Override
-    public String getHintText() {
+    public String getHintText(final GraphEditor editor) {
         return (firstNode == null) ? getFirstHintMessage() : getSecondHintMessage();
     }
 

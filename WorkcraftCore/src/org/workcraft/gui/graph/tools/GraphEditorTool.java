@@ -13,6 +13,7 @@ public interface GraphEditorTool extends Tool, GraphEditorKeyListener, GraphEdit
     void drawInUserSpace(GraphEditor editor, Graphics2D g);
     void drawInScreenSpace(GraphEditor editor, Graphics2D g);
     Decorator getDecorator(GraphEditor editor);
+    String getHintText(GraphEditor editor);
 
     void createInterfacePanel(GraphEditor editor);
     JPanel getInterfacePanel();

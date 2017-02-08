@@ -9,6 +9,7 @@ import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
@@ -84,6 +85,12 @@ public class DtdSelectionTool extends SelectionTool {
                 model.removeFromSelection(node);
             }
         }
+    }
+
+    @Override
+    public String getHintText(final GraphEditor editor) {
+        return "Double-click on a signal to append a transition. Hold Shift for rising transition, " +
+                DesktopApi.getMenuKeyMaskName() + " for falling transition, or both keys for unstable transition.";
     }
 
 }

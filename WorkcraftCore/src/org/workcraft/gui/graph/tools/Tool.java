@@ -8,7 +8,6 @@ public interface Tool {
     String getLabel();
     Icon getIcon();
     int getHotKeyCode();
-    String getHintText();
     Cursor getCursor();
     boolean requiresButton();
 }

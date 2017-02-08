@@ -14,29 +14,35 @@ public class Transition extends Vertex {
     public static final String PROPERTY_DIRECTION = "Direction";
 
     public enum Direction {
-        RISE("+ (rise)"),
-        FALL("- (fall)"),
-        DESTABILISE("switch"),
-        STABILISE("stabilise");
+        RISE("+", "rise"),
+        FALL("-", "fall"),
+        DESTABILISE("*", "destabilise"),
+        STABILISE("%", "stabilise");
 
-        private final String name;
+        private final String symbol;
+        private final String description;
 
-        Direction(String name) {
-            this.name = name;
+        Direction(String name, String description) {
+            this.symbol = name;
+            this.description = description;
         }
 
-        public static Direction fromString(String s) {
+        public String getSymbol() {
+            return symbol;
+        }
+
+        public static Direction fromSymbol(String symbol) {
             for (Direction item : Direction.values()) {
-                if ((s != null) && (s.equals(item.name))) {
+                if ((symbol != null) && (symbol.equals(item.symbol))) {
                     return item;
                 }
             }
-            throw new ArgumentException("Unexpected string: " + s);
+            throw new ArgumentException("Unexpected name: " + symbol);
         }
 
         @Override
         public String toString() {
-            return name;
+            return symbol + "(" + description + ")";
         }
 
         public Direction reverse() {

@@ -166,7 +166,7 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
     }
 
     @Override
-    public String getHintText() {
+    public String getHintText(final GraphEditor editor) {
         return generator.getText();
     }
 

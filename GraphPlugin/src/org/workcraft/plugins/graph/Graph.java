@@ -12,7 +12,6 @@ import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.gui.propertyeditor.ModelProperties;
-import org.workcraft.plugins.graph.propertydescriptors.SymbolPropertyDescriptor;
 import org.workcraft.plugins.graph.propertydescriptors.VertexSymbolPropertyDescriptor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
@@ -54,15 +53,22 @@ public class Graph extends AbstractMathModel {
         return createNode(name, null, Symbol.class);
     }
 
-    public final Collection<Symbol> getSymbols() {
+    public Collection<Symbol> getSymbols() {
         return Hierarchy.getDescendantsOfType(getRoot(), Symbol.class);
     }
 
-    public final Collection<Vertex> getVertices() {
+    public Collection<Symbol> getSymbols(Container container) {
+        if (container == null) {
+            container = getRoot();
+        }
+        return Hierarchy.getChildrenOfType(container, Symbol.class);
+    }
+
+    public Collection<Vertex> getVertices() {
         return Hierarchy.getDescendantsOfType(getRoot(), Vertex.class);
     }
 
-    public final Collection<Vertex> getVertices(final Symbol symbol) {
+    public Collection<Vertex> getVertices(final Symbol symbol) {
         return Hierarchy.getDescendantsOfType(getRoot(), Vertex.class, new Func<Vertex, Boolean>() {
             @Override
             public Boolean eval(Vertex arg) {
@@ -104,12 +110,7 @@ public class Graph extends AbstractMathModel {
     @Override
     public ModelProperties getProperties(Node node) {
         ModelProperties properties = super.getProperties(node);
-        if (node == null) {
-            for (final Symbol symbol: getSymbols()) {
-                SymbolPropertyDescriptor symbolDescriptor = new SymbolPropertyDescriptor(this, symbol);
-                properties.insertOrderedByFirstWord(symbolDescriptor);
-            }
-        } else if (node instanceof Vertex) {
+        if (node instanceof Vertex) {
             Vertex vertex = (Vertex) node;
             properties.add(new VertexSymbolPropertyDescriptor(this, vertex));
         }

@@ -760,7 +760,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
     }
 
     @Override
-    public String getHintText() {
+    public String getHintText(final GraphEditor editor) {
         return "Click on a highlighted node to fire it.";
     }
 

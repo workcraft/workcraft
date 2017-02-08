@@ -171,7 +171,7 @@ public class PetriSimulationTool extends SimulationTool {
     }
 
     @Override
-    public String getHintText() {
+    public String getHintText(final GraphEditor editor) {
         return "Click on a highlighted transition to fire it.";
     }
 

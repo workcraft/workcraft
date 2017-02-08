@@ -57,7 +57,7 @@ public abstract class AbstractGraphEditorTool implements GraphEditorTool {
     }
 
     @Override
-    public String getHintText() {
+    public String getHintText(final GraphEditor editor) {
         return null;
     }
 
@@ -71,7 +71,8 @@ public abstract class AbstractGraphEditorTool implements GraphEditorTool {
         if ((issueText != null) && CommonEditorSettings.getIssueVisibility()) {
             GUI.drawEditorMessage(editor, g, CommonEditorSettings.getIssueColor(), issueText);
         } else if (CommonEditorSettings.getHintVisibility()) {
-            GUI.drawEditorMessage(editor, g, CommonEditorSettings.getHintColor(), getHintText());
+            String hintText = getHintText(editor);
+            GUI.drawEditorMessage(editor, g, CommonEditorSettings.getHintColor(), hintText);
         }
     }
 

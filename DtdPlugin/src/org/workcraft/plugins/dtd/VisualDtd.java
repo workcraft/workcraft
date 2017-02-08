@@ -13,7 +13,11 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.plugins.dtd.Transition.Direction;
+import org.workcraft.plugins.dtd.propertydescriptors.SignalInitialStatePropertyDescriptor;
+import org.workcraft.plugins.dtd.propertydescriptors.SignalTypePropertyDescriptor;
 import org.workcraft.plugins.graph.VisualGraph;
 import org.workcraft.util.Hierarchy;
 
@@ -135,16 +139,24 @@ public class VisualDtd extends VisualGraph {
         return vConnection;
     }
 
-    public Collection<VisualSignal> getVisualSignals() {
-        return Hierarchy.getDescendantsOfType(getRoot(), VisualSignal.class);
+    public Collection<VisualSignal> getVisualSignals(Container container) {
+        if (container == null) {
+            container = getRoot();
+        }
+        return Hierarchy.getChildrenOfType(container, VisualSignal.class);
     }
 
-    public Collection<VisualTransition> getVisualTransitions() {
-        return Hierarchy.getDescendantsOfType(getRoot(), VisualTransition.class);
+    public Collection<VisualTransition> getVisualTransitions(Container container) {
+        if (container == null) {
+            container = getRoot();
+        }
+        return Hierarchy.getChildrenOfType(container, VisualTransition.class);
     }
 
     protected VisualSignal getVisualSignal(VisualTransition transition) {
-        for (VisualSignal signal: getVisualSignals()) {
+        Node parent = transition.getParent();
+        Container container = (parent instanceof Container) ? (Container) parent : null;
+        for (VisualSignal signal: getVisualSignals(container)) {
             Signal refSignal = transition.getReferencedTransition().getSignal();
             if (signal.getReferencedSignal() == refSignal) {
                 return signal;
@@ -155,8 +167,10 @@ public class VisualDtd extends VisualGraph {
 
     protected Collection<VisualTransition> getVisualTransitions(VisualSignal signal) {
         HashSet<VisualTransition> result = new HashSet<>();
+        Node parent = signal.getParent();
+        Container container = (parent instanceof Container) ? (Container) parent : null;
         Signal refSignal = signal.getReferencedSignal();
-        for (VisualTransition transition: getVisualTransitions()) {
+        for (VisualTransition transition: getVisualTransitions(container)) {
             if (transition.getReferencedTransition().getSignal() == refSignal) {
                 result.add(transition);
             }
@@ -244,6 +258,24 @@ public class VisualDtd extends VisualGraph {
         } catch (InvalidConnectionException e) {
         }
         return new SignalPulse(leadLevel, leadEdge, midLevel, trailEdge, trailLevel);
+    }
+
+    @Override
+    public ModelProperties getProperties(Node node) {
+        ModelProperties properties = super.getProperties(node);
+        if (node == null) {
+            for (final VisualSignal signal: getVisualSignals(getCurrentLevel())) {
+                Signal mathSignal = signal.getReferencedSignal();
+                SignalTypePropertyDescriptor typeDescriptor = new SignalTypePropertyDescriptor(getMathModel(), mathSignal);
+                properties.insertOrderedByFirstWord(typeDescriptor);
+                SignalInitialStatePropertyDescriptor initialStateDescriptor = new SignalInitialStatePropertyDescriptor(getMathModel(), mathSignal);
+                properties.insertOrderedByFirstWord(initialStateDescriptor);
+            }
+        } else if (node instanceof VisualTransition) {
+            properties.removeByName(Transition.PROPERTY_SYMBOL);
+            properties.removeByName(NamePropertyDescriptor.PROPERTY_NAME);
+        }
+        return properties;
     }
 
 }

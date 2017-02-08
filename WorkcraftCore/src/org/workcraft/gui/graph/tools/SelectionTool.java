@@ -902,13 +902,13 @@ public class SelectionTool extends AbstractGraphEditorTool {
     }
 
     @Override
-    public String getHintText() {
+    public String getHintText(final GraphEditor editor) {
         if (isPanMode) {
             return "Use " + DesktopApi.getMenuKeyMaskName() + " + RMB to pan the view.";
         } else if (isTextMode) {
             return "Use " + DesktopApi.getMenuKeyMaskName() + " + Enter to finish text editing.";
         }
-        return super.getHintText();
+        return super.getHintText(editor);
     }
 
 }

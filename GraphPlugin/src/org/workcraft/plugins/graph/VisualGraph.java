@@ -7,6 +7,7 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.ShortName;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualComponent;
@@ -14,6 +15,8 @@ import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
+import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.plugins.graph.propertydescriptors.SymbolPropertyDescriptor;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Directed Graph")
@@ -63,6 +66,20 @@ public class VisualGraph extends AbstractVisualModel {
 
     public Collection<VisualVertex> getVisualVertex() {
         return Hierarchy.getDescendantsOfType(getRoot(), VisualVertex.class);
+    }
+
+    @Override
+    public ModelProperties getProperties(Node node) {
+        ModelProperties properties = super.getProperties(node);
+        Graph graph = (Graph) getMathModel();
+        if (node == null) {
+            Container container = NamespaceHelper.getMathContainer(this, getCurrentLevel());
+            for (final Symbol symbol: graph.getSymbols(container)) {
+                SymbolPropertyDescriptor symbolDescriptor = new SymbolPropertyDescriptor(graph, symbol);
+                properties.insertOrderedByFirstWord(symbolDescriptor);
+            }
+        }
+        return properties;
     }
 
 }

@@ -125,7 +125,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
     protected Timer timer = null;
 
     @Override
-    public String getHintText() {
+    public String getHintText(final GraphEditor editor) {
         return "Click on a highlighted node to fire it.";
     }
 
