@@ -52,6 +52,13 @@ public class Wtg extends Dtd {
         return Hierarchy.getDescendantsOfType(getRoot(), Waveform.class);
     }
 
+    public final Collection<Signal> getSignals(Container container) {
+        if (container == null) {
+            container = getRoot();
+        }
+        return Hierarchy.getDescendantsOfType(container, Signal.class);
+    }
+
     public final Collection<Transition> getTransitions(Container container) {
         if (container == null) {
             container = getRoot();

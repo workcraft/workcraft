@@ -2,6 +2,7 @@ package org.workcraft.plugins.wtg.serialisation;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -10,8 +11,8 @@ import java.util.UUID;
 import org.workcraft.Info;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.ArgumentException;
+import org.workcraft.exceptions.FormatException;
 import org.workcraft.plugins.dtd.Signal;
 import org.workcraft.plugins.dtd.Signal.Type;
 import org.workcraft.plugins.dtd.Transition;
@@ -24,6 +25,15 @@ import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
 
 public class DotGSerialiser implements ModelSerialiser {
+
+    private static final String KEYWORDS_INPUTS = ".inputs";
+    private static final String KEYWORD_OUTPUTS = ".outputs";
+    private static final String KEYWORD_INTERNAL = ".internal";
+    private static final String KEYWORD_INITIAL = ".initial";
+    private static final String KEYWORD_WAVEFORM = ".waveform";
+    private static final String KEYWORD_ENTRY = ".entry";
+    private static final String KEYWORD_EXIT = ".exit";
+    private static final String KEYWORD_END = ".end";
 
     class ReferenceResolver implements ReferenceProducer {
         HashMap<Object, String> refMap = new HashMap<>();
@@ -84,79 +94,145 @@ public class DotGSerialiser implements ModelSerialiser {
         writeSignalHeader(out, wtg, Type.INPUT);
         writeSignalHeader(out, wtg, Type.OUTPUT);
         writeSignalHeader(out, wtg, Type.INTERNAL);
-        writeWtg(out, wtg);
+        writeInitial(out, wtg);
         for (Waveform waveform: wtg.getWaveforms()) {
             writeWaveform(out, wtg, waveform);
         }
+        writeEnd(out);
     }
 
     private void writeSignalHeader(PrintWriter out, Wtg wtg, Type type) {
-        HashSet<String> names = new HashSet<>();
-        for (Signal signal: wtg.getSignals(type)) {
-            String name = getSrialisedNodeName(wtg, signal);
-            names.add(name);
-        }
-        if (!names.isEmpty()) {
-            switch (type) {
-            case INPUT:
-                out.write(".inputs");
-                break;
-            case OUTPUT:
-                out.write(".outputs");
-                break;
-            case INTERNAL:
-                out.write(".internal");
-                break;
-            }
-            for (String name: names) {
-                out.write(" " + name);
-            }
-            out.write("\n");
+        Collection<Node> signals = new HashSet<>();
+        signals.addAll(wtg.getSignals(type));
+        switch (type) {
+        case INPUT:
+            writeNodeSet(out, wtg, KEYWORDS_INPUTS, signals);
+            break;
+        case OUTPUT:
+            writeNodeSet(out, wtg, KEYWORD_OUTPUTS, signals);
+            break;
+        case INTERNAL:
+            writeNodeSet(out, wtg, KEYWORD_INTERNAL, signals);
+            break;
         }
     }
 
-    private void writeWtg(PrintWriter out, Wtg wtg) {
-        out.write(".wtg\n");
+    private void writeInitial(PrintWriter out, Wtg wtg) {
+        HashSet<State> initialStates = new HashSet<>();
         for (State state: wtg.getStates()) {
-            writeGraphEntry(out, wtg, state);
+            if (state.isInitial()) {
+                initialStates.add(state);
+            }
         }
-        for (Waveform waveform: wtg.getWaveforms()) {
-            writeGraphEntry(out, wtg, waveform);
-        }
-        writeMarking(out, wtg);
-    }
-
-    private void writeWaveform(PrintWriter out, Wtg wtg, Waveform waveform) {
-        String waveformName = getSrialisedNodeName(wtg, waveform);
-        out.write("\n");
-        out.write(".waveform " + waveformName + "\n");
-        for (Transition transition: wtg.getTransitions(waveform)) {
-            writeGraphEntry(out, wtg, transition);
+        if (initialStates.isEmpty()) {
+            throw new FormatException("Initial state is undefined");
+        } else if (initialStates.size() > 1) {
+            throw new FormatException("More that one initial state");
+        } else {
+            writeNodeSet(out, wtg, KEYWORD_INITIAL, (Collection) initialStates);
         }
     }
 
-    private void writeGraphEntry(PrintWriter out, Wtg wtg, MathNode node) {
-        if (node != null) {
-            String curNodeName = getSrialisedNodeName(wtg, node);
-            Set<Node> postset = wtg.getPostset(node);
-            if (!postset.isEmpty()) {
-                out.write(curNodeName);
-                for (Node succNode: postset) {
-                    String succNodeName = getSrialisedNodeName(wtg, succNode);
-                    out.write(" " + succNodeName);
+    private void writeNodeSet(PrintWriter out, Wtg wtg, String keyword, Collection<Node> nodes) {
+        if (nodes != null) {
+            HashSet<String> nodeNames = new HashSet<>();
+            for (Node node: nodes) {
+                String nodeName = getSrialisedNodeName(wtg, node);
+                nodeNames.add(nodeName);
+            }
+            if (!nodeNames.isEmpty()) {
+                out.write(keyword);
+                for (String nodeName: nodeNames) {
+                    out.write(" " + nodeName);
                 }
                 out.write("\n");
             }
         }
     }
 
-    private void writeMarking(PrintWriter out, Wtg wtg) {
-        for (State state: wtg.getStates()) {
-            if (state.isInitial()) {
-                String stateStr = getSrialisedNodeName(wtg, state);
-                out.write(".marking " + stateStr + "\n");
+    private void writeWaveform(PrintWriter out, Wtg wtg, Waveform waveform) {
+        String waveformName = getSrialisedNodeName(wtg, waveform);
+        Set<Node> preset = wtg.getPreset(waveform);
+        Set<Node> postset = wtg.getPostset(waveform);
+        if ((preset.size() != 1) || (postset.size() != 1)) {
+            throw new FormatException("Incorrect preset and/or postset of waveform '" + waveformName + "'");
+        } else {
+            Node entryState = preset.iterator().next();
+            String entryStateName = getSrialisedNodeName(wtg, entryState);
+            Node exitState = postset.iterator().next();
+            String exitStateName = getSrialisedNodeName(wtg, exitState);
+            out.write("\n");
+            out.write(KEYWORD_WAVEFORM + " " + waveformName + " " + entryStateName + " " + exitStateName + "\n");
+            writeWaveformEntry(out, wtg, waveform);
+            writeWaveformBody(out, wtg, waveform);
+            writeWaveformExit(out, wtg, waveform);
+        }
+    }
+
+    private void writeWaveformEntry(PrintWriter out, Wtg wtg, Waveform waveform) {
+        HashSet<Transition> entryTransitions = new HashSet<>();
+        Collection<Transition> transitions = wtg.getTransitions(waveform);
+        for (Transition transition: transitions) {
+            HashSet<Node> predTransitions = new HashSet<>();
+            predTransitions.addAll(wtg.getPreset(transition));
+            predTransitions.retainAll(transitions);
+            if (predTransitions.isEmpty()) {
+                entryTransitions.add(transition);
             }
         }
+        if (entryTransitions.isEmpty()) {
+            String waveformName = getSrialisedNodeName(wtg, waveform);
+            throw new FormatException("Waveform '" + waveformName + "' has no entry transitions");
+        } else {
+            writeNodeSet(out, wtg, KEYWORD_ENTRY, (Collection) entryTransitions);
+        }
+    }
+
+    private void writeWaveformBody(PrintWriter out, Wtg wtg, Waveform waveform) {
+        for (Transition transition: wtg.getTransitions(waveform)) {
+            Set<Node> succTransitions = new HashSet<>();
+            for (Node succNode: wtg.getPostset(transition)) {
+                if (succNode instanceof Transition) {
+                    succTransitions.add(succNode);
+                }
+            }
+            writeWaveformBodyLine(out, wtg, transition, succTransitions);
+        }
+    }
+
+    private void writeWaveformExit(PrintWriter out, Wtg wtg, Waveform waveform) {
+        HashSet<Transition> exitTransitions = new HashSet<>();
+        Collection<Transition> transitions = wtg.getTransitions(waveform);
+        for (Transition transition: transitions) {
+            HashSet<Node> succTransitions = new HashSet<>();
+            succTransitions.addAll(wtg.getPostset(transition));
+            succTransitions.retainAll(transitions);
+            if (succTransitions.isEmpty()) {
+                exitTransitions.add(transition);
+            }
+        }
+        if (exitTransitions.isEmpty()) {
+            String waveformName = getSrialisedNodeName(wtg, waveform);
+            throw new FormatException("Waveform '" + waveformName + "' has no exit transitions");
+        } else {
+            writeNodeSet(out, wtg, KEYWORD_EXIT, (Collection) exitTransitions);
+        }
+    }
+
+    private void writeWaveformBodyLine(PrintWriter out, Wtg wtg, Node node, Set<Node> succNodes) {
+        if ((node != null) && !succNodes.isEmpty()) {
+            String nodeName = getSrialisedNodeName(wtg, node);
+            out.write(nodeName);
+            for (Node succNode: succNodes) {
+                String succNodeName = getSrialisedNodeName(wtg, succNode);
+                out.write(" " + succNodeName);
+            }
+            out.write("\n");
+        }
+    }
+
+    private void writeEnd(PrintWriter out) {
+        out.write("\n" + KEYWORD_END + "\n");
     }
 
 }

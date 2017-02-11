@@ -1,7 +1,9 @@
 package org.workcraft.plugins.dtd;
 
 import java.awt.BasicStroke;
+import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.geom.AffineTransform;
 
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.VisualNode;
@@ -10,6 +12,37 @@ import org.workcraft.plugins.dtd.Signal.State;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
 public class VisualLevelConnection extends VisualConnection {
+
+    class OffsetStroke implements Stroke {
+        private final Stroke stroke;
+        private final float offset;
+
+        OffsetStroke(Stroke stroke, float offset) {
+            this.stroke = stroke;
+            this.offset = offset;
+        }
+
+        @Override
+        public Shape createStrokedShape(Shape shape) {
+            AffineTransform at = AffineTransform.getTranslateInstance(0.0, offset);
+            return stroke.createStrokedShape(at.createTransformedShape(shape));
+        }
+    }
+
+    class CompositeStroke implements Stroke {
+        private final Stroke stroke1;
+        private final Stroke stroke2;
+
+        CompositeStroke(Stroke stroke1, Stroke stroke2) {
+            this.stroke1 = stroke1;
+            this.stroke2 = stroke2;
+        }
+
+        @Override
+        public Shape createStrokedShape(Shape shape) {
+            return stroke2.createStrokedShape(stroke1.createStrokedShape(shape));
+        }
+    }
 
     public VisualLevelConnection() {
         this(null, null, null);
@@ -45,6 +78,18 @@ public class VisualLevelConnection extends VisualConnection {
 
     @Override
     public Stroke getStroke() {
+        State state = getBeforeState();
+        float width = 0.5f * (float) CommonVisualSettings.getStrokeWidth();
+        switch (state) {
+        case UNSTABLE:
+            float[] pattern = {0.1f, 0.1f};
+            return new BasicStroke(width, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f);
+        default:
+            return new BasicStroke(width);
+        }
+    }
+
+    private State getBeforeState() {
         VisualNode fromNode = getFirst();
         State state = null;
         if (fromNode instanceof VisualSignal) {
@@ -54,11 +99,7 @@ public class VisualLevelConnection extends VisualConnection {
             VisualTransition fromTransition = (VisualTransition) fromNode;
             state = fromTransition.getReferencedTransition().getNextState();
         }
-        if (state == State.UNSTABLE) {
-            float[] pattern = {0.1f, 0.1f};
-            return new BasicStroke((float) getLineWidth(), BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f);
-        }
-        return new BasicStroke((float) getLineWidth());
+        return state;
     }
 
 }

@@ -17,7 +17,7 @@ public class Transition extends Vertex {
         RISE("+", "rise"),
         FALL("-", "fall"),
         DESTABILISE("*", "destabilise"),
-        STABILISE("%", "stabilise");
+        STABILISE("@", "stabilise");
 
         private final String symbol;
         private final String description;

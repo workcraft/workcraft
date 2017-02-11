@@ -62,20 +62,6 @@ public class VisualTransition extends VisualVertex {
                 shape.closePath();
                 break;
             case DESTABILISE:
-                shape.moveTo(0.0, +0.0);
-                shape.lineTo(0.0, -0.4 * size + h2);
-                shape.moveTo(0.0, -0.5 * size + h);
-                shape.lineTo(+w2, -0.4 * size + h);
-                shape.lineTo(-w2, -0.4 * size + h);
-                shape.closePath();
-                shape.moveTo(0.0, -0.0);
-                shape.lineTo(0.0, +0.4 * size - h2);
-                shape.moveTo(0.0, +0.5 * size - h);
-                shape.lineTo(-w2, +0.4 * size - h);
-                shape.lineTo(+w2, +0.4 * size - h);
-                shape.closePath();
-                break;
-            case STABILISE:
                 shape.moveTo(0.0, +0.5 * size);
                 shape.lineTo(0.0, +0.1 * size);
                 shape.moveTo(0.0, +0.0 * size + h2);
@@ -87,6 +73,20 @@ public class VisualTransition extends VisualVertex {
                 shape.moveTo(0.0, -0.0 * size - h2);
                 shape.lineTo(-w2, -0.1 * size - h2);
                 shape.lineTo(+w2, -0.1 * size - h2);
+                shape.closePath();
+                break;
+            case STABILISE:
+                shape.moveTo(0.0, +0.0);
+                shape.lineTo(0.0, -0.4 * size + h2);
+                shape.moveTo(0.0, -0.5 * size + h);
+                shape.lineTo(+w2, -0.4 * size + h);
+                shape.lineTo(-w2, -0.4 * size + h);
+                shape.closePath();
+                shape.moveTo(0.0, -0.0);
+                shape.lineTo(0.0, +0.4 * size - h2);
+                shape.moveTo(0.0, +0.5 * size - h);
+                shape.lineTo(-w2, +0.4 * size - h);
+                shape.lineTo(+w2, +0.4 * size - h);
                 shape.closePath();
                 break;
             }
