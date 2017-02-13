@@ -17,4 +17,5 @@ public class VisualWtgDescriptor implements VisualModelDescriptor {
     public Iterable<GraphEditorTool> createTools() {
         throw new org.workcraft.exceptions.NotImplementedException();
     }
+
 }
