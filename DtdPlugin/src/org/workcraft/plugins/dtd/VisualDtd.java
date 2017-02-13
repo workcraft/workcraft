@@ -79,20 +79,23 @@ public class VisualDtd extends VisualGraph {
             throw new InvalidConnectionException("Connection already exists.");
         }
 
-        if ((first instanceof VisualComponent) && (second instanceof VisualComponent)) {
-            VisualComponent firstComponent = (VisualComponent) first;
-            VisualComponent secondComponent = (VisualComponent) second;
-            if (firstComponent.getRootSpaceX() > secondComponent.getRootSpaceX()) {
-                throw new InvalidConnectionException("Invalid order of events.");
-            }
-        }
-
         if ((first instanceof VisualTransition) && (second instanceof VisualTransition)) {
             VisualTransition firstTransition = (VisualTransition) first;
             VisualTransition secondTransition = (VisualTransition) second;
-            if ((firstTransition.getSignal() == secondTransition.getSignal())
-                    && (firstTransition.getDirection() == secondTransition.getDirection())) {
-                throw new InvalidConnectionException("Cannot order transitions of the same signal and direction.");
+            if (firstTransition.getX() > secondTransition.getX()) {
+                throw new InvalidConnectionException("Invalid order of transitions.");
+            }
+            if (firstTransition.getSignal() == secondTransition.getSignal()) {
+                if (firstTransition.getDirection() == Direction.STABILISE) {
+                    throw new InvalidConnectionException("Signal at unknown state cannot change.");
+                }
+                if ((firstTransition.getDirection() != Direction.DESTABILISE)
+                        && (secondTransition.getDirection() == Direction.STABILISE)) {
+                    throw new InvalidConnectionException("Only unstable signal can stabilise.");
+                }
+                if (firstTransition.getDirection() == secondTransition.getDirection()) {
+                    throw new InvalidConnectionException("Cannot connect transitions of the same signal and direction.");
+                }
             }
             return;
         }

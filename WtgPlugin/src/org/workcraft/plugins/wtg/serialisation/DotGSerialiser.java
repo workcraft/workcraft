@@ -36,7 +36,49 @@ public class DotGSerialiser implements ModelSerialiser {
     private static final String KEYWORD_END = ".end";
 
     class ReferenceResolver implements ReferenceProducer {
+        private static final String SEPARATOR_INSTANCE = "/";
+        private static final String SEPARATOR_STATE = "@";
         HashMap<Object, String> refMap = new HashMap<>();
+
+        ReferenceResolver(Wtg wtg) {
+            for (Signal signal: wtg.getSignals()) {
+                refMap.put(signal, wtg.getName(signal));
+            }
+            for (State state: wtg.getStates()) {
+                refMap.put(state, wtg.getName(state));
+            }
+            for (Waveform waveform: wtg.getWaveforms()) {
+                refMap.put(waveform, wtg.getName(waveform));
+                HashMap<String, Integer> instanceCount = new HashMap<>();
+                for (Transition transition: wtg.getTransitions(waveform)) {
+                    String transitionName = getSrialisedTransitionName(wtg, transition);
+                    if (!instanceCount.containsKey(transitionName)) {
+                        instanceCount.put(transitionName, 1);
+                    } else {
+                        int count = instanceCount.get(transitionName);
+                        transitionName += SEPARATOR_INSTANCE + count;
+                        instanceCount.put(transitionName, count + 1);
+                    }
+                    refMap.put(transition, transitionName);
+                }
+            }
+        }
+
+        private String getSrialisedTransitionName(Wtg wtg, Transition transition) {
+            Signal signal = transition.getSignal();
+            String result = wtg.getName(signal);
+            Direction direction = transition.getDirection();
+            switch (wtg.getBeforeState(transition)) {
+            case UNSTABLE:
+                result += SEPARATOR_STATE + transition.getNextState().getSymbol();
+                break;
+            default:
+                result += direction.getSymbol();
+                break;
+
+            }
+            return result;
+        }
 
         @Override
         public String getReference(Object obj) {
@@ -46,18 +88,16 @@ public class DotGSerialiser implements ModelSerialiser {
 
     @Override
     public ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer refs) {
-        PrintWriter writer = new PrintWriter(out);
-        writer.write(Info.getGeneratedByText("# WTG file ", "\n"));
-
-        ReferenceResolver resolver = new ReferenceResolver();
-
         if (model instanceof Wtg) {
-            write(writer, (Wtg) model);
+            Wtg wtg = (Wtg) model;
+            ReferenceResolver resolver = new ReferenceResolver(wtg);
+            PrintWriter writer = new PrintWriter(out);
+            write(writer, wtg, resolver);
+            writer.close();
+            return resolver;
         } else {
             throw new ArgumentException("Model class not supported: " + model.getClass().getName());
         }
-        writer.close();
-        return resolver;
     }
 
     @Override
@@ -80,44 +120,35 @@ public class DotGSerialiser implements ModelSerialiser {
         return Format.WTG;
     }
 
-    private String getSrialisedNodeName(Wtg wtg, Node node) {
-        if (node instanceof Transition) {
-            Transition transition = (Transition) node;
-            Signal signal = transition.getSignal();
-            Direction direction = transition.getDirection();
-            return wtg.getName(signal) + direction.getSymbol();
-        }
-        return wtg.getName(node);
-    }
-
-    private void write(PrintWriter out, Wtg wtg) {
-        writeSignalHeader(out, wtg, Type.INPUT);
-        writeSignalHeader(out, wtg, Type.OUTPUT);
-        writeSignalHeader(out, wtg, Type.INTERNAL);
-        writeInitial(out, wtg);
+    private void write(PrintWriter out, Wtg wtg, ReferenceProducer refs) {
+        out.write(Info.getGeneratedByText("# WTG file ", "\n"));
+        writeSignalHeader(out, wtg, refs, Type.INPUT);
+        writeSignalHeader(out, wtg, refs, Type.OUTPUT);
+        writeSignalHeader(out, wtg, refs, Type.INTERNAL);
+        writeInitial(out, wtg, refs);
         for (Waveform waveform: wtg.getWaveforms()) {
-            writeWaveform(out, wtg, waveform);
+            writeWaveform(out, wtg, refs, waveform);
         }
         writeEnd(out);
     }
 
-    private void writeSignalHeader(PrintWriter out, Wtg wtg, Type type) {
+    private void writeSignalHeader(PrintWriter out, Wtg wtg, ReferenceProducer refs, Type type) {
         Collection<Node> signals = new HashSet<>();
         signals.addAll(wtg.getSignals(type));
         switch (type) {
         case INPUT:
-            writeNodeSet(out, wtg, KEYWORDS_INPUTS, signals);
+            writeNodeSet(out, wtg, refs, KEYWORDS_INPUTS, signals);
             break;
         case OUTPUT:
-            writeNodeSet(out, wtg, KEYWORD_OUTPUTS, signals);
+            writeNodeSet(out, wtg, refs, KEYWORD_OUTPUTS, signals);
             break;
         case INTERNAL:
-            writeNodeSet(out, wtg, KEYWORD_INTERNAL, signals);
+            writeNodeSet(out, wtg, refs, KEYWORD_INTERNAL, signals);
             break;
         }
     }
 
-    private void writeInitial(PrintWriter out, Wtg wtg) {
+    private void writeInitial(PrintWriter out, Wtg wtg, ReferenceProducer refs) {
         HashSet<State> initialStates = new HashSet<>();
         for (State state: wtg.getStates()) {
             if (state.isInitial()) {
@@ -129,15 +160,15 @@ public class DotGSerialiser implements ModelSerialiser {
         } else if (initialStates.size() > 1) {
             throw new FormatException("More that one initial state");
         } else {
-            writeNodeSet(out, wtg, KEYWORD_INITIAL, (Collection) initialStates);
+            writeNodeSet(out, wtg, refs, KEYWORD_INITIAL, (Collection) initialStates);
         }
     }
 
-    private void writeNodeSet(PrintWriter out, Wtg wtg, String keyword, Collection<Node> nodes) {
+    private void writeNodeSet(PrintWriter out, Wtg wtg, ReferenceProducer refs, String keyword, Collection<Node> nodes) {
         if (nodes != null) {
             HashSet<String> nodeNames = new HashSet<>();
             for (Node node: nodes) {
-                String nodeName = getSrialisedNodeName(wtg, node);
+                String nodeName = refs.getReference(node);
                 nodeNames.add(nodeName);
             }
             if (!nodeNames.isEmpty()) {
@@ -150,26 +181,26 @@ public class DotGSerialiser implements ModelSerialiser {
         }
     }
 
-    private void writeWaveform(PrintWriter out, Wtg wtg, Waveform waveform) {
-        String waveformName = getSrialisedNodeName(wtg, waveform);
+    private void writeWaveform(PrintWriter out, Wtg wtg, ReferenceProducer refs, Waveform waveform) {
+        String waveformName = refs.getReference(waveform);
         Set<Node> preset = wtg.getPreset(waveform);
         Set<Node> postset = wtg.getPostset(waveform);
         if ((preset.size() != 1) || (postset.size() != 1)) {
             throw new FormatException("Incorrect preset and/or postset of waveform '" + waveformName + "'");
         } else {
             Node entryState = preset.iterator().next();
-            String entryStateName = getSrialisedNodeName(wtg, entryState);
+            String entryStateName = refs.getReference(entryState);
             Node exitState = postset.iterator().next();
-            String exitStateName = getSrialisedNodeName(wtg, exitState);
+            String exitStateName = refs.getReference(exitState);
             out.write("\n");
             out.write(KEYWORD_WAVEFORM + " " + waveformName + " " + entryStateName + " " + exitStateName + "\n");
-            writeWaveformEntry(out, wtg, waveform);
-            writeWaveformBody(out, wtg, waveform);
-            writeWaveformExit(out, wtg, waveform);
+            writeWaveformEntry(out, wtg, refs, waveform);
+            writeWaveformBody(out, wtg, refs, waveform);
+            writeWaveformExit(out, wtg, refs, waveform);
         }
     }
 
-    private void writeWaveformEntry(PrintWriter out, Wtg wtg, Waveform waveform) {
+    private void writeWaveformEntry(PrintWriter out, Wtg wtg, ReferenceProducer refs, Waveform waveform) {
         HashSet<Transition> entryTransitions = new HashSet<>();
         Collection<Transition> transitions = wtg.getTransitions(waveform);
         for (Transition transition: transitions) {
@@ -181,26 +212,27 @@ public class DotGSerialiser implements ModelSerialiser {
             }
         }
         if (entryTransitions.isEmpty()) {
-            String waveformName = getSrialisedNodeName(wtg, waveform);
+            String waveformName = refs.getReference(waveform);
             throw new FormatException("Waveform '" + waveformName + "' has no entry transitions");
         } else {
-            writeNodeSet(out, wtg, KEYWORD_ENTRY, (Collection) entryTransitions);
+            writeNodeSet(out, wtg, refs, KEYWORD_ENTRY, (Collection) entryTransitions);
         }
     }
 
-    private void writeWaveformBody(PrintWriter out, Wtg wtg, Waveform waveform) {
+    private void writeWaveformBody(PrintWriter out, Wtg wtg, ReferenceProducer refs, Waveform waveform) {
         for (Transition transition: wtg.getTransitions(waveform)) {
-            Set<Node> succTransitions = new HashSet<>();
+            Set<Transition> succTransitions = new HashSet<>();
             for (Node succNode: wtg.getPostset(transition)) {
                 if (succNode instanceof Transition) {
-                    succTransitions.add(succNode);
+                    Transition succTransition = (Transition) succNode;
+                    succTransitions.add(succTransition);
                 }
             }
-            writeWaveformBodyLine(out, wtg, transition, succTransitions);
+            writeWaveformBodyLine(out, wtg, refs, transition, succTransitions);
         }
     }
 
-    private void writeWaveformExit(PrintWriter out, Wtg wtg, Waveform waveform) {
+    private void writeWaveformExit(PrintWriter out, Wtg wtg, ReferenceProducer refs, Waveform waveform) {
         HashSet<Transition> exitTransitions = new HashSet<>();
         Collection<Transition> transitions = wtg.getTransitions(waveform);
         for (Transition transition: transitions) {
@@ -212,20 +244,20 @@ public class DotGSerialiser implements ModelSerialiser {
             }
         }
         if (exitTransitions.isEmpty()) {
-            String waveformName = getSrialisedNodeName(wtg, waveform);
+            String waveformName = refs.getReference(waveform);
             throw new FormatException("Waveform '" + waveformName + "' has no exit transitions");
         } else {
-            writeNodeSet(out, wtg, KEYWORD_EXIT, (Collection) exitTransitions);
+            writeNodeSet(out, wtg, refs, KEYWORD_EXIT, (Collection) exitTransitions);
         }
     }
 
-    private void writeWaveformBodyLine(PrintWriter out, Wtg wtg, Node node, Set<Node> succNodes) {
-        if ((node != null) && !succNodes.isEmpty()) {
-            String nodeName = getSrialisedNodeName(wtg, node);
-            out.write(nodeName);
-            for (Node succNode: succNodes) {
-                String succNodeName = getSrialisedNodeName(wtg, succNode);
-                out.write(" " + succNodeName);
+    private void writeWaveformBodyLine(PrintWriter out, Wtg wtg, ReferenceProducer refs, Transition transition, Set<Transition> succTransitions) {
+        if ((transition != null) && (succTransitions != null) && !succTransitions.isEmpty()) {
+            String transitionName = refs.getReference(transition);
+            out.write(transitionName);
+            for (Node succTransition: succTransitions) {
+                String succTransitionName = refs.getReference(succTransition);
+                out.write(" " + succTransitionName);
             }
             out.write("\n");
         }

@@ -3,11 +3,15 @@ package org.workcraft.plugins.dtd;
 import java.util.Collection;
 
 import org.workcraft.annotations.VisualClass;
+import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
+import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.plugins.dtd.Signal.State;
 import org.workcraft.plugins.dtd.Signal.Type;
+import org.workcraft.plugins.dtd.propertydescriptors.DirectionPropertyDescriptor;
 import org.workcraft.plugins.graph.Graph;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
@@ -56,6 +60,33 @@ public class Dtd extends Graph {
 
     public Collection<Transition> getTransitions() {
         return Hierarchy.getDescendantsOfType(getRoot(), Transition.class);
+    }
+
+    public State getBeforeState(Transition transition) {
+        Signal signal = transition.getSignal();
+        for (Connection connection: getConnections(transition)) {
+            if (connection.getSecond() != transition) continue;
+            Node fromNode = connection.getFirst();
+            if (fromNode == signal) {
+                return signal.getInitialState();
+            } else if (fromNode instanceof Transition) {
+                Transition fromTransition = (Transition) fromNode;
+                if (fromTransition.getSignal() == signal) {
+                    return fromTransition.getNextState();
+                }
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public ModelProperties getProperties(Node node) {
+        ModelProperties properties = super.getProperties(node);
+        if (node instanceof Transition) {
+            Transition transition = (Transition) node;
+            properties.add(new DirectionPropertyDescriptor(transition));
+        }
+        return properties;
     }
 
 }

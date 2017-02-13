@@ -17,7 +17,7 @@ public class Transition extends Vertex {
         RISE("+", "rise"),
         FALL("-", "fall"),
         DESTABILISE("*", "destabilise"),
-        STABILISE("@", "stabilise");
+        STABILISE("?", "stabilise");
 
         private final String symbol;
         private final String description;
@@ -82,8 +82,8 @@ public class Transition extends Vertex {
         switch (getDirection()) {
         case RISE: return State.HIGH;
         case FALL: return State.LOW;
-        case DESTABILISE:  return State.UNSTABLE;
-        case STABILISE:  return State.STABLE;
+        case DESTABILISE: return State.UNSTABLE;
+        case STABILISE: return State.STABLE;
         }
         return null;
     }
