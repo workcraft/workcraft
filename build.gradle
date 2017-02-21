@@ -5,7 +5,7 @@ buildscript {
     dependencies {
         classpath 'ca.coglinc:javacc-gradle-plugin:2.4.0'
         classpath 'de.aaschmid:gradle-cpd-plugin:1.0'
-        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.7.1'
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.1'
     }
 }
 
@@ -14,9 +14,9 @@ repositories {
 }
 
 ext {
-    checkstyleVersion = '7.3'
-    pmdVersion = '5.5.2'
-    jacocoVersion = '0.7.8'
+    checkstyleVersion = '7.5.1'
+    pmdVersion = '5.5.3'
+    jacocoVersion = '0.7.9'
 }
 
 subprojects {
@@ -75,7 +75,7 @@ subprojects {
         compile fileTree(dir: '../ThirdParty/batik', include: ['*.jar'])
 
         testCompile 'junit:junit:4.12'
-        javacc 'net.java.dev.javacc:javacc:7.0.0'
+        javacc 'net.java.dev.javacc:javacc:7.0.2'
     }
 
     apply plugin: 'checkstyle'
