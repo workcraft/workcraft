@@ -67,6 +67,7 @@ public class VisualDtd extends VisualGraph {
     public VisualDtd(Dtd model, VisualGroup root) {
         super(model, root);
         new DtdStateSupervisor(this).attach(getRoot());
+        new SignalConsisitencySupervisor(this).attach(getRoot());
     }
 
     @Override

@@ -158,8 +158,8 @@ public class VisualVertex extends VisualComponent {
         Symbol symbol = getReferencedVertex().getSymbol();
         if (symbol != null) {
             label = r.getModel().getMathName(symbol);
+            cacheLabelRenderedText(label, labelFont, getLabelPositioning(), getLabelOffset());
         }
-        cacheLabelRenderedText(label, labelFont, getLabelPositioning(), getLabelOffset());
     }
 
     @Override

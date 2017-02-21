@@ -9,10 +9,12 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.gui.propertyeditor.ModelProperties;
+import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.plugins.dtd.Signal.State;
 import org.workcraft.plugins.dtd.Signal.Type;
 import org.workcraft.plugins.dtd.propertydescriptors.DirectionPropertyDescriptor;
 import org.workcraft.plugins.graph.Graph;
+import org.workcraft.plugins.graph.Vertex;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
@@ -62,6 +64,15 @@ public class Dtd extends Graph {
         return Hierarchy.getDescendantsOfType(getRoot(), Transition.class);
     }
 
+    public Collection<Transition> getTransitions(final Signal signal) {
+        return Hierarchy.getDescendantsOfType(getRoot(), Transition.class, new Func<Transition, Boolean>() {
+            @Override
+            public Boolean eval(Transition arg) {
+                return (arg != null) && (arg.getSignal() == signal);
+            }
+        });
+    }
+
     public State getBeforeState(Transition transition) {
         Signal signal = transition.getSignal();
         for (Connection connection: getConnections(transition)) {
@@ -86,6 +97,8 @@ public class Dtd extends Graph {
         if (node instanceof Transition) {
             Transition transition = (Transition) node;
             properties.add(new DirectionPropertyDescriptor(transition));
+            properties.removeByName(NamePropertyDescriptor.PROPERTY_NAME);
+            properties.removeByName(Vertex.PROPERTY_SYMBOL);
         }
         return properties;
     }
