@@ -91,34 +91,37 @@ public class VisualSignal extends VisualComponent {
 
     public Shape getShape() {
         double h = 0.2 * size;
+        double h2 = 0.4 * h;
         double w = 0.1 * size;
         double w2 = 0.5 * w;
+        double s = 0.5 * size;
+        double s2 = 0.5 * s;
         Path2D shape = new Path2D.Double();
         // "1" symbol
         Path2D oneShape = new Path2D.Double();
-        oneShape.moveTo(-w2, -0.5 * size + w2);
-        oneShape.lineTo(0.0, -0.5 * size);
-        oneShape.lineTo(0.0, -0.5 * size + h);
-        oneShape.moveTo(-w2, -0.5 * size + h);
-        oneShape.lineTo(+w2, -0.5 * size + h);
+        oneShape.moveTo(-w2, -s2 - h2 + w2);
+        oneShape.lineTo(0.0, -s2 - h2);
+        oneShape.lineTo(0.0, -s2 + h2);
+        oneShape.moveTo(-w2, -s2 + h2);
+        oneShape.lineTo(+w2, -s2 + h2);
         shape.append(oneShape, false);
         // "0" shape
-        Ellipse2D zeroShape = new Ellipse2D.Double(-w2, 0.5 * size - h, w, h);
+        Ellipse2D zeroShape = new Ellipse2D.Double(-w2, s2 - h2, w, h);
         shape.append(zeroShape, false);
         return shape;
     }
 
     public Shape getInitialStateShape() {
-        double h = 0.2 * size;
-        double w = 0.1 * size;
-        double w2 = 0.5 * w;
+        double h = 0.1 * size;
         double h2 = 0.5 * h;
+        double w = 0.05 * size;
+        double w2 = 0.5 * w;
         Path2D shape = new Path2D.Double();
         if (getReferencedSignal() != null) {
             switch (getInitialState()) {
             case HIGH:
                 Path2D highShape = new Path2D.Double();
-                highShape.moveTo(0.0, 0.0);
+                highShape.moveTo(0.0, +h2);
                 highShape.lineTo(0.0, -h2);
                 highShape.moveTo(0.0, -h);
                 highShape.lineTo(-w2, -h2);
@@ -128,7 +131,7 @@ public class VisualSignal extends VisualComponent {
                 break;
             case LOW:
                 Path2D lowShape = new Path2D.Double();
-                lowShape.moveTo(0.0, 0.0);
+                lowShape.moveTo(0.0, -h2);
                 lowShape.lineTo(0.0, +h2);
                 lowShape.moveTo(0.0, +h);
                 lowShape.lineTo(-w2, +h2);
@@ -145,7 +148,7 @@ public class VisualSignal extends VisualComponent {
                 shape.append(unstableShape, false);
                 break;
             case STABLE:
-                Line2D stableShape = new Line2D.Double(-w2, 0.0, +w2, 0.0);
+                Line2D stableShape = new Line2D.Double(-w2, 0.0, +w, 0.0);
                 shape.append(stableShape, false);
                 break;
             }
@@ -200,4 +203,5 @@ public class VisualSignal extends VisualComponent {
         default:       return CommonSignalSettings.getDummyColor();
         }
     }
+
 }

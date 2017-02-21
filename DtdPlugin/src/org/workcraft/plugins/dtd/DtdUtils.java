@@ -58,7 +58,7 @@ public class DtdUtils {
             state = t1.getNextState();
         }
         if ((state == State.HIGH) || (state == State.LOW)) {
-            double offset = CommonVisualSettings.getNodeSize() * (state == State.LOW ? 0.5 : -0.5);
+            double offset = CommonVisualSettings.getNodeSize() * (state == State.LOW ? 0.25 : -0.25);
             polyline.addControlPoint(new Point2D.Double(v1.getX(), v1.getY() + offset));
             polyline.addControlPoint(new Point2D.Double(v2.getX(), v2.getY() + offset));
         }

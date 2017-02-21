@@ -41,52 +41,55 @@ public class VisualTransition extends VisualVertex {
     public Shape getShape() {
         Path2D shape = new Path2D.Double();
         if (getReferencedTransition() != null) {
-            double w2 = 0.5 * strokeWidth;
-            double h = strokeWidth;
-            double h2 = 0.5 * h;
+            double sw2 = 0.5 * strokeWidth;
+            double w = 0.08 * size;
+            double w2 = 0.5 * w;
+            double h = 0.1 * size;
+            double s = 0.5 * size;
+            double s2 = 0.5 * s;
             switch (getReferencedTransition().getDirection()) {
             case RISE:
-                shape.moveTo(0.0, +0.5 * size);
-                shape.lineTo(0.0, -0.4 * size + h2);
-                shape.moveTo(0.0, -0.5 * size + h);
-                shape.lineTo(+w2, -0.4 * size + h);
-                shape.lineTo(-w2, -0.4 * size + h);
+                shape.moveTo(0.0, +s2);
+                shape.lineTo(0.0, -s2 + h);
+                shape.moveTo(0.0, -s2 + sw2);
+                shape.lineTo(+w2, -s2 + h);
+                shape.lineTo(-w2, -s2 + h);
                 shape.closePath();
                 break;
             case FALL:
-                shape.moveTo(0.0, -0.5 * size);
-                shape.lineTo(0.0, +0.4 * size - h2);
-                shape.moveTo(0.0, +0.5 * size - h);
-                shape.lineTo(-w2, +0.4 * size - h);
-                shape.lineTo(+w2, +0.4 * size - h);
+                shape.moveTo(0.0, -s2);
+                shape.lineTo(0.0, +s2 - h);
+                shape.moveTo(0.0, +s2 - sw2);
+                shape.lineTo(-w2, +s2 - h);
+                shape.lineTo(+w2, +s2 - h);
                 shape.closePath();
                 break;
             case DESTABILISE:
-                shape.moveTo(0.0, +0.5 * size);
-                shape.lineTo(0.0, +0.1 * size);
-                shape.moveTo(0.0, +0.0 * size + h2);
-                shape.lineTo(+w2, +0.1 * size + h2);
-                shape.lineTo(-w2, +0.1 * size + h2);
+                shape.moveTo(0.0, +s2 - sw2);
+                shape.lineTo(0.0, +h);
+                shape.moveTo(0.0, +sw2);
+                shape.lineTo(+w2, +h);
+                shape.lineTo(-w2, +h);
                 shape.closePath();
-                shape.moveTo(0.0, -0.5 * size);
-                shape.lineTo(0.0, -0.1 * size);
-                shape.moveTo(0.0, -0.0 * size - h2);
-                shape.lineTo(-w2, -0.1 * size - h2);
-                shape.lineTo(+w2, -0.1 * size - h2);
+                shape.moveTo(0.0, -s2 + sw2);
+                shape.lineTo(0.0, -h);
+                shape.moveTo(0.0, -sw2);
+                shape.lineTo(-w2, -h);
+                shape.lineTo(+w2, -h);
                 shape.closePath();
                 break;
             case STABILISE:
                 shape.moveTo(0.0, +0.0);
-                shape.lineTo(0.0, -0.4 * size + h2);
-                shape.moveTo(0.0, -0.5 * size + h);
-                shape.lineTo(+w2, -0.4 * size + h);
-                shape.lineTo(-w2, -0.4 * size + h);
+                shape.lineTo(0.0, -s2 + h);
+                shape.moveTo(0.0, -s2 + sw2);
+                shape.lineTo(+w2, -s2 + h);
+                shape.lineTo(-w2, -s2 + h);
                 shape.closePath();
                 shape.moveTo(0.0, -0.0);
-                shape.lineTo(0.0, +0.4 * size - h2);
-                shape.moveTo(0.0, +0.5 * size - h);
-                shape.lineTo(-w2, +0.4 * size - h);
-                shape.lineTo(+w2, +0.4 * size - h);
+                shape.lineTo(0.0, +s2 - h);
+                shape.moveTo(0.0, +s2 - sw2);
+                shape.lineTo(-w2, +s2 - h);
+                shape.lineTo(+w2, +s2 - h);
                 shape.closePath();
                 break;
             }
@@ -100,7 +103,7 @@ public class VisualTransition extends VisualVertex {
         Color colorisation = r.getDecoration().getColorisation();
         Shape shape = getShape();
         g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-        g.setStroke(new BasicStroke((float) strokeWidth / 2));
+        g.setStroke(new BasicStroke((float) strokeWidth / 2.0f));
         g.draw(shape);
     }
 
