@@ -4,7 +4,6 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.dtd.Signal.State;
 import org.workcraft.plugins.graph.Vertex;
 
 @DisplayName("Transition")
@@ -76,16 +75,6 @@ public class Transition extends Vertex {
 
     public Signal getSignal() {
         return (Signal) getSymbol();
-    }
-
-    public State getNextState() {
-        switch (getDirection()) {
-        case RISE: return State.HIGH;
-        case FALL: return State.LOW;
-        case DESTABILISE: return State.UNSTABLE;
-        case STABILISE: return State.STABLE;
-        }
-        return null;
     }
 
 }

@@ -19,6 +19,46 @@ public class DtdUtils {
     private static final double ARROW_LENGTH = 0.2;
     private static final double CAUSALITY_ARC_OFFSET = 1.0;
 
+    public static Direction getNextDirection(State state) {
+        switch (state) {
+        case HIGH: return Direction.FALL;
+        case LOW: return Direction.RISE;
+        case UNSTABLE: return Direction.STABILISE;
+        case STABLE: return Direction.DESTABILISE;
+        }
+        return null;
+    }
+
+    public static Direction getPreviousDirection(State state) {
+        switch (state) {
+        case HIGH: return Direction.RISE;
+        case LOW: return Direction.FALL;
+        case UNSTABLE: return Direction.DESTABILISE;
+        case STABLE: return Direction.STABILISE;
+        }
+        return null;
+    }
+
+    public static State getNextState(Direction direction) {
+        switch (direction) {
+        case RISE: return State.HIGH;
+        case FALL: return State.LOW;
+        case DESTABILISE: return State.UNSTABLE;
+        case STABILISE: return State.STABLE;
+        }
+        return null;
+    }
+
+    public static State getPreviousState(Direction direction) {
+        switch (direction) {
+        case RISE: return State.LOW;
+        case FALL: return State.HIGH;
+        case DESTABILISE: return State.STABLE;
+        case STABILISE: return State.UNSTABLE;
+        }
+        return null;
+    }
+
     public static boolean isLevelConnection(MathConnection connection) {
         boolean result = false;
         if (connection != null) {
@@ -55,23 +95,14 @@ public class DtdUtils {
             state = s1.getInitialState();
         } else if (v1 instanceof VisualTransition) {
             VisualTransition t1 = (VisualTransition) v1;
-            state = t1.getNextState();
+            Direction direction = t1.getDirection();
+            state = getNextState(direction);
         }
         if ((state == State.HIGH) || (state == State.LOW)) {
             double offset = CommonVisualSettings.getNodeSize() * (state == State.LOW ? 0.25 : -0.25);
             polyline.addControlPoint(new Point2D.Double(v1.getX(), v1.getY() + offset));
             polyline.addControlPoint(new Point2D.Double(v2.getX(), v2.getY() + offset));
         }
-    }
-
-    public static Direction getNextDirection(State state) {
-        switch (state) {
-        case HIGH: return Direction.FALL;
-        case LOW: return Direction.RISE;
-        case UNSTABLE: return Direction.STABILISE;
-        case STABLE: return Direction.DESTABILISE;
-        }
-        return null;
     }
 
     public static boolean isEventConnection(MathConnection connection) {

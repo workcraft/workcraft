@@ -97,7 +97,8 @@ public class VisualLevelConnection extends VisualConnection {
             state = fromSignal.getInitialState();
         } else if (fromNode instanceof VisualTransition) {
             VisualTransition fromTransition = (VisualTransition) fromNode;
-            state = fromTransition.getReferencedTransition().getNextState();
+            Transition.Direction direction = fromTransition.getDirection();
+            state = DtdUtils.getPreviousState(direction);
         }
         return state;
     }

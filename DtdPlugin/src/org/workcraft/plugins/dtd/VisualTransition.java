@@ -13,7 +13,6 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.gui.Coloriser;
-import org.workcraft.plugins.dtd.Signal.State;
 import org.workcraft.plugins.dtd.Transition.Direction;
 import org.workcraft.plugins.graph.VisualVertex;
 
@@ -122,10 +121,6 @@ public class VisualTransition extends VisualVertex {
 
     public Direction getDirection() {
         return getReferencedTransition().getDirection();
-    }
-
-    public State getNextState() {
-        return getReferencedTransition().getNextState();
     }
 
     @Override

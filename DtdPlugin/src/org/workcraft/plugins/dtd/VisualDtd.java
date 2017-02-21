@@ -220,6 +220,11 @@ public class VisualDtd extends VisualGraph {
             } else {
                 direction = DtdUtils.getNextDirection(signal.getInitialState());
             }
+        } else {
+            if (lastTransition == null) {
+                Signal.State previousState = DtdUtils.getPreviousState(direction);
+                signal.setInitialState(previousState);
+            }
         }
         VisualTransition edge = createVisualTransition(signal, direction);
         Point2D pos = new Point2D.Double(fromComponent.getRootSpaceX() + APPEND_EDGE_OFFSET, fromComponent.getRootSpaceY());

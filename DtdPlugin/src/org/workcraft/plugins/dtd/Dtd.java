@@ -72,7 +72,8 @@ public class Dtd extends Graph {
             } else if (fromNode instanceof Transition) {
                 Transition fromTransition = (Transition) fromNode;
                 if (fromTransition.getSignal() == signal) {
-                    return fromTransition.getNextState();
+                    Transition.Direction direction = fromTransition.getDirection();
+                    return DtdUtils.getNextState(direction);
                 }
             }
         }

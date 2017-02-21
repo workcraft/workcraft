@@ -13,6 +13,7 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.FormatException;
+import org.workcraft.plugins.dtd.DtdUtils;
 import org.workcraft.plugins.dtd.Signal;
 import org.workcraft.plugins.dtd.Signal.Type;
 import org.workcraft.plugins.dtd.Transition;
@@ -70,7 +71,8 @@ public class DotGSerialiser implements ModelSerialiser {
             Direction direction = transition.getDirection();
             switch (wtg.getBeforeState(transition)) {
             case UNSTABLE:
-                result += SEPARATOR_STATE + transition.getNextState().getSymbol();
+                Signal.State signalState = DtdUtils.getNextState(direction);
+                result += SEPARATOR_STATE + signalState.getSymbol();
                 break;
             default:
                 result += direction.getSymbol();
