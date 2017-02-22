@@ -1,9 +1,14 @@
 package org.workcraft.plugins.dtd;
 
 import java.awt.geom.Rectangle2D;
+import java.util.HashSet;
+import java.util.Set;
 
+import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateSupervisor;
 import org.workcraft.observation.TransformChangedEvent;
@@ -28,6 +33,13 @@ public final class DtdStateSupervisor extends StateSupervisor {
                 VisualSignal signal = (VisualSignal) tce.getSender();
                 handleSignalTransformation(signal);
                 handleComponentTransformation(signal);
+            }
+        } else if (e instanceof PropertyChangedEvent) {
+            PropertyChangedEvent pce = (PropertyChangedEvent) e;
+            String propertyName = pce.getPropertyName();
+            if ((pce.getSender() instanceof Transition) && (propertyName.equals(Transition.PROPERTY_DIRECTION))) {
+                VisualTransition transtition = dtd.getVisualComponent((Transition) pce.getSender(), VisualTransition.class);
+                handleTransitionChangeDirection(transtition);
             }
         }
     }
@@ -72,6 +84,22 @@ public final class DtdStateSupervisor extends StateSupervisor {
         } else if (xMax < bb.getMaxX()) {
             double xOffset = bb.getMaxX() - component.getX();
             component.setX(xMax - xOffset);
+        }
+    }
+
+    private void handleTransitionChangeDirection(VisualTransition transition) {
+        Set<Connection> connections = new HashSet<>(dtd.getConnections(transition));
+        for (Connection connection: connections) {
+            if (connection instanceof VisualLevelConnection) {
+                Node first = connection.getFirst();
+                Node second = connection.getSecond();
+                dtd.remove(connection);
+                try {
+                    dtd.connect(first, second);
+                } catch (InvalidConnectionException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
         }
     }
 

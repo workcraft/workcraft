@@ -69,8 +69,10 @@ public class Transition extends Vertex {
     }
 
     public void setDirection(Direction direction) {
-        this.direction = direction;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_DIRECTION));
+        if (this.direction != direction) {
+            this.direction = direction;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_DIRECTION));
+        }
     }
 
     public Signal getSignal() {
