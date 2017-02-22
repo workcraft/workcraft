@@ -47,6 +47,17 @@ public class BoundingBoxHelper {
         return result;
     }
 
+    public static Rectangle2D expand(Rectangle2D rect, double dxMin, double dyMin, double dxMax, double dyMax) {
+        Rectangle2D result = null;
+        if (rect != null) {
+            result = new Rectangle2D.Double();
+            result.setRect(rect);
+            result.add(rect.getMinX() - dxMin, rect.getMinY() - dyMin);
+            result.add(rect.getMaxX() + dxMax, rect.getMaxY() + dyMax);
+        }
+        return result;
+    }
+
     public static Rectangle2D move(Rectangle2D rect, double dx, double dy) {
         return new Rectangle2D.Double(rect.getX() + dx, rect.getY() + dy, rect.getWidth(), rect.getHeight());
     }

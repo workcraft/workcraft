@@ -171,7 +171,7 @@ public class VisualSignal extends VisualComponent {
 
     @Override
     public Rectangle2D getInternalBoundingBoxInLocalSpace() {
-        return BoundingBoxHelper.expand(getShape().getBounds2D(), 0.5 * size, 0.5 * size);
+        return BoundingBoxHelper.expand(getShape().getBounds2D(), 0.0, 0.0, 0.2 * size, 0.0);
     }
 
     @Override
