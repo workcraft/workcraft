@@ -97,7 +97,6 @@ public final class DtdStateSupervisor extends StateSupervisor {
                 try {
                     dtd.connect(first, second);
                 } catch (InvalidConnectionException e) {
-                    System.out.println(e.getMessage());
                 }
             }
         }

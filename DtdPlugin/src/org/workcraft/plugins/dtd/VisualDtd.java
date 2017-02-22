@@ -15,6 +15,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
+import org.workcraft.plugins.dtd.Signal.State;
 import org.workcraft.plugins.dtd.Transition.Direction;
 import org.workcraft.plugins.dtd.propertydescriptors.SignalInitialStatePropertyDescriptor;
 import org.workcraft.plugins.dtd.propertydescriptors.SignalTypePropertyDescriptor;
@@ -103,9 +104,25 @@ public class VisualDtd extends VisualGraph {
 
         if ((first instanceof VisualSignal) && (second instanceof VisualTransition)) {
             Signal firstSignal = ((VisualSignal) first).getReferencedSignal();
-            Signal secondSignal = ((VisualTransition) second).getSignal();
+            VisualTransition secondTransition = (VisualTransition) second;
+            Signal secondSignal = secondTransition.getSignal();
             if (firstSignal != secondSignal) {
                 throw new InvalidConnectionException("Cannot relate transition with a different signal.");
+            }
+            if (firstSignal.getInitialState() == State.STABLE) {
+                throw new InvalidConnectionException("Signal at unknown state cannot change.");
+            }
+            if ((firstSignal.getInitialState() != State.UNSTABLE)
+                    && (secondTransition.getDirection() == Direction.STABILISE)) {
+                throw new InvalidConnectionException("Only unstable signal can stabilise.");
+            }
+            if ((firstSignal.getInitialState() == State.HIGH)
+                    && (secondTransition.getDirection() == Direction.RISE)) {
+                throw new InvalidConnectionException("Signal is already high.");
+            }
+            if ((firstSignal.getInitialState() == State.LOW)
+                    && (secondTransition.getDirection() == Direction.FALL)) {
+                throw new InvalidConnectionException("Signal is already low.");
             }
             return;
         }
