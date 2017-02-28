@@ -10,25 +10,36 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.Collection;
+import java.util.HashSet;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
+import org.workcraft.dom.Container;
+import org.workcraft.dom.DefaultGroupImpl;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.BoundingBoxHelper;
+import org.workcraft.dom.visual.CustomTouchable;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
+import org.workcraft.dom.visual.Touchable;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
+import org.workcraft.observation.HierarchyObserver;
+import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.plugins.shared.CommonSignalSettings;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
+import org.workcraft.util.Hierarchy;
 
 @Hotkey(KeyEvent.VK_X)
 @DisplayName("Signal")
 @SVGIcon("images/dtd-node-signal.svg")
-public class VisualSignal extends VisualComponent {
+public class VisualSignal extends VisualComponent implements Container, CustomTouchable, ObservableHierarchy {
 
     public static final String PROPERTY_COLOR = "Color";
+    protected DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
     public VisualSignal(Signal signal) {
         super(signal);
@@ -117,7 +128,7 @@ public class VisualSignal extends VisualComponent {
         double w = 0.05 * size;
         double w2 = 0.5 * w;
         Path2D shape = new Path2D.Double();
-        if (getReferencedSignal() != null) {
+        if ((getReferencedSignal() != null) && (getInitialState() != null)) {
             switch (getInitialState()) {
             case HIGH:
                 Path2D highShape = new Path2D.Double();
@@ -175,6 +186,14 @@ public class VisualSignal extends VisualComponent {
     }
 
     @Override
+    public Rectangle2D getBoundingBoxInLocalSpace() {
+        Rectangle2D bb = super.getBoundingBoxInLocalSpace();
+        Collection<Touchable> touchableChildren = Hierarchy.getChildrenOfType(this, Touchable.class);
+        Rectangle2D childrenBB = BoundingBoxHelper.mergeBoundingBoxes(touchableChildren);
+        return BoundingBoxHelper.union(bb, childrenBB);
+    }
+
+    @Override
     public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
         return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
     }
@@ -202,6 +221,110 @@ public class VisualSignal extends VisualComponent {
         case INTERNAL: return CommonSignalSettings.getInternalColor();
         default:       return CommonSignalSettings.getDummyColor();
         }
+    }
+
+    @Override
+    public void add(Node node) {
+        groupImpl.add(node);
+    }
+
+    @Override
+    public Collection<Node> getChildren() {
+        return groupImpl.getChildren();
+    }
+
+    @Override
+    public Node getParent() {
+        return groupImpl.getParent();
+    }
+
+    @Override
+    public void setParent(Node parent) {
+        groupImpl.setParent(parent);
+    }
+
+    @Override
+    public void remove(Node node) {
+        groupImpl.remove(node);
+    }
+
+    @Override
+    public void add(Collection<Node> nodes) {
+        groupImpl.add(nodes);
+    }
+
+    @Override
+    public void remove(Collection<Node> nodes) {
+        for (Node n : nodes) {
+            remove(n);
+        }
+    }
+
+    @Override
+    public void reparent(Collection<Node> nodes, Container newParent) {
+        groupImpl.reparent(nodes, newParent);
+    }
+
+    @Override
+    public void reparent(Collection<Node> nodes) {
+        groupImpl.reparent(nodes);
+    }
+
+    @Override
+    public Node hitCustom(Point2D point) {
+        Point2D pointInLocalSpace = getParentToLocalTransform().transform(point, null);
+        for (Node node : getChildren()) {
+            if (node instanceof VisualSignalEvent) {
+                VisualSignalEvent event = (VisualSignalEvent) node;
+                if (event.hitTest(pointInLocalSpace)) {
+                    return event;
+                }
+            }
+        }
+        return hitTest(point) ? this : null;
+    }
+
+    @Override
+    public void addObserver(HierarchyObserver obs) {
+        groupImpl.addObserver(obs);
+    }
+
+    @Override
+    public void removeObserver(HierarchyObserver obs) {
+        groupImpl.removeObserver(obs);
+    }
+
+    @Override
+    public void removeAllObservers() {
+        groupImpl.removeAllObservers();
+    }
+
+    protected Collection<VisualSignalTransition> getVisualTransitions() {
+        HashSet<VisualSignalTransition> result = new HashSet<>();
+        for (Node node: getChildren()) {
+            if (node instanceof VisualSignalTransition) {
+                result.add((VisualSignalTransition) node);
+            }
+        }
+        return result;
+    }
+
+    protected VisualSignalEntry getVisualSignalEntry() {
+        for (Node node: getChildren()) {
+            if (node instanceof VisualSignalEntry) {
+                return (VisualSignalEntry) node;
+            }
+        }
+        return null;
+    }
+
+    protected VisualSignalExit getVisualSignalExit() {
+        for (Node node: getChildren()) {
+            if (node instanceof VisualSignalExit) {
+                return (VisualSignalExit) node;
+            }
+        }
+        return null;
     }
 
 }

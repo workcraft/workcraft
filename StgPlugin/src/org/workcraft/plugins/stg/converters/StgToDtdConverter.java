@@ -12,7 +12,7 @@ import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.dtd.Dtd;
 import org.workcraft.plugins.dtd.Signal.Type;
-import org.workcraft.plugins.dtd.Transition.Direction;
+import org.workcraft.plugins.dtd.SignalTransition.Direction;
 import org.workcraft.plugins.dtd.VisualDtd;
 import org.workcraft.plugins.dtd.VisualDtd.SignalEvent;
 import org.workcraft.plugins.dtd.VisualSignal;

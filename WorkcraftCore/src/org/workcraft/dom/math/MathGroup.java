@@ -13,7 +13,7 @@ import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.util.Hierarchy;
 
-public class MathGroup extends MathNode implements NamespaceProvider, ObservableHierarchy, Container {
+public class MathGroup extends MathNode implements NamespaceProvider, ObservableHierarchy {
     private final DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
     @Override

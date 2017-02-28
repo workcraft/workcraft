@@ -78,29 +78,21 @@ public class VisualLevelConnection extends VisualConnection {
 
     @Override
     public Stroke getStroke() {
-        State state = getBeforeState();
+        State state = getState();
         float width = 0.5f * (float) CommonVisualSettings.getStrokeWidth();
-        switch (state) {
-        case UNSTABLE:
+        if (state == State.UNSTABLE) {
             float[] pattern = {0.1f, 0.1f};
             return new BasicStroke(width, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f);
-        default:
-            return new BasicStroke(width);
         }
+        return new BasicStroke(width);
     }
 
-    private State getBeforeState() {
-        VisualNode fromNode = getFirst();
-        State state = null;
-        if (fromNode instanceof VisualSignal) {
-            VisualSignal fromSignal = (VisualSignal) fromNode;
-            state = fromSignal.getInitialState();
-        } else if (fromNode instanceof VisualTransition) {
-            VisualTransition fromTransition = (VisualTransition) fromNode;
-            Transition.Direction direction = fromTransition.getDirection();
-            state = DtdUtils.getPreviousState(direction);
+    private State getState() {
+        VisualNode node = getFirst();
+        if (node instanceof VisualSignalEvent) {
+            return DtdUtils.getState((VisualSignalEvent) node);
         }
-        return state;
+        return null;
     }
 
 }

@@ -386,10 +386,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
                 return this;
             }
         }
-        if (hitTestInLocalSpace(pointInLocalSpace)) {
-            return this;
-        }
-        return null;
+        return hitTestInLocalSpace(pointInLocalSpace) ? this : null;
     }
 
     public void setDirection(Direction value) {

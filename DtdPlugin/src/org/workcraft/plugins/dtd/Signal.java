@@ -1,14 +1,21 @@
 package org.workcraft.plugins.dtd;
 
+import java.util.Collection;
+
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
+import org.workcraft.dom.Container;
+import org.workcraft.dom.DefaultGroupImpl;
+import org.workcraft.dom.Node;
 import org.workcraft.exceptions.ArgumentException;
+import org.workcraft.observation.HierarchyObserver;
+import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.graph.Symbol;
 
 @DisplayName("Signal")
 @VisualClass(org.workcraft.plugins.dtd.VisualSignal.class)
-public class Signal extends Symbol {
+public class Signal extends Symbol implements ObservableHierarchy, Container {
 
     public static final String PROPERTY_TYPE = "Type";
     public static final String PROPERTY_INITIAL_STATE = "Initial state";
@@ -51,8 +58,8 @@ public class Signal extends Symbol {
             case LOW: return HIGH;
             case UNSTABLE: return STABLE;
             case STABLE: return UNSTABLE;
+            default: return this;
             }
-            return null;
         }
     }
 
@@ -82,6 +89,7 @@ public class Signal extends Symbol {
         }
     }
 
+    private final DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
     private Type type = Type.OUTPUT;
     private State initialState = State.LOW;
 
@@ -105,6 +113,66 @@ public class Signal extends Symbol {
             initialState = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_INITIAL_STATE));
         }
+    }
+
+    @Override
+    public Node getParent() {
+        return groupImpl.getParent();
+    }
+
+    @Override
+    public void setParent(Node parent) {
+        groupImpl.setParent(parent);
+    }
+
+    @Override
+    public void addObserver(HierarchyObserver obs) {
+        groupImpl.addObserver(obs);
+    }
+
+    @Override
+    public void removeObserver(HierarchyObserver obs) {
+        groupImpl.removeObserver(obs);
+    }
+
+    @Override
+    public void add(Node node) {
+        groupImpl.add(node);
+    }
+
+    @Override
+    public void add(Collection<Node> nodes) {
+        groupImpl.add(nodes);
+    }
+
+    @Override
+    public void remove(Node node) {
+        groupImpl.remove(node);
+    }
+
+    @Override
+    public void remove(Collection<Node> node) {
+        groupImpl.remove(node);
+    }
+
+    @Override
+    public void reparent(Collection<Node> nodes) {
+        groupImpl.reparent(nodes);
+    }
+
+    @Override
+    public void reparent(Collection<Node> nodes, Container newParent) {
+        groupImpl.reparent(nodes, newParent);
+    }
+
+    @Override
+    public Collection<Node> getChildren() {
+        return groupImpl.getChildren();
+    }
+
+    @Override
+    public void removeAllObservers() {
+        groupImpl.removeAllObservers();
     }
 
 }

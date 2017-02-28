@@ -13,7 +13,7 @@ import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
-import org.workcraft.plugins.dtd.Transition.Direction;
+import org.workcraft.plugins.dtd.SignalTransition.Direction;
 import org.workcraft.plugins.dtd.VisualDtd;
 import org.workcraft.plugins.dtd.VisualLevelConnection;
 import org.workcraft.plugins.dtd.VisualSignal;
@@ -41,31 +41,31 @@ public class DtdSelectionTool extends SelectionTool {
             if (node instanceof VisualSignal) {
                 we.saveMemento();
                 VisualSignal signal = (VisualSignal) node;
-                Direction direction = null;
-                switch (e.getKeyModifiers()) {
-                case MouseEvent.SHIFT_DOWN_MASK:
-                    direction = Direction.RISE;
-                    break;
-                case MouseEvent.CTRL_DOWN_MASK:
-                    direction = Direction.FALL;
-                    break;
-                case MouseEvent.SHIFT_DOWN_MASK | MouseEvent.CTRL_DOWN_MASK:
-                    direction = Direction.DESTABILISE;
-                    break;
-                default:
-                    break;
-                }
+                Direction direction = getDesiredDirection(e);
                 model.appendSignalEvent(signal, direction);
                 processed = true;
             } else if ((node instanceof VisualLevelConnection) && (e.getClickCount() > 1)) {
                 we.saveMemento();
                 VisualLevelConnection connection = (VisualLevelConnection) node;
-                model.insetrSignalPulse(connection);
+                model.insertSignalPulse(connection);
                 processed = true;
             }
         }
         if (!processed) {
             super.mouseClicked(e);
+        }
+    }
+
+    private Direction getDesiredDirection(GraphEditorMouseEvent e) {
+        switch (e.getKeyModifiers()) {
+        case MouseEvent.SHIFT_DOWN_MASK:
+            return Direction.RISE;
+        case MouseEvent.CTRL_DOWN_MASK:
+            return Direction.FALL;
+        case MouseEvent.SHIFT_DOWN_MASK | MouseEvent.CTRL_DOWN_MASK:
+            return Direction.DESTABILISE;
+        default:
+            return null;
         }
     }
 

@@ -25,44 +25,45 @@ public final class DtdStateSupervisor extends StateSupervisor {
     public void handleEvent(StateEvent e) {
         if (e instanceof TransformChangedEvent) {
             TransformChangedEvent tce = (TransformChangedEvent) e;
-            if (tce.getSender() instanceof VisualTransition) {
-                VisualTransition transition = (VisualTransition) tce.getSender();
-                handleTransitionTransformation(transition);
-                handleComponentTransformation(transition);
-            } else if (tce.getSender() instanceof VisualSignal) {
-                VisualSignal signal = (VisualSignal) tce.getSender();
-                handleSignalTransformation(signal);
-                handleComponentTransformation(signal);
+            if (tce.getSender() instanceof VisualSignalEvent) {
+                VisualSignalEvent event = (VisualSignalEvent) tce.getSender();
+                handleTransitionTransformation(event);
+                handleComponentTransformation(event);
             }
+//            } else if (tce.getSender() instanceof VisualSignal) {
+//                VisualSignal signal = (VisualSignal) tce.getSender();
+//                handleSignalTransformation(signal);
+//                handleComponentTransformation(signal);
+//            }
         } else if (e instanceof PropertyChangedEvent) {
             PropertyChangedEvent pce = (PropertyChangedEvent) e;
             String propertyName = pce.getPropertyName();
-            if ((pce.getSender() instanceof Transition) && (propertyName.equals(Transition.PROPERTY_DIRECTION))) {
-                VisualTransition transtition = dtd.getVisualComponent((Transition) pce.getSender(), VisualTransition.class);
+            if ((pce.getSender() instanceof SignalTransition) && (propertyName.equals(SignalTransition.PROPERTY_DIRECTION))) {
+                VisualSignalTransition transtition = dtd.getVisualComponent((SignalTransition) pce.getSender(), VisualSignalTransition.class);
                 handleTransitionChangeDirection(transtition);
             }
         }
     }
 
-    private void handleTransitionTransformation(VisualTransition transition) {
-        VisualSignal signal = dtd.getVisualSignal(transition);
+    private void handleTransitionTransformation(VisualSignalEvent event) {
+        VisualSignal signal = event.getSignal();
         if (signal != null) {
             double y = signal.getRootSpaceY();
-            align(transition, y);
+            align(event, y);
         }
     }
 
     private void handleSignalTransformation(VisualSignal signal) {
         double y = signal.getRootSpaceY();
-        for (VisualTransition transition: dtd.getVisualTransitions(signal)) {
+        for (VisualSignalTransition transition: dtd.getVisualTransitions(signal)) {
             align(transition, y);
         }
     }
 
-    private void align(VisualTransition transition, double y) {
-        double d = Math.abs(y - transition.getRootSpaceY());
+    private void align(VisualSignalEvent event, double y) {
+        double d = Math.abs(y - event.getRootSpaceY());
         if (d > 0.001) {
-            transition.setRootSpaceY(y);
+            event.setRootSpaceY(y);
         }
     }
 
@@ -87,7 +88,7 @@ public final class DtdStateSupervisor extends StateSupervisor {
         }
     }
 
-    private void handleTransitionChangeDirection(VisualTransition transition) {
+    private void handleTransitionChangeDirection(VisualSignalTransition transition) {
         Set<Connection> connections = new HashSet<>(dtd.getConnections(transition));
         for (Connection connection: connections) {
             if (connection instanceof VisualLevelConnection) {

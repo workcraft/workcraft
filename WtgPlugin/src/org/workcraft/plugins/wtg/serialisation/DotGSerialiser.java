@@ -16,8 +16,8 @@ import org.workcraft.exceptions.FormatException;
 import org.workcraft.plugins.dtd.DtdUtils;
 import org.workcraft.plugins.dtd.Signal;
 import org.workcraft.plugins.dtd.Signal.Type;
-import org.workcraft.plugins.dtd.Transition;
-import org.workcraft.plugins.dtd.Transition.Direction;
+import org.workcraft.plugins.dtd.SignalTransition;
+import org.workcraft.plugins.dtd.SignalTransition.Direction;
 import org.workcraft.plugins.wtg.State;
 import org.workcraft.plugins.wtg.Waveform;
 import org.workcraft.plugins.wtg.Wtg;
@@ -51,7 +51,7 @@ public class DotGSerialiser implements ModelSerialiser {
             for (Waveform waveform: wtg.getWaveforms()) {
                 refMap.put(waveform, wtg.getName(waveform));
                 HashMap<String, Integer> instanceCount = new HashMap<>();
-                for (Transition transition: wtg.getTransitions(waveform)) {
+                for (SignalTransition transition: wtg.getTransitions(waveform)) {
                     String transitionName = getSrialisedTransitionName(wtg, transition);
                     if (!instanceCount.containsKey(transitionName)) {
                         instanceCount.put(transitionName, 1);
@@ -65,7 +65,7 @@ public class DotGSerialiser implements ModelSerialiser {
             }
         }
 
-        private String getSrialisedTransitionName(Wtg wtg, Transition transition) {
+        private String getSrialisedTransitionName(Wtg wtg, SignalTransition transition) {
             Signal signal = transition.getSignal();
             String result = wtg.getName(signal);
             Direction direction = transition.getDirection();
@@ -203,9 +203,9 @@ public class DotGSerialiser implements ModelSerialiser {
     }
 
     private void writeWaveformEntry(PrintWriter out, Wtg wtg, ReferenceProducer refs, Waveform waveform) {
-        HashSet<Transition> entryTransitions = new HashSet<>();
-        Collection<Transition> transitions = wtg.getTransitions(waveform);
-        for (Transition transition: transitions) {
+        HashSet<SignalTransition> entryTransitions = new HashSet<>();
+        Collection<SignalTransition> transitions = wtg.getTransitions(waveform);
+        for (SignalTransition transition: transitions) {
             HashSet<Node> predTransitions = new HashSet<>();
             predTransitions.addAll(wtg.getPreset(transition));
             predTransitions.retainAll(transitions);
@@ -222,11 +222,11 @@ public class DotGSerialiser implements ModelSerialiser {
     }
 
     private void writeWaveformBody(PrintWriter out, Wtg wtg, ReferenceProducer refs, Waveform waveform) {
-        for (Transition transition: wtg.getTransitions(waveform)) {
-            Set<Transition> succTransitions = new HashSet<>();
+        for (SignalTransition transition: wtg.getTransitions(waveform)) {
+            Set<SignalTransition> succTransitions = new HashSet<>();
             for (Node succNode: wtg.getPostset(transition)) {
-                if (succNode instanceof Transition) {
-                    Transition succTransition = (Transition) succNode;
+                if (succNode instanceof SignalTransition) {
+                    SignalTransition succTransition = (SignalTransition) succNode;
                     succTransitions.add(succTransition);
                 }
             }
@@ -235,9 +235,9 @@ public class DotGSerialiser implements ModelSerialiser {
     }
 
     private void writeWaveformExit(PrintWriter out, Wtg wtg, ReferenceProducer refs, Waveform waveform) {
-        HashSet<Transition> exitTransitions = new HashSet<>();
-        Collection<Transition> transitions = wtg.getTransitions(waveform);
-        for (Transition transition: transitions) {
+        HashSet<SignalTransition> exitTransitions = new HashSet<>();
+        Collection<SignalTransition> transitions = wtg.getTransitions(waveform);
+        for (SignalTransition transition: transitions) {
             HashSet<Node> succTransitions = new HashSet<>();
             succTransitions.addAll(wtg.getPostset(transition));
             succTransitions.retainAll(transitions);
@@ -253,7 +253,7 @@ public class DotGSerialiser implements ModelSerialiser {
         }
     }
 
-    private void writeWaveformBodyLine(PrintWriter out, Wtg wtg, ReferenceProducer refs, Transition transition, Set<Transition> succTransitions) {
+    private void writeWaveformBodyLine(PrintWriter out, Wtg wtg, ReferenceProducer refs, SignalTransition transition, Set<SignalTransition> succTransitions) {
         if ((transition != null) && (succTransitions != null) && !succTransitions.isEmpty()) {
             String transitionName = refs.getReference(transition);
             out.write(transitionName);

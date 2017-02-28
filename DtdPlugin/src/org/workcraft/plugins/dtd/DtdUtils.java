@@ -11,7 +11,7 @@ import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.plugins.dtd.Signal.State;
-import org.workcraft.plugins.dtd.Transition.Direction;
+import org.workcraft.plugins.dtd.SignalTransition.Direction;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
 public class DtdUtils {
@@ -25,8 +25,8 @@ public class DtdUtils {
         case LOW: return Direction.RISE;
         case UNSTABLE: return Direction.STABILISE;
         case STABLE: return Direction.DESTABILISE;
+        default: return null;
         }
-        return null;
     }
 
     public static Direction getPreviousDirection(State state) {
@@ -35,8 +35,8 @@ public class DtdUtils {
         case LOW: return Direction.FALL;
         case UNSTABLE: return Direction.DESTABILISE;
         case STABLE: return Direction.STABILISE;
+        default: return null;
         }
-        return null;
     }
 
     public static State getNextState(Direction direction) {
@@ -45,8 +45,8 @@ public class DtdUtils {
         case FALL: return State.LOW;
         case DESTABILISE: return State.UNSTABLE;
         case STABILISE: return State.STABLE;
+        default: return null;
         }
-        return null;
     }
 
     public static State getPreviousState(Direction direction) {
@@ -55,6 +55,18 @@ public class DtdUtils {
         case FALL: return State.HIGH;
         case DESTABILISE: return State.STABLE;
         case STABILISE: return State.UNSTABLE;
+        default: return null;
+        }
+    }
+
+    public static State getState(VisualSignalEvent event) {
+        if (event instanceof VisualSignalEntry) {
+            VisualSignal signal = event.getSignal();
+            return signal.getInitialState();
+        }
+        if (event instanceof VisualSignalTransition) {
+            VisualSignalTransition transition = (VisualSignalTransition) event;
+            return getNextState(transition.getDirection());
         }
         return null;
     }
@@ -64,14 +76,9 @@ public class DtdUtils {
         if (connection != null) {
             MathNode c1 = (MathNode) connection.getFirst();
             MathNode c2 = (MathNode) connection.getSecond();
-            if (c2 instanceof Transition) {
-                Signal s2 = ((Transition) c2).getSignal();
-                Signal s1 = null;
-                if (c1 instanceof Signal) {
-                    s1 = (Signal) c1;
-                } else if (c1 instanceof Transition) {
-                    s1 = ((Transition) c1).getSignal();
-                }
+            if ((c1 instanceof SignalEvent) && (c2 instanceof SignalEvent)) {
+                Signal s1 = ((SignalEvent) c1).getSignal();
+                Signal s2 = ((SignalEvent) c2).getSignal();
                 result = s1 == s2;
             }
         }
@@ -90,13 +97,14 @@ public class DtdUtils {
         Polyline polyline = (Polyline) connection.getGraphic();
 
         State state = null;
-        if (v1 instanceof VisualSignal) {
-            VisualSignal s1 = (VisualSignal) v1;
+        if (v1 instanceof VisualSignalEvent) {
+            VisualSignal s1 = ((VisualSignalEvent) v1).getSignal();
             state = s1.getInitialState();
-        } else if (v1 instanceof VisualTransition) {
-            VisualTransition t1 = (VisualTransition) v1;
-            Direction direction = t1.getDirection();
-            state = getNextState(direction);
+            if (v1 instanceof VisualSignalTransition) {
+                VisualSignalTransition t1 = (VisualSignalTransition) v1;
+                Direction direction = t1.getDirection();
+                state = getNextState(direction);
+            }
         }
         if ((state == State.HIGH) || (state == State.LOW)) {
             double offset = CommonVisualSettings.getNodeSize() * (state == State.LOW ? 0.25 : -0.25);
@@ -110,9 +118,9 @@ public class DtdUtils {
         if (connection != null) {
             MathNode c1 = (MathNode) connection.getFirst();
             MathNode c2 = (MathNode) connection.getSecond();
-            if ((c1 instanceof Transition) && (c2 instanceof Transition)) {
-                Signal s1 = ((Transition) c1).getSignal();
-                Signal s2 = ((Transition) c2).getSignal();
+            if ((c1 instanceof SignalEvent) && (c2 instanceof SignalEvent)) {
+                Signal s1 = ((SignalEvent) c1).getSignal();
+                Signal s2 = ((SignalEvent) c2).getSignal();
                 result = s1 != s2;
             }
         }

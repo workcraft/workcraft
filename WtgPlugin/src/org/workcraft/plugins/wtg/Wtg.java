@@ -9,7 +9,7 @@ import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.plugins.dtd.Dtd;
 import org.workcraft.plugins.dtd.Signal;
-import org.workcraft.plugins.dtd.Transition;
+import org.workcraft.plugins.dtd.SignalTransition;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Identifier;
@@ -25,7 +25,7 @@ public class Wtg extends Dtd {
         this(root, new HierarchicalUniqueNameReferenceManager(refs) {
             @Override
             public String getPrefix(Node node) {
-                if (node instanceof Transition) return Identifier.createInternal("e");
+                if (node instanceof SignalTransition) return Identifier.createInternal("e");
                 if (node instanceof Signal) return "x";
                 if (node instanceof State) return "s";
                 if (node instanceof Waveform) return "w";
@@ -59,11 +59,11 @@ public class Wtg extends Dtd {
         return Hierarchy.getDescendantsOfType(container, Signal.class);
     }
 
-    public final Collection<Transition> getTransitions(Container container) {
+    public final Collection<SignalTransition> getTransitions(Container container) {
         if (container == null) {
             container = getRoot();
         }
-        return Hierarchy.getDescendantsOfType(container, Transition.class);
+        return Hierarchy.getDescendantsOfType(container, SignalTransition.class);
     }
 
 }

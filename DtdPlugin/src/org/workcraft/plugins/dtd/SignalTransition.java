@@ -4,11 +4,10 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.graph.Vertex;
 
 @DisplayName("Transition")
-@VisualClass(org.workcraft.plugins.dtd.VisualTransition.class)
-public class Transition extends Vertex {
+@VisualClass(org.workcraft.plugins.dtd.VisualSignalTransition.class)
+public class SignalTransition extends SignalEvent {
 
     public static final String PROPERTY_DIRECTION = "Direction";
 
@@ -50,19 +49,12 @@ public class Transition extends Vertex {
             case FALL: return RISE;
             case DESTABILISE: return STABILISE;
             case STABILISE: return DESTABILISE;
+            default: return this;
             }
-            return null;
         }
     }
 
     private Direction direction = Direction.RISE;
-
-    public Transition() {
-    }
-
-    public Transition(Signal signal) {
-        super(signal);
-    }
 
     public Direction getDirection() {
         return direction;
@@ -73,10 +65,6 @@ public class Transition extends Vertex {
             this.direction = direction;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_DIRECTION));
         }
-    }
-
-    public Signal getSignal() {
-        return (Signal) getSymbol();
     }
 
 }

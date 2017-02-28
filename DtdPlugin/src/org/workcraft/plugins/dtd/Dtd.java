@@ -32,7 +32,9 @@ public class Dtd extends Graph {
             @Override
             public String getPrefix(Node node) {
                 if (node instanceof Signal) return "x";
-                if (node instanceof Transition) return Identifier.createInternal("e");
+                if (node instanceof SignalEntry) return Identifier.createInternal("entry");
+                if (node instanceof SignalExit) return Identifier.createInternal("exit");
+                if (node instanceof SignalTransition) return Identifier.createInternal("t");
                 return super.getPrefix(node);
             }
         });
@@ -60,30 +62,30 @@ public class Dtd extends Graph {
         });
     }
 
-    public Collection<Transition> getTransitions() {
-        return Hierarchy.getDescendantsOfType(getRoot(), Transition.class);
+    public Collection<SignalTransition> getTransitions() {
+        return Hierarchy.getDescendantsOfType(getRoot(), SignalTransition.class);
     }
 
-    public Collection<Transition> getTransitions(final Signal signal) {
-        return Hierarchy.getDescendantsOfType(getRoot(), Transition.class, new Func<Transition, Boolean>() {
+    public Collection<SignalTransition> getTransitions(final Signal signal) {
+        return Hierarchy.getDescendantsOfType(getRoot(), SignalTransition.class, new Func<SignalTransition, Boolean>() {
             @Override
-            public Boolean eval(Transition arg) {
+            public Boolean eval(SignalTransition arg) {
                 return (arg != null) && (arg.getSignal() == signal);
             }
         });
     }
 
-    public State getBeforeState(Transition transition) {
+    public State getBeforeState(SignalTransition transition) {
         Signal signal = transition.getSignal();
         for (Connection connection: getConnections(transition)) {
             if (connection.getSecond() != transition) continue;
             Node fromNode = connection.getFirst();
             if (fromNode == signal) {
                 return signal.getInitialState();
-            } else if (fromNode instanceof Transition) {
-                Transition fromTransition = (Transition) fromNode;
+            } else if (fromNode instanceof SignalTransition) {
+                SignalTransition fromTransition = (SignalTransition) fromNode;
                 if (fromTransition.getSignal() == signal) {
-                    Transition.Direction direction = fromTransition.getDirection();
+                    SignalTransition.Direction direction = fromTransition.getDirection();
                     return DtdUtils.getNextState(direction);
                 }
             }
@@ -94,8 +96,8 @@ public class Dtd extends Graph {
     @Override
     public ModelProperties getProperties(Node node) {
         ModelProperties properties = super.getProperties(node);
-        if (node instanceof Transition) {
-            Transition transition = (Transition) node;
+        if (node instanceof SignalTransition) {
+            SignalTransition transition = (SignalTransition) node;
             properties.add(new DirectionPropertyDescriptor(transition));
             properties.removeByName(NamePropertyDescriptor.PROPERTY_NAME);
             properties.removeByName(Vertex.PROPERTY_SYMBOL);

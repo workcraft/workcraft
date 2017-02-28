@@ -5,19 +5,19 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
-import org.workcraft.plugins.dtd.Transition;
-import org.workcraft.plugins.dtd.Transition.Direction;
+import org.workcraft.plugins.dtd.SignalTransition;
+import org.workcraft.plugins.dtd.SignalTransition.Direction;
 
 public class DirectionPropertyDescriptor implements PropertyDescriptor {
-    private final Transition transition;
+    private final SignalTransition transition;
 
-    public DirectionPropertyDescriptor(Transition transition) {
+    public DirectionPropertyDescriptor(SignalTransition transition) {
         this.transition = transition;
     }
 
     @Override
     public String getName() {
-        return Transition.PROPERTY_DIRECTION;
+        return SignalTransition.PROPERTY_DIRECTION;
     }
 
     @Override

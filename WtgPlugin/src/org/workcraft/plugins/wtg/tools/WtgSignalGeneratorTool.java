@@ -5,18 +5,12 @@ import java.awt.Graphics2D;
 
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
-import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.gui.graph.tools.NodeGeneratorTool;
-import org.workcraft.plugins.dtd.Signal;
+import org.workcraft.plugins.dtd.tools.DtdSignalGeneratorTool;
 import org.workcraft.plugins.wtg.VisualWaveform;
 import org.workcraft.util.GUI;
 
-public class SignalGeneratorTool extends NodeGeneratorTool {
-
-    public SignalGeneratorTool() {
-        super(new DefaultNodeGenerator(Signal.class));
-    }
+public class WtgSignalGeneratorTool extends DtdSignalGeneratorTool {
 
     @Override
     public void mousePressed(GraphEditorMouseEvent e) {

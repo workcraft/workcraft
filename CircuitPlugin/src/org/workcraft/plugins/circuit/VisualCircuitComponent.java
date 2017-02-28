@@ -50,8 +50,8 @@ import org.workcraft.util.Hierarchy;
 @DisplayName("Abstract Component")
 @Hotkey(KeyEvent.VK_A)
 @SVGIcon("images/circuit-node-component.svg")
-public class VisualCircuitComponent extends VisualComponent implements
-        Container, CustomTouchable, StateObserver, ObservableHierarchy {
+public class VisualCircuitComponent extends VisualComponent implements Container, CustomTouchable, StateObserver, ObservableHierarchy {
+
     public static final String PROPERTY_RENDER_TYPE = "Render type";
 
     private static final Color inputColor = VisualContact.inputColor;

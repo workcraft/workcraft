@@ -7,7 +7,7 @@ import org.workcraft.gui.graph.tools.CommentGeneratorTool;
 import org.workcraft.gui.graph.tools.CustomToolsProvider;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
-import org.workcraft.plugins.wtg.tools.SignalGeneratorTool;
+import org.workcraft.plugins.wtg.tools.WtgSignalGeneratorTool;
 import org.workcraft.plugins.wtg.tools.WtgConnectionTool;
 import org.workcraft.plugins.wtg.tools.WtgSelectionTool;
 
@@ -22,7 +22,7 @@ public class WtgToolsProvider implements CustomToolsProvider {
         result.add(new WtgConnectionTool());
         result.add(new NodeGeneratorTool(new DefaultNodeGenerator(State.class), true));
         result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Waveform.class), true));
-        result.add(new SignalGeneratorTool());
+        result.add(new WtgSignalGeneratorTool());
         return result;
     }
 

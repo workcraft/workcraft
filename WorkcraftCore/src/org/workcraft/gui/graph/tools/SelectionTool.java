@@ -422,9 +422,9 @@ public class SelectionTool extends AbstractGraphEditorTool {
             selectionBox = getSelectionRect(e.getStartPosition(), e.getPosition());
             editor.repaint();
         } else {
-            VisualNode node = (VisualNode) HitMan.hitTestCurrentLevelFirst(e.getPosition(), model);
+            Node node = HitMan.hitTestCurrentLevelFirst(e.getPosition(), model);
             if (currentNode != node) {
-                currentNode = node;
+                currentNode = (VisualNode) node;
                 editor.repaint();
             }
         }
