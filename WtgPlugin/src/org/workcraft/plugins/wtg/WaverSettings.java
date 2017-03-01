@@ -19,7 +19,7 @@ public class WaverSettings implements Settings {
     private static final String keyPrintStdout = prefix + ".printStdout";
     private static final String keyPrintStderr = prefix + ".printStderr";
 
-    private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\Waver\\waver.exe" : "tools/Waver/waver";
+    private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\waver\\waver.exe" : "tools/waver/waver";
     private static final String defaultArgs = "";
     private static final Boolean defaultPrintStdout = true;
     private static final Boolean defaultPrintStderr = true;
