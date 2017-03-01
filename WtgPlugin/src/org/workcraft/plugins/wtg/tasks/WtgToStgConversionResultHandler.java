@@ -18,18 +18,18 @@ import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class WtgToStgConversionResultHandler extends DummyProgressMonitor<ParseWtgConversionResult> {
+public class WtgToStgConversionResultHandler extends DummyProgressMonitor<WaverConversionResult> {
 
-    private final ParseWtgConversionTask task;
+    private final WaverConversionTask task;
     private WorkspaceEntry result;
 
-    public WtgToStgConversionResultHandler(ParseWtgConversionTask task) {
+    public WtgToStgConversionResultHandler(WaverConversionTask task) {
         this.task = task;
         this.result = null;
     }
 
     @Override
-    public void finished(final Result<? extends ParseWtgConversionResult> result, String description) {
+    public void finished(final Result<? extends WaverConversionResult> result, String description) {
         final Framework framework = Framework.getInstance();
         WorkspaceEntry we = task.getWorkspaceEntry();
         Path<String> path = we.getWorkspacePath();
@@ -41,13 +41,15 @@ public class WtgToStgConversionResultHandler extends DummyProgressMonitor<ParseW
             this.result = framework.createWork(me, directory, name);
         } else if (result.getOutcome() != Outcome.CANCELLED) {
             MainWindow mainWindow = framework.getMainWindow();
-            if (result.getCause() == null) {
-                Result<? extends ExternalProcessResult> petrifyResult = result.getReturnValue().getResult();
-                JOptionPane.showMessageDialog(mainWindow,
-                        "ParseWtg output:\n" + petrifyResult.getReturnValue().getErrorsHeadAndTail(),
-                        "Conversion failed", JOptionPane.WARNING_MESSAGE);
-            } else {
+            if (result.getCause() != null) {
                 ExceptionDialog.show(mainWindow, result.getCause());
+            } else {
+                String message = "Unexpected Waver error";
+                if (result.getReturnValue() != null) {
+                    Result<? extends ExternalProcessResult> waverResult = result.getReturnValue().getResult();
+                    message = "Waver output:\n" + waverResult.getReturnValue().getErrorsHeadAndTail();
+                }
+                JOptionPane.showMessageDialog(mainWindow, message, "Conversion failed", JOptionPane.WARNING_MESSAGE);
             }
         }
     }

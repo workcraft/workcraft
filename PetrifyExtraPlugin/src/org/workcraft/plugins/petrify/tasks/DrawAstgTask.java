@@ -33,6 +33,7 @@ public class DrawAstgTask implements Task<ExternalProcessResult> {
         // Name of the executable
         String toolName = ToolUtils.getAbsoluteCommandPath(PetrifyUtilitySettings.getCommand());
         command.add(toolName);
+        command.add("-draw_astg");
 
         // Built-in arguments
         for (String arg : options) {

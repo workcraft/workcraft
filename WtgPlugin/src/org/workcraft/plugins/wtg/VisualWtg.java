@@ -6,6 +6,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.dtd.VisualDtd;
+import org.workcraft.plugins.dtd.VisualSignal;
 import org.workcraft.plugins.dtd.VisualSignalTransition;
 
 @DisplayName("Waveform Transition Graph")
@@ -52,8 +53,10 @@ public class VisualWtg extends VisualDtd {
             return;
         }
         if ((first instanceof VisualSignalTransition) && (second instanceof VisualSignalTransition)) {
-            Node firstWaveform = first.getParent();
-            Node secondWaveform = second.getParent();
+            VisualSignal firstSignal = ((VisualSignalTransition) first).getVisualSignal();
+            VisualSignal secondSignal = ((VisualSignalTransition) second).getVisualSignal();
+            Node firstWaveform = firstSignal.getParent();
+            Node secondWaveform = secondSignal.getParent();
             if (firstWaveform != secondWaveform) {
                 throw new InvalidConnectionException("Cannot connect events from different waveforms.");
             }

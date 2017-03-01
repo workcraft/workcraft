@@ -7,15 +7,15 @@ import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.observation.HierarchyObserver;
 import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.observation.PropertyChangedEvent;
-import org.workcraft.plugins.graph.Symbol;
 
 @DisplayName("Signal")
 @VisualClass(org.workcraft.plugins.dtd.VisualSignal.class)
-public class Signal extends Symbol implements ObservableHierarchy, Container {
+public class Signal extends MathNode implements ObservableHierarchy, Container {
 
     public static final String PROPERTY_TYPE = "Type";
     public static final String PROPERTY_INITIAL_STATE = "Initial state";

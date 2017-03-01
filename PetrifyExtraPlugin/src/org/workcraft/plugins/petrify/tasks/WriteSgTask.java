@@ -42,6 +42,7 @@ public class WriteSgTask implements Task<ExternalProcessResult>, ExternalProcess
         // Name of the executable
         String toolName = ToolUtils.getAbsoluteCommandPath(PetrifyUtilitySettings.getCommand());
         command.add(toolName);
+        command.add("-write_sg");
 
         // Built-in arguments
         if (options != null) {

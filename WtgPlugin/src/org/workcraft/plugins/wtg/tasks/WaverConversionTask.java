@@ -23,11 +23,11 @@ import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class ParseWtgConversionTask implements Task<ParseWtgConversionResult> {
+public class WaverConversionTask implements Task<WaverConversionResult> {
 
     private final WorkspaceEntry we;
 
-    public ParseWtgConversionTask(WorkspaceEntry we) {
+    public WaverConversionTask(WorkspaceEntry we) {
         this.we = we;
     }
 
@@ -36,7 +36,7 @@ public class ParseWtgConversionTask implements Task<ParseWtgConversionResult> {
     }
 
     @Override
-    public Result<? extends ParseWtgConversionResult> run(ProgressMonitor<? super ParseWtgConversionResult> monitor) {
+    public Result<? extends WaverConversionResult> run(ProgressMonitor<? super WaverConversionResult> monitor) {
         final Framework framework = Framework.getInstance();
         try {
             // Common variables
@@ -58,36 +58,36 @@ public class ParseWtgConversionTask implements Task<ParseWtgConversionResult> {
 
             if (wtgExportResult.getOutcome() != Outcome.FINISHED) {
                 if (wtgExportResult.getOutcome() == Outcome.CANCELLED) {
-                    return new Result<ParseWtgConversionResult>(Outcome.CANCELLED);
+                    return new Result<WaverConversionResult>(Outcome.CANCELLED);
                 }
-                return new Result<ParseWtgConversionResult>(Outcome.FAILED);
+                return new Result<WaverConversionResult>(Outcome.FAILED);
             }
             monitor.progressUpdate(0.20);
 
             // Generate STG
-            ParseWtgTask parseWtgTask = new ParseWtgTask(null, wtgFile, null, null);
-            Result<? extends ExternalProcessResult> parseWtgResult = framework.getTaskManager().execute(
-                    parseWtgTask, "Building state graph", subtaskMonitor);
+            WaverTask waverTask = new WaverTask(null, wtgFile, null, null);
+            Result<? extends ExternalProcessResult> waverResult = framework.getTaskManager().execute(
+                    waverTask, "Building state graph", subtaskMonitor);
 
-            if (parseWtgResult.getOutcome() == Outcome.FINISHED) {
+            if (waverResult.getOutcome() == Outcome.FINISHED) {
                 try {
-                    ByteArrayInputStream in = new ByteArrayInputStream(parseWtgResult.getReturnValue().getOutput());
+                    ByteArrayInputStream in = new ByteArrayInputStream(waverResult.getReturnValue().getOutput());
                     final StgModel stg = new DotGImporter().importSTG(in);
-                    return Result.finished(new ParseWtgConversionResult(null, (Stg) stg));
+                    return Result.finished(new WaverConversionResult(null, (Stg) stg));
                 } catch (DeserialisationException e) {
                     return Result.exception(e);
                 }
             }
-            if (parseWtgResult.getOutcome() == Outcome.CANCELLED) {
+            if (waverResult.getOutcome() == Outcome.CANCELLED) {
                 return Result.cancelled();
             }
-            if (parseWtgResult.getCause() != null) {
-                return Result.exception(parseWtgResult.getCause());
+            if (waverResult.getCause() != null) {
+                return Result.exception(waverResult.getCause());
             } else {
-                return Result.failed(new ParseWtgConversionResult(parseWtgResult, null));
+                return Result.failed(new WaverConversionResult(waverResult, null));
             }
         } catch (Throwable e) {
-            return new Result<ParseWtgConversionResult>(e);
+            return new Result<WaverConversionResult>(e);
         }
     }
 

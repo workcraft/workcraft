@@ -10,23 +10,26 @@ import java.awt.geom.Rectangle2D;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.CustomTouchable;
 import org.workcraft.dom.visual.DrawRequest;
+import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
-import org.workcraft.plugins.graph.VisualVertex;
 
-public abstract class VisualSignalEvent extends VisualVertex implements CustomTouchable {
+public abstract class VisualSignalEvent extends VisualComponent implements CustomTouchable {
 
     public VisualSignalEvent(SignalEvent event) {
         super(event);
+    }
+
+    public SignalEvent getReferencedSignalEvent() {
+        return (SignalEvent) getReferencedComponent();
     }
 
     @Override
     public void draw(DrawRequest r) {
         Graphics2D g = r.getGraphics();
         Color colorisation = r.getDecoration().getColorisation();
-        Shape shape = getShape();
         g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-        g.setStroke(new BasicStroke((float) strokeWidth / 2.0f));
-        g.draw(shape);
+        g.setStroke(getStroke());
+        g.draw(getShape());
     }
 
     @Override
@@ -50,10 +53,12 @@ public abstract class VisualSignalEvent extends VisualVertex implements CustomTo
         return hitTestInLocalSpace(pointInLocalSpace) ? this : null;
     }
 
-    public VisualSignal getSignal() {
+    public VisualSignal getVisualSignal() {
         return (VisualSignal) getParent();
     }
 
     public abstract Shape getShape();
+
+    public abstract BasicStroke getStroke();
 
 }

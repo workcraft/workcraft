@@ -9,6 +9,7 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.visual.AbstractVisualModel;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -19,12 +20,11 @@ import org.workcraft.plugins.dtd.Signal.State;
 import org.workcraft.plugins.dtd.SignalTransition.Direction;
 import org.workcraft.plugins.dtd.propertydescriptors.SignalInitialStatePropertyDescriptor;
 import org.workcraft.plugins.dtd.propertydescriptors.SignalTypePropertyDescriptor;
-import org.workcraft.plugins.graph.VisualGraph;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Digital Timing Diagram")
 @CustomTools(DtdToolsProvider.class)
-public class VisualDtd extends VisualGraph {
+public class VisualDtd extends AbstractVisualModel {
 
     private static final double APPEND_EDGE_OFFSET = 1.0;
     private static final double INSERT_PULSE_OFFSET = 1.0;
@@ -106,9 +106,9 @@ public class VisualDtd extends VisualGraph {
 
         if ((first instanceof VisualSignalEntry) && (second instanceof VisualSignalExit)) {
             VisualSignalEntry firstEntry = (VisualSignalEntry) first;
-            VisualSignal firstSignal = firstEntry.getSignal();
+            VisualSignal firstSignal = firstEntry.getVisualSignal();
             VisualSignalExit secondExit = (VisualSignalExit) second;
-            VisualSignal secondSignal = secondExit.getSignal();
+            VisualSignal secondSignal = secondExit.getVisualSignal();
             if (firstSignal != secondSignal) {
                 throw new InvalidConnectionException("Cannot relate entry and exit of different signals.");
             }
@@ -117,9 +117,9 @@ public class VisualDtd extends VisualGraph {
 
         if ((first instanceof VisualSignalEntry) && (second instanceof VisualSignalTransition)) {
             VisualSignalEntry firstEntry = (VisualSignalEntry) first;
-            VisualSignal firstSignal = firstEntry.getSignal();
+            VisualSignal firstSignal = firstEntry.getVisualSignal();
             VisualSignalTransition secondTransition = (VisualSignalTransition) second;
-            VisualSignal secondSignal = secondTransition.getSignal();
+            VisualSignal secondSignal = secondTransition.getVisualSignal();
             if (firstSignal != secondSignal) {
                 throw new InvalidConnectionException("Cannot relate entry and transition of different signals.");
             }
@@ -143,9 +143,9 @@ public class VisualDtd extends VisualGraph {
 
         if ((first instanceof VisualSignalTransition) && (second instanceof VisualSignalExit)) {
             VisualSignalTransition firstTransition = (VisualSignalTransition) first;
-            VisualSignal firstSignal = firstTransition.getSignal();
+            VisualSignal firstSignal = firstTransition.getVisualSignal();
             VisualSignalExit secondExit = (VisualSignalExit) second;
-            VisualSignal secondSignal = secondExit.getSignal();
+            VisualSignal secondSignal = secondExit.getVisualSignal();
             if (firstSignal != secondSignal) {
                 throw new InvalidConnectionException("Cannot relate transition and exit of different signals.");
             }
@@ -224,7 +224,7 @@ public class VisualDtd extends VisualGraph {
     public SignalEvent appendSignalEvent(VisualSignal signal, Direction direction) {
         VisualSignalEvent event = signal.getVisualSignalEntry();
         for (VisualSignalTransition transition: signal.getVisualTransitions()) {
-            if ((event == null) || (transition.getRootSpaceX() > event.getRootSpaceX())) {
+            if ((event == null) || (transition.getX() > event.getX())) {
                 event = transition;
             }
         }
@@ -235,7 +235,7 @@ public class VisualDtd extends VisualGraph {
         }
         State state = signal.getInitialState();
         if (direction == null) {
-            state = DtdUtils.getState(event);
+            state = DtdUtils.getNextState(event.getReferencedSignalEvent());
             direction = DtdUtils.getNextDirection(state);
         } else {
             if (event instanceof VisualSignalEntry) {
@@ -246,16 +246,16 @@ public class VisualDtd extends VisualGraph {
             }
         }
         VisualSignalTransition edge = createVisualTransition(signal, direction);
-        double x = signal.getRootSpaceX();
-        double y = signal.getRootSpaceY();
+        double x = signal.getX();
+        double y = signal.getY();
         if (event != null) {
-            x = event.getRootSpaceX();
+            x = event.getX();
         }
         x += APPEND_EDGE_OFFSET;
-        if ((exit != null) && (x + APPEND_EDGE_OFFSET > exit.getRootSpaceX())) {
-            exit.setRootSpacePosition(new Point2D.Double(x + APPEND_EDGE_OFFSET, y));
+        if ((exit != null) && (x + APPEND_EDGE_OFFSET > exit.getX())) {
+            exit.setPosition(new Point2D.Double(x + APPEND_EDGE_OFFSET, y));
         }
-        edge.setRootSpacePosition(new Point2D.Double(x, y));
+        edge.setPosition(new Point2D.Double(x, y));
         VisualConnection beforeLevel = null;
         try {
             beforeLevel = connect(event, edge);
@@ -274,8 +274,8 @@ public class VisualDtd extends VisualGraph {
     public SignalPulse insertSignalPulse(VisualLevelConnection connection) {
         VisualSignalEvent fromEvent = (VisualSignalEvent) connection.getFirst();
         VisualSignalEvent toEvent = (VisualSignalEvent) connection.getSecond();
-        Signal.State state = DtdUtils.getState(fromEvent);
-        VisualSignal signal = fromEvent.getSignal();
+        State state = DtdUtils.getNextState(fromEvent.getReferencedSignalEvent());
+        VisualSignal signal = fromEvent.getVisualSignal();
         Direction leadDirection = DtdUtils.getPreviousDirection(state);
         Direction trailDirection = DtdUtils.getNextDirection(state);
         VisualSignalTransition leadEdge = createVisualTransition(signal, leadDirection);
@@ -283,9 +283,9 @@ public class VisualDtd extends VisualGraph {
 
         double y = fromEvent.getY();
         Point2D p = connection.getMiddleSegmentCenterPoint();
-        double leadX = (p.getX() - INSERT_PULSE_OFFSET < fromEvent.getRootSpaceX())
-                ? 0.5 * (p.getX() + fromEvent.getRootSpaceX()) : p.getX() - 0.5 * INSERT_PULSE_OFFSET;
-        double trailX = (p.getX() + INSERT_PULSE_OFFSET > toEvent.getRootSpaceX())
+        double leadX = (p.getX() - INSERT_PULSE_OFFSET < fromEvent.getX())
+                ? 0.5 * (p.getX() + fromEvent.getX()) : p.getX() - 0.5 * INSERT_PULSE_OFFSET;
+        double trailX = (p.getX() + INSERT_PULSE_OFFSET > toEvent.getX())
                 ? 0.5 * (p.getX() + toEvent.getRootSpaceX()) : p.getX() + 0.5 * INSERT_PULSE_OFFSET;
         leadEdge.setRootSpacePosition(new Point2D.Double(leadX, y));
         trailEdge.setRootSpacePosition(new Point2D.Double(trailX, y));
@@ -310,7 +310,7 @@ public class VisualDtd extends VisualGraph {
         mathSignal.add(mathEntry);
         VisualSignalEntry entry = new VisualSignalEntry(mathEntry);
         signal.add(entry);
-        entry.setPosition(new Point2D.Double(0.0, 0.0));
+        entry.setPosition(new Point2D.Double(0.5, 0.0));
 
         SignalExit mathExit = new SignalExit();
         mathSignal.add(mathExit);
@@ -335,7 +335,6 @@ public class VisualDtd extends VisualGraph {
                 properties.insertOrderedByFirstWord(initialStateDescriptor);
             }
         } else if (node instanceof VisualSignalTransition) {
-            properties.removeByName(SignalTransition.PROPERTY_SYMBOL);
             properties.removeByName(NamePropertyDescriptor.PROPERTY_NAME);
         }
         return properties;

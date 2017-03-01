@@ -15,7 +15,7 @@ import org.workcraft.tasks.Task;
 import org.workcraft.util.DataAccumulator;
 import org.workcraft.util.ToolUtils;
 
-public class ParseWtgTask implements Task<ExternalProcessResult>, ExternalProcessListener {
+public class WaverTask implements Task<ExternalProcessResult>, ExternalProcessListener {
     private final List<String> options;
     private final File inputFile;
     private final File outputFile;
@@ -26,7 +26,7 @@ public class ParseWtgTask implements Task<ExternalProcessResult>, ExternalProces
     private final DataAccumulator stdoutAccum = new DataAccumulator();
     private final DataAccumulator stderrAccum = new DataAccumulator();
 
-    public ParseWtgTask(List<String> options, File inputFile, File outputFile, File workingDirectory) {
+    public WaverTask(List<String> options, File inputFile, File outputFile, File workingDirectory) {
         this.options = options;
         this.inputFile = inputFile;
         this.outputFile = outputFile;
@@ -39,7 +39,7 @@ public class ParseWtgTask implements Task<ExternalProcessResult>, ExternalProces
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
-        String toolName = ToolUtils.getAbsoluteCommandPath("tools/WtgTools/parseWTG");
+        String toolName = ToolUtils.getAbsoluteCommandPath("tools/CatsTools/waver");
         command.add(toolName);
 
         // Built-in arguments

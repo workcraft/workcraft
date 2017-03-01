@@ -1,5 +1,6 @@
 dependencies {
     compile project(':WorkcraftCore')
+    compile project(':GraphPlugin')
     compile project(':StgPlugin')
     compile project(':CircuitPlugin')
 }

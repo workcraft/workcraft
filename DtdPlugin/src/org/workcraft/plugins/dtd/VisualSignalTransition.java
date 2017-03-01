@@ -1,18 +1,15 @@
 package org.workcraft.plugins.dtd;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Path2D;
+import java.awt.geom.Path2D.Double;
 import java.awt.geom.Rectangle2D;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
-import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.gui.Coloriser;
 import org.workcraft.plugins.dtd.SignalTransition.Direction;
 
 @Hotkey(KeyEvent.VK_T)
@@ -31,13 +28,14 @@ public class VisualSignalTransition extends VisualSignalEvent {
         removePropertyDeclarationByName(PROPERTY_LABEL);
         removePropertyDeclarationByName(PROPERTY_LABEL_POSITIONING);
         removePropertyDeclarationByName(PROPERTY_LABEL_COLOR);
-        removePropertyDeclarationByName(PROPERTY_SYMBOL_POSITIONING);
-        removePropertyDeclarationByName(PROPERTY_SYMBOL_COLOR);
-        removePropertyDeclarationByName(PROPERTY_RENDER_TYPE);
+    }
+
+    private Double getShapeEmpty() {
+        return new Path2D.Double();
     }
 
     private Shape getShapeRise(double w, double h, double s) {
-        Path2D shape = new Path2D.Double();
+        Path2D shape = getShapeEmpty();
         double sw2 = 0.5 * strokeWidth;
         double w2 = 0.5 * w;
         double s2 = 0.5 * s;
@@ -51,7 +49,7 @@ public class VisualSignalTransition extends VisualSignalEvent {
     }
 
     private Shape getShapeFall(double w, double h, double s) {
-        Path2D shape = new Path2D.Double();
+        Path2D shape = getShapeEmpty();
         double sw2 = 0.5 * strokeWidth;
         double w2 = 0.5 * w;
         double s2 = 0.5 * s;
@@ -65,7 +63,7 @@ public class VisualSignalTransition extends VisualSignalEvent {
     }
 
     private Shape getShapeDestabilise(double w, double h, double s) {
-        Path2D shape = new Path2D.Double();
+        Path2D shape = getShapeEmpty();
         double sw2 = 0.5 * strokeWidth;
         double w2 = 0.5 * w;
         double s2 = 0.5 * s;
@@ -85,7 +83,7 @@ public class VisualSignalTransition extends VisualSignalEvent {
     }
 
     private Shape getShapeStabilise(double w, double h, double s) {
-        Path2D shape = new Path2D.Double();
+        Path2D shape = getShapeEmpty();
         double sw2 = 0.5 * strokeWidth;
         double w2 = 0.5 * w;
         double s2 = 0.5 * s;
@@ -107,7 +105,7 @@ public class VisualSignalTransition extends VisualSignalEvent {
     @Override
     public Shape getShape() {
         if (getReferencedTransition() == null) {
-            return new Path2D.Double();
+            return getShapeEmpty();
         }
         double w = 0.08 * size;
         double h = 0.1 * size;
@@ -117,18 +115,13 @@ public class VisualSignalTransition extends VisualSignalEvent {
         case FALL: return getShapeFall(w, h, s);
         case DESTABILISE: return getShapeDestabilise(w, h, s);
         case STABILISE: return getShapeStabilise(w, h, s);
-        default: return new Path2D.Double();
+        default: return getShapeEmpty();
         }
     }
 
     @Override
-    public void draw(DrawRequest r) {
-        Graphics2D g = r.getGraphics();
-        Color colorisation = r.getDecoration().getColorisation();
-        Shape shape = getShape();
-        g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-        g.setStroke(new BasicStroke((float) strokeWidth / 2.0f));
-        g.draw(shape);
+    public BasicStroke getStroke() {
+        return new BasicStroke((float) strokeWidth / 2.0f);
     }
 
     @Override

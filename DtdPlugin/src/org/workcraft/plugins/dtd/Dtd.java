@@ -3,25 +3,26 @@ package org.workcraft.plugins.dtd;
 import java.util.Collection;
 
 import org.workcraft.annotations.VisualClass;
-import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.AbstractMathModel;
+import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.plugins.dtd.Signal.State;
 import org.workcraft.plugins.dtd.Signal.Type;
+import org.workcraft.plugins.dtd.SignalTransition.Direction;
 import org.workcraft.plugins.dtd.propertydescriptors.DirectionPropertyDescriptor;
-import org.workcraft.plugins.graph.Graph;
-import org.workcraft.plugins.graph.Vertex;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Identifier;
 
 @VisualClass(org.workcraft.plugins.dtd.VisualDtd.class)
-public class Dtd extends Graph {
+public class Dtd extends AbstractMathModel {
 
     public Dtd() {
         this(null, (References) null);
@@ -44,9 +45,10 @@ public class Dtd extends Graph {
         super(root, man);
     }
 
-    @Override
-    public boolean keepUnusedSymbols() {
-        return true;
+    public MathConnection connect(Node first, Node second) {
+        MathConnection con = new MathConnection((MathNode) first, (MathNode) second);
+        Hierarchy.getNearestContainer(first, second).add(con);
+        return con;
     }
 
     public Collection<Signal> getSignals() {
@@ -75,32 +77,29 @@ public class Dtd extends Graph {
         });
     }
 
-    public State getBeforeState(SignalTransition transition) {
-        Signal signal = transition.getSignal();
-        for (Connection connection: getConnections(transition)) {
-            if (connection.getSecond() != transition) continue;
-            Node fromNode = connection.getFirst();
-            if (fromNode == signal) {
-                return signal.getInitialState();
-            } else if (fromNode instanceof SignalTransition) {
-                SignalTransition fromTransition = (SignalTransition) fromNode;
-                if (fromTransition.getSignal() == signal) {
-                    SignalTransition.Direction direction = fromTransition.getDirection();
+    public State getPreviousState(SignalEvent event) {
+        Signal signal = event.getSignal();
+        for (Node node: getPreset(event)) {
+            if (node instanceof SignalTransition) {
+                SignalTransition transition = (SignalTransition) node;
+                if (transition.getSignal() == signal) {
+                    Direction direction = transition.getDirection();
                     return DtdUtils.getNextState(direction);
                 }
             }
         }
-        return null;
+        return signal.getInitialState();
     }
 
     @Override
     public ModelProperties getProperties(Node node) {
         ModelProperties properties = super.getProperties(node);
-        if (node instanceof SignalTransition) {
-            SignalTransition transition = (SignalTransition) node;
-            properties.add(new DirectionPropertyDescriptor(transition));
+        if (node instanceof SignalEvent) {
             properties.removeByName(NamePropertyDescriptor.PROPERTY_NAME);
-            properties.removeByName(Vertex.PROPERTY_SYMBOL);
+            if (node instanceof SignalTransition) {
+                SignalTransition transition = (SignalTransition) node;
+                properties.add(new DirectionPropertyDescriptor(transition));
+            }
         }
         return properties;
     }

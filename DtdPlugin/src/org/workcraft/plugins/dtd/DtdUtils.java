@@ -59,13 +59,13 @@ public class DtdUtils {
         }
     }
 
-    public static State getState(VisualSignalEvent event) {
-        if (event instanceof VisualSignalEntry) {
-            VisualSignal signal = event.getSignal();
+    public static State getNextState(SignalEvent event) {
+        if (event instanceof SignalEntry) {
+            Signal signal = event.getSignal();
             return signal.getInitialState();
         }
-        if (event instanceof VisualSignalTransition) {
-            VisualSignalTransition transition = (VisualSignalTransition) event;
+        if (event instanceof SignalTransition) {
+            SignalTransition transition = (SignalTransition) event;
             return getNextState(transition.getDirection());
         }
         return null;
@@ -98,7 +98,7 @@ public class DtdUtils {
 
         State state = null;
         if (v1 instanceof VisualSignalEvent) {
-            VisualSignal s1 = ((VisualSignalEvent) v1).getSignal();
+            VisualSignal s1 = ((VisualSignalEvent) v1).getVisualSignal();
             state = s1.getInitialState();
             if (v1 instanceof VisualSignalTransition) {
                 VisualSignalTransition t1 = (VisualSignalTransition) v1;

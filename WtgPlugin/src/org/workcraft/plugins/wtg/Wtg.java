@@ -9,6 +9,8 @@ import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.plugins.dtd.Dtd;
 import org.workcraft.plugins.dtd.Signal;
+import org.workcraft.plugins.dtd.SignalEntry;
+import org.workcraft.plugins.dtd.SignalExit;
 import org.workcraft.plugins.dtd.SignalTransition;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
@@ -25,7 +27,9 @@ public class Wtg extends Dtd {
         this(root, new HierarchicalUniqueNameReferenceManager(refs) {
             @Override
             public String getPrefix(Node node) {
-                if (node instanceof SignalTransition) return Identifier.createInternal("e");
+                if (node instanceof SignalEntry) return Identifier.createInternal("entry");
+                if (node instanceof SignalExit) return Identifier.createInternal("exit");
+                if (node instanceof SignalTransition) return Identifier.createInternal("t");
                 if (node instanceof Signal) return "x";
                 if (node instanceof State) return "s";
                 if (node instanceof Waveform) return "w";
@@ -37,11 +41,6 @@ public class Wtg extends Dtd {
     public Wtg(Container root, ReferenceManager man) {
         super(root, man);
         new InitialStateSupervisor().attach(getRoot());
-    }
-
-    @Override
-    public boolean keepUnusedSymbols() {
-        return true;
     }
 
     public final Collection<State> getStates() {
@@ -64,6 +63,20 @@ public class Wtg extends Dtd {
             container = getRoot();
         }
         return Hierarchy.getDescendantsOfType(container, SignalTransition.class);
+    }
+
+    public final Collection<SignalEntry> getEntrys(Container container) {
+        if (container == null) {
+            container = getRoot();
+        }
+        return Hierarchy.getDescendantsOfType(container, SignalEntry.class);
+    }
+
+    public final Collection<SignalExit> getExits(Container container) {
+        if (container == null) {
+            container = getRoot();
+        }
+        return Hierarchy.getDescendantsOfType(container, SignalExit.class);
     }
 
 }

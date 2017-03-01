@@ -1,10 +1,10 @@
 package org.workcraft.plugins.dtd;
 
-import org.workcraft.plugins.graph.Vertex;
+import org.workcraft.dom.math.MathNode;
 
-public class SignalEvent extends Vertex {
+public class SignalEvent extends MathNode {
 
-    Signal getSignal() {
+    public Signal getSignal() {
         return (Signal) getParent();
     }
 

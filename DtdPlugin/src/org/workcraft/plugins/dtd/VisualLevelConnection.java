@@ -90,7 +90,8 @@ public class VisualLevelConnection extends VisualConnection {
     private State getState() {
         VisualNode node = getFirst();
         if (node instanceof VisualSignalEvent) {
-            return DtdUtils.getState((VisualSignalEvent) node);
+            VisualSignalEvent event = (VisualSignalEvent) node;
+            return DtdUtils.getNextState(event.getReferencedSignalEvent());
         }
         return null;
     }

@@ -24,7 +24,7 @@ import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
 
-public class AstgExporter implements Exporter {
+public class DrawAstgExporter implements Exporter {
 
     private static final UUID FORMAT = DesktopApi.getOs().isWindows() ? Format.PS : Format.PDF;
     private static final String EXTENSION = DesktopApi.getOs().isWindows() ? ".ps" : ".pdf";
@@ -32,6 +32,7 @@ public class AstgExporter implements Exporter {
     private static final String RESULT_FILE_NAME = "model" + EXTENSION;
     private static final String STG_FILE_NAME = "model.g";
 
+    @Override
     public void export(Model model, OutputStream out) throws IOException,
             ModelValidationException, SerialisationException {
 
@@ -83,14 +84,17 @@ public class AstgExporter implements Exporter {
         FileUtils.copyFileToStream(resultFile, out);
     }
 
+    @Override
     public String getDescription() {
         return DESCRIPTION;
     }
 
+    @Override
     public String getExtenstion() {
         return EXTENSION;
     }
 
+    @Override
     public int getCompatibility(Model model) {
         if (model instanceof StgModel) {
             return Exporter.GENERAL_COMPATIBILITY;

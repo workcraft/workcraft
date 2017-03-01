@@ -1,12 +1,10 @@
 package org.workcraft.plugins.dtd;
 
-import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -19,6 +17,7 @@ import org.workcraft.annotations.SVGIcon;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultGroupImpl;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.Alignment;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.CustomTouchable;
 import org.workcraft.dom.visual.DrawRequest;
@@ -122,67 +121,18 @@ public class VisualSignal extends VisualComponent implements Container, CustomTo
         return shape;
     }
 
-    public Shape getInitialStateShape() {
-        double h = 0.1 * size;
-        double h2 = 0.5 * h;
-        double w = 0.05 * size;
-        double w2 = 0.5 * w;
-        Path2D shape = new Path2D.Double();
-        if ((getReferencedSignal() != null) && (getInitialState() != null)) {
-            switch (getInitialState()) {
-            case HIGH:
-                Path2D highShape = new Path2D.Double();
-                highShape.moveTo(0.0, +h2);
-                highShape.lineTo(0.0, -h2);
-                highShape.moveTo(0.0, -h);
-                highShape.lineTo(-w2, -h2);
-                highShape.lineTo(+w2, -h2);
-                highShape.closePath();
-                shape.append(highShape, false);
-                break;
-            case LOW:
-                Path2D lowShape = new Path2D.Double();
-                lowShape.moveTo(0.0, -h2);
-                lowShape.lineTo(0.0, +h2);
-                lowShape.moveTo(0.0, +h);
-                lowShape.lineTo(-w2, +h2);
-                lowShape.lineTo(+w2, +h2);
-                lowShape.closePath();
-                shape.append(lowShape, false);
-                break;
-            case UNSTABLE:
-                Path2D unstableShape = new Path2D.Double();
-                unstableShape.moveTo(-w2, 0.0);
-                unstableShape.lineTo(0.0, -h2);
-                unstableShape.lineTo(0.0, +h2);
-                unstableShape.lineTo(+w2, 0.0);
-                shape.append(unstableShape, false);
-                break;
-            case STABLE:
-                Line2D stableShape = new Line2D.Double(-w2, 0.0, +w, 0.0);
-                shape.append(stableShape, false);
-                break;
-            }
-        }
-        return shape;
-    }
-
     @Override
     public void draw(DrawRequest r) {
         Graphics2D g = r.getGraphics();
         Color colorisation = r.getDecoration().getColorisation();
         g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-        g.setStroke(new BasicStroke(0.2f * (float) strokeWidth));
-        g.draw(getShape());
-        g.setStroke(new BasicStroke(0.3f * (float) strokeWidth));
-        g.draw(getInitialStateShape());
         drawLabelInLocalSpace(r);
         drawNameInLocalSpace(r);
     }
 
     @Override
     public Rectangle2D getInternalBoundingBoxInLocalSpace() {
-        return BoundingBoxHelper.expand(getShape().getBounds2D(), 0.0, 0.0, 0.2 * size, 0.0);
+        return new Rectangle2D.Double(-0.25 * size, -0.25 * size, 0.5 * size, 0.5 * size);
     }
 
     @Override
@@ -204,13 +154,31 @@ public class VisualSignal extends VisualComponent implements Container, CustomTo
     }
 
     @Override
+    public Positioning getLabelPositioning() {
+        return Positioning.CENTER;
+    }
+
+    @Override
+    public Alignment getLabelAlignment() {
+        return Alignment.CENTER;
+    }
+
+    @Override
     public boolean getLabelVisibility() {
-        return false;
+        return true;
     }
 
     @Override
     public boolean getNameVisibility() {
         return true;
+    }
+
+    @Override
+    public String getLabel() {
+        if ((getReferencedSignal() != null) && (getInitialState() != null)) {
+            return "[" + getInitialState().getSymbol() + "]";
+        }
+        return null;
     }
 
     @Override
@@ -221,6 +189,11 @@ public class VisualSignal extends VisualComponent implements Container, CustomTo
         case INTERNAL: return CommonSignalSettings.getInternalColor();
         default:       return CommonSignalSettings.getDummyColor();
         }
+    }
+
+    @Override
+    public Color getLabelColor() {
+        return getForegroundColor();
     }
 
     @Override

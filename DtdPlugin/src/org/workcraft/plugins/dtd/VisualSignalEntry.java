@@ -1,13 +1,8 @@
 package org.workcraft.plugins.dtd;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.geom.Path2D;
-
-import org.workcraft.dom.visual.DrawRequest;
-import org.workcraft.gui.Coloriser;
 
 public class VisualSignalEntry extends VisualSignalEvent {
 
@@ -28,13 +23,8 @@ public class VisualSignalEntry extends VisualSignalEvent {
     }
 
     @Override
-    public void draw(DrawRequest r) {
-        Graphics2D g = r.getGraphics();
-        Color colorisation = r.getDecoration().getColorisation();
-        Shape shape = getShape();
-        g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-        g.setStroke(new BasicStroke((float) strokeWidth / 5.0f));
-        g.draw(shape);
+    public BasicStroke getStroke() {
+        return new BasicStroke((float) strokeWidth / 5.0f);
     }
 
 }

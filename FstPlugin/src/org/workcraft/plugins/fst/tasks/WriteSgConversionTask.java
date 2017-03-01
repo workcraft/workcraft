@@ -100,7 +100,6 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
 
             // Generate State Graph
             List<String> writeSgOptions = new ArrayList<>();
-            writeSgOptions.add("-write_sg");
             if (binary) {
                 writeSgOptions.add("-bin");
             }

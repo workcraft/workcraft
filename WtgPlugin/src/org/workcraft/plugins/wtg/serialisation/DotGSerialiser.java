@@ -16,6 +16,8 @@ import org.workcraft.exceptions.FormatException;
 import org.workcraft.plugins.dtd.DtdUtils;
 import org.workcraft.plugins.dtd.Signal;
 import org.workcraft.plugins.dtd.Signal.Type;
+import org.workcraft.plugins.dtd.SignalEntry;
+import org.workcraft.plugins.dtd.SignalExit;
 import org.workcraft.plugins.dtd.SignalTransition;
 import org.workcraft.plugins.dtd.SignalTransition.Direction;
 import org.workcraft.plugins.wtg.State;
@@ -68,8 +70,9 @@ public class DotGSerialiser implements ModelSerialiser {
         private String getSrialisedTransitionName(Wtg wtg, SignalTransition transition) {
             Signal signal = transition.getSignal();
             String result = wtg.getName(signal);
+            Signal.State previousState = wtg.getPreviousState(transition);
             Direction direction = transition.getDirection();
-            switch (wtg.getBeforeState(transition)) {
+            switch (previousState) {
             case UNSTABLE:
                 Signal.State signalState = DtdUtils.getNextState(direction);
                 result += SEPARATOR_STATE + signalState.getSymbol();
@@ -77,7 +80,6 @@ public class DotGSerialiser implements ModelSerialiser {
             default:
                 result += direction.getSymbol();
                 break;
-
             }
             return result;
         }
@@ -204,13 +206,12 @@ public class DotGSerialiser implements ModelSerialiser {
 
     private void writeWaveformEntry(PrintWriter out, Wtg wtg, ReferenceProducer refs, Waveform waveform) {
         HashSet<SignalTransition> entryTransitions = new HashSet<>();
-        Collection<SignalTransition> transitions = wtg.getTransitions(waveform);
-        for (SignalTransition transition: transitions) {
-            HashSet<Node> predTransitions = new HashSet<>();
-            predTransitions.addAll(wtg.getPreset(transition));
-            predTransitions.retainAll(transitions);
-            if (predTransitions.isEmpty()) {
-                entryTransitions.add(transition);
+        for (SignalEntry entry: wtg.getEntrys(waveform)) {
+            for (Node node: wtg.getPostset(entry)) {
+                if (node instanceof SignalTransition) {
+                    SignalTransition transition = (SignalTransition) node;
+                    entryTransitions.add(transition);
+                }
             }
         }
         if (entryTransitions.isEmpty()) {
@@ -236,13 +237,12 @@ public class DotGSerialiser implements ModelSerialiser {
 
     private void writeWaveformExit(PrintWriter out, Wtg wtg, ReferenceProducer refs, Waveform waveform) {
         HashSet<SignalTransition> exitTransitions = new HashSet<>();
-        Collection<SignalTransition> transitions = wtg.getTransitions(waveform);
-        for (SignalTransition transition: transitions) {
-            HashSet<Node> succTransitions = new HashSet<>();
-            succTransitions.addAll(wtg.getPostset(transition));
-            succTransitions.retainAll(transitions);
-            if (succTransitions.isEmpty()) {
-                exitTransitions.add(transition);
+        for (SignalExit exit: wtg.getExits(waveform)) {
+            for (Node node: wtg.getPreset(exit)) {
+                if (node instanceof SignalTransition) {
+                    SignalTransition transition = (SignalTransition) node;
+                    exitTransitions.add(transition);
+                }
             }
         }
         if (exitTransitions.isEmpty()) {

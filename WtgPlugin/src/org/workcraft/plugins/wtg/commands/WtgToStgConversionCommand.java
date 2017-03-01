@@ -3,7 +3,7 @@ package org.workcraft.plugins.wtg.commands;
 import org.workcraft.Framework;
 import org.workcraft.gui.graph.commands.AbstractConversionCommand;
 import org.workcraft.plugins.wtg.Wtg;
-import org.workcraft.plugins.wtg.tasks.ParseWtgConversionTask;
+import org.workcraft.plugins.wtg.tasks.WaverConversionTask;
 import org.workcraft.plugins.wtg.tasks.WtgToStgConversionResultHandler;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.workspace.ModelEntry;
@@ -18,7 +18,7 @@ public class WtgToStgConversionCommand extends AbstractConversionCommand {
 
     @Override
     public String getDisplayName() {
-        return "Signal Transition Graph [ParseWTG]";
+        return "Signal Transition Graph [Waver]";
     }
 
     @Override
@@ -30,7 +30,7 @@ public class WtgToStgConversionCommand extends AbstractConversionCommand {
     public WorkspaceEntry execute(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
-        final ParseWtgConversionTask task = new ParseWtgConversionTask(we);
+        final WaverConversionTask task = new WaverConversionTask(we);
         final WtgToStgConversionResultHandler monitor = new WtgToStgConversionResultHandler(task);
         taskManager.execute(task, "Converting to STG", monitor);
         return monitor.getResult();
