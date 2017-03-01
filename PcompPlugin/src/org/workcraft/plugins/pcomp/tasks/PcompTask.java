@@ -3,7 +3,7 @@ package org.workcraft.plugins.pcomp.tasks;
 import java.io.File;
 import java.util.ArrayList;
 
-import org.workcraft.plugins.pcomp.PcompUtilitySettings;
+import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
@@ -44,7 +44,7 @@ public class PcompTask implements Task<ExternalProcessResult> {
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
-        String toolName = ToolUtils.getAbsoluteCommandPath(PcompUtilitySettings.getCommand());
+        String toolName = ToolUtils.getAbsoluteCommandPath(PcompSettings.getCommand());
         command.add(toolName);
 
         // Built-in arguments
@@ -64,7 +64,7 @@ public class PcompTask implements Task<ExternalProcessResult> {
         }
 
         // Extra arguments (should go before the file parameters)
-        for (String arg : PcompUtilitySettings.getExtraArgs().split("\\s")) {
+        for (String arg : PcompSettings.getArgs().split("\\s")) {
             if (!arg.isEmpty()) {
                 command.add(arg);
             }

@@ -29,15 +29,15 @@ public class PetrifySynthesisCommandsTests {
         framework.initPlugins(false);
         switch (DesktopApi.getOs()) {
         case LINUX:
-            PetrifyUtilitySettings.setCommand("../dist-template/linux/tools/PetrifyTools/petrify");
+            PetrifySettings.setCommand("../dist-template/linux/tools/PetrifyTools/petrify");
             CircuitSettings.setGateLibrary("../dist-template/linux/libraries/workcraft.lib");
             break;
         case MACOS:
-            PetrifyUtilitySettings.setCommand("../dist-template/osx/Contents/Resources/tools/PetrifyTools/petrify");
+            PetrifySettings.setCommand("../dist-template/osx/Contents/Resources/tools/PetrifyTools/petrify");
             CircuitSettings.setGateLibrary("../dist-template/osx/Contents/Resources/libraries/workcraft.lib");
             break;
         case WINDOWS:
-            PetrifyUtilitySettings.setCommand("..\\dist-template\\windows\\tools\\PetrifyTools\\petrify.exe");
+            PetrifySettings.setCommand("..\\dist-template\\windows\\tools\\PetrifyTools\\petrify.exe");
             CircuitSettings.setGateLibrary("..\\dist-template\\windows\\libraries\\workcraft.lib");
             break;
         default:

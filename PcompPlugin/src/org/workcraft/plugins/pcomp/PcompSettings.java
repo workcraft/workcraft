@@ -8,38 +8,38 @@ import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 
-public class PcompUtilitySettings implements Settings {
+public class PcompSettings implements Settings {
 
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "Tools.pcomp";
 
     private static final String ketCommand = prefix + ".command";
-    private static final String keyExtraArgs = prefix + ".args";
+    private static final String keyArgs = prefix + ".args";
 
     private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\UnfoldingTools\\pcomp.exe" : "tools/UnfoldingTools/pcomp";
-    private static final String defaultExtraArgs = "";
+    private static final String defaultArgs = "";
 
     private static String command = defaultCommand;
-    private static String extraArgs = defaultExtraArgs;
+    private static String args = defaultArgs;
 
-    public PcompUtilitySettings() {
-        properties.add(new PropertyDeclaration<PcompUtilitySettings, String>(
+    public PcompSettings() {
+        properties.add(new PropertyDeclaration<PcompSettings, String>(
                 this, "PComp command", String.class, true, false, false) {
-            protected void setter(PcompUtilitySettings object, String value) {
+            protected void setter(PcompSettings object, String value) {
                 setCommand(value);
             }
-            protected String getter(PcompUtilitySettings object) {
+            protected String getter(PcompSettings object) {
                 return getCommand();
             }
         });
 
-        properties.add(new PropertyDeclaration<PcompUtilitySettings, String>(
+        properties.add(new PropertyDeclaration<PcompSettings, String>(
                 this, "Additional parameters", String.class, true, false, false) {
-            protected void setter(PcompUtilitySettings object, String value) {
-                setExtraArgs(value);
+            protected void setter(PcompSettings object, String value) {
+                setArgs(value);
             }
-            protected String getter(PcompUtilitySettings object) {
-                return getExtraArgs();
+            protected String getter(PcompSettings object) {
+                return getArgs();
             }
         });
     }
@@ -52,13 +52,13 @@ public class PcompUtilitySettings implements Settings {
     @Override
     public void load(Config config) {
         setCommand(config.getString(ketCommand, defaultCommand));
-        setExtraArgs(config.getString(keyExtraArgs, defaultExtraArgs));
+        setArgs(config.getString(keyArgs, defaultArgs));
     }
 
     @Override
     public void save(Config config) {
         config.set(ketCommand, getCommand());
-        config.set(keyExtraArgs, getExtraArgs());
+        config.set(keyArgs, getArgs());
     }
 
     @Override
@@ -79,12 +79,12 @@ public class PcompUtilitySettings implements Settings {
         command = value;
     }
 
-    public static String getExtraArgs() {
-        return extraArgs;
+    public static String getArgs() {
+        return args;
     }
 
-    public static void setExtraArgs(String value) {
-        extraArgs = value;
+    public static void setArgs(String value) {
+        args = value;
     }
 
 }

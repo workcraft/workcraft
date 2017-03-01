@@ -3,7 +3,7 @@ package org.workcraft.plugins.mpsat.commands;
 import org.workcraft.Framework;
 import org.workcraft.gui.graph.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
-import org.workcraft.plugins.mpsat.MpsatSettings;
+import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -12,7 +12,7 @@ public abstract class MpsatAbstractVerificationCommand extends AbstractVerificat
 
     @Override
     public void run(WorkspaceEntry we) {
-        final MpsatSettings settings = getSettings();
+        final MpsatParameters settings = getSettings();
         final MpsatChainTask mpsatTask = new MpsatChainTask(we, settings);
 
         String description = "MPSat tool chain";
@@ -26,6 +26,6 @@ public abstract class MpsatAbstractVerificationCommand extends AbstractVerificat
         taskManager.queue(mpsatTask, description, monitor);
     }
 
-    public abstract MpsatSettings getSettings();
+    public abstract MpsatParameters getSettings();
 
 }

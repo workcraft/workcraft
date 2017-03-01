@@ -53,7 +53,7 @@ public class PetrifyModule implements Module {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
 
-        pm.registerClass(Settings.class, PetrifyUtilitySettings.class);
+        pm.registerClass(Settings.class, PetrifySettings.class);
 
         pm.registerClass(Command.class, PetrifyUntoggleConversionCommand.class);
         pm.registerClass(Command.class, PetrifyCscConflictResolutionCommand.class);

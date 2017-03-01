@@ -65,7 +65,7 @@ public class WaverConversionTask implements Task<WaverConversionResult> {
             monitor.progressUpdate(0.20);
 
             // Generate STG
-            WaverTask waverTask = new WaverTask(null, wtgFile, null, null);
+            WaverTask waverTask = new WaverTask(wtgFile, null, null);
             Result<? extends ExternalProcessResult> waverResult = framework.getTaskManager().execute(
                     waverTask, "Building state graph", subtaskMonitor);
 

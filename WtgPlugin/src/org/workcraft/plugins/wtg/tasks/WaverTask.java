@@ -3,11 +3,11 @@ package org.workcraft.plugins.wtg.tasks;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
+import org.workcraft.plugins.wtg.WaverSettings;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -16,7 +16,6 @@ import org.workcraft.util.DataAccumulator;
 import org.workcraft.util.ToolUtils;
 
 public class WaverTask implements Task<ExternalProcessResult>, ExternalProcessListener {
-    private final List<String> options;
     private final File inputFile;
     private final File outputFile;
     private final File workingDirectory;
@@ -26,8 +25,7 @@ public class WaverTask implements Task<ExternalProcessResult>, ExternalProcessLi
     private final DataAccumulator stdoutAccum = new DataAccumulator();
     private final DataAccumulator stderrAccum = new DataAccumulator();
 
-    public WaverTask(List<String> options, File inputFile, File outputFile, File workingDirectory) {
-        this.options = options;
+    public WaverTask(File inputFile, File outputFile, File workingDirectory) {
         this.inputFile = inputFile;
         this.outputFile = outputFile;
         this.workingDirectory = workingDirectory;
@@ -39,12 +37,12 @@ public class WaverTask implements Task<ExternalProcessResult>, ExternalProcessLi
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
-        String toolName = ToolUtils.getAbsoluteCommandPath("tools/CatsTools/waver");
+        String toolName = ToolUtils.getAbsoluteCommandPath(WaverSettings.getCommand());
         command.add(toolName);
 
-        // Built-in arguments
-        if (options != null) {
-            for (String arg : options) {
+        // Extra arguments (should go before the file parameters)
+        for (String arg : WaverSettings.getArgs().split("\\s")) {
+            if (!arg.isEmpty()) {
                 command.add(arg);
             }
         }
@@ -60,7 +58,9 @@ public class WaverTask implements Task<ExternalProcessResult>, ExternalProcessLi
             command.add(outputFile.getAbsolutePath());
         }
 
-        ExternalProcessTask task = new ExternalProcessTask(command, workingDirectory);
+        boolean printStdout = WaverSettings.getPrintStdout();
+        boolean printStderr = WaverSettings.getPrintStderr();
+        ExternalProcessTask task = new ExternalProcessTask(command, workingDirectory, printStdout, printStderr);
         Result<? extends ExternalProcessResult> res = task.run(monitor);
         if (res.getOutcome() != Outcome.FINISHED) {
             return res;

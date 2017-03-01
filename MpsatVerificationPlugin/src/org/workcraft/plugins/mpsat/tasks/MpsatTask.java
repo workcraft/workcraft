@@ -10,8 +10,8 @@ import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.plugins.mpsat.MpsatUtilitySettings;
-import org.workcraft.plugins.punf.PunfUtilitySettings;
+import org.workcraft.plugins.mpsat.MpsatSettings;
+import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
@@ -64,8 +64,8 @@ public class MpsatTask implements Task<ExternalProcessResult> {
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
-        String toolPrefix = MpsatUtilitySettings.getCommand();
-        String toolSuffix = PunfUtilitySettings.getToolSuffix(tryPnml);
+        String toolPrefix = MpsatSettings.getCommand();
+        String toolSuffix = PunfSettings.getToolSuffix(tryPnml);
         String toolName = ToolUtils.getAbsoluteCommandWithSuffixPath(toolPrefix, toolSuffix);
         command.add(toolName);
 
@@ -75,8 +75,8 @@ public class MpsatTask implements Task<ExternalProcessResult> {
         }
 
         // Extra arguments (should go before the file parameters)
-        String extraArgs = MpsatUtilitySettings.getArgs();
-        if (MpsatUtilitySettings.getAdvancedMode()) {
+        String extraArgs = MpsatSettings.getArgs();
+        if (MpsatSettings.getAdvancedMode()) {
             MainWindow mainWindow = Framework.getInstance().getMainWindow();
             String tmp = JOptionPane.showInputDialog(mainWindow, "Additional parameters for MPSat:", extraArgs);
             if (tmp == null) {
@@ -95,8 +95,8 @@ public class MpsatTask implements Task<ExternalProcessResult> {
             command.add(unfoldingFile.getAbsolutePath());
         }
 
-        boolean printStdout = MpsatUtilitySettings.getPrintStdout();
-        boolean printStderr = MpsatUtilitySettings.getPrintStderr();
+        boolean printStdout = MpsatSettings.getPrintStdout();
+        boolean printStderr = MpsatSettings.getPrintStderr();
         ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
         Result<? extends ExternalProcessResult> res = task.run(monitor);
         if (res.getOutcome() == Outcome.FINISHED) {

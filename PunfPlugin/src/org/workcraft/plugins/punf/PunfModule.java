@@ -11,7 +11,7 @@ public class PunfModule implements Module {
     public void init() {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
-        pm.registerClass(Settings.class, PunfUtilitySettings.class);
+        pm.registerClass(Settings.class, PunfSettings.class);
     }
 
     @Override

@@ -33,8 +33,8 @@ import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
-import org.workcraft.plugins.mpsat.MpsatSettings;
-import org.workcraft.plugins.mpsat.MpsatSettings.SolutionMode;
+import org.workcraft.plugins.mpsat.MpsatParameters;
+import org.workcraft.plugins.mpsat.MpsatParameters.SolutionMode;
 import org.workcraft.plugins.shared.gui.PresetManagerPanel;
 import org.workcraft.plugins.shared.presets.Preset;
 import org.workcraft.plugins.shared.presets.SettingsToControlsMapper;
@@ -48,7 +48,7 @@ public class MpsatPropertyDialog extends JDialog {
     private static final int DEFAULT_ALL_SOLUTION_LIMIT = 10;
 
     private JPanel optionsPanel, predicatePanel, buttonsPanel;
-    private PresetManagerPanel<MpsatSettings> presetPanel;
+    private PresetManagerPanel<MpsatParameters> presetPanel;
     private JComboBox<MpsatMode> modeCombo;
     private JTextField solutionLimitText;
     private JTextArea propertyText;
@@ -109,39 +109,39 @@ public class MpsatPropertyDialog extends JDialog {
     }
 
     private void createPresetPanel() {
-        ArrayList<Preset<MpsatSettings>> builtInPresets = new ArrayList<>();
+        ArrayList<Preset<MpsatParameters>> builtInPresets = new ArrayList<>();
 
         if (presetManager.isAllowStgPresets()) {
             builtInPresets.add(new Preset<>("Consistency",
-                    MpsatSettings.getConsistencySettings(), true));
+                    MpsatParameters.getConsistencySettings(), true));
 
             builtInPresets.add(new Preset<>("Delay insensitive interface",
-                    MpsatSettings.getDiInterfaceSettings(), true));
+                    MpsatParameters.getDiInterfaceSettings(), true));
 
             builtInPresets.add(new Preset<>("Input properness",
-                    MpsatSettings.getInputPropernessSettings(), true));
+                    MpsatParameters.getInputPropernessSettings(), true));
 
             builtInPresets.add(new Preset<>("Output persistency (without dummies)",
-                    MpsatSettings.getOutputPersistencySettings(), true));
+                    MpsatParameters.getOutputPersistencySettings(), true));
         }
 
         builtInPresets.add(new Preset<>("Deadlock freeness",
-                MpsatSettings.getDeadlockReachSettings(), true));
+                MpsatParameters.getDeadlockReachSettings(), true));
 
-        SettingsToControlsMapper<MpsatSettings> guiMapper = new SettingsToControlsMapper<MpsatSettings>() {
+        SettingsToControlsMapper<MpsatParameters> guiMapper = new SettingsToControlsMapper<MpsatParameters>() {
             @Override
-            public void applySettingsToControls(MpsatSettings settings) {
+            public void applySettingsToControls(MpsatParameters settings) {
                 MpsatPropertyDialog.this.applySettingsToControls(settings);
             }
 
             @Override
-            public MpsatSettings getSettingsFromControls() {
-                MpsatSettings settings = MpsatPropertyDialog.this.getSettingsFromControls();
+            public MpsatParameters getSettingsFromControls() {
+                MpsatParameters settings = MpsatPropertyDialog.this.getSettingsFromControls();
                 return settings;
             }
         };
 
-        presetPanel = new PresetManagerPanel<MpsatSettings>(presetManager, builtInPresets, guiMapper, this);
+        presetPanel = new PresetManagerPanel<MpsatParameters>(presetManager, builtInPresets, guiMapper, this);
     }
 
     private void createOptionsPanel() {
@@ -273,11 +273,11 @@ public class MpsatPropertyDialog extends JDialog {
         return modalResult;
     }
 
-    public MpsatSettings getSettings() {
+    public MpsatParameters getSettings() {
         return getSettingsFromControls();
     }
 
-    private void applySettingsToControls(MpsatSettings settings) {
+    private void applySettingsToControls(MpsatParameters settings) {
         modeCombo.setSelectedItem(settings.getMode());
 
         switch (settings.getSolutionMode()) {
@@ -303,7 +303,7 @@ public class MpsatPropertyDialog extends JDialog {
         unsatisfiebleRadioButton.setSelected(settings.getInversePredicate());
     }
 
-    private MpsatSettings getSettingsFromControls() {
+    private MpsatParameters getSettingsFromControls() {
         SolutionMode solutionMode;
         if (firstSolutionRadioButton.isSelected()) {
             solutionMode = SolutionMode.FIRST;
@@ -323,7 +323,7 @@ public class MpsatPropertyDialog extends JDialog {
             solutionLimin = 0;
         }
 
-        MpsatSettings settings = new MpsatSettings(null, (MpsatMode) modeCombo.getSelectedItem(),
+        MpsatParameters settings = new MpsatParameters(null, (MpsatMode) modeCombo.getSelectedItem(),
                 0, solutionMode, solutionLimin, propertyText.getText(), unsatisfiebleRadioButton.isSelected());
 
         return settings;

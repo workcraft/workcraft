@@ -43,13 +43,13 @@ public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatC
     private void handleSuccess(final Result<? extends MpsatCombinedChainResult> result, WorkspaceEntry we) {
         MpsatCombinedChainResult returnValue = result.getReturnValue();
         List<Result<? extends ExternalProcessResult>> mpsatResultList = returnValue.getMpsatResultList();
-        List<MpsatSettings> mpsatSettingsList = result.getReturnValue().getMpsatSettingsList();
+        List<MpsatParameters> mpsatSettingsList = result.getReturnValue().getMpsatSettingsList();
         Result<? extends ExternalProcessResult> violationMpsatResult = null;
-        MpsatSettings violationMpsatSettings = null;
+        MpsatParameters violationMpsatSettings = null;
         String verifiedMessageDetailes = "";
         for (int index = 0; index < mpsatResultList.size(); ++index) {
             Result<? extends ExternalProcessResult> mpsatResult = mpsatResultList.get(index);
-            MpsatSettings mpsatSettings = mpsatSettingsList.get(index);
+            MpsatParameters mpsatSettings = mpsatSettingsList.get(index);
             MpsatResultParser mdp = new MpsatResultParser(mpsatResult.getReturnValue());
             List<MpsatSolution> solutions = mdp.getSolutions();
             if (!MpsatSolution.hasTraces(solutions)) {

@@ -13,10 +13,10 @@ import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatResultParser;
-import org.workcraft.plugins.mpsat.MpsatSettings;
+import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
-import org.workcraft.plugins.punf.PunfUtilitySettings;
+import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.SignalTransition.Type;
@@ -34,10 +34,10 @@ import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class MpsatConformationTask extends MpsatChainTask {
-    private final MpsatSettings toolchainPreparationSettings = new MpsatSettings("Toolchain preparation of data",
+    private final MpsatParameters toolchainPreparationSettings = new MpsatParameters("Toolchain preparation of data",
             MpsatMode.UNDEFINED, 0, null, 0);
 
-    private final MpsatSettings toolchainCompletionSettings = new MpsatSettings("Toolchain completion",
+    private final MpsatParameters toolchainCompletionSettings = new MpsatParameters("Toolchain completion",
             MpsatMode.UNDEFINED, 0, null, 0);
 
     private final WorkspaceEntry we;
@@ -122,7 +122,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             monitor.progressUpdate(0.50);
 
             // Generate unfolding
-            File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + PunfUtilitySettings.getUnfoldingExtension(true));
+            File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + PunfSettings.getUnfoldingExtension(true));
             PunfTask punfTask = new PunfTask(stgFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
             Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
                     punfTask, "Unfolding .g", subtaskMonitor);
@@ -140,7 +140,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             Set<String> devOutputNames = devStg.getSignalNames(Type.OUTPUT, null);
             byte[] palcesList = FileUtils.readAllBytes(placesFile);
             Set<String> devPlaceNames = parsePlaceNames(palcesList, 0);
-            MpsatSettings conformationSettings = MpsatSettings.getConformationSettings(devOutputNames, devPlaceNames);
+            MpsatParameters conformationSettings = MpsatParameters.getConformationSettings(devOutputNames, devPlaceNames);
             MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
                     unfoldingFile, directory, true, stgFile, placesFile);
             Result<? extends ExternalProcessResult>  mpsatConformationResult = framework.getTaskManager().execute(

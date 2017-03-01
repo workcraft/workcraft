@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import org.workcraft.Framework;
 import org.workcraft.gui.graph.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.mpsat.MpsatCombinedChainResultHandler;
-import org.workcraft.plugins.mpsat.MpsatSettings;
+import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainTask;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.TaskManager;
@@ -36,11 +36,11 @@ public class MpsatCombinedVerificationCommand extends AbstractVerificationComman
 
     @Override
     public final void run(WorkspaceEntry we) {
-        final ArrayList<MpsatSettings> settingsList = new ArrayList<>();
-        settingsList.add(MpsatSettings.getConsistencySettings());
-        settingsList.add(MpsatSettings.getDeadlockSettings());
-        settingsList.add(MpsatSettings.getInputPropernessSettings());
-        settingsList.add(MpsatSettings.getOutputPersistencySettings());
+        final ArrayList<MpsatParameters> settingsList = new ArrayList<>();
+        settingsList.add(MpsatParameters.getConsistencySettings());
+        settingsList.add(MpsatParameters.getDeadlockSettings());
+        settingsList.add(MpsatParameters.getInputPropernessSettings());
+        settingsList.add(MpsatParameters.getOutputPersistencySettings());
 
         final MpsatCombinedChainTask mpsatTask = new MpsatCombinedChainTask(we, settingsList);
 

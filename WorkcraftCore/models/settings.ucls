@@ -40,8 +40,8 @@
       <operations public="true" package="true" protected="false" private="false" static="true"/>    
     </display>  
   </class>  
-  <class id="5" language="java" name="org.workcraft.plugins.petrify.PetrifyUtilitySettings" project="PetrifyPlugin" 
-    file="/PetrifyPlugin/src/org/workcraft/plugins/petrify/PetrifyUtilitySettings.java" binary="false" 
+  <class id="5" language="java" name="org.workcraft.plugins.petrify.PetrifyUtilitySettings" project="PetrifyExtraPlugin" 
+    file="/PetrifyExtraPlugin/src/org/workcraft/plugins/petrify/PetrifyUtilitySettings.java" binary="false" 
     corner="BOTTOM_RIGHT">    
     <position height="-1" width="-1" x="768" y="724"/>    
     <display autosize="true" stereotype="true" package="true" initial-value="false" signature="true" accessors="true" 

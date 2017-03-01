@@ -39,7 +39,7 @@ public class MpsatModule implements Module {
         pm.registerClass(Command.class, MpsatCombinedVerificationCommand.class);
         pm.registerClass(Command.class, MpsatPropertyVerificationCommand.class);
         pm.registerClass(Command.class, MpsatAssertionVerificationCommand.class);
-        pm.registerClass(Settings.class, MpsatUtilitySettings.class);
+        pm.registerClass(Settings.class, MpsatSettings.class);
     }
 
     @Override

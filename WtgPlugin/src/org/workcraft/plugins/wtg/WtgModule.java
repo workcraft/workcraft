@@ -5,6 +5,7 @@ import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.graph.commands.Command;
+import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.wtg.commands.WtgToStgConversionCommand;
 import org.workcraft.plugins.wtg.interop.DotGExporter;
@@ -26,6 +27,7 @@ public class WtgModule  implements Module {
         pm.registerClass(Exporter.class, DotGExporter.class);
         pm.registerClass(ModelSerialiser.class, DotGSerialiser.class);
         pm.registerClass(Command.class, WtgToStgConversionCommand.class);
+        pm.registerClass(Settings.class, WaverSettings.class);
     }
 
 }

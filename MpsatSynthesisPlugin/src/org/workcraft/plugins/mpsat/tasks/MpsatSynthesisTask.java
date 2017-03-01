@@ -11,8 +11,8 @@ import javax.swing.JOptionPane;
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.circuit.CircuitSettings;
-import org.workcraft.plugins.mpsat.MpsatSynthesisUtilitySettings;
-import org.workcraft.plugins.punf.PunfUtilitySettings;
+import org.workcraft.plugins.mpsat.MpsatSynthesisSettings;
+import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
@@ -50,8 +50,8 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
-        String toolPrefix = MpsatSynthesisUtilitySettings.getCommand();
-        String toolSuffix = PunfUtilitySettings.getToolSuffix(tryPnml);
+        String toolPrefix = MpsatSynthesisSettings.getCommand();
+        String toolSuffix = PunfSettings.getToolSuffix(tryPnml);
         String toolName = ToolUtils.getAbsoluteCommandWithSuffixPath(toolPrefix, toolSuffix);
         command.add(toolName);
 
@@ -61,7 +61,7 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
         }
 
         // Can this MPSat output Verilog?
-        boolean canOutputVerilog = tryPnml && PunfUtilitySettings.getUsePnmlUnfolding();
+        boolean canOutputVerilog = tryPnml && PunfSettings.getUsePnmlUnfolding();
 
         // Technology mapping library (if needed and accepted)
         if (canOutputVerilog && needsGateLibrary) {
@@ -78,8 +78,8 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
         }
 
         // Extra arguments (should go before the file parameters)
-        String extraArgs = MpsatSynthesisUtilitySettings.getArgs();
-        if (MpsatSynthesisUtilitySettings.getAdvancedMode()) {
+        String extraArgs = MpsatSynthesisSettings.getArgs();
+        if (MpsatSynthesisSettings.getAdvancedMode()) {
             MainWindow mainWindow = Framework.getInstance().getMainWindow();
             String tmp = JOptionPane.showInputDialog(mainWindow, "Additional parameters for MPSat:", extraArgs);
             if (tmp == null) {
@@ -97,13 +97,13 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
         command.add(inputFileName);
 
         // Output file
-        boolean needVerilog = canOutputVerilog && MpsatSynthesisUtilitySettings.getOpenSynthesisResult();
+        boolean needVerilog = canOutputVerilog && MpsatSynthesisSettings.getOpenSynthesisResult();
         String outputFileName = needVerilog ? VERILOG_FILE_NAME : EQN_FILE_NAME;
         File outputFile = new File(directory, outputFileName);
         command.add(outputFile.getAbsolutePath());
 
-        boolean printStdout = MpsatSynthesisUtilitySettings.getPrintStdout();
-        boolean printStderr = MpsatSynthesisUtilitySettings.getPrintStderr();
+        boolean printStdout = MpsatSynthesisSettings.getPrintStdout();
+        boolean printStderr = MpsatSynthesisSettings.getPrintStderr();
         ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
         Result<? extends ExternalProcessResult> res = task.run(monitor);
         if (res.getOutcome() == Outcome.FINISHED) {

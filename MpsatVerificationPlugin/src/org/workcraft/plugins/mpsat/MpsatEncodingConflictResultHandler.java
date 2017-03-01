@@ -74,7 +74,7 @@ final class MpsatEncodingConflictResultHandler implements Runnable {
                 core.setColor(colorGenerator.updateColor());
                 cores.add(core);
             }
-            if (MpsatUtilitySettings.getDebugCores()) {
+            if (MpsatSettings.getDebugCores()) {
                 if (solution.getComment() == null) {
                     System.out.println("Encoding conflict:");
                 } else {

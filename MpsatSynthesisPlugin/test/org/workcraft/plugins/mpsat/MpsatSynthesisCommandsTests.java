@@ -16,7 +16,7 @@ import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.mpsat.commands.MpsatAbstractSynthesisCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatComplexGateSynthesisCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatTechnologyMappingSynthesisCommand;
-import org.workcraft.plugins.punf.PunfUtilitySettings;
+import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -30,18 +30,18 @@ public class MpsatSynthesisCommandsTests {
         framework.initPlugins(false);
         switch (DesktopApi.getOs()) {
         case LINUX:
-            PunfUtilitySettings.setCommand("../dist-template/linux/tools/UnfoldingTools/punf");
-            MpsatSynthesisUtilitySettings.setCommand("../dist-template/linux/tools/UnfoldingTools/mpsat");
+            PunfSettings.setCommand("../dist-template/linux/tools/UnfoldingTools/punf");
+            MpsatSynthesisSettings.setCommand("../dist-template/linux/tools/UnfoldingTools/mpsat");
             CircuitSettings.setGateLibrary("../dist-template/linux/libraries/workcraft.lib");
             break;
         case MACOS:
-            PunfUtilitySettings.setCommand("../dist-template/osx/Contents/Resources/tools/UnfoldingTools/punf");
-            MpsatSynthesisUtilitySettings.setCommand("../dist-template/osx/Contents/Resources/tools/UnfoldingTools/mpsat");
+            PunfSettings.setCommand("../dist-template/osx/Contents/Resources/tools/UnfoldingTools/punf");
+            MpsatSynthesisSettings.setCommand("../dist-template/osx/Contents/Resources/tools/UnfoldingTools/mpsat");
             CircuitSettings.setGateLibrary("../dist-template/osx/Contents/Resources/libraries/workcraft.lib");
             break;
         case WINDOWS:
-            PunfUtilitySettings.setCommand("..\\dist-template\\windows\\tools\\UnfoldingTools\\punf.exe");
-            MpsatSynthesisUtilitySettings.setCommand("..\\dist-template\\windows\\tools\\UnfoldingTools\\mpsat.exe");
+            PunfSettings.setCommand("..\\dist-template\\windows\\tools\\UnfoldingTools\\punf.exe");
+            MpsatSynthesisSettings.setCommand("..\\dist-template\\windows\\tools\\UnfoldingTools\\mpsat.exe");
             CircuitSettings.setGateLibrary("..\\dist-template\\windows\\libraries\\workcraft.lib");
             break;
         default:

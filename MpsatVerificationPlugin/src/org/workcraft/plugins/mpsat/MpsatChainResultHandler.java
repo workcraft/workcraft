@@ -40,7 +40,7 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
     private void handleSuccess(final Result<? extends MpsatChainResult> result, WorkspaceEntry we) {
         MpsatChainResult returnValue = result.getReturnValue();
         Result<? extends ExternalProcessResult> mpsatResult = (returnValue == null) ? null : returnValue.getMpsatResult();
-        MpsatSettings mpsatSettings = returnValue.getMpsatSettings();
+        MpsatParameters mpsatSettings = returnValue.getMpsatSettings();
         switch (mpsatSettings.getMode()) {
         case UNDEFINED:
             String undefinedMessage = returnValue.getMessage();

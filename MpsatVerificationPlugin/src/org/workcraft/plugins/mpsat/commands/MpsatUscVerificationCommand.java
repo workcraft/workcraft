@@ -1,7 +1,7 @@
 package org.workcraft.plugins.mpsat.commands;
 
 import org.workcraft.gui.graph.commands.Command;
-import org.workcraft.plugins.mpsat.MpsatSettings;
+import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -24,8 +24,8 @@ public class MpsatUscVerificationCommand extends MpsatAbstractVerificationComman
     }
 
     @Override
-    public MpsatSettings getSettings() {
-        return MpsatSettings.getUscSettings();
+    public MpsatParameters getSettings() {
+        return MpsatParameters.getUscSettings();
     }
 
 }

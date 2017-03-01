@@ -5,11 +5,11 @@ import java.io.File;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.plugins.shared.presets.SettingsSerialiser;
 
-public class MpsatPresetManager extends PresetManager<MpsatSettings> {
+public class MpsatPresetManager extends PresetManager<MpsatParameters> {
 
     private boolean allowStgPresets;
 
-    public MpsatPresetManager(File presetFile, SettingsSerialiser<MpsatSettings> serialiser, boolean allowStgPresets) {
+    public MpsatPresetManager(File presetFile, SettingsSerialiser<MpsatParameters> serialiser, boolean allowStgPresets) {
         super(presetFile, serialiser);
         this.setAllowStgPresets(allowStgPresets);
     }

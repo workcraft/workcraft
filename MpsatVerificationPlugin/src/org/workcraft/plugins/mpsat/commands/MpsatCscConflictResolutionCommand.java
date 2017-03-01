@@ -4,8 +4,8 @@ import org.workcraft.Framework;
 import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.MpsatMode;
-import org.workcraft.plugins.mpsat.MpsatSettings;
-import org.workcraft.plugins.mpsat.MpsatSettings.SolutionMode;
+import org.workcraft.plugins.mpsat.MpsatParameters;
+import org.workcraft.plugins.mpsat.MpsatParameters.SolutionMode;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.TaskManager;
@@ -31,7 +31,7 @@ public class MpsatCscConflictResolutionCommand implements Command {
 
     @Override
     public void run(WorkspaceEntry we) {
-        MpsatSettings settings = new MpsatSettings("Resolution of CSC conflicts",
+        MpsatParameters settings = new MpsatParameters("Resolution of CSC conflicts",
                 MpsatMode.RESOLVE_ENCODING_CONFLICTS, 4, SolutionMode.MINIMUM_COST, 1);
 
         final Framework framework = Framework.getInstance();

@@ -21,7 +21,7 @@ public class MpsatSynthesisModule implements Module {
         pm.registerClass(Command.class, MpsatGeneralisedCelementSynthesisCommand.class);
         pm.registerClass(Command.class, MpsatStandardCelementSynthesisCommand.class);
         pm.registerClass(Command.class, MpsatTechnologyMappingSynthesisCommand.class);
-        pm.registerClass(Settings.class, MpsatSynthesisUtilitySettings.class);
+        pm.registerClass(Settings.class, MpsatSynthesisSettings.class);
     }
 
     @Override
