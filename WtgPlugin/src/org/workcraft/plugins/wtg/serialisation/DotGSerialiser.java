@@ -208,7 +208,7 @@ public class DotGSerialiser implements ModelSerialiser {
         HashSet<SignalTransition> entryTransitions = new HashSet<>();
         for (SignalEntry entry: wtg.getEntrys(waveform)) {
             for (Node node: wtg.getPostset(entry)) {
-                if (node instanceof SignalTransition) {
+                if ((node instanceof SignalTransition) && (wtg.getPreset(node).size() == 1)) {
                     SignalTransition transition = (SignalTransition) node;
                     entryTransitions.add(transition);
                 }
@@ -239,7 +239,7 @@ public class DotGSerialiser implements ModelSerialiser {
         HashSet<SignalTransition> exitTransitions = new HashSet<>();
         for (SignalExit exit: wtg.getExits(waveform)) {
             for (Node node: wtg.getPreset(exit)) {
-                if (node instanceof SignalTransition) {
+                if ((node instanceof SignalTransition) && (wtg.getPostset(node).size() == 1)) {
                     SignalTransition transition = (SignalTransition) node;
                     exitTransitions.add(transition);
                 }

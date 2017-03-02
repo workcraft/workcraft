@@ -23,7 +23,7 @@ import org.workcraft.util.Pair;
 
 public class StgToDtdConverter {
     private static final double SIGNAL_OFFSET = 1.0;
-    private static final double EVENT_OFFSET = 0.5;
+    private static final double EVENT_OFFSET = 1.0;
 
     private final Stg stg;
     private final VisualDtd dtd;

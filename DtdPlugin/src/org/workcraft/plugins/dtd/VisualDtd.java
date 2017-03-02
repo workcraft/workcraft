@@ -1,5 +1,6 @@
 package org.workcraft.plugins.dtd;
 
+import java.awt.Color;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.HashSet;
@@ -15,20 +16,18 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.gui.propertyeditor.ModelProperties;
-import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.plugins.dtd.Signal.State;
 import org.workcraft.plugins.dtd.SignalTransition.Direction;
-import org.workcraft.plugins.dtd.propertydescriptors.SignalInitialStatePropertyDescriptor;
-import org.workcraft.plugins.dtd.propertydescriptors.SignalTypePropertyDescriptor;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Digital Timing Diagram")
 @CustomTools(DtdToolsProvider.class)
 public class VisualDtd extends AbstractVisualModel {
 
-    private static final double APPEND_EDGE_OFFSET = 0.5;
-    private static final double INSERT_PULSE_OFFSET = 0.5;
+    private static final double OFFSET_ENTRY = 0.5;
+    private static final double OFFSET_EXIT = 1.0;
+    private static final double OFFSET_TRANSITION = 1.0;
+    private static final double PULSE_WIDTH = 1.0;
 
     public class SignalEvent {
         public final VisualConnection beforeLevel;
@@ -226,20 +225,24 @@ public class VisualDtd extends AbstractVisualModel {
 
     public void createSignalEntryAndExit(VisualSignal signal) {
         Signal mathSignal = signal.getReferencedSignal();
+        Color color = signal.getForegroundColor();
 
         SignalEntry mathEntry = new SignalEntry();
         mathSignal.add(mathEntry);
         VisualSignalEntry entry = new VisualSignalEntry(mathEntry);
         signal.add(entry);
-        entry.setPosition(new Point2D.Double(0.5, 0.0));
+        entry.setPosition(new Point2D.Double(OFFSET_ENTRY, 0.0));
+        entry.setForegroundColor(color);
 
         SignalExit mathExit = new SignalExit();
         mathSignal.add(mathExit);
         VisualSignalExit exit = new VisualSignalExit(mathExit);
         signal.add(exit);
-        exit.setPosition(new Point2D.Double(2.0, 0.0));
+        exit.setPosition(new Point2D.Double(OFFSET_EXIT, 0.0));
+        exit.setForegroundColor(color);
         try {
-            connect(entry, exit);
+            VisualConnection connection = connect(entry, exit);
+            connection.setColor(color);
         } catch (InvalidConnectionException e) {
         }
     }
@@ -287,21 +290,26 @@ public class VisualDtd extends AbstractVisualModel {
         if (event != null) {
             x = event.getX();
         }
-        x += APPEND_EDGE_OFFSET;
-        if ((exit != null) && (x + APPEND_EDGE_OFFSET > exit.getX())) {
-            exit.setPosition(new Point2D.Double(x + APPEND_EDGE_OFFSET, y));
+        x += OFFSET_TRANSITION;
+        if ((exit != null) && (x + OFFSET_TRANSITION > exit.getX())) {
+            exit.setPosition(new Point2D.Double(x + OFFSET_TRANSITION, y));
         }
         edge.setPosition(new Point2D.Double(x, y));
-        VisualConnection beforeLevel = null;
-        try {
-            beforeLevel = connect(event, edge);
-            beforeLevel.setColor(signal.getForegroundColor());
-        } catch (InvalidConnectionException e) {
-        }
+        Color color = signal.getForegroundColor();
+        edge.setForegroundColor(color);
         VisualConnection afterLevel = null;
         try {
             afterLevel = connect(edge, exit);
-            afterLevel.setColor(signal.getForegroundColor());
+            afterLevel.setColor(color);
+        } catch (InvalidConnectionException e) {
+        }
+        VisualConnection beforeLevel = null;
+        try {
+            beforeLevel = connect(event, edge);
+            if (connection instanceof VisualLevelConnection) {
+                color = ((VisualLevelConnection) connection).getColor();
+            }
+            beforeLevel.setColor(color);
         } catch (InvalidConnectionException e) {
         }
         return new SignalEvent(beforeLevel, edge, afterLevel);
@@ -319,10 +327,10 @@ public class VisualDtd extends AbstractVisualModel {
 
         double y = fromEvent.getY();
         Point2D p = connection.getMiddleSegmentCenterPoint();
-        double leadX = (p.getX() - INSERT_PULSE_OFFSET < fromEvent.getX())
-                ? 0.5 * (p.getX() + fromEvent.getX()) : p.getX() - 0.5 * INSERT_PULSE_OFFSET;
-        double trailX = (p.getX() + INSERT_PULSE_OFFSET > toEvent.getX())
-                ? 0.5 * (p.getX() + toEvent.getRootSpaceX()) : p.getX() + 0.5 * INSERT_PULSE_OFFSET;
+        double leadX = (p.getX() - PULSE_WIDTH < fromEvent.getX())
+                ? 0.5 * (p.getX() + fromEvent.getX()) : p.getX() - 0.5 * PULSE_WIDTH;
+        double trailX = (p.getX() + PULSE_WIDTH > toEvent.getX())
+                ? 0.5 * (p.getX() + toEvent.getRootSpaceX()) : p.getX() + 0.5 * PULSE_WIDTH;
         leadEdge.setRootSpacePosition(new Point2D.Double(leadX, y));
         trailEdge.setRootSpacePosition(new Point2D.Double(trailX, y));
 
@@ -349,23 +357,6 @@ public class VisualDtd extends AbstractVisualModel {
         }
         removeFromSelection(undeletableNodes);
         super.deleteSelection();
-    }
-
-    @Override
-    public ModelProperties getProperties(Node node) {
-        ModelProperties properties = super.getProperties(node);
-        if (node == null) {
-            for (final VisualSignal signal: getVisualSignals(getCurrentLevel())) {
-                Signal mathSignal = signal.getReferencedSignal();
-                SignalTypePropertyDescriptor typeDescriptor = new SignalTypePropertyDescriptor(getMathModel(), mathSignal);
-                properties.insertOrderedByFirstWord(typeDescriptor);
-                SignalInitialStatePropertyDescriptor initialStateDescriptor = new SignalInitialStatePropertyDescriptor(getMathModel(), mathSignal);
-                properties.insertOrderedByFirstWord(initialStateDescriptor);
-            }
-        } else if (node instanceof VisualSignalTransition) {
-            properties.removeByName(NamePropertyDescriptor.PROPERTY_NAME);
-        }
-        return properties;
     }
 
 }

@@ -10,7 +10,6 @@ import java.awt.datatransfer.Transferable;
 import java.awt.dnd.DragSource;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Set;
 
@@ -478,8 +477,8 @@ public class StgSimulationTool extends PetriSimulationTool {
                     "Cannot generate a timing diagram for an empty trace.",
                     "Generation of Timing Diagram", JOptionPane.WARNING_MESSAGE);
         } else {
-            LinkedList<Pair<String, Color>> orderedTraceSignals = getOrderedTraceSignals(stg, trace);
-            StgToDtdConverter converter = new StgToDtdConverter(stg, trace, orderedTraceSignals);
+            LinkedList<Pair<String, Color>> visibleSignals = getVisibleSignals(stg);
+            StgToDtdConverter converter = new StgToDtdConverter(stg, trace, visibleSignals);
             VisualDtd dtd = converter.getVisualDtd();
 
             WorkspaceEntry we = editor.getWorkspaceEntry();
@@ -490,23 +489,12 @@ public class StgSimulationTool extends PetriSimulationTool {
         }
     }
 
-    private LinkedList<Pair<String, Color>> getOrderedTraceSignals(Stg stg, Trace trace) {
+    private LinkedList<Pair<String, Color>> getVisibleSignals(Stg stg) {
         LinkedList<Pair<String, Color>> result = new LinkedList<>();
-        HashSet<String> traceSignals = new HashSet<>();
-        for (String transitionRef: trace) {
-            Node node = stg.getNodeByReference(transitionRef);
-            if (node instanceof SignalTransition) {
-                SignalTransition transition = (SignalTransition) node;
-                String signalRef = stg.getSignalReference(transition);
-                traceSignals.add(signalRef);
-            }
-        }
         for (String signalRef: signals) {
-            if (traceSignals.contains(signalRef)) {
-                SignalData signalData = signalDataMap.get(signalRef);
-                if ((signalData != null) && signalData.visible) {
-                    result.add(new Pair<String, Color>(signalData.name, signalData.color));
-                }
+            SignalData signalData = signalDataMap.get(signalRef);
+            if ((signalData != null) && signalData.visible) {
+                result.add(new Pair<String, Color>(signalData.name, signalData.color));
             }
         }
         return result;

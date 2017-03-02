@@ -15,7 +15,6 @@ import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.plugins.dtd.Signal.State;
 import org.workcraft.plugins.dtd.Signal.Type;
 import org.workcraft.plugins.dtd.SignalTransition.Direction;
-import org.workcraft.plugins.dtd.propertydescriptors.DirectionPropertyDescriptor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
@@ -96,10 +95,6 @@ public class Dtd extends AbstractMathModel {
         ModelProperties properties = super.getProperties(node);
         if (node instanceof SignalEvent) {
             properties.removeByName(NamePropertyDescriptor.PROPERTY_NAME);
-            if (node instanceof SignalTransition) {
-                SignalTransition transition = (SignalTransition) node;
-                properties.add(new DirectionPropertyDescriptor(transition));
-            }
         }
         return properties;
     }

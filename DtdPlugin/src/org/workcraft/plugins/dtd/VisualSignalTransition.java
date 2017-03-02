@@ -10,6 +10,7 @@ import java.awt.geom.Rectangle2D;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
+import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.plugins.dtd.SignalTransition.Direction;
 
 @Hotkey(KeyEvent.VK_T)
@@ -21,6 +22,7 @@ public class VisualSignalTransition extends VisualSignalEvent {
 
     public VisualSignalTransition(SignalTransition transition) {
         super(transition);
+        addPropertyDeclarations();
         renamePropertyDeclarationByName(PROPERTY_FOREGROUND_COLOR, PROPERTY_COLOR);
         removePropertyDeclarationByName(PROPERTY_FILL_COLOR);
         removePropertyDeclarationByName(PROPERTY_NAME_POSITIONING);
@@ -28,6 +30,19 @@ public class VisualSignalTransition extends VisualSignalEvent {
         removePropertyDeclarationByName(PROPERTY_LABEL);
         removePropertyDeclarationByName(PROPERTY_LABEL_POSITIONING);
         removePropertyDeclarationByName(PROPERTY_LABEL_COLOR);
+    }
+
+    private void addPropertyDeclarations() {
+        addPropertyDeclaration(new PropertyDeclaration<VisualSignalTransition, Direction>(
+                this, SignalTransition.PROPERTY_DIRECTION, Direction.class, true, true, true) {
+            protected void setter(VisualSignalTransition object, Direction value) {
+                object.setDirection(value);
+            }
+
+            protected Direction getter(VisualSignalTransition object) {
+                return object.getDirection();
+            }
+        });
     }
 
     private Double getShapeEmpty() {
@@ -131,6 +146,10 @@ public class VisualSignalTransition extends VisualSignalEvent {
 
     public SignalTransition getReferencedTransition() {
         return (SignalTransition) getReferencedComponent();
+    }
+
+    public void setDirection(Direction value) {
+        getReferencedTransition().setDirection(value);
     }
 
     public Direction getDirection() {
