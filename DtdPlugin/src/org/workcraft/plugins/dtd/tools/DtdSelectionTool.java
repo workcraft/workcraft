@@ -87,10 +87,11 @@ public class DtdSelectionTool extends SelectionTool {
         }
     }
 
+
     @Override
     public String getHintText(final GraphEditor editor) {
-        return "Double-click on a signal to append a transition. Hold Shift for rising transition, " +
-                DesktopApi.getMenuKeyMaskName() + " for falling transition, or both keys for unstable transition.";
+        return "Double-click on a signal to add its transition. Hold Shift for rising edge, " +
+                DesktopApi.getMenuKeyMaskName() + " for falling edge, or both keys for unstable state.";
     }
 
 }

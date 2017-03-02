@@ -272,7 +272,7 @@ public class VisualSignal extends VisualComponent implements Container, CustomTo
         groupImpl.removeAllObservers();
     }
 
-    protected Collection<VisualSignalTransition> getVisualTransitions() {
+    public Collection<VisualSignalTransition> getVisualTransitions() {
         HashSet<VisualSignalTransition> result = new HashSet<>();
         for (Node node: getChildren()) {
             if (node instanceof VisualSignalTransition) {
@@ -282,7 +282,7 @@ public class VisualSignal extends VisualComponent implements Container, CustomTo
         return result;
     }
 
-    protected VisualSignalEntry getVisualSignalEntry() {
+    public VisualSignalEntry getVisualSignalEntry() {
         for (Node node: getChildren()) {
             if (node instanceof VisualSignalEntry) {
                 return (VisualSignalEntry) node;
@@ -291,7 +291,7 @@ public class VisualSignal extends VisualComponent implements Container, CustomTo
         return null;
     }
 
-    protected VisualSignalExit getVisualSignalExit() {
+    public VisualSignalExit getVisualSignalExit() {
         for (Node node: getChildren()) {
             if (node instanceof VisualSignalExit) {
                 return (VisualSignalExit) node;

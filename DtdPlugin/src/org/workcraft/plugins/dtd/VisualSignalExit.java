@@ -24,7 +24,7 @@ public class VisualSignalExit extends VisualSignalEvent {
 
     @Override
     public BasicStroke getStroke() {
-        return new BasicStroke((float) strokeWidth / 5.0f);
+        return new BasicStroke((float) strokeWidth / 10.0f);
     }
 
 }

@@ -2,6 +2,7 @@ package org.workcraft.plugins.dtd;
 
 import java.awt.geom.Point2D;
 import java.util.Collection;
+import java.util.HashSet;
 
 import org.workcraft.annotations.CustomTools;
 import org.workcraft.annotations.DisplayName;
@@ -26,8 +27,8 @@ import org.workcraft.util.Hierarchy;
 @CustomTools(DtdToolsProvider.class)
 public class VisualDtd extends AbstractVisualModel {
 
-    private static final double APPEND_EDGE_OFFSET = 1.0;
-    private static final double INSERT_PULSE_OFFSET = 1.0;
+    private static final double APPEND_EDGE_OFFSET = 0.5;
+    private static final double INSERT_PULSE_OFFSET = 0.5;
 
     public class SignalEvent {
         public final VisualConnection beforeLevel;
@@ -192,11 +193,25 @@ public class VisualDtd extends AbstractVisualModel {
         return Hierarchy.getChildrenOfType(container, VisualSignal.class);
     }
 
-    public Collection<VisualSignalTransition> getVisualTransitions(Container container) {
+    public Collection<VisualSignalTransition> getVisualSignalTransitions(Container container) {
         if (container == null) {
             container = getRoot();
         }
-        return Hierarchy.getChildrenOfType(container, VisualSignalTransition.class);
+        return Hierarchy.getDescendantsOfType(container, VisualSignalTransition.class);
+    }
+
+    public Collection<VisualSignalEntry> getVisualSignalEntries(Container container) {
+        if (container == null) {
+            container = getRoot();
+        }
+        return Hierarchy.getDescendantsOfType(container, VisualSignalEntry.class);
+    }
+
+    public Collection<VisualSignalExit> getVisualSignalExits(Container container) {
+        if (container == null) {
+            container = getRoot();
+        }
+        return Hierarchy.getDescendantsOfType(container, VisualSignalExit.class);
     }
 
     public VisualSignal createVisualSignal(String name) {
@@ -205,7 +220,28 @@ public class VisualDtd extends AbstractVisualModel {
         getMathModel().setName(mathSignal, name);
         VisualSignal visualSignal = new VisualSignal(mathSignal);
         add(visualSignal);
+        createSignalEntryAndExit(visualSignal);
         return visualSignal;
+    }
+
+    public void createSignalEntryAndExit(VisualSignal signal) {
+        Signal mathSignal = signal.getReferencedSignal();
+
+        SignalEntry mathEntry = new SignalEntry();
+        mathSignal.add(mathEntry);
+        VisualSignalEntry entry = new VisualSignalEntry(mathEntry);
+        signal.add(entry);
+        entry.setPosition(new Point2D.Double(0.5, 0.0));
+
+        SignalExit mathExit = new SignalExit();
+        mathSignal.add(mathExit);
+        VisualSignalExit exit = new VisualSignalExit(mathExit);
+        signal.add(exit);
+        exit.setPosition(new Point2D.Double(2.0, 0.0));
+        try {
+            connect(entry, exit);
+        } catch (InvalidConnectionException e) {
+        }
     }
 
     public VisualSignalTransition createVisualTransition(VisualSignal signal, Direction direction) {
@@ -303,24 +339,16 @@ public class VisualDtd extends AbstractVisualModel {
         return new SignalPulse(leadLevel, leadEdge, midLevel, trailEdge, trailLevel);
     }
 
-    public void createSignalEntryAndExit(VisualSignal signal) {
-        Signal mathSignal = signal.getReferencedSignal();
-
-        SignalEntry mathEntry = new SignalEntry();
-        mathSignal.add(mathEntry);
-        VisualSignalEntry entry = new VisualSignalEntry(mathEntry);
-        signal.add(entry);
-        entry.setPosition(new Point2D.Double(0.5, 0.0));
-
-        SignalExit mathExit = new SignalExit();
-        mathSignal.add(mathExit);
-        VisualSignalExit exit = new VisualSignalExit(mathExit);
-        signal.add(exit);
-        exit.setPosition(new Point2D.Double(2.0, 0.0));
-        try {
-            connect(entry, exit);
-        } catch (InvalidConnectionException e) {
+    @Override
+    public void deleteSelection() {
+        HashSet<Node> undeletableNodes = new HashSet<>();
+        for (Node node: getSelection()) {
+            if ((node instanceof VisualSignalEntry) || (node instanceof VisualSignalExit)) {
+                undeletableNodes.add(node);
+            }
         }
+        removeFromSelection(undeletableNodes);
+        super.deleteSelection();
     }
 
     @Override

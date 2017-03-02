@@ -16,6 +16,7 @@ import org.workcraft.plugins.dtd.SignalTransition.Direction;
 import org.workcraft.plugins.dtd.VisualDtd;
 import org.workcraft.plugins.dtd.VisualDtd.SignalEvent;
 import org.workcraft.plugins.dtd.VisualSignal;
+import org.workcraft.plugins.dtd.VisualSignalExit;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.util.Pair;
@@ -80,7 +81,7 @@ public class StgToDtdConverter {
     private HashMap<SignalEvent, SignalTransition> ctreateEvents(Trace trace) {
         HashMap<SignalEvent, SignalTransition> result = new HashMap<>();
         HashMap<Node, HashSet<SignalEvent>> causeMap = new HashMap<>();
-        double x = 0.0;
+        double x = EVENT_OFFSET;
         for (String transitionRef: trace) {
             Node node = stg.getNodeByReference(transitionRef);
             boolean skip = true;
@@ -109,6 +110,7 @@ public class StgToDtdConverter {
                 SignalEvent curEvent = dtd.appendSignalEvent(signal, direction);
                 result.put(curEvent, transition);
                 x += EVENT_OFFSET;
+                alignSignalExits(x + EVENT_OFFSET);
                 curEvent.edge.setX(x);
                 for (Node pred: stg.getPreset(transition)) {
                     HashSet<SignalEvent> predEvents = causeMap.get(pred);
@@ -129,6 +131,14 @@ public class StgToDtdConverter {
             }
         }
         return result;
+    }
+
+    private void alignSignalExits(double xExit) {
+        for (VisualSignalExit exit: dtd.getVisualSignalExits(null)) {
+            if (exit.getX() < xExit) {
+                exit.setX(xExit);
+            }
+        }
     }
 
     public VisualSignal getDtdVisualSignal(String signalName) {
