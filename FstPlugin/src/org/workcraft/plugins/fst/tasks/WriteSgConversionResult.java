@@ -1,4 +1,4 @@
-package org.workcraft.plugins.fst.task;
+package org.workcraft.plugins.fst.tasks;
 
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;

@@ -26,13 +26,13 @@ public class PetrifyConversionCommandsTests {
         framework.initPlugins(false);
         switch (DesktopApi.getOs()) {
         case LINUX:
-            PetrifyUtilitySettings.setCommand("../dist-template/linux/tools/PetrifyTools/petrify");
+            PetrifySettings.setCommand("../dist-template/linux/tools/PetrifyTools/petrify");
             break;
         case MACOS:
-            PetrifyUtilitySettings.setCommand("../dist-template/osx/Contents/Resources/tools/PetrifyTools/petrify");
+            PetrifySettings.setCommand("../dist-template/osx/Contents/Resources/tools/PetrifyTools/petrify");
             break;
         case WINDOWS:
-            PetrifyUtilitySettings.setCommand("..\\dist-template\\windows\\tools\\PetrifyTools\\petrify.exe");
+            PetrifySettings.setCommand("..\\dist-template\\windows\\tools\\PetrifyTools\\petrify.exe");
             break;
         default:
         }

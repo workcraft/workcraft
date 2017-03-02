@@ -7,11 +7,11 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.plugins.dfs.stg.DfsToStgConverter;
 import org.workcraft.plugins.mpsat.MpsatResultParser;
-import org.workcraft.plugins.mpsat.MpsatSettings;
+import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
-import org.workcraft.plugins.punf.PunfUtilitySettings;
+import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.StgModel;
@@ -27,10 +27,10 @@ import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class CheckDataflowTask extends MpsatChainTask {
-    private final MpsatSettings toolchainPreparationSettings = MpsatSettings.getToolchainPreparationSettings();
-    private final MpsatSettings toolchainCompletionSettings = MpsatSettings.getToolchainCompletionSettings();
-    private final MpsatSettings deadlockSettings = MpsatSettings.getDeadlockSettings();
-    private final MpsatSettings persistencySettings = MpsatSettings.getOutputPersistencySettings();
+    private final MpsatParameters toolchainPreparationSettings = MpsatParameters.getToolchainPreparationSettings();
+    private final MpsatParameters toolchainCompletionSettings = MpsatParameters.getToolchainCompletionSettings();
+    private final MpsatParameters deadlockSettings = MpsatParameters.getDeadlockSettings();
+    private final MpsatParameters persistencySettings = MpsatParameters.getOutputPersistencySettings();
     private final WorkspaceEntry we;
 
     public CheckDataflowTask(WorkspaceEntry we) {
@@ -68,7 +68,7 @@ public class CheckDataflowTask extends MpsatChainTask {
             }
             monitor.progressUpdate(0.20);
 
-            File unfoldingFile = new File(directory, "unfolding" + PunfUtilitySettings.getUnfoldingExtension(true));
+            File unfoldingFile = new File(directory, "unfolding" + PunfSettings.getUnfoldingExtension(true));
             PunfTask punfTask = new PunfTask(netFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
             Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
                     punfTask, "Unfolding .g", mon);

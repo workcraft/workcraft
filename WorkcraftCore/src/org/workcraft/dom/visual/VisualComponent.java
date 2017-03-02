@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 
+import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.gui.Coloriser;
@@ -235,6 +236,27 @@ public abstract class VisualComponent extends VisualTransformableNode implements
         return new Point2D.Double(0, 0);
     }
 
+    public void centerPivotPoint(boolean horisontal, boolean vertical) {
+        Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+        if (horisontal) {
+            setX(getX() + bb.getCenterX());
+        }
+        if (vertical) {
+            setY(getY() + bb.getCenterY());
+        }
+        for (Node node: getChildren()) {
+            if (node instanceof VisualTransformableNode) {
+                VisualTransformableNode vc = (VisualTransformableNode) node;
+                if (horisontal) {
+                    vc.setX(vc.getX() - bb.getCenterX());
+                }
+                if (vertical) {
+                    vc.setY(vc.getY() - bb.getCenterY());
+                }
+            }
+        }
+    }
+
     public boolean getLabelVisibility() {
         return CommonVisualSettings.getLabelVisibility();
     }
@@ -289,16 +311,30 @@ public abstract class VisualComponent extends VisualTransformableNode implements
         }
     }
 
-    public void drawPivot(DrawRequest r) {
+    public void drawOutline(DrawRequest r) {
+        Decoration d = r.getDecoration();
         Graphics2D g = r.getGraphics();
-        float s2 = (float) CommonVisualSettings.getPivotSize() / 2;
-        Path2D p = new Path2D.Double();
-        p.moveTo(-s2, 0);
-        p.lineTo(s2, 0);
-        p.moveTo(0, -s2);
-        p.lineTo(0, s2);
-        g.setStroke(new BasicStroke((float) CommonVisualSettings.getPivotWidth()));
-        g.draw(p);
+        Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+        if (bb != null) {
+            g.setStroke(new BasicStroke((float) strokeWidth));
+            g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+            g.draw(bb);
+        }
+    }
+
+    public void drawPivot(DrawRequest r) {
+        Decoration d = r.getDecoration();
+        Graphics2D g = r.getGraphics();
+        if (d.getColorisation() != null) {
+            float s2 = (float) CommonVisualSettings.getPivotSize() / 2;
+            Path2D p = new Path2D.Double();
+            p.moveTo(-s2, 0);
+            p.lineTo(s2, 0);
+            p.moveTo(0, -s2);
+            p.lineTo(0, s2);
+            g.setStroke(new BasicStroke((float) CommonVisualSettings.getPivotWidth()));
+            g.draw(p);
+        }
     }
 
     public boolean getNameVisibility() {

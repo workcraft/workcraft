@@ -7,6 +7,7 @@ import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
+import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.plugins.stg.SignalTransition;
 
@@ -35,8 +36,10 @@ public class StgSignalTransitionGeneratorTool  extends NodeGeneratorTool {
     }
 
     @Override
-    public String getHintText() {
-        return "Click to create falling (or rising with " + DesktopApi.getMenuKeyMaskName() + ") transition of output (or input with Shift) signal.";
+    public String getHintText(final GraphEditor editor) {
+        return "Click to create falling (or rising with " +
+                DesktopApi.getMenuKeyMaskName() +
+                ") transition of output (or input with Shift) signal.";
     }
 }
 

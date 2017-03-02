@@ -9,11 +9,11 @@ import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatResultParser;
-import org.workcraft.plugins.mpsat.MpsatSettings;
+import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
-import org.workcraft.plugins.punf.PunfUtilitySettings;
+import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.SignalTransition.Type;
@@ -29,13 +29,13 @@ import org.workcraft.workspace.WorkspaceUtils;
 
 public class CustomCheckCircuitTask extends MpsatChainTask {
 
-    private final MpsatSettings toolchainPreparationSettings = new MpsatSettings("Toolchain preparation of data",
+    private final MpsatParameters toolchainPreparationSettings = new MpsatParameters("Toolchain preparation of data",
             MpsatMode.UNDEFINED, 0, null, 0);
 
-    private final MpsatSettings toolchainCompletionSettings = new MpsatSettings("Toolchain completion",
+    private final MpsatParameters toolchainCompletionSettings = new MpsatParameters("Toolchain completion",
             MpsatMode.UNDEFINED, 0, null, 0);
 
-    public CustomCheckCircuitTask(WorkspaceEntry we, MpsatSettings settings) {
+    public CustomCheckCircuitTask(WorkspaceEntry we, MpsatParameters settings) {
         super(we, settings);
     }
 
@@ -108,7 +108,7 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
             monitor.progressUpdate(0.20);
 
             // Generate unfolding (only if needed)
-            File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + PunfUtilitySettings.getUnfoldingExtension(true));
+            File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + PunfSettings.getUnfoldingExtension(true));
             PunfTask punfTask = new PunfTask(sysStgFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
             SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<>(monitor);
             Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", punfMonitor);
@@ -123,7 +123,7 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
             monitor.progressUpdate(0.40);
 
             // Check custom property (if requested)
-            MpsatSettings settings = getSettings();
+            MpsatParameters settings = getSettings();
             MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory), unfoldingFile, directory);
             SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
             Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(

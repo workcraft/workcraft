@@ -3,7 +3,7 @@ package org.workcraft.plugins.mpsat.commands;
 import org.workcraft.Framework;
 import org.workcraft.gui.graph.commands.AbstractSynthesisCommand;
 import org.workcraft.plugins.mpsat.MpsatSynthesisMode;
-import org.workcraft.plugins.mpsat.MpsatSynthesisSettings;
+import org.workcraft.plugins.mpsat.MpsatSynthesisParameters;
 import org.workcraft.plugins.mpsat.tasks.MpsatSynthesisChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatSynthesisResultHandler;
 import org.workcraft.plugins.stg.StgModel;
@@ -32,7 +32,7 @@ public abstract class MpsatAbstractSynthesisCommand extends AbstractSynthesisCom
     public WorkspaceEntry execute(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
-        final MpsatSynthesisSettings settings = new MpsatSynthesisSettings("Logic synthesis", getSynthesisMode(), 0);
+        final MpsatSynthesisParameters settings = new MpsatSynthesisParameters("Logic synthesis", getSynthesisMode(), 0);
         final MpsatSynthesisChainTask task = new MpsatSynthesisChainTask(we, settings);
         final MpsatSynthesisResultHandler monitor = new MpsatSynthesisResultHandler(task);
         taskManager.execute(task, "MPSat logic synthesis", monitor);
@@ -43,7 +43,7 @@ public abstract class MpsatAbstractSynthesisCommand extends AbstractSynthesisCom
     public void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
-        final MpsatSynthesisSettings settings = new MpsatSynthesisSettings("Logic synthesis", getSynthesisMode(), 0);
+        final MpsatSynthesisParameters settings = new MpsatSynthesisParameters("Logic synthesis", getSynthesisMode(), 0);
         final MpsatSynthesisChainTask task = new MpsatSynthesisChainTask(we, settings);
         final MpsatSynthesisResultHandler monitor = new MpsatSynthesisResultHandler(task);
         taskManager.queue(task, "MPSat logic synthesis", monitor);

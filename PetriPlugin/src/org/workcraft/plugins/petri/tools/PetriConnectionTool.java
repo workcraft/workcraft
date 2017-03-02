@@ -14,10 +14,6 @@ import org.workcraft.plugins.petri.VisualTransition;
 
 public class PetriConnectionTool extends ConnectionTool {
 
-    public PetriConnectionTool() {
-        super(true, true, true);
-    }
-
     @Override
     public boolean isConnectable(Node node) {
         return (node instanceof VisualPlace)

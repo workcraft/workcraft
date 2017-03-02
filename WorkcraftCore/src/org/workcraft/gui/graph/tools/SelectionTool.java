@@ -73,11 +73,8 @@ public class SelectionTool extends AbstractGraphEditorTool {
     private enum DrugState { NONE, MOVE, SELECT };
     private enum SelectionMode { NONE, ADD, REMOVE, REPLACE };
 
-    private static final Color highlightColor = new Color(1.0f, 0.5f, 0.0f).brighter();
-    private static final Color selectionColor = new Color(99, 130, 191).brighter();
     private static final Color selectionBorderColor = new Color(200, 200, 200);
     private static final Color selectionFillColor = new Color(99, 130, 191, 32);
-    private static final Color grayOutColor = Color.LIGHT_GRAY;
 
     protected JPanel interfacePanel;
     protected JPanel controlPanel;
@@ -295,7 +292,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
         GraphEditor editor = e.getEditor();
         Point2D position = e.getPosition();
         if (e.getButton() == MouseEvent.BUTTON1) {
-            Node node = HitMan.hitTestForSelection(position, model);
+            Node node = HitMan.hitTestCurrentLevelFirst(position, model);
             if (node == null) {
                 if (e.getClickCount() > 1) {
                     if (model.getCurrentLevel() instanceof VisualGroup) {
@@ -360,7 +357,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
         }
 
         if (e.getButton() == MouseEvent.BUTTON3) {
-            VisualNode node = (VisualNode) HitMan.hitTestForPopup(position, model);
+            VisualNode node = hitTestPopup(model, position);
             JPopupMenu popup = createPopupMenu(node, editor);
             if (popup != null) {
                 if (node == null) {
@@ -372,6 +369,10 @@ public class SelectionTool extends AbstractGraphEditorTool {
                 popup.show(systemEvent.getComponent(), systemEvent.getX(), systemEvent.getY());
             }
         }
+    }
+
+    public VisualNode hitTestPopup(VisualModel model, Point2D position) {
+        return (VisualNode) HitMan.hitTestCurrentLevelDeepest(position, model);
     }
 
     public JPopupMenu createPopupMenu(Node node, final GraphEditor editor) {
@@ -425,9 +426,9 @@ public class SelectionTool extends AbstractGraphEditorTool {
             selectionBox = getSelectionRect(e.getStartPosition(), e.getPosition());
             editor.repaint();
         } else {
-            VisualNode node = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
+            Node node = HitMan.hitTestCurrentLevelFirst(e.getPosition(), model);
             if (currentNode != node) {
-                currentNode = node;
+                currentNode = (VisualNode) node;
                 editor.repaint();
             }
         }
@@ -451,7 +452,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
         VisualModel model = editor.getModel();
         if (e.getButtonModifiers() == MouseEvent.BUTTON1_DOWN_MASK) {
             Point2D startPos = e.getStartPosition();
-            Node hitNode = HitMan.hitTestForSelection(startPos, model);
+            Node hitNode = HitMan.hitTestCurrentLevelFirst(startPos, model);
 
             if (hitNode == null) {
                 // If hit nothing then start select-drag
@@ -641,16 +642,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
             public Decoration getDecoration(Node node) {
                 VisualModel model = editor.getModel();
                 if (node == currentNode) {
-                    return new Decoration() {
-                        @Override
-                        public Color getColorisation() {
-                            return highlightColor;
-                        }
-                        @Override
-                        public Color getBackground() {
-                            return null;
-                        }
-                    };
+                    return Decoration.Highlighted.INSTANCE;
                 }
 
                 if (node == model.getCurrentLevel()) {
@@ -658,16 +650,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
                 }
 
                 if (node == model.getRoot()) {
-                    return new Decoration() {
-                        @Override
-                        public Color getColorisation() {
-                            return grayOutColor;
-                        }
-                        @Override
-                        public Color getBackground() {
-                            return null;
-                        }
-                    };
+                    return Decoration.Shaded.INSTANCE;
                 }
                 /*
                  * r & !c & s | !r & (c | s) <=> (!r & c) | (!c & s)
@@ -678,16 +661,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
                  */
                 if (((selectionMode != SelectionMode.REMOVE) && selected.contains(node))
                         || (!selected.contains(node) && model.getSelection().contains(node))) {
-                    return new Decoration() {
-                        @Override
-                        public Color getColorisation() {
-                            return selectionColor;
-                        }
-                        @Override
-                        public Color getBackground() {
-                            return null;
-                        }
-                    };
+                    return Decoration.Selected.INSTANCE;
                 }
 
                 //if (node == mouseOverNode) return selectedDecoration;
@@ -932,13 +906,13 @@ public class SelectionTool extends AbstractGraphEditorTool {
     }
 
     @Override
-    public String getHintText() {
+    public String getHintText(final GraphEditor editor) {
         if (isPanMode) {
             return "Use " + DesktopApi.getMenuKeyMaskName() + " + RMB to pan the view.";
         } else if (isTextMode) {
             return "Use " + DesktopApi.getMenuKeyMaskName() + " + Enter to finish text editing.";
         }
-        return super.getHintText();
+        return super.getHintText(editor);
     }
 
 }

@@ -6,6 +6,7 @@ import org.workcraft.dom.math.MathNode;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
+import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.plugins.circuit.FunctionContact;
 
@@ -30,7 +31,7 @@ public class ContactGeneratorTool extends NodeGeneratorTool {
     }
 
     @Override
-    public String getHintText() {
+    public String getHintText(final GraphEditor editor) {
         return "Click to create an output port (hold Shift for input port).";
     }
 }

@@ -1,4 +1,4 @@
-package org.workcraft.plugins.fst.task;
+package org.workcraft.plugins.fst.tasks;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -28,6 +28,7 @@ import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
 
@@ -74,7 +75,7 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
         try {
             // Common variables
             monitor.progressUpdate(0.05);
-            PetriNetModel petri = (PetriNetModel) getWorkspaceEntry().getModelEntry().getMathModel();
+            PetriNetModel petri = WorkspaceUtils.getAs(we, PetriNetModel.class);
             Exporter petriExporter = Export.chooseBestExporter(framework.getPluginManager(), petri, Format.STG);
             if (petriExporter == null) {
                 throw new RuntimeException("Exporter not available: model class " + petri.getClass().getName() + " to format STG.");
@@ -99,7 +100,6 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
 
             // Generate State Graph
             List<String> writeSgOptions = new ArrayList<>();
-            writeSgOptions.add("-write_sg");
             if (binary) {
                 writeSgOptions.add("-bin");
             }

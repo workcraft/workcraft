@@ -15,7 +15,7 @@ public class PcompModule implements Module {
         PluginManager pm = framework.getPluginManager();
 
         pm.registerClass(Command.class, ParallelCompositionCommand.class);
-        pm.registerClass(Settings.class, PcompUtilitySettings.class);
+        pm.registerClass(Settings.class, PcompSettings.class);
     }
 
     @Override

@@ -17,7 +17,7 @@ import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
-import org.workcraft.plugins.petrify.PetrifyUtilitySettings;
+import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.util.FileUtils;
@@ -71,7 +71,7 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
         }
 
         String verilog = result.getReturnValue().getVerilog();
-        if (PetrifyUtilitySettings.getOpenSynthesisResult() && (verilog != null) && !verilog.isEmpty()) {
+        if (PetrifySettings.getOpenSynthesisResult() && (verilog != null) && !verilog.isEmpty()) {
             LogUtils.logInfoLine("Petrify synthesis result in Verilog format:");
             System.out.println(verilog);
             try {

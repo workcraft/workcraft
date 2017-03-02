@@ -31,7 +31,10 @@ public class RenderedText {
 
         Rectangle2D textBounds = null;
         glyphVectors = new LinkedList<GlyphVector>();
-        String[] lines = text.split("\\|");
+        String[] lines = {""};
+        if (text != null) {
+            lines = text.split("\\|");
+        }
         for (String line: lines) {
             final FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000.0, 1000.0), true, true);
             final GlyphVector glyphVector = font.createGlyphVector(context, line.trim());
@@ -42,7 +45,8 @@ public class RenderedText {
             }
             textBounds = BoundingBoxHelper.union(textBounds, lineBounds);
         }
-        spacing = (lines.length < 2) ? 0.0 : (spacingRatio * textBounds.getHeight() / (lines.length - 1));
+        int lineCount = lines.length;
+        spacing = (lineCount < 2) ? 0.0 : (spacingRatio * textBounds.getHeight() / (lineCount - 1));
         textBounds = BoundingBoxHelper.transform(textBounds, AffineTransform.getScaleInstance(1.0, 1.0 + spacingRatio));
         double x = xOffset + positioning.xOffset + 0.5 * positioning.xSign * textBounds.getWidth() - textBounds.getCenterX();
         double y = yOffset + positioning.yOffset + 0.5 * positioning.ySign * textBounds.getHeight() - textBounds.getCenterY();

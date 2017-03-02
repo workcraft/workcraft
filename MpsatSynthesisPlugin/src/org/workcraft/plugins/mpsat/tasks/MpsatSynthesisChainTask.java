@@ -4,8 +4,8 @@ import java.io.File;
 
 import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
-import org.workcraft.plugins.mpsat.MpsatSynthesisSettings;
-import org.workcraft.plugins.punf.PunfUtilitySettings;
+import org.workcraft.plugins.mpsat.MpsatSynthesisParameters;
+import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.Stg;
@@ -23,9 +23,9 @@ import org.workcraft.workspace.WorkspaceUtils;
 
 public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> {
     private final WorkspaceEntry we;
-    private final MpsatSynthesisSettings settings;
+    private final MpsatSynthesisParameters settings;
 
-    public MpsatSynthesisChainTask(WorkspaceEntry we, MpsatSynthesisSettings settings) {
+    public MpsatSynthesisChainTask(WorkspaceEntry we, MpsatSynthesisParameters settings) {
         this.we = we;
         this.settings = settings;
     }
@@ -60,7 +60,7 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> 
 
             // Generate unfolding
             boolean tryPnml = settings.getMode().canPnml();
-            File unfoldingFile = new File(directory, "unfolding" + PunfUtilitySettings.getUnfoldingExtension(tryPnml));
+            File unfoldingFile = new File(directory, "unfolding" + PunfSettings.getUnfoldingExtension(tryPnml));
             PunfTask punfTask = new PunfTask(netFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
             Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", subtaskMonitor);
 
@@ -98,7 +98,7 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> 
         }
     }
 
-    public MpsatSynthesisSettings getSettings() {
+    public MpsatSynthesisParameters getSettings() {
         return settings;
     }
 

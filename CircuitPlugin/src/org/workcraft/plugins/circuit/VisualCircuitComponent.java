@@ -50,8 +50,8 @@ import org.workcraft.util.Hierarchy;
 @DisplayName("Abstract Component")
 @Hotkey(KeyEvent.VK_A)
 @SVGIcon("images/circuit-node-component.svg")
-public class VisualCircuitComponent extends VisualComponent implements
-        Container, CustomTouchable, StateObserver, ObservableHierarchy {
+public class VisualCircuitComponent extends VisualComponent implements Container, CustomTouchable, StateObserver, ObservableHierarchy {
+
     public static final String PROPERTY_RENDER_TYPE = "Render type";
 
     private static final Color inputColor = VisualContact.inputColor;
@@ -221,15 +221,9 @@ public class VisualCircuitComponent extends VisualComponent implements
         invalidateBoundingBox();
     }
 
-    public void centerPivotPoint() {
-        Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-        setX(getX() + bb.getCenterX());
-        setY(getY() + bb.getCenterY());
-        Collection<VisualContact> contacts = getContacts();
-        for (VisualContact vc: contacts) {
-            vc.setX(vc.getX() - bb.getCenterX());
-            vc.setY(vc.getY() - bb.getCenterY());
-        }
+    @Override
+    public void centerPivotPoint(boolean horisontal, boolean vertical) {
+        super.centerPivotPoint(horisontal, vertical);
         invalidateBoundingBox();
     }
 
@@ -546,35 +540,38 @@ public class VisualCircuitComponent extends VisualComponent implements
 
     @Override
     public void draw(DrawRequest r) {
-        Graphics2D g = r.getGraphics();
-        Decoration d = r.getDecoration();
-
         // Cache rendered text to better estimate the bounding box
         cacheRenderedText(r);
-
-        Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-
-        g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
-        g.fill(bb);
-        g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-        if (getIsEnvironment()) {
-            float[] dash = {0.25f, 0.25f };
-            g.setStroke(new BasicStroke((float) CircuitSettings.getBorderWidth(),
-                    BasicStroke.CAP_BUTT, BasicStroke.JOIN_ROUND, 10.0f, dash, 0.0f));
-        } else {
-            g.setStroke(new BasicStroke((float) CircuitSettings.getBorderWidth()));
-        }
-
-        g.draw(bb);
-
-        if (d.getColorisation() != null) {
-            drawPivot(r);
-        }
-
+        drawOutline(r);
+        drawPivot(r);
         drawContactLines(r);
         drawContactLabels(r);
         drawLabelInLocalSpace(r);
         drawNameInLocalSpace(r);
+    }
+
+    @Override
+    public void drawOutline(DrawRequest r) {
+        Decoration d = r.getDecoration();
+        Graphics2D g = r.getGraphics();
+        Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+        if (bb != null) {
+            g.setColor(Coloriser.colorise(getFillColor(), d.getBackground()));
+            g.fill(bb);
+            g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+            setStroke(g);
+            g.draw(bb);
+        }
+    }
+
+    public void setStroke(Graphics2D g) {
+        if (getIsEnvironment()) {
+            float[] pattern = {0.2f, 0.2f};
+            g.setStroke(new BasicStroke((float) CircuitSettings.getBorderWidth(),
+                        BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
+        } else {
+            g.setStroke(new BasicStroke((float) CircuitSettings.getBorderWidth()));
+        }
     }
 
     @Override

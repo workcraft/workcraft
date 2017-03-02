@@ -7,6 +7,7 @@ public class Format {
     public static final UUID defaultVisualXML = UUID.fromString("2fa9669c-a1bf-4be4-8622-007635d672e5");
     public static final UUID STG = UUID.fromString("000199d9-4ac1-4423-b8ea-9017d838e45b");
     public static final UUID SG = UUID.fromString("f309012a-ab89-4036-bb80-8b1a161e8899");
+    public static final UUID WTG = UUID.fromString("ff127612-f14d-4afd-90dc-8c74daa4083c");
     public static final UUID SVG = UUID.fromString("99439c3c-753b-46e3-a5d5-6a0993305a2c");
     public static final UUID PS = UUID.fromString("9b5bd9f0-b5cf-11df-8d81-0800200c9a66");
     public static final UUID EPS = UUID.fromString("c6158d84-e242-4f8c-9ec9-3a6cf045b769");
@@ -26,6 +27,8 @@ public class Format {
             return ".g (Signal Transition Graph)";
         } else if (format.equals(SG)) {
             return ".sg (State Graph)";
+        } else if (format.equals(WTG)) {
+            return ".wtg (Waveform Transition Graph)";
         } else if (format.equals(SVG)) {
             return ".svg (Scalable Vector Graphics)";
         } else if (format.equals(PS)) {
@@ -54,6 +57,7 @@ public class Format {
         if ("defaultVisualXML".equals(name)) return defaultVisualXML;
         if ("STG".equals(name)) return STG;
         if ("SG".equals(name)) return SG;
+        if ("WTG".equals(name)) return WTG;
         if ("SVG".equals(name)) return SVG;
         if ("PS".equals(name)) return PS;
         if ("EPS".equals(name)) return EPS;

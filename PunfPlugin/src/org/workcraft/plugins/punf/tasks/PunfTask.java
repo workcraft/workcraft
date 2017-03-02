@@ -2,7 +2,7 @@ package org.workcraft.plugins.punf.tasks;
 
 import java.util.ArrayList;
 
-import org.workcraft.plugins.punf.PunfUtilitySettings;
+import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
@@ -31,13 +31,13 @@ public class PunfTask implements Task<ExternalProcessResult> {
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
-        String toolPrefix = PunfUtilitySettings.getCommand();
-        String toolSuffix = PunfUtilitySettings.getToolSuffix(tryPnml);
+        String toolPrefix = PunfSettings.getCommand();
+        String toolSuffix = PunfSettings.getToolSuffix(tryPnml);
         String toolName = ToolUtils.getAbsoluteCommandWithSuffixPath(toolPrefix, toolSuffix);
         command.add(toolName);
 
         // Extra arguments (should go before the file parameters)
-        for (String arg : PunfUtilitySettings.getExtraArgs().split("\\s")) {
+        for (String arg : PunfSettings.getArgs().split("\\s")) {
             if (!arg.isEmpty()) {
                 command.add(arg);
             }
@@ -47,8 +47,8 @@ public class PunfTask implements Task<ExternalProcessResult> {
         command.add("-m=" + outputPath);
         command.add(inputPath);
 
-        boolean printStdout = PunfUtilitySettings.getPrintStdout();
-        boolean printStderr = PunfUtilitySettings.getPrintStderr();
+        boolean printStdout = PunfSettings.getPrintStdout();
+        boolean printStderr = PunfSettings.getPrintStderr();
         ExternalProcessTask task = new ExternalProcessTask(command, null, printStdout, printStderr);
         Result<? extends ExternalProcessResult> res = task.run(monitor);
 

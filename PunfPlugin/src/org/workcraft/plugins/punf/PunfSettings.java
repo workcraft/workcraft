@@ -8,76 +8,76 @@ import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 
-public class PunfUtilitySettings implements Settings {
+public class PunfSettings implements Settings {
 
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "Tools.punf";
 
     private static final String keyCommand = prefix + ".command";
-    private static final String keyExtraArgs = prefix + ".args";
+    private static final String keyArgs = prefix + ".args";
     private static final String keyPrintStdout = prefix + ".printStdout";
     private static final String keyPrintStderr = prefix + ".printStderr";
     private static final String keyUsePnmlUnfolding = prefix + ".usePnmlUnfolding";
 
     private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\UnfoldingTools\\punf.exe" : "tools/UnfoldingTools/punf";
-    private static final String defaultExtraArgs = "-r";
+    private static final String defaultArgs = "-r";
     private static final Boolean defaultPrintStdout = true;
     private static final Boolean defaultPrintStderr = true;
     private static final Boolean defaultUsePnmlUnfolding = true;
 
     private static String command = defaultCommand;
-    private static String extraArgs = defaultExtraArgs;
+    private static String args = defaultArgs;
     private static Boolean printStdout = defaultPrintStdout;
     private static Boolean printStderr = defaultPrintStderr;
     private static Boolean usePnmlUnfolding = defaultUsePnmlUnfolding;
 
-    public PunfUtilitySettings() {
-        properties.add(new PropertyDeclaration<PunfUtilitySettings, String>(
+    public PunfSettings() {
+        properties.add(new PropertyDeclaration<PunfSettings, String>(
                 this, "Punf command", String.class, true, false, false) {
-            protected void setter(PunfUtilitySettings object, String value) {
+            protected void setter(PunfSettings object, String value) {
                 setCommand(value);
             }
-            protected String getter(PunfUtilitySettings object) {
+            protected String getter(PunfSettings object) {
                 return getCommand();
             }
         });
 
-        properties.add(new PropertyDeclaration<PunfUtilitySettings, String>(
+        properties.add(new PropertyDeclaration<PunfSettings, String>(
                 this, "Additional parameters", String.class, true, false, false) {
-            protected void setter(PunfUtilitySettings object, String value) {
-                setExtraArgs(value);
+            protected void setter(PunfSettings object, String value) {
+                setArgs(value);
             }
-            protected String getter(PunfUtilitySettings object) {
-                return getExtraArgs();
+            protected String getter(PunfSettings object) {
+                return getArgs();
             }
         });
 
-        properties.add(new PropertyDeclaration<PunfUtilitySettings, Boolean>(
+        properties.add(new PropertyDeclaration<PunfSettings, Boolean>(
                 this, "Output stdout", Boolean.class, true, false, false) {
-            protected void setter(PunfUtilitySettings object, Boolean value) {
+            protected void setter(PunfSettings object, Boolean value) {
                 setPrintStdout(value);
             }
-            protected Boolean getter(PunfUtilitySettings object) {
+            protected Boolean getter(PunfSettings object) {
                 return getPrintStdout();
             }
         });
 
-        properties.add(new PropertyDeclaration<PunfUtilitySettings, Boolean>(
+        properties.add(new PropertyDeclaration<PunfSettings, Boolean>(
                 this, "Output stderr", Boolean.class, true, false, false) {
-            protected void setter(PunfUtilitySettings object, Boolean value) {
+            protected void setter(PunfSettings object, Boolean value) {
                 setPrintStderr(value);
             }
-            protected Boolean getter(PunfUtilitySettings object) {
+            protected Boolean getter(PunfSettings object) {
                 return getPrintStderr();
             }
         });
 
-        properties.add(new PropertyDeclaration<PunfUtilitySettings, Boolean>(
+        properties.add(new PropertyDeclaration<PunfSettings, Boolean>(
                 this, "Use PNML-based unfolding (where possible)", Boolean.class, true, false, false) {
-            protected void setter(PunfUtilitySettings object, Boolean value) {
+            protected void setter(PunfSettings object, Boolean value) {
                 setUsePnmlUnfolding(value);
             }
-            protected Boolean getter(PunfUtilitySettings object) {
+            protected Boolean getter(PunfSettings object) {
                 return getUsePnmlUnfolding();
             }
         });
@@ -91,7 +91,7 @@ public class PunfUtilitySettings implements Settings {
     @Override
     public void load(Config config) {
         setCommand(config.getString(keyCommand, defaultCommand));
-        setExtraArgs(config.getString(keyExtraArgs, defaultExtraArgs));
+        setArgs(config.getString(keyArgs, defaultArgs));
         setUsePnmlUnfolding(config.getBoolean(keyUsePnmlUnfolding, defaultUsePnmlUnfolding));
         setPrintStdout(config.getBoolean(keyPrintStdout, defaultPrintStdout));
         setPrintStderr(config.getBoolean(keyPrintStderr, defaultPrintStderr));
@@ -100,7 +100,7 @@ public class PunfUtilitySettings implements Settings {
     @Override
     public void save(Config config) {
         config.set(keyCommand, getCommand());
-        config.set(keyExtraArgs, getExtraArgs());
+        config.set(keyArgs, getArgs());
         config.setBoolean(keyPrintStdout, getPrintStdout());
         config.setBoolean(keyPrintStderr, getPrintStderr());
         config.setBoolean(keyUsePnmlUnfolding, getUsePnmlUnfolding());
@@ -124,12 +124,12 @@ public class PunfUtilitySettings implements Settings {
         command = value;
     }
 
-    public static String getExtraArgs() {
-        return extraArgs;
+    public static String getArgs() {
+        return args;
     }
 
-    public static void setExtraArgs(String value) {
-        extraArgs = value;
+    public static void setArgs(String value) {
+        args = value;
     }
 
     public static Boolean getPrintStdout() {

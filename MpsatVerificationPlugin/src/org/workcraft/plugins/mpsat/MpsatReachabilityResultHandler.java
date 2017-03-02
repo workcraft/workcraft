@@ -35,9 +35,9 @@ final class MpsatReachabilityResultHandler implements Runnable {
 
     private final WorkspaceEntry we;
     private final Result<? extends ExternalProcessResult> result;
-    private final MpsatSettings settings;
+    private final MpsatParameters settings;
 
-    MpsatReachabilityResultHandler(WorkspaceEntry we, Result<? extends ExternalProcessResult> result, MpsatSettings settings) {
+    MpsatReachabilityResultHandler(WorkspaceEntry we, Result<? extends ExternalProcessResult> result, MpsatParameters settings) {
         this.we = we;
         this.result = result;
         this.settings = settings;

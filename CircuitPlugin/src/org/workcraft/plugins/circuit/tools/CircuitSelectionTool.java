@@ -71,7 +71,7 @@ public class CircuitSelectionTool extends SelectionTool {
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     editor.getWorkspaceEntry().saveMemento();
-                    component.centerPivotPoint();
+                    component.centerPivotPoint(true, true);
                 }
             });
             popup.add(centerPivotPointMenuItem);

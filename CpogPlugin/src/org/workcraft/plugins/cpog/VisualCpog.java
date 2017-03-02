@@ -100,7 +100,6 @@ public class VisualCpog extends AbstractVisualModel {
     public VisualCpog(Cpog model, VisualGroup root) {
         super(model, root);
         this.mathModel = model;
-
         if (root == null) {
             try {
                 createDefaultFlatStructure();

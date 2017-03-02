@@ -4,24 +4,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.workcraft.annotations.VisualClass;
-import org.workcraft.dom.Container;
-import org.workcraft.dom.DefaultGroupImpl;
-import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathGroup;
 import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
-import org.workcraft.observation.HierarchyObserver;
-import org.workcraft.observation.ObservableHierarchy;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.util.Hierarchy;
 
 @VisualClass(org.workcraft.plugins.circuit.VisualCircuitComponent.class)
-public class CircuitComponent extends MathGroup implements Container, ObservableHierarchy {
+public class CircuitComponent extends MathGroup {
 
     public static final String PROPERTY_MODULE = "Module";
     public static final String PROPERTY_IS_ENVIRONMENT = "Treat as environment";
     public static final String PROPERTY_PATH_BREAKER = "Path breaker";
 
-    DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
     private String name = "";
     private String module = "";
     private boolean isEnvironment = false;
@@ -67,61 +61,6 @@ public class CircuitComponent extends MathGroup implements Container, Observable
             this.pathBreaker = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_PATH_BREAKER));
         }
-    }
-
-    @Override
-    public Node getParent() {
-        return groupImpl.getParent();
-    }
-
-    @Override
-    public void setParent(Node parent) {
-        groupImpl.setParent(parent);
-    }
-
-    @Override
-    public void addObserver(HierarchyObserver obs) {
-        groupImpl.addObserver(obs);
-    }
-
-    @Override
-    public void removeObserver(HierarchyObserver obs) {
-        groupImpl.removeObserver(obs);
-    }
-
-    @Override
-    public void add(Node node) {
-        groupImpl.add(node);
-    }
-
-    @Override
-    public void add(Collection<Node> nodes) {
-        groupImpl.add(nodes);
-    }
-
-    @Override
-    public void remove(Node node) {
-        groupImpl.remove(node);
-    }
-
-    @Override
-    public void remove(Collection<Node> node) {
-        groupImpl.remove(node);
-    }
-
-    @Override
-    public void reparent(Collection<Node> nodes) {
-        groupImpl.reparent(nodes);
-    }
-
-    @Override
-    public void reparent(Collection<Node> nodes, Container newParent) {
-        groupImpl.reparent(nodes, newParent);
-    }
-
-    @Override
-    public Collection<Node> getChildren() {
-        return groupImpl.getChildren();
     }
 
     public Collection<Contact> getContacts() {

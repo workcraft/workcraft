@@ -1,4 +1,4 @@
-package org.workcraft.plugins.fst.task;
+package org.workcraft.plugins.fst.tasks;
 
 import java.awt.Color;
 import java.io.File;

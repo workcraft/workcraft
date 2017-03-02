@@ -28,8 +28,8 @@ import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
-import org.workcraft.plugins.mpsat.MpsatSettings;
-import org.workcraft.plugins.mpsat.MpsatSettings.SolutionMode;
+import org.workcraft.plugins.mpsat.MpsatParameters;
+import org.workcraft.plugins.mpsat.MpsatParameters.SolutionMode;
 import org.workcraft.plugins.shared.gui.PresetManagerPanel;
 import org.workcraft.plugins.shared.presets.Preset;
 import org.workcraft.plugins.shared.presets.SettingsToControlsMapper;
@@ -40,7 +40,7 @@ import info.clearthought.layout.TableLayout;
 @SuppressWarnings("serial")
 public class MpsatAssertionDialog extends JDialog {
     private JPanel predicatePanel, buttonsPanel;
-    private PresetManagerPanel<MpsatSettings> presetPanel;
+    private PresetManagerPanel<MpsatParameters> presetPanel;
     private JTextArea assertionText;
     private final MpsatPresetManager presetManager;
 
@@ -96,24 +96,24 @@ public class MpsatAssertionDialog extends JDialog {
     }
 
     private void createPresetPanel() {
-        ArrayList<Preset<MpsatSettings>> builtInPresets = new ArrayList<>();
+        ArrayList<Preset<MpsatParameters>> builtInPresets = new ArrayList<>();
 
-        builtInPresets.add(new Preset<>("", MpsatSettings.getEmptyAssertionSettings(), false));
+        builtInPresets.add(new Preset<>("", MpsatParameters.getEmptyAssertionSettings(), false));
 
-        SettingsToControlsMapper<MpsatSettings> guiMapper = new SettingsToControlsMapper<MpsatSettings>() {
+        SettingsToControlsMapper<MpsatParameters> guiMapper = new SettingsToControlsMapper<MpsatParameters>() {
             @Override
-            public void applySettingsToControls(MpsatSettings settings) {
+            public void applySettingsToControls(MpsatParameters settings) {
                 MpsatAssertionDialog.this.applySettingsToControls(settings);
             }
 
             @Override
-            public MpsatSettings getSettingsFromControls() {
-                MpsatSettings settings = MpsatAssertionDialog.this.getSettingsFromControls();
+            public MpsatParameters getSettingsFromControls() {
+                MpsatParameters settings = MpsatAssertionDialog.this.getSettingsFromControls();
                 return settings;
             }
         };
 
-        presetPanel = new PresetManagerPanel<MpsatSettings>(presetManager, builtInPresets, guiMapper, this);
+        presetPanel = new PresetManagerPanel<MpsatParameters>(presetManager, builtInPresets, guiMapper, this);
     }
 
     private void createAssertionPanel() {
@@ -141,7 +141,7 @@ public class MpsatAssertionDialog extends JDialog {
         predicatePanel.add(propertyPanel, BorderLayout.SOUTH);
     }
 
-    public MpsatSettings getSettings() {
+    public MpsatParameters getSettings() {
         return getSettingsFromControls();
     }
 
@@ -183,12 +183,12 @@ public class MpsatAssertionDialog extends JDialog {
         return modalResult;
     }
 
-    private void applySettingsToControls(MpsatSettings settings) {
+    private void applySettingsToControls(MpsatParameters settings) {
         assertionText.setText(settings.getExpression());
     }
 
-    private MpsatSettings getSettingsFromControls() {
-        return new MpsatSettings(null, MpsatMode.ASSERTION,
+    private MpsatParameters getSettingsFromControls() {
+        return new MpsatParameters(null, MpsatMode.ASSERTION,
                 0, SolutionMode.MINIMUM_COST, 0, assertionText.getText(), true);
     }
 

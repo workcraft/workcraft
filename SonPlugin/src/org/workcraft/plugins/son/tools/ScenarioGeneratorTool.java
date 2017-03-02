@@ -409,7 +409,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
 
     @Override
     public void drawInScreenSpace(GraphEditor editor, Graphics2D g) {
-        GUI.drawEditorMessage(editor, g, Color.BLACK, "Click on the highlight node to choose a scenario");
+        GUI.drawEditorMessage(editor, g, Color.BLACK, "Click on the highlight node to choose a scenario.");
     }
 
     @Override

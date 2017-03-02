@@ -539,7 +539,8 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
     @Override
     public void deleteSelection() {
-        // XXX: The order of removal influences the remaining selection because there are listeners that remove hanging connections and replica nodes.
+        // Note: The order of removal influences the remaining selection because
+        // there are listeners that remove hanging connections and replica nodes.
         // Remove selected connections
         deleteSelection(new Func<Node, Boolean>() {
             @Override

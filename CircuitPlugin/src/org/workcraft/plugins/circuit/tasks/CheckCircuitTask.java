@@ -14,11 +14,11 @@ import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.mpsat.MpsatResultParser;
-import org.workcraft.plugins.mpsat.MpsatSettings;
+import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
-import org.workcraft.plugins.punf.PunfUtilitySettings;
+import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.SignalTransition.Type;
@@ -34,10 +34,10 @@ import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class CheckCircuitTask extends MpsatChainTask {
-    private final MpsatSettings toolchainPreparationSettings = MpsatSettings.getToolchainPreparationSettings();
-    private final MpsatSettings toolchainCompletionSettings = MpsatSettings.getToolchainCompletionSettings();
-    private final MpsatSettings deadlockSettings = MpsatSettings.getDeadlockSettings();
-    private final MpsatSettings persistencySettings = MpsatSettings.getOutputPersistencySettings();
+    private final MpsatParameters toolchainPreparationSettings = MpsatParameters.getToolchainPreparationSettings();
+    private final MpsatParameters toolchainCompletionSettings = MpsatParameters.getToolchainCompletionSettings();
+    private final MpsatParameters deadlockSettings = MpsatParameters.getDeadlockSettings();
+    private final MpsatParameters persistencySettings = MpsatParameters.getOutputPersistencySettings();
 
     private final WorkspaceEntry we;
     private final boolean checkConformation;
@@ -166,7 +166,7 @@ public class CheckCircuitTask extends MpsatChainTask {
             Result<? extends ExternalProcessResult> punfResult = null;
             final TaskManager taskManager = framework.getTaskManager();
             if (checkDeadlock || checkPersistency) {
-                unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + PunfUtilitySettings.getUnfoldingExtension(true));
+                unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + PunfSettings.getUnfoldingExtension(true));
                 punfTask = new PunfTask(sysStgFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
                 SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<>(monitor);
                 punfResult = taskManager.execute(punfTask, "Unfolding .g", punfMonitor);
@@ -186,7 +186,7 @@ public class CheckCircuitTask extends MpsatChainTask {
             if ((envStg != null) && checkConformation) {
                 if ((sysStgFile != sysModStgFile) || (unfoldingModFile == null)) {
                     String fileSuffix = (sysStgFile == null) ? "" : StgUtils.MODIFIED_FILE_SUFFIX;
-                    unfoldingModFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + fileSuffix + PunfUtilitySettings.getUnfoldingExtension(true));
+                    unfoldingModFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + fileSuffix + PunfSettings.getUnfoldingExtension(true));
                     punfModTask = new PunfTask(sysModStgFile.getAbsolutePath(), unfoldingModFile.getAbsolutePath());
                     SubtaskMonitor<Object> punfModMonitor = new SubtaskMonitor<>(monitor);
                     punfModResult = taskManager.execute(punfModTask, "Unfolding .g", punfModMonitor);
@@ -259,7 +259,7 @@ public class CheckCircuitTask extends MpsatChainTask {
                 Set<String> devOutputNames = devStg.getSignalNames(Type.OUTPUT, null);
                 byte[] placesList = FileUtils.readAllBytes(placesModFile);
                 Set<String> devPlaceNames = parsePlaceNames(placesList, 0);
-                MpsatSettings conformationSettings = MpsatSettings.getConformationSettings(devOutputNames, devPlaceNames);
+                MpsatParameters conformationSettings = MpsatParameters.getConformationSettings(devOutputNames, devPlaceNames);
                 MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
                         unfoldingModFile, directory, true, sysModStgFile, placesModFile);
                 SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);

@@ -67,7 +67,7 @@ public class PolicySelectionTool extends SelectionTool {
         boolean processed = false;
         VisualModel model = e.getEditor().getModel();
         if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() > 1)) {
-            VisualNode node = (VisualNode) HitMan.hitTestForSelection(e.getPosition(), model);
+            VisualNode node = (VisualNode) HitMan.hitTestCurrentLevelFirst(e.getPosition(), model);
             if (node instanceof VisualPlace) {
                 VisualPlace place = (VisualPlace) node;
                 if (place.getReferencedPlace().getTokens() <= 1) {

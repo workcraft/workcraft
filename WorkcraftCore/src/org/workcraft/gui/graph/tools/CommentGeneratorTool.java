@@ -35,7 +35,7 @@ public class CommentGeneratorTool extends NodeGeneratorTool {
     }
 
     @Override
-    public String getHintText() {
+    public String getHintText(final GraphEditor editor) {
         return "Click to create a text label.";
     }
 

@@ -214,25 +214,28 @@ public class VisualPage extends VisualComponent implements Collapsible, Containe
         for (VisualComponent component: Hierarchy.getChildrenOfType(this, VisualComponent.class)) {
             component.cacheRenderedText(r);
         }
-
-        Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-        if ((bb != null) && (getParent() != null)) {
-            Graphics2D g = r.getGraphics();
-            if (getIsCollapsed() && !isCurrentLevelInside()) {
-                g.setColor(Coloriser.colorise(this.getFillColor(), d.getColorisation()));
-                g.fill(bb);
-            }
-            float[] pattern = {0.2f, 0.2f};
-            g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
-            g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
-            g.draw(bb);
-
-            if (d.getColorisation() != null) {
-                drawPivot(r);
-            }
-
+        if (getParent() != null) {
+            drawOutline(r);
+            drawPivot(r);
             drawNameInLocalSpace(r);
             drawLabelInLocalSpace(r);
+        }
+    }
+
+    @Override
+    public void drawOutline(DrawRequest r) {
+        Decoration d = r.getDecoration();
+        Graphics2D g = r.getGraphics();
+        Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+        if (bb != null) {
+            if (getIsCollapsed() && !isCurrentLevelInside()) {
+                g.setColor(Coloriser.colorise(getFillColor(), d.getColorisation()));
+                g.fill(bb);
+            }
+            float[] pattern = {0.1f, 0.1f};
+            g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
+            g.setColor(Coloriser.colorise(getForegroundColor(), d.getColorisation()));
+            g.draw(bb);
         }
     }
 

@@ -94,37 +94,45 @@ public class VisualGroup extends VisualTransformableNode implements Drawable, Co
 
     @Override
     public void draw(DrawRequest r) {
-
         Decoration dec = r.getDecoration();
         if (dec instanceof ContainerDecoration) {
             setIsExcited(((ContainerDecoration) dec).isContainerExcited());
         }
-
         // This is to update the rendered text for names (and labels) of group children,
         // which is necessary to calculate the bounding box before children have been drawn
         for (VisualComponent component: Hierarchy.getChildrenOfType(this, VisualComponent.class)) {
             component.cacheRenderedText(r);
         }
+        if (getParent() != null) {
+            drawOutline(r);
+            drawPivot(r);
+        }
+    }
 
+    public void drawOutline(DrawRequest r) {
+        Decoration d = r.getDecoration();
+        Graphics2D g = r.getGraphics();
         Rectangle2D bb = getBoundingBoxInLocalSpace();
-        if ((bb != null) && (getParent() != null)) {
-            Graphics2D g = r.getGraphics();
-            Decoration d = r.getDecoration();
+        if (bb != null) {
             g.setColor(Coloriser.colorise(Color.GRAY, d.getColorisation()));
             float[] pattern = {0.2f, 0.2f};
-            g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_SQUARE, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
+            g.setStroke(new BasicStroke(0.05f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
             g.draw(bb);
+        }
+    }
 
-            if (d.getColorisation() != null) {
-                float s2 = (float) CommonVisualSettings.getPivotSize() / 2;
-                Path2D p = new Path2D.Double();
-                p.moveTo(-s2, 0);
-                p.lineTo(s2, 0);
-                p.moveTo(0, -s2);
-                p.lineTo(0, s2);
-                g.setStroke(new BasicStroke((float) CommonVisualSettings.getPivotWidth()));
-                g.draw(p);
-            }
+    public void drawPivot(DrawRequest r) {
+        Decoration d = r.getDecoration();
+        Graphics2D g = r.getGraphics();
+        if (d.getColorisation() != null) {
+            float s2 = (float) CommonVisualSettings.getPivotSize() / 2;
+            Path2D p = new Path2D.Double();
+            p.moveTo(-s2, 0);
+            p.lineTo(s2, 0);
+            p.moveTo(0, -s2);
+            p.lineTo(0, s2);
+            g.setStroke(new BasicStroke((float) CommonVisualSettings.getPivotWidth()));
+            g.draw(p);
         }
     }
 

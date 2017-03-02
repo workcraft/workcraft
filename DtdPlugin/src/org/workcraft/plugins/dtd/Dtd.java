@@ -5,75 +5,56 @@ import java.util.Collection;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.math.AbstractMathModel;
+import org.workcraft.dom.math.MathConnection;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
-import org.workcraft.exceptions.ArgumentException;
+import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
+import org.workcraft.plugins.dtd.Signal.State;
 import org.workcraft.plugins.dtd.Signal.Type;
-import org.workcraft.plugins.dtd.propertydescriptors.SignalTypePropertyDescriptor;
-import org.workcraft.plugins.graph.Graph;
+import org.workcraft.plugins.dtd.SignalTransition.Direction;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Identifier;
 
 @VisualClass(org.workcraft.plugins.dtd.VisualDtd.class)
-public class Dtd extends Graph {
+public class Dtd extends AbstractMathModel {
 
     public Dtd() {
-        this(null, null);
+        this(null, (References) null);
     }
 
     public Dtd(Container root, References refs) {
-        super(root, new HierarchicalUniqueNameReferenceManager(refs) {
+        this(root, new HierarchicalUniqueNameReferenceManager(refs) {
             @Override
             public String getPrefix(Node node) {
                 if (node instanceof Signal) return "x";
-                if (node instanceof Transition) return Identifier.createInternal("e");
+                if (node instanceof SignalEntry) return Identifier.createInternal("entry");
+                if (node instanceof SignalExit) return Identifier.createInternal("exit");
+                if (node instanceof SignalTransition) return Identifier.createInternal("t");
                 return super.getPrefix(node);
             }
         });
     }
 
-    @Override
-    public boolean keepUnusedSymbols() {
-        return true;
+    public Dtd(Container root, ReferenceManager man) {
+        super(root, man);
     }
 
-    public Signal createSignal(String name, Type type) {
-        Signal signal = createNode(name, null, Signal.class);
-        signal.setType(type);
-        return signal;
+    public MathConnection connect(Node first, Node second) {
+        MathConnection con = new MathConnection((MathNode) first, (MathNode) second);
+        Hierarchy.getNearestContainer(first, second).add(con);
+        return con;
     }
 
-    public Signal getOrCreateSignal(String name, Type type) {
-        Signal signal = null;
-        Node node = getNodeByReference(name);
-        if (node == null) {
-            signal = createSignal(name, type);
-        } else if (node instanceof Signal) {
-            signal = (Signal) node;
-            if (signal.getType() != type) {
-                throw new ArgumentException("Signal '" + name + "' already exists and its type '"
-                        + signal.getType() + "' is different from the required \'" + type + "' type.");
-            }
-        } else {
-            throw new ArgumentException("Node '" + name + "' already exists and it is not a signal.");
-        }
-        return signal;
-    }
-
-    public Transition createTransition(Signal signal) {
-        Transition transition = new Transition(signal);
-        getRoot().add(transition);
-        return transition;
-    }
-
-    public final Collection<Signal> getSignals() {
+    public Collection<Signal> getSignals() {
         return Hierarchy.getDescendantsOfType(getRoot(), Signal.class);
     }
 
-    public final Collection<Signal> getSignals(final Type type) {
+    public Collection<Signal> getSignals(final Type type) {
         return Hierarchy.getDescendantsOfType(getRoot(), Signal.class, new Func<Signal, Boolean>() {
             @Override
             public Boolean eval(Signal arg) {
@@ -82,20 +63,37 @@ public class Dtd extends Graph {
         });
     }
 
-    public final Collection<Transition> getTransitions() {
-        return Hierarchy.getDescendantsOfType(getRoot(), Transition.class);
+    public Collection<SignalTransition> getTransitions() {
+        return Hierarchy.getDescendantsOfType(getRoot(), SignalTransition.class);
+    }
+
+    public Collection<SignalTransition> getTransitions(final Signal signal) {
+        return Hierarchy.getDescendantsOfType(getRoot(), SignalTransition.class, new Func<SignalTransition, Boolean>() {
+            @Override
+            public Boolean eval(SignalTransition arg) {
+                return (arg != null) && (arg.getSignal() == signal);
+            }
+        });
+    }
+
+    public State getPreviousState(SignalEvent event) {
+        Signal signal = event.getSignal();
+        for (Node node: getPreset(event)) {
+            if (node instanceof SignalTransition) {
+                SignalTransition transition = (SignalTransition) node;
+                if (transition.getSignal() == signal) {
+                    Direction direction = transition.getDirection();
+                    return DtdUtils.getNextState(direction);
+                }
+            }
+        }
+        return signal.getInitialState();
     }
 
     @Override
     public ModelProperties getProperties(Node node) {
         ModelProperties properties = super.getProperties(node);
-        if (node == null) {
-            for (final Signal signal: getSignals()) {
-                SignalTypePropertyDescriptor typeDescriptor = new SignalTypePropertyDescriptor(this, signal);
-                properties.insertOrderedByFirstWord(typeDescriptor);
-            }
-        } else if (node instanceof Transition) {
-            properties.removeByName(Transition.PROPERTY_SYMBOL);
+        if (node instanceof SignalEvent) {
             properties.removeByName(NamePropertyDescriptor.PROPERTY_NAME);
         }
         return properties;

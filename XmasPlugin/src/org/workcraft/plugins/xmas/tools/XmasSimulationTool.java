@@ -80,7 +80,7 @@ public class XmasSimulationTool extends StgSimulationTool {
     }
 
     @Override
-    public String getHintText() {
+    public String getHintText(final GraphEditor editor) {
         String msg = "Click on a highlighted element to activate it.";
         if (getExcitedTransition(converter.getClockStg().fallList) != null) {
             msg += " Right-click for the next clock tick.";

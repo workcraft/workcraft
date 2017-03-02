@@ -19,7 +19,7 @@ import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.mpsat.MpsatSynthesisMode;
-import org.workcraft.plugins.mpsat.MpsatSynthesisUtilitySettings;
+import org.workcraft.plugins.mpsat.MpsatSynthesisSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -98,7 +98,7 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
             System.out.println(new String(verilogOutput));
             System.out.println();
         }
-        if (MpsatSynthesisUtilitySettings.getOpenSynthesisResult() && (verilogOutput != null)) {
+        if (MpsatSynthesisSettings.getOpenSynthesisResult() && (verilogOutput != null)) {
             try {
                 ByteArrayInputStream in = new ByteArrayInputStream(verilogOutput);
                 VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);

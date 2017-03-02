@@ -1,6 +1,6 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import org.workcraft.plugins.mpsat.MpsatSettings;
+import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.Result;
 
@@ -9,14 +9,14 @@ public class MpsatChainResult {
     private Result<? extends ExternalProcessResult> pcompResult;
     private Result<? extends ExternalProcessResult> punfResult;
     private Result<? extends ExternalProcessResult> mpsatResult;
-    private MpsatSettings mpsatSettings;
+    private MpsatParameters mpsatSettings;
     private String message;
 
     public MpsatChainResult(Result<? extends Object> exportResult,
             Result<? extends ExternalProcessResult> pcompResult,
             Result<? extends ExternalProcessResult> punfResult,
             Result<? extends ExternalProcessResult> mpsatResult,
-            MpsatSettings mpsatSettings, String message) {
+            MpsatParameters mpsatSettings, String message) {
 
         this.exportResult = exportResult;
         this.pcompResult = pcompResult;
@@ -30,12 +30,12 @@ public class MpsatChainResult {
             Result<? extends ExternalProcessResult> pcompResult,
             Result<? extends ExternalProcessResult> punfResult,
             Result<? extends ExternalProcessResult> mpsatResult,
-            MpsatSettings mpsatSettings) {
+            MpsatParameters mpsatSettings) {
 
         this(exportResult, pcompResult, punfResult, mpsatResult, mpsatSettings, null);
     }
 
-    public MpsatSettings getMpsatSettings() {
+    public MpsatParameters getMpsatSettings() {
         return mpsatSettings;
     }
 

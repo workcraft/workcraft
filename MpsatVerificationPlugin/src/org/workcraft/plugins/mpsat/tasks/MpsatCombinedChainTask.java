@@ -6,9 +6,9 @@ import java.util.List;
 
 import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
-import org.workcraft.plugins.mpsat.MpsatSettings;
+import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.petri.PetriNetModel;
-import org.workcraft.plugins.punf.PunfUtilitySettings;
+import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.serialisation.Format;
@@ -25,9 +25,9 @@ import org.workcraft.workspace.WorkspaceUtils;
 
 public class MpsatCombinedChainTask implements Task<MpsatCombinedChainResult> {
     private final WorkspaceEntry we;
-    private final List<MpsatSettings> settingsList;
+    private final List<MpsatParameters> settingsList;
 
-    public MpsatCombinedChainTask(WorkspaceEntry we, List<MpsatSettings> settingsList) {
+    public MpsatCombinedChainTask(WorkspaceEntry we, List<MpsatParameters> settingsList) {
         this.we = we;
         this.settingsList = settingsList;
     }
@@ -62,10 +62,10 @@ public class MpsatCombinedChainTask implements Task<MpsatCombinedChainResult> {
 
             // Generate unfolding
             boolean tryPnml = true;
-            for (MpsatSettings settings: settingsList) {
+            for (MpsatParameters settings: settingsList) {
                 tryPnml &= settings.getMode().canPnml();
             }
-            File unfoldingFile = new File(directory, "unfolding" + PunfUtilitySettings.getUnfoldingExtension(tryPnml));
+            File unfoldingFile = new File(directory, "unfolding" + PunfSettings.getUnfoldingExtension(tryPnml));
             PunfTask punfTask = new PunfTask(netFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
             Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", subtaskMonitor);
 
@@ -80,7 +80,7 @@ public class MpsatCombinedChainTask implements Task<MpsatCombinedChainResult> {
 
             // Run MPSat on the generated unfolding
             ArrayList<Result<? extends ExternalProcessResult>> mpsatResultList = new ArrayList<>(settingsList.size());
-            for (MpsatSettings settings: settingsList) {
+            for (MpsatParameters settings: settingsList) {
                 MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory),
                         unfoldingFile, directory, tryPnml, netFile);
                 Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
@@ -105,7 +105,7 @@ public class MpsatCombinedChainTask implements Task<MpsatCombinedChainResult> {
         }
     }
 
-    public List<MpsatSettings> getSettingsList() {
+    public List<MpsatParameters> getSettingsList() {
         return settingsList;
     }
 

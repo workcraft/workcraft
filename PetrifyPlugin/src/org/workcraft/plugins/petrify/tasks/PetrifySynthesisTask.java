@@ -16,7 +16,7 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.petrify.PetrifyUtilitySettings;
+import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.plugins.stg.StgModel;
@@ -54,7 +54,7 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
-        String toolName = ToolUtils.getAbsoluteCommandPath(PetrifyUtilitySettings.getCommand());
+        String toolName = ToolUtils.getAbsoluteCommandPath(PetrifySettings.getCommand());
         command.add(toolName);
 
         // Built-in arguments
@@ -63,8 +63,8 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
         }
 
         // Extra arguments (should go before the file parameters)
-        String extraArgs = PetrifyUtilitySettings.getArgs();
-        if (PetrifyUtilitySettings.getAdvancedMode()) {
+        String extraArgs = PetrifySettings.getArgs();
+        if (PetrifySettings.getAdvancedMode()) {
             MainWindow mainWindow = Framework.getInstance().getMainWindow();
             String tmp = JOptionPane.showInputDialog(mainWindow, "Additional parameters for Petrify:", extraArgs);
             if (tmp == null) {
@@ -126,8 +126,8 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
         File stgFile = getInputFile(stg, directory);
         command.add(stgFile.getAbsolutePath());
 
-        boolean printStdout = PetrifyUtilitySettings.getPrintStdout();
-        boolean printStderr = PetrifyUtilitySettings.getPrintStderr();
+        boolean printStdout = PetrifySettings.getPrintStdout();
+        boolean printStderr = PetrifySettings.getPrintStderr();
         ExternalProcessTask task = new ExternalProcessTask(command, null, printStdout, printStderr);
         SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessResult> res = task.run(mon);

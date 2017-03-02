@@ -1,6 +1,6 @@
 package org.workcraft.plugins.mpsat.commands;
 
-import org.workcraft.plugins.mpsat.MpsatSettings;
+import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -23,8 +23,8 @@ public class MpsatDiInterfaceVerificationCommand extends MpsatAbstractVerificati
     }
 
     @Override
-    public MpsatSettings getSettings() {
-        return MpsatSettings.getDiInterfaceSettings();
+    public MpsatParameters getSettings() {
+        return MpsatParameters.getDiInterfaceSettings();
     }
 
 }
