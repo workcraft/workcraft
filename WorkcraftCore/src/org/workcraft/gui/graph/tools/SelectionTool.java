@@ -357,7 +357,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
         }
 
         if (e.getButton() == MouseEvent.BUTTON3) {
-            VisualNode node = (VisualNode) HitMan.hitTestCurrentLevelDeepest(position, model);
+            VisualNode node = hitTestPopup(model, position);
             JPopupMenu popup = createPopupMenu(node, editor);
             if (popup != null) {
                 if (node == null) {
@@ -369,6 +369,10 @@ public class SelectionTool extends AbstractGraphEditorTool {
                 popup.show(systemEvent.getComponent(), systemEvent.getX(), systemEvent.getY());
             }
         }
+    }
+
+    public VisualNode hitTestPopup(VisualModel model, Point2D position) {
+        return (VisualNode) HitMan.hitTestCurrentLevelDeepest(position, model);
     }
 
     public JPopupMenu createPopupMenu(Node node, final GraphEditor editor) {

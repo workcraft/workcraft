@@ -221,15 +221,9 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         invalidateBoundingBox();
     }
 
-    public void centerPivotPoint() {
-        Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
-        setX(getX() + bb.getCenterX());
-        setY(getY() + bb.getCenterY());
-        Collection<VisualContact> contacts = getContacts();
-        for (VisualContact vc: contacts) {
-            vc.setX(vc.getX() - bb.getCenterX());
-            vc.setY(vc.getY() - bb.getCenterY());
-        }
+    @Override
+    public void centerPivotPoint(boolean horisontal, boolean vertical) {
+        super.centerPivotPoint(horisontal, vertical);
         invalidateBoundingBox();
     }
 

@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
 
+import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.gui.Coloriser;
@@ -233,6 +234,27 @@ public abstract class VisualComponent extends VisualTransformableNode implements
     @Override
     public Point2D getCenterInLocalSpace() {
         return new Point2D.Double(0, 0);
+    }
+
+    public void centerPivotPoint(boolean horisontal, boolean vertical) {
+        Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+        if (horisontal) {
+            setX(getX() + bb.getCenterX());
+        }
+        if (vertical) {
+            setY(getY() + bb.getCenterY());
+        }
+        for (Node node: getChildren()) {
+            if (node instanceof VisualTransformableNode) {
+                VisualTransformableNode vc = (VisualTransformableNode) node;
+                if (horisontal) {
+                    vc.setX(vc.getX() - bb.getCenterX());
+                }
+                if (vertical) {
+                    vc.setY(vc.getY() - bb.getCenterY());
+                }
+            }
+        }
     }
 
     public boolean getLabelVisibility() {
