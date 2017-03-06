@@ -16,9 +16,15 @@ import org.workcraft.tasks.Result.Outcome;
 public class ConceptsTask implements Task<ExternalProcessResult> {
 
     private final File inputFile;
+    private Object[] includeList;
 
     public ConceptsTask(File inputFile) {
         this.inputFile = inputFile;
+    }
+
+    public ConceptsTask(File inputFile, Object[] includeList) {
+        this.inputFile = inputFile;
+        this.includeList = includeList;
     }
 
     @Override
@@ -26,14 +32,20 @@ public class ConceptsTask implements Task<ExternalProcessResult> {
         try {
             ArrayList<String> command = new ArrayList<>();
 
-//            String stackLocation = StgSettings.getConceptsFolderLocation() + "stack";
             command.add("stack");
             command.add("runghc");
             String translateLocation = DesktopApi.getOs().isWindows() ? "translate\\Main.hs" : "translate/Main.hs";
-            command.add(StgSettings.getConceptsFolderLocation() + translateLocation); //TODO: Make concepts folder location a setting
-            command.add(inputFile.getAbsolutePath());
+            //TODO: Make concepts folder location a setting
+            command.add(StgSettings.getConceptsFolderLocation() + translateLocation);
             String stackYamlCommand = "--stack-yaml=" + StgSettings.getConceptsFolderLocation() + "stack.yaml";
             command.add(stackYamlCommand);
+            command.add("--");
+            command.add(inputFile.getAbsolutePath());
+
+            for (Object i : includeList) {
+                command.add("-i");
+                command.add(i.toString());
+            }
 
             ExternalProcessTask task = new ExternalProcessTask(command, new File("."));
             SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
@@ -42,8 +54,8 @@ public class ConceptsTask implements Task<ExternalProcessResult> {
                 return result;
             }
             ExternalProcessResult retVal = result.getReturnValue();
-            ExternalProcessResult finalResult = new ExternalProcessResult(
-                    retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), null);
+            ExternalProcessResult finalResult = new ExternalProcessResult(retVal.getReturnCode(), retVal.getOutput(),
+                    retVal.getErrors(), null);
 
             if (retVal.getReturnCode() == 0) {
                 return Result.finished(finalResult);
@@ -51,7 +63,7 @@ public class ConceptsTask implements Task<ExternalProcessResult> {
                 return Result.failed(finalResult);
             }
         } catch (NullPointerException e) {
-            //Open window dialog was cancelled, do nothing
+            // Open window dialog was cancelled, do nothing
         }
         return null;
     }

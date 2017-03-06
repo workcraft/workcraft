@@ -41,7 +41,7 @@ public class TranslateConceptConversionCommand extends AbstractConversionCommand
             final TaskManager taskManager = framework.getTaskManager();
             File inputFile = dialog.getFile();
             dotLayout = dialog.getDotLayoutState();
-            ConceptsTask task = new ConceptsTask(inputFile);
+            ConceptsTask task = new ConceptsTask(inputFile, dialog.getIncludeList());
             String name = FileUtils.getFileNameWithoutExtension(inputFile);
             ConceptsResultHandler resultHandler = new ConceptsResultHandler(this, name, we);
             taskManager.queue(task, "Translating concepts", resultHandler);

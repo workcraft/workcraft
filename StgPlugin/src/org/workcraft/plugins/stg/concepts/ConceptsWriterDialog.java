@@ -14,6 +14,7 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Scanner;
 
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -40,6 +41,7 @@ public class ConceptsWriterDialog extends JDialog {
     private JTextArea conceptsText;
     private JCheckBox dotLayoutCheckBox;
     private boolean changed = false, translate = false;
+    private static DefaultListModel<String> includeList = new DefaultListModel<String>();
 
     public ConceptsWriterDialog() {
         super(Framework.getInstance().getMainWindow(), "Write and translate Concepts", ModalityType.APPLICATION_MODAL);
@@ -61,8 +63,7 @@ public class ConceptsWriterDialog extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 setVisible(false);
             }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-                JComponent.WHEN_IN_FOCUSED_WINDOW);
+        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         setContentPane(content);
         setMinimumSize(new Dimension(1000, 500));
@@ -96,12 +97,12 @@ public class ConceptsWriterDialog extends JDialog {
 
             @Override
             public void keyPressed(KeyEvent e) {
-                //Do nothing
+                // Do nothing
             }
 
             @Override
             public void keyReleased(KeyEvent e) {
-                //Do nothing
+                // Do nothing
             }
 
         });
@@ -115,11 +116,13 @@ public class ConceptsWriterDialog extends JDialog {
         JButton openFileBtn = GUI.createDialogButton("Open file");
         JButton saveFileBtn = GUI.createDialogButton("Save to file");
         JButton resetBtn = GUI.createDialogButton("Reset to default");
+        JButton includeBtn = GUI.createDialogButton("Included files");
         dotLayoutCheckBox = new JCheckBox("Use dot layout");
         JPanel fileBtnPanel = new JPanel();
         fileBtnPanel.add(openFileBtn);
         fileBtnPanel.add(saveFileBtn);
         fileBtnPanel.add(resetBtn);
+        fileBtnPanel.add(includeBtn);
         fileBtnPanel.add(dotLayoutCheckBox);
 
         openFileBtn.addActionListener(new ActionListener() {
@@ -139,8 +142,8 @@ public class ConceptsWriterDialog extends JDialog {
                         conceptsText.setText(readFile(f));
                         updateLastDirUsed();
                     } catch (FileNotFoundException e1) {
-                        JOptionPane.showMessageDialog(null, e1.getMessage(),
-                                "File not found error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(null, e1.getMessage(), "File not found error",
+                                JOptionPane.ERROR_MESSAGE);
                     }
 
                 }
@@ -183,6 +186,17 @@ public class ConceptsWriterDialog extends JDialog {
                 conceptsText.setText(getDefaultText());
                 lastFileUsed = null;
                 changed = false;
+            }
+
+        });
+
+        final ConceptsIncludesDialog dialog = new ConceptsIncludesDialog(this, lastDirUsed, includeList);
+
+        includeBtn.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent arg0) {
+                dialog.setVisible(true);
             }
 
         });
@@ -233,12 +247,7 @@ public class ConceptsWriterDialog extends JDialog {
     }
 
     private String getDefaultText() {
-        return "module Concept where\n"
-                + "\n"
-                + "import Tuura.Concept.STG\n"
-                + "\n"
-                + "circuit a b c = \n"
-                + "  where";
+        return "module Concept where\n" + "\n" + "import Tuura.Concept.STG\n" + "\n" + "circuit a b c = \n" + "  where";
     }
 
     private String readFile(File file) throws FileNotFoundException {
@@ -280,6 +289,10 @@ public class ConceptsWriterDialog extends JDialog {
 
     public boolean getDotLayoutState() {
         return dotLayoutCheckBox.isSelected();
+    }
+
+    public Object[] getIncludeList() {
+        return includeList.toArray();
     }
 
 }
