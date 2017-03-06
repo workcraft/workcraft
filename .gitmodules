@@ -1,6 +1,6 @@
 [submodule "doc"]
 	path = doc
-	url = https://github.com/tuura/workcraft-doc
+	url = https://github.com/workcraft/workcraft-doc
 [submodule "dist-template"]
 	path = dist-template
-	url = https://github.com/tuura/workcraft-dist-template
+	url = https://github.com/workcraft/workcraft-dist-template

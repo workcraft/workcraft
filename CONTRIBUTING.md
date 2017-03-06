@@ -49,7 +49,7 @@ developing and debugging Workcraft.
 
 1. Clone the Workcraft git repo and set it as the current directory:
 
-        git clone https://github.com/tuura/workcraft.git
+        git clone https://github.com/workcraft/workcraft.git
         cd workcraft
 
 2. Generate Java parser classes from JavaCC grammar files:

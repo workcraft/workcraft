@@ -1,9 +1,9 @@
 # ![Workcraft logo](logo.png)
 
-[![Build Status](https://travis-ci.org/tuura/workcraft.svg?branch=master)](https://travis-ci.org/tuura/workcraft)
-[![Code Climate](https://codeclimate.com/github/tuura/workcraft/badges/gpa.svg)](https://codeclimate.com/github/tuura/workcraft)
-[![Coverage Status](https://coveralls.io/repos/github/tuura/workcraft/badge.svg?branch=master)](https://coveralls.io/github/tuura/workcraft?branch=master)
-![Repo Size](https://reposs.herokuapp.com/?path=tuura/workcraft&color=lightgray)
+[![Build Status](https://travis-ci.org/workcraft/workcraft.svg?branch=master)](https://travis-ci.org/workcraft/workcraft)
+[![Code Climate](https://codeclimate.com/github/workcraft/workcraft/badges/gpa.svg)](https://codeclimate.com/github/workcraft/workcraft)
+[![Coverage Status](https://coveralls.io/repos/github/workcraft/workcraft/badge.svg?branch=master)](https://coveralls.io/github/workcraft/workcraft?branch=master)
+![Repo Size](https://reposs.herokuapp.com/?path=workcraft/workcraft&color=lightgray)
 
 Workcraft is a cross-platform toolset to capture, simulate, synthesize
 and verify graph models. It supports a wide range of popular graph
@@ -35,11 +35,11 @@ You can run Workcraft directly after building it:
 ### Miscellaneous
 
 Help and tutorial pages are available in the
-[workcraft-doc](https://github.com/tuura/workcraft-doc) repo.
+[workcraft-doc](https://github.com/workcraft/workcraft-doc) repo.
 
 Templates for building Windows, Linux and OS X distributions
 of Workcraft are available in the [workcraft-dist-template]
-(https://github.com/tuura/workcraft-dist-template) repo.
+(https://github.com/workcraft/workcraft-dist-template) repo.
 This includes the binaries of backend tools, gate libraries
 and other platform-specific content.
 
