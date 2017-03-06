@@ -486,7 +486,7 @@ public class MainWindow extends JFrame {
     }
 
     public void createDockingLayout() {
-        PerspectiveManager pm = (PerspectiveManager) DockingManager.getLayoutManager();
+        PerspectiveManager pm = PerspectiveManager.getInstance();
         pm.add(new Perspective(FLEXDOCK_WORKSPACE, FLEXDOCK_WORKSPACE));
         pm.setCurrentPerspective(FLEXDOCK_WORKSPACE, true);
         PropertyManager.getDockingPortRoot().setTabPlacement(SwingConstants.TOP);
@@ -547,6 +547,10 @@ public class MainWindow extends JFrame {
         registerUtilityWindow(editorToolsDockable);
         registerUtilityWindow(toolControlsDockable);
         registerUtilityWindow(workspaceDockable);
+
+        // FIXME: Restoring previously saved layout does not work as expected:
+        // "default" and "restored" layouts interfere with each other, which does not look nice.
+        //DockingManager.restoreLayout();
     }
 
     public void shutdown() throws OperationCancelledException {
