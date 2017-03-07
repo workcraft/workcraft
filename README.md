@@ -1,3 +1,4 @@
+[![Stories in Ready](https://badge.waffle.io/workcraft/workcraft.png?label=ready&title=Ready)](https://waffle.io/workcraft/workcraft)
 # ![Workcraft logo](logo.png)
 
 [![Build Status](https://travis-ci.org/workcraft/workcraft.svg?branch=master)](https://travis-ci.org/workcraft/workcraft)
