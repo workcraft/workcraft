@@ -9,8 +9,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.graph.commands.Command;
-import org.workcraft.plugins.plato.tasks.ConceptsTask;
 import org.workcraft.plugins.plato.tasks.PlatoResultHandler;
+import org.workcraft.plugins.plato.tasks.PlatoTask;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.FileUtils;
@@ -58,7 +58,7 @@ public class ImportConceptsCommand implements Command {
         if (inputFile != null) {
             final Framework framework = Framework.getInstance();
             final TaskManager taskManager = framework.getTaskManager();
-            ConceptsTask task = new ConceptsTask(inputFile);
+            PlatoTask task = new PlatoTask(inputFile);
             String inputName = FileUtils.getFileNameWithoutExtension(inputFile);
             final PlatoResultHandler result = new PlatoResultHandler(this, inputName, we);
             taskManager.queue(task, "Translating concepts", result);

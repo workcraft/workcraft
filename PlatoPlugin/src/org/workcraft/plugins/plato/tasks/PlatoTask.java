@@ -13,16 +13,17 @@ import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.Result.Outcome;
 
-public class ConceptsTask implements Task<ExternalProcessResult> {
+public class PlatoTask implements Task<ExternalProcessResult> {
 
     private final File inputFile;
-    private Object[] includeList;
+    private final Object[] includeList;
 
-    public ConceptsTask(File inputFile) {
+    public PlatoTask(File inputFile) {
         this.inputFile = inputFile;
+        this.includeList = new Object[0];
     }
 
-    public ConceptsTask(File inputFile, Object[] includeList) {
+    public PlatoTask(File inputFile, Object[] includeList) {
         this.inputFile = inputFile;
         this.includeList = includeList;
     }

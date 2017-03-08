@@ -7,8 +7,8 @@ import java.io.InputStream;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.interop.Importer;
-import org.workcraft.plugins.plato.tasks.ConceptsTask;
 import org.workcraft.plugins.plato.tasks.PlatoResultHandler;
+import org.workcraft.plugins.plato.tasks.PlatoTask;
 import org.workcraft.plugins.plato.exceptions.PlatoException;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.StgDescriptor;
@@ -39,8 +39,8 @@ public class PlatoImporter implements Importer {
     @Override
     public ModelEntry importFrom(InputStream in) throws DeserialisationException {
         try {
-            ConceptsTask task = new ConceptsTask(inputFile);
-            PlatoResultHandler monitor = new PlatoResultHandler(null);
+            PlatoTask task = new PlatoTask(inputFile);
+            PlatoResultHandler monitor = new PlatoResultHandler(this);
             Result<? extends ExternalProcessResult> result = task.run(monitor);
             if (result.getOutcome() == Outcome.FINISHED) {
                 String output = new String(result.getReturnValue().getOutput());

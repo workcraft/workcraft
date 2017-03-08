@@ -5,8 +5,8 @@ import java.io.File;
 import org.workcraft.Framework;
 import org.workcraft.gui.graph.commands.AbstractConversionCommand;
 import org.workcraft.plugins.plato.gui.PlatoWriterDialog;
-import org.workcraft.plugins.plato.tasks.ConceptsTask;
 import org.workcraft.plugins.plato.tasks.PlatoResultHandler;
+import org.workcraft.plugins.plato.tasks.PlatoTask;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.FileUtils;
@@ -44,7 +44,7 @@ public class PlatoConversionCommand extends AbstractConversionCommand {
             final TaskManager taskManager = framework.getTaskManager();
             File inputFile = dialog.getFile();
             dotLayout = dialog.getDotLayoutState();
-            ConceptsTask task = new ConceptsTask(inputFile, dialog.getIncludeList());
+            PlatoTask task = new PlatoTask(inputFile, dialog.getIncludeList());
             String name = FileUtils.getFileNameWithoutExtension(inputFile);
             PlatoResultHandler resultHandler = new PlatoResultHandler(this, name, we);
             taskManager.queue(task, "Translating concepts", resultHandler);
