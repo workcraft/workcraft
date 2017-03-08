@@ -1,4 +1,4 @@
-package org.workcraft.plugins.stg.concepts;
+package org.workcraft.plugins.plato.tasks;
 
 import java.awt.Container;
 import java.io.File;
@@ -17,10 +17,13 @@ import org.workcraft.gui.DockableWindowContentPanel.ViewAction;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.workspace.Path;
+import org.workcraft.plugins.plato.commands.PlatoConversionCommand;
+import org.workcraft.plugins.plato.exceptions.PlatoException;
+import org.workcraft.plugins.plato.interop.PlatoImporter;
+import org.workcraft.plugins.plato.layout.ConceptsLayout;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.VisualStg;
-import org.workcraft.plugins.stg.interop.ConceptsImporter;
 import org.workcraft.plugins.stg.interop.DotGImporter;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -30,7 +33,7 @@ import org.workcraft.util.Import;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class ConceptsResultHandler extends DummyProgressMonitor<ExternalProcessResult> {
+public class PlatoResultHandler extends DummyProgressMonitor<ExternalProcessResult> {
 
     private final class ProcessConceptsResult implements Runnable {
         private final Result<? extends ExternalProcessResult> result;
@@ -44,7 +47,7 @@ public class ConceptsResultHandler extends DummyProgressMonitor<ExternalProcessR
             try {
                 String output = new String(result.getReturnValue().getOutput());
                 if ((result.getOutcome() == Outcome.FINISHED) && (output.startsWith(".model out"))) {
-                    if (!(sender instanceof ConceptsImporter)) {
+                    if (!(sender instanceof PlatoImporter)) {
                         final Framework framework = Framework.getInstance();
                         final MainWindow mainWindow = framework.getMainWindow();
                         final GraphEditorPanel editor = mainWindow.getEditor(we);
@@ -54,7 +57,7 @@ public class ConceptsResultHandler extends DummyProgressMonitor<ExternalProcessR
                             String title = "Concepts - ";
                             MathModel mathModel = me.getMathModel();
                             mathModel.setTitle(title + name);
-                            if (sender instanceof TranslateConceptConversionCommand && !((TranslateConceptConversionCommand) sender).getDotLayout()) {
+                            if (sender instanceof PlatoConversionCommand && !((PlatoConversionCommand) sender).getDotLayout()) {
                                 StgDescriptor stgModel = new StgDescriptor();
                                 Path<String> path = we.getWorkspacePath();
                                 VisualModelDescriptor v = stgModel.getVisualModelDescriptor();
@@ -82,15 +85,15 @@ public class ConceptsResultHandler extends DummyProgressMonitor<ExternalProcessR
                         }
                     }
                 } else {
-                    throw new ConceptsToolException(result);
+                    throw new PlatoException(result);
                 }
             } catch (IOException | DeserialisationException e) {
                 e.printStackTrace();
                 we.cancelMemento();
             } catch (NullPointerException e) {
-                new ConceptsToolException(result).handleConceptsError();
+                new PlatoException(result).handleConceptsError();
                 we.cancelMemento();
-            } catch (ConceptsToolException e) {
+            } catch (PlatoException e) {
                 e.handleConceptsError();
                 we.cancelMemento();
             }
@@ -102,13 +105,13 @@ public class ConceptsResultHandler extends DummyProgressMonitor<ExternalProcessR
     private final WorkspaceEntry we;
     private WorkspaceEntry weResult;
 
-    public ConceptsResultHandler(Object sender, String name, WorkspaceEntry we) {
+    public PlatoResultHandler(Object sender, String name, WorkspaceEntry we) {
         this.sender = sender;
         this.name = name;
         this.we = we;
     }
 
-    public ConceptsResultHandler(Object sender) {
+    public PlatoResultHandler(Object sender) {
         this(sender, null, null);
     }
 

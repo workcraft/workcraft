@@ -1,4 +1,4 @@
-package org.workcraft.plugins.stg.concepts;
+package org.workcraft.plugins.plato.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -33,7 +33,7 @@ import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.util.GUI;
 
 @SuppressWarnings("serial")
-public class ConceptsWriterDialog extends JDialog {
+public class PlatoWriterDialog extends JDialog {
 
     private static File lastFileUsed, lastDirUsed;
 
@@ -43,7 +43,7 @@ public class ConceptsWriterDialog extends JDialog {
     private boolean changed = false, translate = false;
     private static DefaultListModel<String> includeList = new DefaultListModel<String>();
 
-    public ConceptsWriterDialog() {
+    public PlatoWriterDialog() {
         super(Framework.getInstance().getMainWindow(), "Write and translate Concepts", ModalityType.APPLICATION_MODAL);
 
         content = new JPanel();
@@ -190,7 +190,7 @@ public class ConceptsWriterDialog extends JDialog {
 
         });
 
-        final ConceptsIncludesDialog dialog = new ConceptsIncludesDialog(this, lastDirUsed, includeList);
+        final PlatoIncludesDialog dialog = new PlatoIncludesDialog(this, lastDirUsed, includeList);
 
         includeBtn.addActionListener(new ActionListener() {
 

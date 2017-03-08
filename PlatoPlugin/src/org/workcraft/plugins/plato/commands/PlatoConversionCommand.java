@@ -1,9 +1,12 @@
-package org.workcraft.plugins.stg.concepts;
+package org.workcraft.plugins.plato.commands;
 
 import java.io.File;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.graph.commands.AbstractConversionCommand;
+import org.workcraft.plugins.plato.gui.PlatoWriterDialog;
+import org.workcraft.plugins.plato.tasks.ConceptsTask;
+import org.workcraft.plugins.plato.tasks.PlatoResultHandler;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.FileUtils;
@@ -11,7 +14,7 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class TranslateConceptConversionCommand extends AbstractConversionCommand {
+public class PlatoConversionCommand extends AbstractConversionCommand {
 
     private boolean dotLayout;
 
@@ -32,7 +35,7 @@ public class TranslateConceptConversionCommand extends AbstractConversionCommand
 
     @Override
     public WorkspaceEntry execute(WorkspaceEntry we) {
-        ConceptsWriterDialog dialog = new ConceptsWriterDialog();
+        PlatoWriterDialog dialog = new PlatoWriterDialog();
         dialog.setVisible(true);
         if (!dialog.getTranslate()) {
             return null;
@@ -43,7 +46,7 @@ public class TranslateConceptConversionCommand extends AbstractConversionCommand
             dotLayout = dialog.getDotLayoutState();
             ConceptsTask task = new ConceptsTask(inputFile, dialog.getIncludeList());
             String name = FileUtils.getFileNameWithoutExtension(inputFile);
-            ConceptsResultHandler resultHandler = new ConceptsResultHandler(this, name, we);
+            PlatoResultHandler resultHandler = new PlatoResultHandler(this, name, we);
             taskManager.queue(task, "Translating concepts", resultHandler);
             return resultHandler.getResult();
         }

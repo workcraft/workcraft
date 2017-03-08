@@ -1,4 +1,4 @@
-package org.workcraft.plugins.stg.concepts;
+package org.workcraft.plugins.plato.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -19,14 +19,14 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.workcraft.util.GUI;
 
 @SuppressWarnings("serial")
-public class ConceptsIncludesDialog extends JDialog {
+public class PlatoIncludesDialog extends JDialog {
 
     private final JPanel content, btnPanel;
     private final File lastDirUsed;
     private static JList<String> includeList;
     private final DefaultListModel<String> includeListModel;
 
-    public ConceptsIncludesDialog(ConceptsWriterDialog parent, File lastDirUsed,
+    public PlatoIncludesDialog(PlatoWriterDialog parent, File lastDirUsed,
             DefaultListModel<String> includeListModel) {
         super(parent, "Include concept files", ModalityType.APPLICATION_MODAL);
 

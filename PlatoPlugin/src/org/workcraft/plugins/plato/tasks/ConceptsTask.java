@@ -1,12 +1,12 @@
-package org.workcraft.plugins.stg.concepts;
+package org.workcraft.plugins.plato.tasks;
 
 import java.io.File;
 import java.util.ArrayList;
 
 import org.workcraft.gui.DesktopApi;
+import org.workcraft.plugins.plato.PlatoSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
-import org.workcraft.plugins.stg.StgSettings;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.SubtaskMonitor;
@@ -35,9 +35,8 @@ public class ConceptsTask implements Task<ExternalProcessResult> {
             command.add("stack");
             command.add("runghc");
             String translateLocation = DesktopApi.getOs().isWindows() ? "translate\\Main.hs" : "translate/Main.hs";
-            //TODO: Make concepts folder location a setting
-            command.add(StgSettings.getConceptsFolderLocation() + translateLocation);
-            String stackYamlCommand = "--stack-yaml=" + StgSettings.getConceptsFolderLocation() + "stack.yaml";
+            command.add(PlatoSettings.getConceptsFolderLocation() + translateLocation);
+            String stackYamlCommand = "--stack-yaml=" + PlatoSettings.getConceptsFolderLocation() + "stack.yaml";
             command.add(stackYamlCommand);
             command.add("--");
             command.add(inputFile.getAbsolutePath());

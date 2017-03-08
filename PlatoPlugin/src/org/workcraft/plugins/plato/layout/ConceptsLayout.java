@@ -1,4 +1,4 @@
-package org.workcraft.plugins.stg.concepts;
+package org.workcraft.plugins.plato.layout;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,9 +16,9 @@ import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.SignalTransition.Type;
-import org.workcraft.util.Hierarchy;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.util.Hierarchy;
 
 public class ConceptsLayout {
 
