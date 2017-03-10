@@ -14,7 +14,7 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class PlatoSTGConversionCommand extends AbstractConversionCommand {
+public class PlatoStgConversionCommand extends AbstractConversionCommand {
 
     private boolean dotLayout;
 

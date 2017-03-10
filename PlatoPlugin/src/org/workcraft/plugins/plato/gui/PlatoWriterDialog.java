@@ -41,10 +41,13 @@ public class PlatoWriterDialog extends JDialog {
     private JTextArea conceptsText;
     private JCheckBox dotLayoutCheckBox;
     private boolean changed = false, translate = false;
+    private final boolean fst;
     private static DefaultListModel<String> includeList = new DefaultListModel<String>();
 
-    public PlatoWriterDialog() {
+    public PlatoWriterDialog(boolean fst) {
         super(Framework.getInstance().getMainWindow(), "Write and translate Concepts", ModalityType.APPLICATION_MODAL);
+
+        this.fst = fst;
 
         content = new JPanel();
         content.setLayout(new BorderLayout());
@@ -123,7 +126,9 @@ public class PlatoWriterDialog extends JDialog {
         fileBtnPanel.add(saveFileBtn);
         fileBtnPanel.add(resetBtn);
         fileBtnPanel.add(includeBtn);
-        fileBtnPanel.add(dotLayoutCheckBox);
+        if (!fst) {
+            fileBtnPanel.add(dotLayoutCheckBox);
+        }
 
         openFileBtn.addActionListener(new ActionListener() {
 
@@ -247,7 +252,10 @@ public class PlatoWriterDialog extends JDialog {
     }
 
     private String getDefaultText() {
-        return "module Concept where\n" + "\n" + "import Tuura.Concept.STG\n" + "\n" + "circuit a b c = \n" + "  where";
+        String result = "module Concept where\n" + "\n" + "import Tuura.Concept.";
+        result = result + (fst ? "FSM" : "STG");
+        result = result + "\n\n" + "circuit a b c = \n" + "  where";
+        return result;
     }
 
     private String readFile(File file) throws FileNotFoundException {

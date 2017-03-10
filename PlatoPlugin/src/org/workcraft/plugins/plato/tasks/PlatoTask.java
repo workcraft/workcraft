@@ -17,15 +17,18 @@ public class PlatoTask implements Task<ExternalProcessResult> {
 
     private final File inputFile;
     private final Object[] includeList;
+    private final boolean fst;
 
     public PlatoTask(File inputFile) {
         this.inputFile = inputFile;
         this.includeList = new Object[0];
+        this.fst = false;
     }
 
-    public PlatoTask(File inputFile, Object[] includeList) {
+    public PlatoTask(File inputFile, Object[] includeList, boolean fst) {
         this.inputFile = inputFile;
         this.includeList = includeList;
+        this.fst = fst;
     }
 
     @Override
@@ -41,6 +44,10 @@ public class PlatoTask implements Task<ExternalProcessResult> {
             command.add(stackYamlCommand);
             command.add("--");
             command.add(inputFile.getAbsolutePath());
+
+            if (fst) {
+                command.add("-f");
+            }
 
             for (Object i : includeList) {
                 command.add("-i");
