@@ -300,7 +300,11 @@ public class PlatoWriterDialog extends JDialog {
     }
 
     public Object[] getIncludeList() {
-        return includeList.toArray();
+        Object[] list = includeList.toArray();
+        if ((list.length == 1) && (list[0].toString() == "")) {
+            return new Object[0];
+        }
+        return list;
     }
 
 }

@@ -14,20 +14,34 @@ public class PlatoSettings implements Settings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "Tools.plato";
 
-    private static final String keyConceptsFolderLocation = prefix + ".conceptsFolderLocation";
+    private static final String keyPlatoFolderLocation = prefix + ".platoFolderLocation";
+    private static final String keyPlatoIncludesList = prefix + ".platoIncludesList";
 
-    private static final String defaultConceptsFolderLocation = DesktopApi.getOs().isWindows() ? "tools\\plato\\" : "tools/plato/";
+    private static final String defaultPlatoFolderLocation = DesktopApi.getOs().isWindows() ? "tools\\plato\\" : "tools/plato/";
+    private static final String defaultPlatoIncludesList = "";
 
-    private static String conceptsFolderLocation = defaultConceptsFolderLocation;
+    private static String conceptsFolderLocation = defaultPlatoFolderLocation;
+    private static String platoIncludesList = defaultPlatoIncludesList;
 
     public PlatoSettings() {
         properties.add(new PropertyDeclaration<PlatoSettings, String>(
                 this, "Concepts folder location", String.class, true, false, false) {
             protected void setter(PlatoSettings object, String value) {
-                setConceptsFolderLocation(value);
+                setPlatoFolderLocation(value);
             }
             protected String getter(PlatoSettings object) {
-                return getConceptsFolderLocation();
+                return getPlatoFolderLocation();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<PlatoSettings, String>(
+                this, "Folders to always include (separate with \';\')", String.class, true, false, false) {
+            protected void setter(PlatoSettings object, String value) {
+                setPlatoIncludesList(value);
+            }
+            @Override
+            protected String getter(PlatoSettings object) {
+                return getPlatoIncludesList();
             }
         });
     }
@@ -39,12 +53,14 @@ public class PlatoSettings implements Settings {
 
     @Override
     public void save(Config config) {
-        config.set(keyConceptsFolderLocation, getConceptsFolderLocation());
+        config.set(keyPlatoFolderLocation, getPlatoFolderLocation());
+        config.set(keyPlatoIncludesList, getPlatoIncludesList());
     }
 
     @Override
     public void load(Config config) {
-        setConceptsFolderLocation(config.getString(keyConceptsFolderLocation, defaultConceptsFolderLocation));
+        setPlatoFolderLocation(config.getString(keyPlatoFolderLocation, defaultPlatoFolderLocation));
+        setPlatoIncludesList(config.getString(keyPlatoIncludesList, defaultPlatoIncludesList));
     }
 
     @Override
@@ -57,12 +73,20 @@ public class PlatoSettings implements Settings {
         return "Plato";
     }
 
-    public static String getConceptsFolderLocation() {
+    public static String getPlatoFolderLocation() {
         return conceptsFolderLocation;
     }
 
-    public static void setConceptsFolderLocation(String value) {
+    public static void setPlatoFolderLocation(String value) {
         conceptsFolderLocation = value;
+    }
+
+    public static String getPlatoIncludesList() {
+        return platoIncludesList;
+    }
+
+    public static void setPlatoIncludesList(String value) {
+        platoIncludesList = value;
     }
 
 }

@@ -68,6 +68,7 @@ public class PlatoIncludesDialog extends JDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 JFileChooser chooser = new JFileChooser();
+                chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
                 chooser.setFileFilter(new FileNameExtensionFilter("Haskell/Concept file (.hs)", "hs"));
                 chooser.setCurrentDirectory(lastDirUsed);
                 if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {

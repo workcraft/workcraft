@@ -68,7 +68,7 @@ public class PlatoException extends Exception {
     }
 
     private void conceptsNotInstalled() {
-        String pkg = PlatoSettings.getConceptsFolderLocation();
+        String pkg = PlatoSettings.getPlatoFolderLocation();
         JOptionPane.showMessageDialog(mainWindow, "Concepts could not be run. \n"
                 + "The " + pkg + " package needs to be installed via stack. To do this: \n"
                 + "1. Make sure stack is installed (https://docs.haskellstack.org/en/stable/install_and_upgrade/).\n"

@@ -88,7 +88,6 @@ public class PlatoResultHandler extends DummyProgressMonitor<ExternalProcessResu
             } catch (NullPointerException e) {
                 new PlatoException(result).handleConceptsError();
             } catch (PlatoException e) {
-                e.printStackTrace();
                 e.handleConceptsError();
             }
         }
