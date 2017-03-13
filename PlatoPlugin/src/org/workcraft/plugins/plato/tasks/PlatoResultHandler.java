@@ -2,6 +2,8 @@ package org.workcraft.plugins.plato.tasks;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.Iterator;
 
 import javax.swing.SwingUtilities;
 
@@ -16,6 +18,11 @@ import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.fst.FstDescriptor;
 import org.workcraft.plugins.fst.VisualFst;
+import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
+import org.workcraft.plugins.mpsat.MpsatMode;
+import org.workcraft.plugins.mpsat.MpsatParameters;
+import org.workcraft.plugins.mpsat.MpsatParameters.SolutionMode;
+import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.plato.commands.PlatoFstConversionCommand;
 import org.workcraft.plugins.plato.commands.PlatoStgConversionCommand;
 import org.workcraft.plugins.plato.exceptions.PlatoException;
@@ -26,6 +33,7 @@ import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.interop.DotGImporter;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.Import;
 import org.workcraft.util.LogUtils;
@@ -61,10 +69,12 @@ public class PlatoResultHandler extends DummyProgressMonitor<ExternalProcessResu
                                     System.out.println(LogUtils.PREFIX_INFO + s);
                                 }
                             }
+                        } else {
+                            invariants = new String[0];
                         }
 
                         if (sender instanceof PlatoStgConversionCommand) {
-                            addStg(output, framework, editor);
+                            addStg(output, framework, editor, invariants);
                         } else if (sender instanceof PlatoFstConversionCommand) {
                             addFst(output, framework, editor);
                         }
@@ -106,13 +116,16 @@ public class PlatoResultHandler extends DummyProgressMonitor<ExternalProcessResu
         }
     }
 
-    private void addWork(Framework framework, WorkspaceEntry we, GraphEditorPanel editor, ModelEntry me) {
+    private WorkspaceEntry addWork(Framework framework, WorkspaceEntry we, GraphEditorPanel editor, ModelEntry me) {
+        WorkspaceEntry newWe = null;
         if (!isCurrentWorkEmpty(editor)) {
-            we = framework.createWork(me, Path.<String>empty(), name);
+            newWe = framework.createWork(me, Path.<String>empty(), name);
         } else {
             we.setModelEntry(me);
+            newWe = we;
         }
         framework.getMainWindow().getEditor(we).zoomFit();
+        return newWe;
     }
 
     private boolean isCurrentWorkEmpty(GraphEditorPanel editor) {
@@ -125,7 +138,7 @@ public class PlatoResultHandler extends DummyProgressMonitor<ExternalProcessResu
         return false;
     }
 
-    private void addStg(String output, Framework framework, GraphEditorPanel editor) throws PlatoException, IOException, DeserialisationException {
+    private void addStg(String output, Framework framework, GraphEditorPanel editor, String[] invariants) throws PlatoException, IOException, DeserialisationException {
         ModelEntry me = Import.importFromByteArray(new DotGImporter(), output.getBytes());
         MathModel mathModel = me.getMathModel();
         StgDescriptor stgModel = new StgDescriptor();
@@ -138,8 +151,8 @@ public class PlatoResultHandler extends DummyProgressMonitor<ExternalProcessResu
             } else {
                 visualStg.getBestLayouter().layout(visualStg);
             }
-            addWork(framework, we, editor, me);
-            framework.getMainWindow().getEditor(we).zoomFit();
+            we = addWork(framework, we, editor, me);
+            runReachTest(invariants);
         } catch (VisualModelInstantiationException e) {
             e.printStackTrace();
         }
@@ -154,16 +167,76 @@ public class PlatoResultHandler extends DummyProgressMonitor<ExternalProcessResu
             VisualFst visualFst = (VisualFst) v.create(mathModel);
             me = new ModelEntry(me.getDescriptor(), visualFst);
             visualFst.getBestLayouter().layout(visualFst);
-            addWork(framework, we, editor, me);
-            framework.getMainWindow().getEditor(we).zoomFit();
+            we = addWork(framework, we, editor, me);
         } catch (VisualModelInstantiationException e) {
             e.printStackTrace();
         }
     }
 
-
     public WorkspaceEntry getResult() {
         return we;
+    }
+
+    private void runReachTest(String[] invariants) {
+        final String prefix = "exists s in SIGNALS \\ DUMMY {\n" + "let Es = ev s {\n";
+        final String suffix = "}\n" + "}";
+
+        if (invariants.length != 0) {
+            ArrayList<String> expression = new ArrayList<>();
+
+            for (String i : invariants) {
+                ArrayList<String> exp = new ArrayList<>();
+                if (i.startsWith("invariant = not (")) {
+                    i = i.replace("invariant = not (", "");
+
+                    while (!i.startsWith(")")) {
+                        int x = i.indexOf(" && ");
+                        if (x == -1) {
+                            x = i.length() - 1;
+                        }
+
+                        String sig = i.substring(0, x);
+                        String sigExp = "";
+                        if (sig.startsWith("not ")) {
+                            sigExp = "~$S\"" + sig.substring(4) + "\"";
+                        } else {
+                            sigExp = "$S\"" + sig + "\"";
+                        }
+                        exp.add(sigExp);
+
+                        if (x != i.length() - 1) {
+                            x += 4;
+                        }
+                        i = i.substring(x);
+                    }
+
+                    Iterator<String> it = exp.iterator();
+                    String fullExp = "";
+                    while (it.hasNext()) {
+                        fullExp = fullExp + it.next();
+                        if (it.hasNext()) {
+                            fullExp = fullExp + " & ";
+                        }
+                    }
+                    expression.add(fullExp);
+                }
+            }
+            String fullExpression = "";
+            Iterator<String> it = expression.iterator();
+            while (it.hasNext()) {
+                fullExpression = fullExpression + it.next();
+                if (it.hasNext()) {
+                    fullExpression = fullExpression + "\n|\n";
+                }
+            }
+            fullExpression = prefix + fullExpression + suffix;
+
+            MpsatParameters param = new MpsatParameters(null, MpsatMode.STG_REACHABILITY, 0, SolutionMode.MINIMUM_COST, 10, fullExpression, true);
+            final MpsatChainTask mpsatTask = new MpsatChainTask(we, param);
+            final TaskManager taskManager = Framework.getInstance().getTaskManager();
+            final MpsatChainResultHandler monitor = new MpsatChainResultHandler(mpsatTask);
+            taskManager.queue(mpsatTask, "Verify invariant of translated concepts", monitor);
+        }
     }
 
 }

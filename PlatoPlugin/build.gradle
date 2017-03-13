@@ -3,4 +3,5 @@ dependencies {
     compile project(':PetriPlugin')
     compile project(':StgPlugin')
     compile project(':FstPlugin')
+    compile project(':MpsatVerificationPlugin')
 }

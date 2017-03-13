@@ -10,8 +10,6 @@ import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
-//import org.workcraft.plugins.plato.commands.TranslateConceptConversionCommand;
-//import org.workcraft.plugins.plato.interop.ConceptsImporter;
 import org.workcraft.plugins.stg.commands.ContractNamedTransitionTransformationCommand;
 import org.workcraft.plugins.stg.commands.DummyToSignalTransitionTransformationCommand;
 import org.workcraft.plugins.stg.commands.ExplicitPlaceTransformationCommand;
@@ -55,7 +53,6 @@ public class StgModule implements Module {
 
         pm.registerClass(Exporter.class, DotGExporter.class);
         pm.registerClass(Importer.class, DotGImporter.class);
-        //pm.registerClass(Importer.class, ConceptsImporter.class);
 
         pm.registerClass(ModelSerialiser.class, DotGSerialiser.class);
         pm.registerClass(Settings.class, StgSettings.class);
@@ -71,7 +68,6 @@ public class StgModule implements Module {
         pm.registerClass(Command.class, StgToPetriConversionCommand.class);
         pm.registerClass(Command.class, MergeTransitionTransformationCommand.class);
         pm.registerClass(Command.class, InsertDummyTransformationCommand.class);
-        //pm.registerClass(Command.class, TranslateConceptConversionCommand.class);
     }
 
     private void initCompatibilityManager() {
