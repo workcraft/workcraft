@@ -128,6 +128,9 @@ public class MpsatPropertyDialog extends JDialog {
         builtInPresets.add(new Preset<>("Deadlock freeness",
                 MpsatParameters.getDeadlockReachSettings(), true));
 
+        builtInPresets.add(new Preset<>("Deadlock freeness without maximal dummies",
+                MpsatParameters.getDeadlockWithoutMaximalDummyReachSettings(), true));
+
         SettingsToControlsMapper<MpsatParameters> guiMapper = new SettingsToControlsMapper<MpsatParameters>() {
             @Override
             public void applySettingsToControls(MpsatParameters settings) {

@@ -96,15 +96,15 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
         }
     }
 
-    public boolean checkConformation() {
-        return true;
-    }
-
     public boolean checkDeadlock() {
         return true;
     }
 
     public boolean checkPersistency() {
+        return true;
+    }
+
+    public boolean checkConformation() {
         return true;
     }
 

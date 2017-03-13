@@ -156,7 +156,31 @@ public class MpsatParameters {
     public static MpsatParameters getDeadlockReachSettings() {
         return new MpsatParameters("Deadlock freeness", MpsatMode.REACHABILITY, 0,
                 MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(),
-                MpsatParameters.REACH_DEADLOCK, true);
+                REACH_DEADLOCK, true);
+    }
+
+    private static final String REACH_DEADLOCK_WITHOUT_MAXIMAL_DUMMY =
+            "// Ensure that the explored configurations have no maximal dummies, i.e. whenever a dummy\n" +
+            "// event is included into a configuration, some of its causal successors is also included.\n" +
+            "forall e in ev DUMMY \\ CUTOFFS {\n" +
+            "    $e -> exists f in post post e \\ CUTOFFS { $f }\n" +
+            "}\n" +
+            "&\n" +
+            "// e is 'stubborn' if |(*e)*\\CUTOFFS|<=1;\n" +
+            "// to reach a deadlock, a non-cut-off stubborn e must fire whenever **e fired;\n" +
+            "// for a cut-off subborn e, **e cannot be a part of a deadlocked configuration.\n" +
+            "forall e in EVENTS {\n" +
+            "    let Pe = pre e, Pe_P = post Pe \\ CUTOFFS, stb = card Pe_P <= 1 {\n" +
+            "        exists f in pre Pe { ~$f }\n" +
+            "        |\n" +
+            "        (stb ? ~is_cutoff e & $e : exists f in Pe_P { $f })\n" +
+            "    }\n" +
+            "}\n";
+
+    public static MpsatParameters getDeadlockWithoutMaximalDummyReachSettings() {
+        return new MpsatParameters("Deadlock freeness without maximal dummies", MpsatMode.REACHABILITY, 0,
+                MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(),
+                REACH_DEADLOCK_WITHOUT_MAXIMAL_DUMMY, true);
     }
 
     private static final String REACH_CONSISTENCY =
@@ -172,7 +196,7 @@ public class MpsatParameters {
     public static MpsatParameters getConsistencySettings() {
         return new MpsatParameters("Consistency", MpsatMode.STG_REACHABILITY, 0,
                 MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(),
-                MpsatParameters.REACH_CONSISTENCY, true);
+                REACH_CONSISTENCY, true);
     }
 
     private static final String REACH_DUMMY_CHECK =
@@ -210,7 +234,7 @@ public class MpsatParameters {
     public static MpsatParameters getOutputPersistencySettings() {
         return new MpsatParameters("Output persistency", MpsatMode.STG_REACHABILITY_OUTPUT_PERSISTENCY, 0,
                 MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(),
-                MpsatParameters.REACH_OUTPUT_PERSISTENCY, true);
+                REACH_OUTPUT_PERSISTENCY, true);
     }
 
     private static final String REACH_DI_INTERFACE =
@@ -235,7 +259,7 @@ public class MpsatParameters {
     public static MpsatParameters getDiInterfaceSettings() {
         return new MpsatParameters("Delay insensitive interface", MpsatMode.STG_REACHABILITY, 0,
                 MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(),
-                MpsatParameters.REACH_DI_INTERFACE, true);
+                REACH_DI_INTERFACE, true);
     }
 
     private static final String REACH_INPUT_PROPERNESS =
@@ -279,7 +303,7 @@ public class MpsatParameters {
     public static MpsatParameters getInputPropernessSettings() {
         return new MpsatParameters("Input properness", MpsatMode.STG_REACHABILITY, 0,
                 MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(),
-                MpsatParameters.REACH_INPUT_PROPERNESS, true);
+                REACH_INPUT_PROPERNESS, true);
     }
 
     // Reach expression for checking conformation (this is a template, the list of places needs to be updated for each circuit)
