@@ -1,22 +1,24 @@
-package org.workcraft.plugins.stg.interop;
+package org.workcraft.plugins.plato.interop;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.InputStream;
 
+import org.workcraft.dom.Model;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.interop.Importer;
+import org.workcraft.plugins.plato.tasks.PlatoResultHandler;
+import org.workcraft.plugins.plato.tasks.PlatoTask;
+import org.workcraft.plugins.plato.exceptions.PlatoException;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.concepts.ConceptsResultHandler;
-import org.workcraft.plugins.stg.concepts.ConceptsTask;
-import org.workcraft.plugins.stg.concepts.ConceptsToolException;
+import org.workcraft.plugins.stg.interop.DotGImporter;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.workspace.ModelEntry;
 
-public class ConceptsImporter implements Importer {
+public class PlatoImporter implements Importer {
 
     private File inputFile;
 
@@ -37,8 +39,8 @@ public class ConceptsImporter implements Importer {
     @Override
     public ModelEntry importFrom(InputStream in) throws DeserialisationException {
         try {
-            ConceptsTask task = new ConceptsTask(inputFile);
-            ConceptsResultHandler monitor = new ConceptsResultHandler(null);
+            PlatoTask task = new PlatoTask(inputFile);
+            PlatoResultHandler monitor = new PlatoResultHandler(this);
             Result<? extends ExternalProcessResult> result = task.run(monitor);
             if (result.getOutcome() == Outcome.FINISHED) {
                 String output = new String(result.getReturnValue().getOutput());
@@ -46,11 +48,11 @@ public class ConceptsImporter implements Importer {
                     DotGImporter importer = new DotGImporter();
                     ByteArrayInputStream is = new ByteArrayInputStream(result.getReturnValue().getOutput());
                     StgModel stg = importer.importSTG(is);
-                    return new ModelEntry(new StgDescriptor(), stg);
+                    return new ModelEntry(new StgDescriptor(), (Model) stg);
                 }
             }
-            throw new ConceptsToolException(result);
-        } catch (ConceptsToolException e) {
+            throw new PlatoException(result);
+        } catch (PlatoException e) {
             e.handleConceptsError();
             throw new DeserialisationException();
         }

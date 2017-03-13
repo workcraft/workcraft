@@ -21,8 +21,6 @@ import org.workcraft.plugins.stg.commands.MirrorTransitionTransformationCommand;
 import org.workcraft.plugins.stg.commands.PetriToStgConversionCommand;
 import org.workcraft.plugins.stg.commands.SignalToDummyTransitionTransformationCommand;
 import org.workcraft.plugins.stg.commands.StgToPetriConversionCommand;
-import org.workcraft.plugins.stg.concepts.TranslateConceptConversionCommand;
-import org.workcraft.plugins.stg.interop.ConceptsImporter;
 import org.workcraft.plugins.stg.interop.DotGExporter;
 import org.workcraft.plugins.stg.interop.DotGImporter;
 import org.workcraft.plugins.stg.serialisation.DotGSerialiser;
@@ -55,7 +53,6 @@ public class StgModule implements Module {
 
         pm.registerClass(Exporter.class, DotGExporter.class);
         pm.registerClass(Importer.class, DotGImporter.class);
-        pm.registerClass(Importer.class, ConceptsImporter.class);
 
         pm.registerClass(ModelSerialiser.class, DotGSerialiser.class);
         pm.registerClass(Settings.class, StgSettings.class);
@@ -71,7 +68,6 @@ public class StgModule implements Module {
         pm.registerClass(Command.class, StgToPetriConversionCommand.class);
         pm.registerClass(Command.class, MergeTransitionTransformationCommand.class);
         pm.registerClass(Command.class, InsertDummyTransformationCommand.class);
-        pm.registerClass(Command.class, TranslateConceptConversionCommand.class);
     }
 
     private void initCompatibilityManager() {

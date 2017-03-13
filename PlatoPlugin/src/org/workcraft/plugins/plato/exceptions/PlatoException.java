@@ -1,22 +1,22 @@
-package org.workcraft.plugins.stg.concepts;
+package org.workcraft.plugins.plato.exceptions;
 
 import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.plugins.plato.PlatoSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
-import org.workcraft.plugins.stg.StgSettings;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.LogUtils;
 
 @SuppressWarnings("serial")
-public class ConceptsToolException extends Exception {
+public class PlatoException extends Exception {
 
     private static final MainWindow mainWindow = Framework.getInstance().getMainWindow();
     private final Result<? extends ExternalProcessResult> result;
 
-    public ConceptsToolException(Result<? extends ExternalProcessResult> result) {
+    public PlatoException(Result<? extends ExternalProcessResult> result) {
         this.result = result;
     }
 
@@ -68,7 +68,7 @@ public class ConceptsToolException extends Exception {
     }
 
     private void conceptsNotInstalled() {
-        String pkg = StgSettings.getConceptsFolderLocation();
+        String pkg = PlatoSettings.getPlatoFolderLocation();
         JOptionPane.showMessageDialog(mainWindow, "Concepts could not be run. \n"
                 + "The " + pkg + " package needs to be installed via stack. To do this: \n"
                 + "1. Make sure stack is installed (https://docs.haskellstack.org/en/stable/install_and_upgrade/).\n"

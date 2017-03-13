@@ -22,5 +22,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/PetriPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/PolicyPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/WtgPlugin"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/PlatoPlugin"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

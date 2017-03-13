@@ -1,4 +1,4 @@
-package org.workcraft.plugins.stg.concepts;
+package org.workcraft.plugins.plato.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
@@ -33,7 +33,7 @@ import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.util.GUI;
 
 @SuppressWarnings("serial")
-public class ConceptsWriterDialog extends JDialog {
+public class PlatoWriterDialog extends JDialog {
 
     private static File lastFileUsed, lastDirUsed;
 
@@ -41,10 +41,13 @@ public class ConceptsWriterDialog extends JDialog {
     private JTextArea conceptsText;
     private JCheckBox dotLayoutCheckBox;
     private boolean changed = false, translate = false;
+    private final boolean fst;
     private static DefaultListModel<String> includeList = new DefaultListModel<String>();
 
-    public ConceptsWriterDialog() {
+    public PlatoWriterDialog(boolean fst) {
         super(Framework.getInstance().getMainWindow(), "Write and translate Concepts", ModalityType.APPLICATION_MODAL);
+
+        this.fst = fst;
 
         content = new JPanel();
         content.setLayout(new BorderLayout());
@@ -123,7 +126,9 @@ public class ConceptsWriterDialog extends JDialog {
         fileBtnPanel.add(saveFileBtn);
         fileBtnPanel.add(resetBtn);
         fileBtnPanel.add(includeBtn);
-        fileBtnPanel.add(dotLayoutCheckBox);
+        if (!fst) {
+            fileBtnPanel.add(dotLayoutCheckBox);
+        }
 
         openFileBtn.addActionListener(new ActionListener() {
 
@@ -190,7 +195,7 @@ public class ConceptsWriterDialog extends JDialog {
 
         });
 
-        final ConceptsIncludesDialog dialog = new ConceptsIncludesDialog(this, lastDirUsed, includeList);
+        final PlatoIncludesDialog dialog = new PlatoIncludesDialog(this, lastDirUsed, includeList);
 
         includeBtn.addActionListener(new ActionListener() {
 
@@ -247,7 +252,10 @@ public class ConceptsWriterDialog extends JDialog {
     }
 
     private String getDefaultText() {
-        return "module Concept where\n" + "\n" + "import Tuura.Concept.STG\n" + "\n" + "circuit a b c = \n" + "  where";
+        String result = "module Concept where\n" + "\n" + "import Tuura.Concept.";
+        result = result + (fst ? "FSM" : "STG");
+        result = result + "\n\n" + "circuit a b c = \n" + "  where";
+        return result;
     }
 
     private String readFile(File file) throws FileNotFoundException {
@@ -292,7 +300,11 @@ public class ConceptsWriterDialog extends JDialog {
     }
 
     public Object[] getIncludeList() {
-        return includeList.toArray();
+        Object[] list = includeList.toArray();
+        if ((list.length == 1) && (list[0].toString() == "")) {
+            return new Object[0];
+        }
+        return list;
     }
 
 }

@@ -6,7 +6,6 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 import org.workcraft.Config;
-import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
@@ -19,19 +18,16 @@ public class StgSettings implements Settings {
     private static final String keyLowLevelSuffix = prefix + ".lowLevelSuffix";
     private static final String keyHighLevelSuffix = prefix + ".highLevelSuffix";
     private static final String keyGroupSignalConversion = prefix + ".groupSignalConversion";
-    private static final String keyConceptsFolderLocation = prefix + ".conceptsFolderLocation";
 
     private static final Integer defaultDensityMapLevelLimit = 5;
     private static final String defaultLowLevelSuffix = "_LOW";
     private static final String defaultHighLevelSuffix = "_HIGH";
     private static final Boolean defaultGroupSignalConversion = false;
-    private static final String defaultConceptsFolderLocation = DesktopApi.getOs().isWindows() ? "tools\\plato\\" : "tools/plato/";
 
     private static Integer densityMapLevelLimit = defaultDensityMapLevelLimit;
     private static String lowLevelSuffix = defaultLowLevelSuffix;
     private static String highLevelSuffix = defaultHighLevelSuffix;
     private static Boolean groupSignalConversion = defaultGroupSignalConversion;
-    private static String conceptsFolderLocation = defaultConceptsFolderLocation;
 
     public StgSettings() {
         properties.add(new PropertyDeclaration<StgSettings, Integer>(
@@ -88,15 +84,6 @@ public class StgSettings implements Settings {
             }
         });
 
-        properties.add(new PropertyDeclaration<StgSettings, String>(
-                this, "Concepts folder location", String.class, true, false, false) {
-            protected void setter(StgSettings object, String value) {
-                setConceptsFolderLocation(value);
-            }
-            protected String getter(StgSettings object) {
-                return getConceptsFolderLocation();
-            }
-        });
     }
 
     private boolean checkSignalLevelSuffix(String value) {
@@ -135,7 +122,6 @@ public class StgSettings implements Settings {
         setLowLevelSuffix(config.getString(keyLowLevelSuffix, defaultLowLevelSuffix));
         setHighLevelSuffix(config.getString(keyHighLevelSuffix, defaultHighLevelSuffix));
         setGroupSignalConversion(config.getBoolean(keyGroupSignalConversion, defaultGroupSignalConversion));
-        setConceptsFolderLocation(config.getString(keyConceptsFolderLocation, defaultConceptsFolderLocation));
     }
 
     @Override
@@ -144,7 +130,6 @@ public class StgSettings implements Settings {
         config.set(keyLowLevelSuffix, getLowLevelSuffix());
         config.set(keyHighLevelSuffix, getHighLevelSuffix());
         config.setBoolean(keyGroupSignalConversion, getGroupSignalConversion());
-        config.set(keyConceptsFolderLocation, getConceptsFolderLocation());
     }
 
     @Override
@@ -191,14 +176,6 @@ public class StgSettings implements Settings {
 
     public static void setGroupSignalConversion(Boolean value) {
         groupSignalConversion = value;
-    }
-
-    public static String getConceptsFolderLocation() {
-        return conceptsFolderLocation;
-    }
-
-    public static void setConceptsFolderLocation(String value) {
-        conceptsFolderLocation = value;
     }
 
 }
