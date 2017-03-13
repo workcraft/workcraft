@@ -5,8 +5,8 @@ import java.io.File;
 import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat.MpsatMode;
-import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.MpsatParameters;
+import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
@@ -29,19 +29,17 @@ import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class CheckDeadlockTask extends MpsatChainTask {
-    private final MpsatParameters settings;
-    private final WorkspaceEntry we;
 
     public CheckDeadlockTask(WorkspaceEntry we) {
-        super(we, null);
-        this.we = we;
-        this.settings = new MpsatParameters("Deadlock freeness", MpsatMode.DEADLOCK, 0,
-                MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount());
+        super(we, new MpsatParameters("Deadlock freeness", MpsatMode.DEADLOCK, 0,
+                MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount()));
     }
 
     @Override
     public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
         final Framework framework = Framework.getInstance();
+        WorkspaceEntry we = getWorkspaceEntry();
+        MpsatParameters settings = getSettings();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         try {

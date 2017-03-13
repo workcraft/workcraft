@@ -3,7 +3,7 @@ package org.workcraft.plugins.circuit.commands;
 public class CircuitDeadlockVerificationCommand extends CircuitVerificationCommand {
     @Override
     public Position getPosition() {
-        return Position.TOP;
+        return null;
     }
 
     @Override

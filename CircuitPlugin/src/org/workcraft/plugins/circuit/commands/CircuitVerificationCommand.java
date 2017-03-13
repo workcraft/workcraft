@@ -31,11 +31,6 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
     }
 
     @Override
-    public Position getPosition() {
-        return Position.MIDDLE;
-    }
-
-    @Override
     public void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();

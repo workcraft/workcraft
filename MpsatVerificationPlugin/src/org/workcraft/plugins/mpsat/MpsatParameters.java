@@ -307,7 +307,8 @@ public class MpsatParameters {
     }
 
     // Reach expression for checking conformation (this is a template, the list of places needs to be updated for each circuit)
-    private static final String REACH_CONFORMATION_DEV_PLACES = "// insert device place names here"; // For example: "p0", "<a-,b+>"
+    private static final String REACH_CONFORMATION_DEV_PLACES =
+            "/* insert device place names here */"; // For example: "p0", "<a-,b+>"
 
     private static final String REACH_CONFORMATION =
             "// Check a device STG for conformation to its environment STG.\n" +
@@ -371,7 +372,7 @@ public class MpsatParameters {
     // may disappear from unfolding), therefore the conformation property cannot be checked reliably.
     private static String genReachConformation(Set<String> devOutputNames, Set<String> devPlaceNames) {
         String devPlaceList = genNameList(devPlaceNames);
-        return REACH_CONFORMATION.replaceFirst(REACH_CONFORMATION_DEV_PLACES, devPlaceList);
+        return REACH_CONFORMATION.replace(REACH_CONFORMATION_DEV_PLACES, devPlaceList);
     }
 
     private static String genNameList(Collection<String> names) {
@@ -383,6 +384,62 @@ public class MpsatParameters {
             result += "\"" + name + "\"";
         }
         return result;
+    }
+
+    // Reach expression for checking strict implementation
+    private static final String REACH_STRICT_IMPLEMENTATION_SIGNAL =
+            "/* insert signal name here */";
+
+    private static final String REACH_STRICT_IMPLEMENTATION_EXPR =
+            "/* insert complex gate expression here */";
+
+    private static final String REACH_STRICT_IMPLEMENTATION_EXPR_SET =
+            "/* insert generalised C-element set function here */";
+
+    private static final String REACH_STRICT_IMPLEMENTATION_EXPR_RESET =
+            "/* insert generalised C-element reset function here */";
+
+    private static final String REACH_STRICT_IMPLEMENTATION_COMPLEX_GATE =
+            "($S\"" + REACH_STRICT_IMPLEMENTATION_SIGNAL + "\" ' ^ " + REACH_STRICT_IMPLEMENTATION_EXPR + ")";
+
+    private static final String REACH_STRICT_IMPLEMENTATION_GENERALISED_CELEMENT =
+            "let\n" +
+            "    sig=$S\"" + REACH_STRICT_IMPLEMENTATION_SIGNAL + "\",\n" +
+            "    set=" + REACH_STRICT_IMPLEMENTATION_EXPR_SET + ",\n" +
+            "    reset=" + REACH_STRICT_IMPLEMENTATION_EXPR_RESET + ",\n" +
+            "    val=$sig, en=@sig, nxt=sig' {\n" +
+            "    (~set & ~val & en) | (set & ~nxt) | (~reset & val & en) | (reset & nxt)\n" +
+            "}\n";
+
+    private static final String REACH_STRICT_IMPLEMENTATION =
+            "// Checks the STG is strictly implemented by a circuit.\n";
+
+    public static MpsatParameters getStrictImplementationReachSettings(Collection<SignalInfo> signalInfos) {
+        String reachStrictImplementation = REACH_STRICT_IMPLEMENTATION;
+        boolean isFirstSignal = true;
+        for (SignalInfo signalInfo: signalInfos) {
+            boolean isComplexGate = (signalInfo.resetExpr == null) || signalInfo.resetExpr.isEmpty();
+            String s = isComplexGate ? REACH_STRICT_IMPLEMENTATION_COMPLEX_GATE : REACH_STRICT_IMPLEMENTATION_GENERALISED_CELEMENT;
+            s = s.replace(REACH_STRICT_IMPLEMENTATION_SIGNAL, signalInfo.name);
+            if (isComplexGate) {
+                s = s.replace(REACH_STRICT_IMPLEMENTATION_EXPR, signalInfo.setExpr);
+            } else {
+                s = s.replace(REACH_STRICT_IMPLEMENTATION_EXPR_SET, signalInfo.setExpr);
+                s = s.replace(REACH_STRICT_IMPLEMENTATION_EXPR_RESET, signalInfo.resetExpr);
+            }
+            if (!isFirstSignal) {
+                reachStrictImplementation += "\n|\n";
+            }
+            reachStrictImplementation += s;
+            isFirstSignal = false;
+        }
+        if (MpsatSettings.getDebugReach()) {
+            System.out.println("\nReach expression for the strict implementation property:");
+            System.out.println(reachStrictImplementation);
+        }
+        return new MpsatParameters("Strict implementation", MpsatMode.STG_REACHABILITY, 0,
+                MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(),
+                reachStrictImplementation, true);
     }
 
     public static MpsatParameters getCscSettings() {

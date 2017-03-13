@@ -6,8 +6,8 @@ import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.plugins.dfs.stg.DfsToStgConverter;
-import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.MpsatParameters;
+import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
@@ -31,16 +31,15 @@ public class CheckDataflowTask extends MpsatChainTask {
     private final MpsatParameters toolchainCompletionSettings = MpsatParameters.getToolchainCompletionSettings();
     private final MpsatParameters deadlockSettings = MpsatParameters.getDeadlockSettings();
     private final MpsatParameters persistencySettings = MpsatParameters.getOutputPersistencySettings();
-    private final WorkspaceEntry we;
 
     public CheckDataflowTask(WorkspaceEntry we) {
         super(we, null);
-        this.we = we;
     }
 
     @Override
     public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
         final Framework framework = Framework.getInstance();
+        WorkspaceEntry we = getWorkspaceEntry();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         try {
