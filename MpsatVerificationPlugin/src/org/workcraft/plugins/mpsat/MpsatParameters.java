@@ -408,15 +408,15 @@ public class MpsatParameters {
             "/* insert generalised C-element reset function here */";
 
     private static final String REACH_STRICT_IMPLEMENTATION_COMPLEX_GATE =
-            "(S\"" + REACH_STRICT_IMPLEMENTATION_SIGNAL + "\" ' ^ " + REACH_STRICT_IMPLEMENTATION_EXPR + ")";
+            "(S\"" + REACH_STRICT_IMPLEMENTATION_SIGNAL + "\" ' ^ (" + REACH_STRICT_IMPLEMENTATION_EXPR + "))";
 
     private static final String REACH_STRICT_IMPLEMENTATION_GENERALISED_CELEMENT =
             "let\n" +
-            "    sig=S\"" + REACH_STRICT_IMPLEMENTATION_SIGNAL + "\",\n" +
-            "    set=" + REACH_STRICT_IMPLEMENTATION_EXPR_SET + ",\n" +
-            "    reset=" + REACH_STRICT_IMPLEMENTATION_EXPR_RESET + ",\n" +
-            "    val=$sig, en=@sig, nxt=sig' {\n" +
-            "    (~set & ~val & en) | (set & ~nxt) | (~reset & val & en) | (reset & nxt)\n" +
+            "    signal=S\"" + REACH_STRICT_IMPLEMENTATION_SIGNAL + "\",\n" +
+            "    setExpr=" + REACH_STRICT_IMPLEMENTATION_EXPR_SET + ",\n" +
+            "    resetExpr=" + REACH_STRICT_IMPLEMENTATION_EXPR_RESET + " {\n" +
+            "    (@signal & ~setExpr & ~($signal)) | (setExpr & ~(signal')) |\n" +
+            "    (@signal & ~resetExpr & $signal) | (resetExpr & signal')\n" +
             "}\n";
 
     private static final String REACH_STRICT_IMPLEMENTATION =
