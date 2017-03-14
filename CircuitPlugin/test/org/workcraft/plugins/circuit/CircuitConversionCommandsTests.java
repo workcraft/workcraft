@@ -45,7 +45,8 @@ public class CircuitConversionCommandsTests {
             for (Contact port: srcCircuit.getPorts()) {
                 if (port.isInput()) {
                     srcCircuitInputs.add(port.getName());
-                } else {
+                }
+                if (port.isOutput()) {
                     srcCircuitOutputs.add(port.getName());
                 }
             }

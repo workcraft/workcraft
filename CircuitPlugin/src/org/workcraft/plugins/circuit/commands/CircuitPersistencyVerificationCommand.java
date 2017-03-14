@@ -1,9 +1,10 @@
 package org.workcraft.plugins.circuit.commands;
 
 public class CircuitPersistencyVerificationCommand extends CircuitVerificationCommand {
+
     @Override
-    public Position getPosition() {
-        return null;
+    public int getPriority() {
+        return 1;
     }
 
     @Override
@@ -20,4 +21,5 @@ public class CircuitPersistencyVerificationCommand extends CircuitVerificationCo
     public boolean checkDeadlock() {
         return false;
     }
+
 }

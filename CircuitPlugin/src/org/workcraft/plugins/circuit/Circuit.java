@@ -99,6 +99,24 @@ public class Circuit extends AbstractMathModel {
         });
     }
 
+    public Collection<Contact> getInputPorts() {
+        return Hierarchy.getDescendantsOfType(getRoot(), Contact.class, new Func<Contact, Boolean>() {
+            @Override
+            public Boolean eval(Contact arg) {
+                return arg.isPort() && arg.isInput();
+            }
+        });
+    }
+
+    public Collection<Contact> getOutputPorts() {
+        return Hierarchy.getDescendantsOfType(getRoot(), Contact.class, new Func<Contact, Boolean>() {
+            @Override
+            public Boolean eval(Contact arg) {
+                return arg.isPort() && arg.isOutput();
+            }
+        });
+    }
+
     public Collection<Contact> getDrivers() {
         return Hierarchy.getDescendantsOfType(getRoot(), Contact.class, new Func<Contact, Boolean>() {
             @Override

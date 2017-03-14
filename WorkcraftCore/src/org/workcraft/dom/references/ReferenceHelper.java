@@ -32,7 +32,7 @@ public class ReferenceHelper {
         return getReferencesAsString(refs);
     }
 
-    private static ArrayList<String> getReferenceList(final Model model, Collection<Node> nodes) {
+    public static ArrayList<String> getReferenceList(final Model model, Collection<Node> nodes) {
         ArrayList<String> refs = new ArrayList<>();
         for (Node node: nodes) {
             String ref = model.getNodeReference(node);

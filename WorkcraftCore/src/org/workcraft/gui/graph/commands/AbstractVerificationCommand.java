@@ -16,7 +16,7 @@ public abstract class AbstractVerificationCommand implements Command, MenuOrderi
 
     @Override
     public Position getPosition() {
-        return Position.TOP;
+        return null;
     }
 
 }

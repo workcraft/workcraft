@@ -31,6 +31,18 @@ public class MpsatParameters {
         }
     }
 
+    public static class SignalInfo {
+        public final String name;
+        public final String setExpr;
+        public final String resetExpr;
+
+        public SignalInfo(String name, String setExpr, String resetExpr) {
+            this.name = name;
+            this.setExpr = setExpr;
+            this.resetExpr = resetExpr;
+        }
+    }
+
     private final String name;
     private final MpsatMode mode;
     private final int verbosity;
@@ -358,10 +370,6 @@ public class MpsatParameters {
 
     public static MpsatParameters getConformationSettings(Set<String> devOutputNames, Set<String> devPlaceNames) {
         String reachConformation = genReachConformation(devOutputNames, devPlaceNames);
-        if (MpsatSettings.getDebugReach()) {
-            System.out.println("\nReach expression for the interface conformation property:");
-            System.out.println(reachConformation);
-        }
         return new MpsatParameters("Interface conformation", MpsatMode.STG_REACHABILITY_CONFORMATION, 0,
                 MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(),
                 reachConformation, true);
@@ -400,11 +408,11 @@ public class MpsatParameters {
             "/* insert generalised C-element reset function here */";
 
     private static final String REACH_STRICT_IMPLEMENTATION_COMPLEX_GATE =
-            "($S\"" + REACH_STRICT_IMPLEMENTATION_SIGNAL + "\" ' ^ " + REACH_STRICT_IMPLEMENTATION_EXPR + ")";
+            "(S\"" + REACH_STRICT_IMPLEMENTATION_SIGNAL + "\" ' ^ " + REACH_STRICT_IMPLEMENTATION_EXPR + ")";
 
     private static final String REACH_STRICT_IMPLEMENTATION_GENERALISED_CELEMENT =
             "let\n" +
-            "    sig=$S\"" + REACH_STRICT_IMPLEMENTATION_SIGNAL + "\",\n" +
+            "    sig=S\"" + REACH_STRICT_IMPLEMENTATION_SIGNAL + "\",\n" +
             "    set=" + REACH_STRICT_IMPLEMENTATION_EXPR_SET + ",\n" +
             "    reset=" + REACH_STRICT_IMPLEMENTATION_EXPR_RESET + ",\n" +
             "    val=$sig, en=@sig, nxt=sig' {\n" +
@@ -432,10 +440,6 @@ public class MpsatParameters {
             }
             reachStrictImplementation += s;
             isFirstSignal = false;
-        }
-        if (MpsatSettings.getDebugReach()) {
-            System.out.println("\nReach expression for the strict implementation property:");
-            System.out.println(reachStrictImplementation);
         }
         return new MpsatParameters("Strict implementation", MpsatMode.STG_REACHABILITY, 0,
                 MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(),
