@@ -12,8 +12,8 @@ import java.util.Set;
 import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat.MpsatMode;
-import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.MpsatParameters;
+import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.punf.PunfSettings;
@@ -34,24 +34,24 @@ import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class MpsatConformationTask extends MpsatChainTask {
+
     private final MpsatParameters toolchainPreparationSettings = new MpsatParameters("Toolchain preparation of data",
             MpsatMode.UNDEFINED, 0, null, 0);
 
     private final MpsatParameters toolchainCompletionSettings = new MpsatParameters("Toolchain completion",
             MpsatMode.UNDEFINED, 0, null, 0);
 
-    private final WorkspaceEntry we;
     private final File envFile;
 
     public MpsatConformationTask(WorkspaceEntry we, File envFile) {
         super(we, null);
-        this.we = we;
         this.envFile = envFile;
     }
 
     @Override
     public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
         Framework framework = Framework.getInstance();
+        WorkspaceEntry we = getWorkspaceEntry();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         try {

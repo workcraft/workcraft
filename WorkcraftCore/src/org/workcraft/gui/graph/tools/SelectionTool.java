@@ -372,7 +372,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
     }
 
     public VisualNode hitTestPopup(VisualModel model, Point2D position) {
-        return (VisualNode) HitMan.hitTestCurrentLevelDeepest(position, model);
+        return (VisualNode) HitMan.hitTestCurrentLevelFirst(position, model);
     }
 
     public JPopupMenu createPopupMenu(Node node, final GraphEditor editor) {

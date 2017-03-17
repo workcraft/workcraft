@@ -67,15 +67,16 @@ public class CircuitLayoutTests {
     }
 
     private void countCircuitNodes(WorkspaceEntry we, Set<String> inputs, Set<String> outputs, Set<String> gates) {
-        Circuit vCircuit = WorkspaceUtils.getAs(we, Circuit.class);
-        for (Contact port: vCircuit.getPorts()) {
+        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
+        for (Contact port: circuit.getPorts()) {
             if (port.isInput()) {
                 inputs.add(port.getName());
-            } else {
+            }
+            if (port.isOutput()) {
                 outputs.add(port.getName());
             }
         }
-        for (FunctionComponent component: vCircuit.getFunctionComponents()) {
+        for (FunctionComponent component: circuit.getFunctionComponents()) {
             gates.add(component.getModule() + " " + component.getName());
         }
     }

@@ -39,14 +39,12 @@ public class CheckCircuitTask extends MpsatChainTask {
     private final MpsatParameters deadlockSettings = MpsatParameters.getDeadlockSettings();
     private final MpsatParameters persistencySettings = MpsatParameters.getOutputPersistencySettings();
 
-    private final WorkspaceEntry we;
     private final boolean checkConformation;
     private final boolean checkDeadlock;
     private final boolean checkPersistency;
 
     public CheckCircuitTask(WorkspaceEntry we, boolean checkConformation, boolean checkDeadlock, boolean checkPersistency) {
         super(we, null);
-        this.we = we;
         this.checkConformation = checkConformation;
         this.checkDeadlock = checkDeadlock;
         this.checkPersistency = checkPersistency;
@@ -55,6 +53,7 @@ public class CheckCircuitTask extends MpsatChainTask {
     @Override
     public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
         Framework framework = Framework.getInstance();
+        WorkspaceEntry we = getWorkspaceEntry();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         try {

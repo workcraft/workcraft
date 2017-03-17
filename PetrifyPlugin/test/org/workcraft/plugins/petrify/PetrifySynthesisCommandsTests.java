@@ -110,7 +110,8 @@ public class PetrifySynthesisCommandsTests {
         for (Contact port: dstCircuit.getPorts()) {
             if (port.isInput()) {
                 dstInputs.add(port.getName());
-            } else {
+            }
+            if (port.isOutput()) {
                 dstOutputs.add(port.getName());
             }
         }

@@ -29,20 +29,18 @@ import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class CheckDataflowDeadlockTask extends MpsatChainTask {
-    private final MpsatParameters settings;
-    private final WorkspaceEntry we;
 
     public CheckDataflowDeadlockTask(WorkspaceEntry we) {
-        super(we, null);
-        this.we = we;
-        this.settings = new MpsatParameters("Deadlock freeness", MpsatMode.DEADLOCK, 0,
+        super(we, new MpsatParameters("Deadlock freeness", MpsatMode.DEADLOCK, 0,
                 MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(),
-                null, true);
+                null, true));
     }
 
     @Override
     public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
         final Framework framework = Framework.getInstance();
+        WorkspaceEntry we = getWorkspaceEntry();
+        MpsatParameters settings = getSettings();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         try {

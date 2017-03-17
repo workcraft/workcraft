@@ -31,6 +31,18 @@ public class MpsatParameters {
         }
     }
 
+    public static class SignalInfo {
+        public final String name;
+        public final String setExpr;
+        public final String resetExpr;
+
+        public SignalInfo(String name, String setExpr, String resetExpr) {
+            this.name = name;
+            this.setExpr = setExpr;
+            this.resetExpr = resetExpr;
+        }
+    }
+
     private final String name;
     private final MpsatMode mode;
     private final int verbosity;
@@ -156,7 +168,31 @@ public class MpsatParameters {
     public static MpsatParameters getDeadlockReachSettings() {
         return new MpsatParameters("Deadlock freeness", MpsatMode.REACHABILITY, 0,
                 MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(),
-                MpsatParameters.REACH_DEADLOCK, true);
+                REACH_DEADLOCK, true);
+    }
+
+    private static final String REACH_DEADLOCK_WITHOUT_MAXIMAL_DUMMY =
+            "// Ensure that the explored configurations have no maximal dummies, i.e. whenever a dummy\n" +
+            "// event is included into a configuration, some of its causal successors is also included.\n" +
+            "forall e in ev DUMMY \\ CUTOFFS {\n" +
+            "    $e -> exists f in post post e \\ CUTOFFS { $f }\n" +
+            "}\n" +
+            "&\n" +
+            "// e is 'stubborn' if |(*e)*\\CUTOFFS|<=1;\n" +
+            "// to reach a deadlock, a non-cut-off stubborn e must fire whenever **e fired;\n" +
+            "// for a cut-off subborn e, **e cannot be a part of a deadlocked configuration.\n" +
+            "forall e in EVENTS {\n" +
+            "    let Pe = pre e, Pe_P = post Pe \\ CUTOFFS, stb = card Pe_P <= 1 {\n" +
+            "        exists f in pre Pe { ~$f }\n" +
+            "        |\n" +
+            "        (stb ? ~is_cutoff e & $e : exists f in Pe_P { $f })\n" +
+            "    }\n" +
+            "}\n";
+
+    public static MpsatParameters getDeadlockWithoutMaximalDummyReachSettings() {
+        return new MpsatParameters("Deadlock freeness without maximal dummies", MpsatMode.REACHABILITY, 0,
+                MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(),
+                REACH_DEADLOCK_WITHOUT_MAXIMAL_DUMMY, true);
     }
 
     private static final String REACH_CONSISTENCY =
@@ -172,7 +208,7 @@ public class MpsatParameters {
     public static MpsatParameters getConsistencySettings() {
         return new MpsatParameters("Consistency", MpsatMode.STG_REACHABILITY, 0,
                 MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(),
-                MpsatParameters.REACH_CONSISTENCY, true);
+                REACH_CONSISTENCY, true);
     }
 
     private static final String REACH_DUMMY_CHECK =
@@ -210,7 +246,7 @@ public class MpsatParameters {
     public static MpsatParameters getOutputPersistencySettings() {
         return new MpsatParameters("Output persistency", MpsatMode.STG_REACHABILITY_OUTPUT_PERSISTENCY, 0,
                 MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(),
-                MpsatParameters.REACH_OUTPUT_PERSISTENCY, true);
+                REACH_OUTPUT_PERSISTENCY, true);
     }
 
     private static final String REACH_DI_INTERFACE =
@@ -235,7 +271,7 @@ public class MpsatParameters {
     public static MpsatParameters getDiInterfaceSettings() {
         return new MpsatParameters("Delay insensitive interface", MpsatMode.STG_REACHABILITY, 0,
                 MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(),
-                MpsatParameters.REACH_DI_INTERFACE, true);
+                REACH_DI_INTERFACE, true);
     }
 
     private static final String REACH_INPUT_PROPERNESS =
@@ -279,11 +315,12 @@ public class MpsatParameters {
     public static MpsatParameters getInputPropernessSettings() {
         return new MpsatParameters("Input properness", MpsatMode.STG_REACHABILITY, 0,
                 MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(),
-                MpsatParameters.REACH_INPUT_PROPERNESS, true);
+                REACH_INPUT_PROPERNESS, true);
     }
 
     // Reach expression for checking conformation (this is a template, the list of places needs to be updated for each circuit)
-    private static final String REACH_CONFORMATION_DEV_PLACES = "// insert device place names here"; // For example: "p0", "<a-,b+>"
+    private static final String REACH_CONFORMATION_DEV_PLACES =
+            "/* insert device place names here */"; // For example: "p0", "<a-,b+>"
 
     private static final String REACH_CONFORMATION =
             "// Check a device STG for conformation to its environment STG.\n" +
@@ -333,10 +370,6 @@ public class MpsatParameters {
 
     public static MpsatParameters getConformationSettings(Set<String> devOutputNames, Set<String> devPlaceNames) {
         String reachConformation = genReachConformation(devOutputNames, devPlaceNames);
-        if (MpsatSettings.getDebugReach()) {
-            System.out.println("\nReach expression for the interface conformation property:");
-            System.out.println(reachConformation);
-        }
         return new MpsatParameters("Interface conformation", MpsatMode.STG_REACHABILITY_CONFORMATION, 0,
                 MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(),
                 reachConformation, true);
@@ -347,7 +380,7 @@ public class MpsatParameters {
     // may disappear from unfolding), therefore the conformation property cannot be checked reliably.
     private static String genReachConformation(Set<String> devOutputNames, Set<String> devPlaceNames) {
         String devPlaceList = genNameList(devPlaceNames);
-        return REACH_CONFORMATION.replaceFirst(REACH_CONFORMATION_DEV_PLACES, devPlaceList);
+        return REACH_CONFORMATION.replace(REACH_CONFORMATION_DEV_PLACES, devPlaceList);
     }
 
     private static String genNameList(Collection<String> names) {
@@ -359,6 +392,58 @@ public class MpsatParameters {
             result += "\"" + name + "\"";
         }
         return result;
+    }
+
+    // Reach expression for checking strict implementation
+    private static final String REACH_STRICT_IMPLEMENTATION_SIGNAL =
+            "/* insert signal name here */";
+
+    private static final String REACH_STRICT_IMPLEMENTATION_EXPR =
+            "/* insert complex gate expression here */";
+
+    private static final String REACH_STRICT_IMPLEMENTATION_EXPR_SET =
+            "/* insert generalised C-element set function here */";
+
+    private static final String REACH_STRICT_IMPLEMENTATION_EXPR_RESET =
+            "/* insert generalised C-element reset function here */";
+
+    private static final String REACH_STRICT_IMPLEMENTATION_COMPLEX_GATE =
+            "('S\"" + REACH_STRICT_IMPLEMENTATION_SIGNAL + "\" ^ (" + REACH_STRICT_IMPLEMENTATION_EXPR + "))";
+
+    private static final String REACH_STRICT_IMPLEMENTATION_GENERALISED_CELEMENT =
+            "let\n" +
+            "    signal=S\"" + REACH_STRICT_IMPLEMENTATION_SIGNAL + "\",\n" +
+            "    setExpr=" + REACH_STRICT_IMPLEMENTATION_EXPR_SET + ",\n" +
+            "    resetExpr=" + REACH_STRICT_IMPLEMENTATION_EXPR_RESET + " {\n" +
+            "    (@signal & ~setExpr & ~$signal) | (setExpr & ~'signal) |\n" +
+            "    (@signal & ~resetExpr & $signal) | (resetExpr & 'signal)\n" +
+            "}\n";
+
+    private static final String REACH_STRICT_IMPLEMENTATION =
+            "// Checks the STG is strictly implemented by a circuit.\n";
+
+    public static MpsatParameters getStrictImplementationReachSettings(Collection<SignalInfo> signalInfos) {
+        String reachStrictImplementation = REACH_STRICT_IMPLEMENTATION;
+        boolean isFirstSignal = true;
+        for (SignalInfo signalInfo: signalInfos) {
+            boolean isComplexGate = (signalInfo.resetExpr == null) || signalInfo.resetExpr.isEmpty();
+            String s = isComplexGate ? REACH_STRICT_IMPLEMENTATION_COMPLEX_GATE : REACH_STRICT_IMPLEMENTATION_GENERALISED_CELEMENT;
+            s = s.replace(REACH_STRICT_IMPLEMENTATION_SIGNAL, signalInfo.name);
+            if (isComplexGate) {
+                s = s.replace(REACH_STRICT_IMPLEMENTATION_EXPR, signalInfo.setExpr);
+            } else {
+                s = s.replace(REACH_STRICT_IMPLEMENTATION_EXPR_SET, signalInfo.setExpr);
+                s = s.replace(REACH_STRICT_IMPLEMENTATION_EXPR_RESET, signalInfo.resetExpr);
+            }
+            if (!isFirstSignal) {
+                reachStrictImplementation += "\n|\n";
+            }
+            reachStrictImplementation += s;
+            isFirstSignal = false;
+        }
+        return new MpsatParameters("Strict implementation", MpsatMode.STG_REACHABILITY, 0,
+                MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(),
+                reachStrictImplementation, true);
     }
 
     public static MpsatParameters getCscSettings() {

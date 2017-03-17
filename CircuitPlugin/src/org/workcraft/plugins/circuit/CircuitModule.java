@@ -16,6 +16,7 @@ import org.workcraft.plugins.circuit.commands.CircuitDeadlockVerificationCommand
 import org.workcraft.plugins.circuit.commands.CircuitLayoutCommand;
 import org.workcraft.plugins.circuit.commands.CircuitPersistencyVerificationCommand;
 import org.workcraft.plugins.circuit.commands.CircuitPropertyVerificationCommand;
+import org.workcraft.plugins.circuit.commands.CircuitStrictImplementationVerificationCommand;
 import org.workcraft.plugins.circuit.commands.CircuitToStgConversionCommand;
 import org.workcraft.plugins.circuit.commands.CircuitVerificationCommand;
 import org.workcraft.plugins.circuit.commands.ContractComponentTransformationCommand;
@@ -56,6 +57,7 @@ public class CircuitModule implements Module {
         pm.registerClass(Command.class, CircuitDeadlockVerificationCommand.class);
         pm.registerClass(Command.class, CircuitPersistencyVerificationCommand.class);
         pm.registerClass(Command.class, CircuitVerificationCommand.class);
+        pm.registerClass(Command.class, CircuitStrictImplementationVerificationCommand.class);
         pm.registerClass(Command.class, CircuitPropertyVerificationCommand.class);
         pm.registerClass(Command.class, CircuitAssertionVerificationCommand.class);
 

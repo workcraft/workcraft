@@ -11,6 +11,11 @@ import org.workcraft.workspace.WorkspaceUtils;
 
 public class DfsDeadlockVerificationCommand extends AbstractVerificationCommand {
 
+    @Override
+    public int getPriority() {
+        return 1;
+    }
+
     public String getDisplayName() {
         return "Deadlock [MPSat]";
     }

@@ -3,7 +3,6 @@ package org.workcraft.plugins.wtg.tools;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.awt.geom.Point2D;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -11,7 +10,6 @@ import javax.swing.JPopupMenu;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.dtd.tools.DtdSelectionTool;
@@ -44,11 +42,6 @@ public class WtgSelectionTool extends DtdSelectionTool {
             popup.add(centerPivotPointMenuItem);
         }
         return popup;
-    }
-
-    @Override
-    public VisualNode hitTestPopup(VisualModel model, Point2D position) {
-        return (VisualNode) HitMan.hitTestCurrentLevelFirst(position, model);
     }
 
     @Override

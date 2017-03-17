@@ -1,9 +1,10 @@
 package org.workcraft.plugins.circuit.commands;
 
 public class CircuitDeadlockVerificationCommand extends CircuitVerificationCommand {
+
     @Override
-    public Position getPosition() {
-        return Position.TOP;
+    public int getPriority() {
+        return 1;
     }
 
     @Override
@@ -20,4 +21,5 @@ public class CircuitDeadlockVerificationCommand extends CircuitVerificationComma
     public boolean checkPersistency() {
         return false;
     }
+
 }

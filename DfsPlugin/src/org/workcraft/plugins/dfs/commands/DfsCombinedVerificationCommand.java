@@ -21,11 +21,6 @@ public class DfsCombinedVerificationCommand extends AbstractVerificationCommand 
     }
 
     @Override
-    public Position getPosition() {
-        return Position.BOTTOM;
-    }
-
-    @Override
     public void run(WorkspaceEntry we) {
         final CheckDataflowTask task = new CheckDataflowTask(we);
         String description = "MPSat tool chain";

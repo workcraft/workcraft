@@ -11,6 +11,11 @@ import org.workcraft.workspace.WorkspaceUtils;
 
 public class DfsPersisitencyVerificationCommand extends AbstractVerificationCommand {
 
+    @Override
+    public int getPriority() {
+        return 1;
+    }
+
     public String getDisplayName() {
         return "Output persistency [MPSat]";
     }
