@@ -138,7 +138,7 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationResu
                 PetrifyTransformationResult result = new PetrifyTransformationResult(res, outStg);
                 int returnCode = res.getReturnValue().getReturnCode();
                 String errorMessage = new String(res.getReturnValue().getErrors());
-                if ((returnCode != 0) || (errorMessage.endsWith(">>> ERROR: Cannot solve CSC.\n"))) {
+                if ((returnCode != 0) || (errorMessage.contains(">>> ERROR: Cannot solve CSC.\n"))) {
                     return Result.failed(result);
                 }
                 return Result.finished(result);
