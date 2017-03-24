@@ -83,7 +83,7 @@ public class HitMan {
     }
 
     public static boolean isBranchHit(Point2D point, Node node) {
-        if (node instanceof Touchable && ((Touchable) node).hitTest(point)) {
+        if ((node instanceof Touchable) && ((Touchable) node).hitTest(point)) {
             if (node instanceof Hidable) {
                 return !((Hidable) node).isHidden();
             } else {
@@ -160,11 +160,6 @@ public class HitMan {
         return (T) hitDeepest(point, node, Hierarchy.getTypeFilter(type));
     }
 
-    public static Node hitTestRootDeepest(Point2D point, VisualModel model) {
-        Point2D pt = transformToChildSpace(point, model.getRoot());
-        return hitTestDeepest(pt, model.getRoot());
-    }
-
     public static Node hitTestCurrentLevelFirst(Point2D point, VisualModel model) {
         AffineTransform at = TransformHelper.getTransform(model.getRoot(), model.getCurrentLevel());
         Point2D pt = at.transform(point, null);
@@ -202,19 +197,21 @@ public class HitMan {
         });
     }
 
-    public static Node hitTestCurrentLevelDeepest(Point2D point, VisualModel model) {
-        AffineTransform at = TransformHelper.getTransform(model.getRoot(), model.getCurrentLevel());
-        Point2D pt = at.transform(point, null);
-        return hitTestDeepest(pt, model.getCurrentLevel());
+    public static Node hitTestRootDeepest(Point2D point, VisualModel model) {
+        Container root = model.getRoot();
+        Point2D pt = transformToChildSpace(point, root);
+        return hitTestRootDeepest(pt, root);
     }
 
-    public static Node hitTestDeepest(Point2D point, Node node) {
+    public static Node hitTestRootDeepest(Point2D point, Node root) {
         Node result = null;
         if (result == null) {
-            result = hitTestDeepestMovable(point, node);
+            Node moveable = hitTestDeepestMovable(point, root);
+            result = (moveable != root) ? moveable : null;
         }
         if (result == null) {
-            result = hitTestDeepestConnection(point, node);
+            Node connection = hitTestDeepestConnection(point, root);
+            result = (connection != root) ? connection : null;
         }
         return result;
     }
