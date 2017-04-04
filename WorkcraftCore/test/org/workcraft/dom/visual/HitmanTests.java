@@ -72,7 +72,7 @@ public class HitmanTests {
                         new DummyNode(),
                 }
         );
-        assertSame(toHit, HitMan.hitDeepestNodeOfType(new Point2D.Double(0.5, 0.5), node, HitableNode.class));
+        assertSame(toHit, HitMan.hitDeepest(new Point2D.Double(0.5, 0.5), node, HitableNode.class));
     }
 
 }

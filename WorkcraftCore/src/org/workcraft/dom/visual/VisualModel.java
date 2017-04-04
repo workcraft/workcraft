@@ -61,7 +61,7 @@ public interface VisualModel extends Model, ObservableState {
     VisualPage groupPageSelection();
     void ungroupSelection();
 
-    Collection<Node> boxHitTest(Point2D p1, Point2D p2);
+    Collection<Node> hitBox(Point2D p1, Point2D p2);
 
     void setTemplateNode(VisualNode node);
     VisualNode getTemplateNode();

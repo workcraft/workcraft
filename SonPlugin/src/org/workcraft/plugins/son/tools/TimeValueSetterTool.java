@@ -12,6 +12,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.geom.Point2D;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -22,6 +23,7 @@ import javax.swing.JTextField;
 import javax.swing.text.AbstractDocument;
 
 import org.workcraft.Framework;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualComponent;
@@ -578,7 +580,9 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
     @Override
     public void mousePressed(GraphEditorMouseEvent e) {
         net.refreshNodeColor();
-        Node node = HitMan.hitTestRootDeepest(e.getPosition(), e.getModel());
+        Point2D position = e.getPosition();
+        Container root = e.getModel().getRoot();
+        Node node = HitMan.hitDeepest(position, root, VisualSONConnection.class);
         if (node instanceof VisualSONConnection) {
             estimatorButton.setEnabled(false);
             VisualSONConnection con = (VisualSONConnection) node;
@@ -592,8 +596,8 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
             }
         }
 
-        Node node2 = HitMan.hitFirstNodeOfType(e.getPosition(), e.getModel().getRoot(), VisualBlock.class);
-        if (node2 != null) {
+        Node node2 = HitMan.hitFirstChild(position, root, VisualBlock.class);
+        if (node2 instanceof VisualBlock) {
             selection = ((VisualBlock) node2).getReferencedComponent();
             visualSelection = node2;
             if (((VisualBlock) node2).getIsCollapsed()) {
@@ -605,7 +609,7 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
             }
         }
 
-        Node node3 = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(), new Func<Node, Boolean>() {
+        Node node3 = HitMan.hitDeepest(position, root, new Func<Node, Boolean>() {
             @Override
             public Boolean eval(Node node) {
                 return (node instanceof VisualPlaceNode) || (node instanceof VisualEvent);

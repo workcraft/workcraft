@@ -97,9 +97,9 @@ public class ConnectionTool extends AbstractGraphEditorTool {
 
     protected void updateState(GraphEditor editor) {
         if (allLevels) {
-            currentNode = (VisualNode) HitMan.hitTestRootDeepest(currentPoint, editor.getModel());
+            currentNode = (VisualNode) HitMan.hitDeepest(currentPoint, editor.getModel());
         } else {
-            currentNode = (VisualNode) HitMan.hitTestCurrentLevelFirst(currentPoint, editor.getModel());
+            currentNode = (VisualNode) HitMan.hitFirstInCurrentLevel(currentPoint, editor.getModel());
         }
         if ((currentNode == null) || isConnectable(currentNode)) {
             if (currentNode != firstNode) {

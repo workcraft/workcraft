@@ -37,7 +37,7 @@ public class StgSelectionTool extends SelectionTool {
         if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() > 1)) {
             GraphEditor editor = e.getEditor();
             VisualModel model = editor.getModel();
-            Node node = HitMan.hitTestCurrentLevelFirst(e.getPosition(), model);
+            Node node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
             if (node != null) {
                 if (node instanceof VisualPlace) {
                     Place place = ((VisualPlace) node).getReferencedPlace();

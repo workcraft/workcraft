@@ -292,7 +292,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
         GraphEditor editor = e.getEditor();
         Point2D position = e.getPosition();
         if (e.getButton() == MouseEvent.BUTTON1) {
-            Node node = HitMan.hitTestCurrentLevelFirst(position, model);
+            Node node = HitMan.hitFirstInCurrentLevel(position, model);
             if (node == null) {
                 if (e.getClickCount() > 1) {
                     if (model.getCurrentLevel() instanceof VisualGroup) {
@@ -372,7 +372,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
     }
 
     public VisualNode hitTestPopup(VisualModel model, Point2D position) {
-        return (VisualNode) HitMan.hitTestCurrentLevelFirst(position, model);
+        return (VisualNode) HitMan.hitFirstInCurrentLevel(position, model);
     }
 
     public JPopupMenu createPopupMenu(Node node, final GraphEditor editor) {
@@ -422,11 +422,11 @@ public class SelectionTool extends AbstractGraphEditorTool {
             VisualModelTransformer.translateSelection(model, snapPos2.getX() - snapPos1.getX(), snapPos2.getY() - snapPos1.getY());
         } else if (dragState == DrugState.SELECT) {
             selected.clear();
-            selected.addAll(model.boxHitTest(e.getStartPosition(), e.getPosition()));
+            selected.addAll(model.hitBox(e.getStartPosition(), e.getPosition()));
             selectionBox = getSelectionRect(e.getStartPosition(), e.getPosition());
             editor.repaint();
         } else {
-            Node node = HitMan.hitTestCurrentLevelFirst(e.getPosition(), model);
+            Node node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
             if (currentNode != node) {
                 currentNode = (VisualNode) node;
                 editor.repaint();
@@ -452,7 +452,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
         VisualModel model = editor.getModel();
         if (e.getButtonModifiers() == MouseEvent.BUTTON1_DOWN_MASK) {
             Point2D startPos = e.getStartPosition();
-            Node hitNode = HitMan.hitTestCurrentLevelFirst(startPos, model);
+            Node hitNode = HitMan.hitFirstInCurrentLevel(startPos, model);
 
             if (hitNode == null) {
                 // If hit nothing then start select-drag
@@ -764,6 +764,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
             if (node instanceof Container) {
                 editor.getWorkspaceEntry().saveMemento();
                 model.setCurrentLevel((Container) node);
+                currentNode = null;
                 editor.repaint();
             }
         }
@@ -777,6 +778,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
             editor.getWorkspaceEntry().saveMemento();
             model.setCurrentLevel(parent);
             model.addToSelection(level);
+            currentNode = null;
             editor.repaint();
         }
     }

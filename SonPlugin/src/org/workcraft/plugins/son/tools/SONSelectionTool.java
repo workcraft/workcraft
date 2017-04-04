@@ -175,12 +175,12 @@ public class SONSelectionTool extends SelectionTool {
         VisualSON model = (VisualSON) e.getEditor().getModel();
 
         if (e.getClickCount() > 1) {
-            VisualNode node = (VisualNode) HitMan.hitTestCurrentLevelFirst(e.getPosition(), model);
+            VisualNode node = (VisualNode) HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
             Collection<Node> selection = e.getModel().getSelection();
 
             if (selection.size() == 1) {
                 Node selectedNode = selection.iterator().next();
-                selectedNode = (VisualNode) HitMan.hitTestCurrentLevelFirst(e.getPosition(), model);
+                selectedNode = (VisualNode) HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
 
                 if (selectedNode instanceof VisualBlock) {
                     if (!((VisualBlock) selectedNode).getIsCollapsed()) {
