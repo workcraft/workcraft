@@ -620,7 +620,7 @@ public final class Framework {
             if (vmd == null) {
                 JOptionPane.showMessageDialog(getMainWindow(),
                         "A visual model could not be created for the selected model.\n"
-                        + "Model '" + descriptor.getDisplayName() + "' does not have visual model support.",
+                        + descriptor.getDisplayName() + " does not have visual model support.",
                         "Error", JOptionPane.ERROR_MESSAGE);
             }
             try {
@@ -773,8 +773,11 @@ public final class Framework {
         VisualModel vmodel1 = me1.getVisualModel();
         VisualModel vmodel2 = me2.getVisualModel();
 
-        if (!me1.getDescriptor().getDisplayName().equals(me2.getDescriptor().getDisplayName())) {
-            throw new DeserialisationException("Incompatible models cannot be merged");
+        String displayName1 = me1.getDescriptor().getDisplayName();
+        String displayName2 = me2.getDescriptor().getDisplayName();
+        if (!displayName1.equals(displayName2)) {
+            throw new DeserialisationException(
+                    "Incompatible " + displayName1 + " and " + displayName2 + " model cannot be merged.");
         }
 
         Collection<Node> children = new HashSet<>(vmodel2.getRoot().getChildren());

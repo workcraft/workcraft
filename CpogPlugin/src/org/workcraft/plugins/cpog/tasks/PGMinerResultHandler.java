@@ -51,7 +51,8 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
                     final ToolboxPanel toolbox = editor.getToolBox();
                     final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
                     if (result.getOutcome() == Outcome.FAILED) {
-                        JOptionPane.showMessageDialog(mainWindow, "PGMiner could not run", "Concurrency extraction failed", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(mainWindow, "PGMiner could not run",
+                                "Concurrency extraction failed", JOptionPane.ERROR_MESSAGE);
                     } else {
                         if (createNewWindow) {
                             CpogDescriptor cpogModel = new CpogDescriptor();
@@ -60,7 +61,8 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
                             VisualModelDescriptor v = cpogModel.getVisualModelDescriptor();
                             try {
                                 if (v == null) {
-                                    throw new VisualModelInstantiationException("visual model is not defined for \"" + cpogModel.getDisplayName() + "\".");
+                                    throw new VisualModelInstantiationException(
+                                            "visual model is not defined for '" + cpogModel.getDisplayName() + "'.");
                                 }
                                 visualCpog = (VisualCpog) v.create(mathModel);
                                 final Path<String> directory = we.getWorkspacePath().getParent();

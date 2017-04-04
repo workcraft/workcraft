@@ -30,15 +30,17 @@ public class DockableWindow extends AbstractDockable {
     private final ChangeListener tabChangeListener = new ChangeListener() {
         @Override
         public void stateChanged(ChangeEvent e) {
-            JTabbedPane tabbedPane = (JTabbedPane) e.getSource();
-            int myTabIndex = getTabIndex(tabbedPane, DockableWindow.this);
-            if (tabbedPane.getSelectedIndex() == myTabIndex) {
-                for (DockableWindowTabListener l : tabListeners) {
-                    l.tabSelected(tabbedPane, myTabIndex);
-                }
-            } else {
-                for (DockableWindowTabListener l : tabListeners) {
-                    l.tabDeselected(tabbedPane, myTabIndex);
+            if (e.getSource() instanceof JTabbedPane) {
+                JTabbedPane tabbedPane = (JTabbedPane) e.getSource();
+                int myTabIndex = getTabIndex(tabbedPane, DockableWindow.this);
+                if (tabbedPane.getSelectedIndex() == myTabIndex) {
+                    for (DockableWindowTabListener l: tabListeners) {
+                        l.tabSelected(tabbedPane, myTabIndex);
+                    }
+                } else {
+                    for (DockableWindowTabListener l: tabListeners) {
+                        l.tabDeselected(tabbedPane, myTabIndex);
+                    }
                 }
             }
         }
@@ -57,7 +59,7 @@ public class DockableWindow extends AbstractDockable {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (e.getButton() == MouseEvent.BUTTON1) {
-                    for (DockableWindowTabListener l : tabListeners) {
+                    for (DockableWindowTabListener l: tabListeners) {
                         l.headerClicked();
                     }
                 }
@@ -99,7 +101,7 @@ public class DockableWindow extends AbstractDockable {
     }
 
     public static int getTabIndex(JTabbedPane tabbedPane, DockableWindow window) {
-        int myTabIndex = -2;
+        int myTabIndex = -1;
         for (int i = 0; i < tabbedPane.getTabCount(); i++) {
             if (tabbedPane.getComponentAt(i) == window.getComponent()) {
                 myTabIndex = i;
@@ -110,7 +112,7 @@ public class DockableWindow extends AbstractDockable {
     }
 
     public static void updateHeaders(DockingPort port, ScriptedActionListener actionListener) {
-        for (Object d : port.getDockables()) {
+        for (Object d: port.getDockables()) {
             DockableWindow dockable = (DockableWindow) d;
             boolean inTab = dockable.getComponent().getParent() instanceof JTabbedPane;
             DockableWindowContentPanel contentPanel = dockable.getContentPanel();
@@ -145,7 +147,7 @@ public class DockableWindow extends AbstractDockable {
     }
 
     private static void processTabEvents(DockingPort port) {
-        for (Object d : port.getDockables()) {
+        for (Object d: port.getDockables()) {
             DockableWindow dockable = (DockableWindow) d;
             dockable.processTabEvents();
         }
@@ -156,7 +158,7 @@ public class DockableWindow extends AbstractDockable {
             JTabbedPane tabbedPane = (JTabbedPane) getComponent().getParent();
             if (!inTab) {
                 inTab = true;
-                for (DockableWindowTabListener l : tabListeners) {
+                for (DockableWindowTabListener l: tabListeners) {
                     l.dockedInTab(tabbedPane, getTabIndex(tabbedPane, this));
                 }
             }
@@ -166,7 +168,7 @@ public class DockableWindow extends AbstractDockable {
         } else {
             if (inTab) {
                 inTab = false;
-                for (DockableWindowTabListener l : tabListeners) {
+                for (DockableWindowTabListener l: tabListeners) {
                     l.dockedStandalone();
                 }
             }
