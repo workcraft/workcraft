@@ -1,6 +1,7 @@
 package org.workcraft.plugins.policy;
 
 import java.awt.BasicStroke;
+import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Shape;
 import java.awt.event.KeyEvent;
@@ -14,6 +15,7 @@ import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.plugins.petri.VisualTransition;
+import org.workcraft.plugins.shared.CommonVisualSettings;
 
 @Hotkey(KeyEvent.VK_T)
 @DisplayName ("Transition")
@@ -22,10 +24,16 @@ public class VisualBundledTransition extends VisualTransition {
 
     public VisualBundledTransition(BundledTransition transition) {
         super(transition);
+        removePropertyDeclarationByName(PROPERTY_FILL_COLOR);
     }
 
     public BundledTransition getReferencedTransition() {
         return (BundledTransition) getReferencedComponent();
+    }
+
+    @Override
+    public Color getFillColor() {
+        return CommonVisualSettings.getFillColor();
     }
 
     @Override

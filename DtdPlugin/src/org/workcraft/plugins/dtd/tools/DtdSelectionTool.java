@@ -37,7 +37,7 @@ public class DtdSelectionTool extends SelectionTool {
         WorkspaceEntry we = e.getEditor().getWorkspaceEntry();
         VisualDtd model = (VisualDtd) e.getModel();
         if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() > 1)) {
-            Node node = HitMan.hitTestCurrentLevelFirst(e.getPosition(), model);
+            Node node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
             if (node instanceof VisualSignal) {
                 we.saveMemento();
                 VisualSignal signal = (VisualSignal) node;

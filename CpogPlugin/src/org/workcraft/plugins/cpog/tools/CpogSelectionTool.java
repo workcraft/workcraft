@@ -594,7 +594,7 @@ public class CpogSelectionTool extends SelectionTool {
 
         if (e.getButton() == MouseEvent.BUTTON1 && e.getClickCount() > 1) {
             VisualModel model = e.getEditor().getModel();
-            VisualNode node = (VisualNode) HitMan.hitTestCurrentLevelFirst(e.getPosition(), model);
+            VisualNode node = (VisualNode) HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
             if (node != null) {
                 if (node instanceof VisualVariable) {
                     VisualVariable var = (VisualVariable) node;

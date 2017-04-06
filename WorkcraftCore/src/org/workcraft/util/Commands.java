@@ -14,6 +14,7 @@ import org.workcraft.MenuOrdering.Position;
 import org.workcraft.PluginManager;
 import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.graph.commands.ScriptableCommand;
+import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -118,8 +119,10 @@ public class Commands {
             command.run(we);
         } else {
             String commandName = command.getClass().getSimpleName();
-            throw new RuntimeException("Command '" + commandName + "' is incompatible"
-                    + " with workspace entry '" + we.getWorkspacePath() + "'.");
+            String displayName = we.getModelEntry().getDescriptor().getDisplayName();
+            Path<String> workspacePath = we.getWorkspacePath();
+            throw new RuntimeException("Command '" + commandName + "' is incompatible with "
+                    + displayName + " (workspace entry '" + workspacePath + "').");
         }
     }
 
@@ -128,8 +131,10 @@ public class Commands {
         if (command.isApplicableTo(we)) {
             return command.execute(we);
         } else {
-            throw new RuntimeException("Command '" + commandName + "' is incompatible"
-                    + " with workspace entry '" + we.getWorkspacePath() + "'.");
+            String displayName = we.getModelEntry().getDescriptor().getDisplayName();
+            Path<String> workspacePath = we.getWorkspacePath();
+            throw new RuntimeException("Command '" + commandName + "' is incompatible with "
+                    + displayName + " (workspace entry '" + workspacePath + "').");
         }
     }
 

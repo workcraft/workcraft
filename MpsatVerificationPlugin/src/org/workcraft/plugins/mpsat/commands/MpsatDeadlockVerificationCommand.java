@@ -1,7 +1,7 @@
 package org.workcraft.plugins.mpsat.commands;
 
 import org.workcraft.plugins.mpsat.MpsatParameters;
-import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -14,7 +14,7 @@ public class MpsatDeadlockVerificationCommand extends MpsatAbstractVerificationC
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, StgModel.class);
+        return WorkspaceUtils.isApplicable(we, PetriNetModel.class);
     }
 
     @Override

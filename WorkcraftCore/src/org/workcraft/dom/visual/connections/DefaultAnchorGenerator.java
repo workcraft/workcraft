@@ -13,7 +13,7 @@ public class DefaultAnchorGenerator extends DummyMouseListener {
     public void mouseClicked(GraphEditorMouseEvent e) {
         if (e.getClickCount() == 2) {
             VisualModel model = e.getModel();
-            Node node = HitMan.hitTestCurrentLevelFirst(e.getPosition(), model);
+            Node node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
             if (node instanceof VisualConnection) {
                 VisualConnection connection = (VisualConnection) node;
                 WorkspaceEntry we = e.getEditor().getWorkspaceEntry();

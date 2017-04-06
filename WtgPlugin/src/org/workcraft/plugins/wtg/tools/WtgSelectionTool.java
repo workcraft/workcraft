@@ -50,7 +50,7 @@ public class WtgSelectionTool extends DtdSelectionTool {
         WorkspaceEntry we = e.getEditor().getWorkspaceEntry();
         VisualWtg model = (VisualWtg) e.getModel();
         if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() > 1)) {
-            Node node = HitMan.hitTestCurrentLevelFirst(e.getPosition(), model);
+            Node node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
             if (node instanceof VisualState) {
                 we.saveMemento();
                 VisualState state = (VisualState) node;

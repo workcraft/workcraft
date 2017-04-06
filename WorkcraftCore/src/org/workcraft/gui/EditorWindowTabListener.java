@@ -6,7 +6,9 @@ import org.workcraft.Framework;
 import org.workcraft.gui.graph.GraphEditorPanel;
 
 public class EditorWindowTabListener implements DockableWindowTabListener {
+
     private final GraphEditorPanel editor;
+
     public EditorWindowTabListener(GraphEditorPanel editor) {
         this.editor = editor;
     }

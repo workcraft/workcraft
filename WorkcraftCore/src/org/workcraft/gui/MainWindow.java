@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.DisplayMode;
 import java.awt.Font;
 import java.awt.Insets;
-import java.awt.Rectangle;
 import java.awt.Toolkit;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -201,14 +200,11 @@ public class MainWindow extends JFrame {
 
     private DockableWindow createDockableWindow(JComponent component, String title, Dockable neighbour, int options,
             String relativeRegion, String persistentID) {
-
         int id = getNextDockableID();
         DockableWindowContentPanel panel = new DockableWindowContentPanel(this, id, title, component, options);
-
         DockableWindow dockable = new DockableWindow(this, panel, persistentID);
         DockingManager.registerDockable(dockable);
         idToDockableWindowMap.put(id, dockable);
-
         if (neighbour != null) {
             DockingManager.dock(dockable, neighbour, relativeRegion);
         } else {
@@ -229,17 +225,19 @@ public class MainWindow extends JFrame {
         final GraphEditorPanel editor = new GraphEditorPanel(we);
         String title = getTitle(we);
         final DockableWindow editorWindow;
+        int options = DockableWindowContentPanel.CLOSE_BUTTON;
+        // FIXME: Maximised tabs confuse EditorWindowTabListener that sets editorInFocus,
+        //        therefore the maximise button is temporary removed from the dockable windows.
+        // options |= DockableWindowContentPanel.MAXIMIZE_BUTTON;
         if (editorWindows.isEmpty()) {
-            editorWindow = createDockableWindow(editor, title, documentPlaceholder,
-                    DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON,
+            editorWindow = createDockableWindow(editor, title, documentPlaceholder, options,
                     DockingConstants.CENTER_REGION, "Document" + we.getWorkspacePath());
             DockingManager.close(documentPlaceholder);
             DockingManager.unregisterDockable(documentPlaceholder);
             utilityWindows.remove(documentPlaceholder);
         } else {
             DockableWindow firstEditorWindow = editorWindows.values().iterator().next().iterator().next();
-            editorWindow = createDockableWindow(editor, title, firstEditorWindow,
-                    DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON,
+            editorWindow = createDockableWindow(editor, title, firstEditorWindow, options,
                     DockingConstants.CENTER_REGION, "Document" + we.getWorkspacePath());
         }
         editorWindow.addTabListener(new EditorWindowTabListener(editor));
@@ -257,19 +255,6 @@ public class MainWindow extends JFrame {
         }
         mainMenu.registerUtilityWindow(dockableWindow);
         utilityWindows.add(dockableWindow);
-    }
-
-    public void setWindowSize(boolean maximised, int width, int height) {
-        if (maximised) {
-            DisplayMode mode = getDisplayMode();
-            Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(this.getGraphicsConfiguration());
-            this.setMaximizedBounds(new Rectangle(mode.getWidth() - insets.right - insets.left,
-                    mode.getHeight() - insets.top - insets.bottom));
-            this.setExtendedState(this.getExtendedState() | JFrame.MAXIMIZED_BOTH);
-            this.setSize(mode.getWidth() - insets.right - insets.left, mode.getHeight() - insets.top - insets.bottom);
-        } else {
-            this.setExtendedState(JFrame.NORMAL);
-        }
     }
 
     public void startup() {
@@ -360,7 +345,6 @@ public class MainWindow extends JFrame {
 
     public void toggleDockableWindowMaximized(int id) {
         DockableWindow dockableWindow = idToDockableWindowMap.get(id);
-
         if (dockableWindow != null) {
             DockingManager.toggleMaximized(dockableWindow);
             dockableWindow.setMaximized(!dockableWindow.isMaximized());
@@ -385,7 +369,7 @@ public class MainWindow extends JFrame {
         int id = dockableWindow.getID();
         GraphEditorPanel editor = getGraphEditorPanel(dockableWindow);
         if (editor != null) {
-            // handle editor window close
+            // Handle editor window close
             WorkspaceEntry we = editor.getWorkspaceEntry();
 
             if (we.isChanged()) {
@@ -589,10 +573,10 @@ public class MainWindow extends JFrame {
         String heightStr = framework.getConfigCoreVar(CONFIG_GUI_MAIN_HEIGHT);
 
         boolean maximised = (maximisedStr == null) ? true : Boolean.parseBoolean(maximisedStr);
-        this.setExtendedState(maximised ? JFrame.MAXIMIZED_BOTH : JFrame.NORMAL);
+        setExtendedState(maximised ? JFrame.MAXIMIZED_BOTH : JFrame.NORMAL);
 
         DisplayMode mode = getDisplayMode();
-        Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(this.getGraphicsConfiguration());
+        Insets insets = Toolkit.getDefaultToolkit().getScreenInsets(getGraphicsConfiguration());
         int width = mode.getWidth() - insets.right - insets.left;
         int height = mode.getHeight() - insets.top - insets.bottom;
         if ((widthStr != null) && (heightStr != null)) {
@@ -605,7 +589,7 @@ public class MainWindow extends JFrame {
                 height = MIN_HEIGHT;
             }
         }
-        this.setSize(width, height);
+        setSize(width, height);
     }
 
     public DisplayMode getDisplayMode() {
@@ -652,7 +636,7 @@ public class MainWindow extends JFrame {
             recentFiles.remove(fileName);
             // Make sure there is not too many entries
             int recentCount = CommonEditorSettings.getRecentCount();
-            for (String entry : new ArrayList<String>(recentFiles)) {
+            for (String entry: new ArrayList<String>(recentFiles)) {
                 if (recentFiles.size() < recentCount) {
                     break;
                 }
@@ -696,7 +680,7 @@ public class MainWindow extends JFrame {
                 VisualModelDescriptor visualModelDescriptor = info.getVisualModelDescriptor();
                 if (visualModelDescriptor == null) {
                     throw new VisualModelInstantiationException(
-                            "visual model is not defined for '" + info.getDisplayName() + "'.");
+                            "Visual model is not defined for '" + info.getDisplayName() + "'.");
                 }
                 VisualModel visualModel = visualModelDescriptor.create(mathModel);
                 ModelEntry me = new ModelEntry(info, visualModel);
@@ -757,7 +741,7 @@ public class MainWindow extends JFrame {
             fc.setFileFilter(FileFilters.DOCUMENT_FILES);
         }
         if (importers != null) {
-            for (Importer importer : importers) {
+            for (Importer importer: importers) {
                 fc.addChoosableFileFilter(new ImporterFileFilter(importer));
             }
         }
@@ -827,13 +811,13 @@ public class MainWindow extends JFrame {
         JFileChooser fc = createOpenDialog("Open work file(s)", true, true, null);
         if (fc.showDialog(this, "Open") == JFileChooser.APPROVE_OPTION) {
             final HashSet<WorkspaceEntry> newWorkspaceEntries = new HashSet<>();
-            for (File f : fc.getSelectedFiles()) {
-                String path = f.getPath();
+            for (File file: fc.getSelectedFiles()) {
+                String path = file.getPath();
                 if (!path.endsWith(FileFilters.DOCUMENT_EXTENSION)) {
                     path += FileFilters.DOCUMENT_EXTENSION;
-                    f = new File(path);
+                    file = new File(path);
                 }
-                WorkspaceEntry we = openWork(f);
+                WorkspaceEntry we = openWork(file);
                 if (we != null) {
                     newWorkspaceEntries.add(we);
                 }
@@ -843,8 +827,8 @@ public class MainWindow extends JFrame {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    for (WorkspaceEntry we : newWorkspaceEntries) {
-                        for (DockableWindow window : editorWindows.get(we)) {
+                    for (WorkspaceEntry we: newWorkspaceEntries) {
+                        for (DockableWindow window: editorWindows.get(we)) {
                             GraphEditor editor = getGraphEditorPanel(window);
                             if (editor != null) {
                                 editor.zoomFit();
@@ -883,13 +867,13 @@ public class MainWindow extends JFrame {
     public void mergeWork() throws OperationCancelledException {
         JFileChooser fc = createOpenDialog("Merge work file(s)", true, true, null);
         if (fc.showDialog(this, "Merge") == JFileChooser.APPROVE_OPTION) {
-            for (File f : fc.getSelectedFiles()) {
-                String path = f.getPath();
+            for (File file: fc.getSelectedFiles()) {
+                String path = file.getPath();
                 if (!path.endsWith(FileFilters.DOCUMENT_EXTENSION)) {
                     path += FileFilters.DOCUMENT_EXTENSION;
-                    f = new File(path);
+                    file = new File(path);
                 }
-                mergeWork(f);
+                mergeWork(file);
             }
         } else {
             throw new OperationCancelledException("Merge operation cancelled by user.");
@@ -999,13 +983,13 @@ public class MainWindow extends JFrame {
         Collection<PluginInfo<? extends Importer>> importerInfo = pm.getPlugins(Importer.class);
         Importer[] importers = new Importer[importerInfo.size()];
         int cnt = 0;
-        for (PluginInfo<? extends Importer> info : importerInfo) {
+        for (PluginInfo<? extends Importer> info: importerInfo) {
             importers[cnt++] = info.getSingleton();
         }
 
         JFileChooser fc = createOpenDialog("Import model(s)", true, false, importers);
         if (fc.showDialog(this, "Open") == JFileChooser.APPROVE_OPTION) {
-            for (File file : fc.getSelectedFiles()) {
+            for (File file: fc.getSelectedFiles()) {
                 importFrom(file, importers);
             }
         }
@@ -1014,7 +998,7 @@ public class MainWindow extends JFrame {
     public void importFrom(File file, Importer[] importers) {
         final Framework framework = Framework.getInstance();
         if (checkFileMessageDialog(file, null)) {
-            for (Importer importer : importers) {
+            for (Importer importer: importers) {
                 if (importer.accept(file)) {
                     try {
                         ModelEntry me = Import.importFromFile(importer, file);
@@ -1109,11 +1093,11 @@ public class MainWindow extends JFrame {
     }
 
     public void refreshWorkspaceEntryTitle(WorkspaceEntry we, boolean updateHeaders) {
-        for (DockableWindow w : editorWindows.get(we)) {
+        for (DockableWindow window: editorWindows.get(we)) {
             // final GraphEditorPanel editor = getCurrentEditor();
             // String title = getTitle(we, editor.getModel());
             String title = getTitle(we);
-            w.setTitle(title);
+            window.setTitle(title);
         }
         if (updateHeaders) {
             DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
@@ -1121,7 +1105,7 @@ public class MainWindow extends JFrame {
     }
 
     public void refreshWorkspaceEntryTitles() {
-        for (WorkspaceEntry we : editorWindows.keySet()) {
+        for (WorkspaceEntry we: editorWindows.keySet()) {
             refreshWorkspaceEntryTitle(we, false);
         }
         DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
@@ -1136,7 +1120,7 @@ public class MainWindow extends JFrame {
 
     public List<GraphEditorPanel> getEditors(WorkspaceEntry we) {
         ArrayList<GraphEditorPanel> result = new ArrayList<>();
-        for (DockableWindow window : editorWindows.get(we)) {
+        for (DockableWindow window: editorWindows.get(we)) {
             result.add(getGraphEditorPanel(window));
         }
         return result;
@@ -1181,11 +1165,11 @@ public class MainWindow extends JFrame {
     }
 
     public void closeActiveEditor() throws OperationCancelledException {
-        for (WorkspaceEntry k : editorWindows.keySet()) {
-            for (DockableWindow w : editorWindows.get(k)) {
-                DockableWindowContentPanel contentPanel = w.getContentPanel();
+        for (WorkspaceEntry we: editorWindows.keySet()) {
+            for (DockableWindow window: editorWindows.get(we)) {
+                DockableWindowContentPanel contentPanel = window.getContentPanel();
                 if ((contentPanel != null) && (contentPanel.getContent() == editorInFocus)) {
-                    closeDockableWindow(w);
+                    closeDockableWindow(window);
                     return;
                 }
             }
@@ -1194,27 +1178,24 @@ public class MainWindow extends JFrame {
 
     public void closeEditorWindows() throws OperationCancelledException {
         LinkedHashSet<DockableWindow> windowsToClose = new LinkedHashSet<>();
-
-        for (WorkspaceEntry k : editorWindows.keySet()) {
-            for (DockableWindow w : editorWindows.get(k)) {
-                windowsToClose.add(w);
+        for (WorkspaceEntry we: editorWindows.keySet()) {
+            for (DockableWindow window: editorWindows.get(we)) {
+                windowsToClose.add(window);
             }
         }
-
-        for (DockableWindow w : windowsToClose) {
-            if (DockingManager.isMaximized(w)) {
-                toggleDockableWindowMaximized(w.getID());
+        for (DockableWindow window: windowsToClose) {
+            if (DockingManager.isMaximized(window)) {
+                toggleDockableWindowMaximized(window.getID());
             }
         }
-
-        for (DockableWindow w : windowsToClose) {
-            closeDockableWindow(w);
+        for (DockableWindow window: windowsToClose) {
+            closeDockableWindow(window);
         }
     }
 
     public void closeEditors(WorkspaceEntry openFile) throws OperationCancelledException {
-        for (DockableWindow w : new ArrayList<DockableWindow>(editorWindows.get(openFile))) {
-            closeDockableWindow(w);
+        for (DockableWindow window: new ArrayList<DockableWindow>(editorWindows.get(openFile))) {
+            closeDockableWindow(window);
         }
     }
 
