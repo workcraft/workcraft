@@ -390,6 +390,10 @@ public abstract class VisualComponent extends VisualTransformableNode implements
         return new Rectangle2D.Double(-size / 2, -size / 2, size, size);
     }
 
+    public Rectangle2D getInternalBoundingBox() {
+        return transformToParentSpace(getInternalBoundingBoxInLocalSpace());
+    }
+
     @Override
     public Rectangle2D getBoundingBoxInLocalSpace() {
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();

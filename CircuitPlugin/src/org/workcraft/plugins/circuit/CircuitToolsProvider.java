@@ -12,6 +12,7 @@ import org.workcraft.plugins.circuit.tools.ContactGeneratorTool;
 import org.workcraft.plugins.circuit.tools.FunctionComponentGeneratorTool;
 import org.workcraft.plugins.circuit.tools.InitialisationAnalyserTool;
 import org.workcraft.plugins.circuit.tools.LoopAnalyserTool;
+import org.workcraft.plugins.circuit.tools.RoutingAnalyserTool;
 
 public class CircuitToolsProvider implements CustomToolsProvider {
 
@@ -27,6 +28,7 @@ public class CircuitToolsProvider implements CustomToolsProvider {
         result.add(new CircuitSimulationTool());
         result.add(new InitialisationAnalyserTool());
         result.add(new LoopAnalyserTool());
+        result.add(new RoutingAnalyserTool());
 
         return result;
     }

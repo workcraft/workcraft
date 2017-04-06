@@ -1,5 +1,6 @@
 package org.workcraft.plugins.circuit;
 
+import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.io.File;
 import java.util.Collection;
@@ -26,13 +27,19 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.ToolboxPanel;
 import org.workcraft.gui.graph.GraphEditorPanel;
+import org.workcraft.gui.graph.Viewport;
 import org.workcraft.gui.graph.commands.AbstractLayoutCommand;
+import org.workcraft.gui.graph.tools.Decorator;
+import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutCommand;
+import org.workcraft.plugins.circuit.routing.RouterClient;
+import org.workcraft.plugins.circuit.tools.RoutingAnalyserTool;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
@@ -43,21 +50,24 @@ import org.workcraft.workspace.WorkspaceEntry;
 @CustomTools(CircuitToolsProvider.class)
 public class VisualCircuit extends AbstractVisualModel {
 
-    private final Circuit circuit;
+    RouterClient routingGrid = new RouterClient();
 
     public VisualCircuit(Circuit model, VisualGroup root) {
         super(model, root);
-        circuit = model;
     }
 
     public VisualCircuit(Circuit model) throws VisualModelInstantiationException {
         super(model);
-        circuit = model;
         try {
             createDefaultFlatStructure();
         } catch (NodeCreationException e) {
             throw new VisualModelInstantiationException(e);
         }
+    }
+
+    @Override
+    public Circuit getMathModel() {
+        return (Circuit) super.getMathModel();
     }
 
     @Override
@@ -71,7 +81,7 @@ public class VisualCircuit extends AbstractVisualModel {
         }
 
         if (second instanceof VisualComponent) {
-            for (Connection c: this.getConnections(second)) {
+            for (Connection c: getConnections(second)) {
                 if (c.getSecond() == second) {
                     throw new InvalidConnectionException("Only one connection is allowed as a driver.");
                 }
@@ -99,7 +109,7 @@ public class VisualCircuit extends AbstractVisualModel {
         }
 
         HashSet<Contact> drivenSet = new HashSet<>();
-        Circuit circuit = (Circuit) this.getMathModel();
+        Circuit circuit = getMathModel();
         Contact driver = null;
         if (first instanceof VisualConnection) {
             VisualConnection firstConnection = (VisualConnection) first;
@@ -194,7 +204,7 @@ public class VisualCircuit extends AbstractVisualModel {
             if (mConnection == null) {
                 MathNode mComponent1 = vComponent1.getReferencedComponent();
                 MathNode mComponent2 = vComponent2.getReferencedComponent();
-                mConnection = circuit.connect(mComponent1, mComponent2);
+                mConnection = getMathModel().connect(mComponent1, mComponent2);
             }
             vConnection = new VisualCircuitConnection(mConnection, vComponent1, vComponent2);
             vConnection.setArrowLength(0.0);
@@ -248,7 +258,7 @@ public class VisualCircuit extends AbstractVisualModel {
             add(vc);
         }
         if (name != null) {
-            circuit.setName(vc.getReferencedComponent(), name);
+            getMathModel().setName(vc.getReferencedComponent(), name);
         }
         vc.setPosition(new Point2D.Double(0.0, 0.0));
         return vc;
@@ -348,6 +358,21 @@ public class VisualCircuit extends AbstractVisualModel {
                 env.setBase(base);
                 add(env);
             }
+        }
+    }
+
+    @Override
+    public void draw(Graphics2D g, Decorator decorator) {
+        super.draw(g, decorator);
+        Framework framework = Framework.getInstance();
+        MainWindow mainWindow = framework.getMainWindow();
+        ToolboxPanel toolbox = mainWindow.getCurrentToolbox();
+        GraphEditorTool tool = toolbox.getSelectedTool();
+        if (tool instanceof RoutingAnalyserTool) {
+            routingGrid.registerObstacles(this);
+            GraphEditorPanel editor = mainWindow.getCurrentEditor();
+            Viewport viewport = editor.getViewport();
+            routingGrid.draw(g, viewport);
         }
     }
 
