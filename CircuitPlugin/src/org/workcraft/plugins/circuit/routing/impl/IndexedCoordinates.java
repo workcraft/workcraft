@@ -129,7 +129,6 @@ public class IndexedCoordinates {
      *            the number of times to add this coordinate
      */
     public void addCoordinate(Coordinate coordinate, int times) {
-
         for (int i = 0; i < times; i++) {
             boolean doHigher = coordinate.getOrientation() == CoordinateOrientation.ORIENT_HIGHER
                     || coordinate.getOrientation() == CoordinateOrientation.ORIENT_BOTH;

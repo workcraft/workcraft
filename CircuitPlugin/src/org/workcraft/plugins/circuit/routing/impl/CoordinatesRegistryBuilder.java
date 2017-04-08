@@ -12,6 +12,16 @@ import org.workcraft.plugins.circuit.routing.basic.RouterPort;
  */
 public class CoordinatesRegistryBuilder {
 
+    public CoordinatesRegistry buildPhase1Coordinates(RouterTask routerTask) {
+        CoordinatesRegistry baseRegistry = new CoordinatesRegistry();
+        registerRectangles(baseRegistry, routerTask);
+        registerBoundaries(baseRegistry, routerTask);
+        registerPorts(baseRegistry, routerTask);
+        registerObstacleCoordinates(baseRegistry, routerTask);
+        printStatistics("Phase 1 statisitics:", baseRegistry, routerTask);
+        return baseRegistry;
+    }
+
     public CoordinatesRegistry buildPhase2Coordinates(RouterTask routerTask,
             CoordinatesRegistry otherRegistry, UsageCounter usageCounter) {
 
@@ -27,29 +37,11 @@ public class CoordinatesRegistryBuilder {
             Coordinate yCoord = otherRegistry.getYCoords().getCoordinateByIndex(y);
             baseRegistry.getYCoords().addCoordinate(yCoord, yUsage);
         }
-
         registerRectangles(baseRegistry, routerTask);
         registerBoundaries(baseRegistry, routerTask);
         registerPorts(baseRegistry, routerTask);
         registerObstacleCoordinates(baseRegistry, routerTask);
-        System.out.println("cells: " + baseRegistry.getXCoords().size() * baseRegistry.getYCoords().size() + " ("
-                + baseRegistry.getXCoords().size() + "x" + baseRegistry.getYCoords().size() + ")" + " rectangles:"
-                + routerTask.getRectangles().size() + " connections:" + routerTask.getConnections().size());
-
-        return baseRegistry;
-    }
-
-    public CoordinatesRegistry buildPhase1Coordinates(RouterTask routerTask) {
-        CoordinatesRegistry baseRegistry = new CoordinatesRegistry();
-        registerRectangles(baseRegistry, routerTask);
-        registerBoundaries(baseRegistry, routerTask);
-        registerPorts(baseRegistry, routerTask);
-        registerObstacleCoordinates(baseRegistry, routerTask);
-
-        System.out.println("cells: " + baseRegistry.getXCoords().size() * baseRegistry.getYCoords().size() + " ("
-                + baseRegistry.getXCoords().size() + "x" + baseRegistry.getYCoords().size() + ")" + " rectangles:"
-                + routerTask.getRectangles().size() + " connections:" + routerTask.getConnections().size());
-
+        printStatistics("Phase 2 statisitics:", baseRegistry, routerTask);
         return baseRegistry;
     }
 
@@ -122,6 +114,15 @@ public class CoordinatesRegistryBuilder {
         baseRegistry.getXCoords().addPublic(CoordinateOrientation.ORIENT_HIGHER, maxx);
         baseRegistry.getYCoords().addPublic(CoordinateOrientation.ORIENT_LOWER, miny);
         baseRegistry.getYCoords().addPublic(CoordinateOrientation.ORIENT_HIGHER, maxy);
+    }
+
+    private void printStatistics(String title, CoordinatesRegistry baseRegistry, RouterTask routerTask) {
+        System.out.println(title);
+        int xSize = baseRegistry.getXCoords().size();
+        int ySize = baseRegistry.getYCoords().size();
+        System.out.println("  Cells: " + xSize * ySize + " (" + xSize + "x" + ySize + ")");
+        System.out.println("  Rectangles: " + routerTask.getRectangles().size());
+        System.out.println("  Connections: " + routerTask.getConnections().size());
     }
 
 }

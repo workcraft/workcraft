@@ -30,9 +30,7 @@ public class RouterCellsBuilder {
     }
 
     private void markBlocked(CoordinatesRegistry coordinatesRegistry, RouterCells routerCells, RouterTask routerTask) {
-
         for (RouterPort port : routerTask.getPorts()) {
-
             Point location = port.getLocation();
             IndexedPoint ip = coordinatesRegistry.getIndexedCoordinate(port.getLocation());
             IndexedInterval xInterval = coordinatesRegistry.getXCoords().getIndexedIntervalExclusive(
@@ -52,7 +50,6 @@ public class RouterCellsBuilder {
         }
 
         for (Line segment : routerTask.getSegments()) {
-
             markBlockedSegment(coordinatesRegistry, routerCells, segment, null);
         }
     }

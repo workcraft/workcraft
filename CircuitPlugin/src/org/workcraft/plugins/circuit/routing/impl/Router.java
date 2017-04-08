@@ -9,13 +9,10 @@ public class Router {
 
     private final CoordinatesRegistryBuilder registryBuilder = new CoordinatesRegistryBuilder();
     private final RouterCellsBuilder cellsBuilder = new RouterCellsBuilder();
-
-    private CoordinatesRegistry coordinatesPhase2;
-
-
     private final AbstractRoutingAlgorithm algorithm = new DijkstraRouter();
     private RouterTask routerTask;
     private List<Route> routesFound;
+    private CoordinatesRegistry coordinatesPhase2;
 
     public void setRouterTask(RouterTask routerTask) {
         if (routerTask == null || routerTask.equals(this.routerTask)) {
@@ -34,7 +31,6 @@ public class Router {
     }
 
     public void routeConnections() {
-
         long start = System.currentTimeMillis();
         // 1st phase
         CoordinatesRegistry coordinatesPhase1 = registryBuilder.buildPhase1Coordinates(routerTask);
@@ -50,8 +46,7 @@ public class Router {
         routesFound = algorithm.route(routerTask, coordinatesPhase2, true);
 
         long stop = System.currentTimeMillis();
-        System.out.println("solved ms:" + (stop - start));
-
+        System.out.println("Routing completed in " + (stop - start) + "ms");
     }
 
     public List<Route> getRoutingResult() {
