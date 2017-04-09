@@ -175,7 +175,7 @@ public class ConnectionHelper {
             }
             ControlPoint cur = polyline.getControlPoint(i);
             Point2D curPos = cur.getPosition();
-            if (Math.abs(clacGradient(predPos, curPos, succPos)) < gradientThreshold) {
+            if (Math.abs(calcGradient(predPos, curPos, succPos)) < gradientThreshold) {
                 polyline.remove(cur);
             } else {
                 i++;
@@ -220,7 +220,7 @@ public class ConnectionHelper {
         }
     }
 
-    private static double clacGradient(Point2D p1, Point2D p2, Point2D p3) {
+    public static double calcGradient(Point2D p1, Point2D p2, Point2D p3) {
         double p1x = p1.getX();
         double p1y = p1.getY();
         double p2x = p2.getX();

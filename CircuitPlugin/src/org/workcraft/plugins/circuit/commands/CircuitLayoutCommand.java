@@ -3,26 +3,31 @@ package org.workcraft.plugins.circuit.commands;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
 import org.workcraft.dom.Connection;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.ConnectionGraphic;
+import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.graph.commands.AbstractLayoutCommand;
 import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitComponent;
 import org.workcraft.plugins.circuit.VisualContact;
+import org.workcraft.plugins.circuit.VisualJoint;
 import org.workcraft.plugins.circuit.routing.RouterClient;
 import org.workcraft.plugins.circuit.routing.basic.Point;
 import org.workcraft.plugins.circuit.routing.impl.Route;
@@ -230,31 +235,102 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
                 ConnectionHelper.addControlPoints((VisualConnection) connection, locationsInRootSpace);
             }
         }
-        mergeConnections(circuit);
+        while (mergeConnections(circuit)) { }
     }
 
-    private void mergeConnections(VisualCircuit circuit) {
-        boolean done;
-        do {
-            HashMap<Node, HashSet<VisualConnection>> srcToConnetions = new HashMap<>();
-            for (VisualConnection connection: Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualConnection.class)) {
-                Node src = connection.getFirst();
-                HashSet<VisualConnection> connections = srcToConnetions.get(src);
-                if (connections == null) {
-                    connections = new HashSet<>();
-                    srcToConnetions.put(src, connections);
+    private boolean mergeConnections(VisualCircuit circuit) {
+        Collection<VisualConnection> collections = Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualConnection.class);
+        for (VisualConnection c1: collections) {
+            for (VisualConnection c2: collections) {
+                if (mergeConnections(circuit, c1, c2)) {
+                    return true;
                 }
-                connections.add(connection);
             }
-            done = true;
-            for (HashSet<VisualConnection> connections: srcToConnetions.values()) {
-                done &= mergeConnections(circuit, connections);
-            }
-        } while (!done);
+        }
+        return false;
     }
 
-    private boolean mergeConnections(VisualCircuit circuit, HashSet<VisualConnection> connections) {
-        return true;
+    private boolean mergeConnections(VisualCircuit circuit, VisualConnection c1, VisualConnection c2) {
+        if ((c1 != c2) && (c1.getFirst() == c2.getFirst())) {
+            VisualTransformableNode src = (VisualTransformableNode) c1.getFirst();
+            Point2D p0 = src.getRootSpacePosition();
+            Point2D p1 = getRootSpaceFirstSegmentEnd(c1);
+            Point2D p2 = getRootSpaceFirstSegmentEnd(c2);
+            double gradient = ConnectionHelper.calcGradient(p0, p1, p2);
+            boolean sameSide = ((p2.getX() > p0.getX()) == (p1.getX() > p0.getX()))
+                    && ((p2.getY() > p0.getY()) == (p1.getY() > p0.getY()));
+            if ((Math.abs(gradient) < 0.01) && sameSide) {
+                Point2D p = p0.distanceSq(p1) < p0.distanceSq(p2) ? p1 : p2;
+                if (c1.getSecond() instanceof VisualJoint) {
+                    VisualJoint joint = (VisualJoint) c1.getSecond();
+                    if (p.distanceSq(joint.getRootSpacePosition()) < 0.01) {
+                        appendConnection(circuit, joint, c2);
+                    }
+                } else if (c2.getSecond() instanceof VisualJoint) {
+                    VisualJoint joint = (VisualJoint) c2.getSecond();
+                    if (p.distanceSq(joint.getRootSpacePosition()) < 0.01) {
+                        appendConnection(circuit, joint, c1);
+                    }
+                } else {
+                    mergeCommonConnectionSegment(circuit, c1, c2, p);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void appendConnection(VisualCircuit circuit, VisualJoint joint, VisualConnection connection) {
+        Point2D p = joint.getRootSpacePosition();
+        LinkedList<Point2D> suffixLocationsInRootSpace = ConnectionHelper.getSuffixControlPoints(connection, p);
+        circuit.remove(connection);
+        try {
+            VisualConnection succConnection = circuit.connect(joint, connection.getSecond());
+            ConnectionHelper.addControlPoints(succConnection, suffixLocationsInRootSpace);
+            succConnection.copyStyle(connection);
+        } catch (InvalidConnectionException e) {
+        }
+    }
+
+    private void mergeCommonConnectionSegment(VisualCircuit circuit, VisualConnection c1, VisualConnection c2, Point2D p) {
+        LinkedList<Point2D> commonLocationsInRootSpace = ConnectionHelper.getPrefixControlPoints(c1, p);
+        LinkedList<Point2D> c1LocationsInRootSpace = ConnectionHelper.getSuffixControlPoints(c1, p);
+        LinkedList<Point2D> c2LocationsInRootSpace = ConnectionHelper.getSuffixControlPoints(c2, p);
+
+        Container container = Hierarchy.getNearestContainer(c1, c2);
+        VisualJoint joint = circuit.createJoint(container);
+        joint.setPosition(p);
+        circuit.remove(c1);
+        circuit.remove(c2);
+
+        try {
+            VisualConnection commonConnection = circuit.connect(c1.getFirst(), joint);
+            commonConnection.mixStyle(c1, c2);
+            ConnectionHelper.addControlPoints(commonConnection, commonLocationsInRootSpace);
+
+            VisualConnection succ1Connection = circuit.connect(joint, c1.getSecond());
+            ConnectionHelper.addControlPoints(succ1Connection, c1LocationsInRootSpace);
+            succ1Connection.copyStyle(c1);
+
+            VisualConnection succ2Connection = circuit.connect(joint, c2.getSecond());
+            ConnectionHelper.addControlPoints(succ2Connection, c2LocationsInRootSpace);
+            succ2Connection.copyStyle(c2);
+        } catch (InvalidConnectionException e) {
+        }
+    }
+
+    private Point2D getRootSpaceFirstSegmentEnd(VisualConnection connection) {
+        VisualTransformableNode dst = (VisualTransformableNode) connection.getSecond();
+        Point2D result = dst.getRootSpacePosition();
+        ConnectionGraphic graphic = connection.getGraphic();
+        if (graphic instanceof Polyline) {
+            Polyline polyline = (Polyline) graphic;
+            if (polyline.getControlPointCount() > 0) {
+                ControlPoint cp = polyline.getFirstControlPoint();
+                result = cp.getRootSpacePosition();
+            }
+        }
+        return result;
     }
 
 }
