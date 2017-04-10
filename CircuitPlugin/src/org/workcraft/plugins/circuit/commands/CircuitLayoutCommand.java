@@ -17,7 +17,6 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.ConnectionGraphic;
-import org.workcraft.dom.visual.connections.ControlPoint;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
@@ -239,9 +238,15 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
     }
 
     private boolean mergeConnections(VisualCircuit circuit) {
-        Collection<VisualConnection> collections = Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualConnection.class);
-        for (VisualConnection c1: collections) {
-            for (VisualConnection c2: collections) {
+        Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualConnection.class);
+        for (VisualConnection connection: connections) {
+            ConnectionGraphic grapic = connection.getGraphic();
+            if (grapic instanceof Polyline) {
+                ConnectionHelper.filterControlPoints((Polyline) grapic, 0.01, 0.01);
+            }
+        }
+        for (VisualConnection c1: connections) {
+            for (VisualConnection c2: connections) {
                 if (mergeConnections(circuit, c1, c2)) {
                     return true;
                 }
@@ -254,30 +259,61 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
         if ((c1 != c2) && (c1.getFirst() == c2.getFirst())) {
             VisualTransformableNode src = (VisualTransformableNode) c1.getFirst();
             Point2D p0 = src.getRootSpacePosition();
-            Point2D p1 = getRootSpaceFirstSegmentEnd(c1);
-            Point2D p2 = getRootSpaceFirstSegmentEnd(c2);
-            double gradient = ConnectionHelper.calcGradient(p0, p1, p2);
-            boolean sameSide = ((p2.getX() > p0.getX()) == (p1.getX() > p0.getX()))
-                    && ((p2.getY() > p0.getY()) == (p1.getY() > p0.getY()));
-            if ((Math.abs(gradient) < 0.01) && sameSide) {
-                Point2D p = p0.distanceSq(p1) < p0.distanceSq(p2) ? p1 : p2;
+            Point2D p = getLastCommonPoint(c1, c2);
+            if ((p != null) && (p0.distanceSq(p) > 0.01)) {
+                boolean processed = false;
                 if (c1.getSecond() instanceof VisualJoint) {
                     VisualJoint joint = (VisualJoint) c1.getSecond();
                     if (p.distanceSq(joint.getRootSpacePosition()) < 0.01) {
                         appendConnection(circuit, joint, c2);
+                        processed = true;
                     }
                 } else if (c2.getSecond() instanceof VisualJoint) {
                     VisualJoint joint = (VisualJoint) c2.getSecond();
                     if (p.distanceSq(joint.getRootSpacePosition()) < 0.01) {
                         appendConnection(circuit, joint, c1);
+                        processed = true;
                     }
-                } else {
+                }
+                if (!processed) {
                     mergeCommonConnectionSegment(circuit, c1, c2, p);
                 }
                 return true;
             }
         }
         return false;
+    }
+
+    private Point2D getLastCommonPoint(VisualConnection c1, VisualConnection c2) {
+        if (c1.getFirst() != c2.getFirst()) {
+            return null;
+        }
+        Point2D pos = ((VisualTransformableNode) c1.getFirst()).getRootSpacePosition();
+        ConnectionGraphic g1 = c1.getGraphic();
+        ConnectionGraphic g2 = c2.getGraphic();
+        if ((g1 instanceof Polyline) && (g2 instanceof Polyline)) {
+            Polyline p1 = (Polyline) g1;
+            Polyline p2 = (Polyline) g2;
+            int count = Math.min(p1.getControlPointCount(), p2.getControlPointCount());
+            for (int i = 0; i <= count; i++) {
+                Point2D pos1 = (i < p1.getControlPointCount()) ? p1.getControlPoint(i).getRootSpacePosition()
+                        : ((VisualTransformableNode) c1.getSecond()).getRootSpacePosition();
+                Point2D pos2 = (i < p2.getControlPointCount()) ? p2.getControlPoint(i).getRootSpacePosition()
+                        : ((VisualTransformableNode) c2.getSecond()).getRootSpacePosition();
+                if (pos1.distanceSq(pos2) < 0.01) {
+                    pos = pos1;
+                } else {
+                    double gradient = ConnectionHelper.calcGradient(pos, pos1, pos2);
+                    boolean sameSide = ((pos2.getX() > pos.getX()) == (pos1.getX() > pos.getX()))
+                            && ((pos2.getY() > pos.getY()) == (pos1.getY() > pos.getY()));
+                    if ((Math.abs(gradient) < 0.01) && sameSide) {
+                        pos = (pos.distanceSq(pos1) < pos.distanceSq(pos2)) ? pos1 : pos2;
+                    }
+                    break;
+                }
+            }
+        }
+        return pos;
     }
 
     private void appendConnection(VisualCircuit circuit, VisualJoint joint, VisualConnection connection) {
@@ -317,20 +353,6 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
             succ2Connection.copyStyle(c2);
         } catch (InvalidConnectionException e) {
         }
-    }
-
-    private Point2D getRootSpaceFirstSegmentEnd(VisualConnection connection) {
-        VisualTransformableNode dst = (VisualTransformableNode) connection.getSecond();
-        Point2D result = dst.getRootSpacePosition();
-        ConnectionGraphic graphic = connection.getGraphic();
-        if (graphic instanceof Polyline) {
-            Polyline polyline = (Polyline) graphic;
-            if (polyline.getControlPointCount() > 0) {
-                ControlPoint cp = polyline.getFirstControlPoint();
-                result = cp.getRootSpacePosition();
-            }
-        }
-        return result;
     }
 
 }
