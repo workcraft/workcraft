@@ -180,11 +180,11 @@ public class CellAnalyser {
         sourceDirection = null;
         destinationDirection = null;
 
-        if (connection.getSource().isFixedDirection) {
+        if (connection.getSource().isFixedDirection()) {
             sourceDirection = connection.getSource().getDirection();
         }
 
-        if (connection.getDestination().isFixedDirection) {
+        if (connection.getDestination().isFixedDirection()) {
             destinationDirection = connection.getDestination().getDirection();
         }
 

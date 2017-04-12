@@ -27,21 +27,19 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.ToolboxPanel;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.commands.AbstractLayoutCommand;
 import org.workcraft.gui.graph.tools.Decorator;
-import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutCommand;
+import org.workcraft.plugins.circuit.commands.CircuitLayoutSettings;
 import org.workcraft.plugins.circuit.routing.RouterClient;
 import org.workcraft.plugins.circuit.routing.RouterVisualiser;
 import org.workcraft.plugins.circuit.routing.impl.Router;
 import org.workcraft.plugins.circuit.routing.impl.RouterTask;
-import org.workcraft.plugins.circuit.tools.RoutingAnalyserTool;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
@@ -361,20 +359,15 @@ public class VisualCircuit extends AbstractVisualModel {
         }
     }
 
-    private final Router router = new Router();
-
     @Override
     public void draw(Graphics2D g, Decorator decorator) {
         super.draw(g, decorator);
-        Framework framework = Framework.getInstance();
-        MainWindow mainWindow = framework.getMainWindow();
-        ToolboxPanel toolbox = mainWindow.getCurrentToolbox();
-        GraphEditorTool tool = toolbox.getSelectedTool();
-        if (tool instanceof RoutingAnalyserTool) {
+        if (CircuitLayoutSettings.getDebugRouting()) {
             RouterClient routerClient = new RouterClient();
             RouterTask routerTask = routerClient.registerObstacles(this);
-            router.setRouterTask(routerTask);
-            RouterVisualiser.drawRoutes(router, g);
+            Router router = new Router();
+            router.routeConnections(routerTask);
+            RouterVisualiser.drawEverything(router, g);
         }
     }
 

@@ -9,15 +9,17 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
+import org.workcraft.dom.visual.SnapHelper;
+import org.workcraft.plugins.circuit.commands.CircuitLayoutSettings;
 import org.workcraft.plugins.circuit.routing.basic.Coordinate;
 import org.workcraft.plugins.circuit.routing.basic.CoordinateOrientation;
 import org.workcraft.plugins.circuit.routing.basic.IndexedInterval;
-import org.workcraft.plugins.circuit.routing.basic.RouterConstants;
 
 /**
  * This class maps coordinates to integer indexes.
  */
 public class IndexedCoordinates {
+    private static final double THRESHOLD = 0.01;
 
     private final TreeMap<Double, Coordinate> values = new TreeMap<>();
     private final Collection<Coordinate> readOnlyValues = Collections.unmodifiableCollection(values.values());
@@ -135,16 +137,15 @@ public class IndexedCoordinates {
             boolean doLower = coordinate.getOrientation() == CoordinateOrientation.ORIENT_HIGHER
                     || coordinate.getOrientation() == CoordinateOrientation.ORIENT_BOTH;
 
+            double snapMinor = CircuitLayoutSettings.getSnapMinor();
             if (doHigher) {
                 addValue(coordinate.isPublic(), coordinate.getOrientation(),
-                        coordinate.getValue() + i * RouterConstants.MINOR_SNAP);
+                        coordinate.getValue() + i * snapMinor);
             }
-
             if (doLower) {
                 addValue(coordinate.isPublic(), coordinate.getOrientation(),
-                        coordinate.getValue() - i * RouterConstants.MINOR_SNAP);
+                        coordinate.getValue() - i * snapMinor);
             }
-
         }
     }
 
@@ -195,8 +196,8 @@ public class IndexedCoordinates {
     public boolean isIntervalOccupied(double from, double to) {
         assert from <= to : "the interval borders must be provided from lower to higher";
 
-        Double minBorder = values.ceilingKey(from - RouterConstants.EPSILON);
-        Double maxBorder = values.floorKey(to + RouterConstants.EPSILON);
+        Double minBorder = values.ceilingKey(from - THRESHOLD);
+        Double maxBorder = values.floorKey(to + THRESHOLD);
 
         if (minBorder == null || maxBorder == null) {
             return false;
@@ -224,8 +225,8 @@ public class IndexedCoordinates {
 
         build();
 
-        Double minBorder = values.ceilingKey(from - RouterConstants.EPSILON);
-        Double maxBorder = values.floorKey(to + RouterConstants.EPSILON);
+        Double minBorder = values.ceilingKey(from - THRESHOLD);
+        Double maxBorder = values.floorKey(to + THRESHOLD);
 
         if (minBorder == null || maxBorder == null) {
             return null;
@@ -254,8 +255,8 @@ public class IndexedCoordinates {
 
         build();
 
-        Double minBorder = values.ceilingKey(from + 2 * RouterConstants.EPSILON);
-        Double maxBorder = values.floorKey(to - 2 * RouterConstants.EPSILON);
+        Double minBorder = values.ceilingKey(from + 2 * THRESHOLD);
+        Double maxBorder = values.floorKey(to - 2 * THRESHOLD);
 
         if (minBorder == null || maxBorder == null) {
             return null;
@@ -311,7 +312,7 @@ public class IndexedCoordinates {
         Coordinate last = null;
         List<Coordinate> toAdd = new ArrayList<Coordinate>();
         List<Coordinate> toDelete = new ArrayList<Coordinate>();
-
+        double marginSegment = CircuitLayoutSettings.getMarginSegment();
         for (Coordinate coordinate : getValues()) {
             if (!(coordinate.isPublic())) {
                 continue;
@@ -338,8 +339,8 @@ public class IndexedCoordinates {
 
                     if (coordinate.getOrientation() == CoordinateOrientation.ORIENT_LOWER) {
 
-                        double middle = SnapCalculator.snapToClosest((last.getValue() + coordinate.getValue()) / 2,
-                                RouterConstants.SEGMENT_MARGIN);
+                        double middle = SnapHelper.snapToClosest((last.getValue() + coordinate.getValue()) / 2,
+                                marginSegment);
 
                         if (coordinate.getOrientation() == CoordinateOrientation.ORIENT_BOTH) {
                             middle = coordinate.getValue();

@@ -33,7 +33,7 @@ public class RouterClient {
             routerTask.addRectangle(internalBoundingBox);
             for (VisualContact contact : component.getContacts()) {
                 Point pos = new Point(contact.getX() + component.getX(), contact.getY() + component.getY());
-                RouterPort routerPort = RouterPort.withFlexibleDirection(getDirection(contact), pos);
+                RouterPort routerPort = new RouterPort(getDirection(contact), pos, false);
                 contactToRouterPortMap.put(contact, routerPort);
                 routerTask.addPort(routerPort);
                 Line portSegment = internalBoundingBox.getPortSegment(pos);
@@ -45,15 +45,17 @@ public class RouterClient {
             Rectangle2D bb = port.getInternalBoundingBox();
             routerTask.addRectangle(new Rectangle(bb.getX(), bb.getY(), bb.getWidth(), bb.getHeight()));
             Point pos = new Point(bb.getCenterX(), bb.getCenterY());
-            RouterPort routerPort = RouterPort.withFixedDirection(getDirection(port), pos);
+            RouterPort routerPort = new RouterPort(getDirection(port), pos, true);
             contactToRouterPortMap.put(port, routerPort);
             routerTask.addPort(routerPort);
         }
 
         for (Entry<VisualContact, RouterPort> entry : contactToRouterPortMap.entrySet()) {
             VisualContact srcContact = entry.getKey();
+            if (srcContact.isDriven()) continue;
             RouterPort srcRouterPort = entry.getValue();
             for (VisualContact dstContact : CircuitUtils.findDriven(circuit, srcContact, false)) {
+                if (srcContact == dstContact) continue;
                 RouterPort dstRouterPort = getRouterPort(dstContact);
                 routerTask.addConnection(new RouterConnection(srcRouterPort, dstRouterPort));
             }

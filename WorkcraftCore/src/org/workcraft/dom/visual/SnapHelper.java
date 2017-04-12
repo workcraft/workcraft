@@ -1,8 +1,8 @@
-package org.workcraft.plugins.circuit.routing.impl;
+package org.workcraft.dom.visual;
 
-import org.workcraft.plugins.circuit.routing.basic.RouterConstants;
+public class SnapHelper {
 
-public class SnapCalculator {
+    private static final double THRESHOLD = 0.01;
 
     /**
      * Snap given value to a higher snapped value. The snapSize must be
@@ -16,7 +16,7 @@ public class SnapCalculator {
      */
     public static double snapToHigher(double value, double snapSize) {
         assert snapSize > 0 : "snapSize must be positive";
-        double divided = (value - RouterConstants.EPSILON) / snapSize;
+        double divided = (value - THRESHOLD) / snapSize;
         double ceil = Math.ceil(divided);
         if (ceil == -0.0) {
             // special case, to avoid returning -0.0
@@ -36,7 +36,7 @@ public class SnapCalculator {
      */
     public static double snapToLower(double value, double snapSize) {
         assert snapSize > 0 : "snapSize must be positive";
-        double divided = (value + RouterConstants.EPSILON) / snapSize;
+        double divided = (value + THRESHOLD) / snapSize;
         double floor = Math.floor(divided);
         return floor * snapSize;
     }

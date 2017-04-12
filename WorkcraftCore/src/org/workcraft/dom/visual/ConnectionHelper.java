@@ -15,7 +15,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 
 public class ConnectionHelper {
-    public static final double SAME_ANCHOR_POINT_THRESHOLD = 0.1;
+    private static final double SAME_ANCHOR_POINT_THRESHOLD = 0.1;
 
     public static boolean areDifferentAnchorPoints(Point2D p1, Point2D p2) {
         return p1.distance(p2) > SAME_ANCHOR_POINT_THRESHOLD;

@@ -16,6 +16,7 @@ import org.workcraft.plugins.circuit.commands.CircuitDeadlockVerificationCommand
 import org.workcraft.plugins.circuit.commands.CircuitLayoutCommand;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutPlacementCommand;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutRoutingCommand;
+import org.workcraft.plugins.circuit.commands.CircuitLayoutSettings;
 import org.workcraft.plugins.circuit.commands.CircuitPersistencyVerificationCommand;
 import org.workcraft.plugins.circuit.commands.CircuitPropertyVerificationCommand;
 import org.workcraft.plugins.circuit.commands.CircuitStrictImplementationVerificationCommand;
@@ -80,6 +81,7 @@ public class CircuitModule implements Module {
         pm.registerClass(Importer.class, VerilogImporter.class);
         pm.registerClass(Importer.class, GenlibImporter.class);
         pm.registerClass(Exporter.class, SdcExporter.class);
+        pm.registerClass(Settings.class, CircuitLayoutSettings.class);
     }
 
     private void initCompatibilityManager() {

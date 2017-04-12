@@ -1,9 +1,10 @@
 package org.workcraft.plugins.circuit.routing.impl;
 
+import org.workcraft.dom.visual.SnapHelper;
+import org.workcraft.plugins.circuit.commands.CircuitLayoutSettings;
 import org.workcraft.plugins.circuit.routing.basic.Coordinate;
 import org.workcraft.plugins.circuit.routing.basic.CoordinateOrientation;
 import org.workcraft.plugins.circuit.routing.basic.Rectangle;
-import org.workcraft.plugins.circuit.routing.basic.RouterConstants;
 import org.workcraft.plugins.circuit.routing.basic.RouterPort;
 
 /**
@@ -101,14 +102,16 @@ public class CoordinatesRegistryBuilder {
     }
 
     private void registerSnappedRectangle(CoordinatesRegistry baseRegistry, Rectangle rec) {
-        double minx = SnapCalculator.snapToLower(rec.getX() - RouterConstants.OBSTACLE_MARGIN,
-                RouterConstants.MAJOR_SNAP);
-        double maxx = SnapCalculator.snapToHigher(rec.getX() + rec.getWidth() + RouterConstants.OBSTACLE_MARGIN,
-                RouterConstants.MAJOR_SNAP);
-        double miny = SnapCalculator.snapToLower(rec.getY() - RouterConstants.OBSTACLE_MARGIN,
-                RouterConstants.MAJOR_SNAP);
-        double maxy = SnapCalculator.snapToHigher(rec.getY() + rec.getHeight() + RouterConstants.OBSTACLE_MARGIN,
-                RouterConstants.MAJOR_SNAP);
+        double marginObstacle = CircuitLayoutSettings.getMarginObstacle();
+        double snapMajor = CircuitLayoutSettings.getSnapMajor();
+        double minx = SnapHelper.snapToLower(rec.getX() - marginObstacle,
+                snapMajor);
+        double maxx = SnapHelper.snapToHigher(rec.getX() + rec.getWidth() + marginObstacle,
+                snapMajor);
+        double miny = SnapHelper.snapToLower(rec.getY() - marginObstacle,
+                snapMajor);
+        double maxy = SnapHelper.snapToHigher(rec.getY() + rec.getHeight() + marginObstacle,
+                snapMajor);
 
         baseRegistry.getXCoords().addPublic(CoordinateOrientation.ORIENT_LOWER, minx);
         baseRegistry.getXCoords().addPublic(CoordinateOrientation.ORIENT_HIGHER, maxx);
@@ -117,12 +120,14 @@ public class CoordinatesRegistryBuilder {
     }
 
     private void printStatistics(String title, CoordinatesRegistry baseRegistry, RouterTask routerTask) {
-        System.out.println(title);
-        int xSize = baseRegistry.getXCoords().size();
-        int ySize = baseRegistry.getYCoords().size();
-        System.out.println("  Cells: " + xSize * ySize + " (" + xSize + "x" + ySize + ")");
-        System.out.println("  Rectangles: " + routerTask.getRectangles().size());
-        System.out.println("  Connections: " + routerTask.getConnections().size());
+        if (CircuitLayoutSettings.getPrintStatistics()) {
+            System.out.println(title);
+            int xSize = baseRegistry.getXCoords().size();
+            int ySize = baseRegistry.getYCoords().size();
+            System.out.println("  Cells: " + xSize * ySize + " (" + xSize + "x" + ySize + ")");
+            System.out.println("  Rectangles: " + routerTask.getRectangles().size());
+            System.out.println("  Connections: " + routerTask.getConnections().size());
+        }
     }
 
 }

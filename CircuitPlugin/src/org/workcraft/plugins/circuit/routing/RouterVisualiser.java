@@ -24,8 +24,7 @@ import org.workcraft.plugins.circuit.routing.impl.RouterCells;
 
 public class RouterVisualiser {
 
-    public static void drawEverything(Router router, Graphics2D g, Viewport viewport) {
-        drawCoordinates(router, g, viewport);
+    public static void drawEverything(Router router, Graphics2D g) {
         drawBlocks(router, g);
         drawSegments(router, g);
         drawCells(router, g);
@@ -112,9 +111,7 @@ public class RouterVisualiser {
 
     public static void drawCells(Router router, Graphics2D g) {
         RouterCells rcells = router.getCoordinatesRegistry().getRouterCells();
-
         int[][] cells = rcells.cells;
-
         int y = 0;
         for (Coordinate dy : router.getCoordinatesRegistry().getYCoordinates()) {
             int x = 0;
@@ -127,7 +124,6 @@ public class RouterVisualiser {
                 boolean isHorizontalBlock = (cells[x][y] & CellState.HORIZONTAL_BLOCK) != 0;
 
                 Path2D shape = new Path2D.Double();
-
                 if (isBusy) {
                     g.setColor(Color.RED);
                     shape.moveTo(dx.getValue() - 0.1, dy.getValue() - 0.1);
@@ -136,7 +132,6 @@ public class RouterVisualiser {
                     shape.lineTo(dx.getValue() - 0.1, dy.getValue() + 0.1);
                     g.draw(shape);
                 } else {
-
                     if (isVerticalPrivate) {
                         shape = new Path2D.Double();
                         g.setColor(Color.MAGENTA.darker());

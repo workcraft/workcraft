@@ -7,7 +7,6 @@ import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.layout.DotLayoutCommand;
 import org.workcraft.plugins.layout.DotLayoutSettings;
-import org.workcraft.plugins.layout.NullLayoutCommand;
 import org.workcraft.plugins.layout.RandomLayoutCommand;
 import org.workcraft.plugins.layout.RandomLayoutSettings;
 import org.workcraft.plugins.shared.CommonCommentSettings;
@@ -40,7 +39,6 @@ public class BuiltinTools implements Module {
         pm.registerClass(Settings.class, RandomLayoutSettings.class);
 
         pm.registerClass(Command.class, DotLayoutCommand.class);
-        pm.registerClass(Command.class, NullLayoutCommand.class);
         pm.registerClass(Command.class, RandomLayoutCommand.class);
 
         pm.registerClass(Command.class, CopyLabelTransformationCommand.class);
