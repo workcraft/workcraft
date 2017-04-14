@@ -53,7 +53,6 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
     @Override
     public void layout(VisualModel model) {
         if (model instanceof VisualCircuit) {
-            long startTime = System.currentTimeMillis();
             VisualCircuit circuit = (VisualCircuit) model;
             if (!skipLayoutPlacement()) {
                 setComponentPosition(circuit);
@@ -65,10 +64,7 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
             } else {
                 routeSelfLoops(circuit);
             }
-            long finishTime = System.currentTimeMillis();
-            if (CircuitLayoutSettings.getPrintStatistics()) {
-                System.out.println("Circuit layout is completed in " + (finishTime - startTime) + "ms");
-            }
+            mergeConnections(circuit);
         }
     }
 
@@ -246,25 +242,29 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
                 ConnectionHelper.addControlPoints((VisualConnection) connection, locationsInRootSpace);
             }
         }
-        while (mergeConnections(circuit)) { }
     }
 
-    private boolean mergeConnections(VisualCircuit circuit) {
-        Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualConnection.class);
-        for (VisualConnection connection: connections) {
+    private void mergeConnections(VisualCircuit circuit) {
+        for (VisualConnection connection: Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualConnection.class)) {
             ConnectionGraphic grapic = connection.getGraphic();
             if (grapic instanceof Polyline) {
                 ConnectionHelper.filterControlPoints((Polyline) grapic, 0.01, 0.01);
             }
         }
-        for (VisualConnection c1: connections) {
-            for (VisualConnection c2: connections) {
-                if (mergeConnections(circuit, c1, c2)) {
-                    return true;
+        boolean progress = true;
+        while (progress) {
+            progress = false;
+            Collection<VisualConnection> connections = Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualConnection.class);
+            for (VisualConnection c1: connections) {
+                for (VisualConnection c2: connections) {
+                    if (mergeConnections(circuit, c1, c2)) {
+                        progress = true;
+                        break;
+                    }
                 }
+                if (progress) break;
             }
         }
-        return false;
     }
 
     private boolean mergeConnections(VisualCircuit circuit, VisualConnection c1, VisualConnection c2) {

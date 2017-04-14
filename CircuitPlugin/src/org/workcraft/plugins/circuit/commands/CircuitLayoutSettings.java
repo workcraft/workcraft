@@ -20,7 +20,6 @@ public class CircuitLayoutSettings implements Settings {
     private static final String keyMarginSegment = prefix + ".marginSegment";
     private static final String keySnapMajor = prefix + ".snapMajor";
     private static final String keySnapMinor = prefix + ".snapMinor";
-    private static final String keyPrintStatistics = prefix + ".printStatistics";
     private static final String keyDebugRouting = prefix + ".debugRouting";
 
     private static final double defaultSpacingHorizontal = 6.0;
@@ -30,7 +29,6 @@ public class CircuitLayoutSettings implements Settings {
     private static final double defaultMarginSegment = 0.25;
     private static final double defaultSnapMajor = 1.0;
     private static final double defaultSnapMinor = 0.5;
-    private static final boolean defaultPrintStatistics = false;
     private static final boolean defaultDebugRouting = false;
 
     private static double spacingHorizontal = defaultSpacingHorizontal;
@@ -40,7 +38,6 @@ public class CircuitLayoutSettings implements Settings {
     private static double marginSegment = defaultMarginSegment;
     private static double snapMajor = defaultSnapMajor;
     private static double snapMinor = defaultSnapMinor;
-    private static boolean printStatistics = defaultPrintStatistics;
     private static boolean debugRouting = defaultDebugRouting;
 
     public CircuitLayoutSettings() {
@@ -108,15 +105,6 @@ public class CircuitLayoutSettings implements Settings {
             }
         });
         properties.add(new PropertyDeclaration<CircuitLayoutSettings, Boolean>(
-                this, "Print statistics", Boolean.class, true, false, false) {
-            protected void setter(CircuitLayoutSettings object, Boolean value) {
-                setPrintStatistics(value);
-            }
-            protected Boolean getter(CircuitLayoutSettings object) {
-                return getPrintStatistics();
-            }
-        });
-        properties.add(new PropertyDeclaration<CircuitLayoutSettings, Boolean>(
                 this, "Debug routing", Boolean.class, true, false, false) {
             protected void setter(CircuitLayoutSettings object, Boolean value) {
                 setDebugRouting(value);
@@ -141,7 +129,6 @@ public class CircuitLayoutSettings implements Settings {
         setMarginSegment(config.getDouble(keyMarginSegment, defaultMarginSegment));
         setSnapMajor(config.getDouble(keySnapMajor, defaultSnapMajor));
         setSnapMinor(config.getDouble(keySnapMinor, defaultSnapMinor));
-        setPrintStatistics(config.getBoolean(keyPrintStatistics, defaultPrintStatistics));
         setDebugRouting(config.getBoolean(keyDebugRouting, defaultDebugRouting));
     }
 
@@ -154,7 +141,6 @@ public class CircuitLayoutSettings implements Settings {
         config.setDouble(keyMarginSegment, getMarginSegment());
         config.setDouble(keySnapMajor, getSnapMajor());
         config.setDouble(keySnapMinor, getSnapMinor());
-        config.setBoolean(keyPrintStatistics, getPrintStatistics());
         config.setBoolean(keyDebugRouting, getDebugRouting());
     }
 
@@ -222,14 +208,6 @@ public class CircuitLayoutSettings implements Settings {
 
     public static void setSnapMinor(double value) {
         snapMinor = value;
-    }
-
-    public static boolean getPrintStatistics() {
-        return printStatistics;
-    }
-
-    public static void setPrintStatistics(boolean value) {
-        printStatistics = value;
     }
 
     public static boolean getDebugRouting() {
