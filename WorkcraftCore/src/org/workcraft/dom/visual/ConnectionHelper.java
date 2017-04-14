@@ -15,7 +15,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 
 public class ConnectionHelper {
-    public static final double SAME_ANCHOR_POINT_THRESHOLD = 0.1;
+    private static final double SAME_ANCHOR_POINT_THRESHOLD = 0.1;
 
     public static boolean areDifferentAnchorPoints(Point2D p1, Point2D p2) {
         return p1.distance(p2) > SAME_ANCHOR_POINT_THRESHOLD;
@@ -175,7 +175,7 @@ public class ConnectionHelper {
             }
             ControlPoint cur = polyline.getControlPoint(i);
             Point2D curPos = cur.getPosition();
-            if (Math.abs(clacGradient(predPos, curPos, succPos)) < gradientThreshold) {
+            if (Math.abs(calcGradient(predPos, curPos, succPos)) < gradientThreshold) {
                 polyline.remove(cur);
             } else {
                 i++;
@@ -220,7 +220,7 @@ public class ConnectionHelper {
         }
     }
 
-    private static double clacGradient(Point2D p1, Point2D p2, Point2D p3) {
+    public static double calcGradient(Point2D p1, Point2D p2, Point2D p3) {
         double p1x = p1.getX();
         double p1y = p1.getY();
         double p2x = p2.getX();

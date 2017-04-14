@@ -14,6 +14,9 @@ import org.workcraft.plugins.circuit.commands.CircuitAssertionVerificationComman
 import org.workcraft.plugins.circuit.commands.CircuitConformationVerificationCommand;
 import org.workcraft.plugins.circuit.commands.CircuitDeadlockVerificationCommand;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutCommand;
+import org.workcraft.plugins.circuit.commands.CircuitLayoutPlacementCommand;
+import org.workcraft.plugins.circuit.commands.CircuitLayoutRoutingCommand;
+import org.workcraft.plugins.circuit.commands.CircuitLayoutSettings;
 import org.workcraft.plugins.circuit.commands.CircuitPersistencyVerificationCommand;
 import org.workcraft.plugins.circuit.commands.CircuitPropertyVerificationCommand;
 import org.workcraft.plugins.circuit.commands.CircuitStrictImplementationVerificationCommand;
@@ -51,6 +54,8 @@ public class CircuitModule implements Module {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
         pm.registerClass(Command.class, CircuitLayoutCommand.class);
+        pm.registerClass(Command.class, CircuitLayoutPlacementCommand.class);
+        pm.registerClass(Command.class, CircuitLayoutRoutingCommand.class);
         pm.registerClass(Command.class, CircuitToStgConversionCommand.class);
 
         pm.registerClass(Command.class, CircuitConformationVerificationCommand.class);
@@ -76,6 +81,7 @@ public class CircuitModule implements Module {
         pm.registerClass(Importer.class, VerilogImporter.class);
         pm.registerClass(Importer.class, GenlibImporter.class);
         pm.registerClass(Exporter.class, SdcExporter.class);
+        pm.registerClass(Settings.class, CircuitLayoutSettings.class);
     }
 
     private void initCompatibilityManager() {
