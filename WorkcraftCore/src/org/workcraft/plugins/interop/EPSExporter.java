@@ -18,6 +18,7 @@ import org.workcraft.serialisation.Format;
 
 public class EPSExporter implements Exporter {
 
+    @Override
     public void export(Model model, OutputStream out) throws IOException, SerialisationException {
         InputStream svg = SVGExportUtils.stream(model);
         Transcoder transcoder = new EPSTranscoder();
@@ -30,14 +31,17 @@ public class EPSExporter implements Exporter {
         }
     }
 
+    @Override
     public String getDescription() {
         return ".eps (FOP EPS transcoder)";
     }
 
+    @Override
     public String getExtenstion() {
         return ".eps";
     }
 
+    @Override
     public int getCompatibility(Model model) {
         if (model instanceof VisualModel) {
             return Exporter.GENERAL_COMPATIBILITY;
@@ -50,4 +54,5 @@ public class EPSExporter implements Exporter {
     public UUID getTargetFormat() {
         return Format.EPS;
     }
+
 }

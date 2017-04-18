@@ -12,9 +12,9 @@ public interface Exporter {
     int GENERAL_COMPATIBILITY = 1;
     int BEST_COMPATIBILITY = 10;
 
+    void export(Model model, OutputStream out) throws IOException, ModelValidationException, SerialisationException;
     String getDescription();
     String getExtenstion();
-    UUID getTargetFormat();
     int getCompatibility(Model model);
-    void export(Model model, OutputStream out) throws IOException, ModelValidationException, SerialisationException;
+    UUID getTargetFormat();
 }

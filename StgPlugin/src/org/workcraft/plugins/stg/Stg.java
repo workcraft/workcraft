@@ -232,10 +232,12 @@ public class Stg extends AbstractMathModel implements StgModel {
         return path + t.getSignalName();
     }
 
+    @Override
     public int getInstanceNumber(Node st) {
         return referenceManager.getInstanceNumber(st);
     }
 
+    @Override
     public void setInstanceNumber(Node st, int number) {
         referenceManager.setInstanceNumber(st, number);
     }

@@ -23,6 +23,7 @@ import org.workcraft.plugins.stg.commands.SignalToDummyTransitionTransformationC
 import org.workcraft.plugins.stg.commands.StgToPetriConversionCommand;
 import org.workcraft.plugins.stg.interop.DotGExporter;
 import org.workcraft.plugins.stg.interop.DotGImporter;
+import org.workcraft.plugins.stg.interop.LpnExporter;
 import org.workcraft.plugins.stg.serialisation.DotGSerialiser;
 import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcDeserialiser;
 import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcSerialiser;
@@ -52,6 +53,7 @@ public class StgModule implements Module {
         pm.registerClass(XMLDeserialiser.class, ImplicitPlaceArcDeserialiser.class);
 
         pm.registerClass(Exporter.class, DotGExporter.class);
+        pm.registerClass(Exporter.class, LpnExporter.class);
         pm.registerClass(Importer.class, DotGImporter.class);
 
         pm.registerClass(ModelSerialiser.class, DotGSerialiser.class);

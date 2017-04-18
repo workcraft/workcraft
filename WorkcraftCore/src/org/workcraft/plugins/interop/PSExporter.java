@@ -18,6 +18,7 @@ import org.workcraft.serialisation.Format;
 
 public class PSExporter implements Exporter {
 
+    @Override
     public void export(Model model, OutputStream out) throws IOException, SerialisationException {
         InputStream svg = SVGExportUtils.stream(model);
         Transcoder transcoder = new PSTranscoder();
@@ -30,14 +31,17 @@ public class PSExporter implements Exporter {
         }
     }
 
+    @Override
     public String getDescription() {
         return ".ps (FOP PS transcoder)";
     }
 
+    @Override
     public String getExtenstion() {
         return ".ps";
     }
 
+    @Override
     public int getCompatibility(Model model) {
         if (model instanceof VisualModel) {
             return Exporter.GENERAL_COMPATIBILITY;
@@ -50,4 +54,5 @@ public class PSExporter implements Exporter {
     public UUID getTargetFormat() {
         return Format.PS;
     }
+
 }

@@ -13,10 +13,10 @@ public class Format {
     public static final UUID EPS = UUID.fromString("c6158d84-e242-4f8c-9ec9-3a6cf045b769");
     public static final UUID PDF = UUID.fromString("fa1da69d-3a17-4296-809e-a71f28066fc0");
     public static final UUID PNG = UUID.fromString("c09714a6-cae9-4744-95cb-17ba4d28f5ef");
-    public static final UUID EMF = UUID.fromString("c8f9fe37-87d2-42bd-8a25-9e1d38813549");
     public static final UUID DOT = UUID.fromString("f1596b60-e294-11de-8a39-0800200c9a66");
     public static final UUID VERILOG = UUID.fromString("fdd4414e-fd02-4702-b143-09b24430fdd1");
     public static final UUID SDC = UUID.fromString("fd92a9c6-e13a-4785-83ff-1fb6f666b8ed");
+    public static final UUID LPN = UUID.fromString("3d3432eb-a993-430f-a47d-a1efb4280cc8");
 
     public static String getDescription(UUID format) {
         if (format.equals(workcraftXML)) {
@@ -39,14 +39,14 @@ public class Format {
             return ".pdf (Portable Document Format)";
         } else if (format.equals(PNG)) {
             return ".png (Portable Network Graphics)";
-        } else if (format.equals(EMF)) {
-            return ".emf (Enhanced Mediafile)";
         } else if (format.equals(DOT)) {
             return ".dot (GraphViz dot)";
         } else if (format.equals(VERILOG)) {
             return ".v (Verilog netlist)";
         } else if (format.equals(SDC)) {
             return ".sdc (Synopsys Design Constraints)";
+        } else if (format.equals(LPN)) {
+            return ".lpn (Labeled Petri Net)";
         } else {
             return "Unknown format";
         }
@@ -63,10 +63,10 @@ public class Format {
         if ("EPS".equals(name)) return EPS;
         if ("PDF".equals(name)) return PDF;
         if ("PNG".equals(name)) return PNG;
-        if ("EMF".equals(name)) return EMF;
         if ("DOT".equals(name)) return DOT;
         if ("VERILOG".equals(name)) return VERILOG;
         if ("SDC".equals(name)) return SDC;
+        if ("LPN".equals(name)) return LPN;
         return null;
     }
 

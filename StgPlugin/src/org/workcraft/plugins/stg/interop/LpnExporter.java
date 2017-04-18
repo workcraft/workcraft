@@ -3,20 +3,20 @@ package org.workcraft.plugins.stg.interop;
 import java.util.UUID;
 
 import org.workcraft.interop.AbstractSerialiseExporter;
-import org.workcraft.plugins.stg.serialisation.DotGSerialiser;
+import org.workcraft.plugins.stg.serialisation.LpnSerialiser;
 import org.workcraft.serialisation.Format;
 
-public class DotGExporter extends AbstractSerialiseExporter {
+public class LpnExporter extends AbstractSerialiseExporter {
 
-    DotGSerialiser serialiser = new DotGSerialiser();
+    LpnSerialiser serialiser = new LpnSerialiser();
 
     @Override
     public UUID getTargetFormat() {
-        return Format.STG;
+        return Format.LPN;
     }
 
     @Override
-    public DotGSerialiser getSerialiser() {
+    public LpnSerialiser getSerialiser() {
         return serialiser;
     }
 
