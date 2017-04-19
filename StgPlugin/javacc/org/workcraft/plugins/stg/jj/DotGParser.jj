@@ -3,9 +3,12 @@
  */
 
 options {
-  JDK_VERSION = "1.7";
-  LOOKAHEAD = 1;
-  STATIC = false;
+    JDK_VERSION = "1.7";
+    LOOKAHEAD = 1;
+    STATIC = false;
+    DEBUG_PARSER = true;
+    DEBUG_LOOKAHEAD = false;
+    DEBUG_TOKEN_MANAGER = false;
 }
 
 PARSER_BEGIN(DotGParser)
@@ -20,6 +23,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.*;
+import org.workcraft.util.LogUtils;
 import org.workcraft.util.Pair;
 import org.workcraft.util.Triple;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -173,6 +177,7 @@ TOKEN :
 {
     <COMMENT : "#" (~["\r", "\n"])*>
 |   <LINEBREAK : ((<COMMENT>)? ["\r", "\n"])+>
+|   <MODEL_NAME : ".model" | ".name">
 |   <INPUT_HEADER : ".inputs">
 |   <OUTPUT_HEADER : ".outputs">
 |   <INTERNAL_HEADER : ".internal">
@@ -217,12 +222,17 @@ Stg parse() :
 
 void header() :
 {
+    Token t;
     List<String> list;
 }
 {
     (<LINEBREAK>)*
     (
-        <INPUT_HEADER> list = stringList()
+        <MODEL_NAME> t = <NAME>
+        {
+            stg.setTitle(t.image);
+        }
+    |   <INPUT_HEADER> list = stringList()
         {
             addSignals(list, Type.INPUT);
         }
@@ -242,7 +252,10 @@ void header() :
         {
             addDummies(list);
         }
-    |   <UNSUPPORTED_HEADER> <REST>
+    |   t = <UNSUPPORTED_HEADER> <REST>
+        {
+            LogUtils.logWarningLine("Unsupported keyword '" + t.image + "' in line " + t.beginLine + ". The whole line is ignored.");
+        }
     )
 }
 

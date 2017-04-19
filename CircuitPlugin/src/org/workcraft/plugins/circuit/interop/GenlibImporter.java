@@ -34,14 +34,14 @@ public class GenlibImporter implements Importer {
 
     public Circuit importGenlib(InputStream in) throws DeserialisationException {
         final Circuit circuit = new Circuit();
-        GenlibParser genlibParser = new GenlibParser(in);
+        GenlibParser parser = new GenlibParser(in);
         if (CommonDebugSettings.getParserTracing()) {
-            genlibParser.enable_tracing();
+            parser.enable_tracing();
         } else {
-            genlibParser.disable_tracing();
+            parser.disable_tracing();
         }
         try {
-            Library library = genlibParser.parseGenlib();
+            Library library = parser.parseGenlib();
             for (final String name: library.getNames()) {
                 final Gate gate = library.get(name);
                 GenlibUtils.instantiateGate(gate, null, circuit);

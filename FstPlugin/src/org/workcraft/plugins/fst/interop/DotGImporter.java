@@ -10,6 +10,7 @@ import org.workcraft.plugins.fst.FstDescriptor;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.jj.DotGParser;
 import org.workcraft.plugins.fst.jj.ParseException;
+import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.ModelEntry;
 
@@ -35,7 +36,13 @@ public class DotGImporter implements Importer {
 
     public Fst importSG(InputStream in) throws DeserialisationException {
         try {
-            return new DotGParser(in).parse();
+            DotGParser parser = new DotGParser(in);
+            if (CommonDebugSettings.getParserTracing()) {
+                parser.enable_tracing();
+            } else {
+                parser.disable_tracing();
+            }
+            return parser.parse();
         } catch (FormatException e) {
             throw new DeserialisationException(e);
         } catch (ParseException e) {

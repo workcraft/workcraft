@@ -114,13 +114,13 @@ public class VerilogImporter implements Importer {
 
     public Circuit importCircuit(InputStream in) throws DeserialisationException {
         try {
-            VerilogParser verilogParser = new VerilogParser(in);
+            VerilogParser parser = new VerilogParser(in);
             if (CommonDebugSettings.getParserTracing()) {
-                verilogParser.enable_tracing();
+                parser.enable_tracing();
             } else {
-                verilogParser.disable_tracing();
+                parser.disable_tracing();
             }
-            HashMap<String, Module> modules = getModuleMap(verilogParser.parseCircuit());
+            HashMap<String, Module> modules = getModuleMap(parser.parseCircuit());
             HashSet<Module> topModules = getTopModule(modules);
             if (topModules.size() == 0) {
                 throw new DeserialisationException(MSG_NO_TOP_MODULE);
