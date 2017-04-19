@@ -18,6 +18,7 @@ import org.workcraft.serialisation.Format;
 
 public class PDFExporter implements Exporter {
 
+    @Override
     public void export(Model model, OutputStream out) throws IOException, SerialisationException {
         InputStream svg = SVGExportUtils.stream(model);
         Transcoder transcoder = new PDFTranscoder();
@@ -30,14 +31,17 @@ public class PDFExporter implements Exporter {
         }
     }
 
+    @Override
     public String getDescription() {
         return ".pdf (FOP PDF generator)";
     }
 
+    @Override
     public String getExtenstion() {
         return ".pdf";
     }
 
+    @Override
     public int getCompatibility(Model model) {
         if (model instanceof VisualModel) {
             return Exporter.GENERAL_COMPATIBILITY;
@@ -50,4 +54,5 @@ public class PDFExporter implements Exporter {
     public UUID getTargetFormat() {
         return Format.PDF;
     }
+
 }

@@ -14,19 +14,19 @@ import org.workcraft.plugins.stg.jj.ParseException;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.ModelEntry;
 
-public class DotGImporter implements Importer {
+public class LpnImporter implements Importer {
 
     private static final String GRAPH_KEYWORD = ".graph";
 
     @Override
     public boolean accept(File file) {
-        return file.getName().endsWith(".g")
+        return file.getName().endsWith(".lpn")
                 && FileUtils.fileContainsKeyword(file, GRAPH_KEYWORD);
     }
 
     @Override
     public String getDescription() {
-        return "Signal Transition Graph (.g)";
+        return "Labeled Petri Net (.lpn)";
     }
 
     @Override

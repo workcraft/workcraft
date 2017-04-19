@@ -12,7 +12,7 @@ import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
 
-public class DotGSerialiser implements ModelSerialiser {
+public class LpnSerialiser implements ModelSerialiser {
 
     class ReferenceResolver implements ReferenceProducer {
         HashMap<Object, String> refMap = new HashMap<>();
@@ -25,7 +25,7 @@ public class DotGSerialiser implements ModelSerialiser {
 
     @Override
     public ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer refs) {
-        StgSerialiserUtils.writeModel(model, out, Style.STG);
+        StgSerialiserUtils.writeModel(model, out, Style.LPN);
         return new ReferenceResolver();
     }
 
@@ -36,17 +36,17 @@ public class DotGSerialiser implements ModelSerialiser {
 
     @Override
     public String getDescription() {
-        return "Workcraft STG serialiser";
+        return "Workcraft LPN serialiser";
     }
 
     @Override
     public String getExtension() {
-        return ".g";
+        return ".lpn";
     }
 
     @Override
     public UUID getFormatUUID() {
-        return Format.STG;
+        return Format.LPN;
     }
 
 }

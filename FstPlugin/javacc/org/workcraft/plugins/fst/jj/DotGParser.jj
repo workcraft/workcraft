@@ -4,9 +4,11 @@
 options
 {
     JDK_VERSION = "1.7";
-
     LOOKAHEAD= 1;
     STATIC = false;
+    DEBUG_PARSER = true;
+    DEBUG_LOOKAHEAD = false;
+    DEBUG_TOKEN_MANAGER = false;
 }
 
 PARSER_BEGIN(DotGParser)
@@ -23,6 +25,7 @@ import org.workcraft.plugins.fst.Signal;
 import org.workcraft.plugins.fst.Signal.Type;
 import org.workcraft.plugins.fst.SignalEvent;
 import org.workcraft.plugins.fst.SignalEvent.Direction;
+import org.workcraft.util.LogUtils;
 import org.workcraft.util.Pair;
 import org.workcraft.exceptions.FormatException;
 
@@ -78,6 +81,7 @@ TOKEN :
 {
     <COMMENT : "#" (~["\r", "\n"])*>
 |   <LINEBREAK : ((<COMMENT>)? ["\r", "\n"])+>
+|   <MODEL_NAME : ".model" | ".name">
 |   <INPUT_HEADER : ".inputs">
 |   <OUTPUT_HEADER : ".outputs">
 |   <INTERNAL_HEADER : ".internal">
@@ -119,12 +123,17 @@ Fst parse() :
 
 void header() :
 {
+    Token t;
     List<String> list;
 }
 {
     (<LINEBREAK>)*
     (
-        <INPUT_HEADER> list = stringList()
+        <MODEL_NAME> t = <NAME>
+        {
+            fst.setTitle(t.image);
+        }
+    |   <INPUT_HEADER> list = stringList()
         {
             addSignals(list, Type.INPUT);
         }
@@ -140,7 +149,10 @@ void header() :
         {
             addSignals(list, Type.DUMMY);
         }
-    |   <UNSUPPORTED_HEADER> <REST>
+    |   t = <UNSUPPORTED_HEADER> <REST>
+        {
+            LogUtils.logWarningLine("Unsupported keyword '" + t.image + "' in line " + t.beginLine + ". The whole line is ignored.");
+        }
     )
 }
 

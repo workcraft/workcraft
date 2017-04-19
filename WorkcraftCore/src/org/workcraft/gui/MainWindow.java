@@ -1002,8 +1002,11 @@ public class MainWindow extends JFrame {
                 if (importer.accept(file)) {
                     try {
                         ModelEntry me = Import.importFromFile(importer, file);
-                        String title = FileUtils.getFileNameWithoutExtension(file);
-                        me.getMathModel().setTitle(title);
+                        String title = me.getMathModel().getTitle();
+                        if ((title == null) || title.isEmpty()) {
+                            title = FileUtils.getFileNameWithoutExtension(file);
+                            me.getMathModel().setTitle(title);
+                        }
                         framework.createWork(me, Path.<String>empty(), file.getName());
                         lastOpenPath = file.getParent();
                         break;

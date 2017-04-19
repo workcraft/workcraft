@@ -22,6 +22,7 @@ import org.workcraft.util.XmlUtil;
 
 public class SVGExporter implements Exporter {
 
+    @Override
     public void export(Model model, OutputStream out) throws IOException, SerialisationException {
         if (model == null) {
             throw new SerialisationException("Not a visual model");
@@ -40,14 +41,17 @@ public class SVGExporter implements Exporter {
         }
     }
 
+    @Override
     public String getDescription() {
         return ".svg (Batik SVG generator)";
     }
 
+    @Override
     public String getExtenstion() {
         return ".svg";
     }
 
+    @Override
     public int getCompatibility(Model model) {
         if (model instanceof VisualModel) {
             return Exporter.GENERAL_COMPATIBILITY;
@@ -60,4 +64,5 @@ public class SVGExporter implements Exporter {
     public UUID getTargetFormat() {
         return Format.SVG;
     }
+
 }
