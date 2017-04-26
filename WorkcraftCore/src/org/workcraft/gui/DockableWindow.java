@@ -1,6 +1,7 @@
 package org.workcraft.gui;
 
 import java.awt.Component;
+import java.awt.Container;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -82,6 +83,15 @@ public class DockableWindow extends AbstractDockable {
     public void setMaximized(boolean maximized) {
         panel.setMaximized(maximized);
         updateHeaders(this.getDockingPort(), mainWindow.getDefaultActionListener());
+        if (maximized) {
+            for (DockableWindowTabListener l: tabListeners) {
+                l.windowMaximised();
+            }
+        } else {
+            for (DockableWindowTabListener l: tabListeners) {
+                l.windowRestored();
+            }
+        }
     }
 
     public boolean isClosed() {
@@ -121,7 +131,8 @@ public class DockableWindow extends AbstractDockable {
                 JTabbedPane tabbedPane = (JTabbedPane) dockable.getComponent().getParent();
                 for (int i = 0; i < tabbedPane.getComponentCount(); i++) {
                     if (dockable.getComponent() == tabbedPane.getComponentAt(i)) {
-                        tabbedPane.setTabComponentAt(i, new DockableTab(dockable, actionListener));
+                        DockableTab dockableTab = new DockableTab(dockable, actionListener);
+                        tabbedPane.setTabComponentAt(i, dockableTab);
                         break;
                     }
                 }
@@ -154,23 +165,23 @@ public class DockableWindow extends AbstractDockable {
     }
 
     public void processTabEvents() {
-        if (getComponent().getParent() instanceof JTabbedPane) {
-            JTabbedPane tabbedPane = (JTabbedPane) getComponent().getParent();
+        Container parent = getComponent().getParent();
+        if (parent instanceof JTabbedPane) {
+            JTabbedPane tabbedPane = (JTabbedPane) parent;
             if (!inTab) {
                 inTab = true;
                 for (DockableWindowTabListener l: tabListeners) {
                     l.dockedInTab(tabbedPane, getTabIndex(tabbedPane, this));
                 }
             }
-            if (!Arrays.asList(tabbedPane.getChangeListeners()).contains(tabChangeListener)) {
+            List<ChangeListener> tabbedPaneListeners = Arrays.asList(tabbedPane.getChangeListeners());
+            if (!tabbedPaneListeners.contains(tabChangeListener)) {
                 tabbedPane.addChangeListener(tabChangeListener);
             }
-        } else {
-            if (inTab) {
-                inTab = false;
-                for (DockableWindowTabListener l: tabListeners) {
-                    l.dockedStandalone();
-                }
+        } else if (inTab) {
+            inTab = false;
+            for (DockableWindowTabListener l: tabListeners) {
+                l.dockedStandalone();
             }
         }
     }
