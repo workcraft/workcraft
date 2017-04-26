@@ -8,8 +8,8 @@ import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.graph.tools.GraphEditorKeyListener;
 
 class GraphEditorPanelKeyListener implements KeyListener {
-    GraphEditorPanel editor;
-    GraphEditorKeyListener forwardListener;
+    private final GraphEditorPanel editor;
+    private final GraphEditorKeyListener forwardListener;
 
     GraphEditorPanelKeyListener(GraphEditorPanel editor, GraphEditorKeyListener forwardListener) {
         this.editor = editor;

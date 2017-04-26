@@ -15,9 +15,8 @@ public class EditorWindowTabListener implements DockableWindowTabListener {
 
     @Override
     public void tabSelected(JTabbedPane tabbedPane, int tabIndex) {
-        final Framework framework = Framework.getInstance();
-        MainWindow mainWindow = framework.getMainWindow();
-        mainWindow.requestFocus(editor);
+        setNonFocusable(tabbedPane);
+        requestEditorFocus();
     }
 
     @Override
@@ -26,14 +25,36 @@ public class EditorWindowTabListener implements DockableWindowTabListener {
 
     @Override
     public void dockedStandalone() {
+        requestEditorFocus();
     }
 
     @Override
     public void dockedInTab(JTabbedPane tabbedPane, int tabIndex) {
+        setNonFocusable(tabbedPane);
+        requestEditorFocus();
     }
 
     @Override
     public void headerClicked() {
+        requestEditorFocus();
+    }
+
+    @Override
+    public void windowMaximised() {
+        requestEditorFocus();
+    }
+
+    @Override
+    public void windowRestored() {
+        requestEditorFocus();
+    }
+
+    private void setNonFocusable(JTabbedPane tabbedPane) {
+        // Set non-focusable, so that tab activation does not steal the focus form the included component.
+        tabbedPane.setFocusable(false);
+    }
+
+    private void requestEditorFocus() {
         final Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
         mainWindow.requestFocus(editor);

@@ -225,10 +225,7 @@ public class MainWindow extends JFrame {
         final GraphEditorPanel editor = new GraphEditorPanel(we);
         String title = getTitle(we);
         final DockableWindow editorWindow;
-        int options = DockableWindowContentPanel.CLOSE_BUTTON;
-        // FIXME: Maximised tabs confuse EditorWindowTabListener that sets editorInFocus,
-        //        therefore the maximise button is temporary removed from the dockable windows.
-        // options |= DockableWindowContentPanel.MAXIMIZE_BUTTON;
+        int options = DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON;
         if (editorWindows.isEmpty()) {
             editorWindow = createDockableWindow(editor, title, documentPlaceholder, options,
                     DockingConstants.CENTER_REGION, "Document" + we.getWorkspacePath());
@@ -236,16 +233,29 @@ public class MainWindow extends JFrame {
             DockingManager.unregisterDockable(documentPlaceholder);
             utilityWindows.remove(documentPlaceholder);
         } else {
+            unmaximiseAllDockableWindows();
             DockableWindow firstEditorWindow = editorWindows.values().iterator().next().iterator().next();
             editorWindow = createDockableWindow(editor, title, firstEditorWindow, options,
                     DockingConstants.CENTER_REGION, "Document" + we.getWorkspacePath());
         }
-        editorWindow.addTabListener(new EditorWindowTabListener(editor));
+        EditorWindowTabListener tabListener = new EditorWindowTabListener(editor);
+        editorWindow.addTabListener(tabListener);
         editorWindows.put(we, editorWindow);
         requestFocus(editor);
         setWorkActionsEnableness(true);
         editor.zoomFit();
         return editor;
+    }
+
+    private void unmaximiseAllDockableWindows() {
+        for (LinkedList<DockableWindow> dockableWindows: editorWindows.values()) {
+            for (DockableWindow dockableWindow: dockableWindows) {
+                if (dockableWindow.isMaximized()) {
+                    DockingManager.toggleMaximized(dockableWindow);
+                    dockableWindow.setMaximized(false);
+                }
+            }
+        }
     }
 
     private void registerUtilityWindow(DockableWindow dockableWindow) {
@@ -696,25 +706,24 @@ public class MainWindow extends JFrame {
         }
     }
 
-    public void requestFocus(GraphEditorPanel sender) {
-        sender.requestFocusInWindow();
-        if (editorInFocus != sender) {
-            editorInFocus = sender;
+    public void requestFocus(GraphEditorPanel editor) {
+        editor.requestFocusInWindow();
+        if (editorInFocus != editor) {
+            editorInFocus = editor;
 
             WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
             mainMenu.setMenuForWorkspaceEntry(we);
 
-            ToolboxPanel toolBox = sender.getToolBox();
+            ToolboxPanel toolBox = editorInFocus.getToolBox();
             toolControlsWindow.setContent(toolBox);
             editorToolsWindow.setContent(toolBox.getControlPanel());
 
             GraphEditorTool selectedTool = toolBox.getSelectedTool();
             selectedTool.setup(editorInFocus);
-            sender.updatePropertyView();
+            editorInFocus.updatePropertyView();
 
             Framework.getInstance().updateJavaScript(we);
         }
-        editorInFocus.requestFocus();
     }
 
     private void printCause(Throwable e) {

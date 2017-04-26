@@ -72,6 +72,27 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     public static final String TITLE_SUFFIX_SELECTED_ELEMENTS = " selected elements";
     private static final int VIEWPORT_MARGIN = 25;
 
+    public class GraphEditorFocusListener implements FocusListener {
+        private final GraphEditorPanel editor;
+
+        public GraphEditorFocusListener(GraphEditorPanel editor) {
+            this.editor = editor;
+        }
+
+        @Override
+        public void focusGained(FocusEvent e) {
+            final Framework framework = Framework.getInstance();
+            MainWindow mainWindow = framework.getMainWindow();
+            mainWindow.requestFocus(editor);
+            repaint();
+        }
+
+        @Override
+        public void focusLost(FocusEvent e) {
+            repaint();
+        }
+    }
+
     class Resizer implements ComponentListener {
 
         @Override
@@ -90,18 +111,6 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
         @Override
         public void componentShown(ComponentEvent e) {
-        }
-    }
-
-    public class GraphEditorFocusListener implements FocusListener {
-        @Override
-        public void focusGained(FocusEvent e) {
-            repaint();
-        }
-
-        @Override
-        public void focusLost(FocusEvent e) {
-            repaint();
         }
     }
 
@@ -201,14 +210,14 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
         GraphEditorPanelMouseListener mouseListener = new GraphEditorPanelMouseListener(this, toolboxPanel);
         GraphEditorPanelKeyListener keyListener = new GraphEditorPanelKeyListener(this, toolboxPanel);
+        GraphEditorFocusListener focusListener = new GraphEditorFocusListener(this);
 
         addMouseMotionListener(mouseListener);
         addMouseListener(mouseListener);
         addMouseWheelListener(mouseListener);
-        addFocusListener(new GraphEditorFocusListener());
-        addComponentListener(new Resizer());
-
         addKeyListener(keyListener);
+        addFocusListener(focusListener);
+        addComponentListener(new Resizer());
 
         add(overlay, BorderLayout.CENTER);
 

@@ -8,4 +8,6 @@ public interface DockableWindowTabListener {
     void tabSelected(JTabbedPane pane, int index);
     void tabDeselected(JTabbedPane pane, int index);
     void headerClicked();
+    void windowMaximised();
+    void windowRestored();
 }

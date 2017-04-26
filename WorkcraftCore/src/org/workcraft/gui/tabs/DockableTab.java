@@ -41,20 +41,22 @@ public class DockableTab extends JPanel {
         label.setFocusable(false);
         label.setOpaque(false);
 
-        TabButton close = null;
+        TabButton closeButton = null;
         if ((dockableWindow.getOptions() & DockableWindowContentPanel.MAXIMIZE_BUTTON) != 0) {
-            TabButton max = new TabButton("\u2191", "Maximize window", new ViewAction(dockableWindow.getID(), ViewAction.MAXIMIZE_ACTION), actionListener);
-            buttonsPanel.add(max);
+            ViewAction viewAction = new ViewAction(dockableWindow.getID(), ViewAction.MAXIMIZE_ACTION);
+            TabButton maxButton = new TabButton("\u2191", "Maximize window", viewAction, actionListener);
+            buttonsPanel.add(maxButton);
             buttonsPanel.add(Box.createRigidArea(new Dimension(2, 0)));
         }
 
         if ((dockableWindow.getOptions() & DockableWindowContentPanel.CLOSE_BUTTON) != 0) {
-            close = new TabButton("\u00d7", "Close window", new ViewAction(dockableWindow.getID(), ViewAction.CLOSE_ACTION), actionListener);
-            buttonsPanel.add(close);
+            ViewAction viewAction = new ViewAction(dockableWindow.getID(), ViewAction.CLOSE_ACTION);
+            closeButton = new TabButton("\u00d7", "Close window", viewAction, actionListener);
+            buttonsPanel.add(closeButton);
         }
 
         Dimension x = label.getPreferredSize();
-        Dimension y = (close != null) ? close.getPreferredSize() : x;
+        Dimension y = (closeButton != null) ? closeButton.getPreferredSize() : x;
 
         this.add(label, BorderLayout.CENTER);
         this.add(buttonsPanel, BorderLayout.EAST);

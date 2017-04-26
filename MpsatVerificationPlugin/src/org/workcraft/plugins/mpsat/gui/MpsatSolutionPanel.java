@@ -2,7 +2,6 @@ package org.workcraft.plugins.mpsat.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -75,20 +74,11 @@ public class MpsatSolutionPanel extends JPanel {
             public void actionPerformed(ActionEvent e) {
                 final Framework framework = Framework.getInstance();
                 final MainWindow mainWindow = framework.getMainWindow();
-                GraphEditorPanel currentEditor = mainWindow.getCurrentEditor();
-                if (currentEditor == null || currentEditor.getWorkspaceEntry() != we) {
-                    final List<GraphEditorPanel> editors = mainWindow.getEditors(we);
-                    if (editors.size() > 0) {
-                        currentEditor = editors.get(0);
-                        mainWindow.requestFocus(currentEditor);
-                    } else {
-                        currentEditor = mainWindow.createEditorWindow(we);
-                    }
-                }
-                final ToolboxPanel toolbox = currentEditor.getToolBox();
+                GraphEditorPanel editor = mainWindow.getEditor(we);
+                final ToolboxPanel toolbox = editor.getToolBox();
                 final SimulationTool tool = toolbox.getToolInstance(SimulationTool.class);
                 toolbox.selectTool(tool);
-                tool.setTrace(solution.getMainTrace(), solution.getBranchTrace(), currentEditor);
+                tool.setTrace(solution.getMainTrace(), solution.getBranchTrace(), editor);
                 String comment = solution.getComment();
                 if ((comment != null) && !comment.isEmpty()) {
                     comment = comment.replaceAll("\\<.*?>", "");
