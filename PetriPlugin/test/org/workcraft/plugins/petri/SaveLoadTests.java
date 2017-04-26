@@ -46,7 +46,7 @@ public class SaveLoadTests {
     //@Test
     public void testMathModelLoad() throws Exception {
         Framework framework = Framework.getInstance();
-        framework.getPluginManager().reconfigureManifest(false);
+        framework.getPluginManager().initPlugins();
 
         final CompatibilityManager compatibilityManager = framework.getCompatibilityManager();
         ByteArrayInputStream bis = compatibilityManager.process(new Base16Reader(testDataMathModel), null);
@@ -61,7 +61,7 @@ public class SaveLoadTests {
     //@Test
     public void testVisualModelLoad() throws Exception {
         Framework framework = Framework.getInstance();
-        framework.getPluginManager().reconfigureManifest(false);
+        framework.getPluginManager().initPlugins();
 
         final CompatibilityManager compatibilityManager = framework.getCompatibilityManager();
         ByteArrayInputStream bis = compatibilityManager.process(new Base16Reader(testDataVisualModel), null);
@@ -90,7 +90,7 @@ public class SaveLoadTests {
     private void ensureSampleUpToDate(String sampleVarName, Model model, String currentValue) throws SerialisationException, Exception {
         Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
-        pm.reconfigureManifest(false);
+        pm.initPlugins();
 
         StringWriter writer = new StringWriter();
         framework.saveModel(new ModelEntry(new PetriNetDescriptor(), model), new Base16Writer(writer));

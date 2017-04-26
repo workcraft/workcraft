@@ -27,7 +27,7 @@ public class CircuitConversionCommandsTests {
     @BeforeClass
     public static void initPlugins() {
         final Framework framework = Framework.getInstance();
-        framework.initPlugins(false);
+        framework.initPlugins();
     }
 
     @Test

@@ -5,9 +5,7 @@ import java.net.URISyntaxException;
 
 import org.workcraft.Framework;
 import org.workcraft.Info;
-import org.workcraft.PluginManager;
 import org.workcraft.exceptions.OperationCancelledException;
-import org.workcraft.exceptions.PluginInstantiationException;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.util.GUI;
@@ -123,23 +121,6 @@ public class MainWindowActions {
             try {
                 mainWindow.closeEditorWindows();
             } catch (OperationCancelledException e) {
-            }
-        }
-    };
-
-    public static final Action RECONFIGURE_PLUGINS_ACTION = new Action() {
-        @Override
-        public String getText() {
-            return "Reconfigure plugins";
-        }
-        @Override
-        public void run() {
-            final Framework framework = Framework.getInstance();
-            PluginManager pm = framework.getPluginManager();
-            try {
-                pm.reconfigureManifest(true);
-            } catch (PluginInstantiationException e) {
-                LogUtils.logErrorLine(e.getMessage());
             }
         }
     };
