@@ -11,18 +11,18 @@ import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
 import org.workcraft.exceptions.PluginInstantiationException;
+import org.workcraft.util.LogUtils;
 
 public class PluginFinder {
 
     public static List<Class<?>> search(File starting) throws PluginInstantiationException {
         List<Class<?>> result = new ArrayList<Class<?>>();
-
         search(starting, starting, result);
-
         return result;
     }
 
     private static class ClassFileFilter implements FilenameFilter {
+        @Override
         public boolean accept(File dir, String name) {
             File f = new File(dir.getPath() + File.separator + name);
             if (f.isDirectory()) {
@@ -44,7 +44,6 @@ public class PluginFinder {
 
         if (current.isDirectory()) {
             File[] list = current.listFiles(classFilter);
-
             for (File f : list) {
                 if (f.isDirectory()) {
                     search(starting, f, result);
@@ -76,7 +75,6 @@ public class PluginFinder {
         }
 
         String className;
-
         if (path.startsWith(File.separator)) {
             className = path.substring(File.separator.length());
         } else {
@@ -84,32 +82,28 @@ public class PluginFinder {
         }
 
         className = className.replace(File.separatorChar, '.').replace('/', '.');
-
         if (!className.startsWith("org.workcraft.plugins")) {
             return;
         }
 
         className = className.substring(0, className.length() - ".class".length());
-
         try {
             Class<?> cls = Class.forName(className);
-
             if (!Modifier.isAbstract(cls.getModifiers())) {
                 if (Plugin.class.isAssignableFrom(cls)) {
                     try {
                         cls.getConstructor();
                         result.add(cls);
-                        System.out.println("plugin " + cls.getName());
                     } catch (NoSuchMethodException ex) {
-                        System.out.println("plugin " + cls.getName() + " does not have a default constructor. skipping.");
+                        LogUtils.logWarningLine("Plugin '" + cls.getName() + "' does not have a default constructor. Skipping.");
                     }
                 }
             }
-
         } catch (LinkageError e) {
-            System.out.println("bad class: " + e.getMessage());
+            LogUtils.logErrorLine("Bad class: " + e.getMessage());
         } catch (ClassNotFoundException e) {
             throw new PluginInstantiationException(e);
         }
     }
+
 }

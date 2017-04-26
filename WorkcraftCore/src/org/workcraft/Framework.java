@@ -39,7 +39,6 @@ import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.LayoutException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.OperationCancelledException;
@@ -284,13 +283,13 @@ public final class Framework {
         return instance;
     }
 
-    private void loadConfigPlugins() {
+    private void loadPluginsSettings() {
         for (PluginInfo<? extends Settings> info : pluginManager.getPlugins(Settings.class)) {
             info.getSingleton().load(config);
         }
     }
 
-    private void saveConfigPlugins() {
+    private void savePluginsSettings() {
         for (PluginInfo<? extends Settings> info : pluginManager.getPlugins(Settings.class)) {
             info.getSingleton().save(config);
         }
@@ -298,18 +297,18 @@ public final class Framework {
 
     public void resetConfig() {
         config = new Config();
-        loadConfigPlugins();
+        loadPluginsSettings();
     }
 
     public void loadConfig() {
         File file = new File(CONFIG_FILE_PATH);
         LogUtils.logMessageLine("Loading global preferences from " + file.getAbsolutePath());
         config.load(file);
-        loadConfigPlugins();
+        loadPluginsSettings();
     }
 
     public void saveConfig() {
-        saveConfigPlugins();
+        savePluginsSettings();
         File file = new File(CONFIG_FILE_PATH);
         LogUtils.logMessageLine("Saving global preferences to " + file.getAbsolutePath());
         config.save(file);
@@ -323,7 +322,7 @@ public final class Framework {
     public void setConfigVar(String key, String value) {
         setConfigCoreVar(key, value);
         // For consistency, update plugin settings.
-        loadConfigPlugins();
+        loadPluginsSettings();
     }
 
     public String getConfigCoreVar(String key) {
@@ -333,12 +332,12 @@ public final class Framework {
 
     public String getConfigVar(String key) {
         // For consistency, flush plugin settings.
-        saveConfigPlugins();
+        savePluginsSettings();
         return getConfigCoreVar(key);
     }
 
     public void initJavaScript() {
-        LogUtils.logMessageLine("Initialising javascript...");
+        LogUtils.logMessageLine("Initialising JavaScript...");
         contextFactory.call(new ContextAction() {
             @Override
             public Object run(Context cx) {
@@ -935,14 +934,10 @@ public final class Framework {
         }
     }
 
-    public void initPlugins(boolean load) {
+    public void initPlugins() {
         try {
-            if (load) {
-                pluginManager.loadManifest();
-            } else {
-                pluginManager.reconfigureManifest(false);
-            }
-        } catch (IOException | FormatException | PluginInstantiationException e) {
+            pluginManager.initPlugins();
+        } catch (PluginInstantiationException e) {
             e.printStackTrace();
         }
     }

@@ -25,7 +25,7 @@ public class CircuitLayoutTests {
     @BeforeClass
     public static void initPlugins() {
         final Framework framework = Framework.getInstance();
-        framework.initPlugins(false);
+        framework.initPlugins();
         switch (DesktopApi.getOs()) {
         case LINUX:
             CircuitSettings.setGateLibrary("../dist-template/linux/libraries/workcraft.lib");

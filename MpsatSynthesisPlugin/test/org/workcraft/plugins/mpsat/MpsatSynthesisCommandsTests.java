@@ -27,7 +27,7 @@ public class MpsatSynthesisCommandsTests {
     @BeforeClass
     public static void initPlugins() {
         final Framework framework = Framework.getInstance();
-        framework.initPlugins(false);
+        framework.initPlugins();
         switch (DesktopApi.getOs()) {
         case LINUX:
             PunfSettings.setCommand("../dist-template/linux/tools/UnfoldingTools/punf");

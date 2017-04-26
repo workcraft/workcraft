@@ -26,7 +26,7 @@ public class PetrifySynthesisCommandsTests {
     @BeforeClass
     public static void initPlugins() {
         final Framework framework = Framework.getInstance();
-        framework.initPlugins(false);
+        framework.initPlugins();
         switch (DesktopApi.getOs()) {
         case LINUX:
             PetrifySettings.setCommand("../dist-template/linux/tools/PetrifyTools/petrify");
