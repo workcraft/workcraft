@@ -1,7 +1,6 @@
 package org.workcraft.plugins.mpsat.tasks;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -24,7 +23,6 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.FileUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -35,13 +33,13 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
     private final MpsatSynthesisChainTask task;
     private WorkspaceEntry result;
 
-    public MpsatSynthesisResultHandler(MpsatSynthesisChainTask task) {
+    public MpsatSynthesisResultHandler(final MpsatSynthesisChainTask task) {
         this.task = task;
         this.result = null;
     }
 
     @Override
-    public void finished(final Result<? extends MpsatSynthesisChainResult> result, String description) {
+    public void finished(final Result<? extends MpsatSynthesisChainResult> result, final String description) {
         switch (result.getOutcome()) {
         case FINISHED:
             handleSuccess(result);
@@ -55,9 +53,9 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
     }
 
     private void handleSuccess(final Result<? extends MpsatSynthesisChainResult> result) {
-        MpsatSynthesisChainResult returnValue = result.getReturnValue();
+        final MpsatSynthesisChainResult returnValue = result.getReturnValue();
         final MpsatSynthesisMode mpsatMode = returnValue.getMpsatSettings().getMode();
-        ExternalProcessResult mpsatReturnValue = returnValue.getMpsatResult().getReturnValue();
+        final ExternalProcessResult mpsatReturnValue = returnValue.getMpsatResult().getReturnValue();
         switch (mpsatMode) {
         case COMPLEX_GATE_IMPLEMENTATION:
             handleSynthesisResult(mpsatReturnValue, false, RenderType.GATE);
@@ -72,7 +70,7 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
             handleSynthesisResult(mpsatReturnValue, false, RenderType.GATE);
             break;
         default:
-            MainWindow mainWindow = Framework.getInstance().getMainWindow();
+            final MainWindow mainWindow = Framework.getInstance().getMainWindow();
             JOptionPane.showMessageDialog(mainWindow,
                     "Warning: MPSat synthesis mode \'" + mpsatMode.getArgument() + "\' is not (yet) supported.",
                     TITLE, JOptionPane.WARNING_MESSAGE);
@@ -80,19 +78,19 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
         }
     }
 
-    private void handleSynthesisResult(ExternalProcessResult mpsatResult, boolean sequentialAssign, RenderType renderType) {
+    private void handleSynthesisResult(final ExternalProcessResult mpsatResult, final boolean sequentialAssign, final RenderType renderType) {
         final String log = new String(mpsatResult.getOutput());
         if ((log != null) && !log.isEmpty()) {
             System.out.println(log);
             System.out.println();
         }
-        byte[] eqnOutput = mpsatResult.getFileData(MpsatSynthesisTask.EQN_FILE_NAME);
+        final byte[] eqnOutput = mpsatResult.getFileData(MpsatSynthesisTask.EQN_FILE_NAME);
         if (eqnOutput != null) {
             LogUtils.logInfoLine("MPSat synthesis result in EQN format:");
             System.out.println(new String(eqnOutput));
             System.out.println();
         }
-        byte[] verilogOutput = mpsatResult.getFileData(MpsatSynthesisTask.VERILOG_FILE_NAME);
+        final byte[] verilogOutput = mpsatResult.getFileData(MpsatSynthesisTask.VERILOG_FILE_NAME);
         if (verilogOutput != null) {
             LogUtils.logInfoLine("MPSat synthesis result in Verilog format:");
             System.out.println(new String(verilogOutput));
@@ -100,24 +98,21 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
         }
         if (MpsatSynthesisSettings.getOpenSynthesisResult() && (verilogOutput != null)) {
             try {
-                ByteArrayInputStream in = new ByteArrayInputStream(verilogOutput);
-                VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
-                final Circuit circuit = verilogImporter.importCircuit(in);
-                final WorkspaceEntry we = task.getWorkspaceEntry();
-                Path<String> path = we.getWorkspacePath();
-                final Path<String> directory = path.getParent();
-                final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
-                final ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
-
                 final Framework framework = Framework.getInstance();
-                result = framework.createWork(me, directory, name);
-                VisualModel visualModel = result.getModelEntry().getVisualModel();
+                final ByteArrayInputStream in = new ByteArrayInputStream(verilogOutput);
+                final VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
+                final Circuit circuit = verilogImporter.importCircuit(in);
+                final ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
+                final WorkspaceEntry we = task.getWorkspaceEntry();
+                final Path<String> path = we.getWorkspacePath();
+                result = framework.createWork(me, path);
+                final VisualModel visualModel = result.getModelEntry().getVisualModel();
                 if (visualModel instanceof VisualCircuit) {
-                    VisualCircuit visualCircuit = (VisualCircuit) visualModel;
-                    for (VisualFunctionComponent component: visualCircuit.getVisualFunctionComponents()) {
+                    final VisualCircuit visualCircuit = (VisualCircuit) visualModel;
+                    for (final VisualFunctionComponent component: visualCircuit.getVisualFunctionComponents()) {
                         component.setRenderType(renderType);
                     }
-                    String title = we.getModelEntry().getModel().getTitle();
+                    final String title = we.getModelEntry().getModel().getTitle();
                     visualCircuit.setTitle(title);
                     if (!we.getFile().exists()) {
                         JOptionPane.showMessageDialog(null,
@@ -142,7 +137,7 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
                         }
                     });
                 }
-            } catch (DeserialisationException e) {
+            } catch (final DeserialisationException e) {
                 throw new RuntimeException(e);
             }
         }
@@ -150,42 +145,42 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
 
     private void handleFailure(final Result<? extends MpsatSynthesisChainResult> result) {
         String errorMessage = "Error: MPSat synthesis failed.";
-        Throwable genericCause = result.getCause();
+        final Throwable genericCause = result.getCause();
         if (genericCause != null) {
             // Exception was thrown somewhere in the chain task run() method (not in any of the subtasks)
             errorMessage += ERROR_CAUSE_PREFIX + genericCause.toString();
         } else {
-            MpsatSynthesisChainResult returnValue = result.getReturnValue();
-            Result<? extends Object> exportResult = (returnValue == null) ? null : returnValue.getExportResult();
-            Result<? extends ExternalProcessResult> punfResult = (returnValue == null) ? null : returnValue.getPunfResult();
-            Result<? extends ExternalProcessResult> mpsatResult = (returnValue == null) ? null : returnValue.getMpsatResult();
+            final MpsatSynthesisChainResult returnValue = result.getReturnValue();
+            final Result<? extends Object> exportResult = (returnValue == null) ? null : returnValue.getExportResult();
+            final Result<? extends ExternalProcessResult> punfResult = (returnValue == null) ? null : returnValue.getPunfResult();
+            final Result<? extends ExternalProcessResult> mpsatResult = (returnValue == null) ? null : returnValue.getMpsatResult();
             if ((exportResult != null) && (exportResult.getOutcome() == Outcome.FAILED)) {
                 errorMessage += "\n\nCould not export the model as a .g file.";
-                Throwable exportCause = exportResult.getCause();
+                final Throwable exportCause = exportResult.getCause();
                 if (exportCause != null) {
                     errorMessage += ERROR_CAUSE_PREFIX + exportCause.toString();
                 }
             } else if ((punfResult != null) && (punfResult.getOutcome() == Outcome.FAILED)) {
                 errorMessage += "\n\nPunf could not build the unfolding prefix.";
-                Throwable punfCause = punfResult.getCause();
+                final Throwable punfCause = punfResult.getCause();
                 if (punfCause != null) {
                     errorMessage += ERROR_CAUSE_PREFIX + punfCause.toString();
                 } else {
-                    ExternalProcessResult punfReturnValue = punfResult.getReturnValue();
+                    final ExternalProcessResult punfReturnValue = punfResult.getReturnValue();
                     if (punfReturnValue != null) {
-                        String punfError = punfReturnValue.getErrorsHeadAndTail();
+                        final String punfError = punfReturnValue.getErrorsHeadAndTail();
                         errorMessage += ERROR_CAUSE_PREFIX + punfError;
                     }
                 }
             } else if ((mpsatResult != null) && (mpsatResult.getOutcome() == Outcome.FAILED)) {
                 errorMessage += "\n\nMPSat did not execute as expected.";
-                Throwable mpsatCause = mpsatResult.getCause();
+                final Throwable mpsatCause = mpsatResult.getCause();
                 if (mpsatCause != null) {
                     errorMessage += ERROR_CAUSE_PREFIX + mpsatCause.toString();
                 } else {
-                    ExternalProcessResult mpsatReturnValue = mpsatResult.getReturnValue();
+                    final ExternalProcessResult mpsatReturnValue = mpsatResult.getReturnValue();
                     if (mpsatReturnValue != null) {
-                        String mpsatError = mpsatReturnValue.getErrorsHeadAndTail();
+                        final String mpsatError = mpsatReturnValue.getErrorsHeadAndTail();
                         errorMessage += ERROR_CAUSE_PREFIX + mpsatError;
                     }
                 }
@@ -193,7 +188,7 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
                 errorMessage += "\n\nMPSat chain task returned failure status without further explanation.";
             }
         }
-        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        final MainWindow mainWindow = Framework.getInstance().getMainWindow();
         JOptionPane.showMessageDialog(mainWindow, errorMessage, TITLE, JOptionPane.ERROR_MESSAGE);
     }
 

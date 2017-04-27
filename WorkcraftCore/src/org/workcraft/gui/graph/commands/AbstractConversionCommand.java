@@ -30,9 +30,8 @@ public abstract class AbstractConversionCommand implements ScriptableCommand, Me
             return null;
         } else {
             final Framework framework = Framework.getInstance();
-            final Path<String> directory = we.getWorkspacePath().getParent();
-            final String name = we.getWorkspacePath().getNode();
-            return framework.createWork(meDst, directory, name);
+            final Path<String> desiredPath = we.getWorkspacePath();
+            return framework.createWork(meDst, desiredPath);
         }
     }
 

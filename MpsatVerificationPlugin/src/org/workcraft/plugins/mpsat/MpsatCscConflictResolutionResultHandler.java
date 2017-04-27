@@ -1,7 +1,6 @@
 package org.workcraft.plugins.mpsat;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 
 import javax.swing.JOptionPane;
 
@@ -14,7 +13,6 @@ import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.DotGImporter;
 import org.workcraft.tasks.Result;
-import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -24,7 +22,7 @@ public class MpsatCscConflictResolutionResultHandler implements Runnable {
     private final Result<? extends ExternalProcessResult> result;
     private WorkspaceEntry weResult;
 
-    public MpsatCscConflictResolutionResultHandler(WorkspaceEntry we, Result<? extends ExternalProcessResult> result) {
+    public MpsatCscConflictResolutionResultHandler(final WorkspaceEntry we, final Result<? extends ExternalProcessResult> result) {
         this.we = we;
         this.result = result;
         this.weResult = null;
@@ -37,7 +35,7 @@ public class MpsatCscConflictResolutionResultHandler implements Runnable {
         }
         try {
             return new DotGImporter().importSTG(new ByteArrayInputStream(content));
-        } catch (DeserialisationException e) {
+        } catch (final DeserialisationException e) {
             throw new RuntimeException(e);
         }
     }
@@ -45,20 +43,16 @@ public class MpsatCscConflictResolutionResultHandler implements Runnable {
     @Override
     public void run() {
         final Framework framework = Framework.getInstance();
-        Path<String> path = we.getWorkspacePath();
-        String fileName = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
-
-        StgModel model = getResolvedStg();
+        final StgModel model = getResolvedStg();
         if (model == null) {
-            String errorMessage = result.getReturnValue().getErrorsHeadAndTail();
+            final String errorMessage = result.getReturnValue().getErrorsHeadAndTail();
             JOptionPane.showMessageDialog(framework.getMainWindow(),
                     "MPSat output: \n" + errorMessage,
                     "Conflict resolution failed", JOptionPane.WARNING_MESSAGE);
         } else {
-            Path<String> directory = path.getParent();
-            String name = fileName + "_resolved";
-            ModelEntry me = new ModelEntry(new StgDescriptor(), model);
-            weResult = framework.createWork(me, directory, name);
+            final ModelEntry me = new ModelEntry(new StgDescriptor(), model);
+            final Path<String> path = we.getWorkspacePath();
+            weResult = framework.createWork(me, path);
         }
     }
 

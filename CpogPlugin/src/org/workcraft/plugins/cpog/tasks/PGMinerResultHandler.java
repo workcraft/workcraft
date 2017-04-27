@@ -1,6 +1,5 @@
 package org.workcraft.plugins.cpog.tasks;
 
-import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.JOptionPane;
@@ -21,7 +20,6 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -32,21 +30,21 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
     private final boolean createNewWindow;
     private WorkspaceEntry weResult;
 
-    public PGMinerResultHandler(VisualCpog visualCpog, WorkspaceEntry we, boolean createNewWindow) {
+    public PGMinerResultHandler(final VisualCpog visualCpog, final WorkspaceEntry we, final boolean createNewWindow) {
         this.visualCpog = visualCpog;
         this.we = we;
         this.createNewWindow = createNewWindow;
         this.weResult = null;
     }
 
-    public void finished(final Result<? extends ExternalProcessResult> result, String description) {
+    public void finished(final Result<? extends ExternalProcessResult> result, final String description) {
         try {
             SwingUtilities.invokeAndWait(new Runnable() {
 
                 @Override
                 public void run() {
                     final Framework framework = Framework.getInstance();
-                    MainWindow mainWindow = framework.getMainWindow();
+                    final MainWindow mainWindow = framework.getMainWindow();
                     final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
                     final ToolboxPanel toolbox = editor.getToolBox();
                     final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
@@ -55,35 +53,33 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
                                 "Concurrency extraction failed", JOptionPane.ERROR_MESSAGE);
                     } else {
                         if (createNewWindow) {
-                            CpogDescriptor cpogModel = new CpogDescriptor();
-                            MathModel mathModel = cpogModel.createMathModel();
-                            Path<String> path = we.getWorkspacePath();
-                            VisualModelDescriptor v = cpogModel.getVisualModelDescriptor();
+                            final CpogDescriptor cpogModel = new CpogDescriptor();
+                            final MathModel mathModel = cpogModel.createMathModel();
+                            final VisualModelDescriptor v = cpogModel.getVisualModelDescriptor();
                             try {
                                 if (v == null) {
                                     throw new VisualModelInstantiationException(
                                             "visual model is not defined for '" + cpogModel.getDisplayName() + "'.");
                                 }
                                 visualCpog = (VisualCpog) v.create(mathModel);
-                                final Path<String> directory = we.getWorkspacePath().getParent();
-                                final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
                                 final ModelEntry me = new ModelEntry(cpogModel, visualCpog);
-                                weResult = framework.createWork(me, directory, name);
-                            } catch (VisualModelInstantiationException e) {
+                                final Path<String> path = we.getWorkspacePath();
+                                weResult = framework.createWork(me, path);
+                            } catch (final VisualModelInstantiationException e) {
                                 e.printStackTrace();
                             }
                         }
-                        String[] output = new String(result.getReturnValue().getOutput()).split("\n");
+                        final String[] output = new String(result.getReturnValue().getOutput()).split("\n");
 
                         we.captureMemento();
                         try {
                             for (int i = 0; i < output.length; i++) {
-                                String exp = output[i];
+                                final String exp = output[i];
                                 tool.insertExpression(exp, visualCpog, false, false, true, false);
                             }
 
                             we.saveMemento();
-                        } catch (Exception e) {
+                        } catch (final Exception e) {
                             we.cancelMemento();
                         }
                     }

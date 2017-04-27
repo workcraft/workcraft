@@ -515,20 +515,22 @@ public class CircuitToStgConverter {
                 Hierarchy.getChildrenOfType(stg.getRoot(), VisualComponent.class));
         movedComponents.removeAll(unmovedPlaces);
         movedComponents.removeAll(unmovedTransition);
-        Rectangle2D bb = BoundingBoxHelper.mergeBoundingBoxes((Collection) movedComponents);
-        double xPlace = bb.getCenterX() - SCALE_X * 0.5 * unmovedPlaces.size();
-        double yPlace = bb.getMinY() - 2.0 * SCALE_Y;
-        for (VisualComponent component: unmovedPlaces) {
-            Point2D pos = new Point2D.Double(xPlace, yPlace);
-            component.setPosition(pos);
-            xPlace += SCALE_X;
-        }
-        double xTransition = bb.getCenterX() - SCALE_X * 0.5 * unmovedTransition.size();
-        double yTransition = bb.getMinY() - SCALE_Y;
-        for (VisualComponent component: unmovedTransition) {
-            Point2D pos = new Point2D.Double(xTransition, yTransition);
-            component.setPosition(pos);
-            xTransition += SCALE_X;
+        if (!movedComponents.isEmpty()) {
+            Rectangle2D bb = BoundingBoxHelper.mergeBoundingBoxes((Collection) movedComponents);
+            double xPlace = bb.getCenterX() - SCALE_X * 0.5 * unmovedPlaces.size();
+            double yPlace = bb.getMinY() - 2.0 * SCALE_Y;
+            for (VisualComponent component: unmovedPlaces) {
+                Point2D pos = new Point2D.Double(xPlace, yPlace);
+                component.setPosition(pos);
+                xPlace += SCALE_X;
+            }
+            double xTransition = bb.getCenterX() - SCALE_X * 0.5 * unmovedTransition.size();
+            double yTransition = bb.getMinY() - SCALE_Y;
+            for (VisualComponent component: unmovedTransition) {
+                Point2D pos = new Point2D.Double(xTransition, yTransition);
+                component.setPosition(pos);
+                xTransition += SCALE_X;
+            }
         }
     }
 
