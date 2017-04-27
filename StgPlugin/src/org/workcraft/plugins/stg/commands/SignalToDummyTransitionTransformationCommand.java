@@ -17,6 +17,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class SignalToDummyTransitionTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
+
     private HashSet<VisualDummyTransition> dummyTransitions = null;
 
     @Override
@@ -84,7 +85,7 @@ public class SignalToDummyTransitionTransformationCommand extends AbstractTransf
             VisualStg stg = (VisualStg) model;
             VisualSignalTransition signalTransition = (VisualSignalTransition) node;
             VisualDummyTransition dummyTransition = StgUtils.convertSignalToDummyTransition(stg, signalTransition);
-            if (dummyTransitions == null) {
+            if (dummyTransitions != null) {
                 dummyTransitions.add(dummyTransition);
             }
         }

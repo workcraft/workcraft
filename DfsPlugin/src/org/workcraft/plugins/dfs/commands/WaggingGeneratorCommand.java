@@ -61,7 +61,7 @@ public class WaggingGeneratorCommand implements ScriptableCommand {
         int count = 0;
         final Framework framework = Framework.getInstance();
         String ans = JOptionPane.showInputDialog(framework.getMainWindow(),
-                "Please enter the number of wagging branches:", "4");
+                "Enter the number of wagging branches:", "4");
         if (ans != null) {
             try {
                 count = Integer.parseInt(ans);

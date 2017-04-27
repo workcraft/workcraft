@@ -25,6 +25,11 @@ public class CommandsTests {
         "org/workcraft/plugins/stg/commands/vme.stg.work",
     };
 
+    private static final String[] COMPRESSED_HANDSHAKE_STG_WORKS = {
+            "org/workcraft/plugins/stg/commands/handshakes-2.stg.work",
+            "org/workcraft/plugins/stg/commands/handshakes-3.stg.work",
+    };
+
     @BeforeClass
     public static void initPlugins() {
         final Framework framework = Framework.getInstance();
@@ -183,6 +188,39 @@ public class CommandsTests {
             Assert.assertEquals(midPlaces, dstPlaces + dstImplicitPlaceArcs);
             Assert.assertEquals(midTransitions, dstDummyTransitions);
             Assert.assertEquals(0, dstSignalTransitions);
+        }
+    }
+
+    @Test
+    public void testExpandHandshakeTransformationCommand() throws IOException, DeserialisationException {
+        final Framework framework = Framework.getInstance();
+        final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        for (String testStgWork: COMPRESSED_HANDSHAKE_STG_WORKS) {
+            URL srcUrl = classLoader.getResource(testStgWork);
+
+            WorkspaceEntry srcWe = framework.loadWork(srcUrl.getFile());
+            VisualStg srcStg = WorkspaceUtils.getAs(srcWe, VisualStg.class);
+            int srcPlaces = srcStg.getVisualPlaces().size();
+            int srcImplicitPlaceArcs = srcStg.getVisualImplicitPlaceArcs().size();
+            int srcSignalTransitions = srcStg.getVisualSignalTransitions().size();
+            int srcDummyTransitions = srcStg.getVisualDummyTransitions().size();
+            int srcConnections = srcStg.getVisualConnections().size();
+
+            srcStg.selectAll();
+            ExpandHandshakeReqAckTransformationCommand command = new ExpandHandshakeReqAckTransformationCommand();
+            WorkspaceEntry dstWe = command.execute(srcWe);
+            VisualStg dstStg = WorkspaceUtils.getAs(dstWe, VisualStg.class);
+            int dstPlaces = dstStg.getVisualPlaces().size();
+            int dstImplicitPlaceArcs = dstStg.getVisualImplicitPlaceArcs().size();
+            int dstSignalTransitions = dstStg.getVisualSignalTransitions().size();
+            int dstDummyTransitions = dstStg.getVisualDummyTransitions().size();
+            int dstConnections = dstStg.getVisualConnections().size();
+
+            Assert.assertEquals(srcPlaces, dstPlaces);
+            Assert.assertEquals(srcSignalTransitions * 2, dstSignalTransitions);
+            Assert.assertEquals(srcDummyTransitions, dstDummyTransitions);
+            Assert.assertEquals(srcImplicitPlaceArcs + srcSignalTransitions, dstImplicitPlaceArcs);
+            Assert.assertEquals(srcConnections + srcSignalTransitions, dstConnections);
         }
     }
 

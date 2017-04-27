@@ -86,7 +86,7 @@ public class DummyToSignalTransitionTransformationCommand extends AbstractTransf
         if ((model instanceof VisualStg) && (node instanceof VisualDummyTransition)) {
             VisualDummyTransition dummyTransition = (VisualDummyTransition) node;
             VisualSignalTransition signalTransition = StgUtils.convertDummyToSignalTransition((VisualStg) model, dummyTransition);
-            if (signalTransitions == null) {
+            if (signalTransitions != null) {
                 signalTransitions.add(signalTransition);
             }
         }
