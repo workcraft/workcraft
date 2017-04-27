@@ -1,7 +1,6 @@
 package org.workcraft.plugins.petrify.tasks;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -20,7 +19,6 @@ import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderTy
 import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
-import org.workcraft.util.FileUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -34,8 +32,8 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
     private final boolean sequentialAssign;
     private WorkspaceEntry result;
 
-    public PetrifySynthesisResultHandler(WorkspaceEntry we, boolean boxSequentialComponents,
-            boolean boxCombinationalComponents, boolean sequentialAssign) {
+    public PetrifySynthesisResultHandler(final WorkspaceEntry we, final boolean boxSequentialComponents,
+            final boolean boxCombinationalComponents, final boolean sequentialAssign) {
         this.we = we;
         this.boxSequentialComponents = boxSequentialComponents;
         this.boxCombinationalComponents = boxCombinationalComponents;
@@ -44,7 +42,7 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
     }
 
     @Override
-    public void finished(final Result<? extends PetrifySynthesisResult> result, String description) {
+    public void finished(final Result<? extends PetrifySynthesisResult> result, final String description) {
         switch (result.getOutcome()) {
         case FINISHED:
             handleSuccess(result);
@@ -58,39 +56,36 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
     }
 
     private void handleSuccess(final Result<? extends PetrifySynthesisResult> result) {
-        String log = result.getReturnValue().getLog();
+        final String log = result.getReturnValue().getLog();
         if ((log != null) && !log.isEmpty()) {
             LogUtils.logInfoLine("Petrify synthesis log:");
             System.out.println(log);
         }
 
-        String equations = result.getReturnValue().getEquation();
+        final String equations = result.getReturnValue().getEquation();
         if ((equations != null) && !equations.isEmpty()) {
             LogUtils.logInfoLine("Petrify synthesis result in EQN format:");
             System.out.println(equations);
         }
 
-        String verilog = result.getReturnValue().getVerilog();
+        final String verilog = result.getReturnValue().getVerilog();
         if (PetrifySettings.getOpenSynthesisResult() && (verilog != null) && !verilog.isEmpty()) {
             LogUtils.logInfoLine("Petrify synthesis result in Verilog format:");
             System.out.println(verilog);
             try {
-                ByteArrayInputStream in = new ByteArrayInputStream(verilog.getBytes());
-                VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
+                final ByteArrayInputStream in = new ByteArrayInputStream(verilog.getBytes());
+                final VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
                 final Circuit circuit = verilogImporter.importCircuit(in);
-                Path<String> path = we.getWorkspacePath();
-                final Path<String> directory = path.getParent();
-                final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
+                final Path<String> path = we.getWorkspacePath();
                 final ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
-
                 final Framework framework = Framework.getInstance();
                 final MainWindow mainWindow = framework.getMainWindow();
-                this.result = framework.createWork(me, directory, name);
-                VisualModel visualModel = this.result.getModelEntry().getVisualModel();
+                this.result = framework.createWork(me, path);
+                final VisualModel visualModel = this.result.getModelEntry().getVisualModel();
                 if (visualModel instanceof VisualCircuit) {
-                    VisualCircuit visualCircuit = (VisualCircuit) visualModel;
+                    final VisualCircuit visualCircuit = (VisualCircuit) visualModel;
                     setComponentsRenderStyle(visualCircuit);
-                    String title = we.getModelEntry().getModel().getTitle();
+                    final String title = we.getModelEntry().getModel().getTitle();
                     visualCircuit.setTitle(title);
                     if (!we.getFile().exists()) {
                         JOptionPane.showMessageDialog(mainWindow,
@@ -113,14 +108,14 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
                         }
                     });
                 }
-            } catch (DeserialisationException e) {
+            } catch (final DeserialisationException e) {
                 throw new RuntimeException(e);
             }
         }
     }
 
-    private void setComponentsRenderStyle(VisualCircuit visualCircuit) {
-        for (VisualFunctionComponent component: visualCircuit.getVisualFunctionComponents()) {
+    private void setComponentsRenderStyle(final VisualCircuit visualCircuit) {
+        for (final VisualFunctionComponent component: visualCircuit.getVisualFunctionComponents()) {
             if (component.isSequentialGate()) {
                 if (boxSequentialComponents) {
                     component.setRenderType(RenderType.BOX);
@@ -135,11 +130,11 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
 
     private void handleFailure(final Result<? extends PetrifySynthesisResult> result) {
         String errorMessage = "Error: Petrify synthesis failed.";
-        PetrifySynthesisResult returnValue = result.getReturnValue();
+        final PetrifySynthesisResult returnValue = result.getReturnValue();
         if (returnValue != null) {
             errorMessage += ERROR_CAUSE_PREFIX + returnValue.getStderr();
         }
-        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        final MainWindow mainWindow = Framework.getInstance().getMainWindow();
         JOptionPane.showMessageDialog(mainWindow, errorMessage, TITLE, JOptionPane.ERROR_MESSAGE);
     }
 

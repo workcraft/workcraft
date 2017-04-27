@@ -1,7 +1,5 @@
 package org.workcraft.plugins.fst.tasks;
 
-import java.io.File;
-
 import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
@@ -18,7 +16,6 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -26,30 +23,26 @@ public class PetriToFsmConversionResultHandler extends DummyProgressMonitor<Writ
     private final WriteSgConversionTask task;
     private WorkspaceEntry result;
 
-    public PetriToFsmConversionResultHandler(WriteSgConversionTask task) {
+    public PetriToFsmConversionResultHandler(final WriteSgConversionTask task) {
         this.task = task;
         this.result = null;
     }
 
     @Override
-    public void finished(final Result<? extends WriteSgConversionResult> result, String description) {
+    public void finished(final Result<? extends WriteSgConversionResult> result, final String description) {
         final Framework framework = Framework.getInstance();
-        WorkspaceEntry we = task.getWorkspaceEntry();
-        Path<String> path = we.getWorkspacePath();
         if (result.getOutcome() == Outcome.FINISHED) {
             final VisualFst fst = new VisualFst(result.getReturnValue().getConversionResult());
             final VisualFsm fsm = new VisualFsm(new Fsm());
             final FstToFsmConverter converter = new FstToFsmConverter(fst, fsm);
-
-            MathModel model = converter.getDstModel().getMathModel();
-            final Path<String> directory = path.getParent();
-            final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
+            final MathModel model = converter.getDstModel().getMathModel();
             final ModelEntry me = new ModelEntry(new FsmDescriptor(), model);
-            this.result = framework.createWork(me, directory, name);
+            final Path<String> path = task.getWorkspaceEntry().getWorkspacePath();
+            this.result = framework.createWork(me, path);
         } else if (result.getOutcome() != Outcome.CANCELLED) {
-            MainWindow mainWindow = framework.getMainWindow();
+            final MainWindow mainWindow = framework.getMainWindow();
             if (result.getCause() == null) {
-                Result<? extends ExternalProcessResult> writeSgResult = result.getReturnValue().getResult();
+                final Result<? extends ExternalProcessResult> writeSgResult = result.getReturnValue().getResult();
                 JOptionPane.showMessageDialog(mainWindow,
                         "Petrify output:\n" + writeSgResult.getReturnValue().getErrorsHeadAndTail(),
                         "Conversion failed", JOptionPane.WARNING_MESSAGE);

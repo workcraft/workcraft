@@ -1,6 +1,5 @@
 package org.workcraft.plugins.petrify.tasks;
 
-import java.io.File;
 import java.util.HashMap;
 
 import javax.swing.JOptionPane;
@@ -28,7 +27,6 @@ import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -50,15 +48,13 @@ public class PetrifyTransformationResultHandler extends DummyProgressMonitor<Pet
     @Override
     public void finished(final Result<? extends PetrifyTransformationResult> result, String description) {
         final Framework framework = Framework.getInstance();
-        Path<String> path = we.getWorkspacePath();
         if (result.getOutcome() == Outcome.FINISHED) {
             StgModel stgModel = result.getReturnValue().getResult();
             PetriNetModel model = convertResultStgToPetriNet ? stgModel : convertStgToPetriNet(stgModel);
-            final Path<String> directory = path.getParent();
-            final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
             final ModelDescriptor modelDescriptor = convertResultStgToPetriNet ? new StgDescriptor() : new PetriNetDescriptor();
             final ModelEntry me = new ModelEntry(modelDescriptor, model);
-            this.result = framework.createWork(me, directory, name);
+            final Path<String> path = we.getWorkspacePath();
+            this.result = framework.createWork(me, path);
         } else if (result.getOutcome() == Outcome.FAILED) {
             MainWindow mainWindow = framework.getMainWindow();
             if (result.getCause() == null) {

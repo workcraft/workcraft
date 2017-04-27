@@ -1,7 +1,6 @@
 package org.workcraft.plugins.fst.tasks;
 
 import java.awt.Color;
-import java.io.File;
 import java.util.HashMap;
 
 import javax.swing.JOptionPane;
@@ -21,7 +20,6 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.ColorGenerator;
 import org.workcraft.util.ColorUtils;
-import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -34,30 +32,27 @@ public class StgToFstConversionResultHandler extends DummyProgressMonitor<WriteS
     private final WriteSgConversionTask task;
     private WorkspaceEntry result;
 
-    public StgToFstConversionResultHandler(WriteSgConversionTask task) {
+    public StgToFstConversionResultHandler(final WriteSgConversionTask task) {
         this.task = task;
         this.result = null;
     }
 
     @Override
-    public void finished(final Result<? extends WriteSgConversionResult> result, String description) {
+    public void finished(final Result<? extends WriteSgConversionResult> result, final String description) {
         final Framework framework = Framework.getInstance();
-        WorkspaceEntry we = task.getWorkspaceEntry();
-        Path<String> path = we.getWorkspacePath();
         if (result.getOutcome() == Outcome.FINISHED) {
-            Fst model = result.getReturnValue().getConversionResult();
-            final Path<String> directory = path.getParent();
-            final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
+            final Fst model = result.getReturnValue().getConversionResult();
             final ModelEntry me = new ModelEntry(new FstDescriptor(), model);
-            this.result = framework.createWork(me, directory, name);
-            VisualModel visualModel = me.getVisualModel();
+            final Path<String> path = task.getWorkspaceEntry().getWorkspacePath();
+            this.result = framework.createWork(me, path);
+            final VisualModel visualModel = me.getVisualModel();
             if (visualModel instanceof VisualFst) {
                 highlightCscConflicts((VisualFst) visualModel);
             }
         } else if (result.getOutcome() != Outcome.CANCELLED) {
-            MainWindow mainWindow = framework.getMainWindow();
+            final MainWindow mainWindow = framework.getMainWindow();
             if (result.getCause() == null) {
-                Result<? extends ExternalProcessResult> petrifyResult = result.getReturnValue().getResult();
+                final Result<? extends ExternalProcessResult> petrifyResult = result.getReturnValue().getResult();
                 JOptionPane.showMessageDialog(mainWindow,
                         "Petrify output:\n" + petrifyResult.getReturnValue().getErrorsHeadAndTail(),
                         "Conversion failed", JOptionPane.WARNING_MESSAGE);
@@ -67,13 +62,13 @@ public class StgToFstConversionResultHandler extends DummyProgressMonitor<WriteS
         }
     }
 
-    protected void highlightCscConflicts(VisualFst visualFst) {
-        HashMap<String, Color> codeToColorMap = new HashMap<>();
-        for (VisualState state: visualFst.getVisualStates()) {
-            String name = visualFst.getMathName(state);
+    protected void highlightCscConflicts(final VisualFst visualFst) {
+        final HashMap<String, Color> codeToColorMap = new HashMap<>();
+        for (final VisualState state: visualFst.getVisualStates()) {
+            final String name = visualFst.getMathName(state);
             if (name.endsWith("_csc")) {
                 String code = null;
-                String[] nameParts = name.split("_");
+                final String[] nameParts = name.split("_");
                 if (nameParts.length == 3) {
                     code = name.split("_")[1];
                 }

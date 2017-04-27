@@ -591,6 +591,12 @@ public final class Framework {
         return null;
     }
 
+    public WorkspaceEntry createWork(ModelEntry me, Path<String> desiredPath) {
+        final Path<String> directory = desiredPath.getParent();
+        final String desiredName = desiredPath.getNode();
+        return createWork(me, directory, desiredName);
+    }
+
     public WorkspaceEntry createWork(ModelEntry me, Path<String> directory, String desiredName) {
         final Path<String> path = getWorkspace().createWorkPath(directory, desiredName);
         boolean open = me.isVisual() || CommonEditorSettings.getOpenNonvisual();

@@ -43,25 +43,22 @@ public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
             String resultDirectory = result.getReturnValue().getResultDirectory();
             solver.handleResult(stdoutLines, resultDirectory);
 
-            // import verilog file into circuit
+            // Import Verilog file into circuit
             if (solver.isVerilog()) {
                 try {
                     byte[] verilogBytes = solver.getVerilog();
-                    ByteArrayInputStream in = new ByteArrayInputStream(verilogBytes);
-                    VerilogImporter verilogImporter = new VerilogImporter(false);
+                    final ByteArrayInputStream in = new ByteArrayInputStream(verilogBytes);
+                    final VerilogImporter verilogImporter = new VerilogImporter(false);
                     final Circuit circuit = verilogImporter.importCircuit(in);
-                    Path<String> path = we.getWorkspacePath();
-                    final Path<String> directory = path.getParent();
-                    final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
                     final ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
-
+                    final Path<String> path = we.getWorkspacePath();
                     final Framework framework = Framework.getInstance();
                     final MainWindow mainWindow = framework.getMainWindow();
-                    WorkspaceEntry weCircuit = framework.createWork(me, directory, name);
-                    VisualModel visualModel = weCircuit.getModelEntry().getVisualModel();
+                    final WorkspaceEntry weCircuit = framework.createWork(me, path);
+                    final VisualModel visualModel = weCircuit.getModelEntry().getVisualModel();
                     if (visualModel instanceof VisualCircuit) {
-                        VisualCircuit visualCircuit = (VisualCircuit) visualModel;
-                        String title = we.getModelEntry().getModel().getTitle();
+                        final VisualCircuit visualCircuit = (VisualCircuit) visualModel;
+                        final String title = we.getModelEntry().getModel().getTitle();
                         visualCircuit.setTitle(title);
                         SwingUtilities.invokeLater(new Runnable() {
                             @Override
@@ -75,19 +72,19 @@ public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
                 }
             }
         } else if (result.getOutcome() == Outcome.FAILED) {
-            String errorMessage = getErrorMessage(result.getReturnValue());
+            final String errorMessage = getErrorMessage(result.getReturnValue());
             final Framework framework = Framework.getInstance();
 
             // In case of an internal error, activate automatically verbose mode
             if (errorMessage.equals(INTERNAL_ERROR_MSG)) {
-                String[] sentence = result.getReturnValue().getStdout().split("\n");
+                final String[] sentence = result.getReturnValue().getStdout().split("\n");
                 for (int i = 0; i < sentence.length; i++) {
                     System.out.println(sentence[i]);
                 }
             }
 
             //Removing temporary files
-            File dir = solver.getDirectory();
+            final File dir = solver.getDirectory();
             FileUtils.deleteOnExitRecursively(dir);
 
             //Display the error

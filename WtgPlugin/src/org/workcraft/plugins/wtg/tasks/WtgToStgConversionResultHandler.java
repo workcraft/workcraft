@@ -1,7 +1,5 @@
 package org.workcraft.plugins.wtg.tasks;
 
-import java.io.File;
-
 import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
@@ -14,7 +12,6 @@ import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -23,30 +20,27 @@ public class WtgToStgConversionResultHandler extends DummyProgressMonitor<WaverC
     private final WaverConversionTask task;
     private WorkspaceEntry result;
 
-    public WtgToStgConversionResultHandler(WaverConversionTask task) {
+    public WtgToStgConversionResultHandler(final WaverConversionTask task) {
         this.task = task;
         this.result = null;
     }
 
     @Override
-    public void finished(final Result<? extends WaverConversionResult> result, String description) {
+    public void finished(final Result<? extends WaverConversionResult> result, final String description) {
         final Framework framework = Framework.getInstance();
-        WorkspaceEntry we = task.getWorkspaceEntry();
-        Path<String> path = we.getWorkspacePath();
         if (result.getOutcome() == Outcome.FINISHED) {
-            Stg model = result.getReturnValue().getConversionResult();
-            final Path<String> directory = path.getParent();
-            final String name = FileUtils.getFileNameWithoutExtension(new File(path.getNode()));
+            final Stg model = result.getReturnValue().getConversionResult();
             final ModelEntry me = new ModelEntry(new StgDescriptor(), model);
-            this.result = framework.createWork(me, directory, name);
+            final Path<String> path = task.getWorkspaceEntry().getWorkspacePath();
+            this.result = framework.createWork(me, path);
         } else if (result.getOutcome() != Outcome.CANCELLED) {
-            MainWindow mainWindow = framework.getMainWindow();
+            final MainWindow mainWindow = framework.getMainWindow();
             if (result.getCause() != null) {
                 ExceptionDialog.show(mainWindow, result.getCause());
             } else {
                 String message = "Unexpected Waver error";
                 if (result.getReturnValue() != null) {
-                    Result<? extends ExternalProcessResult> waverResult = result.getReturnValue().getResult();
+                    final Result<? extends ExternalProcessResult> waverResult = result.getReturnValue().getResult();
                     message = "Waver output:\n" + waverResult.getReturnValue().getErrorsHeadAndTail();
                 }
                 JOptionPane.showMessageDialog(mainWindow, message, "Conversion failed", JOptionPane.WARNING_MESSAGE);
