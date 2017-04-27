@@ -84,6 +84,7 @@ public class StgModule implements Module {
         final Framework framework = Framework.getInstance();
         final CompatibilityManager cm = framework.getCompatibilityManager();
         Version v310 = new Version(3, 1, 0, Version.Status.RELEASE);
+        Version v314 = new Version(3, 1, 0, Version.Status.RELEASE);
 
         cm.registerMetaReplacement(v310,
                 "<descriptor class=\"org.workcraft.plugins.stg.STGModelDescriptor\"/>",
@@ -100,6 +101,18 @@ public class StgModule implements Module {
         cm.registerGlobalReplacement(v310, Stg.class.getName(),
                 "<node class=\"org.workcraft.plugins.stg.STGPlace\" ref=",
                 "<node class=\"org.workcraft.plugins.stg.StgPlace\" ref=");
+
+        cm.registerGlobalReplacement(v314, VisualStg.class.getName(),
+                "<node class=\"org.workcraft.plugins.petri.VisualPlace\" ref=",
+                "<node class=\"org.workcraft.plugins.stg.VisualStgPlace\" ref=");
+
+        cm.registerGlobalReplacement(v314, VisualStg.class.getName(),
+                "<VisualPlace ref=\"(.*?)\"/>",
+                "<VisualStgPlace ref=\"$1\"/>");
+
+        cm.registerGlobalReplacement(v314, VisualStg.class.getName(),
+                "<VisualPlace ref=\"(.*?)\">",
+                "<VisualStgPlace ref=\"$1\"/>\\n<VisualPlace>");
     }
 
 }

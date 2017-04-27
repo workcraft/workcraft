@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Set;
 
+import org.workcraft.plugins.stg.StgMutexUtils.MutexData;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.LogUtils;
 
@@ -215,6 +216,38 @@ public class MpsatParameters {
             "exists e in EVENTS {\n" +
             "    is_dummy e\n" +
             "}\n";
+
+    // Reach expression for checking if these two pairs of signals can be implemented by a mutex
+    private static final String REACH_MUTEX_R1 = "/* insert r1 name here */";
+    private static final String REACH_MUTEX_G1 = "/* insert g1 name here */";
+    private static final String REACH_MUTEX_R2 = "/* insert r2 name here */";
+    private static final String REACH_MUTEX_G2 = "/* insert g2 name here */";
+    private static final String REACH_IMPLICIT_MUTEX =
+            "// For given signals r1, r2, g1, g2, check whether g1/g2 can be implemented by a mutex\n" +
+            "// with requests r1/r2 and grants g1/g2. It is very similar to the \"strict implementation\",\n" +
+            "// i.e. we are looking for a \"bad\" state where the next-state values of the grants differ\n" +
+            "// from [g1] = r1 & ~g2 and [g2] = r2 & ~g1.\n" +
+            "let\n" +
+            "    r1=S\"" + REACH_MUTEX_R1 + "\",\n" +
+            "    g1=S\"" + REACH_MUTEX_G1 + "\",\n" +
+            "    r2=S\"" + REACH_MUTEX_R2 + "\",\n" +
+            "    g2=S\"" + REACH_MUTEX_G2 + "\"\n" +
+            "{\n" +
+            "    ('g1 ^ ($r1 & ~$g2))\n" +
+            "    |\n" +
+            "    ('g2 ^ ($r2 & ~$g1))\n" +
+            "}\n";
+
+    public static MpsatParameters getImplicitMutexSettings(MutexData mutexData) {
+        String reach = REACH_IMPLICIT_MUTEX
+                .replace(REACH_MUTEX_R1, mutexData.r1)
+                .replace(REACH_MUTEX_G1, mutexData.g1)
+                .replace(REACH_MUTEX_R2, mutexData.r2)
+                .replace(REACH_MUTEX_G2, mutexData.g2);
+        return new MpsatParameters("Non-persistency implementable by mutex " + mutexData, MpsatMode.STG_REACHABILITY, 0,
+                MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(),
+                reach, true);
+    }
 
     private static final String REACH_OUTPUT_PERSISTENCY =
             "// Checks whether the STG is output persistent, i.e. no local signal can be disabled by any other signal.\n" +

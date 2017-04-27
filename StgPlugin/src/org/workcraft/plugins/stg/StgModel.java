@@ -11,6 +11,7 @@ public interface StgModel extends PetriNetModel {
     Collection<DummyTransition> getDummyTransitions();
     Collection<SignalTransition> getSignalTransitions();
     Collection<SignalTransition> getSignalTransitions(Type type);
+    Collection<StgPlace> getMutexPlaces();
 
     Set<String> getDummyReferences();
     Set<String> getSignalReferences();

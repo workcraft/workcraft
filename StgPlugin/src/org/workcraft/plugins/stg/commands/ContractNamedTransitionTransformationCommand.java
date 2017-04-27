@@ -19,6 +19,7 @@ import org.workcraft.plugins.petri.commands.ContractTransitionTransformationComm
 import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.plugins.stg.VisualStgPlace;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Pair;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -26,7 +27,7 @@ import org.workcraft.workspace.WorkspaceUtils;
 
 public class ContractNamedTransitionTransformationCommand extends ContractTransitionTransformationCommand {
 
-    HashSet<VisualPlace> convertedImplicitPlaces = new HashSet<>();
+    HashSet<VisualStgPlace> convertedImplicitPlaces = new HashSet<>();
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
@@ -42,7 +43,7 @@ public class ContractNamedTransitionTransformationCommand extends ContractTransi
             Set<Connection> adjacentConnections = new HashSet<>(visualModel.getConnections(visualTransition));
             for (Connection connection: adjacentConnections) {
                 if (connection instanceof VisualImplicitPlaceArc) {
-                    VisualPlace formerImplicitPlace = visualStg.makeExplicit((VisualImplicitPlaceArc) connection);
+                    VisualStgPlace formerImplicitPlace = visualStg.makeExplicit((VisualImplicitPlaceArc) connection);
                     convertedImplicitPlaces.add(formerImplicitPlace);
                 }
             }
@@ -59,8 +60,10 @@ public class ContractNamedTransitionTransformationCommand extends ContractTransi
                 Pair<VisualPlace, VisualPlace> originalPlacePair = productPlaceMap.get(productPlace);
                 VisualPlace predPlace = originalPlacePair.getFirst();
                 VisualPlace succPlace = originalPlacePair.getSecond();
-                if (convertedImplicitPlaces.contains(predPlace) && convertedImplicitPlaces.contains(succPlace)) {
-                    VisualConnection connection = visualStg.maybeMakeImplicit(productPlace, true);
+                if ((productPlace instanceof VisualStgPlace)
+                        && convertedImplicitPlaces.contains(predPlace)
+                        && convertedImplicitPlaces.contains(succPlace)) {
+                    VisualConnection connection = visualStg.maybeMakeImplicit((VisualStgPlace) productPlace, true);
                     filterControlPoints(connection);
                 }
             }
@@ -78,7 +81,7 @@ public class ContractNamedTransitionTransformationCommand extends ContractTransi
         String succName = visualModel.getMathName(succPlace);
         String productName = nameManagerer.getDerivedName(null, predName + succName);
         StgPlace mathPlace = mathModel.createNode(productName, mathContainer, StgPlace.class);
-        return visualModel.createVisualComponent(mathPlace, VisualPlace.class, visualContainer);
+        return visualModel.createVisualComponent(mathPlace, VisualStgPlace.class, visualContainer);
     }
 
 }
