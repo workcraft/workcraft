@@ -12,12 +12,12 @@ public class Info {
     private static final String subtitle3 = "Return of the Hazard";
     private static final String subtitle4 = "Revenge of the Timing Assumption";
 
-    private static final Version version = new Version(3, 1, 3, Status.RELEASE);
+    private static final Version version = new Version(3, 1, 4, Status.RELEASE);
 
     private static final int startYear = 2006;
     private static final int currentYear = Calendar.getInstance().get(Calendar.YEAR);
     private static final String organisation = "Newcastle University";
-    private static final String homepage = "http://workcraft.org/";
+    private static final String homepage = "https://workcraft.org/";
     private static final String email = "support@workcraft.org";
 
     public static final String OPTION_DIR = "-dir:";

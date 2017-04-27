@@ -146,13 +146,15 @@ public class VerilogImporter implements Importer {
 
     private HashSet<Module> getTopModule(HashMap<String, Module> modules) {
         HashSet<Module> result = new HashSet<>(modules.values());
-        for (Module module: modules.values()) {
-            if (module.isEmpty()) {
-                result.remove(module);
-            }
-            for (Instance instance: module.instances) {
-                if (instance.moduleName == null) continue;
-                result.remove(modules.get(instance.moduleName));
+        if (modules.size() > 1) {
+            for (Module module: modules.values()) {
+                if (module.isEmpty()) {
+                    result.remove(module);
+                }
+                for (Instance instance: module.instances) {
+                    if (instance.moduleName == null) continue;
+                    result.remove(modules.get(instance.moduleName));
+                }
             }
         }
         return result;
