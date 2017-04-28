@@ -7,6 +7,7 @@ import java.util.Set;
 
 import org.workcraft.Framework;
 import org.workcraft.PluginManager;
+import org.workcraft.dom.Container;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.circuit.VisualCircuit;
@@ -151,14 +152,15 @@ public class CircuitStgUtils {
     }
 
     public static void restoreInterfaceSignals(Stg stg, Collection<String> inputSignalNames, Collection<String> outputSignalNames) {
-        for (String signalName: stg.getSignalNames(null)) {
-            stg.setSignalType(signalName, Type.INTERNAL, null);
+        Container container = stg.getRoot();
+        for (String signalName: stg.getSignalNames(container)) {
+            stg.setSignalType(signalName, Type.INTERNAL, container);
         }
         for (String inputName: inputSignalNames) {
-            stg.setSignalType(inputName, Type.INPUT, null);
+            stg.setSignalType(inputName, Type.INPUT, container);
         }
         for (String outputName: outputSignalNames) {
-            stg.setSignalType(outputName, Type.OUTPUT, null);
+            stg.setSignalType(outputName, Type.OUTPUT, container);
         }
     }
 

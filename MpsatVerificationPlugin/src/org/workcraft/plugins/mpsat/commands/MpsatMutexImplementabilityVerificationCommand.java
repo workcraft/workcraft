@@ -2,6 +2,8 @@ package org.workcraft.plugins.mpsat.commands;
 
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import org.workcraft.Framework;
 import org.workcraft.gui.graph.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.mpsat.MpsatCombinedChainResultHandler;
@@ -17,6 +19,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class MpsatMutexImplementabilityVerificationCommand extends AbstractVerificationCommand {
+
+    private static final String TITLE = "Implementability by mutex";
 
     @Override
     public String getDisplayName() {
@@ -40,6 +44,7 @@ public class MpsatMutexImplementabilityVerificationCommand extends AbstractVerif
 
     @Override
     public void run(WorkspaceEntry we) {
+        final Framework framework = Framework.getInstance();
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         final ArrayList<MpsatParameters> settingsList = new ArrayList<>();
         for (StgPlace place: stg.getMutexPlaces()) {
@@ -49,7 +54,12 @@ public class MpsatMutexImplementabilityVerificationCommand extends AbstractVerif
                 settingsList.add(settings);
             }
         }
-
+        if (settingsList.isEmpty()) {
+            JOptionPane.showMessageDialog(framework.getMainWindow(),
+                    "Error: No mutex place found with non-input grants and unique requests.",
+                    TITLE, JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         final MpsatCombinedChainTask mpsatTask = new MpsatCombinedChainTask(we, settingsList);
 
         String description = "MPSat tool chain";
@@ -57,7 +67,6 @@ public class MpsatMutexImplementabilityVerificationCommand extends AbstractVerif
         if (!title.isEmpty()) {
             description += "(" + title + ")";
         }
-        final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
         final MpsatCombinedChainResultHandler monitor = new MpsatCombinedChainResultHandler(mpsatTask);
         taskManager.queue(mpsatTask, description, monitor);

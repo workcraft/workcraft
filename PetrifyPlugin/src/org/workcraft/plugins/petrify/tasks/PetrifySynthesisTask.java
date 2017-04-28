@@ -19,7 +19,10 @@ import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
-import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.StgMutexUtils.MutexData;
+import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -36,6 +39,7 @@ import org.workcraft.workspace.WorkspaceUtils;
 public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, ExternalProcessListener {
     private final WorkspaceEntry we;
     private final String[] args;
+    private final Collection<MutexData> mutexData;
 
     /**
      * @param args - arguments corresponding to type of logic synthesis
@@ -44,9 +48,10 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
      * @param libraryFile - could be null
      * @param logFile - could be null
      */
-    public PetrifySynthesisTask(WorkspaceEntry we, String[] args) {
+    public PetrifySynthesisTask(WorkspaceEntry we, String[] args, Collection<MutexData> mutexData) {
         this.we = we;
         this.args = args;
+        this.mutexData = mutexData;
     }
 
     @Override
@@ -103,7 +108,7 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
         command.add("-log");
         command.add(logFile.getAbsolutePath());
 
-        StgModel stg = WorkspaceUtils.getAs(we, StgModel.class);
+        Stg stg = WorkspaceUtils.getAs(we, Stg.class);
 
         // Check for isolated marked places and temporary remove them is requested
         HashSet<Place> isolatedPlaces = PetriNetUtils.getIsolatedMarkedPlaces(stg);
@@ -157,18 +162,37 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
         }
     }
 
-    private File getInputFile(StgModel stg, File directory) {
+    private File getInputFile(Stg stg, File directory) {
         final Framework framework = Framework.getInstance();
         Exporter stgExporter = Export.chooseBestExporter(framework.getPluginManager(), stg, Format.STG);
         if (stgExporter == null) {
             throw new RuntimeException("Exporter not available: model class " + stg.getClass().getName() + " to format STG.");
         }
 
-        File stgFile = new File(directory, "petrify" + stgExporter.getExtenstion());
+        File stgFile = new File(directory, "spec" + stgExporter.getExtenstion());
         ExportTask exportTask = new ExportTask(stgExporter, stg, stgFile.getAbsolutePath());
         Result<? extends Object> exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
         if (exportResult.getOutcome() != Outcome.FINISHED) {
             throw new RuntimeException("Unable to export the model.");
+        }
+        if (!mutexData.isEmpty()) {
+            stg = StgUtils.loadStg(stgFile);
+            for (MutexData m: mutexData) {
+                if (stg.getSignalType(m.r1) == Type.INTERNAL) {
+                    stg.setSignalType(m.r1, Type.OUTPUT);
+                }
+                stg.setSignalType(m.g1, Type.INPUT);
+                if (stg.getSignalType(m.r2) == Type.INTERNAL) {
+                    stg.setSignalType(m.r2, Type.OUTPUT);
+                }
+                stg.setSignalType(m.g2, Type.INPUT);
+            }
+            stgFile = new File(directory, "spec-mutex" + stgExporter.getExtenstion());
+            exportTask = new ExportTask(stgExporter, stg, stgFile.getAbsolutePath());
+            exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
+            if (exportResult.getOutcome() != Outcome.FINISHED) {
+                throw new RuntimeException("Unable to export the model after factoring out the mutexes.");
+            }
         }
         return stgFile;
     }

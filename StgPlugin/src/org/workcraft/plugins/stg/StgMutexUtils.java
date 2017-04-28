@@ -2,6 +2,7 @@ package org.workcraft.plugins.stg;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Set;
 
 import org.workcraft.dom.Node;
@@ -20,6 +21,17 @@ public class StgMutexUtils {
         public String toString() {
             return me + " (.r1(" + r1 + "), .g1(" + g1 + "), .r2(" + r2 + "), .g2(" + g2 + "))";
         }
+    }
+
+    public static LinkedList<MutexData> getMutexData(Stg stg) {
+        LinkedList<MutexData> result = new LinkedList<>();
+        for (StgPlace place: stg.getMutexPlaces()) {
+            MutexData mutexData = new MutexData();
+            if (StgMutexUtils.fillMutexContext(stg, place, mutexData)) {
+                result.add(mutexData);
+            }
+        }
+        return result;
     }
 
     public static boolean fillMutexContext(Stg stg, StgPlace place, MutexData me) {

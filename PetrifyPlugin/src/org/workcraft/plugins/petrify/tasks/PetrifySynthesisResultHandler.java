@@ -1,6 +1,9 @@
 package org.workcraft.plugins.petrify.tasks;
 
+import java.awt.geom.Point2D;
 import java.io.ByteArrayInputStream;
+import java.util.Collection;
+import java.util.HashSet;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -14,9 +17,11 @@ import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitDescriptor;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
+import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.petrify.PetrifySettings;
+import org.workcraft.plugins.stg.StgMutexUtils.MutexData;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.util.LogUtils;
@@ -30,14 +35,16 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
     private final boolean boxSequentialComponents;
     private final boolean boxCombinationalComponents;
     private final boolean sequentialAssign;
+    private final Collection<MutexData> mutexData;
     private WorkspaceEntry result;
 
     public PetrifySynthesisResultHandler(final WorkspaceEntry we, final boolean boxSequentialComponents,
-            final boolean boxCombinationalComponents, final boolean sequentialAssign) {
+            final boolean boxCombinationalComponents, final boolean sequentialAssign, Collection<MutexData> mutexData) {
         this.we = we;
         this.boxSequentialComponents = boxSequentialComponents;
         this.boxCombinationalComponents = boxCombinationalComponents;
         this.sequentialAssign = sequentialAssign;
+        this.mutexData = mutexData;
         this.result = null;
     }
 
@@ -75,7 +82,7 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
             try {
                 final ByteArrayInputStream in = new ByteArrayInputStream(verilog.getBytes());
                 final VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
-                final Circuit circuit = verilogImporter.importCircuit(in);
+                final Circuit circuit = verilogImporter.importCircuit(in, mutexData);
                 final Path<String> path = we.getWorkspacePath();
                 final ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
                 final Framework framework = Framework.getInstance();
@@ -115,8 +122,20 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
     }
 
     private void setComponentsRenderStyle(final VisualCircuit visualCircuit) {
+        HashSet<String> mutexNames = new HashSet<>();
+        for (MutexData me: mutexData) {
+            mutexNames.add(me.me);
+        }
         for (final VisualFunctionComponent component: visualCircuit.getVisualFunctionComponents()) {
-            if (component.isSequentialGate()) {
+            if (mutexNames.contains(visualCircuit.getNodeMathReference(component))) {
+                component.setRenderType(RenderType.BOX);
+                for (VisualFunctionContact contact: visualCircuit.getVisualFunctionContacts()) {
+                    Point2D pos = contact.getPosition();
+                    double x = pos.getX() + (contact.isInput() ?  -0.5 : +0.5);
+                    double y = 2.0 * pos.getY();
+                    contact.setPosition(new Point2D.Double(x, y));
+                }
+            } else if (component.isSequentialGate()) {
                 if (boxSequentialComponents) {
                     component.setRenderType(RenderType.BOX);
                 }

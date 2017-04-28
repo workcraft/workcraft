@@ -56,16 +56,23 @@ import org.workcraft.plugins.circuit.verilog.Module;
 import org.workcraft.plugins.circuit.verilog.Pin;
 import org.workcraft.plugins.circuit.verilog.Port;
 import org.workcraft.plugins.shared.CommonDebugSettings;
+import org.workcraft.plugins.stg.StgMutexUtils.MutexData;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 
 public class VerilogImporter implements Importer {
 
+    private static final String MUTEX_MODULE_NAME = "MUTEX";
+    private static final String MUTEX_R1_NAME = "r1";
+    private static final String MUTEX_G1_NAME = "g1";
+    private static final String MUTEX_R2_NAME = "r2";
+    private static final String MUTEX_G2_NAME = "g2";
+
     private class AssignGate {
         public final String outputName;
         public final String setFunction;
         public final String resetFunction;
-        public final HashMap<String, String> connections; // (portName -> netName)
+        public final HashMap<String, String> connections; // (portName -> wireName)
 
         AssignGate(String outputName, String setFunction, String resetFunction, HashMap<String, String> connections) {
             this.outputName = outputName;
@@ -113,6 +120,10 @@ public class VerilogImporter implements Importer {
     }
 
     public Circuit importCircuit(InputStream in) throws DeserialisationException {
+        return importCircuit(in, new LinkedList<MutexData>());
+    }
+
+    public Circuit importCircuit(InputStream in, Collection<MutexData> mutexData) throws DeserialisationException {
         try {
             VerilogParser parser = new VerilogParser(in);
             if (CommonDebugSettings.getParserTracing()) {
@@ -138,7 +149,7 @@ public class VerilogImporter implements Importer {
                 }
             }
             Module topModule = topModules.iterator().next();
-            return createCircuit(topModule, modules);
+            return createCircuit(topModule, modules, mutexData);
         } catch (FormatException | org.workcraft.plugins.circuit.jj.verilog.ParseException e) {
             throw new DeserialisationException(e);
         }
@@ -202,7 +213,7 @@ public class VerilogImporter implements Importer {
         System.out.print("endmodule\n\n");
     }
 
-    private Circuit createCircuit(Module topModule, HashMap<String, Module> modules) {
+    private Circuit createCircuit(Module topModule, HashMap<String, Module> modules, Collection<MutexData> mutexData) {
         Circuit circuit = new Circuit();
         circuit.setTitle(topModule.name);
         HashMap<Instance, FunctionComponent> instanceComponentMap = new HashMap<>();
@@ -228,6 +239,9 @@ public class VerilogImporter implements Importer {
             if (component != null) {
                 instanceComponentMap.put(verilogInstance, component);
             }
+        }
+        for (MutexData me: mutexData) {
+            createMutex(circuit, me, wires, modules);
         }
         createConnections(circuit, wires);
         setZeroDelayAttribute(instanceComponentMap);
@@ -529,7 +543,7 @@ public class VerilogImporter implements Importer {
         int index = 0;
         for (Pin verilogPin: verilogInstance.connections) {
             Wire wire = getOrCreateWire(verilogPin.netName, wires);
-            String pinName = gate.isPrimititve() ? getPrimitiveGatePinName(index++) : verilogPin.name;
+            String pinName = gate.isPrimitive() ? getPrimitiveGatePinName(index++) : verilogPin.name;
             Node node = circuit.getNodeByReference(component, pinName);
             if (node instanceof FunctionContact) {
                 FunctionContact contact = (FunctionContact) node;
@@ -578,6 +592,67 @@ public class VerilogImporter implements Importer {
             }
         }
         return component;
+    }
+
+    private FunctionComponent createMutex(Circuit circuit, MutexData me,
+            HashMap<String, Wire> wires, HashMap<String, Module> modules) {
+        final FunctionComponent component = new FunctionComponent();
+        component.setModule(MUTEX_MODULE_NAME);
+        circuit.add(component);
+        try {
+            circuit.setName(component, me.me);
+        } catch (ArgumentException e) {
+            String componentRef = circuit.getNodeReference(component);
+            LogUtils.logWarningLine("Cannot set name '" + me.me + "' for component '" + componentRef + "'.");
+        }
+        addMutexPin(circuit, component, MUTEX_R1_NAME, IOType.INPUT, me.r1, wires);
+        FunctionContact g1Contact = addMutexPin(circuit, component, MUTEX_G1_NAME, IOType.OUTPUT, me.g1, wires);
+        addMutexPin(circuit, component, MUTEX_R2_NAME, IOType.INPUT, me.r2, wires);
+        FunctionContact g2Contact = addMutexPin(circuit, component, MUTEX_G2_NAME, IOType.OUTPUT, me.g2, wires);
+        try {
+            setMutexFunctions(circuit, component, g1Contact, MUTEX_R1_NAME, MUTEX_G2_NAME);
+            setMutexFunctions(circuit, component, g2Contact, MUTEX_R2_NAME, MUTEX_G1_NAME);
+        } catch (org.workcraft.formula.jj.ParseException e) {
+            throw new RuntimeException(e);
+        }
+        setMutexGrant(circuit, me.g1, wires);
+        setMutexGrant(circuit, me.g2, wires);
+        return component;
+    }
+
+    private void setMutexFunctions(Circuit circuit, final FunctionComponent component, FunctionContact grantContact,
+            String reqPinName, String otherGrantPinName) throws org.workcraft.formula.jj.ParseException {
+        String setString = reqPinName + " * " + otherGrantPinName + "'";
+        BooleanFormula setFormula = CircuitUtils.parseContactFuncton(circuit, component, setString);
+        grantContact.setSetFunctionQuiet(setFormula);
+        String resetString = reqPinName + "'";
+        BooleanFormula resetFormula = CircuitUtils.parseContactFuncton(circuit, component, resetString);
+        grantContact.setResetFunctionQuiet(resetFormula);
+    }
+
+    private void setMutexGrant(Circuit circuit, String wireName, HashMap<String, Wire> wires) {
+        Node g1Node = circuit.getNodeByReference(wireName);
+        if (g1Node instanceof FunctionContact) {
+            FunctionContact g1Port = (FunctionContact) g1Node;
+            g1Port.setIOType(IOType.OUTPUT);
+            Wire g1Wire = getOrCreateWire(wireName, wires);
+            g1Wire.sinks.add(g1Port);
+        }
+    }
+
+    private FunctionContact addMutexPin(Circuit circuit, FunctionComponent component, String pinName, IOType type,
+            String wireName, HashMap<String, Wire> wires) {
+        FunctionContact contact = new FunctionContact();
+        contact.setIOType(type);
+        component.add(contact);
+        circuit.setName(contact, pinName);
+        Wire wire = getOrCreateWire(wireName, wires);
+        if (type == IOType.INPUT) {
+            wire.sinks.add(contact);
+        } else {
+            wire.source = contact;
+        }
+        return contact;
     }
 
     private Wire getOrCreateWire(String name, HashMap<String, Wire> wires) {
@@ -714,7 +789,7 @@ public class VerilogImporter implements Importer {
         }
     }
 
-    private HashMap<String, Module> getModuleMap(List<Module> modules) throws org.workcraft.plugins.circuit.jj.verilog.ParseException {
+    private HashMap<String, Module> getModuleMap(List<Module> modules) {
         HashMap<String, Module> result = new HashMap<>();
         for (Module module: modules) {
             if ((module == null) || (module.name == null)) continue;
