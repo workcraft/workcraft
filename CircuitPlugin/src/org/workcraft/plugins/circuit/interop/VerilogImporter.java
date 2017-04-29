@@ -56,7 +56,7 @@ import org.workcraft.plugins.circuit.verilog.Module;
 import org.workcraft.plugins.circuit.verilog.Pin;
 import org.workcraft.plugins.circuit.verilog.Port;
 import org.workcraft.plugins.shared.CommonDebugSettings;
-import org.workcraft.plugins.stg.StgMutexUtils.MutexData;
+import org.workcraft.plugins.stg.MutexData;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 

@@ -21,7 +21,7 @@ import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.petrify.PetrifySettings;
-import org.workcraft.plugins.stg.StgMutexUtils.MutexData;
+import org.workcraft.plugins.stg.MutexData;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.util.LogUtils;

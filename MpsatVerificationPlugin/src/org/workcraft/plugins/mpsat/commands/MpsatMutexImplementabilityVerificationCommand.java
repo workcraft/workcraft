@@ -12,7 +12,7 @@ import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainTask;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.StgMutexUtils;
-import org.workcraft.plugins.stg.StgMutexUtils.MutexData;
+import org.workcraft.plugins.stg.MutexData;
 import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.workspace.WorkspaceEntry;

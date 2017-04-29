@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import org.workcraft.plugins.stg.StgMutexUtils.MutexData;
+import org.workcraft.plugins.stg.MutexData;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.Pair;
