@@ -28,7 +28,7 @@ public class MpsatInputPropernessVerificationCommand extends MpsatAbstractVerifi
     }
 
     @Override
-    public MpsatParameters getSettings() {
+    public MpsatParameters getSettings(WorkspaceEntry we) {
         return MpsatParameters.getInputPropernessSettings();
     }
 

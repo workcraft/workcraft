@@ -600,10 +600,10 @@ public class VerilogImporter implements Importer {
         component.setModule(MUTEX_MODULE_NAME);
         circuit.add(component);
         try {
-            circuit.setName(component, me.me);
+            circuit.setName(component, me.ref);
         } catch (ArgumentException e) {
             String componentRef = circuit.getNodeReference(component);
-            LogUtils.logWarningLine("Cannot set name '" + me.me + "' for component '" + componentRef + "'.");
+            LogUtils.logWarningLine("Cannot set name '" + me.ref + "' for component '" + componentRef + "'.");
         }
         addMutexPin(circuit, component, MUTEX_R1_NAME, IOType.INPUT, me.r1, wires);
         FunctionContact g1Contact = addMutexPin(circuit, component, MUTEX_G1_NAME, IOType.OUTPUT, me.g1, wires);

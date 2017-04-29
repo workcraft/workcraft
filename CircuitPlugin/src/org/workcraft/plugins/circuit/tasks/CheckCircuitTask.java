@@ -13,8 +13,8 @@ import org.workcraft.Framework;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
-import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.MpsatParameters;
+import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
@@ -255,10 +255,9 @@ public class CheckCircuitTask extends MpsatChainTask {
 
             // Check for interface conformation (only if requested and if the environment is specified)
             if ((envStg != null) && checkConformation) {
-                Set<String> devOutputNames = devStg.getSignalNames(Type.OUTPUT, null);
                 byte[] placesList = FileUtils.readAllBytes(placesModFile);
                 Set<String> devPlaceNames = parsePlaceNames(placesList, 0);
-                MpsatParameters conformationSettings = MpsatParameters.getConformationSettings(devOutputNames, devPlaceNames);
+                MpsatParameters conformationSettings = MpsatParameters.getConformationSettings(devPlaceNames);
                 MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
                         unfoldingModFile, directory, true, sysModStgFile, placesModFile);
                 SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);

@@ -124,7 +124,7 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
     private void setComponentsRenderStyle(final VisualCircuit visualCircuit) {
         HashSet<String> mutexNames = new HashSet<>();
         for (MutexData me: mutexData) {
-            mutexNames.add(me.me);
+            mutexNames.add(me.ref);
         }
         for (final VisualFunctionComponent component: visualCircuit.getVisualFunctionComponents()) {
             if (mutexNames.contains(visualCircuit.getNodeMathReference(component))) {

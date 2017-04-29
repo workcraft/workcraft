@@ -4,11 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Set;
+import java.util.LinkedList;
 
 import org.workcraft.plugins.stg.StgMutexUtils.MutexData;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.LogUtils;
+import org.workcraft.util.Pair;
 
 public class MpsatParameters {
 
@@ -228,10 +229,10 @@ public class MpsatParameters {
             "// i.e. we are looking for a \"bad\" state where the next-state values of the grants differ\n" +
             "// from [g1] = r1 & ~g2 and [g2] = r2 & ~g1.\n" +
             "let\n" +
-            "    r1=S\"" + REACH_MUTEX_R1 + "\",\n" +
-            "    g1=S\"" + REACH_MUTEX_G1 + "\",\n" +
-            "    r2=S\"" + REACH_MUTEX_R2 + "\",\n" +
-            "    g2=S\"" + REACH_MUTEX_G2 + "\"\n" +
+            "    r1 = S\"" + REACH_MUTEX_R1 + "\",\n" +
+            "    g1 = S\"" + REACH_MUTEX_G1 + "\",\n" +
+            "    r2 = S\"" + REACH_MUTEX_R2 + "\",\n" +
+            "    g2 = S\"" + REACH_MUTEX_G2 + "\"\n" +
             "{\n" +
             "    ('g1 ^ ($r1 & ~$g2))\n" +
             "    |\n" +
@@ -249,21 +250,31 @@ public class MpsatParameters {
                 reach, true);
     }
 
+    private static final String REACH_OUTPUT_PERSISTENCY_EXCEPTIONS =
+            "/* insert signal pairs of output persistency exceptions */"; // For example: {"me1_g1", "me1_g2"}, {"me2_g1", "me2_g2"},
+
     private static final String REACH_OUTPUT_PERSISTENCY =
-            "// Checks whether the STG is output persistent, i.e. no local signal can be disabled by any other signal.\n" +
+            "// Checks whether the STG is output persistent, i.e. no local signal can be disabled by any other signal,\n" +
+            "// with the exception of the provided set of pairs of signals (e.g. mutex outputs).\n" +
             REACH_DUMMY_CHECK +
             "? fail \"Output persistency can currently be checked only for STGs without dummies\" :\n" +
             "let\n" +
+            "    EXCEPTIONS = {" + REACH_OUTPUT_PERSISTENCY_EXCEPTIONS + "{\"\"}} \\ {{\"\"}},\n" +
+            "    SIGE = gather pair in EXCEPTIONS {\n" +
+            "        gather str in pair { S str }\n" +
+            "    },\n" +
             "    TR = tran EVENTS,\n" +
             "    TRL = tran LOCAL * TR,\n" +
             "    TRPT = gather t in TRL s.t. ~is_minus t { t },\n" +
-            "    TRMT = gather t in TRL s.t. ~is_plus t { t } {\n" +
+            "    TRMT = gather t in TRL s.t. ~is_plus t { t }\n" +
+            "{\n" +
             "    exists t_loc in TRL {\n" +
             "        let\n" +
             "            pre_t_loc = pre t_loc,\n" +
             "            OTHER_LOC = (tran sig t_loc \\ {t_loc}) * (is_plus t_loc ? TRPT : is_minus t_loc ? TRMT : TR) {\n" +
             "            // Check if some t can disable t_loc without enabling any other transition labelled by sig t_loc.\n" +
-            "            exists t in post pre_t_loc * TR s.t. sig t != sig t_loc & card ((pre t \\ post t) * pre_t_loc) != 0 {\n" +
+            "            exists t in post pre_t_loc * TR s.t. sig t != sig t_loc &\n" +
+            "                    ~({sig t, sig t_loc} in SIGE) & card ((pre t \\ post t) * pre_t_loc) != 0 {\n" +
             "                forall t_loc1 in OTHER_LOC s.t. card (pre t_loc1 * (pre t \\ post t)) = 0 {\n" +
             "                    exists p in pre t_loc1 \\ post t { ~$p }\n" +
             "                }\n" +
@@ -277,16 +288,29 @@ public class MpsatParameters {
             "}\n";
 
     public static MpsatParameters getOutputPersistencySettings() {
+        return getOutputPersistencySettings(new LinkedList<Pair<String, String>>());
+    }
+
+    public static MpsatParameters getOutputPersistencySettings(Collection<Pair<String, String>> exceptions) {
+        String str = "";
+        if (exceptions != null) {
+            for (Pair<String, String> exception: exceptions) {
+                str += "{\"" + exception.getFirst() + "\", \"" + exception.getSecond() + "\"}, ";
+            }
+        }
+        String reachOutputPersistence = REACH_OUTPUT_PERSISTENCY.replace(REACH_OUTPUT_PERSISTENCY_EXCEPTIONS, str);
         return new MpsatParameters("Output persistency", MpsatMode.STG_REACHABILITY_OUTPUT_PERSISTENCY, 0,
                 MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(),
-                REACH_OUTPUT_PERSISTENCY, true);
+                reachOutputPersistence, true);
     }
 
     private static final String REACH_DI_INTERFACE =
             "// Checks whether the STG's interface is delay insensitive, i.e. an input transition cannot trigger another input transition\n" +
             REACH_DUMMY_CHECK +
             "? fail \"Delay insensitivity can currently be checked only for STGs without dummies\" :\n" +
-            "let TRINP = tran INPUTS * tran EVENTS {\n" +
+            "let\n" +
+            "    TRINP = tran INPUTS * tran EVENTS {" +
+            "{\n" +
             "    exists ti in TRINP {\n" +
             "        let pre_ti = pre ti {\n" +
             "            // Check if some ti_trig can trigger ti\n" +
@@ -317,7 +341,8 @@ public class MpsatParameters {
             "    TRI = tran INTERNAL * TR,\n" +
             "    TRL = tran LOCAL * TR,\n" +
             "    TRPT = gather t in TRINP s.t. ~is_minus t { t },\n" +
-            "    TRMT = gather t in TRINP s.t. ~is_plus t { t } {\n" +
+            "    TRMT = gather t in TRINP s.t. ~is_plus t { t }\n" +
+            "{\n" +
             "    exists t_inp in TRINP {\n" +
             "        let\n" +
             "            pre_t_inp = pre t_inp,\n" +
@@ -366,14 +391,12 @@ public class MpsatParameters {
             "     // This set may in fact contain places from the environment STG, e.g. when PCOMP removes duplicate\n" +
             "     // places from the composed STG, it substitutes them with equivalent places that remain.\n" +
             "     // LIMITATION: syntax error if any of these sets is empty.\n" +
-            "    PDEV_NAMES={\n" +
-            "        " + REACH_CONFORMATION_DEV_PLACES + "\n" +
-            "    },\n" +
+            "    PDEV_NAMES = {" + REACH_CONFORMATION_DEV_PLACES + "\"\"} \\ {\"\"},\n" +
             "    // PDEV is the set of places with the names in PDEV_NAMES.\n" +
             "    // XML-based PUNF / MPSAT are needed here to process dead places correctly.\n" +
-            "    PDEV=gather nm in PDEV_NAMES { P nm },\n" +
+            "    PDEV = gather nm in PDEV_NAMES { P nm },\n" +
             "    // PDEV_EXT includes PDEV and places with the same preset and postset ignoring context as some place in PDEV\n" +
-            "    PDEV_EXT=gather p in PLACES s.t.\n" +
+            "    PDEV_EXT = gather p in PLACES s.t.\n" +
             "        p in PDEV\n" +
             "        |\n" +
             "        let pre_p=pre p, post_p=post p, s_pre_p=pre_p \\ post_p, s_post_p=post_p \\ pre_p {\n" +
@@ -387,7 +410,7 @@ public class MpsatParameters {
             "    // TDEV is the set of device transitions.\n" +
             "    // XML-based PUNF / MPSAT are needed here to process dead transitions correctly.\n" +
             "    // LIMITATION: each transition in the device must have some arcs, i.e. its preset or postset is non-empty.\n" +
-            "    TDEV=tran sig (pre PDEV + post PDEV)\n" +
+            "    TDEV = tran sig (pre PDEV + post PDEV)\n" +
             "{\n" +
             "     // The device STG must have no dummies.\n" +
             "    card (sig TDEV * DUMMY) != 0 ? fail \"Conformation can currently be checked only for device STGs without dummies\" :\n" +
@@ -401,30 +424,18 @@ public class MpsatParameters {
             "    }\n" +
             "}\n";
 
-    public static MpsatParameters getConformationSettings(Set<String> devOutputNames, Set<String> devPlaceNames) {
-        String reachConformation = genReachConformation(devOutputNames, devPlaceNames);
-        return new MpsatParameters("Interface conformation", MpsatMode.STG_REACHABILITY_CONFORMATION, 0,
-                MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(),
-                reachConformation, true);
-    }
-
     // Note: New (PNML-based) version of Punf is required to check conformation property. Old version of
     // Punf does not support dead signals, dead transitions and dead places well (e.g. a dead transition
     // may disappear from unfolding), therefore the conformation property cannot be checked reliably.
-    private static String genReachConformation(Set<String> devOutputNames, Set<String> devPlaceNames) {
-        String devPlaceList = genNameList(devPlaceNames);
-        return REACH_CONFORMATION.replace(REACH_CONFORMATION_DEV_PLACES, devPlaceList);
-    }
-
-    private static String genNameList(Collection<String> names) {
-        String result = "";
-        for (String name: names) {
-            if (!result.isEmpty()) {
-                result += ", ";
-            }
-            result += "\"" + name + "\"";
+    public static MpsatParameters getConformationSettings(Collection<String> devPlaceNames) {
+        String str = "";
+        for (String name: devPlaceNames) {
+            str += "\"" + name + "\", ";
         }
-        return result;
+        String reachConformation = REACH_CONFORMATION.replace(REACH_CONFORMATION_DEV_PLACES, str);
+        return new MpsatParameters("Interface conformation", MpsatMode.STG_REACHABILITY_CONFORMATION, 0,
+                MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(),
+                reachConformation, true);
     }
 
     // Reach expression for checking strict implementation

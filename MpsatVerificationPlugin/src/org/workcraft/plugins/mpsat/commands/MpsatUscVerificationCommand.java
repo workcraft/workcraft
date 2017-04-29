@@ -24,7 +24,7 @@ public class MpsatUscVerificationCommand extends MpsatAbstractVerificationComman
     }
 
     @Override
-    public MpsatParameters getSettings() {
+    public MpsatParameters getSettings(WorkspaceEntry we) {
         return MpsatParameters.getUscSettings();
     }
 

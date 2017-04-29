@@ -7,11 +7,12 @@ import java.util.Set;
 
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.util.Pair;
 
 public class StgMutexUtils {
 
     public static class MutexData {
-        public String me;
+        public String ref;
         public String r1;
         public String g1;
         public String r2;
@@ -19,8 +20,17 @@ public class StgMutexUtils {
 
         @Override
         public String toString() {
-            return me + " (.r1(" + r1 + "), .g1(" + g1 + "), .r2(" + r2 + "), .g2(" + g2 + "))";
+            return ref + " (.r1(" + r1 + "), .g1(" + g1 + "), .r2(" + r2 + "), .g2(" + g2 + "))";
         }
+    }
+
+    public static LinkedList<Pair<String, String>> getMutexGrantPairs(Stg stg) {
+        LinkedList<Pair<String, String>> exceptions = new LinkedList<>();
+        for (MutexData mutexData: getMutexData(stg)) {
+            Pair<String, String> exception = Pair.of(mutexData.g1, mutexData.g2);
+            exceptions.add(exception);
+        }
+        return exceptions;
     }
 
     public static LinkedList<MutexData> getMutexData(Stg stg) {
@@ -38,7 +48,7 @@ public class StgMutexUtils {
         if (!place.isMutex()) {
             return false;
         }
-        me.me = stg.getNodeReference(place);
+        me.ref = stg.getNodeReference(place);
         Set<Node> preset = stg.getPreset(place);
         Set<Node> postset = stg.getPostset(place);
         if ((preset.size() != 2) || (postset.size() != 2)) {
