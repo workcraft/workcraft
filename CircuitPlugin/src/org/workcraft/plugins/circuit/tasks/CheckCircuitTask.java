@@ -14,6 +14,7 @@ import java.util.Set;
 
 import org.workcraft.Framework;
 import org.workcraft.plugins.circuit.Circuit;
+import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
@@ -28,6 +29,7 @@ import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.stg.MutexData;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
@@ -66,25 +68,7 @@ public class CheckCircuitTask extends MpsatChainTask {
             // Common variables
             VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
             File envFile = visualCircuit.getEnvironmentFile();
-
-            LinkedList<Pair<String, String>> grantPairs = new LinkedList<>();
-            Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
-            for (FunctionComponent component: circuit.getFunctionComponents()) {
-                if ("MUTEX".equals(component.getModule())) {
-                    Collection<Contact> outputs = component.getOutputs();
-                    if (outputs.size() == 2) {
-                        Iterator<Contact> iterator = outputs.iterator();
-                        Contact contact1 = iterator.next();
-                        Contact signal1 = CircuitUtils.findSignal(circuit, contact1, true);
-                        String name1 = circuit.getNodeReference(signal1);
-                        Contact contact2 = iterator.next();
-                        Contact signal2 = CircuitUtils.findSignal(circuit, contact2, true);
-                        String name2 = circuit.getNodeReference(signal2);
-                        Pair<String, String> grantPair = Pair.of(name1, name2);
-                        grantPairs.add(grantPair);
-                    }
-                }
-            }
+            LinkedList<Pair<String, String>> grantPairs = getMutexGrantPairs(we);
 
             // Load device STG
             CircuitToStgConverter converter = new CircuitToStgConverter(visualCircuit);
@@ -327,6 +311,31 @@ public class CheckCircuitTask extends MpsatChainTask {
         } finally {
             FileUtils.deleteOnExitRecursively(directory);
         }
+    }
+
+    private LinkedList<Pair<String, String>> getMutexGrantPairs(WorkspaceEntry we) {
+        LinkedList<Pair<String, String>> grantPairs = new LinkedList<>();
+        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
+        MutexData mutexData = CircuitSettings.parseMutexData();
+        if ((mutexData != null) && (mutexData.name != null)) {
+            for (FunctionComponent component: circuit.getFunctionComponents()) {
+                if (mutexData.name.equals(component.getModule())) {
+                    Collection<Contact> outputs = component.getOutputs();
+                    if (outputs.size() == 2) {
+                        Iterator<Contact> iterator = outputs.iterator();
+                        Contact contact1 = iterator.next();
+                        Contact signal1 = CircuitUtils.findSignal(circuit, contact1, true);
+                        String name1 = circuit.getNodeReference(signal1);
+                        Contact contact2 = iterator.next();
+                        Contact signal2 = CircuitUtils.findSignal(circuit, contact2, true);
+                        String name2 = circuit.getNodeReference(signal2);
+                        Pair<String, String> grantPair = Pair.of(name1, name2);
+                        grantPairs.add(grantPair);
+                    }
+                }
+            }
+        }
+        return grantPairs;
     }
 
     private HashSet<String> parsePlaceNames(byte[] bufferedInput, int lineIndex) {

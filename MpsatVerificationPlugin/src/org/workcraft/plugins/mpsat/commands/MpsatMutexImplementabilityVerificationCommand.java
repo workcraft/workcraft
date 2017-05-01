@@ -1,18 +1,21 @@
 package org.workcraft.plugins.mpsat.commands;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
+import org.workcraft.dom.references.ReferenceHelper;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.mpsat.MpsatCombinedChainResultHandler;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainTask;
+import org.workcraft.plugins.stg.MutexData;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.StgMutexUtils;
-import org.workcraft.plugins.stg.MutexData;
 import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -45,18 +48,30 @@ public class MpsatMutexImplementabilityVerificationCommand extends AbstractVerif
     @Override
     public void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
-        Stg stg = WorkspaceUtils.getAs(we, Stg.class);
+        final MainWindow mainWindow = framework.getMainWindow();
+        final Stg stg = WorkspaceUtils.getAs(we, Stg.class);
+        if (stg.getMutexPlaces().isEmpty()) {
+            JOptionPane.showMessageDialog(mainWindow,
+                    "Error: No mutex places found.",
+                    TITLE, JOptionPane.ERROR_MESSAGE);
+            return;
+        }
         final ArrayList<MpsatParameters> settingsList = new ArrayList<>();
+        final ArrayList<StgPlace> problematicPlaces = new ArrayList<>();
         for (StgPlace place: stg.getMutexPlaces()) {
-            MutexData mutexData = new MutexData();
-            if (StgMutexUtils.fillMutexContext(stg, place, mutexData)) {
+            MutexData mutexData = StgMutexUtils.getMutexData(stg, place);
+            if (mutexData != null) {
                 MpsatParameters settings = MpsatParameters.getImplicitMutexSettings(mutexData);
                 settingsList.add(settings);
+            } else {
+                problematicPlaces.add(place);
             }
         }
-        if (settingsList.isEmpty()) {
-            JOptionPane.showMessageDialog(framework.getMainWindow(),
-                    "Error: No mutex place found with non-input grants and unique requests.",
+        if (!problematicPlaces.isEmpty()) {
+            String problematicPlacesString = ReferenceHelper.getNodesAsString(stg, (Collection) problematicPlaces, 50);
+            JOptionPane.showMessageDialog(mainWindow,
+                    "Error: A mutex place must precede a pair of output transitions, each with a single trigger.\n" +
+                            "Problematic places are: " + problematicPlacesString,
                     TITLE, JOptionPane.ERROR_MESSAGE);
             return;
         }

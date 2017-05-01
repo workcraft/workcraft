@@ -62,12 +62,6 @@ import org.workcraft.workspace.ModelEntry;
 
 public class VerilogImporter implements Importer {
 
-    private static final String MUTEX_MODULE_NAME = "MUTEX";
-    private static final String MUTEX_R1_NAME = "r1";
-    private static final String MUTEX_G1_NAME = "g1";
-    private static final String MUTEX_R2_NAME = "r2";
-    private static final String MUTEX_G2_NAME = "g2";
-
     private class AssignGate {
         public final String outputName;
         public final String setFunction;
@@ -240,9 +234,7 @@ public class VerilogImporter implements Importer {
                 instanceComponentMap.put(verilogInstance, component);
             }
         }
-        for (MutexData me: mutexData) {
-            createMutex(circuit, me, wires, modules);
-        }
+        insertMutexes(modules, mutexData, circuit, wires);
         createConnections(circuit, wires);
         setZeroDelayAttribute(instanceComponentMap);
         setInitialState(circuit, wires, topModule.signalStates);
@@ -594,29 +586,41 @@ public class VerilogImporter implements Importer {
         return component;
     }
 
-    private FunctionComponent createMutex(Circuit circuit, MutexData me,
+    private void insertMutexes(HashMap<String, Module> modules, Collection<MutexData> mutexData, Circuit circuit,
+            HashMap<String, Wire> wires) {
+        if (!mutexData.isEmpty()) {
+            MutexData mutexModuleData = CircuitSettings.parseMutexData();
+            if ((mutexModuleData != null) && (mutexModuleData.name != null)) {
+                for (MutexData instanceMutexData: mutexData) {
+                    createMutex(circuit, instanceMutexData, mutexModuleData, wires, modules);
+                }
+            }
+        }
+    }
+
+    private FunctionComponent createMutex(Circuit circuit, MutexData instanceMutexData, MutexData moduleMutexData,
             HashMap<String, Wire> wires, HashMap<String, Module> modules) {
         final FunctionComponent component = new FunctionComponent();
-        component.setModule(MUTEX_MODULE_NAME);
+        component.setModule(moduleMutexData.name);
         circuit.add(component);
         try {
-            circuit.setName(component, me.ref);
+            circuit.setName(component, instanceMutexData.name);
         } catch (ArgumentException e) {
             String componentRef = circuit.getNodeReference(component);
-            LogUtils.logWarningLine("Cannot set name '" + me.ref + "' for component '" + componentRef + "'.");
+            LogUtils.logWarningLine("Cannot set name '" + instanceMutexData.name + "' for component '" + componentRef + "'.");
         }
-        addMutexPin(circuit, component, MUTEX_R1_NAME, IOType.INPUT, me.r1, wires);
-        FunctionContact g1Contact = addMutexPin(circuit, component, MUTEX_G1_NAME, IOType.OUTPUT, me.g1, wires);
-        addMutexPin(circuit, component, MUTEX_R2_NAME, IOType.INPUT, me.r2, wires);
-        FunctionContact g2Contact = addMutexPin(circuit, component, MUTEX_G2_NAME, IOType.OUTPUT, me.g2, wires);
+        addMutexPin(circuit, component, moduleMutexData.r1, IOType.INPUT, instanceMutexData.r1, wires);
+        FunctionContact g1Contact = addMutexPin(circuit, component, moduleMutexData.g1, IOType.OUTPUT, instanceMutexData.g1, wires);
+        addMutexPin(circuit, component, moduleMutexData.r2, IOType.INPUT, instanceMutexData.r2, wires);
+        FunctionContact g2Contact = addMutexPin(circuit, component, moduleMutexData.g2, IOType.OUTPUT, instanceMutexData.g2, wires);
         try {
-            setMutexFunctions(circuit, component, g1Contact, MUTEX_R1_NAME, MUTEX_G2_NAME);
-            setMutexFunctions(circuit, component, g2Contact, MUTEX_R2_NAME, MUTEX_G1_NAME);
+            setMutexFunctions(circuit, component, g1Contact, moduleMutexData.r1, moduleMutexData.g2);
+            setMutexFunctions(circuit, component, g2Contact, moduleMutexData.r2, moduleMutexData.g1);
         } catch (org.workcraft.formula.jj.ParseException e) {
             throw new RuntimeException(e);
         }
-        setMutexGrant(circuit, me.g1, wires);
-        setMutexGrant(circuit, me.g2, wires);
+        setMutexGrant(circuit, instanceMutexData.g1, wires);
+        setMutexGrant(circuit, instanceMutexData.g2, wires);
         return component;
     }
 

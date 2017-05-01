@@ -245,7 +245,7 @@ public class MpsatParameters {
                 .replace(REACH_MUTEX_G1, mutexData.g1)
                 .replace(REACH_MUTEX_R2, mutexData.r2)
                 .replace(REACH_MUTEX_G2, mutexData.g2);
-        return new MpsatParameters("Non-persistency implementable by mutex " + mutexData, MpsatMode.STG_REACHABILITY, 0,
+        return new MpsatParameters("Non-persistency is implementable as " + mutexData, MpsatMode.STG_REACHABILITY, 0,
                 MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(),
                 reach, true);
     }

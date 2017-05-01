@@ -151,7 +151,7 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
     private void setComponentsRenderStyle(final VisualCircuit visualCircuit, final RenderType renderType) {
         HashSet<String> mutexNames = new HashSet<>();
         for (MutexData me: mutexData) {
-            mutexNames.add(me.ref);
+            mutexNames.add(me.name);
         }
         for (final VisualFunctionComponent component: visualCircuit.getVisualFunctionComponents()) {
             if (mutexNames.contains(visualCircuit.getNodeMathReference(component))) {

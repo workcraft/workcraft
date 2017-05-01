@@ -3,14 +3,29 @@ package org.workcraft.plugins.circuit;
 import java.awt.Color;
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.swing.JOptionPane;
 
 import org.workcraft.Config;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.plugins.stg.MutexData;
 
 public class CircuitSettings implements Settings {
+
+    private static final Pattern MUTEX_DATA_PATTERN = Pattern.compile(
+            "(\\w+)\\(\\((\\w+),(\\w+)\\),\\((\\w+),(\\w+)\\)\\)");
+
+    private static final int MUTEX_NAME_GROUP = 1;
+    private static final int MUTEX_R1_GROUP = 2;
+    private static final int MUTEX_G1_GROUP = 3;
+    private static final int MUTEX_R2_GROUP = 4;
+    private static final int MUTEX_G2_GROUP = 5;
+
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "CircuitSettings";
 
@@ -25,6 +40,7 @@ public class CircuitSettings implements Settings {
     private static final String keySimplifyStg = prefix + ".simplifyStg";
     private static final String keyGateLibrary = prefix + ".gateLibrary";
     private static final String keySubstitutionLibrary = prefix + ".substitutionLibrary";
+    private static final String keyMutexData = prefix + ".mutexData";
 
     private static final boolean defaultShowContacts = false;
     private static final boolean defaultShowZeroDelayNames = false;
@@ -37,6 +53,7 @@ public class CircuitSettings implements Settings {
     private static final boolean defaultSimplifyStg = true;
     private static final String defaultGateLibrary = DesktopApi.getOs().isWindows() ? "libraries\\workcraft.lib" : "libraries/workcraft.lib";
     private static final String defaultSubstitutionLibrary = "";
+    private static final String defaultMutexData = "MUTEX ((r1, g1), (r2, g2))";
 
     private static boolean showContacts = defaultShowContacts;
     private static boolean showZeroDelayNames = defaultShowZeroDelayNames;
@@ -49,6 +66,7 @@ public class CircuitSettings implements Settings {
     private static boolean simplifyStg = defaultSimplifyStg;
     private static String gateLibrary = defaultGateLibrary;
     private static String substitutionLibrary = defaultSubstitutionLibrary;
+    private static String mutexData = defaultMutexData;
 
     public CircuitSettings() {
         properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
@@ -160,6 +178,22 @@ public class CircuitSettings implements Settings {
                 return getSubstitutionLibrary();
             }
         });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, String>(
+                this, "Mutex name and request-grant pairs", String.class, true, false, false) {
+            protected void setter(CircuitSettings object, String value) {
+                if (parseMutexData(value) != null) {
+                    setMutexData(value);
+                } else {
+                    JOptionPane.showMessageDialog(null,
+                            "Mutex description format is incorrect. It should be as follows:\n" + defaultMutexData,
+                            "Digital Circuit settings", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+            protected String getter(CircuitSettings object) {
+                return getMutexData();
+            }
+        });
     }
 
     @Override
@@ -190,6 +224,7 @@ public class CircuitSettings implements Settings {
         setSimplifyStg(config.getBoolean(keySimplifyStg, defaultSimplifyStg));
         setGateLibrary(config.getString(keyGateLibrary, defaultGateLibrary));
         setSubstitutionLibrary(config.getString(keySubstitutionLibrary, defaultSubstitutionLibrary));
+        setMutexData(config.getString(keyMutexData, defaultMutexData));
     }
 
     @Override
@@ -205,6 +240,7 @@ public class CircuitSettings implements Settings {
         config.setBoolean(keySimplifyStg, getSimplifyStg());
         config.set(keyGateLibrary, getGateLibrary());
         config.set(keySubstitutionLibrary, getSubstitutionLibrary());
+        config.set(keyMutexData, getMutexData());
     }
 
     public static boolean getShowContacts() {
@@ -293,6 +329,29 @@ public class CircuitSettings implements Settings {
 
     public static void setSubstitutionLibrary(String value) {
         substitutionLibrary = value;
+    }
+
+    public static String getMutexData() {
+        return mutexData;
+    }
+
+    public static void setMutexData(String value) {
+        mutexData = value;
+    }
+
+    public static MutexData parseMutexData() {
+        return parseMutexData(getMutexData());
+    }
+
+    private static MutexData parseMutexData(String str) {
+        MutexData result = null;
+        Matcher matcher = MUTEX_DATA_PATTERN.matcher(str.replaceAll("\\s", ""));
+        if (matcher.find()) {
+            result = new MutexData(matcher.group(MUTEX_NAME_GROUP),
+                    matcher.group(MUTEX_R1_GROUP), matcher.group(MUTEX_G1_GROUP),
+                    matcher.group(MUTEX_R2_GROUP), matcher.group(MUTEX_G2_GROUP));
+        }
+        return result;
     }
 
 }

@@ -108,6 +108,9 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
         command.add("-log");
         command.add(logFile.getAbsolutePath());
 
+        // Preserve internal signals (hidden option)
+        //command.add("-keepinternal");
+
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
 
         // Check for isolated marked places and temporary remove them is requested
@@ -178,13 +181,7 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
         if (!mutexData.isEmpty()) {
             stg = StgUtils.loadStg(stgFile);
             for (MutexData m: mutexData) {
-                if (stg.getSignalType(m.r1) == Type.INTERNAL) {
-                    stg.setSignalType(m.r1, Type.OUTPUT);
-                }
                 stg.setSignalType(m.g1, Type.INPUT);
-                if (stg.getSignalType(m.r2) == Type.INTERNAL) {
-                    stg.setSignalType(m.r2, Type.OUTPUT);
-                }
                 stg.setSignalType(m.g2, Type.INPUT);
             }
             stgFile = new File(directory, "spec-mutex" + stgExporter.getExtenstion());
