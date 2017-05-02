@@ -108,8 +108,8 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
         command.add("-log");
         command.add(logFile.getAbsolutePath());
 
-        // Preserve internal signals (hidden option)
-        //command.add("-keepinternal");
+        // Preserve internal signals (hidden option) -- required for mutex insertion
+        command.add("-keepinternal");
 
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
 

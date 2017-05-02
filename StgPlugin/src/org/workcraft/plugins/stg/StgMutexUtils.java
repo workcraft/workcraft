@@ -72,12 +72,14 @@ public class StgMutexUtils {
     private static Set<SignalTransition> getTriggers(Stg stg, SignalTransition transition, StgPlace skipPlace) {
         HashSet<SignalTransition> result = new HashSet<>();
         for (Node predPlace: stg.getPreset(transition)) {
-            if ((predPlace instanceof StgPlace) && (predPlace != skipPlace)) {
-                for (Node predTransition: stg.getPreset(predPlace)) {
-                    if (predTransition instanceof SignalTransition) {
-                        result.add((SignalTransition) predTransition);
-                    }
+            if (!(predPlace instanceof StgPlace) || (predPlace == skipPlace)) {
+                continue;
+            }
+            for (Node predTransition: stg.getPreset(predPlace)) {
+                if (!(predTransition instanceof SignalTransition) || stg.getPreset(predTransition).contains(predPlace)) {
+                    continue;
                 }
+                result.add((SignalTransition) predTransition);
             }
         }
         return result;

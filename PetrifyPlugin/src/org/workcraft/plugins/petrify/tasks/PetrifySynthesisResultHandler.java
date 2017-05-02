@@ -16,8 +16,8 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitDescriptor;
 import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
-import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.petrify.PetrifySettings;
@@ -127,13 +127,13 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
             mutexNames.add(me.name);
         }
         for (final VisualFunctionComponent component: visualCircuit.getVisualFunctionComponents()) {
-            if (mutexNames.contains(visualCircuit.getNodeMathReference(component))) {
+            String componentRef = visualCircuit.getNodeMathReference(component);
+            if (mutexNames.contains(componentRef)) {
                 component.setRenderType(RenderType.BOX);
-                for (VisualFunctionContact contact: visualCircuit.getVisualFunctionContacts()) {
+                for (VisualContact contact: component.getVisualContacts()) {
                     Point2D pos = contact.getPosition();
                     double x = pos.getX() + (contact.isInput() ?  -0.5 : +0.5);
-                    double y = 2.0 * pos.getY();
-                    contact.setPosition(new Point2D.Double(x, y));
+                    contact.setX(x);
                 }
             } else if (component.isSequentialGate()) {
                 if (boxSequentialComponents) {
