@@ -23,11 +23,11 @@ import org.workcraft.workspace.WorkspaceUtils;
 
 public class MpsatMutexImplementabilityVerificationCommand extends AbstractVerificationCommand {
 
-    private static final String TITLE = "Implementability by mutex";
+    private static final String TITLE = "Mutex place implementability";
 
     @Override
     public String getDisplayName() {
-        return "Non-persistency implementable by mutex [MPSat]";
+        return "Mutex place implementability [MPSat]";
     }
 
     @Override
@@ -70,8 +70,11 @@ public class MpsatMutexImplementabilityVerificationCommand extends AbstractVerif
         if (!problematicPlaces.isEmpty()) {
             String problematicPlacesString = ReferenceHelper.getNodesAsString(stg, (Collection) problematicPlaces, 50);
             JOptionPane.showMessageDialog(mainWindow,
-                    "Error: A mutex place must precede a pair of output transitions, each with a single trigger.\n" +
-                            "Problematic places are: " + problematicPlacesString,
+                    "Error: A mutex place must precede a pair of\n" +
+                            "output transitions, each with a single trigger.\n\n" +
+                            "Problematic places are:" +
+                            (problematicPlacesString.length() > 30 ? "\n" : " ") +
+                            problematicPlacesString,
                     TITLE, JOptionPane.ERROR_MESSAGE);
             return;
         }

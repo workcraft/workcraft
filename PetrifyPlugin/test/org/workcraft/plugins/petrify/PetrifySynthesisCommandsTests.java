@@ -13,11 +13,14 @@ import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.Contact;
+import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.petrify.commands.PetrifyAbstractSynthesisCommand;
 import org.workcraft.plugins.petrify.commands.PetrifyComplexGateSynthesisCommand;
 import org.workcraft.plugins.petrify.commands.PetrifyTechnologyMappingSynthesisCommand;
+import org.workcraft.plugins.stg.MutexData;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -60,6 +63,16 @@ public class PetrifySynthesisCommandsTests {
     }
 
     @Test
+    public void arbitrationComplexGateSynthesis() {
+        testComplexGateSynthesisCommand("org/workcraft/plugins/petrify/arbitration-3.stg.work", 6);
+    }
+
+    @Test
+    public void edcComplexGateSynthesis() {
+        testComplexGateSynthesisCommand("org/workcraft/plugins/petrify/edc.stg.work", 7);
+    }
+
+    @Test
     public void bufferTechnologyMappingSynthesis() {
         testTechnologyMappingSynthesisCommad("org/workcraft/plugins/petrify/buffer-compact.stg.work", 1);
     }
@@ -72,6 +85,16 @@ public class PetrifySynthesisCommandsTests {
     @Test
     public void constTechnologyMappingSynthesis() {
         testTechnologyMappingSynthesisCommad("org/workcraft/plugins/petrify/const.stg.work", 3);
+    }
+
+    @Test
+    public void arbitrationTechnologyMappingSynthesis() {
+        testTechnologyMappingSynthesisCommad("org/workcraft/plugins/petrify/arbitration-3.stg.work", 3);
+    }
+
+    @Test
+    public void edcTechnologyMappingSynthesis() {
+        testTechnologyMappingSynthesisCommad("org/workcraft/plugins/petrify/edc.stg.work", 7);
     }
 
     private void testComplexGateSynthesisCommand(String testStgWork, int expectedGateCount) {
@@ -101,6 +124,7 @@ public class PetrifySynthesisCommandsTests {
         Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
         Set<String> srcInputs = srcStg.getSignalNames(Type.INPUT, null);
         Set<String> srcOutputs = srcStg.getSignalNames(Type.OUTPUT, null);
+        Set<String> srcMutexes = getMutexNames(srcStg);
 
         C command = cls.newInstance();
         WorkspaceEntry dstWe = command.execute(srcWe);
@@ -115,12 +139,32 @@ public class PetrifySynthesisCommandsTests {
                 dstOutputs.add(port.getName());
             }
         }
-
+        Set<String> dstMutexes = getMutexNames(dstCircuit);
         int dstGateCount = dstCircuit.getFunctionComponents().size();
 
         Assert.assertEquals(srcInputs, dstInputs);
         Assert.assertEquals(srcOutputs, dstOutputs);
+        Assert.assertEquals(srcMutexes, dstMutexes);
         Assert.assertEquals(expectedGateCount, dstGateCount);
+    }
+
+    private Set<String> getMutexNames(Stg stg) {
+        HashSet<String> result = new HashSet<>();
+        for (StgPlace place: stg.getMutexPlaces()) {
+            result.add(stg.getNodeReference(place));
+        }
+        return result;
+    }
+
+    private Set<String> getMutexNames(Circuit circuit) {
+        HashSet<String> result = new HashSet<>();
+        MutexData mutexData = CircuitSettings.parseMutexData();
+        for (FunctionComponent component: circuit.getFunctionComponents()) {
+            if (mutexData.name.equals(component.getModule())) {
+                result.add(circuit.getNodeReference(component));
+            }
+        }
+        return result;
     }
 
 }

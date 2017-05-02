@@ -1,6 +1,5 @@
 package org.workcraft.plugins.petrify.tasks;
 
-import java.awt.geom.Point2D;
 import java.io.ByteArrayInputStream;
 import java.util.Collection;
 import java.util.HashSet;
@@ -131,8 +130,7 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
             if (mutexNames.contains(componentRef)) {
                 component.setRenderType(RenderType.BOX);
                 for (VisualContact contact: component.getVisualContacts()) {
-                    Point2D pos = contact.getPosition();
-                    double x = pos.getX() + (contact.isInput() ?  -0.5 : +0.5);
+                    double x = contact.getPosition().getX() + (contact.isInput() ?  -0.5 : +0.5);
                     contact.setX(x);
                 }
             } else if (component.isSequentialGate()) {
