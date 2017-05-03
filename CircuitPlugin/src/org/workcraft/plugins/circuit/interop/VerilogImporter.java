@@ -613,6 +613,10 @@ public class VerilogImporter implements Importer {
                     Wire wire = wires.get(signal.name);
                     if (wire != null) {
                         wire.sinks.remove(contact);
+                        if ((wire.source != null) && (wire.source.getParent() instanceof FunctionComponent)) {
+                            FunctionComponent component = (FunctionComponent) wire.source.getParent();
+                            circuit.setName(component, signal.name);
+                        }
                     }
                 }
             }
