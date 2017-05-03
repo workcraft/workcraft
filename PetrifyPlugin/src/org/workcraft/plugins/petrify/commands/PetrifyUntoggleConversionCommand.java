@@ -1,16 +1,17 @@
 package org.workcraft.plugins.petrify.commands;
 
+import java.util.Collection;
+
 import org.workcraft.Framework;
-import org.workcraft.gui.graph.commands.AbstractConversionCommand;
 import org.workcraft.plugins.petrify.tasks.PetrifyTransformationResultHandler;
 import org.workcraft.plugins.petrify.tasks.PetrifyTransformationTask;
+import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class PetrifyUntoggleConversionCommand extends AbstractConversionCommand {
+public class PetrifyUntoggleConversionCommand extends PetrifyAbstractConversionCommand {
 
     @Override
     public String getDisplayName() {
@@ -31,14 +32,11 @@ public class PetrifyUntoggleConversionCommand extends AbstractConversionCommand 
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
         final PetrifyTransformationTask task = new PetrifyTransformationTask(we, "Signal transition untoggle", new String[] {"-untog"});
-        final PetrifyTransformationResultHandler monitor = new PetrifyTransformationResultHandler(we);
+        boolean hasSignals = hasSignals(we);
+        Collection<Mutex> mutexes = getMutexes(we);
+        final PetrifyTransformationResultHandler monitor = new PetrifyTransformationResultHandler(we, !hasSignals, mutexes);
         taskManager.execute(task, "Petrify signal transition untoggle", monitor);
         return monitor.getResult();
-    }
-
-    @Override
-    public ModelEntry convert(ModelEntry me) {
-        return null; // !!!
     }
 
 }

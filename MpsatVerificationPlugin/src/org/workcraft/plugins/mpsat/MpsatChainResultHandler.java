@@ -1,5 +1,7 @@
 package org.workcraft.plugins.mpsat;
 
+import java.util.Collection;
+
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -8,6 +10,7 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -17,9 +20,15 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
     private static final String TITLE = "MPSat verification";
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
     private final MpsatChainTask task;
+    private final Collection<Mutex> mutexes;
 
     public MpsatChainResultHandler(MpsatChainTask task) {
+        this(task, null);
+    }
+
+    public MpsatChainResultHandler(MpsatChainTask task, Collection<Mutex> mutexes) {
         this.task = task;
+        this.mutexes = mutexes;
     }
 
     @Override
@@ -65,7 +74,7 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
             SwingUtilities.invokeLater(new MpsatDeadlockResultHandler(we, mpsatResult));
             break;
         case RESOLVE_ENCODING_CONFLICTS:
-            SwingUtilities.invokeLater(new MpsatCscConflictResolutionResultHandler(we, mpsatResult));
+            SwingUtilities.invokeLater(new MpsatCscConflictResolutionResultHandler(we, mpsatResult, mutexes));
             break;
         default:
             MainWindow mainWindow = Framework.getInstance().getMainWindow();

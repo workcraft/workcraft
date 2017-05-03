@@ -1,16 +1,20 @@
 package org.workcraft.plugins.mpsat;
 
 import java.io.ByteArrayInputStream;
+import java.util.Collection;
 
 import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
+import org.workcraft.dom.Node;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.plugins.stg.interop.DotGImporter;
 import org.workcraft.tasks.Result;
 import org.workcraft.workspace.ModelEntry;
@@ -20,11 +24,14 @@ public class MpsatCscConflictResolutionResultHandler implements Runnable {
 
     private final WorkspaceEntry we;
     private final Result<? extends ExternalProcessResult> result;
+    private final Collection<Mutex> mutexes;
     private WorkspaceEntry weResult;
 
-    public MpsatCscConflictResolutionResultHandler(final WorkspaceEntry we, final Result<? extends ExternalProcessResult> result) {
+    public MpsatCscConflictResolutionResultHandler(final WorkspaceEntry we,
+            final Result<? extends ExternalProcessResult> result, Collection<Mutex> mutexes) {
         this.we = we;
         this.result = result;
+        this.mutexes = mutexes;
         this.weResult = null;
     }
 
@@ -50,9 +57,22 @@ public class MpsatCscConflictResolutionResultHandler implements Runnable {
                     "MPSat output: \n" + errorMessage,
                     "Conflict resolution failed", JOptionPane.WARNING_MESSAGE);
         } else {
+            restoreMutexPlaces(model);
             final ModelEntry me = new ModelEntry(new StgDescriptor(), model);
             final Path<String> path = we.getWorkspacePath();
             weResult = framework.createWork(me, path);
+        }
+    }
+
+    private void restoreMutexPlaces(final StgModel model) {
+        if (mutexes != null) {
+            for (Mutex mutex: mutexes) {
+                Node node = model.getNodeByReference(mutex.name);
+                if (node instanceof StgPlace) {
+                    StgPlace place = (StgPlace) node;
+                    place.setMutex(true);
+                }
+            }
         }
     }
 

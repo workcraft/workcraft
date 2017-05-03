@@ -32,9 +32,6 @@ public class MutexUtils {
     }
 
     public static Mutex getMutex(Stg stg, StgPlace place) {
-        if (!place.isMutex()) {
-            return null;
-        }
         String name = stg.getNodeReference(place);
         Signal r1 = null;
         Signal g1 = null;

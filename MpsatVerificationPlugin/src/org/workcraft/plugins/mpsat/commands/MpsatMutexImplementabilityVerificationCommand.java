@@ -13,9 +13,9 @@ import org.workcraft.plugins.mpsat.MpsatCombinedChainResultHandler;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainTask;
 import org.workcraft.plugins.stg.Mutex;
+import org.workcraft.plugins.stg.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.MutexUtils;
 import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -86,7 +86,8 @@ public class MpsatMutexImplementabilityVerificationCommand extends AbstractVerif
             description += "(" + title + ")";
         }
         final TaskManager taskManager = framework.getTaskManager();
-        final MpsatCombinedChainResultHandler monitor = new MpsatCombinedChainResultHandler(mpsatTask);
+        Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
+        final MpsatCombinedChainResultHandler monitor = new MpsatCombinedChainResultHandler(mpsatTask, mutexes);
         taskManager.queue(mpsatTask, description, monitor);
     }
 

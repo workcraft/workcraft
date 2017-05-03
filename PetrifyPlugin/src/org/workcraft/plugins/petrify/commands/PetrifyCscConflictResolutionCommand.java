@@ -1,10 +1,14 @@
 package org.workcraft.plugins.petrify.commands;
 
+import java.util.Collection;
+
 import org.workcraft.Framework;
 import org.workcraft.gui.graph.commands.ScriptableCommand;
 import org.workcraft.plugins.petrify.tasks.PetrifyTransformationResultHandler;
 import org.workcraft.plugins.petrify.tasks.PetrifyTransformationTask;
-import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.Mutex;
+import org.workcraft.plugins.stg.MutexUtils;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -23,7 +27,7 @@ public class PetrifyCscConflictResolutionCommand implements ScriptableCommand {
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, StgModel.class);
+        return WorkspaceUtils.isApplicable(we, Stg.class);
     }
 
     @Override
@@ -33,7 +37,8 @@ public class PetrifyCscConflictResolutionCommand implements ScriptableCommand {
 
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
-        final PetrifyTransformationResultHandler monitor = new PetrifyTransformationResultHandler(we);
+        Collection<Mutex> mutexes = MutexUtils.getMutexes(WorkspaceUtils.getAs(we, Stg.class));
+        final PetrifyTransformationResultHandler monitor = new PetrifyTransformationResultHandler(we, false, mutexes);
         taskManager.execute(task, "Petrify CSC conflicts resolution", monitor);
         return monitor.getResult();
     }
@@ -45,7 +50,8 @@ public class PetrifyCscConflictResolutionCommand implements ScriptableCommand {
 
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
-        final PetrifyTransformationResultHandler monitor = new PetrifyTransformationResultHandler(we);
+        Collection<Mutex> mutexes = MutexUtils.getMutexes(WorkspaceUtils.getAs(we, Stg.class));
+        final PetrifyTransformationResultHandler monitor = new PetrifyTransformationResultHandler(we, false, mutexes);
         taskManager.queue(task, "Petrify CSC conflicts resolution", monitor);
     }
 

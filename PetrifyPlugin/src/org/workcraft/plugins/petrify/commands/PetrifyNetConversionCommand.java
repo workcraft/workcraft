@@ -1,21 +1,19 @@
 package org.workcraft.plugins.petrify.commands;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.workcraft.Framework;
-import org.workcraft.gui.graph.commands.AbstractConversionCommand;
 import org.workcraft.plugins.fsm.Fsm;
-import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petrify.tasks.PetrifyTransformationResultHandler;
 import org.workcraft.plugins.petrify.tasks.PetrifyTransformationTask;
-import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class PetrifyNetConversionCommand extends AbstractConversionCommand {
+public class PetrifyNetConversionCommand extends PetrifyAbstractConversionCommand {
 
     @Override
     public String getDisplayName() {
@@ -36,21 +34,13 @@ public class PetrifyNetConversionCommand extends AbstractConversionCommand {
     public WorkspaceEntry execute(WorkspaceEntry we) {
         ArrayList<String> args = getArgs();
         final PetrifyTransformationTask task = new PetrifyTransformationTask(we, "Net synthesis", args.toArray(new String[args.size()]));
-        boolean hasSignals = WorkspaceUtils.isApplicable(we, StgModel.class) || WorkspaceUtils.isApplicable(we, Fst.class);
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
-        final PetrifyTransformationResultHandler monitor = new PetrifyTransformationResultHandler(we, hasSignals);
+        boolean hasSignals = hasSignals(we);
+        Collection<Mutex> mutexes = getMutexes(we);
+        final PetrifyTransformationResultHandler monitor = new PetrifyTransformationResultHandler(we, !hasSignals, mutexes);
         taskManager.execute(task, "Petrify net synthesis", monitor);
         return monitor.getResult();
-    }
-
-    @Override
-    public ModelEntry convert(ModelEntry me) {
-        return null; // !!!
-    }
-
-    public ArrayList<String> getArgs() {
-        return new ArrayList<>();
     }
 
 }
