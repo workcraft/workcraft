@@ -1,6 +1,5 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import java.awt.geom.Point2D;
 import java.io.ByteArrayInputStream;
 import java.util.Collection;
 import java.util.HashSet;
@@ -18,13 +17,12 @@ import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitDescriptor;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
-import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.mpsat.MpsatSynthesisMode;
 import org.workcraft.plugins.mpsat.MpsatSynthesisSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
-import org.workcraft.plugins.stg.MutexData;
+import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -36,12 +34,12 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
     private static final String TITLE = "MPSat synthesis";
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
     private final MpsatSynthesisChainTask task;
-    private final Collection<MutexData> mutexData;
+    private final Collection<Mutex> mutexes;
     private WorkspaceEntry result;
 
-    public MpsatSynthesisResultHandler(final MpsatSynthesisChainTask task, Collection<MutexData> mutexData) {
+    public MpsatSynthesisResultHandler(final MpsatSynthesisChainTask task, Collection<Mutex> mutexes) {
         this.task = task;
-        this.mutexData = mutexData;
+        this.mutexes = mutexes;
         this.result = null;
     }
 
@@ -108,7 +106,7 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
                 final Framework framework = Framework.getInstance();
                 final ByteArrayInputStream in = new ByteArrayInputStream(verilogOutput);
                 final VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
-                final Circuit circuit = verilogImporter.importCircuit(in, mutexData);
+                final Circuit circuit = verilogImporter.importCircuit(in, mutexes);
                 final ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
                 final WorkspaceEntry we = task.getWorkspaceEntry();
                 final Path<String> path = we.getWorkspacePath();
@@ -150,18 +148,12 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
 
     private void setComponentsRenderStyle(final VisualCircuit visualCircuit, final RenderType renderType) {
         HashSet<String> mutexNames = new HashSet<>();
-        for (MutexData me: mutexData) {
+        for (Mutex me: mutexes) {
             mutexNames.add(me.name);
         }
         for (final VisualFunctionComponent component: visualCircuit.getVisualFunctionComponents()) {
             if (mutexNames.contains(visualCircuit.getNodeMathReference(component))) {
                 component.setRenderType(RenderType.BOX);
-                for (VisualFunctionContact contact: visualCircuit.getVisualFunctionContacts()) {
-                    Point2D pos = contact.getPosition();
-                    double x = pos.getX() + (contact.isInput() ?  -0.5 : +0.5);
-                    double y = 2.0 * pos.getY();
-                    contact.setPosition(new Point2D.Double(x, y));
-                }
             } else {
                 component.setRenderType(renderType);
             }

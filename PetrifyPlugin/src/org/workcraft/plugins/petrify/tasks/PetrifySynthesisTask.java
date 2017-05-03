@@ -19,7 +19,8 @@ import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
-import org.workcraft.plugins.stg.MutexData;
+import org.workcraft.plugins.stg.Mutex;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
@@ -32,6 +33,7 @@ import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
+import org.workcraft.util.LogUtils;
 import org.workcraft.util.ToolUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -39,7 +41,7 @@ import org.workcraft.workspace.WorkspaceUtils;
 public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, ExternalProcessListener {
     private final WorkspaceEntry we;
     private final String[] args;
-    private final Collection<MutexData> mutexData;
+    private final Collection<Mutex> mutexes;
 
     /**
      * @param args - arguments corresponding to type of logic synthesis
@@ -48,10 +50,10 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
      * @param libraryFile - could be null
      * @param logFile - could be null
      */
-    public PetrifySynthesisTask(WorkspaceEntry we, String[] args, Collection<MutexData> mutexData) {
+    public PetrifySynthesisTask(WorkspaceEntry we, String[] args, Collection<Mutex> mutexes) {
         this.we = we;
         this.args = args;
-        this.mutexData = mutexData;
+        this.mutexes = mutexes;
     }
 
     @Override
@@ -108,12 +110,9 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
         command.add("-log");
         command.add(logFile.getAbsolutePath());
 
-        // Preserve internal signals (hidden option) -- required for mutex insertion
-        command.add("-keepinternal");
-
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
 
-        // Check for isolated marked places and temporary remove them is requested
+        // Check for isolated marked places and temporary remove them if requested
         HashSet<Place> isolatedPlaces = PetriNetUtils.getIsolatedMarkedPlaces(stg);
         if (!isolatedPlaces.isEmpty()) {
             String refStr = ReferenceHelper.getNodesAsString(stg, (Collection) isolatedPlaces, 50);
@@ -178,11 +177,14 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
         if (exportResult.getOutcome() != Outcome.FINISHED) {
             throw new RuntimeException("Unable to export the model.");
         }
-        if (!mutexData.isEmpty()) {
+        if (!mutexes.isEmpty()) {
             stg = StgUtils.loadStg(stgFile);
-            for (MutexData m: mutexData) {
-                stg.setSignalType(m.g1, Type.INPUT);
-                stg.setSignalType(m.g2, Type.INPUT);
+            for (Mutex mutex: mutexes) {
+                LogUtils.logInfoLine("Factored out " + mutex);
+                setMutexRequest(stg, mutex.r1);
+                stg.setSignalType(mutex.g1.name, Type.INPUT);
+                setMutexRequest(stg, mutex.r2);
+                stg.setSignalType(mutex.g2.name, Type.INPUT);
             }
             stgFile = new File(directory, "spec-mutex" + stgExporter.getExtenstion());
             exportTask = new ExportTask(stgExporter, stg, stgFile.getAbsolutePath());
@@ -192,6 +194,13 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
             }
         }
         return stgFile;
+    }
+
+    private void setMutexRequest(Stg stg, Signal signal) {
+        if (signal.type == Type.INTERNAL) {
+            LogUtils.logInfoLine("Internal signal " + signal.name + " is temporary changed to output, so it is not optimised away.");
+            stg.setSignalType(signal.name, Type.OUTPUT);
+        }
     }
 
     @Override

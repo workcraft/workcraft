@@ -9,7 +9,7 @@ import org.workcraft.plugins.mpsat.MpsatCombinedChainResultHandler;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainTask;
 import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.StgMutexUtils;
+import org.workcraft.plugins.stg.MutexUtils;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.Pair;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -45,7 +45,7 @@ public class MpsatCombinedVerificationCommand extends AbstractVerificationComman
         settingsList.add(MpsatParameters.getInputPropernessSettings());
 
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-        LinkedList<Pair<String, String>> exceptions = StgMutexUtils.getMutexGrantPairs(stg);
+        LinkedList<Pair<String, String>> exceptions = MutexUtils.getMutexGrantPairs(stg);
         settingsList.add(MpsatParameters.getOutputPersistencySettings(exceptions));
 
         final MpsatCombinedChainTask mpsatTask = new MpsatCombinedChainTask(we, settingsList);

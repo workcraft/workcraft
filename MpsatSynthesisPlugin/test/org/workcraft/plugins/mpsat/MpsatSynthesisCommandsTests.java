@@ -19,7 +19,7 @@ import org.workcraft.plugins.mpsat.commands.MpsatComplexGateSynthesisCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatTechnologyMappingSynthesisCommand;
 import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.stg.SignalTransition.Type;
-import org.workcraft.plugins.stg.MutexData;
+import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -163,9 +163,9 @@ public class MpsatSynthesisCommandsTests {
 
     private Set<String> getMutexNames(Circuit circuit) {
         HashSet<String> result = new HashSet<>();
-        MutexData mutexData = CircuitSettings.parseMutexData();
+        Mutex mutex = CircuitSettings.parseMutexData();
         for (FunctionComponent component: circuit.getFunctionComponents()) {
-            if (mutexData.name.equals(component.getModule())) {
+            if (mutex.name.equals(component.getModule())) {
                 result.add(circuit.getNodeReference(component));
             }
         }

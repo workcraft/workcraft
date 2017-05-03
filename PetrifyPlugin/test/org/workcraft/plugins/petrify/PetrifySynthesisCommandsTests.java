@@ -17,7 +17,7 @@ import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.petrify.commands.PetrifyAbstractSynthesisCommand;
 import org.workcraft.plugins.petrify.commands.PetrifyComplexGateSynthesisCommand;
 import org.workcraft.plugins.petrify.commands.PetrifyTechnologyMappingSynthesisCommand;
-import org.workcraft.plugins.stg.MutexData;
+import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgPlace;
@@ -89,7 +89,7 @@ public class PetrifySynthesisCommandsTests {
 
     @Test
     public void arbitrationTechnologyMappingSynthesis() {
-        testTechnologyMappingSynthesisCommad("org/workcraft/plugins/petrify/arbitration-3.stg.work", 3);
+        testTechnologyMappingSynthesisCommad("org/workcraft/plugins/petrify/arbitration-3.stg.work", 6);
     }
 
     @Test
@@ -158,9 +158,9 @@ public class PetrifySynthesisCommandsTests {
 
     private Set<String> getMutexNames(Circuit circuit) {
         HashSet<String> result = new HashSet<>();
-        MutexData mutexData = CircuitSettings.parseMutexData();
+        Mutex mutex = CircuitSettings.parseMutexData();
         for (FunctionComponent component: circuit.getFunctionComponents()) {
-            if (mutexData.name.equals(component.getModule())) {
+            if (mutex.name.equals(component.getModule())) {
                 result.add(circuit.getNodeReference(component));
             }
         }

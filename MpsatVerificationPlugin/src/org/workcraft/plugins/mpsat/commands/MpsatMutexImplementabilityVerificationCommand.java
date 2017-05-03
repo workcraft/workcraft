@@ -12,10 +12,10 @@ import org.workcraft.gui.graph.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.mpsat.MpsatCombinedChainResultHandler;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainTask;
-import org.workcraft.plugins.stg.MutexData;
+import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.StgMutexUtils;
+import org.workcraft.plugins.stg.MutexUtils;
 import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -59,9 +59,9 @@ public class MpsatMutexImplementabilityVerificationCommand extends AbstractVerif
         final ArrayList<MpsatParameters> settingsList = new ArrayList<>();
         final ArrayList<StgPlace> problematicPlaces = new ArrayList<>();
         for (StgPlace place: stg.getMutexPlaces()) {
-            MutexData mutexData = StgMutexUtils.getMutexData(stg, place);
-            if (mutexData != null) {
-                MpsatParameters settings = MpsatParameters.getImplicitMutexSettings(mutexData);
+            Mutex mutex = MutexUtils.getMutex(stg, place);
+            if (mutex != null) {
+                MpsatParameters settings = MpsatParameters.getImplicitMutexSettings(mutex);
                 settingsList.add(settings);
             } else {
                 problematicPlaces.add(place);

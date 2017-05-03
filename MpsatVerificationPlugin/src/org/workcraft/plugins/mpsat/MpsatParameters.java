@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.LinkedList;
 
-import org.workcraft.plugins.stg.MutexData;
+import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.Pair;
@@ -235,13 +235,13 @@ public class MpsatParameters {
             "    ('g2 ^ ($r2 & ~$g1))\n" +
             "}\n";
 
-    public static MpsatParameters getImplicitMutexSettings(MutexData mutexData) {
+    public static MpsatParameters getImplicitMutexSettings(Mutex mutex) {
         String reach = REACH_IMPLICIT_MUTEX
-                .replace(REACH_MUTEX_R1, mutexData.r1)
-                .replace(REACH_MUTEX_G1, mutexData.g1)
-                .replace(REACH_MUTEX_R2, mutexData.r2)
-                .replace(REACH_MUTEX_G2, mutexData.g2);
-        String propertName = "Mutex place implementability for '" + mutexData.name + "'";
+                .replace(REACH_MUTEX_R1, mutex.r1.name)
+                .replace(REACH_MUTEX_G1, mutex.g1.name)
+                .replace(REACH_MUTEX_R2, mutex.r2.name)
+                .replace(REACH_MUTEX_G2, mutex.g2.name);
+        String propertName = "Mutex place implementability for '" + mutex.name + "'";
         return new MpsatParameters(propertName, MpsatMode.STG_REACHABILITY, 0,
                 MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(), reach, true);
     }

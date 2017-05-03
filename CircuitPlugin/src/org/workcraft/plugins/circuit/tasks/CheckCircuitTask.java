@@ -29,7 +29,7 @@ import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
-import org.workcraft.plugins.stg.MutexData;
+import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
@@ -316,10 +316,10 @@ public class CheckCircuitTask extends MpsatChainTask {
     private LinkedList<Pair<String, String>> getMutexGrantPairs(WorkspaceEntry we) {
         LinkedList<Pair<String, String>> grantPairs = new LinkedList<>();
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
-        MutexData mutexData = CircuitSettings.parseMutexData();
-        if ((mutexData != null) && (mutexData.name != null)) {
+        Mutex mutex = CircuitSettings.parseMutexData();
+        if ((mutex != null) && (mutex.name != null)) {
             for (FunctionComponent component: circuit.getFunctionComponents()) {
-                if (mutexData.name.equals(component.getModule())) {
+                if (mutex.name.equals(component.getModule())) {
                     Collection<Contact> outputs = component.getOutputs();
                     if (outputs.size() == 2) {
                         Iterator<Contact> iterator = outputs.iterator();

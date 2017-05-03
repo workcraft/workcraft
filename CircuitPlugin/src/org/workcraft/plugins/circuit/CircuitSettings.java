@@ -13,7 +13,9 @@ import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
-import org.workcraft.plugins.stg.MutexData;
+import org.workcraft.plugins.stg.Mutex;
+import org.workcraft.plugins.stg.Signal;
+import org.workcraft.plugins.stg.SignalTransition.Type;
 
 public class CircuitSettings implements Settings {
 
@@ -339,17 +341,19 @@ public class CircuitSettings implements Settings {
         mutexData = value;
     }
 
-    public static MutexData parseMutexData() {
+    public static Mutex parseMutexData() {
         return parseMutexData(getMutexData());
     }
 
-    private static MutexData parseMutexData(String str) {
-        MutexData result = null;
+    private static Mutex parseMutexData(String str) {
+        Mutex result = null;
         Matcher matcher = MUTEX_DATA_PATTERN.matcher(str.replaceAll("\\s", ""));
         if (matcher.find()) {
-            result = new MutexData(matcher.group(MUTEX_NAME_GROUP),
-                    matcher.group(MUTEX_R1_GROUP), matcher.group(MUTEX_G1_GROUP),
-                    matcher.group(MUTEX_R2_GROUP), matcher.group(MUTEX_G2_GROUP));
+            Signal r1 = new Signal(matcher.group(MUTEX_R1_GROUP), Type.INPUT);
+            Signal g1 = new Signal(matcher.group(MUTEX_G1_GROUP), Type.OUTPUT);
+            Signal r2 = new Signal(matcher.group(MUTEX_R2_GROUP), Type.INPUT);
+            Signal g2 = new Signal(matcher.group(MUTEX_G2_GROUP), Type.OUTPUT);
+            result = new Mutex(matcher.group(MUTEX_NAME_GROUP), r1, g1, r2, g2);
         }
         return result;
     }

@@ -56,7 +56,9 @@ import org.workcraft.plugins.circuit.verilog.Module;
 import org.workcraft.plugins.circuit.verilog.Pin;
 import org.workcraft.plugins.circuit.verilog.Port;
 import org.workcraft.plugins.shared.CommonDebugSettings;
-import org.workcraft.plugins.stg.MutexData;
+import org.workcraft.plugins.stg.Mutex;
+import org.workcraft.plugins.stg.Signal;
+import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 
@@ -114,10 +116,10 @@ public class VerilogImporter implements Importer {
     }
 
     public Circuit importCircuit(InputStream in) throws DeserialisationException {
-        return importCircuit(in, new LinkedList<MutexData>());
+        return importCircuit(in, new LinkedList<Mutex>());
     }
 
-    public Circuit importCircuit(InputStream in, Collection<MutexData> mutexData) throws DeserialisationException {
+    public Circuit importCircuit(InputStream in, Collection<Mutex> mutexes) throws DeserialisationException {
         try {
             VerilogParser parser = new VerilogParser(in);
             if (CommonDebugSettings.getParserTracing()) {
@@ -143,7 +145,7 @@ public class VerilogImporter implements Importer {
                 }
             }
             Module topModule = topModules.iterator().next();
-            return createCircuit(topModule, modules, mutexData);
+            return createCircuit(topModule, modules, mutexes);
         } catch (FormatException | org.workcraft.plugins.circuit.jj.verilog.ParseException e) {
             throw new DeserialisationException(e);
         }
@@ -207,7 +209,7 @@ public class VerilogImporter implements Importer {
         System.out.print("endmodule\n\n");
     }
 
-    private Circuit createCircuit(Module topModule, HashMap<String, Module> modules, Collection<MutexData> mutexData) {
+    private Circuit createCircuit(Module topModule, HashMap<String, Module> modules, Collection<Mutex> mutexes) {
         Circuit circuit = new Circuit();
         circuit.setTitle(topModule.name);
         HashMap<Instance, FunctionComponent> instanceComponentMap = new HashMap<>();
@@ -234,7 +236,7 @@ public class VerilogImporter implements Importer {
                 instanceComponentMap.put(verilogInstance, component);
             }
         }
-        insertMutexes(modules, mutexData, circuit, wires);
+        insertMutexes(modules, mutexes, circuit, wires);
         createConnections(circuit, wires);
         setZeroDelayAttribute(instanceComponentMap);
         setInitialState(circuit, wires, topModule.signalStates);
@@ -586,41 +588,60 @@ public class VerilogImporter implements Importer {
         return component;
     }
 
-    private void insertMutexes(HashMap<String, Module> modules, Collection<MutexData> mutexData, Circuit circuit,
+    private void insertMutexes(HashMap<String, Module> modules, Collection<Mutex> mutexes, Circuit circuit,
             HashMap<String, Wire> wires) {
-        if (!mutexData.isEmpty()) {
-            MutexData mutexModuleData = CircuitSettings.parseMutexData();
-            if ((mutexModuleData != null) && (mutexModuleData.name != null)) {
-                for (MutexData instanceMutexData: mutexData) {
-                    createMutex(circuit, instanceMutexData, mutexModuleData, wires, modules);
+        if (!mutexes.isEmpty()) {
+            Mutex moduleMutex = CircuitSettings.parseMutexData();
+            if ((moduleMutex != null) && (moduleMutex.name != null)) {
+                for (Mutex instanceMutex: mutexes) {
+                    createMutex(circuit, instanceMutex, moduleMutex, wires, modules);
+                    removeTemporaryOutput(circuit, wires, instanceMutex.r1);
+                    removeTemporaryOutput(circuit, wires, instanceMutex.r2);
                 }
             }
         }
     }
 
-    private FunctionComponent createMutex(Circuit circuit, MutexData instanceMutexData, MutexData moduleMutexData,
+    private void removeTemporaryOutput(Circuit circuit, HashMap<String, Wire> wires, Signal signal) {
+        if (signal.type == Type.INTERNAL) {
+            Node node = circuit.getNodeByReference(signal.name);
+            if (node instanceof FunctionContact) {
+                FunctionContact contact = (FunctionContact) node;
+                if (contact.isPort() && contact.isOutput()) {
+                    LogUtils.logInfoLine("Signal " + signal.name + " is restored as internal.");
+                    circuit.remove(contact);
+                    Wire wire = wires.get(signal.name);
+                    if (wire != null) {
+                        wire.sinks.remove(contact);
+                    }
+                }
+            }
+        }
+    }
+
+    private FunctionComponent createMutex(Circuit circuit, Mutex instanceMutex, Mutex moduleMutex,
             HashMap<String, Wire> wires, HashMap<String, Module> modules) {
         final FunctionComponent component = new FunctionComponent();
-        component.setModule(moduleMutexData.name);
+        component.setModule(moduleMutex.name);
         circuit.add(component);
         try {
-            circuit.setName(component, instanceMutexData.name);
+            circuit.setName(component, instanceMutex.name);
         } catch (ArgumentException e) {
             String componentRef = circuit.getNodeReference(component);
-            LogUtils.logWarningLine("Cannot set name '" + instanceMutexData.name + "' for component '" + componentRef + "'.");
+            LogUtils.logWarningLine("Cannot set name '" + instanceMutex.name + "' for component '" + componentRef + "'.");
         }
-        addMutexPin(circuit, component, moduleMutexData.r1, IOType.INPUT, instanceMutexData.r1, wires);
-        FunctionContact g1Contact = addMutexPin(circuit, component, moduleMutexData.g1, IOType.OUTPUT, instanceMutexData.g1, wires);
-        addMutexPin(circuit, component, moduleMutexData.r2, IOType.INPUT, instanceMutexData.r2, wires);
-        FunctionContact g2Contact = addMutexPin(circuit, component, moduleMutexData.g2, IOType.OUTPUT, instanceMutexData.g2, wires);
+        addMutexPin(circuit, component, moduleMutex.r1, instanceMutex.r1, wires);
+        FunctionContact g1Contact = addMutexPin(circuit, component, moduleMutex.g1, instanceMutex.g1, wires);
+        addMutexPin(circuit, component, moduleMutex.r2, instanceMutex.r2, wires);
+        FunctionContact g2Contact = addMutexPin(circuit, component, moduleMutex.g2, instanceMutex.g2, wires);
         try {
-            setMutexFunctions(circuit, component, g1Contact, moduleMutexData.r1, moduleMutexData.g2);
-            setMutexFunctions(circuit, component, g2Contact, moduleMutexData.r2, moduleMutexData.g1);
+            setMutexFunctions(circuit, component, g1Contact, moduleMutex.r1.name, moduleMutex.g2.name);
+            setMutexFunctions(circuit, component, g2Contact, moduleMutex.r2.name, moduleMutex.g1.name);
         } catch (org.workcraft.formula.jj.ParseException e) {
             throw new RuntimeException(e);
         }
-        setMutexGrant(circuit, instanceMutexData.g1, wires);
-        setMutexGrant(circuit, instanceMutexData.g2, wires);
+        setMutexGrant(circuit, instanceMutex.g1, wires);
+        setMutexGrant(circuit, instanceMutex.g2, wires);
         return component;
     }
 
@@ -634,24 +655,32 @@ public class VerilogImporter implements Importer {
         grantContact.setResetFunctionQuiet(resetFormula);
     }
 
-    private void setMutexGrant(Circuit circuit, String wireName, HashMap<String, Wire> wires) {
-        Node g1Node = circuit.getNodeByReference(wireName);
-        if (g1Node instanceof FunctionContact) {
-            FunctionContact g1Port = (FunctionContact) g1Node;
-            g1Port.setIOType(IOType.OUTPUT);
-            Wire g1Wire = getOrCreateWire(wireName, wires);
-            g1Wire.sinks.add(g1Port);
+    private void setMutexGrant(Circuit circuit, Signal signal, HashMap<String, Wire> wires) {
+        Node node = circuit.getNodeByReference(signal.name);
+        if (node instanceof FunctionContact) {
+            FunctionContact port = (FunctionContact) node;
+            if (signal.type == Type.INPUT) {
+                port.setIOType(IOType.INPUT);
+            } else {
+                port.setIOType(IOType.OUTPUT);
+            }
+            Wire wire = getOrCreateWire(signal.name, wires);
+            wire.sinks.add(port);
         }
     }
 
-    private FunctionContact addMutexPin(Circuit circuit, FunctionComponent component, String pinName, IOType type,
-            String wireName, HashMap<String, Wire> wires) {
+    private FunctionContact addMutexPin(Circuit circuit, FunctionComponent component, Signal port, Signal signal,
+            HashMap<String, Wire> wires) {
         FunctionContact contact = new FunctionContact();
-        contact.setIOType(type);
+        if (port.type == Type.INPUT) {
+            contact.setIOType(IOType.INPUT);
+        } else {
+            contact.setIOType(IOType.OUTPUT);
+        }
         component.add(contact);
-        circuit.setName(contact, pinName);
-        Wire wire = getOrCreateWire(wireName, wires);
-        if (type == IOType.INPUT) {
+        circuit.setName(contact, port.name);
+        Wire wire = getOrCreateWire(signal.name, wires);
+        if (port.type == Type.INPUT) {
             wire.sinks.add(contact);
         } else {
             wire.source = contact;
