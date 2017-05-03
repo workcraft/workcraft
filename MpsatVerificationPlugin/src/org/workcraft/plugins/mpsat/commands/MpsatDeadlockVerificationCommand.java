@@ -28,7 +28,7 @@ public class MpsatDeadlockVerificationCommand extends MpsatAbstractVerificationC
     }
 
     @Override
-    public MpsatParameters getSettings() {
+    public MpsatParameters getSettings(WorkspaceEntry we) {
         return MpsatParameters.getDeadlockSettings();
     }
 

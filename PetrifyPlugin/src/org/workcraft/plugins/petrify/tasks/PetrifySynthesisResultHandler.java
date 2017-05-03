@@ -1,6 +1,8 @@
 package org.workcraft.plugins.petrify.tasks;
 
 import java.io.ByteArrayInputStream;
+import java.util.Collection;
+import java.util.HashSet;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -17,6 +19,7 @@ import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.petrify.PetrifySettings;
+import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.util.LogUtils;
@@ -30,14 +33,16 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
     private final boolean boxSequentialComponents;
     private final boolean boxCombinationalComponents;
     private final boolean sequentialAssign;
+    private final Collection<Mutex> mutexes;
     private WorkspaceEntry result;
 
     public PetrifySynthesisResultHandler(final WorkspaceEntry we, final boolean boxSequentialComponents,
-            final boolean boxCombinationalComponents, final boolean sequentialAssign) {
+            final boolean boxCombinationalComponents, final boolean sequentialAssign, Collection<Mutex> mutexes) {
         this.we = we;
         this.boxSequentialComponents = boxSequentialComponents;
         this.boxCombinationalComponents = boxCombinationalComponents;
         this.sequentialAssign = sequentialAssign;
+        this.mutexes = mutexes;
         this.result = null;
     }
 
@@ -75,7 +80,7 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
             try {
                 final ByteArrayInputStream in = new ByteArrayInputStream(verilog.getBytes());
                 final VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
-                final Circuit circuit = verilogImporter.importCircuit(in);
+                final Circuit circuit = verilogImporter.importCircuit(in, mutexes);
                 final Path<String> path = we.getWorkspacePath();
                 final ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
                 final Framework framework = Framework.getInstance();
@@ -115,8 +120,15 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
     }
 
     private void setComponentsRenderStyle(final VisualCircuit visualCircuit) {
+        HashSet<String> mutexNames = new HashSet<>();
+        for (Mutex me: mutexes) {
+            mutexNames.add(me.name);
+        }
         for (final VisualFunctionComponent component: visualCircuit.getVisualFunctionComponents()) {
-            if (component.isSequentialGate()) {
+            String componentRef = visualCircuit.getNodeMathReference(component);
+            if (mutexNames.contains(componentRef)) {
+                component.setRenderType(RenderType.BOX);
+            } else if (component.isSequentialGate()) {
                 if (boxSequentialComponents) {
                     component.setRenderType(RenderType.BOX);
                 }

@@ -23,7 +23,7 @@ public class MpsatNormalcyVerificationCommand extends MpsatAbstractVerificationC
     }
 
     @Override
-    public MpsatParameters getSettings() {
+    public MpsatParameters getSettings(WorkspaceEntry we) {
         return MpsatParameters.getNormalcySettings();
     }
 

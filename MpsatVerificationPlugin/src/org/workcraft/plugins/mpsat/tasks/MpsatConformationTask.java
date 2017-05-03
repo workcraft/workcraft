@@ -19,7 +19,6 @@ import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
-import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.serialisation.Format;
@@ -137,10 +136,9 @@ public class MpsatConformationTask extends MpsatChainTask {
             monitor.progressUpdate(0.60);
 
             // Check for interface conformation
-            Set<String> devOutputNames = devStg.getSignalNames(Type.OUTPUT, null);
             byte[] palcesList = FileUtils.readAllBytes(placesFile);
             Set<String> devPlaceNames = parsePlaceNames(palcesList, 0);
-            MpsatParameters conformationSettings = MpsatParameters.getConformationSettings(devOutputNames, devPlaceNames);
+            MpsatParameters conformationSettings = MpsatParameters.getConformationSettings(devPlaceNames);
             MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
                     unfoldingFile, directory, true, stgFile, placesFile);
             Result<? extends ExternalProcessResult>  mpsatConformationResult = framework.getTaskManager().execute(

@@ -11,8 +11,8 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.graph.commands.AbstractTransformationCommand;
 import org.workcraft.plugins.petri.PetriNetUtils;
-import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.plugins.stg.VisualStgPlace;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -36,14 +36,14 @@ public class ImplicitPlaceTransformationCommand extends AbstractTransformationCo
 
     @Override
     public boolean isApplicableTo(Node node) {
-        return node instanceof VisualPlace;
+        return node instanceof VisualStgPlace;
     }
 
     @Override
     public boolean isEnabled(ModelEntry me, Node node) {
-        if (node instanceof VisualPlace) {
+        if (node instanceof VisualStgPlace) {
             VisualModel model = me.getVisualModel();
-            VisualPlace place = (VisualPlace) node;
+            VisualStgPlace place = (VisualStgPlace) node;
             Collection<Node> preset = model.getPreset(place);
             Collection<Node> postset = model.getPostset(place);
             Collection<Replica> replicas = place.getReplicas();
@@ -79,9 +79,9 @@ public class ImplicitPlaceTransformationCommand extends AbstractTransformationCo
 
     @Override
     public void transform(Model model, Node node) {
-        if ((model instanceof VisualStg) && (node instanceof VisualPlace)) {
+        if ((model instanceof VisualStg) && (node instanceof VisualStgPlace)) {
             VisualStg stg = (VisualStg) model;
-            VisualPlace place = (VisualPlace) node;
+            VisualStgPlace place = (VisualStgPlace) node;
             stg.maybeMakeImplicit(place, true);
         }
     }

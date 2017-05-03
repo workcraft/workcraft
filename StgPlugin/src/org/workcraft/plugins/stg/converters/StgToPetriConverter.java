@@ -84,7 +84,6 @@ public class StgToPetriConverter extends DefaultModelConverter<VisualStg, Visual
                     e.printStackTrace();
                 }
             }
-
         } else {
             dstConnection = super.convertConnection(srcConnection);
         }

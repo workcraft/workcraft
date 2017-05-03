@@ -13,6 +13,7 @@ import org.workcraft.plugins.mpsat.commands.MpsatCscConflictResolutionCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatCscVerificationCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatDeadlockVerificationCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatDiInterfaceVerificationCommand;
+import org.workcraft.plugins.mpsat.commands.MpsatMutexImplementabilityVerificationCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatInputPropernessVerificationCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatNormalcyVerificationCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatOutputPersistencyVerificationCommand;
@@ -30,6 +31,7 @@ public class MpsatModule implements Module {
         pm.registerClass(Command.class, MpsatConsistencyVerificationCommand.class);
         pm.registerClass(Command.class, MpsatDeadlockVerificationCommand.class);
         pm.registerClass(Command.class, MpsatInputPropernessVerificationCommand.class);
+        pm.registerClass(Command.class, MpsatMutexImplementabilityVerificationCommand.class);
         pm.registerClass(Command.class, MpsatOutputPersistencyVerificationCommand.class);
         pm.registerClass(Command.class, MpsatDiInterfaceVerificationCommand.class);
         pm.registerClass(Command.class, MpsatNormalcyVerificationCommand.class);

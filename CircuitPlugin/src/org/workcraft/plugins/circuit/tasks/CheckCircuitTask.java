@@ -6,21 +6,30 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Set;
 
 import org.workcraft.Framework;
+import org.workcraft.plugins.circuit.Circuit;
+import org.workcraft.plugins.circuit.CircuitSettings;
+import org.workcraft.plugins.circuit.CircuitUtils;
+import org.workcraft.plugins.circuit.Contact;
+import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
-import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.MpsatParameters;
+import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
@@ -30,14 +39,13 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.FileUtils;
+import org.workcraft.util.Pair;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class CheckCircuitTask extends MpsatChainTask {
     private final MpsatParameters toolchainPreparationSettings = MpsatParameters.getToolchainPreparationSettings();
     private final MpsatParameters toolchainCompletionSettings = MpsatParameters.getToolchainCompletionSettings();
-    private final MpsatParameters deadlockSettings = MpsatParameters.getDeadlockSettings();
-    private final MpsatParameters persistencySettings = MpsatParameters.getOutputPersistencySettings();
 
     private final boolean checkConformation;
     private final boolean checkDeadlock;
@@ -60,6 +68,7 @@ public class CheckCircuitTask extends MpsatChainTask {
             // Common variables
             VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
             File envFile = visualCircuit.getEnvironmentFile();
+            LinkedList<Pair<String, String>> grantPairs = getMutexGrantPairs(we);
 
             // Load device STG
             CircuitToStgConverter converter = new CircuitToStgConverter(visualCircuit);
@@ -72,6 +81,14 @@ public class CheckCircuitTask extends MpsatChainTask {
                 Set<String> inputSignalNames = devStg.getSignalNames(Type.INPUT, null);
                 Set<String> outputSignalNames = devStg.getSignalNames(Type.OUTPUT, null);
                 CircuitStgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
+            }
+
+            // Convert mutex grants into inputs bith in device and environemnt STGs
+            for (Pair<String, String> grantPair: grantPairs) {
+                devStg.setSignalType(grantPair.getFirst(), Type.INPUT);
+                devStg.setSignalType(grantPair.getSecond(), Type.INPUT);
+                envStg.setSignalType(grantPair.getFirst(), Type.INPUT);
+                envStg.setSignalType(grantPair.getSecond(), Type.INPUT);
             }
 
             // Write device STG into a .g file
@@ -203,6 +220,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 
             // Check for deadlock (if requested)
             if (checkDeadlock) {
+                MpsatParameters deadlockSettings = MpsatParameters.getDeadlockSettings();
                 MpsatTask mpsatDeadlockTask = new MpsatTask(deadlockSettings.getMpsatArguments(directory),
                         unfoldingFile, directory);
                 SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
@@ -229,6 +247,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 
             // Check for persistency (if requested)
             if (checkPersistency) {
+                MpsatParameters persistencySettings = MpsatParameters.getOutputPersistencySettings(grantPairs);
                 MpsatTask mpsatPersistencyTask = new MpsatTask(persistencySettings.getMpsatArguments(directory),
                         unfoldingFile, directory, true, sysStgFile);
                 SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
@@ -255,10 +274,9 @@ public class CheckCircuitTask extends MpsatChainTask {
 
             // Check for interface conformation (only if requested and if the environment is specified)
             if ((envStg != null) && checkConformation) {
-                Set<String> devOutputNames = devStg.getSignalNames(Type.OUTPUT, null);
                 byte[] placesList = FileUtils.readAllBytes(placesModFile);
                 Set<String> devPlaceNames = parsePlaceNames(placesList, 0);
-                MpsatParameters conformationSettings = MpsatParameters.getConformationSettings(devOutputNames, devPlaceNames);
+                MpsatParameters conformationSettings = MpsatParameters.getConformationSettings(devPlaceNames);
                 MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
                         unfoldingModFile, directory, true, sysModStgFile, placesModFile);
                 SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
@@ -293,6 +311,31 @@ public class CheckCircuitTask extends MpsatChainTask {
         } finally {
             FileUtils.deleteOnExitRecursively(directory);
         }
+    }
+
+    private LinkedList<Pair<String, String>> getMutexGrantPairs(WorkspaceEntry we) {
+        LinkedList<Pair<String, String>> grantPairs = new LinkedList<>();
+        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
+        Mutex mutex = CircuitSettings.parseMutexData();
+        if ((mutex != null) && (mutex.name != null)) {
+            for (FunctionComponent component: circuit.getFunctionComponents()) {
+                if (mutex.name.equals(component.getModule())) {
+                    Collection<Contact> outputs = component.getOutputs();
+                    if (outputs.size() == 2) {
+                        Iterator<Contact> iterator = outputs.iterator();
+                        Contact contact1 = iterator.next();
+                        Contact signal1 = CircuitUtils.findSignal(circuit, contact1, true);
+                        String name1 = circuit.getNodeReference(signal1);
+                        Contact contact2 = iterator.next();
+                        Contact signal2 = CircuitUtils.findSignal(circuit, contact2, true);
+                        String name2 = circuit.getNodeReference(signal2);
+                        Pair<String, String> grantPair = Pair.of(name1, name2);
+                        grantPairs.add(grantPair);
+                    }
+                }
+            }
+        }
+        return grantPairs;
     }
 
     private HashSet<String> parsePlaceNames(byte[] bufferedInput, int lineIndex) {

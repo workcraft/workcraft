@@ -28,7 +28,7 @@ public class MpsatConsistencyVerificationCommand extends MpsatAbstractVerificati
     }
 
     @Override
-    public MpsatParameters getSettings() {
+    public MpsatParameters getSettings(WorkspaceEntry we) {
         return MpsatParameters.getConsistencySettings();
     }
 

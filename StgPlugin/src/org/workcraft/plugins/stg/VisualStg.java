@@ -27,7 +27,6 @@ import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.petri.VisualTransition;
@@ -65,7 +64,7 @@ public class VisualStg extends AbstractVisualModel {
     }
 
     private void fixVisibilityOfImplicitPlaces() {
-        for (VisualPlace vp: getVisualPlaces()) {
+        for (VisualStgPlace vp: getVisualPlaces()) {
             Place p = vp.getReferencedPlace();
             if (p instanceof StgPlace) {
                 StgPlace pp = (StgPlace) p;
@@ -86,8 +85,8 @@ public class VisualStg extends AbstractVisualModel {
         if (first == second) {
             throw new InvalidConnectionException("Self-loops are not allowed.");
         }
-        if (((first instanceof VisualPlace) || (first instanceof VisualReplicaPlace) || (first instanceof VisualImplicitPlaceArc))
-                && ((second instanceof VisualPlace) || (second instanceof VisualReplicaPlace) || (second instanceof VisualImplicitPlaceArc))) {
+        if (((first instanceof VisualStgPlace) || (first instanceof VisualReplicaPlace) || (first instanceof VisualImplicitPlaceArc))
+                && ((second instanceof VisualStgPlace) || (second instanceof VisualReplicaPlace) || (second instanceof VisualImplicitPlaceArc))) {
             throw new InvalidConnectionException("Arcs between places are not allowed.");
         }
         if (PetriNetUtils.hasReadArcConnection(this, first, second) || PetriNetUtils.hasReadArcConnection(this, second, first)) {
@@ -114,18 +113,18 @@ public class VisualStg extends AbstractVisualModel {
                 connection = createImplicitPlaceConnection((VisualTransition) first, (VisualTransition) second);
             } else if (second instanceof VisualImplicitPlaceArc) {
                 VisualImplicitPlaceArc con = (VisualImplicitPlaceArc) second;
-                VisualPlace place = makeExplicit(con);
+                VisualStgPlace place = makeExplicit(con);
                 connection = connect(first, place);
-            } else if ((second instanceof VisualPlace) || (second instanceof VisualReplicaPlace)) {
+            } else if ((second instanceof VisualStgPlace) || (second instanceof VisualReplicaPlace)) {
                 connection = createSimpleConnection((VisualNode) first, (VisualNode) second, mConnection);
             }
         } else if (first instanceof VisualImplicitPlaceArc) {
             if (second instanceof VisualTransition) {
                 VisualImplicitPlaceArc con = (VisualImplicitPlaceArc) first;
-                VisualPlace place = makeExplicit(con);
+                VisualStgPlace place = makeExplicit(con);
                 connection = connect(place, second);
             }
-        } else if ((first instanceof VisualPlace) || (first instanceof VisualReplicaPlace)) {
+        } else if ((first instanceof VisualStgPlace) || (first instanceof VisualReplicaPlace)) {
             connection = createSimpleConnection((VisualNode) first, (VisualNode) second, mConnection);
         }
         return connection;
@@ -167,8 +166,8 @@ public class VisualStg extends AbstractVisualModel {
         if (first == second) {
             throw new InvalidConnectionException("Self-loops are not allowed.");
         }
-        if (((first instanceof VisualPlace) || (first instanceof VisualReplicaPlace))
-                && ((second instanceof VisualPlace) || (second instanceof VisualReplicaPlace))) {
+        if (((first instanceof VisualStgPlace) || (first instanceof VisualReplicaPlace))
+                && ((second instanceof VisualStgPlace) || (second instanceof VisualReplicaPlace))) {
             throw new InvalidConnectionException("Read-arcs between places are not allowed.");
         }
         if ((first instanceof VisualTransition) && (second instanceof VisualTransition)) {
@@ -209,8 +208,8 @@ public class VisualStg extends AbstractVisualModel {
         Stg stg = (Stg) getMathModel();
 
         Place mPlace = null;
-        if (place instanceof VisualPlace) {
-            mPlace = ((VisualPlace) place).getReferencedPlace();
+        if (place instanceof VisualStgPlace) {
+            mPlace = ((VisualStgPlace) place).getReferencedPlace();
         } else if (place instanceof VisualReplicaPlace) {
             mPlace = ((VisualReplicaPlace) place).getReferencedPlace();
         }
@@ -230,13 +229,13 @@ public class VisualStg extends AbstractVisualModel {
         return connection;
     }
 
-    public VisualPlace makeExplicit(VisualImplicitPlaceArc connection) {
+    public VisualStgPlace makeExplicit(VisualImplicitPlaceArc connection) {
         Container group = Hierarchy.getNearestAncestor(connection, Container.class);
         Stg stg = (Stg) getMathModel();
         Point2D splitPoint = connection.getSplitPoint();
         StgPlace implicitPlace = connection.getImplicitPlace();
         stg.makeExplicit(implicitPlace);
-        VisualPlace place = new VisualPlace(implicitPlace);
+        VisualStgPlace place = new VisualStgPlace(implicitPlace);
         place.setPosition(splitPoint);
 
         VisualConnection con1 = new VisualConnection(connection.getRefCon1(), connection.getFirst(), place);
@@ -258,7 +257,7 @@ public class VisualStg extends AbstractVisualModel {
         return place;
     }
 
-    public VisualImplicitPlaceArc maybeMakeImplicit(VisualPlace place, boolean preserveConnectionShape) {
+    public VisualImplicitPlaceArc maybeMakeImplicit(VisualStgPlace place, boolean preserveConnectionShape) {
         VisualImplicitPlaceArc connection = null;
         Collection<Node> preset = getPreset(place);
         Collection<Node> postset = getPostset(place);
@@ -296,16 +295,16 @@ public class VisualStg extends AbstractVisualModel {
         return connection;
     }
 
-    public VisualPlace createVisualPlace(String mathRef) {
+    public VisualStgPlace createVisualPlace(String mathRef) {
         Stg stg = (Stg) getMathModel();
         StgPlace mathPlace = stg.createPlace(mathRef, null);
-        return createVisualComponent(mathPlace, VisualPlace.class);
+        return createVisualComponent(mathPlace, VisualStgPlace.class);
     }
 
-    public VisualPlace createVisualPlace(String mathRef, Container container) {
+    public VisualStgPlace createVisualPlace(String mathRef, Container container) {
         Stg stg = (Stg) getMathModel();
         StgPlace mathPlace = stg.createPlace(mathRef, null);
-        return createVisualComponent(mathPlace, VisualPlace.class, container);
+        return createVisualComponent(mathPlace, VisualStgPlace.class, container);
     }
 
     public VisualDummyTransition createVisualDummyTransition(String mathRef) {
@@ -344,8 +343,8 @@ public class VisualStg extends AbstractVisualModel {
         return createVisualComponent(mathTransition, VisualSignalTransition.class, container);
     }
 
-    public Collection<VisualPlace> getVisualPlaces() {
-        return Hierarchy.getDescendantsOfType(getRoot(), VisualPlace.class);
+    public Collection<VisualStgPlace> getVisualPlaces() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualStgPlace.class);
     }
 
     public Collection<VisualTransition> getVisualTransitions() {
@@ -394,8 +393,8 @@ public class VisualStg extends AbstractVisualModel {
         return Hierarchy.getDescendantsOfType(getRoot(), VisualImplicitPlaceArc.class);
     }
 
-    public VisualPlace getVisualPlace(Place place) {
-        for (VisualPlace vp: getVisualPlaces()) {
+    public VisualStgPlace getVisualPlace(StgPlace place) {
+        for (VisualStgPlace vp: getVisualPlaces()) {
             if (vp.getReferencedPlace() == place) {
                 return vp;
             }

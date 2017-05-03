@@ -17,7 +17,7 @@ public class Gate {
         return seq != null;
     }
 
-    public boolean isPrimititve() {
+    public boolean isPrimitive() {
         return primitive;
     }
 

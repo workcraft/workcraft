@@ -1,6 +1,7 @@
 package org.workcraft.plugins.mpsat.tasks;
 
 import java.io.File;
+import java.util.Collection;
 
 import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
@@ -8,7 +9,10 @@ import org.workcraft.plugins.mpsat.MpsatSynthesisParameters;
 import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.stg.Mutex;
+import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -24,10 +28,12 @@ import org.workcraft.workspace.WorkspaceUtils;
 public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> {
     private final WorkspaceEntry we;
     private final MpsatSynthesisParameters settings;
+    private final Collection<Mutex> mutexes;
 
-    public MpsatSynthesisChainTask(WorkspaceEntry we, MpsatSynthesisParameters settings) {
+    public MpsatSynthesisChainTask(WorkspaceEntry we, MpsatSynthesisParameters settings, Collection<Mutex> mutexes) {
         this.we = we;
         this.settings = settings;
+        this.mutexes = mutexes;
     }
 
     @Override
@@ -55,6 +61,24 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> 
                 }
                 return new Result<MpsatSynthesisChainResult>(Outcome.FAILED,
                         new MpsatSynthesisChainResult(exportResult, null, null, null, settings));
+            }
+            if (!mutexes.isEmpty()) {
+                model = StgUtils.loadStg(netFile);
+                for (Mutex m: mutexes) {
+                    model.setSignalType(m.g1.name, Type.INPUT);
+                    model.setSignalType(m.g2.name, Type.INPUT);
+                }
+                netFile = new File(directory, "spec-mutex" + exporter.getExtenstion());
+                exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
+                exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
+
+                if (exportResult.getOutcome() != Outcome.FINISHED) {
+                    if (exportResult.getOutcome() == Outcome.CANCELLED) {
+                        return new Result<MpsatSynthesisChainResult>(Outcome.CANCELLED);
+                    }
+                    return new Result<MpsatSynthesisChainResult>(Outcome.FAILED,
+                            new MpsatSynthesisChainResult(exportResult, null, null, null, settings));
+                }
             }
             monitor.progressUpdate(0.33);
 

@@ -120,6 +120,17 @@ public class Stg extends AbstractMathModel implements StgModel {
     }
 
     @Override
+    public final Collection<StgPlace> getMutexPlaces() {
+        return Hierarchy.getDescendantsOfType(getRoot(), StgPlace.class,
+                new Func<StgPlace, Boolean>() {
+                    @Override
+                    public Boolean eval(StgPlace arg) {
+                        return arg.isMutex();
+                    }
+                });
+    }
+
+    @Override
     public final Collection<Connection> getConnections() {
         return Hierarchy.getDescendantsOfType(getRoot(), Connection.class);
     }
@@ -136,8 +147,8 @@ public class Stg extends AbstractMathModel implements StgModel {
 
     @Override
     public Collection<SignalTransition> getSignalTransitions(final Type type) {
-        return Hierarchy.getDescendantsOfType(getRoot(),
-                SignalTransition.class, new Func<SignalTransition, Boolean>() {
+        return Hierarchy.getDescendantsOfType(getRoot(), SignalTransition.class,
+                new Func<SignalTransition, Boolean>() {
                     @Override
                     public Boolean eval(SignalTransition arg) {
                         return arg.getSignalType() == type;
@@ -171,8 +182,8 @@ public class Stg extends AbstractMathModel implements StgModel {
         if (container == null) {
             container = getRoot();
         }
-        return Hierarchy.getChildrenOfType(container,
-                SignalTransition.class, new Func<SignalTransition, Boolean>() {
+        return Hierarchy.getChildrenOfType(container, SignalTransition.class,
+                new Func<SignalTransition, Boolean>() {
                     @Override
                     public Boolean eval(SignalTransition arg) {
                         return type.equals(arg.getSignalType());
@@ -184,8 +195,8 @@ public class Stg extends AbstractMathModel implements StgModel {
         if (container == null) {
             container = getRoot();
         }
-        return Hierarchy.getChildrenOfType(container,
-                SignalTransition.class, new Func<SignalTransition, Boolean>() {
+        return Hierarchy.getChildrenOfType(container, SignalTransition.class,
+                new Func<SignalTransition, Boolean>() {
                     @Override
                     public Boolean eval(SignalTransition arg) {
                         return signalName.equals(arg.getSignalName());

@@ -25,8 +25,10 @@ public class FunctionContact extends Contact {
     }
 
     public void setSetFunction(BooleanFormula value) {
-        setSetFunctionQuiet(value);
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_SET_FUNCTION));
+        if (setFunction != value) {
+            setSetFunctionQuiet(value);
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_SET_FUNCTION));
+        }
     }
 
     public void setSetFunctionQuiet(BooleanFormula value) {
@@ -38,8 +40,10 @@ public class FunctionContact extends Contact {
     }
 
     public void setResetFunction(BooleanFormula value) {
-        setResetFunctionQuiet(value);
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_RESET_FUNCTION));
+        if (resetFunction != value) {
+            setResetFunctionQuiet(value);
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_RESET_FUNCTION));
+        }
     }
 
     public void setResetFunctionQuiet(BooleanFormula value) {

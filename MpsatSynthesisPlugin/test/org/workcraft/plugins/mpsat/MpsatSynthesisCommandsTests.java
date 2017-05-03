@@ -13,12 +13,15 @@ import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.Contact;
+import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.mpsat.commands.MpsatAbstractSynthesisCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatComplexGateSynthesisCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatTechnologyMappingSynthesisCommand;
 import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -64,6 +67,16 @@ public class MpsatSynthesisCommandsTests {
     }
 
     @Test
+    public void arbitrationComplexGateSynthesis() {
+        testComplexGateSynthesisCommand("org/workcraft/plugins/mpsat/arbitration-3.stg.work", 6);
+    }
+
+    //@Test
+    public void edcComplexGateSynthesis() {
+        testComplexGateSynthesisCommand("org/workcraft/plugins/mpsat/edc-csc.stg.work", 6);
+    }
+
+    @Test
     public void bufferTechnologyMappingSynthesis() {
         testTechnologyMappingSynthesisCommad("org/workcraft/plugins/mpsat/buffer-compact.stg.work", 1);
     }
@@ -76,6 +89,16 @@ public class MpsatSynthesisCommandsTests {
     @Test
     public void constTechnologyMappingSynthesis() {
         testTechnologyMappingSynthesisCommad("org/workcraft/plugins/mpsat/const.stg.work", 5);
+    }
+
+    @Test
+    public void arbitrationTechnologyMappingSynthesis() {
+        testTechnologyMappingSynthesisCommad("org/workcraft/plugins/mpsat/arbitration-3.stg.work", 6);
+    }
+
+    //@Test
+    public void edcTechnologyMappingSynthesis() {
+        testTechnologyMappingSynthesisCommad("org/workcraft/plugins/mpsat/edc-csc.stg.work", 10);
     }
 
     private void testComplexGateSynthesisCommand(String testStgWork, int expectedGateCount) {
@@ -105,6 +128,7 @@ public class MpsatSynthesisCommandsTests {
         Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
         Set<String> srcInputs = srcStg.getSignalNames(Type.INPUT, null);
         Set<String> srcOutputs = srcStg.getSignalNames(Type.OUTPUT, null);
+        Set<String> srcMutexes = getMutexNames(srcStg);
 
         C command = cls.newInstance();
         WorkspaceEntry dstWe = command.execute(srcWe);
@@ -119,12 +143,33 @@ public class MpsatSynthesisCommandsTests {
                 dstOutputs.add(port.getName());
             }
         }
-
+        Set<String> dstMutexes = getMutexNames(dstCircuit);
         int dstGateCount = dstCircuit.getFunctionComponents().size();
 
         Assert.assertEquals(srcInputs, dstInputs);
         Assert.assertEquals(srcOutputs, dstOutputs);
+        Assert.assertEquals(srcMutexes, dstMutexes);
         Assert.assertEquals(expectedGateCount, dstGateCount);
+    }
+
+
+    private Set<String> getMutexNames(Stg stg) {
+        HashSet<String> result = new HashSet<>();
+        for (StgPlace place: stg.getMutexPlaces()) {
+            result.add(stg.getNodeReference(place));
+        }
+        return result;
+    }
+
+    private Set<String> getMutexNames(Circuit circuit) {
+        HashSet<String> result = new HashSet<>();
+        Mutex mutex = CircuitSettings.parseMutexData();
+        for (FunctionComponent component: circuit.getFunctionComponents()) {
+            if (mutex.name.equals(component.getModule())) {
+                result.add(circuit.getNodeReference(component));
+            }
+        }
+        return result;
     }
 
 }

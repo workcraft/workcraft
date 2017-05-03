@@ -23,7 +23,7 @@ public class MpsatCscVerificationCommand extends MpsatAbstractVerificationComman
     }
 
     @Override
-    public MpsatParameters getSettings() {
+    public MpsatParameters getSettings(WorkspaceEntry we) {
         return MpsatParameters.getCscSettings();
     }
 

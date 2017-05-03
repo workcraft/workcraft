@@ -12,7 +12,7 @@ public abstract class MpsatAbstractVerificationCommand extends AbstractVerificat
 
     @Override
     public void run(WorkspaceEntry we) {
-        final MpsatParameters settings = getSettings();
+        final MpsatParameters settings = getSettings(we);
         final MpsatChainTask mpsatTask = new MpsatChainTask(we, settings);
 
         String description = "MPSat tool chain";
@@ -26,6 +26,6 @@ public abstract class MpsatAbstractVerificationCommand extends AbstractVerificat
         taskManager.queue(mpsatTask, description, monitor);
     }
 
-    public abstract MpsatParameters getSettings();
+    public abstract MpsatParameters getSettings(WorkspaceEntry we);
 
 }

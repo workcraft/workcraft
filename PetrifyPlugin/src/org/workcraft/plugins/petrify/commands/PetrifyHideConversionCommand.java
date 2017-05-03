@@ -1,25 +1,22 @@
 package org.workcraft.plugins.petrify.commands;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.gui.graph.commands.AbstractConversionCommand;
-import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.petrify.tasks.PetrifyTransformationResultHandler;
 import org.workcraft.plugins.petrify.tasks.PetrifyTransformationTask;
-import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.VisualDummyTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
 
-public class PetrifyHideConversionCommand extends AbstractConversionCommand {
+public class PetrifyHideConversionCommand extends PetrifyAbstractConversionCommand {
 
     @Override
     public String getDisplayName() {
@@ -29,11 +26,6 @@ public class PetrifyHideConversionCommand extends AbstractConversionCommand {
     @Override
     public Position getPosition() {
         return Position.MIDDLE;
-    }
-
-    @Override
-    public boolean isApplicableTo(WorkspaceEntry we) {
-        return WorkspaceUtils.isApplicable(we, PetriNetModel.class);
     }
 
     @Override
@@ -72,19 +64,11 @@ public class PetrifyHideConversionCommand extends AbstractConversionCommand {
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
         final PetrifyTransformationTask task = new PetrifyTransformationTask(we, "Net synthesis", args.toArray(new String[args.size()]));
-        boolean hasSignals = WorkspaceUtils.isApplicable(we, StgModel.class);
-        final PetrifyTransformationResultHandler monitor = new PetrifyTransformationResultHandler(we, hasSignals);
+        boolean hasSignals = hasSignals(we);
+        Collection<Mutex> mutexes = getMutexes(we);
+        final PetrifyTransformationResultHandler monitor = new PetrifyTransformationResultHandler(we, !hasSignals, mutexes);
         taskManager.execute(task, "Petrify net synthesis", monitor);
         return monitor.getResult();
-    }
-
-    @Override
-    public ModelEntry convert(ModelEntry me) {
-        return null; // !!!
-    }
-
-    public ArrayList<String> getArgs() {
-        return new ArrayList<>();
     }
 
 }

@@ -1,5 +1,6 @@
 package org.workcraft.plugins.petrify.tasks;
 
+import java.util.Collection;
 import java.util.HashMap;
 
 import javax.swing.JOptionPane;
@@ -22,8 +23,12 @@ import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.LabelParser;
+import org.workcraft.plugins.stg.Mutex;
+import org.workcraft.plugins.stg.MutexUtils;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -32,16 +37,14 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class PetrifyTransformationResultHandler extends DummyProgressMonitor<PetrifyTransformationResult> {
     private final WorkspaceEntry we;
-    private final boolean convertResultStgToPetriNet;
+    private final boolean convertToPetriNet;
+    private final Collection<Mutex> mutexes;
     private WorkspaceEntry result;
 
-    public PetrifyTransformationResultHandler(WorkspaceEntry we) {
-        this(we, true);
-    }
-
-    public PetrifyTransformationResultHandler(WorkspaceEntry we, boolean convertResultStgToPetriNet) {
+    public PetrifyTransformationResultHandler(WorkspaceEntry we, boolean convertToPetriNet, Collection<Mutex> mutexes) {
         this.we = we;
-        this.convertResultStgToPetriNet = convertResultStgToPetriNet;
+        this.convertToPetriNet = convertToPetriNet;
+        this.mutexes = mutexes;
         this.result = null;
     }
 
@@ -50,8 +53,9 @@ public class PetrifyTransformationResultHandler extends DummyProgressMonitor<Pet
         final Framework framework = Framework.getInstance();
         if (result.getOutcome() == Outcome.FINISHED) {
             StgModel stgModel = result.getReturnValue().getResult();
-            PetriNetModel model = convertResultStgToPetriNet ? stgModel : convertStgToPetriNet(stgModel);
-            final ModelDescriptor modelDescriptor = convertResultStgToPetriNet ? new StgDescriptor() : new PetriNetDescriptor();
+            PetriNetModel model = convertToPetriNet ? convertStgToPetriNet(stgModel) : stgModel;
+            restoreMutexPlaces(model);
+            final ModelDescriptor modelDescriptor = convertToPetriNet ? new PetriNetDescriptor() : new StgDescriptor();
             final ModelEntry me = new ModelEntry(modelDescriptor, model);
             final Path<String> path = we.getWorkspacePath();
             this.result = framework.createWork(me, path);
@@ -66,6 +70,29 @@ public class PetrifyTransformationResultHandler extends DummyProgressMonitor<Pet
                         "Transformation failed", JOptionPane.WARNING_MESSAGE);
             } else {
                 ExceptionDialog.show(mainWindow, result.getCause());
+            }
+        }
+    }
+
+    private void restoreMutexPlaces(PetriNetModel model) {
+        if ((model instanceof Stg) && (mutexes != null)) {
+            Stg stg = (Stg) model;
+            for (Mutex mutex: mutexes) {
+                resoreMutexPlace(stg, mutex);
+            }
+        }
+    }
+
+    private void resoreMutexPlace(Stg stg, Mutex mutex) {
+        for (Place place: stg.getPlaces()) {
+            if (place instanceof StgPlace) {
+                StgPlace stgPlace = (StgPlace) place;
+                Mutex newMutex = MutexUtils.getMutex(stg, stgPlace);
+                if ((newMutex != null) && (mutex != null) &&
+                        mutex.r1.equals(newMutex.r1) && mutex.g1.equals(newMutex.g1) &&
+                        mutex.r2.equals(newMutex.r2) && mutex.g2.equals(newMutex.g2)) {
+                    stgPlace.setMutex(true);
+                }
             }
         }
     }

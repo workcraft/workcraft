@@ -23,7 +23,7 @@ public class MpsatDiInterfaceVerificationCommand extends MpsatAbstractVerificati
     }
 
     @Override
-    public MpsatParameters getSettings() {
+    public MpsatParameters getSettings(WorkspaceEntry we) {
         return MpsatParameters.getDiInterfaceSettings();
     }
 

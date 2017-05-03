@@ -99,9 +99,9 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
     private void setContactPositions(VisualCircuitComponent circuitComponent) {
         for (VisualContact contact: circuitComponent.getContacts()) {
             if (contact.isInput()) {
-                contact.setPosition(new Point2D.Double(-1.0, 0.0));
+                contact.setPosition(new Point2D.Double(-1.5, 0.0));
             } else {
-                contact.setPosition(new Point2D.Double(1.0, 0.0));
+                contact.setPosition(new Point2D.Double(1.5, 0.0));
             }
         }
         circuitComponent.setContactsDefaultPosition();

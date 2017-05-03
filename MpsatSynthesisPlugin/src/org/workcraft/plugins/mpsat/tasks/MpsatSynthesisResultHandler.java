@@ -1,6 +1,8 @@
 package org.workcraft.plugins.mpsat.tasks;
 
 import java.io.ByteArrayInputStream;
+import java.util.Collection;
+import java.util.HashSet;
 
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -20,6 +22,7 @@ import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderTy
 import org.workcraft.plugins.mpsat.MpsatSynthesisMode;
 import org.workcraft.plugins.mpsat.MpsatSynthesisSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -31,10 +34,12 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
     private static final String TITLE = "MPSat synthesis";
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
     private final MpsatSynthesisChainTask task;
+    private final Collection<Mutex> mutexes;
     private WorkspaceEntry result;
 
-    public MpsatSynthesisResultHandler(final MpsatSynthesisChainTask task) {
+    public MpsatSynthesisResultHandler(final MpsatSynthesisChainTask task, Collection<Mutex> mutexes) {
         this.task = task;
+        this.mutexes = mutexes;
         this.result = null;
     }
 
@@ -101,7 +106,7 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
                 final Framework framework = Framework.getInstance();
                 final ByteArrayInputStream in = new ByteArrayInputStream(verilogOutput);
                 final VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
-                final Circuit circuit = verilogImporter.importCircuit(in);
+                final Circuit circuit = verilogImporter.importCircuit(in, mutexes);
                 final ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
                 final WorkspaceEntry we = task.getWorkspaceEntry();
                 final Path<String> path = we.getWorkspacePath();
@@ -109,9 +114,7 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
                 final VisualModel visualModel = result.getModelEntry().getVisualModel();
                 if (visualModel instanceof VisualCircuit) {
                     final VisualCircuit visualCircuit = (VisualCircuit) visualModel;
-                    for (final VisualFunctionComponent component: visualCircuit.getVisualFunctionComponents()) {
-                        component.setRenderType(renderType);
-                    }
+                    setComponentsRenderStyle(visualCircuit, renderType);
                     final String title = we.getModelEntry().getModel().getTitle();
                     visualCircuit.setTitle(title);
                     if (!we.getFile().exists()) {
@@ -139,6 +142,20 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
                 }
             } catch (final DeserialisationException e) {
                 throw new RuntimeException(e);
+            }
+        }
+    }
+
+    private void setComponentsRenderStyle(final VisualCircuit visualCircuit, final RenderType renderType) {
+        HashSet<String> mutexNames = new HashSet<>();
+        for (Mutex me: mutexes) {
+            mutexNames.add(me.name);
+        }
+        for (final VisualFunctionComponent component: visualCircuit.getVisualFunctionComponents()) {
+            if (mutexNames.contains(visualCircuit.getNodeMathReference(component))) {
+                component.setRenderType(RenderType.BOX);
+            } else {
+                component.setRenderType(renderType);
             }
         }
     }
