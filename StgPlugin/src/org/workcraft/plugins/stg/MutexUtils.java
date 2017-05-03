@@ -1,11 +1,18 @@
 package org.workcraft.plugins.stg;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
+import javax.swing.JOptionPane;
+
+import org.workcraft.Framework;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.references.ReferenceHelper;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.util.Pair;
 
@@ -18,6 +25,32 @@ public class MutexUtils {
             exceptions.add(exception);
         }
         return exceptions;
+    }
+
+    public static LinkedList<Mutex> getImplementableMutexes(Stg stg) {
+        LinkedList<Mutex> result = new LinkedList<>();
+        final ArrayList<StgPlace> problematicPlaces = new ArrayList<>();
+        for (StgPlace place: stg.getMutexPlaces()) {
+            Mutex mutex = MutexUtils.getMutex(stg, place);
+            if (mutex != null) {
+                result.add(mutex);
+            } else {
+                problematicPlaces.add(place);
+            }
+        }
+        if (!problematicPlaces.isEmpty()) {
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            String problematicPlacesString = ReferenceHelper.getNodesAsString(stg, (Collection) problematicPlaces, 50);
+            int answer = JOptionPane.showConfirmDialog(mainWindow,
+                    "The following mutex places may not be implementable by mutex:\n\n" +
+                    problematicPlacesString + "\n\nProceed synthesis without theses places anyways?",
+                    "Synthesis", JOptionPane.YES_NO_OPTION);
+            if (answer != JOptionPane.YES_OPTION) {
+                result = null;
+            }
+        }
+        return result;
     }
 
     public static LinkedList<Mutex> getMutexes(Stg stg) {

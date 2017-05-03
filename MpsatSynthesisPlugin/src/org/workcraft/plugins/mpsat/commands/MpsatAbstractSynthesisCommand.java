@@ -9,9 +9,9 @@ import org.workcraft.plugins.mpsat.MpsatSynthesisParameters;
 import org.workcraft.plugins.mpsat.tasks.MpsatSynthesisChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatSynthesisResultHandler;
 import org.workcraft.plugins.stg.Mutex;
+import org.workcraft.plugins.stg.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.MutexUtils;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.workspace.WorkspaceEntry;
 /*
@@ -36,7 +36,10 @@ public abstract class MpsatAbstractSynthesisCommand extends AbstractSynthesisCom
     @Override
     public WorkspaceEntry execute(WorkspaceEntry we) {
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-        LinkedList<Mutex> mutexes = MutexUtils.getMutexes(stg);
+        LinkedList<Mutex> mutexes = MutexUtils.getImplementableMutexes(stg);
+        if (mutexes == null) {
+            return null;
+        }
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
         final MpsatSynthesisParameters settings = new MpsatSynthesisParameters("Logic synthesis", getSynthesisMode(), 0);
@@ -49,7 +52,10 @@ public abstract class MpsatAbstractSynthesisCommand extends AbstractSynthesisCom
     @Override
     public void run(WorkspaceEntry we) {
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-        LinkedList<Mutex> mutexes = MutexUtils.getMutexes(stg);
+        LinkedList<Mutex> mutexes = MutexUtils.getImplementableMutexes(stg);
+        if (mutexes == null) {
+            return;
+        }
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
         final MpsatSynthesisParameters settings = new MpsatSynthesisParameters("Logic synthesis", getSynthesisMode(), 0);
