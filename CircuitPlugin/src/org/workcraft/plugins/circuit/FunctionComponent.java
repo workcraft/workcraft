@@ -64,6 +64,26 @@ public class FunctionComponent extends CircuitComponent {
         return Hierarchy.getChildrenOfType(this, FunctionContact.class);
     }
 
+    public Collection<FunctionContact> getFunctionInputs() {
+        ArrayList<FunctionContact> result = new ArrayList<>();
+        for (FunctionContact contact: getFunctionContacts()) {
+            if (contact.isInput()) {
+                result.add(contact);
+            }
+        }
+        return result;
+    }
+
+    public Collection<FunctionContact> getFunctionOutputs() {
+        ArrayList<FunctionContact> result = new ArrayList<>();
+        for (FunctionContact contact: getFunctionContacts()) {
+            if (contact.isOutput()) {
+                result.add(contact);
+            }
+        }
+        return result;
+    }
+
     public boolean isBuffer() {
         boolean result = false;
         Collection<FunctionContact> contacts = getFunctionContacts();
