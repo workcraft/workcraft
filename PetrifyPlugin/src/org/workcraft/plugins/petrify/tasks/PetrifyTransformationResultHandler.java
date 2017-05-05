@@ -51,8 +51,8 @@ public class PetrifyTransformationResultHandler extends DummyProgressMonitor<Pet
         final Framework framework = Framework.getInstance();
         if (result.getOutcome() == Outcome.FINISHED) {
             StgModel stgModel = result.getReturnValue().getResult();
+            MutexUtils.restoreMutexPlacesByContext(stgModel, mutexes);
             PetriNetModel model = convertToPetriNet ? convertStgToPetriNet(stgModel) : stgModel;
-            MutexUtils.restoreMutexPlacesByContext(model, mutexes);
             final ModelDescriptor modelDescriptor = convertToPetriNet ? new PetriNetDescriptor() : new StgDescriptor();
             final ModelEntry me = new ModelEntry(modelDescriptor, model);
             final Path<String> path = we.getWorkspacePath();

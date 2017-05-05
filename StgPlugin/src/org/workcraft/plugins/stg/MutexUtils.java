@@ -13,7 +13,6 @@ import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.util.Pair;
@@ -117,7 +116,7 @@ public class MutexUtils {
         return result;
     }
 
-    public static void restoreMutexPlacesByName(final StgModel model, Collection<Mutex> mutexes) {
+    public static void restoreMutexPlacesByName(StgModel model, Collection<Mutex> mutexes) {
         if ((model != null) && (mutexes != null)) {
             for (Mutex mutex: mutexes) {
                 Node node = model.getNodeByReference(mutex.name);
@@ -129,7 +128,7 @@ public class MutexUtils {
         }
     }
 
-    public static void restoreMutexPlacesByContext(PetriNetModel model, Collection<Mutex> mutexes) {
+    public static void restoreMutexPlacesByContext(StgModel model, Collection<Mutex> mutexes) {
         if ((model instanceof Stg) && (mutexes != null)) {
             Stg stg = (Stg) model;
             for (Mutex mutex: mutexes) {
