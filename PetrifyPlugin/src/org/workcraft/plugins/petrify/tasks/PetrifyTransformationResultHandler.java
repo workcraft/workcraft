@@ -25,10 +25,8 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.MutexUtils;
-import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -54,7 +52,7 @@ public class PetrifyTransformationResultHandler extends DummyProgressMonitor<Pet
         if (result.getOutcome() == Outcome.FINISHED) {
             StgModel stgModel = result.getReturnValue().getResult();
             PetriNetModel model = convertToPetriNet ? convertStgToPetriNet(stgModel) : stgModel;
-            restoreMutexPlaces(model);
+            MutexUtils.restoreMutexPlacesByContext(model, mutexes);
             final ModelDescriptor modelDescriptor = convertToPetriNet ? new PetriNetDescriptor() : new StgDescriptor();
             final ModelEntry me = new ModelEntry(modelDescriptor, model);
             final Path<String> path = we.getWorkspacePath();
@@ -70,29 +68,6 @@ public class PetrifyTransformationResultHandler extends DummyProgressMonitor<Pet
                         "Transformation failed", JOptionPane.WARNING_MESSAGE);
             } else {
                 ExceptionDialog.show(mainWindow, result.getCause());
-            }
-        }
-    }
-
-    private void restoreMutexPlaces(PetriNetModel model) {
-        if ((model instanceof Stg) && (mutexes != null)) {
-            Stg stg = (Stg) model;
-            for (Mutex mutex: mutexes) {
-                resoreMutexPlace(stg, mutex);
-            }
-        }
-    }
-
-    private void resoreMutexPlace(Stg stg, Mutex mutex) {
-        for (Place place: stg.getPlaces()) {
-            if (place instanceof StgPlace) {
-                StgPlace stgPlace = (StgPlace) place;
-                Mutex newMutex = MutexUtils.getMutex(stg, stgPlace);
-                if ((newMutex != null) && (mutex != null) &&
-                        mutex.r1.equals(newMutex.r1) && mutex.g1.equals(newMutex.g1) &&
-                        mutex.r2.equals(newMutex.r2) && mutex.g2.equals(newMutex.g2)) {
-                    stgPlace.setMutex(true);
-                }
             }
         }
     }
