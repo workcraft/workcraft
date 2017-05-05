@@ -10,6 +10,7 @@ matrix:
       env: TARGET=cpd
     - jdk: openjdk7
       env: TARGET=test
+      group: deprecated-2017Q1
     - jdk: oraclejdk7
       env: TARGET=test
     - jdk: oraclejdk8
