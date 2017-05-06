@@ -6,15 +6,14 @@ import java.util.Collection;
 import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
-import org.workcraft.dom.Node;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.Mutex;
+import org.workcraft.plugins.stg.MutexUtils;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.plugins.stg.interop.DotGImporter;
 import org.workcraft.tasks.Result;
 import org.workcraft.workspace.ModelEntry;
@@ -57,22 +56,10 @@ public class MpsatCscConflictResolutionResultHandler implements Runnable {
                     "MPSat output: \n" + errorMessage,
                     "Conflict resolution failed", JOptionPane.WARNING_MESSAGE);
         } else {
-            restoreMutexPlaces(model);
+            MutexUtils.restoreMutexPlacesByName(model, mutexes);
             final ModelEntry me = new ModelEntry(new StgDescriptor(), model);
             final Path<String> path = we.getWorkspacePath();
             weResult = framework.createWork(me, path);
-        }
-    }
-
-    private void restoreMutexPlaces(final StgModel model) {
-        if (mutexes != null) {
-            for (Mutex mutex: mutexes) {
-                Node node = model.getNodeByReference(mutex.name);
-                if (node instanceof StgPlace) {
-                    StgPlace place = (StgPlace) node;
-                    place.setMutex(true);
-                }
-            }
         }
     }
 

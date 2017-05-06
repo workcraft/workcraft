@@ -13,6 +13,7 @@ import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.util.Pair;
 
@@ -113,6 +114,53 @@ public class MutexUtils {
             }
         }
         return result;
+    }
+
+    public static void restoreMutexPlacesByName(StgModel model, Collection<Mutex> mutexes) {
+        if ((model != null) && (mutexes != null)) {
+            for (Mutex mutex: mutexes) {
+                Node node = model.getNodeByReference(mutex.name);
+                if (node instanceof StgPlace) {
+                    StgPlace place = (StgPlace) node;
+                    place.setMutex(true);
+                }
+            }
+        }
+    }
+
+    public static void restoreMutexPlacesByContext(StgModel model, Collection<Mutex> mutexes) {
+        if ((model instanceof Stg) && (mutexes != null)) {
+            Stg stg = (Stg) model;
+            for (Mutex mutex: mutexes) {
+                resoreMutexPlace(stg, mutex);
+            }
+        }
+    }
+
+    private static void resoreMutexPlace(Stg stg, Mutex mutex) {
+        if ((stg == null) || (mutex == null)) {
+            return;
+        }
+        for (Place place: stg.getPlaces()) {
+            if (place instanceof StgPlace) {
+                StgPlace stgPlace = (StgPlace) place;
+                Mutex newMutex = MutexUtils.getMutex(stg, stgPlace);
+                if (newMutex == null) {
+                    continue;
+                }
+                boolean r1r1 = mutex.r1.equals(newMutex.r1);
+                boolean g1g1 = mutex.g1.equals(newMutex.g1);
+                boolean r2r2 = mutex.r2.equals(newMutex.r2);
+                boolean g2g2 = mutex.g2.equals(newMutex.g2);
+                boolean r1r2 = mutex.r1.equals(newMutex.r2);
+                boolean g1g2 = mutex.g1.equals(newMutex.g2);
+                boolean r2r1 = mutex.r2.equals(newMutex.r1);
+                boolean g2g1 = mutex.g2.equals(newMutex.g1);
+                if ((r1r1 && g1g1 && r2r2 && g2g2) || (r1r2 && g1g2 && r2r1 && g2g1)) {
+                    stgPlace.setMutex(true);
+                }
+            }
+        }
     }
 
 }

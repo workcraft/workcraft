@@ -238,8 +238,8 @@ public class VerilogImporter implements Importer {
         }
         insertMutexes(modules, mutexes, circuit, wires);
         createConnections(circuit, wires);
-        setZeroDelayAttribute(instanceComponentMap);
         setInitialState(circuit, wires, topModule.signalStates);
+        setZeroDelayAttribute(instanceComponentMap);
         mergeGroups(circuit, topModule.groups, instanceComponentMap);
         return circuit;
     }

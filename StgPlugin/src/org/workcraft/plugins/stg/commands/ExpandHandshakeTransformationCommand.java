@@ -29,6 +29,8 @@ import org.workcraft.workspace.WorkspaceUtils;
 
 public class ExpandHandshakeTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
+    private static final String SUFFIX_REQ = "_req";
+    private static final String SUFFIX_ACK = "_ack";
     private HashSet<Node> expandedNodes = null;
     private Pair<String, String> suffixPair = null;
 
@@ -97,8 +99,8 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
             Type type = transition.getSignalType();
             Direction direction = transition.getDirection();
             Container container = Hierarchy.getNearestContainer(transition);
-            String reqSuffix = "_req";
-            String ackSuffix = "_ack";
+            String reqSuffix = SUFFIX_REQ;
+            String ackSuffix = SUFFIX_ACK;
             if (suffixPair != null) {
                 reqSuffix = suffixPair.getFirst();
                 ackSuffix = suffixPair.getSecond();
@@ -153,14 +155,18 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
         Pair<String, String> result = null;
         final Framework framework = Framework.getInstance();
         String ans = JOptionPane.showInputDialog(framework.getMainWindow(),
-                "Enter a pair of space-separated suffixes for handshake signals:", "_req _ack");
+                "Enter a pair of space-separated suffixes for handshake signals:",
+                SUFFIX_REQ + " " + SUFFIX_ACK);
         if (ans != null) {
             String[] split = ans.trim().split("\\s");
             if (split.length == 2) {
                 result = Pair.of(split[0], split[1]);
             } else {
                 JOptionPane.showMessageDialog(framework.getMainWindow(),
-                        "Two suffixes are required!", "Handshake expansion", JOptionPane.ERROR_MESSAGE);
+                        "Error: Two suffixes are required!\n\n" +
+                        "Default suffixes " + SUFFIX_REQ + " and " + SUFFIX_ACK + " will be used.",
+                        "Handshake expansion", JOptionPane.ERROR_MESSAGE);
+                result = null;
             }
         }
         return result;

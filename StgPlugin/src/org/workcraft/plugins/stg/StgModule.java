@@ -12,7 +12,6 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.stg.commands.ContractNamedTransitionTransformationCommand;
 import org.workcraft.plugins.stg.commands.DummyToSignalTransitionTransformationCommand;
-import org.workcraft.plugins.stg.commands.ExpandHandshakeCtrlSanTransformationCommand;
 import org.workcraft.plugins.stg.commands.ExpandHandshakeReqAckTransformationCommand;
 import org.workcraft.plugins.stg.commands.ExpandHandshakeTransformationCommand;
 import org.workcraft.plugins.stg.commands.ExplicitPlaceTransformationCommand;
@@ -77,7 +76,6 @@ public class StgModule implements Module {
         pm.registerClass(Command.class, InsertDummyTransformationCommand.class);
         pm.registerClass(Command.class, ExpandHandshakeTransformationCommand.class);
         pm.registerClass(Command.class, ExpandHandshakeReqAckTransformationCommand.class);
-        pm.registerClass(Command.class, ExpandHandshakeCtrlSanTransformationCommand.class);
     }
 
     private void initCompatibilityManager() {

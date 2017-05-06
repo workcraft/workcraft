@@ -3,6 +3,8 @@ package org.workcraft.plugins.pcomp.commands;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 
 import org.workcraft.Framework;
 import org.workcraft.PluginManager;
@@ -14,6 +16,9 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.pcomp.gui.PcompDialog;
 import org.workcraft.plugins.pcomp.tasks.PcompResultHandler;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
+import org.workcraft.plugins.stg.Mutex;
+import org.workcraft.plugins.stg.MutexUtils;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.serialisation.Format;
@@ -50,13 +55,19 @@ public class ParallelCompositionCommand implements Command {
             MainWindow mainWindow = framework.getMainWindow();
             PcompDialog dialog = new PcompDialog(mainWindow);
             GUI.centerAndSizeToParent(dialog, mainWindow);
+            Collection<Mutex> mutexes = new HashSet<>();
             if (dialog.run()) {
                 String tmpPrefix = FileUtils.getTempPrefix(we.getTitle());
                 File tmpDirectory = FileUtils.createTempDirectory(tmpPrefix);
                 ArrayList<File> inputFiles = new ArrayList<>();
                 for (Path<String> path : dialog.getSourcePaths()) {
                     Workspace workspace = framework.getWorkspace();
-                    File stgFile = exportStg(workspace.getWork(path), tmpDirectory);
+                    WorkspaceEntry inputWe = workspace.getWork(path);
+                    Collection<Mutex> inputMutexes = MutexUtils.getMutexes(WorkspaceUtils.getAs(inputWe, Stg.class));
+                    if (inputMutexes != null) {
+                        mutexes.addAll(inputMutexes);
+                    }
+                    File stgFile = exportStg(inputWe, tmpDirectory);
                     inputFiles.add(stgFile);
                 }
 
@@ -67,7 +78,7 @@ public class ParallelCompositionCommand implements Command {
                         dialog.getMode(), dialog.isSharedOutputsChecked(), dialog.isImprovedPcompChecked(),
                         tmpDirectory);
 
-                PcompResultHandler pcompResult = new PcompResultHandler(dialog.showInEditor(), outputFile);
+                PcompResultHandler pcompResult = new PcompResultHandler(dialog.showInEditor(), outputFile, mutexes);
                 TaskManager taskManager = framework.getTaskManager();
                 taskManager.queue(pcompTask, "Running parallel composition [PComp]", pcompResult);
             }

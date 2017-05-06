@@ -35,7 +35,6 @@ import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.util.GUI;
-import org.workcraft.util.Hierarchy;
 
 public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
@@ -99,15 +98,14 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
             if (contact.isDriver() && contact.getForcedInit()) {
                 HashSet<Node> init = (contact.getInitToOne()) ? initHighSet : initLowSet;
                 if (init.add(contact)) {
-                    Set<Connection> connections = circuit.getConnections(contact);
-                    queue.addAll(connections);
+                    queueConnections(circuit, contact, queue);
                 }
             }
         }
         while (!queue.isEmpty()) {
             Connection connection = queue.remove();
             Node fromNode = connection.getFirst();
-            HashSet<Node> nodeInitLevelSet = chooseNodeLevelSet(fromNode, initHighSet, initLowSet);
+            HashSet<Node> nodeInitLevelSet = chooseNodeLevelSet(fromNode);
             if ((nodeInitLevelSet != null) && nodeInitLevelSet.add(connection)) {
                 if (initErrorSet.contains(fromNode)) {
                     initErrorSet.add(connection);
@@ -116,56 +114,70 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
                 if (nodeInitLevelSet.add(toNode)) {
                     Node parent = toNode.getParent();
                     if (parent instanceof FunctionComponent) {
-                        LinkedList<BooleanVariable> variables = new LinkedList<>();
-                        LinkedList<BooleanFormula> values = new LinkedList<>();
-                        LinkedList<FunctionContact> outputPins = new LinkedList<>();
-                        for (FunctionContact contact: Hierarchy.getChildrenOfType(parent, FunctionContact.class)) {
-                            if (contact.isOutput()) {
-                                outputPins.add(contact);
-                            }
-                            HashSet<Node> contactInitLevelSet = chooseNodeLevelSet(contact, initHighSet, initLowSet);
-                            if (contactInitLevelSet != null) {
-                                variables.add(contact);
-                                values.add(contactInitLevelSet == initHighSet ? One.instance() : Zero.instance());
-                            }
-                        }
-                        for (FunctionContact outputPin: outputPins) {
-                            Set<Node> outputInitLevelSet = chooseFunctionLevelSet(outputPin, variables, values, initHighSet, initLowSet);
-                            if ((outputInitLevelSet != null) && outputInitLevelSet.add(outputPin)) {
-                                if ((outputInitLevelSet == initHighSet) != outputPin.getInitToOne()) {
-                                    initErrorSet.add(outputPin);
-                                }
-                                Set<Connection> connections = circuit.getConnections(outputPin);
-                                queue.addAll(connections);
-                            }
-                        }
+                        FunctionComponent component = (FunctionComponent) parent;
+                        propagateValuesToOutputs(circuit, component, queue);
                     } else {
-                        Set<Connection> connections = circuit.getConnections(toNode);
-                        queue.addAll(connections);
+                        queueConnections(circuit, toNode, queue);
                     }
                 }
             }
         }
     }
 
-    private HashSet<Node> chooseNodeLevelSet(Node node, HashSet<Node> highSet, HashSet<Node> lowSet) {
-        if (highSet.contains(node)) {
-            return highSet;
+    private void fillVariableValues(FunctionComponent component,
+            LinkedList<BooleanVariable> variables, LinkedList<BooleanFormula> values) {
+        for (FunctionContact contact: component.getFunctionContacts()) {
+            HashSet<Node> contactInitLevelSet = chooseNodeLevelSet(contact);
+            if (contactInitLevelSet != null) {
+                variables.add(contact);
+                values.add(contactInitLevelSet == initHighSet ? One.instance() : Zero.instance());
+            }
         }
-        if (lowSet.contains(node)) {
-            return lowSet;
+    }
+
+    private void propagateValuesToOutputs(Circuit circuit, FunctionComponent component, Queue<Connection> queue) {
+        boolean progress = true;
+        while (progress) {
+            progress = false;
+            LinkedList<BooleanVariable> variables = new LinkedList<>();
+            LinkedList<BooleanFormula> values = new LinkedList<>();
+            fillVariableValues(component, variables, values);
+            for (FunctionContact outputPin: component.getFunctionOutputs()) {
+                Set<Node> outputInitLevelSet = chooseFunctionLevelSet(outputPin, variables, values);
+                if ((outputInitLevelSet != null) && outputInitLevelSet.add(outputPin)) {
+                    progress = true;
+                    if ((outputInitLevelSet == initHighSet) != outputPin.getInitToOne()) {
+                        initErrorSet.add(outputPin);
+                    }
+                    queueConnections(circuit, outputPin, queue);
+                }
+            }
+        }
+    }
+
+    private void queueConnections(Circuit circuit, Node node, Queue<Connection> queue) {
+        Set<Connection> connections = circuit.getConnections(node);
+        queue.addAll(connections);
+    }
+
+    private HashSet<Node> chooseNodeLevelSet(Node node) {
+        if (initHighSet.contains(node)) {
+            return initHighSet;
+        }
+        if (initLowSet.contains(node)) {
+            return initLowSet;
         }
         return null;
     }
 
-    private HashSet<Node> chooseFunctionLevelSet(FunctionContact contact, LinkedList<BooleanVariable> variables,
-            LinkedList<BooleanFormula> values, HashSet<Node> highSet, HashSet<Node> lowSet) {
+    private HashSet<Node> chooseFunctionLevelSet(FunctionContact contact,
+            LinkedList<BooleanVariable> variables, LinkedList<BooleanFormula> values) {
         BooleanFormula setFunction = BooleanUtils.cleverReplace(contact.getSetFunction(), variables, values);
         BooleanFormula resetFunction = BooleanUtils.cleverReplace(contact.getResetFunction(), variables, values);
         if (isEvaluatedHigh(setFunction, resetFunction)) {
-            return highSet;
+            return initHighSet;
         } else if (isEvaluatedLow(setFunction, resetFunction)) {
-            return lowSet;
+            return initLowSet;
         }
         return null;
     }
