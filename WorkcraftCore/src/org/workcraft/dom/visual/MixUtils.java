@@ -44,10 +44,6 @@ public class MixUtils {
             x += point.getX();
             y += point.getY();
         }
-        if (count > 0) {
-            x /= count;
-            y /= count;
-        }
         return (count > 0) ? new Point2D.Double(x / count, y / count) : null;
     }
 
