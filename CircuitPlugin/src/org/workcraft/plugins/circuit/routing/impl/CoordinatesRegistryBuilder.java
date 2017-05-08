@@ -45,27 +45,29 @@ public class CoordinatesRegistryBuilder {
     }
 
     private void registerBoundaries(CoordinatesRegistry baseRegistry, RouterTask routerTask) {
-        Rectangle first = routerTask.getRectangles().iterator().next();
+        if (!routerTask.getRectangles().isEmpty()) {
+            Rectangle first = routerTask.getRectangles().iterator().next();
 
-        double minx = first.getX();
-        double maxx = first.getX() + first.getWidth();
-        double miny = first.getY();
-        double maxy = first.getY() + first.getHeight();
+            double minx = first.getX();
+            double maxx = first.getX() + first.getWidth();
+            double miny = first.getY();
+            double maxy = first.getY() + first.getHeight();
 
-        for (Rectangle rec : routerTask.getRectangles()) {
-            minx = Math.min(minx, rec.getX());
-            miny = Math.min(miny, rec.getY());
-            maxx = Math.max(maxx, rec.getX() + rec.getWidth());
-            maxy = Math.max(maxy, rec.getY() + rec.getHeight());
+            for (Rectangle rec : routerTask.getRectangles()) {
+                minx = Math.min(minx, rec.getX());
+                miny = Math.min(miny, rec.getY());
+                maxx = Math.max(maxx, rec.getX() + rec.getWidth());
+                maxy = Math.max(maxy, rec.getY() + rec.getHeight());
+            }
+
+            for (RouterPort port : routerTask.getPorts()) {
+                minx = Math.min(minx, port.getLocation().getX());
+                miny = Math.min(miny, port.getLocation().getY());
+                maxx = Math.max(maxx, port.getLocation().getX());
+                maxy = Math.max(maxy, port.getLocation().getY());
+            }
+            registerSnappedRectangle(baseRegistry, new Rectangle(minx, miny, maxx - minx, maxy - miny));
         }
-
-        for (RouterPort port : routerTask.getPorts()) {
-            minx = Math.min(minx, port.getLocation().getX());
-            miny = Math.min(miny, port.getLocation().getY());
-            maxx = Math.max(maxx, port.getLocation().getX());
-            maxy = Math.max(maxy, port.getLocation().getY());
-        }
-        registerSnappedRectangle(baseRegistry, new Rectangle(minx, miny, maxx - minx, maxy - miny));
     }
 
     private void registerObstacleCoordinates(CoordinatesRegistry baseRegistry, RouterTask routerTask) {

@@ -29,7 +29,7 @@ public class CellAnalyser {
         cells = coordinatesRegistry.getRouterCells();
 
         sizeX = cells.cells.length;
-        sizeY = cells.cells[0].length;
+        sizeY = (cells.cells.length > 0) ? cells.cells[0].length : 0;
     }
 
     public boolean isMovementPossible(int x, int y, int dx, int dy) {

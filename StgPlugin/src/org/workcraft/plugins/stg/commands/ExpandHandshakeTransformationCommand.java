@@ -1,8 +1,10 @@
 package org.workcraft.plugins.stg.commands;
 
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.LinkedList;
 
 import javax.swing.JOptionPane;
 
@@ -12,6 +14,8 @@ import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.MixUtils;
+import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.graph.commands.AbstractTransformationCommand;
@@ -96,7 +100,6 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
             VisualStg stg = (VisualStg) model;
             VisualSignalTransition transition = (VisualSignalTransition) node;
             String ref = stg.getSignalReference(transition);
-            Type type = transition.getSignalType();
             Direction direction = transition.getDirection();
             Container container = Hierarchy.getNearestContainer(transition);
             String reqSuffix = SUFFIX_REQ;
@@ -105,16 +108,11 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
                 reqSuffix = suffixPair.getFirst();
                 ackSuffix = suffixPair.getSecond();
             }
-            VisualSignalTransition reqTransition = stg.createVisualSignalTransition(ref + reqSuffix, type, direction, container);
-            if (type == Type.INPUT) {
-                type = Type.OUTPUT;
-            } else if (type == Type.OUTPUT) {
-                type = Type.INPUT;
-            }
-            VisualSignalTransition ackTransition = stg.createVisualSignalTransition(ref + ackSuffix, type, direction, container);
-            Point2D pos = transition.getRootSpacePosition();
-            reqTransition.setRootSpacePosition(new Point2D.Double(pos.getX() - 2.0, pos.getY()));
-            ackTransition.setRootSpacePosition(new Point2D.Double(pos.getX() + 2.0, pos.getY()));
+            VisualSignalTransition reqTransition = stg.createVisualSignalTransition(ref + reqSuffix, Type.OUTPUT, direction, container);
+            VisualSignalTransition ackTransition = stg.createVisualSignalTransition(ref + ackSuffix, Type.INPUT, direction, container);
+            Pair<Point2D, Point2D> positionPair = getReqAckPositions(stg, transition);
+            reqTransition.setRootSpacePosition(positionPair.getFirst());
+            ackTransition.setRootSpacePosition(positionPair.getSecond());
             VisualConnection midConnection = null;
             try {
                 midConnection = stg.connect(reqTransition, ackTransition);
@@ -149,6 +147,41 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
             }
             stg.remove(transition);
         }
+    }
+
+    private Pair<Point2D, Point2D> getReqAckPositions(VisualStg stg, VisualSignalTransition transition) {
+        LinkedList<Point2D> predPoints = new LinkedList<>();
+        LinkedList<Point2D> succPoints = new LinkedList<>();
+        for (Connection connection: stg.getConnections(transition)) {
+            if (connection instanceof VisualConnection) {
+                VisualConnection visualConnection = (VisualConnection) connection;
+                AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(visualConnection);
+                if (connection.getFirst() == transition) {
+                    Point2D posInLocalSpace = visualConnection.getPointOnConnection(1.0 / 3.0);
+                    Point2D posInRootSpace = localToRootTransform.transform(posInLocalSpace, null);
+                    succPoints.add(posInRootSpace);
+                }
+                if (connection.getSecond() == transition) {
+                    Point2D posInLocalSpace = visualConnection.getPointOnConnection(2.0 / 3.0);
+                    Point2D posInRootSpace = localToRootTransform.transform(posInLocalSpace, null);
+                    predPoints.add(posInRootSpace);
+                }
+            }
+        }
+        Point2D pos = transition.getRootSpacePosition();
+        if (predPoints.isEmpty() && succPoints.isEmpty()) {
+            predPoints.add(new Point2D.Double(pos.getX(), pos.getY() - 1.0));
+            succPoints.add(new Point2D.Double(pos.getX(), pos.getY() + 1.0));
+        } else if (predPoints.isEmpty()) {
+            Point2D succPoint = MixUtils.middlePoint(succPoints);
+            predPoints.add(new Point2D.Double(2.0 * pos.getX() - succPoint.getX(), 2.0 * pos.getY() - succPoint.getY()));
+        }  else if (succPoints.isEmpty()) {
+            Point2D predPoint = MixUtils.middlePoint(predPoints);
+            succPoints.add(new Point2D.Double(2.0 * pos.getX() - predPoint.getX(), 2.0 * pos.getY() - predPoint.getY()));
+        }
+        Point2D predPoint = MixUtils.middlePoint(predPoints);
+        Point2D succPoint = MixUtils.middlePoint(succPoints);
+        return new Pair<Point2D, Point2D>(predPoint, succPoint);
     }
 
     public Pair<String, String> getSufixes() {
