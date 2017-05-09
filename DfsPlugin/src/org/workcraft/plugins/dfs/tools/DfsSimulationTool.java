@@ -1,6 +1,7 @@
 package org.workcraft.plugins.dfs.tools;
 
 import java.awt.Color;
+import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.Arrays;
@@ -34,9 +35,9 @@ import org.workcraft.plugins.dfs.decorations.RegisterDecoration;
 import org.workcraft.plugins.dfs.stg.BinaryRegisterStg;
 import org.workcraft.plugins.dfs.stg.CounterflowLogicStg;
 import org.workcraft.plugins.dfs.stg.CounterflowRegisterStg;
+import org.workcraft.plugins.dfs.stg.DfsToStgConverter;
 import org.workcraft.plugins.dfs.stg.LogicStg;
 import org.workcraft.plugins.dfs.stg.RegisterStg;
-import org.workcraft.plugins.dfs.stg.DfsToStgConverter;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
@@ -156,64 +157,66 @@ public class DfsSimulationTool extends StgSimulationTool {
 
     @Override
     public void mousePressed(GraphEditorMouseEvent e) {
-        Point2D posRoot = e.getPosition();
-        Node node = HitMan.hitDeepest(posRoot, e.getModel().getRoot(),
-                new Func<Node, Boolean>() {
-                    @Override
-                    public Boolean eval(Node node) {
-                        return getExcitedTransitionOfNode(node) != null;
-                    }
-                });
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            VisualModel model = e.getModel();
+            Node node = HitMan.hitDeepest(e.getPosition(), model.getRoot(),
+                    new Func<Node, Boolean>() {
+                        @Override
+                        public Boolean eval(Node node) {
+                            return getExcitedTransitionOfNode(node) != null;
+                        }
+                    });
 
-        Transition transition = null;
-        if (node instanceof VisualTransformableNode) {
-            AffineTransform rootToLocalTransform = TransformHelper.getTransform(e.getModel().getRoot(), node);
-            Point2D posLocal = rootToLocalTransform.transform(posRoot, null);
-            Point2D posNode = ((VisualTransformableNode) node).getParentToLocalTransform().transform(posLocal, null);
-            if (node instanceof VisualCounterflowLogic) {
-                CounterflowLogicStg lstg = converter.getCounterflowLogicStg((VisualCounterflowLogic) node);
-                if (posNode.getY() < 0) {
-                    transition = getExcitedTransitionOfCollection(lstg.getForwardTransitions());
-                } else {
-                    transition = getExcitedTransitionOfCollection(lstg.getBackwardTransitions());
-                }
-            } else if (node instanceof VisualCounterflowRegister) {
-                CounterflowRegisterStg rstg = converter.getCounterflowRegisterStg((VisualCounterflowRegister) node);
-                if (posNode.getY() < 0) {
-                    transition = getExcitedTransitionOfCollection(rstg.getOrTransitions());
-                } else {
-                    transition = getExcitedTransitionOfCollection(rstg.getAndTransitions());
-                }
-            } else if (node instanceof VisualControlRegister) {
-                BinaryRegisterStg rstg = converter.getControlRegisterStg((VisualControlRegister) node);
-                if (posNode.getY() < 0) {
-                    transition = getExcitedTransitionOfCollection(rstg.getTrueTransitions());
-                } else {
-                    transition = getExcitedTransitionOfCollection(rstg.getFalseTransitions());
-                }
-            } else if (node instanceof VisualPushRegister) {
-                BinaryRegisterStg rstg = converter.getPushRegisterStg((VisualPushRegister) node);
-                if (posNode.getY() < 0) {
-                    transition = getExcitedTransitionOfCollection(rstg.getTrueTransitions());
-                } else {
-                    transition = getExcitedTransitionOfCollection(rstg.getFalseTransitions());
-                }
-            } else if (node instanceof VisualPopRegister) {
-                BinaryRegisterStg rstg = converter.getPopRegisterStg((VisualPopRegister) node);
-                if (posNode.getY() < 0) {
-                    transition = getExcitedTransitionOfCollection(rstg.getTrueTransitions());
-                } else {
-                    transition = getExcitedTransitionOfCollection(rstg.getFalseTransitions());
+            Transition transition = null;
+            if (node instanceof VisualTransformableNode) {
+                AffineTransform rootToLocalTransform = TransformHelper.getTransform(e.getModel().getRoot(), node);
+                Point2D posLocal = rootToLocalTransform.transform(e.getPosition(), null);
+                Point2D posNode = ((VisualTransformableNode) node).getParentToLocalTransform().transform(posLocal, null);
+                if (node instanceof VisualCounterflowLogic) {
+                    CounterflowLogicStg lstg = converter.getCounterflowLogicStg((VisualCounterflowLogic) node);
+                    if (posNode.getY() < 0) {
+                        transition = getExcitedTransitionOfCollection(lstg.getForwardTransitions());
+                    } else {
+                        transition = getExcitedTransitionOfCollection(lstg.getBackwardTransitions());
+                    }
+                } else if (node instanceof VisualCounterflowRegister) {
+                    CounterflowRegisterStg rstg = converter.getCounterflowRegisterStg((VisualCounterflowRegister) node);
+                    if (posNode.getY() < 0) {
+                        transition = getExcitedTransitionOfCollection(rstg.getOrTransitions());
+                    } else {
+                        transition = getExcitedTransitionOfCollection(rstg.getAndTransitions());
+                    }
+                } else if (node instanceof VisualControlRegister) {
+                    BinaryRegisterStg rstg = converter.getControlRegisterStg((VisualControlRegister) node);
+                    if (posNode.getY() < 0) {
+                        transition = getExcitedTransitionOfCollection(rstg.getTrueTransitions());
+                    } else {
+                        transition = getExcitedTransitionOfCollection(rstg.getFalseTransitions());
+                    }
+                } else if (node instanceof VisualPushRegister) {
+                    BinaryRegisterStg rstg = converter.getPushRegisterStg((VisualPushRegister) node);
+                    if (posNode.getY() < 0) {
+                        transition = getExcitedTransitionOfCollection(rstg.getTrueTransitions());
+                    } else {
+                        transition = getExcitedTransitionOfCollection(rstg.getFalseTransitions());
+                    }
+                } else if (node instanceof VisualPopRegister) {
+                    BinaryRegisterStg rstg = converter.getPopRegisterStg((VisualPopRegister) node);
+                    if (posNode.getY() < 0) {
+                        transition = getExcitedTransitionOfCollection(rstg.getTrueTransitions());
+                    } else {
+                        transition = getExcitedTransitionOfCollection(rstg.getFalseTransitions());
+                    }
                 }
             }
-        }
 
-        if (transition == null) {
-            transition = getExcitedTransitionOfNode(node);
-        }
+            if (transition == null) {
+                transition = getExcitedTransitionOfNode(node);
+            }
 
-        if (transition != null) {
-            executeTransition(e.getEditor(), transition);
+            if (transition != null) {
+                executeTransition(e.getEditor(), transition);
+            }
         }
     }
 
