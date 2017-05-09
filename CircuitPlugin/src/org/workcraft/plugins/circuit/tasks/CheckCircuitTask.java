@@ -80,10 +80,10 @@ public class CheckCircuitTask extends MpsatChainTask {
                 // Make sure that input signals of the device STG are also inputs in the environment STG
                 Set<String> inputSignalNames = devStg.getSignalNames(Type.INPUT, null);
                 Set<String> outputSignalNames = devStg.getSignalNames(Type.OUTPUT, null);
-                CircuitStgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
+                StgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
             }
 
-            // Convert mutex grants into inputs bith in device and environemnt STGs
+            // Convert mutex grants into inputs both in device and environment STGs
             for (Pair<String, String> grantPair: grantPairs) {
                 devStg.setSignalType(grantPair.getFirst(), Type.INPUT);
                 devStg.setSignalType(grantPair.getSecond(), Type.INPUT);
@@ -150,7 +150,7 @@ public class CheckCircuitTask extends MpsatChainTask {
                 } else {
                     String fileSuffix = (sysStgFile == null) ? "" : StgUtils.MODIFIED_FILE_SUFFIX;
                     // Convert internal signals to dummies
-                    CircuitStgUtils.convertInternalSignalsToDummies(envStg);
+                    StgUtils.convertInternalSignalsToDummies(envStg);
                     File envModStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + fileSuffix + StgUtils.ASTG_FILE_EXT);
                     Result<? extends Object> envModExportResult = CircuitStgUtils.exportStg(envStg, envModStgFile, directory, monitor);
                     if (envModExportResult.getOutcome() != Outcome.FINISHED) {

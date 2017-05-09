@@ -17,7 +17,6 @@ import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.tasks.CheckStrictImplementationTask;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.plugins.stg.SignalTransition.Type;
@@ -86,7 +85,7 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
         // Make sure that input signals of the circuit are also inputs in the environment STG
         ArrayList<String> circuitInputSignals = ReferenceHelper.getReferenceList(circuit, (Collection) circuit.getInputPorts());
         ArrayList<String> circuitOutputSignals = ReferenceHelper.getReferenceList(circuit, (Collection) circuit.getOutputPorts());
-        CircuitStgUtils.restoreInterfaceSignals(envStg, circuitInputSignals, circuitOutputSignals);
+        StgUtils.restoreInterfaceSignals(envStg, circuitInputSignals, circuitOutputSignals);
 
         // Check that the set of circuit input signals is a subset of STG input signals.
         Set<String> stgInputSignals = envStg.getSignalNames(Type.INPUT, null);
