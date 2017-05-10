@@ -2,12 +2,10 @@ package org.workcraft.plugins.circuit.stg;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Set;
 
 import org.workcraft.Framework;
 import org.workcraft.PluginManager;
-import org.workcraft.dom.Container;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.circuit.VisualCircuit;
@@ -15,7 +13,6 @@ import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
-import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
@@ -87,7 +84,7 @@ public class CircuitStgUtils {
         File result = null;
         Stg envStg = StgUtils.loadStg(envFile);
         if (envStg != null) {
-            restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
+            StgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
             result = exportStg(envStg, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.ASTG_FILE_EXT, directory);
         }
         return result;
@@ -149,25 +146,6 @@ public class CircuitStgUtils {
         }
         TaskManager taskManager = framework.getTaskManager();
         return taskManager.execute(pcompTask, description, subtaskMonitor);
-    }
-
-    public static void restoreInterfaceSignals(Stg stg, Collection<String> inputSignalNames, Collection<String> outputSignalNames) {
-        Container container = stg.getRoot();
-        for (String signalName: stg.getSignalNames(container)) {
-            stg.setSignalType(signalName, Type.INTERNAL, container);
-        }
-        for (String inputName: inputSignalNames) {
-            stg.setSignalType(inputName, Type.INPUT, container);
-        }
-        for (String outputName: outputSignalNames) {
-            stg.setSignalType(outputName, Type.OUTPUT, container);
-        }
-    }
-
-    public static void convertInternalSignalsToDummies(Stg stg) {
-        for (SignalTransition transition: stg.getSignalTransitions(Type.INTERNAL)) {
-            StgUtils.convertSignalToDummyTransition(stg, transition);
-        }
     }
 
 }

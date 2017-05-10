@@ -19,6 +19,7 @@ import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.serialisation.Format;
@@ -77,27 +78,28 @@ public class MpsatConformationTask extends MpsatChainTask {
             monitor.progressUpdate(0.30);
 
             // Generating .g for the environment
-            Result<? extends ExternalProcessResult>  pcompResult = null;
-            File envStgFile = null;
-            if (envFile.getName().endsWith(".g")) {
-                envStgFile = envFile;
-            } else {
-                Stg envStg = StgUtils.loadStg(envFile);
-                if (envStg != null) {
-                    Exporter envStgExporter = Export.chooseBestExporter(framework.getPluginManager(), envStg, Format.STG);
-                    envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.ASTG_FILE_EXT);
-                    ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile.getAbsolutePath());
-                    Result<? extends Object> envExportResult = framework.getTaskManager().execute(
-                            envExportTask, "Exporting environment .g", subtaskMonitor);
+            Stg envStg = StgUtils.loadStg(envFile);
+            if (envStg == null) {
+                return new Result<MpsatChainResult>(Outcome.FAILED,
+                        new MpsatChainResult(null, null, null, null, toolchainPreparationSettings));
+            }
 
-                    if (envExportResult.getOutcome() != Outcome.FINISHED) {
-                        if (envExportResult.getOutcome() == Outcome.CANCELLED) {
-                            return new Result<MpsatChainResult>(Outcome.CANCELLED);
-                        }
-                        return new Result<MpsatChainResult>(Outcome.FAILED,
-                                new MpsatChainResult(envExportResult, null, null, null, toolchainPreparationSettings));
-                    }
+            // Make sure that input signals of the device STG are also inputs in the environment STG
+            Set<String> inputSignalNames = devStg.getSignalNames(Type.INPUT, null);
+            Set<String> outputSignalNames = devStg.getSignalNames(Type.OUTPUT, null);
+            StgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
+            Exporter envStgExporter = Export.chooseBestExporter(framework.getPluginManager(), envStg, Format.STG);
+            File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.ASTG_FILE_EXT);
+            ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile.getAbsolutePath());
+            Result<? extends Object> envExportResult = framework.getTaskManager().execute(
+                    envExportTask, "Exporting environment .g", subtaskMonitor);
+
+            if (envExportResult.getOutcome() != Outcome.FINISHED) {
+                if (envExportResult.getOutcome() == Outcome.CANCELLED) {
+                    return new Result<MpsatChainResult>(Outcome.CANCELLED);
                 }
+                return new Result<MpsatChainResult>(Outcome.FAILED,
+                        new MpsatChainResult(envExportResult, null, null, null, toolchainPreparationSettings));
             }
             monitor.progressUpdate(0.40);
 
@@ -108,7 +110,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             PcompTask pcompTask = new PcompTask(new File[]{devStgFile, envStgFile}, stgFile, placesFile,
                     ConversionMode.OUTPUT, true, false, directory);
 
-            pcompResult = framework.getTaskManager().execute(
+            Result<? extends ExternalProcessResult> pcompResult = framework.getTaskManager().execute(
                     pcompTask, "Running parallel composition [PComp]", subtaskMonitor);
 
             if (pcompResult.getOutcome() != Outcome.FINISHED) {

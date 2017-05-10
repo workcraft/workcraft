@@ -16,7 +16,6 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
@@ -34,6 +33,9 @@ import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.VisualContact;
+import org.workcraft.plugins.circuit.VisualFunctionComponent;
+import org.workcraft.plugins.circuit.VisualFunctionContact;
+import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
 
 public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
@@ -191,26 +193,39 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     }
 
     @Override
-    public void mouseClicked(GraphEditorMouseEvent e) {
+    public void mousePressed(GraphEditorMouseEvent e) {
         boolean processed = false;
         GraphEditor editor = e.getEditor();
-        VisualModel model = editor.getModel();
+        VisualModel model = e.getModel();
         if (e.getButton() == MouseEvent.BUTTON1) {
-            VisualNode node = (VisualNode) HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
-            if (node instanceof VisualContact) {
-                Contact contact = ((VisualContact) node).getReferencedContact();
-                if (contact.isDriver()) {
-                    editor.getWorkspaceEntry().saveMemento();
-                    contact.setForcedInit(!contact.getForcedInit());
-                    Circuit circuit = (Circuit) editor.getModel().getMathModel();
-                    updateState(circuit);
-                    processed = true;
-                }
+            Node node = HitMan.hitDeepest(e.getPosition(), model.getRoot(),
+                    new Func<Node, Boolean>() {
+                        @Override
+                        public Boolean eval(Node node) {
+                            return (node instanceof VisualFunctionComponent) || (node instanceof VisualContact);
+                        }
+                    });
+
+            VisualContact contact = null;
+            if (node instanceof VisualFunctionContact) {
+                contact = (VisualFunctionContact) node;
+            } else if (node instanceof VisualFunctionComponent) {
+                VisualFunctionComponent component = (VisualFunctionComponent) node;
+                contact = component.getMainVisualOutput();
+            }
+
+            if ((contact instanceof VisualFunctionContact) && contact.isDriver()) {
+                FunctionContact funcContact = ((VisualFunctionContact) contact).getReferencedFunctionContact();
+                editor.getWorkspaceEntry().saveMemento();
+                funcContact.setForcedInit(!funcContact.getForcedInit());
+                processed = true;
             }
         }
-
-        if (!processed) {
-            super.mouseClicked(e);
+        if (processed) {
+            Circuit circuit = (Circuit) model.getMathModel();
+            updateState(circuit);
+        } else {
+            super.mousePressed(e);
         }
     }
 

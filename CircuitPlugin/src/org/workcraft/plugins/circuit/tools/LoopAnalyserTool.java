@@ -122,10 +122,10 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
     }
 
     @Override
-    public void mouseClicked(GraphEditorMouseEvent e) {
+    public void mousePressed(GraphEditorMouseEvent e) {
         boolean processed = false;
         GraphEditor editor = e.getEditor();
-        VisualModel model = editor.getModel();
+        VisualModel model = e.getModel();
         if (e.getButton() == MouseEvent.BUTTON1) {
             VisualNode node = (VisualNode) HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
             if (node instanceof VisualContact) {
@@ -142,10 +142,10 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
             }
         }
         if (processed) {
-            Circuit circuit = (Circuit) editor.getModel().getMathModel();
+            Circuit circuit = (Circuit) model.getMathModel();
             updateState(circuit);
         } else {
-            super.mouseClicked(e);
+            super.mousePressed(e);
         }
     }
 

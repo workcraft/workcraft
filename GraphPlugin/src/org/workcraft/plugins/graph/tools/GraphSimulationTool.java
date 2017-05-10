@@ -1,7 +1,7 @@
 package org.workcraft.plugins.graph.tools;
 
 import java.awt.Color;
-import java.awt.geom.Point2D;
+import java.awt.event.MouseEvent;
 
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -66,18 +66,20 @@ public class GraphSimulationTool extends PetriSimulationTool {
 
     @Override
     public void mousePressed(GraphEditorMouseEvent e) {
-        Point2D posRoot = e.getPosition();
-        Node node = HitMan.hitDeepest(posRoot, e.getModel().getRoot(),
-                new Func<Node, Boolean>() {
-                    @Override
-                    public Boolean eval(Node node) {
-                        return getExcitedTransitionOfNode(node) != null;
-                    }
-                });
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            VisualModel model = e.getModel();
+            Node node = HitMan.hitDeepest(e.getPosition(), model.getRoot(),
+                    new Func<Node, Boolean>() {
+                        @Override
+                        public Boolean eval(Node node) {
+                            return getExcitedTransitionOfNode(node) != null;
+                        }
+                    });
 
-        Transition transition = getExcitedTransitionOfNode(node);
-        if (transition != null) {
-            executeTransition(e.getEditor(), transition);
+            Transition transition = getExcitedTransitionOfNode(node);
+            if (transition != null) {
+                executeTransition(e.getEditor(), transition);
+            }
         }
     }
 

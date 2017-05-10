@@ -1,6 +1,7 @@
 package org.workcraft.plugins.stg;
 
 import java.io.File;
+import java.util.Collection;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.Container;
@@ -139,6 +140,25 @@ public class StgUtils {
             }
         }
         return result;
+    }
+
+    public static void restoreInterfaceSignals(Stg stg, Collection<String> inputSignalNames, Collection<String> outputSignalNames) {
+        Container container = stg.getRoot();
+        for (String signalName: stg.getSignalNames(container)) {
+            stg.setSignalType(signalName, Type.INTERNAL, container);
+        }
+        for (String inputName: inputSignalNames) {
+            stg.setSignalType(inputName, Type.INPUT, container);
+        }
+        for (String outputName: outputSignalNames) {
+            stg.setSignalType(outputName, Type.OUTPUT, container);
+        }
+    }
+
+    public static void convertInternalSignalsToDummies(Stg stg) {
+        for (SignalTransition transition: stg.getSignalTransitions(Type.INTERNAL)) {
+            StgUtils.convertSignalToDummyTransition(stg, transition);
+        }
     }
 
 }

@@ -1,7 +1,7 @@
 package org.workcraft.plugins.policy.tools;
 
 import java.awt.Color;
-import java.awt.geom.Point2D;
+import java.awt.event.MouseEvent;
 import java.util.Collection;
 
 import org.workcraft.dom.Container;
@@ -44,21 +44,23 @@ public class PolicySimulationTool extends PetriSimulationTool {
 
     @Override
     public void mousePressed(GraphEditorMouseEvent e) {
-        Point2D posRoot = e.getPosition();
-        Node node = HitMan.hitDeepest(posRoot, e.getModel().getRoot(),
-                new Func<Node, Boolean>() {
-                    @Override
-                    public Boolean eval(Node node) {
-                        return getExcitedTransitionOfNode(node) != null;
-                    }
-                });
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            VisualModel model = e.getModel();
+            Node node = HitMan.hitDeepest(e.getPosition(), model.getRoot(),
+                    new Func<Node, Boolean>() {
+                        @Override
+                        public Boolean eval(Node node) {
+                            return getExcitedTransitionOfNode(node) != null;
+                        }
+                    });
 
-        Transition transition = null;
-        if (transition == null) {
-            transition = getExcitedTransitionOfNode(node);
-        }
-        if (transition != null) {
-            executeTransition(e.getEditor(), transition);
+            Transition transition = null;
+            if (transition == null) {
+                transition = getExcitedTransitionOfNode(node);
+            }
+            if (transition != null) {
+                executeTransition(e.getEditor(), transition);
+            }
         }
     }
 

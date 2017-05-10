@@ -8,8 +8,8 @@ import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.mpsat.MpsatMode;
-import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.MpsatParameters;
+import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
@@ -60,7 +60,7 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
                 // Make sure that input signals of the device STG are also inputs in the environment STG
                 Set<String> inputSignalNames = devStg.getSignalNames(Type.INPUT, null);
                 Set<String> outputSignalNames = devStg.getSignalNames(Type.OUTPUT, null);
-                CircuitStgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
+                StgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
             }
 
             // Write device STG into a .g file

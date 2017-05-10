@@ -1,6 +1,7 @@
 package org.workcraft.plugins.circuit.tools;
 
 import java.awt.Color;
+import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.HashSet;
 
@@ -182,39 +183,43 @@ public class CircuitSimulationTool extends StgSimulationTool {
 
     @Override
     public void mousePressed(GraphEditorMouseEvent e) {
-        Node node = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(),
-                new Func<Node, Boolean>() {
-                    @Override
-                    public Boolean eval(Node node) {
-                        return (node instanceof VisualFunctionComponent) || (node instanceof VisualContact);
-                    }
-                });
+        if (e.getButton() == MouseEvent.BUTTON1) {
+            VisualModel model = e.getModel();
+            Node node = HitMan.hitDeepest(e.getPosition(), model.getRoot(),
+                    new Func<Node, Boolean>() {
+                        @Override
+                        public Boolean eval(Node node) {
+                            return (node instanceof VisualFunctionComponent) || (node instanceof VisualContact);
+                        }
+                    });
 
-        VisualContact contact = null;
-        if (node instanceof VisualContact) {
-            contact = (VisualContact) node;
-        } else if (node instanceof VisualFunctionComponent) {
-            VisualFunctionComponent component = (VisualFunctionComponent) node;
-            Collection<VisualContact> excitedOutputs = getExcitedOutputs(component);
-            if (excitedOutputs.size() == 1) {
-                contact = excitedOutputs.iterator().next();
-            } else if (excitedOutputs.size() > 1) {
-                flashIssue(e.getEditor(), "More than one output of this component is enabled.");
+            GraphEditor editor = e.getEditor();
+            VisualContact contact = null;
+            if (node instanceof VisualContact) {
+                contact = (VisualContact) node;
+            } else if (node instanceof VisualFunctionComponent) {
+                VisualFunctionComponent component = (VisualFunctionComponent) node;
+                Collection<VisualContact> excitedOutputs = getExcitedOutputs(component);
+                if (excitedOutputs.size() == 1) {
+                    contact = excitedOutputs.iterator().next();
+                } else if (excitedOutputs.size() > 1) {
+                    flashIssue(editor, "More than one output of this component is enabled.");
+                }
             }
-        }
 
-        if (contact != null) {
-            hideIssue(e.getEditor());
-            HashSet<SignalTransition> transitions = getContactExcitedTransitions(contact);
-            SignalTransition transition = null;
-            Node traceCurrentNode = getTraceCurrentNode();
-            if (transitions.contains(traceCurrentNode)) {
-                transition = (SignalTransition) traceCurrentNode;
-            } else if (!transitions.isEmpty()) {
-                transition = transitions.iterator().next();
-            }
-            if (transition != null) {
-                executeTransition(e.getEditor(), transition);
+            if (contact != null) {
+                hideIssue(editor);
+                HashSet<SignalTransition> transitions = getContactExcitedTransitions(contact);
+                SignalTransition transition = null;
+                Node traceCurrentNode = getTraceCurrentNode();
+                if (transitions.contains(traceCurrentNode)) {
+                    transition = (SignalTransition) traceCurrentNode;
+                } else if (!transitions.isEmpty()) {
+                    transition = transitions.iterator().next();
+                }
+                if (transition != null) {
+                    executeTransition(editor, transition);
+                }
             }
         }
     }
