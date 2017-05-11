@@ -79,24 +79,25 @@ public class MutexUtils {
         Iterator<Node> postsetIterator = postset.iterator();
         Node succ1 = postsetIterator.next();
         Node succ2 = postsetIterator.next();
-        if ((succ1 instanceof SignalTransition) && (succ2 instanceof SignalTransition)) {
-            SignalTransition tSucc1 = (SignalTransition) succ1;
-            SignalTransition tSucc2 = (SignalTransition) succ2;
-            if ((tSucc1.getSignalType() != Type.OUTPUT) || (tSucc2.getSignalType() != Type.OUTPUT)) {
-                return null;
-            }
-            g1 = new Signal(tSucc1.getSignalName(), tSucc1.getSignalType());
-            g2 = new Signal(tSucc2.getSignalName(), tSucc2.getSignalType());
-            Set<SignalTransition> triggers1 = getTriggers(stg, tSucc1, place);
-            Set<SignalTransition> triggers2 = getTriggers(stg, tSucc2, place);
-            if ((triggers1.size() != 1) || (triggers2.size() != 1)) {
-                return null;
-            }
-            SignalTransition trigger1 = triggers1.iterator().next();
-            SignalTransition trigger2 = triggers2.iterator().next();
-            r1 = new Signal(trigger1.getSignalName(), trigger1.getSignalType());
-            r2 = new Signal(trigger2.getSignalName(), trigger2.getSignalType());
+        if (!(succ1 instanceof SignalTransition) || !(succ2 instanceof SignalTransition)) {
+            return null;
         }
+        SignalTransition tSucc1 = (SignalTransition) succ1;
+        SignalTransition tSucc2 = (SignalTransition) succ2;
+        if ((tSucc1.getSignalType() != Type.OUTPUT) || (tSucc2.getSignalType() != Type.OUTPUT)) {
+            return null;
+        }
+        g1 = new Signal(tSucc1.getSignalName(), tSucc1.getSignalType());
+        g2 = new Signal(tSucc2.getSignalName(), tSucc2.getSignalType());
+        Set<SignalTransition> triggers1 = getTriggers(stg, tSucc1, place);
+        Set<SignalTransition> triggers2 = getTriggers(stg, tSucc2, place);
+        if ((triggers1.size() != 1) || (triggers2.size() != 1)) {
+            return null;
+        }
+        SignalTransition trigger1 = triggers1.iterator().next();
+        SignalTransition trigger2 = triggers2.iterator().next();
+        r1 = new Signal(trigger1.getSignalName(), trigger1.getSignalType());
+        r2 = new Signal(trigger2.getSignalName(), trigger2.getSignalType());
         return new Mutex(name, r1, g1, r2, g2);
     }
 
