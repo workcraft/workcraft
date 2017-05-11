@@ -103,7 +103,6 @@ public class CircuitSignalInfo {
         LinkedList<BooleanVariable> variables = new LinkedList<>();
         LinkedList<BooleanFormula> values = new LinkedList<>();
         for (FunctionContact contact: component.getFunctionContacts()) {
-            if (contact.isOutput()) continue;
             String signalName = getContactSignal(contact);
             BooleanFormula literal = signalLiteralMap.get(signalName);
             if (literal != null) {
