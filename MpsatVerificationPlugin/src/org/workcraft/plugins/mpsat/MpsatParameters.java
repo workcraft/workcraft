@@ -304,7 +304,7 @@ public class MpsatParameters {
             REACH_DUMMY_CHECK +
             "? fail \"Delay insensitivity can currently be checked only for STGs without dummies\" :\n" +
             "let\n" +
-            "    TRINP = tran INPUTS * tran EVENTS {" +
+            "    TRINP = tran INPUTS * tran EVENTS\n" +
             "{\n" +
             "    exists ti in TRINP {\n" +
             "        let pre_ti = pre ti {\n" +
