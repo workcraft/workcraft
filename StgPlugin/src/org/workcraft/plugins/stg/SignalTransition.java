@@ -28,6 +28,23 @@ public class SignalTransition extends NamedTransition {
         public String toString() {
             return name;
         }
+
+        public Type mirror() {
+            switch (this) {
+            case INPUT: return OUTPUT;
+            case OUTPUT: return INPUT;
+            default: return this;
+            }
+        }
+
+        public Type toggle() {
+            switch (this) {
+            case INPUT: return INTERNAL;
+            case OUTPUT: return INPUT;
+            case INTERNAL: return OUTPUT;
+            default: return this;
+            }
+        }
     }
 
     public enum Direction {
@@ -53,6 +70,23 @@ public class SignalTransition extends NamedTransition {
         @Override
         public String toString() {
             return name;
+        }
+
+        public Direction mirror() {
+            switch (this) {
+            case PLUS: return MINUS;
+            case MINUS: return PLUS;
+            default: return this;
+            }
+        }
+
+        public Direction toggle() {
+            switch (this) {
+            case PLUS: return TOGGLE;
+            case MINUS: return PLUS;
+            case TOGGLE: return MINUS;
+            default: return this;
+            }
         }
     }
 

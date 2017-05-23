@@ -73,7 +73,7 @@ public class StgReferenceManager extends HierarchicalUniqueNameReferenceManager 
             switch (((SignalTransition) node).getSignalType()) {
             case INPUT: return "in";
             case OUTPUT: return "out";
-            case INTERNAL: return "t";
+            case INTERNAL: return "sig";
             }
         }
         if (node instanceof DummyTransition) return "dum";

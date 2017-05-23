@@ -75,11 +75,7 @@ public class MirrorTransitionTransformationCommand extends AbstractTransformatio
             VisualSignalTransition visualTransition = (VisualSignalTransition) node;
             SignalTransition transition = visualTransition.getReferencedTransition();
             Direction direction = visualTransition.getDirection();
-            if (direction == Direction.PLUS) {
-                stg.setDirection(transition, Direction.MINUS);
-            } else if (direction == Direction.MINUS) {
-                stg.setDirection(transition, Direction.PLUS);
-            }
+            stg.setDirection(transition, direction.mirror());
         }
     }
 
