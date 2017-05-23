@@ -459,13 +459,18 @@ public class Stg extends AbstractMathModel implements StgModel {
                 }
             } else if (node instanceof SignalTransition) {
                 SignalTransition transition = (SignalTransition) node;
+                properties.removeByName(NamePropertyDescriptor.PROPERTY_NAME);
                 properties.add(new TypePropertyDescriptor(this, transition));
                 properties.add(new SignalPropertyDescriptor(this, transition));
                 properties.add(new DirectionPropertyDescriptor(this, transition));
-                properties.add(new InstancePropertyDescriptor(this, transition));
+                if (StgSettings.getShowTransitionInstance()) {
+                    properties.add(new InstancePropertyDescriptor(this, transition));
+                }
             } else if (node instanceof DummyTransition) {
                 DummyTransition dummy = (DummyTransition) node;
-                properties.add(new InstancePropertyDescriptor(this, dummy));
+                if (StgSettings.getShowTransitionInstance()) {
+                    properties.add(new InstancePropertyDescriptor(this, dummy));
+                }
             }
         }
         return properties;
