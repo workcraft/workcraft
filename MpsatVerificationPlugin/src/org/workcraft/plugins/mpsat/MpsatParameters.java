@@ -250,7 +250,7 @@ public class MpsatParameters {
             "/* insert signal pairs of output persistency exceptions */"; // For example: {"me1_g1", "me1_g2"}, {"me2_g1", "me2_g2"},
 
     private static final String REACH_OUTPUT_PERSISTENCY =
-            "// Checks whether the STG is output persistent, i.e. no local signal can be disabled by any other signal,\n" +
+            "// Checks whether the STG is output-persistent, i.e. no local signal can be disabled by any other signal,\n" +
             "// with the exception of the provided set of pairs of signals (e.g. mutex outputs).\n" +
             REACH_DUMMY_CHECK +
             "? fail \"Output persistency can currently be checked only for STGs without dummies\" :\n" +

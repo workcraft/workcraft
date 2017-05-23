@@ -117,12 +117,12 @@ public class CheckDataflowTask extends MpsatChainTask {
             MpsatResultParser persistencyMpsatResultParser = new MpsatResultParser(persistencyMpsatResult.getReturnValue());
             if (!persistencyMpsatResultParser.getSolutions().isEmpty()) {
                 return new Result<MpsatChainResult>(Outcome.FINISHED,
-                        new MpsatChainResult(exportResult, null, punfResult, persistencyMpsatResult, persistencySettings, "Dataflow is not output persistent"));
+                        new MpsatChainResult(exportResult, null, punfResult, persistencyMpsatResult, persistencySettings, "Dataflow is not output-persistent"));
             }
             monitor.progressUpdate(1.0);
 
             return new Result<MpsatChainResult>(Outcome.FINISHED,
-                    new MpsatChainResult(exportResult, null, punfResult, null, toolchainCompletionSettings, "Dataflow is deadlock-free and output persistent"));
+                    new MpsatChainResult(exportResult, null, punfResult, null, toolchainCompletionSettings, "Dataflow is deadlock-free and output-persistent"));
 
         } catch (Throwable e) {
             return new Result<MpsatChainResult>(e);

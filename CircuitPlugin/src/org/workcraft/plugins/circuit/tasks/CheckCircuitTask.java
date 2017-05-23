@@ -267,7 +267,7 @@ public class CheckCircuitTask extends MpsatChainTask {
                 if (!mpsatPersistencyParser.getSolutions().isEmpty()) {
                     return new Result<MpsatChainResult>(Outcome.FINISHED,
                             new MpsatChainResult(devExportResult, pcompResult, punfResult, mpsatPersistencyResult, persistencySettings,
-                                    "Circuit is not output persistent after the following trace(s):"));
+                                    "Circuit is not output-persistent after the following trace(s):"));
                 }
             }
             monitor.progressUpdate(0.80);
@@ -374,7 +374,7 @@ public class CheckCircuitTask extends MpsatChainTask {
             message += "  * deadlock-free\n";
         }
         if (checkPersistency) {
-            message += "  * output persistent\n";
+            message += "  * output-persistent\n";
         }
         return message;
     }
