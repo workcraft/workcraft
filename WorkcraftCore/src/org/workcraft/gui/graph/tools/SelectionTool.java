@@ -5,13 +5,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Graphics2D;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
@@ -25,15 +21,8 @@ import java.util.Set;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.JScrollPane;
-import javax.swing.JTextPane;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.text.SimpleAttributeSet;
-import javax.swing.text.StyleConstants;
-import javax.swing.text.StyledDocument;
 
 import org.workcraft.Framework;
 import org.workcraft.NodeTransformer;
@@ -45,14 +34,12 @@ import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.Rotatable;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComment;
-import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualModelTransformer;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
-import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.actions.ActionMenuItem;
@@ -61,6 +48,8 @@ import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.Viewport;
 import org.workcraft.gui.graph.commands.Command;
+import org.workcraft.gui.graph.editors.AbstractInplaceEditor;
+import org.workcraft.gui.graph.editors.LabelInplaceEditor;
 import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.util.Commands;
 import org.workcraft.util.GUI;
@@ -95,13 +84,11 @@ public class SelectionTool extends AbstractGraphEditorTool {
 
     private VisualNode currentNode = null;
 
-    private boolean cancelInPlaceEdit = false;
     private boolean enableGroupping = true;
     private boolean enablePaging = true;
     private boolean enableFlipping = true;
     private boolean enableRotating = true;
     private boolean isPanMode = false;
-    private boolean isTextMode = false;
 
     public SelectionTool() {
         this(true, true, true, true);
@@ -265,7 +252,6 @@ public class SelectionTool extends AbstractGraphEditorTool {
         super.activated(editor);
         currentNode = null;
         isPanMode = false;
-        isTextMode = false;
     }
 
     @Override
@@ -328,8 +314,11 @@ public class SelectionTool extends AbstractGraphEditorTool {
                         return;
 
                     } else if (node instanceof VisualComment) {
-                        VisualComment comment = (VisualComment) node;
-                        editLabelInPlace(editor, comment, comment.getLabel());
+                        final VisualComment comment = (VisualComment) node;
+                        AbstractInplaceEditor textEditor = new LabelInplaceEditor(editor, comment);
+                        textEditor.edit(comment.getLabel(), comment.getLabelFont(),
+                                comment.getLabelOffset(), comment.getLabelAlignment(), true);
+                        editor.forceRedraw();
                         return;
                     }
                 } else {
@@ -671,91 +660,6 @@ public class SelectionTool extends AbstractGraphEditorTool {
         };
     }
 
-    public void editLabelInPlace(final GraphEditor editor, final VisualComponent component, String initialText) {
-        // Create a text pane without wrapping
-        final JTextPane textPane = new JTextPane() {
-            @Override
-            public boolean getScrollableTracksViewportWidth() {
-                return getUI().getPreferredSize(this).width <= getParent().getSize().width;
-            }
-        };
-        textPane.setText(initialText.replace("|", "\n"));
-
-        // Align the text to centre
-        SimpleAttributeSet alignment = new SimpleAttributeSet();
-        StyleConstants.setAlignment(alignment, component.getLabelAlignment().toStyleConstant());
-        StyledDocument document = textPane.getStyledDocument();
-        document.setParagraphAttributes(0, document.getLength(), alignment, false);
-
-        // Set font size similar to the current editor scale
-        float fontSize = VisualComponent.labelFont.getSize2D() * (float) editor.getViewport().getTransform().getScaleY();
-        textPane.setFont(VisualComponent.labelFont.deriveFont(fontSize));
-
-        // Add scroll vertical bar (is necessary)
-        final JScrollPane scrollPane = new JScrollPane(textPane);
-        scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
-        scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-
-        // Set the size of the scrollable text editor panel
-        AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(component);
-        Rectangle2D bbRoot = TransformHelper.transform(component, localToRootTransform).getBoundingBox();
-        Rectangle bbScreen = editor.getViewport().userToScreen(BoundingBoxHelper.expand(bbRoot, bbRoot.getWidth(), 2.0));
-        scrollPane.setBounds(bbScreen.x, bbScreen.y, bbScreen.width, bbScreen.height);
-
-        // Show the text editor panel
-        editor.getOverlay().add(scrollPane);
-        textPane.requestFocusInWindow();
-
-        textPane.addKeyListener(new KeyListener() {
-            @Override
-            public void keyPressed(KeyEvent arg0) {
-                if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                    cancelInPlaceEdit = true;
-                    editor.requestFocus();
-                }
-                if ((arg0.getModifiers() == DesktopApi.getMenuKeyMask()) && (arg0.getKeyCode() == KeyEvent.VK_ENTER)) {
-                    cancelInPlaceEdit = false;
-                    editor.requestFocus();
-                }
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-            }
-
-            @Override
-            public void keyTyped(KeyEvent arg0) {
-            }
-        });
-
-        textPane.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent arg0) {
-                editor.getWorkspaceEntry().setCanModify(false);
-                cancelInPlaceEdit = false;
-                isTextMode = true;
-            }
-
-            @Override
-            public void focusLost(FocusEvent arg0) {
-                final String newText = textPane.getText().replace("\n", "|");
-                scrollPane.getParent().remove(scrollPane);
-                if (!cancelInPlaceEdit) {
-                    try {
-                        editor.getWorkspaceEntry().saveMemento();
-                        component.setLabel(newText);
-                    } catch (ArgumentException e) {
-                        JOptionPane.showMessageDialog(null, e.getMessage());
-                        editLabelInPlace(editor, component, newText);
-                    }
-                }
-                isTextMode = false;
-                editor.getWorkspaceEntry().setCanModify(true);
-                editor.repaint();
-            }
-        });
-    }
-
     protected void changeLevelDown(final GraphEditor editor) {
         VisualModel model = editor.getModel();
         Collection<Node> selection = model.getSelection();
@@ -911,8 +815,6 @@ public class SelectionTool extends AbstractGraphEditorTool {
     public String getHintText(final GraphEditor editor) {
         if (isPanMode) {
             return "Use " + DesktopApi.getMenuKeyMaskName() + " + RMB to pan the view.";
-        } else if (isTextMode) {
-            return "Use " + DesktopApi.getMenuKeyMaskName() + " + Enter to finish text editing.";
         }
         return super.getHintText(editor);
     }

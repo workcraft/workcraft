@@ -447,7 +447,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         final FontRenderContext context = new FontRenderContext(AffineTransform.getScaleInstance(1000.0, 1000.0), true, true);
         GlyphVector gv = contactLableGlyphs.get(vc);
         if (gv == null) {
-            gv = nameFont.createGlyphVector(context, name);
+            gv = getNameFont().createGlyphVector(context, name);
             contactLableGlyphs.put(vc, gv);
         }
         return gv;
@@ -551,7 +551,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
     }
 
     @Override
-    public void drawOutline(DrawRequest r) {
+    protected void drawOutline(DrawRequest r) {
         Decoration d = r.getDecoration();
         Graphics2D g = r.getGraphics();
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();

@@ -16,6 +16,7 @@ import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.util.Func;
+import org.workcraft.util.Identifier;
 
 /**
  * A base class for all interpreted graph models.
@@ -234,8 +235,11 @@ public abstract class AbstractModel implements Model {
     @Override
     public ModelProperties getProperties(Node node) {
         ModelProperties properties = new ModelProperties();
-        if ((node != null) && !(node instanceof Connection)) {
-            properties.add(new NamePropertyDescriptor(this, node));
+        if (node != null) {
+            String name = getName(node);
+            if ((name != null) && !Identifier.isInternal(name)) {
+                properties.add(new NamePropertyDescriptor(this, node));
+            }
         }
         return properties;
     }

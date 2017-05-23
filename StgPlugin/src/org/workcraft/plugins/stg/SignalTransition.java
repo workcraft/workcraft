@@ -100,19 +100,7 @@ public class SignalTransition extends NamedTransition {
     @NoAutoSerialisation
     @Override
     public String getName() {
-        final StringBuffer result = new StringBuffer(signalName);
-        switch (direction) {
-        case PLUS:
-            result.append("+");
-            break;
-        case MINUS:
-            result.append("-");
-            break;
-        case TOGGLE:
-            result.append("~");
-            break;
-        }
-        return result.toString();
+        return signalName + direction;
     }
 
 }

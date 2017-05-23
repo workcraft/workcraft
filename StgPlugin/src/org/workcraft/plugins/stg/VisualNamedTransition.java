@@ -9,7 +9,6 @@ import java.awt.geom.Rectangle2D;
 import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.DrawRequest;
 import org.workcraft.dom.visual.Positioning;
-import org.workcraft.dom.visual.RenderedText;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.observation.StateEvent;
@@ -20,13 +19,10 @@ import org.workcraft.plugins.stg.tools.CoreDecoration;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 public class VisualNamedTransition extends VisualTransition implements StateObserver {
-    public static Font font = new Font(Font.SANS_SERIF, Font.PLAIN, 1).deriveFont(0.75f);
-    private RenderedText renderedText = new RenderedText("", font, Positioning.CENTER, getRenderedTextOffset());
 
     public VisualNamedTransition(NamedTransition namedTransition) {
         super(namedTransition, false, false, false);
         namedTransition.addObserver(this);
-        updateRenderedText();
     }
 
     public Point2D getRenderedTextOffset() {
@@ -44,8 +40,18 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
     }
 
     @Override
+    public  Font getNameFont() {
+        return new Font(Font.SANS_SERIF, Font.PLAIN, 1).deriveFont(0.75f);
+    }
+
+    @Override
+    public Positioning getNamePositioning() {
+        return Positioning.CENTER;
+    }
+
+    @Override
     public boolean getNameVisibility() {
-        return false;
+        return true;
     }
 
     @Override
@@ -78,13 +84,18 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
                 g.fill(expandedShape);
             }
         }
-        g.setColor(Coloriser.colorise(getColor(), d.getColorisation()));
-        renderedText.draw(g);
+        drawNameInLocalSpace(r);
+    }
+
+    @Override
+    public Rectangle2D getInternalBoundingBoxInLocalSpace() {
+        return new Rectangle2D.Double(0.0, 0.0, 0.0, 0.0);
     }
 
     @Override
     public Rectangle2D getBoundingBoxInLocalSpace() {
-        return BoundingBoxHelper.expand(renderedText.getBoundingBox(), 0.2, 0.2);
+        Rectangle2D bb = super.getBoundingBoxInLocalSpace();
+        return BoundingBoxHelper.expand(bb, 0.2, 0.2);
     }
 
     @Override
@@ -92,23 +103,7 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
         return getBoundingBoxInLocalSpace().contains(pointInLocalSpace);
     }
 
-    public Color getColor() {
-        return Color.BLACK;
-    }
-
-    protected void updateRenderedText() {
-        Point2D offset = getRenderedTextOffset();
-        if (renderedText.isDifferent(getName(), font, Positioning.CENTER, offset)) {
-            transformChanging();
-            renderedText = new RenderedText(getName(), font, Positioning.CENTER, offset);
-            transformChanged();
-        }
-    }
-
-    public RenderedText getRenderedName() {
-        return renderedText;
-    }
-
+    @Override
     public NamedTransition getReferencedTransition() {
         return (NamedTransition) getReferencedComponent();
     }
@@ -119,8 +114,13 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
     }
 
     @Override
+    public void cacheNameRenderedText(DrawRequest r) {
+        cacheNameRenderedText(getName(), getNameFont(), getNamePositioning(), getNameOffset());
+    }
+
+    @Override
     public void notify(StateEvent e) {
-        updateRenderedText();
+        cacheNameRenderedText(getName(), getNameFont(), getNamePositioning(), getNameOffset());
     }
 
 }

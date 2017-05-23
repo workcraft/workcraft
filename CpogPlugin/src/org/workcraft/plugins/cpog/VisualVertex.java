@@ -207,7 +207,7 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
     public boolean hitTestInLocalSpace(Point2D pointInLocalSpace) {
         Shape shape = getShape();
         if (getRenderType() == RenderType.LABEL) {
-            cacheLabelRenderedText(getLabel(), labelFont, getLabelPositioning(), getLabelOffset());
+            cacheLabelRenderedText(getLabel(), getLabelFont(), getLabelPositioning(), getLabelOffset());
             shape = BoundingBoxHelper.union(getLabelBoundingBox(), getConditionBoundingBox());
         }
         return shape.contains(pointInLocalSpace);

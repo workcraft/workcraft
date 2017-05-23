@@ -45,7 +45,7 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
     }
 
     @Override
-    public Color getColor() {
+    public Color getNameColor() {
         switch (getSignalType()) {
         case INPUT:    return CommonSignalSettings.getInputColor();
         case OUTPUT:   return CommonSignalSettings.getOutputColor();

@@ -1,35 +1,23 @@
 package org.workcraft.plugins.stg.tools;
 
-import java.awt.Rectangle;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
-
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.BoundingBoxHelper;
+import org.workcraft.dom.visual.Alignment;
 import org.workcraft.dom.visual.HitMan;
-import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.gui.graph.editors.AbstractInplaceEditor;
+import org.workcraft.gui.graph.editors.NameInplaceEditor;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualNamedTransition;
 
 public class StgSelectionTool extends SelectionTool {
-    private boolean cancelInPlaceEdit = false;
 
     @Override
     public void mouseClicked(GraphEditorMouseEvent e) {
@@ -50,8 +38,10 @@ public class StgSelectionTool extends SelectionTool {
                         processed = true;
                     }
                 } else if (node instanceof VisualNamedTransition) {
-                    VisualNamedTransition transition = (VisualNamedTransition) node;
-                    editNameInPlace(editor, transition, transition.getName());
+                    final VisualNamedTransition transition = (VisualNamedTransition) node;
+                    AbstractInplaceEditor textEditor = new NameInplaceEditor(editor, transition);
+                    textEditor.edit(transition.getName(), transition.getNameFont(),
+                            transition.getNameOffset(), Alignment.CENTER, false);
                     processed = true;
                 }
             }
@@ -73,64 +63,5 @@ public class StgSelectionTool extends SelectionTool {
         }
     }
 
-    private void editNameInPlace(final GraphEditor editor, final VisualNamedTransition transition, String initialText) {
-        final JTextField text = new JTextField(initialText);
-        AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(transition);
-        Rectangle2D bbRoot = TransformHelper.transform(transition, localToRootTransform).getBoundingBox();
-        Rectangle bbScreen = editor.getViewport().userToScreen(BoundingBoxHelper.expand(bbRoot, 1.0, 0.5));
-        float fontSize = VisualNamedTransition.font.getSize2D() * (float) editor.getViewport().getTransform().getScaleY();
-        text.setFont(VisualNamedTransition.font.deriveFont(fontSize));
-        text.setBounds(bbScreen.x, bbScreen.y, bbScreen.width, bbScreen.height);
-        text.setHorizontalAlignment(JTextField.CENTER);
-        text.selectAll();
-        editor.getOverlay().add(text);
-        text.requestFocusInWindow();
-
-        text.addKeyListener(new KeyListener() {
-            @Override
-            public void keyPressed(KeyEvent arg0) {
-                if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
-                    editor.requestFocus();
-                } else if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                    cancelInPlaceEdit = true;
-                    editor.requestFocus();
-                }
-            }
-
-            @Override
-            public void keyReleased(KeyEvent arg0) {
-            }
-
-            @Override
-            public void keyTyped(KeyEvent arg0) {
-            }
-        });
-
-        final Stg model = (Stg) editor.getModel().getMathModel();
-        text.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent arg0) {
-                editor.getWorkspaceEntry().setCanModify(false);
-                cancelInPlaceEdit = false;
-            }
-
-            @Override
-            public void focusLost(FocusEvent arg0) {
-                final String newName = text.getText();
-                text.getParent().remove(text);
-                if (!cancelInPlaceEdit) {
-                    try {
-                        editor.getWorkspaceEntry().saveMemento();
-                        model.setName(transition.getReferencedComponent(), newName);
-                    } catch (ArgumentException e) {
-                        JOptionPane.showMessageDialog(null, e.getMessage());
-                        editNameInPlace(editor, transition, newName);
-                    }
-                }
-                editor.getWorkspaceEntry().setCanModify(true);
-                editor.repaint();
-            }
-        });
-    }
 
 }
