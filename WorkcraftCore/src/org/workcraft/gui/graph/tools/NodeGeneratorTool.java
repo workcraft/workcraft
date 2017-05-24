@@ -2,14 +2,9 @@ package org.workcraft.gui.graph.tools;
 
 import java.awt.Color;
 import java.awt.Cursor;
-import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Toolkit;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
-import java.awt.image.BufferedImage;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
@@ -19,7 +14,9 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.NodeCreationException;
+import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.generators.NodeGenerator;
 import org.workcraft.util.GUI;
 
@@ -57,31 +54,12 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
     }
 
     @Override
-    public Cursor getCursor() {
-        Cursor cursor = null;
+    public Cursor getCursor(boolean menuKeyDown, boolean shiftKeyDown, boolean altKeyDown) {
         Icon icon = getIcon();
         if (icon instanceof ImageIcon) {
-            int iconSize = icon.getIconWidth();
-            int len = (int) Math.round(0.2 * iconSize);
-            int width = (int) Math.round(0.08 * iconSize);
-            int gap = (int) Math.round(0.05 * iconSize);
-            int iconOffset = len + gap + width + gap;
-            Image img = new BufferedImage(iconSize + iconOffset, iconSize + iconOffset, BufferedImage.TYPE_INT_ARGB);
-            Graphics g = img.getGraphics();
-            g.setColor(Color.BLACK);
-            int d1 = len + gap;
-            int d2 = d1 + width + gap;
-            g.fillRect(d1, 0, width, len);
-            g.fillRect(d1, d2, width, len);
-            g.fillRect(0, d1, len, width);
-            g.fillRect(d2, d1, len, width);
-            g.drawImage(((ImageIcon) icon).getImage(), iconOffset, iconOffset, null);
-            Toolkit toolkit = Toolkit.getDefaultToolkit();
-            int offset = d1 + (int) Math.round(0.5 * width);
-            Point hotSpot = new Point(offset, offset);
-            cursor = toolkit.createCustomCursor(img, hotSpot, getClass().getName());
+            return GUI.createCursorFromIcon((ImageIcon) icon, getClass().getName());
         }
-        return cursor;
+        return null;
     }
 
     private void resetState(GraphEditor editor) {
@@ -154,6 +132,30 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
                 throw new RuntimeException(e1);
             }
         }
+    }
+
+    @Override
+    public boolean keyPressed(GraphEditorKeyEvent event) {
+        GraphEditor editor = event.getEditor();
+        if (editor instanceof GraphEditorPanel) {
+            Cursor cursor = getCursor(event);
+            ((GraphEditorPanel) editor).setCursor(cursor);
+        }
+        return false;
+    }
+
+    @Override
+    public boolean keyReleased(GraphEditorKeyEvent event) {
+        GraphEditor editor = event.getEditor();
+        if (editor instanceof GraphEditorPanel) {
+            Cursor cursor = getCursor(event);
+            ((GraphEditorPanel) editor).setCursor(cursor);
+        }
+        return false;
+    }
+
+    private Cursor getCursor(GraphEditorKeyEvent event) {
+        return getCursor(event.isMenuKeyDown(), event.isShiftKeyDown(), event.isAltKeyDown());
     }
 
     @Override

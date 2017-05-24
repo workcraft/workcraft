@@ -93,7 +93,7 @@ public class PolicySelectionTool extends SelectionTool {
         if (e.isMenuKeyDown()) {
             switch (e.getKeyCode()) {
             case KeyEvent.VK_B:
-                if (e.isShiftDown()) {
+                if (e.isShiftKeyDown()) {
                     selectionUnbundle(e.getEditor());
                 } else {
                     selectionBundle(e.getEditor());

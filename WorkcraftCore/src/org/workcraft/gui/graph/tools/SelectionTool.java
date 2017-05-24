@@ -551,7 +551,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
             return true;
         }
 
-        if (!e.isMenuKeyDown() && !e.isShiftDown()) {
+        if (!e.isMenuKeyDown() && !e.isShiftKeyDown()) {
             switch (e.getKeyCode()) {
             case KeyEvent.VK_LEFT:
                 offsetSelection(editor, -1, 0);
@@ -568,10 +568,10 @@ public class SelectionTool extends AbstractGraphEditorTool {
             }
         }
 
-        if (enablePaging && e.isAltDown() && !e.isMenuKeyDown()) {
+        if (enablePaging && e.isAltKeyDown() && !e.isMenuKeyDown()) {
             switch (e.getKeyCode()) {
             case KeyEvent.VK_G:
-                if (e.isShiftDown()) {
+                if (e.isShiftKeyDown()) {
                     ungroupSelection(editor);
                 } else {
                     pageSelection(editor);
@@ -580,10 +580,10 @@ public class SelectionTool extends AbstractGraphEditorTool {
             }
         }
 
-        if (enableGroupping && e.isMenuKeyDown() && !e.isAltDown()) {
+        if (enableGroupping && e.isMenuKeyDown() && !e.isAltKeyDown()) {
             switch (e.getKeyCode()) {
             case KeyEvent.VK_G:
-                if (e.isShiftDown()) {
+                if (e.isShiftKeyDown()) {
                     ungroupSelection(editor);
                 } else {
                     groupSelection(editor);

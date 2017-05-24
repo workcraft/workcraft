@@ -1,5 +1,7 @@
 package org.workcraft.gui.events;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 
@@ -15,9 +17,6 @@ public class GraphEditorMouseEvent {
     Point2D position;
     Point2D prevPosition;
     Point2D startPosition;
-//    int button;
-//    int clickCount;
-//    int modifiers;
 
     public GraphEditorMouseEvent(GraphEditor editor, MouseEvent e) {
         this.editor = editor;
@@ -35,15 +34,6 @@ public class GraphEditorMouseEvent {
         this.startPosition = startPosition;
         this.prevPosition = prevPosition;
     }
-
-/*    public GraphEditorMouseEvent(GraphEditor editor, int event, Point2D position, int button, int clickCount, int modifiers) {
-        this.editor = editor;
-        this.event = event;
-        this.position = position;
-        this.button = button;
-        this.clickCount = clickCount;
-        this.modifiers = modifiers;
-    }*/
 
     public GraphEditor getEditor() {
         return editor;
@@ -101,4 +91,28 @@ public class GraphEditorMouseEvent {
         // BUTTON2 is ignored as it is reserved for panning
         return event.getModifiersEx() & (MouseEvent.BUTTON1_DOWN_MASK | MouseEvent.BUTTON3_DOWN_MASK);
     }
+
+    private boolean isMaskHit(int mask) {
+        return (getModifiers() & mask) == mask;
+    }
+
+    public boolean isCtrlKeyDown() {
+        return isMaskHit(MouseEvent.CTRL_DOWN_MASK);
+    }
+
+    public boolean isShiftKeyDown() {
+        return isMaskHit(MouseEvent.SHIFT_DOWN_MASK);
+    }
+
+    public boolean isMetaKeyDown() {
+        return isMaskHit(InputEvent.META_DOWN_MASK);
+    }
+
+    public boolean isMenuKeyDown() {
+        if (DesktopApi.getMenuKeyMask() == ActionEvent.META_MASK) {
+            return isMetaKeyDown();
+        }
+        return isCtrlKeyDown();
+    }
+
 }

@@ -247,7 +247,7 @@ public class SONSelectionTool extends SelectionTool {
 
     @Override
     public boolean keyPressed(GraphEditorKeyEvent e) {
-        if (e.isAltDown() && !e.isMenuKeyDown() && !e.isShiftDown()) {
+        if (e.isAltKeyDown() && !e.isMenuKeyDown() && !e.isShiftKeyDown()) {
             switch (e.getKeyCode()) {
             case KeyEvent.VK_B:
                 selectionBlock(e.getEditor());

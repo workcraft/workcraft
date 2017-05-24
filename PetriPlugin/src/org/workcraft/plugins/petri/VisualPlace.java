@@ -42,7 +42,7 @@ public class VisualPlace extends VisualComponent {
 
     private void addPropertyDeclarations() {
         addPropertyDeclaration(new PropertyDeclaration<VisualPlace, Integer>(
-                this, Place.PROPERTY_TOKENS, Integer.class, true, true, true) {
+                this, Place.PROPERTY_TOKENS, Integer.class, true, true, false) {
             public void setter(VisualPlace object, Integer value) {
                 object.getReferencedPlace().setTokens(value);
             }
