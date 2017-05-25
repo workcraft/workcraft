@@ -4,7 +4,6 @@ import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.GridLayout;
 import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.Stroke;
@@ -28,7 +27,6 @@ import java.util.Set;
 
 import javax.swing.AbstractAction;
 import javax.swing.JPanel;
-import javax.swing.JToggleButton;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -50,9 +48,11 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.MainWindowActions;
 import org.workcraft.gui.Overlay;
 import org.workcraft.gui.PropertyEditorWindow;
 import org.workcraft.gui.ToolboxPanel;
+import org.workcraft.gui.actions.ActionButton;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.Properties;
@@ -123,12 +123,8 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     protected Viewport view;
     protected Grid grid;
     protected Ruler ruler;
+    protected ActionButton centerButton;
 
-    protected JPanel modeSelector;
-    protected JToggleButton gridToggler;
-    protected JToggleButton nameToggler;
-    protected JToggleButton labelToggler;
-    protected JToggleButton rulerToggler;
     private static final int size = SizeHelper.getRulerSize();
     protected Stroke borderStroke = new BasicStroke(2);
     private final Overlay overlay = new Overlay();
@@ -149,62 +145,12 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         view.addListener(grid);
         grid.addListener(ruler);
 
-        modeSelector = new JPanel(new GridLayout(2, 2));
-        modeSelector.setSize(size, size);
-        this.add(modeSelector);
-
-        int size2 = size / 2 + 1;
-        gridToggler = new JToggleButton();
-        gridToggler.setSize(size2, size2);
-        gridToggler.setFocusable(false);
-        gridToggler.setToolTipText("Show/hide grid");
-        gridToggler.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                CommonEditorSettings.setGridVisibility(!CommonEditorSettings.getGridVisibility());
-                repaint();
-            }
-        });
-        modeSelector.add(gridToggler);
-
-        nameToggler = new JToggleButton();
-        nameToggler.setSize(size2, size2);
-        nameToggler.setFocusable(false);
-        nameToggler.setToolTipText("Show/hide node names");
-        nameToggler.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                CommonVisualSettings.setNameVisibility(!CommonVisualSettings.getNameVisibility());
-                repaint();
-            }
-        });
-        modeSelector.add(nameToggler);
-
-        labelToggler = new JToggleButton();
-        labelToggler.setSize(size2, size2);
-        labelToggler.setFocusable(false);
-        labelToggler.setToolTipText("Show/hide node labels");
-        labelToggler.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                CommonVisualSettings.setLabelVisibility(!CommonVisualSettings.getLabelVisibility());
-                repaint();
-            }
-        });
-        modeSelector.add(labelToggler);
-
-        rulerToggler = new JToggleButton();
-        rulerToggler.setSize(size2, size2);
-        rulerToggler.setFocusable(false);
-        rulerToggler.setToolTipText("Show/hide rulers");
-        rulerToggler.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                CommonEditorSettings.setRulerVisibility(!CommonEditorSettings.getRulerVisibility());
-                repaint();
-            }
-        });
-        modeSelector.add(rulerToggler);
+        centerButton = new ActionButton(MainWindowActions.VIEW_PAN_CENTER, "");
+        final Framework framework = Framework.getInstance();
+        final MainWindow mainWindow = framework.getMainWindow();
+        centerButton.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        centerButton.setSize(size, size);
+        this.add(centerButton);
 
         toolboxPanel = new ToolboxPanel(this);
 
@@ -273,10 +219,6 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     @Override
     public void paint(Graphics g) {
         Graphics2D g2d = (Graphics2D) g;
-        gridToggler.setSelected(CommonEditorSettings.getGridVisibility());
-        nameToggler.setSelected(CommonVisualSettings.getNameVisibility());
-        labelToggler.setSelected(CommonVisualSettings.getLabelVisibility());
-        rulerToggler.setSelected(CommonEditorSettings.getRulerVisibility());
 
         AffineTransform screenTransform = (AffineTransform) g2d.getTransform().clone();
 
@@ -298,7 +240,8 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
 //        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
+//      g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 //        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
         g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
@@ -309,9 +252,11 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         }
         g2d.setTransform(screenTransform);
 
-        if (CommonEditorSettings.getRulerVisibility()) {
+        Boolean rulerVisibility = CommonEditorSettings.getRulerVisibility();
+        if (rulerVisibility) {
             ruler.draw(g2d);
         }
+        centerButton.setVisible(rulerVisibility);
 
         if (hasFocus()) {
             toolboxPanel.getSelectedTool().drawInScreenSpace(this, g2d);
@@ -598,6 +543,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
             public void run() {
                 getViewport().zoom(1);
                 repaint();
+                requestFocus();
             }
         });
     }
@@ -608,6 +554,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
             public void run() {
                 getViewport().zoom(-1);
                 repaint();
+                requestFocus();
             }
         });
     }
@@ -618,6 +565,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
             public void run() {
                 getViewport().scaleDefault();
                 repaint();
+                requestFocus();
             }
         });
     }
@@ -667,6 +615,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
             public void run() {
                 getViewport().pan(20, 0);
                 repaint();
+                requestFocus();
             }
         });
     }
@@ -677,6 +626,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
             public void run() {
                 getViewport().pan(0, 20);
                 repaint();
+                requestFocus();
             }
         });
     }
@@ -687,6 +637,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
             public void run() {
                 getViewport().pan(-20, 0);
                 repaint();
+                requestFocus();
             }
         });
     }
@@ -697,6 +648,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
             public void run() {
                 getViewport().pan(0, -20);
                 repaint();
+                requestFocus();
             }
         });
     }
@@ -720,6 +672,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
                     Point modelCenterInScreenSpace = viewport.userToScreen(modelCenter);
                     viewport.pan(viewportCenterX - modelCenterInScreenSpace.x, viewportCenterY - modelCenterInScreenSpace.y);
                     repaint();
+                    requestFocus();
                 }
             }
         });

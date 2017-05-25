@@ -4,37 +4,50 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
 
-import javax.swing.JMenuItem;
+import javax.swing.Icon;
+import javax.swing.JToggleButton;
+
+import org.workcraft.util.GUI;
 
 @SuppressWarnings("serial")
-public class ActionMenuItem extends JMenuItem implements Actor {
+public class ActionToggle extends JToggleButton implements Actor {
 
     class ActionForwarder implements ActionListener {
+        @Override
         public void actionPerformed(ActionEvent e) {
-            ActionMenuItem.this.fireActionPerformed();
+            ActionToggle.this.fireActionPerformed();
         }
     }
 
     private final LinkedList<ScriptedActionListener> listeners = new LinkedList<>();
-    private Action scriptedAction = null;
+    private Action action = null;
 
-    public ActionMenuItem(Action action) {
+    public ActionToggle(Action action) {
         this(action, action.getText());
     }
 
-    public ActionMenuItem(Action action, String text) {
+    public ActionToggle(Action action, String text) {
         super(text);
-        scriptedAction = action;
-        scriptedAction.addActor(this);
-        setEnabled(scriptedAction.isEnabled());
-        setAccelerator(action.getKeyStroke());
+        this.action = action;
+        action.addActor(this);
+        setEnabled(action.isEnabled());
+        addActionListener(new ActionForwarder());
+    }
+
+    public ActionToggle(Action action, Icon icon) {
+        super();
+        String toolTip = ActionUtils.getActionTooltip(action);
+        GUI.decorateButton(this, icon, toolTip);
+        this.action = action;
+        action.addActor(this);
+        setEnabled(action.isEnabled());
         addActionListener(new ActionForwarder());
     }
 
     private void fireActionPerformed() {
-        if (scriptedAction != null) {
+        if (action != null) {
             for (ScriptedActionListener l : listeners) {
-                l.actionPerformed(scriptedAction);
+                l.actionPerformed(action);
             }
         }
     }
@@ -47,7 +60,9 @@ public class ActionMenuItem extends JMenuItem implements Actor {
         listeners.remove(listener);
     }
 
+    @Override
     public void actionEnableStateChanged(boolean actionEnableState) {
         this.setEnabled(actionEnableState);
     }
+
 }

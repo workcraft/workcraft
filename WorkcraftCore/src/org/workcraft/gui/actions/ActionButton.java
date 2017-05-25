@@ -4,11 +4,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.LinkedList;
 
+import javax.swing.Icon;
 import javax.swing.JButton;
+
+import org.workcraft.util.GUI;
 
 @SuppressWarnings("serial")
 public class ActionButton extends JButton implements Actor {
+
     class ActionForwarder implements ActionListener {
+        @Override
         public void actionPerformed(ActionEvent e) {
             ActionButton.this.fireActionPerformed();
         }
@@ -17,18 +22,28 @@ public class ActionButton extends JButton implements Actor {
     private final LinkedList<ScriptedActionListener> listeners = new LinkedList<>();
     private Action action = null;
 
+    public ActionButton(Action action) {
+        this(action, action.getText());
+    }
+
     public ActionButton(Action action, String text) {
         super(text);
+        String toolTip = ActionUtils.getActionTooltip(action);
+        setToolTipText(toolTip);
         this.action = action;
         action.addActor(this);
         setEnabled(action.isEnabled());
-
         addActionListener(new ActionForwarder());
     }
 
-    public ActionButton(Action action) {
-        this(action, action.getText());
-
+    public ActionButton(Action action, Icon icon) {
+        super();
+        String toolTip = ActionUtils.getActionTooltip(action);
+        GUI.decorateButton(this, icon, toolTip);
+        this.action = action;
+        action.addActor(this);
+        setEnabled(action.isEnabled());
+        addActionListener(new ActionForwarder());
     }
 
     private void fireActionPerformed() {
@@ -47,7 +62,9 @@ public class ActionButton extends JButton implements Actor {
         listeners.remove(listener);
     }
 
+    @Override
     public void actionEnableStateChanged(boolean actionEnableState) {
         this.setEnabled(actionEnableState);
     }
+
 }

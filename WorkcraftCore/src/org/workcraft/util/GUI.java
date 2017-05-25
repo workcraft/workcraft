@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import javax.imageio.ImageIO;
+import javax.swing.AbstractButton;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -220,14 +221,19 @@ public class GUI {
     }
 
     public static JButton createIconButton(Icon icon, String toolTip) {
-        JButton result = new JButton(icon);
-        result.setToolTipText(toolTip);
-        result.setMargin(new Insets(0, 0, 0, 0));
+        JButton button = new JButton();
+        decorateButton(button, icon, toolTip);
+        return button;
+    }
+
+    public static void decorateButton(AbstractButton button, Icon icon, String toolTip) {
+        button.setIcon(icon);
+        button.setToolTipText(toolTip);
+        button.setMargin(new Insets(0, 0, 0, 0));
         int iconSize = SizeHelper.getToolIconSize();
-        Insets insets = result.getInsets();
+        Insets insets = button.getInsets();
         int minSize = iconSize + Math.max(insets.left + insets.right, insets.top + insets.bottom);
-        result.setPreferredSize(new Dimension(minSize, minSize));
-        return result;
+        button.setPreferredSize(new Dimension(minSize, minSize));
     }
 
     public static JButton createDialogButton(String text) {

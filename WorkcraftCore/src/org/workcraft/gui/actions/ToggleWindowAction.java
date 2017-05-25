@@ -9,13 +9,16 @@ public class ToggleWindowAction extends Action {
     public ToggleWindowAction(DockableWindow window) {
         this.window = window;
     }
+
     @Override
     public String getText() {
         return window.getTitle();
     }
+
     @Override
     public void run() {
         final Framework framework = Framework.getInstance();
         framework.getMainWindow().toggleDockableWindow(window);
     }
+
 }
