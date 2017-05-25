@@ -16,7 +16,32 @@
    inkscape:version="0.91 r13725"
    sodipodi:docname="stg-node-signal_transition-output_minus.svg">
   <defs
-     id="defs13" />
+     id="defs13">
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect8087"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect8083"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect8087-3"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect8087-7"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect8087-3-3"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect8087-7-5"
+       is_visible="true" />
+  </defs>
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -29,18 +54,14 @@
      inkscape:window-width="1920"
      inkscape:window-height="1176"
      id="namedview11"
-     showgrid="true"
-     inkscape:zoom="2.8195282"
-     inkscape:cx="91.716965"
-     inkscape:cy="-5.2572001"
-     inkscape:window-x="1920"
+     showgrid="false"
+     inkscape:zoom="3.8556309"
+     inkscape:cx="-34.533337"
+     inkscape:cy="14.283065"
+     inkscape:window-x="0"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg2888">
-    <inkscape:grid
-       type="xygrid"
-       id="grid8085" />
-  </sodipodi:namedview>
+     inkscape:current-layer="svg2888" />
   <metadata
      id="metadata2893">
     <rdf:RDF>
@@ -54,17 +75,17 @@
     </rdf:RDF>
   </metadata>
   <rect
-     style="fill:none;stroke:#0000cc;stroke-width:3;stroke-opacity:1"
+     style="fill:#ffffff;stroke:#0000cc;stroke-width:3;stroke-opacity:1"
      x="5.5"
      y="5.5"
      width="37"
      height="37"
      id="rect3762" />
-  <rect
-     x="14"
-     y="21.5"
-     width="20"
-     height="5"
-     id="rect2446"
-     style="fill:#0000cc;fill-opacity:1;stroke:none" />
+  <path
+     style="fill:none;fill-rule:evenodd;stroke:#0000cc;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
+     d="m 17.446574,24.000001 13.106851,0"
+     id="path8085-6"
+     inkscape:path-effect="#path-effect8087-3"
+     inkscape:original-d="m 17.446574,24.000001 13.106851,0"
+     inkscape:connector-curvature="0" />
 </svg>

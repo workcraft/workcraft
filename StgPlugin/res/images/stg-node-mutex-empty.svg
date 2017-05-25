@@ -30,10 +30,10 @@
      inkscape:window-height="1176"
      id="namedview7"
      showgrid="false"
-     inkscape:zoom="2.8195283"
-     inkscape:cx="205.44327"
-     inkscape:cy="88.759142"
-     inkscape:window-x="1920"
+     inkscape:zoom="12.474537"
+     inkscape:cx="13.167306"
+     inkscape:cy="-7.5328758"
+     inkscape:window-x="0"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
      inkscape:current-layer="svg2888" />
@@ -50,14 +50,13 @@
     </rdf:RDF>
   </metadata>
   <path
-     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:2.8;stroke-miterlimit:4;stroke-dasharray:none"
+     style="fill:#ffffff;fill-rule:evenodd;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1;fill-opacity:1"
      inkscape:connector-curvature="0"
-     d="m 37.838953,24.0001 a 13.839254,13.839254 0 0 1 -27.678507,0 13.839254,13.839254 0 1 1 27.678507,0 z"
+     d="m 42.6427,24.0001 a 18.643,18.643 0 0 1 -37.286,0 18.643,18.643 0 1 1 37.286,0 z"
      id="path2900" />
   <path
-     style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:1.8;stroke-miterlimit:4;stroke-dasharray:none"
+     style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#000000;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
      inkscape:connector-curvature="0"
-     d="M 44.524679,24 C 44.524679,35.335476 35.335466,44.52467 24,44.52467 12.664533,44.52467 3.4753203,35.335476 3.4753203,24 3.4753203,12.664524 12.664533,3.4753293 24,3.4753293 35.335466,3.4753293 44.524679,12.664524 44.524679,24 Z"
-     id="path2900-5"
-     sodipodi:nodetypes="sssss" />
+     d="m 38.509784,24.001525 a 14.509784,14.509784 0 0 1 -29.0195671,0 14.509784,14.509784 0 1 1 29.0195671,0 z"
+     id="path2900-3" />
 </svg>

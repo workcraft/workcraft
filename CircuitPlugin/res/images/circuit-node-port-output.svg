@@ -16,7 +16,12 @@
    inkscape:version="0.91 r13725"
    sodipodi:docname="circuit-node-port-output.svg">
   <defs
-     id="defs9" />
+     id="defs9">
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect8067"
+       is_visible="true" />
+  </defs>
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -30,9 +35,9 @@
      inkscape:window-height="1176"
      id="namedview7"
      showgrid="false"
-     inkscape:zoom="14.419939"
-     inkscape:cx="-1.5343697"
-     inkscape:cy="15.231688"
+     inkscape:zoom="16.494814"
+     inkscape:cx="67.707991"
+     inkscape:cy="-15.780262"
      inkscape:window-x="0"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
@@ -50,12 +55,19 @@
     </rdf:RDF>
   </metadata>
   <g
-     id="g2819"
-     style="fill:none;stroke:#0000cc;stroke-opacity:1">
+     id="g8070">
     <path
        inkscape:connector-curvature="0"
-       d="m 12.225,34.038 15,0 10,-10 -10,-10 -15,0 0,20 z"
-       style="color:#000000;fill:none;stroke:#0000cc;stroke-width:2;stroke-opacity:1"
+       d="m 16.937158,34.038 15.000001,0 10,-10 -10,-10 -15.000001,0 0,20 z"
+       style="color:#000000;fill:#ffffff;fill-opacity:1;stroke:#000000;stroke-width:3;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1"
        id="path2838" />
+    <path
+       sodipodi:nodetypes="cc"
+       inkscape:connector-curvature="0"
+       inkscape:original-d="m 3.941521,24 11.737336,0"
+       inkscape:path-effect="#path-effect8067"
+       id="path8065"
+       d="m 3.941521,24 11.737336,0"
+       style="fill:none;fill-rule:evenodd;stroke:#000000;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
   </g>
 </svg>

@@ -198,25 +198,25 @@ public class GUI {
 
     public static Cursor createCursorFromIcon(ImageIcon icon, String name) {
         int iconSize = icon.getIconWidth();
-        int len = (int) Math.round(0.2 * iconSize);
-        int width = (int) Math.round(0.08 * iconSize);
-        int gap = (int) Math.round(0.05 * iconSize);
-        int iconOffset = len + gap + width + gap;
-        Image img = new BufferedImage(iconSize + iconOffset, iconSize + iconOffset, BufferedImage.TYPE_INT_ARGB);
-        Graphics g = img.getGraphics();
+        int crossLength = (int) Math.round(0.2 * iconSize);
+        int crossWidth = (int) Math.round(0.08 * iconSize);
+        int crossGap = (int) Math.round(0.05 * iconSize);
+        int iconOffset = crossLength + crossGap + crossWidth + crossGap;
+        Image coursorImage = new BufferedImage(iconSize + iconOffset, iconSize + iconOffset, BufferedImage.TYPE_INT_ARGB);
+        Graphics g = coursorImage.getGraphics();
         Image iconImage = icon.getImage().getScaledInstance(iconSize, iconSize, Image.SCALE_SMOOTH);
         g.drawImage(iconImage, iconOffset, iconOffset, null);
-        int d1 = len + gap;
-        int d2 = d1 + width + gap;
+        int posClose = crossLength + crossGap;
+        int posFar = posClose + crossWidth + crossGap;
         g.setColor(Color.BLACK);
-        g.fillRect(d1, 0, width, len);
-        g.fillRect(d1, d2, width, len);
-        g.fillRect(0, d1, len, width);
-        g.fillRect(d2, d1, len, width);
+        g.fillRect(posClose, 0, crossWidth, crossLength);
+        g.fillRect(posClose, posFar, crossWidth, crossLength);
+        g.fillRect(0, posClose, crossLength, crossWidth);
+        g.fillRect(posFar, posClose, crossLength, crossWidth);
         Toolkit toolkit = Toolkit.getDefaultToolkit();
-        int offset = d1 + (int) Math.round(0.5 * width);
+        int offset = posClose + (int) Math.round(0.5 * crossWidth);
         Point hotSpot = new Point(offset, offset);
-        return toolkit.createCustomCursor(img, hotSpot, name);
+        return toolkit.createCustomCursor(coursorImage, hotSpot, name);
     }
 
     public static JButton createIconButton(Icon icon, String toolTip) {

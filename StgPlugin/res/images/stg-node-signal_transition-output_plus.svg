@@ -16,7 +16,32 @@
    inkscape:version="0.91 r13725"
    sodipodi:docname="stg-node-signal_transition-output_plus.svg">
   <defs
-     id="defs13" />
+     id="defs13">
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect8087"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect8083"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect8087-3"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect8087-7"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect8087-3-3"
+       is_visible="true" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect8087-7-5"
+       is_visible="true" />
+  </defs>
   <sodipodi:namedview
      pagecolor="#ffffff"
      bordercolor="#666666"
@@ -29,18 +54,14 @@
      inkscape:window-width="1920"
      inkscape:window-height="1176"
      id="namedview11"
-     showgrid="true"
-     inkscape:zoom="5.4526853"
-     inkscape:cx="52.035072"
-     inkscape:cy="16.084683"
-     inkscape:window-x="1920"
+     showgrid="false"
+     inkscape:zoom="10.544948"
+     inkscape:cx="2.7436505"
+     inkscape:cy="18.82068"
+     inkscape:window-x="0"
      inkscape:window-y="24"
      inkscape:window-maximized="1"
-     inkscape:current-layer="svg2888">
-    <inkscape:grid
-       type="xygrid"
-       id="grid8085" />
-  </sodipodi:namedview>
+     inkscape:current-layer="svg2888" />
   <metadata
      id="metadata2893">
     <rdf:RDF>
@@ -54,25 +75,29 @@
     </rdf:RDF>
   </metadata>
   <rect
-     style="fill:none;stroke:#0000cc;stroke-width:3;fill-opacity:1;stroke-opacity:1"
+     style="fill:#ffffff;stroke:#0000cc;stroke-width:3;stroke-opacity:1"
      x="5.5"
      y="5.5"
      width="37"
      height="37"
      id="rect3762" />
-  <rect
-     x="14"
-     y="21.5"
-     width="20"
-     height="5"
-     id="rect2446"
-     style="fill:#0000cc;fill-opacity:1;stroke:none" />
-  <rect
-     x="14"
-     y="-26.5"
-     width="20"
-     height="5"
-     id="rect2446-3"
-     style="fill:#0000cc;fill-opacity:1;stroke:none"
-     transform="matrix(0,1,-1,0,0,0)" />
+  <g
+     id="g8115"
+     transform="translate(3.8196095,-15.19275)"
+     style="stroke:#0000cc;stroke-opacity:1">
+    <path
+       inkscape:connector-curvature="0"
+       inkscape:original-d="m 13.626965,39.192751 13.106851,0"
+       inkscape:path-effect="#path-effect8087-3"
+       id="path8085-6"
+       d="m 13.626965,39.192751 13.106851,0"
+       style="fill:none;fill-rule:evenodd;stroke:#0000cc;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       inkscape:connector-curvature="0"
+       inkscape:original-d="m 20.180391,32.639324 0,13.106851"
+       inkscape:path-effect="#path-effect8087-7"
+       id="path8085-5"
+       d="m 20.180391,32.639324 0,13.106851"
+       style="fill:none;fill-rule:evenodd;stroke:#0000cc;stroke-width:3;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+  </g>
 </svg>
