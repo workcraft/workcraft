@@ -57,7 +57,8 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
     public Cursor getCursor(boolean menuKeyDown, boolean shiftKeyDown, boolean altKeyDown) {
         Icon icon = getIcon();
         if (icon instanceof ImageIcon) {
-            return GUI.createCursorFromIcon((ImageIcon) icon, getClass().getName());
+            ImageIcon imageIcon = (ImageIcon) icon;
+            return GUI.createCursorFromIcon(imageIcon, getClass().getName());
         }
         return null;
     }
