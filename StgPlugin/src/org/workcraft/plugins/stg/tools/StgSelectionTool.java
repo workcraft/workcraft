@@ -1,39 +1,32 @@
 package org.workcraft.plugins.stg.tools;
 
-import java.awt.Rectangle;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Rectangle2D;
-
-import javax.swing.JOptionPane;
-import javax.swing.JTextField;
 
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.BoundingBoxHelper;
+import org.workcraft.dom.visual.Alignment;
 import org.workcraft.dom.visual.HitMan;
-import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.gui.graph.editors.AbstractInplaceEditor;
+import org.workcraft.gui.graph.editors.NameInplaceEditor;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.plugins.stg.SignalTransition;
+import org.workcraft.plugins.stg.SignalTransition.Direction;
+import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualNamedTransition;
+import org.workcraft.plugins.stg.VisualSignalTransition;
+import org.workcraft.plugins.stg.VisualStg;
 
 public class StgSelectionTool extends SelectionTool {
-    private boolean cancelInPlaceEdit = false;
 
     @Override
     public void mouseClicked(GraphEditorMouseEvent e) {
-        boolean processed = false;
         if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() > 1)) {
             GraphEditor editor = e.getEditor();
             VisualModel model = editor.getModel();
@@ -42,29 +35,45 @@ public class StgSelectionTool extends SelectionTool {
                 if (node instanceof VisualPlace) {
                     Place place = ((VisualPlace) node).getReferencedPlace();
                     toggleToken(place, editor);
-                    processed = true;
-                } else if (node instanceof VisualImplicitPlaceArc) {
-                    if (e.getKeyModifiers() == DesktopApi.getMenuKeyMouseMask()) {
+                    return;
+                }
+                if (node instanceof VisualImplicitPlaceArc) {
+                    if ((e.getKeyModifiers() & DesktopApi.getMenuKeyMouseMask()) != 0) {
                         Place place = ((VisualImplicitPlaceArc) node).getImplicitPlace();
                         toggleToken(place, editor);
+                        return;
+                    }
+                }
+                if (node instanceof VisualSignalTransition) {
+                    VisualSignalTransition transition = (VisualSignalTransition) node;
+                    boolean processed = false;
+                    if ((e.getKeyModifiers() & DesktopApi.getMenuKeyMouseMask()) != 0) {
+                        toggleSignalType(transition.getReferencedTransition(), editor);
                         processed = true;
                     }
-                } else if (node instanceof VisualNamedTransition) {
+                    if ((e.getModifiers() & MouseEvent.SHIFT_DOWN_MASK) != 0) {
+                        toggleDirection(transition.getReferencedTransition(), editor);
+                        processed = true;
+                    }
+                    if (processed) {
+                        return;
+                    }
+                }
+                if (node instanceof VisualNamedTransition) {
                     VisualNamedTransition transition = (VisualNamedTransition) node;
-                    editNameInPlace(editor, transition, transition.getName());
-                    processed = true;
+                    AbstractInplaceEditor textEditor = new NameInplaceEditor(editor, transition);
+                    textEditor.edit(transition.getName(), transition.getNameFont(),
+                            transition.getNameOffset(), Alignment.CENTER, false);
+                    return;
                 }
             }
         }
-        if (!processed) {
-            super.mouseClicked(e);
-        }
+        super.mouseClicked(e);
     }
 
     private void toggleToken(Place place, GraphEditor editor) {
         if (place.getTokens() <= 1) {
             editor.getWorkspaceEntry().saveMemento();
-
             if (place.getTokens() == 1) {
                 place.setTokens(0);
             } else {
@@ -73,64 +82,20 @@ public class StgSelectionTool extends SelectionTool {
         }
     }
 
-    private void editNameInPlace(final GraphEditor editor, final VisualNamedTransition transition, String initialText) {
-        final JTextField text = new JTextField(initialText);
-        AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(transition);
-        Rectangle2D bbRoot = TransformHelper.transform(transition, localToRootTransform).getBoundingBox();
-        Rectangle bbScreen = editor.getViewport().userToScreen(BoundingBoxHelper.expand(bbRoot, 1.0, 0.5));
-        float fontSize = VisualNamedTransition.font.getSize2D() * (float) editor.getViewport().getTransform().getScaleY();
-        text.setFont(VisualNamedTransition.font.deriveFont(fontSize));
-        text.setBounds(bbScreen.x, bbScreen.y, bbScreen.width, bbScreen.height);
-        text.setHorizontalAlignment(JTextField.CENTER);
-        text.selectAll();
-        editor.getOverlay().add(text);
-        text.requestFocusInWindow();
+    private void toggleSignalType(SignalTransition transition, GraphEditor editor) {
+        editor.getWorkspaceEntry().saveMemento();
+        Type type = transition.getSignalType();
+        transition.setSignalType(type.mirror());
+    }
 
-        text.addKeyListener(new KeyListener() {
-            @Override
-            public void keyPressed(KeyEvent arg0) {
-                if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
-                    editor.requestFocus();
-                } else if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                    cancelInPlaceEdit = true;
-                    editor.requestFocus();
-                }
-            }
-
-            @Override
-            public void keyReleased(KeyEvent arg0) {
-            }
-
-            @Override
-            public void keyTyped(KeyEvent arg0) {
-            }
-        });
-
-        final Stg model = (Stg) editor.getModel().getMathModel();
-        text.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent arg0) {
-                editor.getWorkspaceEntry().setCanModify(false);
-                cancelInPlaceEdit = false;
-            }
-
-            @Override
-            public void focusLost(FocusEvent arg0) {
-                final String newName = text.getText();
-                text.getParent().remove(text);
-                if (!cancelInPlaceEdit) {
-                    try {
-                        editor.getWorkspaceEntry().saveMemento();
-                        model.setName(transition.getReferencedComponent(), newName);
-                    } catch (ArgumentException e) {
-                        JOptionPane.showMessageDialog(null, e.getMessage());
-                        editNameInPlace(editor, transition, newName);
-                    }
-                }
-                editor.getWorkspaceEntry().setCanModify(true);
-                editor.repaint();
-            }
-        });
+    private void toggleDirection(SignalTransition transition, GraphEditor editor) {
+        editor.getWorkspaceEntry().saveMemento();
+        Direction direction = transition.getDirection();
+        VisualModel model = editor.getModel();
+        if (model instanceof VisualStg) {
+            Stg stg = (Stg) model.getMathModel();
+            stg.setDirection(transition, direction.mirror());
+        }
     }
 
 }

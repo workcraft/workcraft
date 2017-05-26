@@ -27,7 +27,7 @@ public class ActionMenuItem extends JMenuItem implements Actor {
         scriptedAction = action;
         scriptedAction.addActor(this);
         setEnabled(scriptedAction.isEnabled());
-
+        setAccelerator(action.getKeyStroke());
         addActionListener(new ActionForwarder());
     }
 

@@ -153,12 +153,12 @@ public class VisualVertex extends VisualComponent {
     }
 
     @Override
-    public void cacheLabelRenderedText(DrawRequest r) {
+    protected void cacheLabelRenderedText(DrawRequest r) {
         String label = Character.toString(EPSILON_SYMBOL);
         Symbol symbol = getReferencedVertex().getSymbol();
         if (symbol != null) {
             label = r.getModel().getMathName(symbol);
-            cacheLabelRenderedText(label, labelFont, getLabelPositioning(), getLabelOffset());
+            cacheLabelRenderedText(label, getLabelFont(), getLabelPositioning(), getLabelOffset());
         }
     }
 

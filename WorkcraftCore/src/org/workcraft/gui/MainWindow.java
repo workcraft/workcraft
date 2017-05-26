@@ -142,6 +142,7 @@ public class MainWindow extends JFrame {
 
     private GraphEditorPanel editorInFocus;
     private MainMenu mainMenu;
+    private ToolBar toolbar;
 
     private String lastSavePath = null;
     private String lastOpenPath = null;
@@ -275,29 +276,33 @@ public class MainWindow extends JFrame {
 
         setTitle(TITLE_WORKCRAFT);
         mainMenu = new MainMenu(this);
-
+        // FIXME: Is menuUI variable really necessary before setJMenuBar?
         MenuBarUI menuUI = mainMenu.getUI();
         setJMenuBar(mainMenu);
+        if (DesktopApi.getOs().isMac()) {
+            mainMenu.setUI(menuUI);
+        }
 
         SilverOceanTheme.enable();
         LookAndFeelHelper.setDefaultLookAndFeel();
         SwingUtilities.updateComponentTreeUI(this);
 
-        if (DesktopApi.getOs().isMac()) {
-            mainMenu.setUI(menuUI);
-        }
-
-        content = new JPanel(new BorderLayout(0, 0));
+        content = new JPanel(new BorderLayout());
         setContentPane(content);
         rootDockingPort = new DefaultDockingPort(FLEXDOCK_DOCKING_PORT);
         content.add(rootDockingPort, BorderLayout.CENTER);
         StandardBorderManager borderManager = new StandardBorderManager(new ShadowBorder());
         rootDockingPort.setBorderManager(borderManager);
 
+        toolbar = new ToolBar(this);
+        add(toolbar, BorderLayout.NORTH);
+        mainMenu.registerToolbar(toolbar);
+
         createWindows();
         createDockingLayout();
         loadRecentFilesFromConfig();
         loadWindowGeometryFromConfig();
+
 
         setVisible(true);
         DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
@@ -1278,6 +1283,7 @@ public class MainWindow extends JFrame {
         SettingsEditorDialog dialog = new SettingsEditorDialog(this);
         dialog.setVisible(true);
         refreshWorkspaceEntryTitles();
+        toolbar.refreshToggles();
     }
 
     public void resetLayout() {
@@ -1300,6 +1306,10 @@ public class MainWindow extends JFrame {
 
     public MainMenu getMainMenu() {
         return mainMenu;
+    }
+
+    public ToolBar getToolbar() {
+        return toolbar;
     }
 
     public DockableWindow getPropertyEditor() {

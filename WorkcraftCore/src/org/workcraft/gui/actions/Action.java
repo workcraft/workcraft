@@ -2,6 +2,8 @@ package org.workcraft.gui.actions;
 
 import java.util.LinkedList;
 
+import javax.swing.KeyStroke;
+
 public abstract class Action/* extends AbstractAction */ {
     private static final long serialVersionUID = -2235480226869966860L;
     private final LinkedList<Actor> actors = new LinkedList<>();
@@ -29,4 +31,9 @@ public abstract class Action/* extends AbstractAction */ {
     public boolean isEnabled() {
         return enabled;
     }
+
+    public KeyStroke getKeyStroke() {
+        return null;
+    }
+
 }

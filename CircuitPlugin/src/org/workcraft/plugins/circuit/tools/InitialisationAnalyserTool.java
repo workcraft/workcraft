@@ -60,7 +60,7 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     }
 
     @Override
-    public Cursor getCursor() {
+    public Cursor getCursor(boolean menuKeyDown, boolean shiftKeyDown, boolean altKeyDown) {
         return Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
     }
 

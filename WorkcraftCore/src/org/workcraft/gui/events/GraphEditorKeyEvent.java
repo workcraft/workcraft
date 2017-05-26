@@ -34,20 +34,27 @@ public class GraphEditorKeyEvent {
         return (modifiers & mask) == mask;
     }
 
-    public boolean isCtrlDown() {
+    public boolean isCtrlKeyDown() {
         return isMaskHit(InputEvent.CTRL_DOWN_MASK);
     }
 
-    public boolean isShiftDown() {
+    public boolean isShiftKeyDown() {
         return isMaskHit(InputEvent.SHIFT_DOWN_MASK);
     }
 
-    public boolean isAltDown() {
+    public boolean isAltKeyDown() {
         return isMaskHit(InputEvent.ALT_DOWN_MASK);
     }
 
-    public boolean isMetaDown() {
+    public boolean isMetaKeyDown() {
         return isMaskHit(InputEvent.META_DOWN_MASK);
+    }
+
+    public boolean isMenuKeyDown() {
+        if (DesktopApi.getMenuKeyMask() == ActionEvent.META_MASK) {
+            return isMetaKeyDown();
+        }
+        return isCtrlKeyDown();
     }
 
     public int getModifiers() {
@@ -60,12 +67,5 @@ public class GraphEditorKeyEvent {
 
     public VisualModel getModel() {
         return editor.getModel();
-    }
-
-    public boolean isMenuKeyDown() {
-        if (DesktopApi.getMenuKeyMask() == ActionEvent.META_MASK) {
-            return isMetaDown();
-        }
-        return isCtrlDown();
     }
 }

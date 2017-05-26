@@ -92,11 +92,7 @@ public class MirrorSignalTransformationCommand extends AbstractTransformationCom
         if ((model instanceof VisualStg) && (node instanceof VisualSignalTransition)) {
             SignalTransition signalTransition = ((VisualSignalTransition) node).getReferencedTransition();
             Type signalType = signalTransition.getSignalType();
-            if (signalType == Type.INPUT) {
-                signalTransition.setSignalType(Type.OUTPUT);
-            } else if (signalType == Type.OUTPUT) {
-                signalTransition.setSignalType(Type.INPUT);
-            }
+            signalTransition.setSignalType(signalType.mirror());
         }
     }
 

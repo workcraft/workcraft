@@ -43,7 +43,7 @@ public abstract class AbstractGraphEditorTool implements GraphEditorTool {
         editor.getWorkspaceEntry().setCanCopy(true);
         if (editor instanceof GraphEditorPanel) {
             GraphEditorPanel panel = (GraphEditorPanel) editor;
-            panel.setCursor(getCursor());
+            panel.setCursor(getCursor(false, false, false));
         }
     }
 
@@ -62,7 +62,7 @@ public abstract class AbstractGraphEditorTool implements GraphEditorTool {
     }
 
     @Override
-    public Cursor getCursor() {
+    public Cursor getCursor(boolean menuKeyDown, boolean shiftKeyDown, boolean altKeyDown) {
         return null;
     }
 

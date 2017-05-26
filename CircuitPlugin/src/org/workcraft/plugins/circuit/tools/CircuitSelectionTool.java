@@ -2,6 +2,7 @@ package org.workcraft.plugins.circuit.tools;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -10,14 +11,20 @@ import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.Alignment;
+import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
+import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.gui.graph.editors.AbstractInplaceEditor;
+import org.workcraft.gui.graph.editors.NameInplaceEditor;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.util.Hierarchy;
 
@@ -77,6 +84,27 @@ public class CircuitSelectionTool extends SelectionTool {
             popup.add(centerPivotPointMenuItem);
         }
         return popup;
+    }
+
+    @Override
+    public void mouseClicked(GraphEditorMouseEvent e) {
+        boolean processed = false;
+        if ((e.getButton() == MouseEvent.BUTTON1) && (e.getClickCount() > 1)) {
+            GraphEditor editor = e.getEditor();
+            final VisualModel model = editor.getModel();
+            Node node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
+            if (node instanceof VisualContact) {
+                final VisualContact contact = (VisualContact) node;
+                if (contact.isPort()) {
+                    AbstractInplaceEditor textEditor = new NameInplaceEditor(editor, contact);
+                    textEditor.edit(contact.getName(), contact.getNameFont(), contact.getNameOffset(), Alignment.CENTER, false);
+                    processed = true;
+                }
+            }
+        }
+        if (!processed) {
+            super.mouseClicked(e);
+        }
     }
 
     @Override

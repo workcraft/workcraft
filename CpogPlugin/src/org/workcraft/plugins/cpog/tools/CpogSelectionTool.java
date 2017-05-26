@@ -4,18 +4,11 @@ import java.awt.BorderLayout;
 import java.awt.Checkbox;
 import java.awt.Component;
 import java.awt.Font;
-import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
-import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
-import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -34,26 +27,24 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
-import javax.swing.JTextField;
 import javax.swing.text.BadLocationException;
 
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.PageNode;
-import org.workcraft.dom.visual.BoundingBoxHelper;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
-import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.utils.FormulaToString;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
+import org.workcraft.gui.graph.editors.AbstractInplaceEditor;
+import org.workcraft.gui.graph.editors.LabelInplaceEditor;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.observation.HierarchyEvent;
@@ -76,7 +67,6 @@ import org.workcraft.plugins.cpog.formula.GraphFunc;
 import org.workcraft.plugins.cpog.formula.jj.CpogFormulaParser;
 import org.workcraft.plugins.cpog.formula.jj.ParseException;
 import org.workcraft.plugins.cpog.formula.jj.TokenMgrError;
-import org.workcraft.plugins.stg.VisualNamedTransition;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -95,10 +85,7 @@ public class CpogSelectionTool extends SelectionTool {
             if (e instanceof PropertyChangedEvent) {
                 PropertyChangedEvent pce = (PropertyChangedEvent) e;
                 if (VisualVertex.PROPERTY_RENDER_TYPE.equals(pce.getPropertyName())) {
-                    try {
-                        correctConnectionLengths(visualCpog, (VisualVertex) pce.getSender());
-                    } catch (InvalidConnectionException e1) {
-                    }
+                    correctConnectionLengths((VisualVertex) pce.getSender());
                 }
             }
         }
@@ -112,22 +99,18 @@ public class CpogSelectionTool extends SelectionTool {
     int xpos = 0;
     boolean transitivesActive = true;
 
-    private JTextArea expressionText;
-    HashMap<String, CpogFormula> graphMap = new HashMap<>();
-    final HashMap<String, Variable> variableMap = new HashMap<>();
+    private final HashMap<String, CpogFormula> graphMap = new HashMap<>();
+    private final HashMap<String, Variable> variableMap = new HashMap<>();
     private final HashMap<String, GraphReference> referenceMap = new HashMap<>();
-    private Checkbox insertTransitives;
     private final HashMap<String, Point2D> prevPoints = new HashMap<>();
     private double highestY = 0; //Sets first graph at y co-ordinate of 0
+    private JTextArea expressionText;
+    private Checkbox insertTransitives;
 
     private final CpogParsingTool parsingTool = new CpogParsingTool(variableMap, xpos, referenceMap);
-
     private final ArrayList<VisualPage> refPages = new ArrayList<>();
-
     private GraphEditor editor;
-    protected boolean cancelInPlaceEdit;
-
-    int scenarioNo = 0;
+    private int scenarioNo = 0;
 
     @Override
     public void createInterfacePanel(final GraphEditor editor) {
@@ -601,13 +584,20 @@ public class CpogSelectionTool extends SelectionTool {
                     var.toggle();
                     processed = true;
                 } else if (node instanceof VisualVertex) {
-                    VisualVertex vertex = (VisualVertex) node;
-                    editNameInPlace(editor, vertex, vertex.getLabel());
+                    final VisualVertex vertex = (VisualVertex) node;
+                    AbstractInplaceEditor textEditor = new LabelInplaceEditor(editor, vertex) {
+                        @Override
+                        public void processResult(String text) {
+                            super.processResult(text);
+                            correctConnectionLengths(vertex);
+                        }
+                    };
+                    textEditor.edit(vertex.getLabel(), vertex.getLabelFont(),
+                            vertex.getLabelOffset(), vertex.getLabelAlignment(), false);
                     processed = true;
                 }
             }
         }
-
         if (!processed) {
             super.mouseClicked(e);
 
@@ -966,72 +956,9 @@ public class CpogSelectionTool extends SelectionTool {
         return parsingTool.getLowestVertex(visualCpog);
     }
 
-    private void editNameInPlace(final GraphEditor editor, final VisualVertex vertex, String initialText) {
-        final JTextField text = new JTextField(initialText);
-        AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(vertex);
-        Rectangle2D bbRoot = TransformHelper.transform(vertex, localToRootTransform).getBoundingBox();
-        Rectangle bbScreen = editor.getViewport().userToScreen(BoundingBoxHelper.expand(bbRoot, 1.0, 0.5));
-        float fontSize = VisualNamedTransition.font.getSize2D() * (float) editor.getViewport().getTransform().getScaleY();
-        text.setFont(VisualNamedTransition.font.deriveFont(fontSize));
-        text.setBounds(bbScreen.x, bbScreen.y, bbScreen.width, bbScreen.height);
-        text.setHorizontalAlignment(JTextField.CENTER);
-        text.selectAll();
-        editor.getOverlay().add(text);
-        text.requestFocusInWindow();
-        final VisualCpog visualCpog = (VisualCpog) editor.getWorkspaceEntry().getModelEntry().getVisualModel();
-
-        text.addKeyListener(new KeyListener() {
-            @Override
-            public void keyPressed(KeyEvent arg0) {
-                if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
-                    editor.requestFocus();
-                } else if (arg0.getKeyCode() == KeyEvent.VK_ESCAPE) {
-                    cancelInPlaceEdit = true;
-                    editor.requestFocus();
-                }
-            }
-
-            @Override
-            public void keyReleased(KeyEvent arg0) {
-            }
-
-            @Override
-            public void keyTyped(KeyEvent arg0) {
-            }
-        });
-
-        text.addFocusListener(new FocusListener() {
-            @Override
-            public void focusGained(FocusEvent arg0) {
-                editor.getWorkspaceEntry().setCanModify(false);
-                cancelInPlaceEdit = false;
-            }
-
-            @Override
-            public void focusLost(FocusEvent arg0) {
-                final String newName = text.getText();
-                text.getParent().remove(text);
-                if (!cancelInPlaceEdit) {
-                    try {
-                        editor.getWorkspaceEntry().saveMemento();
-                        vertex.setLabel(newName);
-                        correctConnectionLengths(visualCpog, vertex);
-                    } catch (ArgumentException e) {
-                        JOptionPane.showMessageDialog(null, e.getMessage());
-                        editNameInPlace(editor, vertex, newName);
-                    } catch (InvalidConnectionException e) {
-                        // TODO Auto-generated catch block
-                        e.printStackTrace();
-                    }
-
-                }
-                editor.getWorkspaceEntry().setCanModify(true);
-                editor.repaint();
-            }
-        });
-    }
-
-    private void correctConnectionLengths(VisualCpog visualCpog, VisualVertex vertex) throws InvalidConnectionException {
+    private void correctConnectionLengths(VisualVertex vertex) {
+        WorkspaceEntry we = editor.getWorkspaceEntry();
+        VisualCpog visualCpog = WorkspaceUtils.getAs(we, VisualCpog.class);
         ArrayList<Node> cons = parsingTool.getChildren(visualCpog, vertex);
         cons.addAll(parsingTool.getParents(visualCpog, vertex));
         for (Node n : cons) {
@@ -1047,7 +974,11 @@ public class CpogSelectionTool extends SelectionTool {
             VisualArc a = (VisualArc) c;
             BooleanFormula b = a.getCondition();
             visualCpog.remove(c);
-            a = (VisualArc) visualCpog.connect(f, s);
+            try {
+                a = (VisualArc) visualCpog.connect(f, s);
+            } catch (InvalidConnectionException e) {
+                e.printStackTrace();
+            }
             a.setCondition(b);
         }
     }

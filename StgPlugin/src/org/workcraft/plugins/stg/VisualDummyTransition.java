@@ -25,7 +25,7 @@ public class VisualDummyTransition extends VisualNamedTransition implements Stat
     }
 
     @Override
-    public Color getColor() {
+    public Color getNameColor() {
         return CommonSignalSettings.getDummyColor();
     }
 

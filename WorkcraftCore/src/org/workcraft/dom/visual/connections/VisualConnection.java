@@ -38,6 +38,7 @@ import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
+import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 public class VisualConnection extends VisualNode implements Node, Drawable, Shapable, Dependent,
@@ -96,23 +97,16 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 
     private ConnectionGraphic graphic = null;
 
-    private static double defaultLineWidth = 0.02;
-    private static double defaultArrowWidth = 0.15;
-    private static double defaultArrowLength = 0.4;
-    private static double defaultBubbleSize = 0.2;
     public static final double HIT_THRESHOLD = 0.2;
-    private static Color defaultColor = Color.BLACK;
 
-    private Color color = defaultColor;
-    private double lineWidth = defaultLineWidth;
+    private Color color = CommonVisualSettings.getConnectionColor();
+    private double lineWidth = CommonVisualSettings.getConnectionLineWidth();
+    private double arrowWidth = CommonVisualSettings.getConnectionArrowWidth();
+    private double arrowLength = CommonVisualSettings.getConnectionArrowLength();
+    private double bubbleSize = CommonVisualSettings.getConnectionBubbleSize();
 
     private boolean hasArrow = true;
-    private double arrowWidth = defaultArrowWidth;
-    private double arrowLength = defaultArrowLength;
-
     private boolean hasBubble = false;
-    private double bubbleSize = defaultBubbleSize;
-
     private boolean isTokenColorPropagator = false;
     private Point2D splitPoint = null;
 
@@ -623,8 +617,8 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
 
     public void setDefaultArrow() {
         setArrow(true);
-        setArrowLength(defaultArrowLength);
-        setArrowWidth(defaultArrowWidth);
+        setArrowLength(CommonVisualSettings.getConnectionArrowLength());
+        setArrowWidth(CommonVisualSettings.getConnectionArrowWidth());
     }
 
 }

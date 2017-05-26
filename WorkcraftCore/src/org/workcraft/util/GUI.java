@@ -1,14 +1,18 @@
 package org.workcraft.util;
 
 import java.awt.Color;
+import java.awt.Cursor;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
 import java.awt.FlowLayout;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
+import java.awt.Toolkit;
 import java.awt.Window;
 import java.awt.font.LineMetrics;
 import java.awt.image.BufferedImage;
@@ -16,6 +20,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import javax.imageio.ImageIO;
+import javax.swing.AbstractButton;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -90,6 +95,22 @@ public class GUI {
         fc.setPreferredSize(new Dimension(preferredWidth, preferredHeight));
     }
 
+    public static void drawEditorMessage(GraphEditor editor, Graphics2D g, Color color, String message) {
+        if (message != null) {
+            g.setFont(UIManager.getFont("Button.font"));
+            Rectangle r = g.getFont().getStringBounds(message, g.getFontRenderContext()).getBounds();
+            r.x = editor.getWidth() / 2 - r.width / 2;
+            r.y = editor.getHeight() - 20 - r.height;
+            g.setColor(new Color(240, 240, 240, 192));
+            g.fillRoundRect(r.x - 10, r.y - 10, r.width + 20, r.height + 20, 5, 5);
+            g.setColor(new Color(224, 224, 224));
+            g.drawRoundRect(r.x - 10, r.y - 10, r.width + 20, r.height + 20, 5, 5);
+            g.setColor(color);
+            LineMetrics lm = g.getFont().getLineMetrics(message, g.getFontRenderContext());
+            g.drawString(message, r.x, r.y + r.height - (int) (lm.getDescent()));
+        }
+    }
+
     public static BufferedImage loadImageFromResource(String path) throws IOException {
         URL res = ClassLoader.getSystemResource(path);
         if (res == null) {
@@ -107,24 +128,7 @@ public class GUI {
         return new ImageIcon(res);
     }
 
-    public static void drawEditorMessage(GraphEditor editor, Graphics2D g, Color color, String message) {
-        if (message != null) {
-            g.setFont(UIManager.getFont("Button.font"));
-            Rectangle r = g.getFont().getStringBounds(message, g.getFontRenderContext()).getBounds();
-            r.x = editor.getWidth() / 2 - r.width / 2;
-            r.y = editor.getHeight() - 20 - r.height;
-            g.setColor(new Color(240, 240, 240, 192));
-            g.fillRoundRect(r.x - 10, r.y - 10, r.width + 20, r.height + 20, 5, 5);
-            g.setColor(new Color(224, 224, 224));
-            g.drawRoundRect(r.x - 10, r.y - 10, r.width + 20, r.height + 20, 5, 5);
-            g.setColor(color);
-            LineMetrics lm = g.getFont().getLineMetrics(message, g.getFontRenderContext());
-            g.drawString(message, r.x, r.y + r.height - (int) (lm.getDescent()));
-        }
-    }
-
     public static ImageIcon createIconFromSVG(String path, int height, int width, Color background) {
-
         try {
             System.setProperty("org.apache.batik.warn_destination", "false");
             Document document;
@@ -150,17 +154,13 @@ public class GUI {
                 g2d.setColor(background);
                 g2d.fillRect(0, 0, width, height);
             }
-//
-//            g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-//            g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-//            g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-//            g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
 
             g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-            g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
+            g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
             g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
             g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+            g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 
             double scaleX = (width - 1) / sizeX;
             double scaleY = (height - 1) / sizeY;
@@ -187,15 +187,53 @@ public class GUI {
         return createIconFromSVG(path, width, height, null);
     }
 
+    public static Cursor createCursorFromImage(String path) {
+        ImageIcon icon = createIconFromImage(path);
+        return createCursorFromIcon(icon, path);
+    }
+
+    public static Cursor createCursorFromSVG(String path) {
+        ImageIcon icon = createIconFromSVG(path);
+        return createCursorFromIcon(icon, path);
+    }
+
+    public static Cursor createCursorFromIcon(ImageIcon icon, String name) {
+        int iconSize = icon.getIconWidth();
+        int crossLength = (int) Math.round(0.2 * iconSize);
+        int crossWidth = (int) Math.round(0.08 * iconSize);
+        int crossGap = (int) Math.round(0.05 * iconSize);
+        int iconOffset = crossLength + crossGap + crossWidth + crossGap;
+        Image coursorImage = new BufferedImage(iconSize + iconOffset, iconSize + iconOffset, BufferedImage.TYPE_INT_ARGB);
+        Graphics g = coursorImage.getGraphics();
+        Image iconImage = icon.getImage().getScaledInstance(iconSize, iconSize, Image.SCALE_SMOOTH);
+        g.drawImage(iconImage, iconOffset, iconOffset, null);
+        int posClose = crossLength + crossGap;
+        int posFar = posClose + crossWidth + crossGap;
+        g.setColor(Color.BLACK);
+        g.fillRect(posClose, 0, crossWidth, crossLength);
+        g.fillRect(posClose, posFar, crossWidth, crossLength);
+        g.fillRect(0, posClose, crossLength, crossWidth);
+        g.fillRect(posFar, posClose, crossLength, crossWidth);
+        Toolkit toolkit = Toolkit.getDefaultToolkit();
+        int offset = posClose + (int) Math.round(0.5 * crossWidth);
+        Point hotSpot = new Point(offset, offset);
+        return toolkit.createCustomCursor(coursorImage, hotSpot, name);
+    }
+
     public static JButton createIconButton(Icon icon, String toolTip) {
-        JButton result = new JButton(icon);
-        result.setToolTipText(toolTip);
-        result.setMargin(new Insets(0, 0, 0, 0));
+        JButton button = new JButton();
+        decorateButton(button, icon, toolTip);
+        return button;
+    }
+
+    public static void decorateButton(AbstractButton button, Icon icon, String toolTip) {
+        button.setIcon(icon);
+        button.setToolTipText(toolTip);
+        button.setMargin(new Insets(0, 0, 0, 0));
         int iconSize = SizeHelper.getToolIconSize();
-        Insets insets = result.getInsets();
+        Insets insets = button.getInsets();
         int minSize = iconSize + Math.max(insets.left + insets.right, insets.top + insets.bottom);
-        result.setPreferredSize(new Dimension(minSize, minSize));
-        return result;
+        button.setPreferredSize(new Dimension(minSize, minSize));
     }
 
     public static JButton createDialogButton(String text) {

@@ -1,22 +1,46 @@
 package org.workcraft.gui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.net.URI;
 import java.net.URISyntaxException;
+
+import javax.swing.KeyStroke;
 
 import org.workcraft.Framework;
 import org.workcraft.Info;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.plugins.shared.CommonEditorSettings;
+import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.util.GUI;
 import org.workcraft.util.LogUtils;
 
 public class MainWindowActions {
 
+    private static GraphEditor getCurrentEditor() {
+        final Framework framework = Framework.getInstance();
+        final MainWindow mainWindow = framework.getMainWindow();
+        return mainWindow.getCurrentEditor();
+    }
+
+    private static void repaintAndFocusCurrentEditor() {
+        final GraphEditor editor = getCurrentEditor();
+        if (editor != null) {
+            editor.repaint();
+            editor.requestFocus();
+        }
+    }
+
     public static final Action CREATE_WORK_ACTION = new Action() {
         @Override
         public String getText() {
             return "Create work...";
+        }
+        @Override
+        public KeyStroke getKeyStroke() {
+            return KeyStroke.getKeyStroke(KeyEvent.VK_N, DesktopApi.getMenuKeyMask());
         }
         @Override
         public void run() {
@@ -33,6 +57,10 @@ public class MainWindowActions {
         @Override
         public String getText() {
             return "Open work...";
+        }
+        @Override
+        public KeyStroke getKeyStroke() {
+            return KeyStroke.getKeyStroke(KeyEvent.VK_O, DesktopApi.getMenuKeyMask());
         }
         @Override
         public void run() {
@@ -65,6 +93,10 @@ public class MainWindowActions {
         @Override
         public String getText() {
             return "Save work";
+        }
+        @Override
+        public KeyStroke getKeyStroke() {
+            return KeyStroke.getKeyStroke(KeyEvent.VK_S, DesktopApi.getMenuKeyMask());
         }
         @Override
         public void run() {
@@ -145,6 +177,10 @@ public class MainWindowActions {
             return "Exit";
         }
         @Override
+        public KeyStroke getKeyStroke() {
+            return KeyStroke.getKeyStroke(KeyEvent.VK_F4, ActionEvent.ALT_MASK);
+        }
+        @Override
         public void run() {
             final Framework framework = Framework.getInstance();
             framework.shutdown();
@@ -170,6 +206,10 @@ public class MainWindowActions {
             return "Undo";
         }
         @Override
+        public KeyStroke getKeyStroke() {
+            return KeyStroke.getKeyStroke(KeyEvent.VK_Z, DesktopApi.getMenuKeyMask());
+        }
+        @Override
         public void run() {
             final Framework framework = Framework.getInstance();
             final MainWindow mainWindow = framework.getMainWindow();
@@ -181,6 +221,10 @@ public class MainWindowActions {
         @Override
         public String getText() {
             return "Redo";
+        }
+        @Override
+        public KeyStroke getKeyStroke() {
+            return KeyStroke.getKeyStroke(KeyEvent.VK_Z, DesktopApi.getMenuKeyMask() | ActionEvent.SHIFT_MASK);
         }
         @Override
         public void run() {
@@ -196,6 +240,10 @@ public class MainWindowActions {
             return "Cut";
         }
         @Override
+        public KeyStroke getKeyStroke() {
+            return KeyStroke.getKeyStroke(KeyEvent.VK_X, DesktopApi.getMenuKeyMask());
+        }
+        @Override
         public void run() {
             final Framework framework = Framework.getInstance();
             final MainWindow mainWindow = framework.getMainWindow();
@@ -207,6 +255,10 @@ public class MainWindowActions {
         @Override
         public String getText() {
             return "Copy";
+        }
+        @Override
+        public KeyStroke getKeyStroke() {
+            return KeyStroke.getKeyStroke(KeyEvent.VK_C, DesktopApi.getMenuKeyMask());
         }
         @Override
         public void run() {
@@ -222,6 +274,10 @@ public class MainWindowActions {
             return "Paste";
         }
         @Override
+        public KeyStroke getKeyStroke() {
+            return KeyStroke.getKeyStroke(KeyEvent.VK_V, DesktopApi.getMenuKeyMask());
+        }
+        @Override
         public void run() {
             final Framework framework = Framework.getInstance();
             final MainWindow mainWindow = framework.getMainWindow();
@@ -233,6 +289,10 @@ public class MainWindowActions {
         @Override
         public String getText() {
             return "Delete";
+        }
+        @Override
+        public KeyStroke getKeyStroke() {
+            return KeyStroke.getKeyStroke(KeyEvent.VK_DELETE, 0);
         }
         @Override
         public void run() {
@@ -247,6 +307,10 @@ public class MainWindowActions {
             return "Select all";
         }
         @Override
+        public KeyStroke getKeyStroke() {
+            return KeyStroke.getKeyStroke(KeyEvent.VK_A, DesktopApi.getMenuKeyMask());
+        }
+        @Override
         public void run() {
             final Framework framework = Framework.getInstance();
             final MainWindow mainWindow = framework.getMainWindow();
@@ -258,6 +322,10 @@ public class MainWindowActions {
         @Override
         public String getText() {
             return "Inverse selection";
+        }
+        @Override
+        public KeyStroke getKeyStroke() {
+            return KeyStroke.getKeyStroke(KeyEvent.VK_I, DesktopApi.getMenuKeyMask());
         }
         @Override
         public void run() {
@@ -299,10 +367,12 @@ public class MainWindowActions {
             return "Zoom in";
         }
         @Override
+        public KeyStroke getKeyStroke() {
+            return KeyStroke.getKeyStroke(KeyEvent.VK_EQUALS, DesktopApi.getMenuKeyMask());
+        }
+        @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
-            final GraphEditor editor = mainWindow.getCurrentEditor();
+            final GraphEditor editor = getCurrentEditor();
             if (editor != null) {
                 editor.zoomIn();
             }
@@ -315,10 +385,12 @@ public class MainWindowActions {
             return "Zoom out";
         }
         @Override
+        public KeyStroke getKeyStroke() {
+            return KeyStroke.getKeyStroke(KeyEvent.VK_MINUS, DesktopApi.getMenuKeyMask());
+        }
+        @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
-            final GraphEditor editor = mainWindow.getCurrentEditor();
+            final GraphEditor editor = getCurrentEditor();
             if (editor != null) {
                 editor.zoomOut();
             }
@@ -331,10 +403,12 @@ public class MainWindowActions {
             return "Default zoom";
         }
         @Override
+        public KeyStroke getKeyStroke() {
+            return KeyStroke.getKeyStroke(KeyEvent.VK_O, DesktopApi.getMenuKeyMask());
+        }
+        @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
-            final GraphEditor editor = mainWindow.getCurrentEditor();
+            final GraphEditor editor = getCurrentEditor();
             if (editor != null) {
                 editor.zoomDefault();
             }
@@ -347,10 +421,12 @@ public class MainWindowActions {
             return "Center selection";
         }
         @Override
+        public KeyStroke getKeyStroke() {
+            return KeyStroke.getKeyStroke(KeyEvent.VK_T, DesktopApi.getMenuKeyMask());
+        }
+        @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
-            final GraphEditor editor = mainWindow.getCurrentEditor();
+            final GraphEditor editor = getCurrentEditor();
             if (editor != null) {
                 editor.panCenter();
             }
@@ -363,10 +439,12 @@ public class MainWindowActions {
             return "Fit selection to screen";
         }
         @Override
+        public KeyStroke getKeyStroke() {
+            return KeyStroke.getKeyStroke(KeyEvent.VK_F, DesktopApi.getMenuKeyMask());
+        }
+        @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
-            final GraphEditor editor = mainWindow.getCurrentEditor();
+            final GraphEditor editor = getCurrentEditor();
             if (editor != null) {
                 editor.zoomFit();
             }
@@ -379,10 +457,12 @@ public class MainWindowActions {
             return "Pan left";
         }
         @Override
+        public KeyStroke getKeyStroke() {
+            return KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, DesktopApi.getMenuKeyMask());
+        }
+        @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
-            final GraphEditor editor = mainWindow.getCurrentEditor();
+            final GraphEditor editor = getCurrentEditor();
             if (editor != null) {
                 editor.panLeft();
             }
@@ -395,10 +475,12 @@ public class MainWindowActions {
             return "Pan up";
         }
         @Override
+        public KeyStroke getKeyStroke() {
+            return KeyStroke.getKeyStroke(KeyEvent.VK_UP, DesktopApi.getMenuKeyMask());
+        }
+        @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
-            final GraphEditor editor = mainWindow.getCurrentEditor();
+            final GraphEditor editor = getCurrentEditor();
             if (editor != null) {
                 editor.panUp();
             }
@@ -411,10 +493,12 @@ public class MainWindowActions {
             return "Pan right";
         }
         @Override
+        public KeyStroke getKeyStroke() {
+            return KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, DesktopApi.getMenuKeyMask());
+        }
+        @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
-            final GraphEditor editor = mainWindow.getCurrentEditor();
+            final GraphEditor editor = getCurrentEditor();
             if (editor != null) {
                 editor.panRight();
             }
@@ -427,13 +511,63 @@ public class MainWindowActions {
             return "Pan down";
         }
         @Override
+        public KeyStroke getKeyStroke() {
+            return KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, DesktopApi.getMenuKeyMask());
+        }
+        @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
-            final GraphEditor editor = mainWindow.getCurrentEditor();
+            final GraphEditor editor = getCurrentEditor();
             if (editor != null) {
                 editor.panDown();
             }
+        }
+    };
+
+    public static final Action TOGGLE_GRID = new Action() {
+        @Override
+        public String getText() {
+            return "Grid visibility";
+        }
+        @Override
+        public void run() {
+            CommonEditorSettings.setGridVisibility(!CommonEditorSettings.getGridVisibility());
+            repaintAndFocusCurrentEditor();
+        }
+    };
+
+    public static final Action TOGGLE_RULER = new Action() {
+        @Override
+        public String getText() {
+            return "Ruler visibility";
+        }
+        @Override
+        public void run() {
+            CommonEditorSettings.setRulerVisibility(!CommonEditorSettings.getRulerVisibility());
+            repaintAndFocusCurrentEditor();
+        }
+    };
+
+    public static final Action TOGGLE_NAME = new Action() {
+        @Override
+        public String getText() {
+            return "Name visibility";
+        }
+        @Override
+        public void run() {
+            CommonVisualSettings.setNameVisibility(!CommonVisualSettings.getNameVisibility());
+            repaintAndFocusCurrentEditor();
+        }
+    };
+
+    public static final Action TOGGLE_LABEL = new Action() {
+        @Override
+        public String getText() {
+            return "Label visibility";
+        }
+        @Override
+        public void run() {
+            CommonVisualSettings.setLabelVisibility(!CommonVisualSettings.getLabelVisibility());
+            repaintAndFocusCurrentEditor();
         }
     };
 
@@ -468,6 +602,10 @@ public class MainWindowActions {
         @Override
         public String getText() {
             return "Help contents";
+        }
+        @Override
+        public KeyStroke getKeyStroke() {
+            return KeyStroke.getKeyStroke(KeyEvent.VK_F1, 0);
         }
         @Override
         public void run() {

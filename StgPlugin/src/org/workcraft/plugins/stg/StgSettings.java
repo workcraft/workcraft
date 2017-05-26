@@ -18,16 +18,19 @@ public class StgSettings implements Settings {
     private static final String keyLowLevelSuffix = prefix + ".lowLevelSuffix";
     private static final String keyHighLevelSuffix = prefix + ".highLevelSuffix";
     private static final String keyGroupSignalConversion = prefix + ".groupSignalConversion";
+    private static final String keyShowTransitionInstance = prefix + ".showTransitionInstance";
 
     private static final Integer defaultDensityMapLevelLimit = 5;
     private static final String defaultLowLevelSuffix = "_LOW";
     private static final String defaultHighLevelSuffix = "_HIGH";
     private static final Boolean defaultGroupSignalConversion = false;
+    private static final Boolean defaultShowTransitionInstance = false;
 
     private static Integer densityMapLevelLimit = defaultDensityMapLevelLimit;
     private static String lowLevelSuffix = defaultLowLevelSuffix;
     private static String highLevelSuffix = defaultHighLevelSuffix;
     private static Boolean groupSignalConversion = defaultGroupSignalConversion;
+    private static Boolean showTransitionInstance = defaultShowTransitionInstance;
 
     public StgSettings() {
         properties.add(new PropertyDeclaration<StgSettings, Integer>(
@@ -84,6 +87,16 @@ public class StgSettings implements Settings {
             }
         });
 
+
+        properties.add(new PropertyDeclaration<StgSettings, Boolean>(
+                this, "Show transition instance property", Boolean.class, true, false, false) {
+            protected void setter(StgSettings object, Boolean value) {
+                setShowTransitionInstance(value);
+            }
+            protected Boolean getter(StgSettings object) {
+                return getShowTransitionInstance();
+            }
+        });
     }
 
     private boolean checkSignalLevelSuffix(String value) {
@@ -122,6 +135,7 @@ public class StgSettings implements Settings {
         setLowLevelSuffix(config.getString(keyLowLevelSuffix, defaultLowLevelSuffix));
         setHighLevelSuffix(config.getString(keyHighLevelSuffix, defaultHighLevelSuffix));
         setGroupSignalConversion(config.getBoolean(keyGroupSignalConversion, defaultGroupSignalConversion));
+        setShowTransitionInstance(config.getBoolean(keyShowTransitionInstance, defaultShowTransitionInstance));
     }
 
     @Override
@@ -130,6 +144,7 @@ public class StgSettings implements Settings {
         config.set(keyLowLevelSuffix, getLowLevelSuffix());
         config.set(keyHighLevelSuffix, getHighLevelSuffix());
         config.setBoolean(keyGroupSignalConversion, getGroupSignalConversion());
+        config.setBoolean(keyShowTransitionInstance, getShowTransitionInstance());
     }
 
     @Override
@@ -176,6 +191,14 @@ public class StgSettings implements Settings {
 
     public static void setGroupSignalConversion(Boolean value) {
         groupSignalConversion = value;
+    }
+
+    public static Boolean getShowTransitionInstance() {
+        return showTransitionInstance;
+    }
+
+    public static void setShowTransitionInstance(Boolean value) {
+        showTransitionInstance = value;
     }
 
 }

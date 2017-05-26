@@ -10,6 +10,8 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.ToolboxPanel;
+import org.workcraft.gui.graph.editors.AbstractInplaceEditor;
+import org.workcraft.gui.graph.editors.LabelInplaceEditor;
 import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
 
 public class CommentGeneratorTool extends NodeGeneratorTool {
@@ -18,7 +20,7 @@ public class CommentGeneratorTool extends NodeGeneratorTool {
         super(new DefaultNodeGenerator(CommentNode.class) {
             @Override
             public VisualNode generate(VisualModel model, Point2D where) throws NodeCreationException {
-                VisualComment component = (VisualComment) super.generate(model, where);
+                final VisualComment comment = (VisualComment) super.generate(model, where);
                 Framework framework = Framework.getInstance();
                 MainWindow mainWindow = framework.getMainWindow();
                 ToolboxPanel toolbox = mainWindow.getCurrentToolbox();
@@ -26,10 +28,11 @@ public class CommentGeneratorTool extends NodeGeneratorTool {
                 GraphEditorTool defaultTool = toolbox.getDefaultTool();
                 toolbox.selectTool(defaultTool);
                 if (defaultTool instanceof SelectionTool) {
-                    SelectionTool selectionTool = (SelectionTool) defaultTool;
-                    selectionTool.editLabelInPlace(editor, component, "");
+                    AbstractInplaceEditor textEditor = new LabelInplaceEditor(editor, comment);
+                    textEditor.edit(comment.getLabel(), comment.getLabelFont(),
+                            comment.getLabelOffset(), comment.getLabelAlignment(), true);
                 }
-                return component;
+                return comment;
             }
         });
     }

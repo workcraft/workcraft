@@ -8,6 +8,6 @@ public interface Tool {
     String getLabel();
     Icon getIcon();
     int getHotKeyCode();
-    Cursor getCursor();
+    Cursor getCursor(boolean menuKeyDown, boolean shiftKeyDown, boolean altKeyDown);
     boolean requiresButton();
 }
