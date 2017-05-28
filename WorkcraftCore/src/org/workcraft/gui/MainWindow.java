@@ -97,6 +97,8 @@ public class MainWindow extends JFrame {
     private static final String CONFIG_GUI_MAIN_LAST_SAVE_PATH = "gui.main.lastSavePath";
     private static final String CONFIG_GUI_MAIN_LAST_OPEN_PATH = "gui.main.lastOpenPath";
     private static final String CONFIG_GUI_MAIN_RECENT_FILE = "gui.main.recentFile";
+    private static final String CONFIG_GUI_MAIN_TOOLBAR_VISIBILITY = "gui.main.toolbar.visibility";
+    private static final String CONFIG_GUI_MAIN_TOOLBAR_POSITION = "gui.main.toolbar.position";
 
     private static final int MIN_WIDTH = 800;
     private static final int MIN_HEIGHT = 450;
@@ -122,6 +124,7 @@ public class MainWindow extends JFrame {
         }
     };
 
+    private BorderLayout layout;
     private JPanel content;
 
     private DefaultDockingPort rootDockingPort;
@@ -270,11 +273,11 @@ public class MainWindow extends JFrame {
 
     public void startup() {
         MainWindowIconManager.apply(this);
-
         JDialog.setDefaultLookAndFeelDecorated(true);
         UIManager.put(SubstanceLookAndFeel.TABBED_PANE_CONTENT_BORDER_KIND, TabContentPaneBorderKind.SINGLE_FULL);
-
         setTitle(TITLE_WORKCRAFT);
+
+        // Create main menu.
         mainMenu = new MainMenu(this);
         // FIXME: Is menuUI variable really necessary before setJMenuBar?
         MenuBarUI menuUI = mainMenu.getUI();
@@ -283,27 +286,32 @@ public class MainWindow extends JFrame {
             mainMenu.setUI(menuUI);
         }
 
+        // Tweak look-and-feel.
         SilverOceanTheme.enable();
         LookAndFeelHelper.setDefaultLookAndFeel();
         SwingUtilities.updateComponentTreeUI(this);
 
-        content = new JPanel(new BorderLayout());
+        // Create content panel and docking ports.
+        layout = new BorderLayout();
+        content = new JPanel(layout);
         setContentPane(content);
         rootDockingPort = new DefaultDockingPort(FLEXDOCK_DOCKING_PORT);
         content.add(rootDockingPort, BorderLayout.CENTER);
         StandardBorderManager borderManager = new StandardBorderManager(new ShadowBorder());
         rootDockingPort.setBorderManager(borderManager);
 
+        // Create toolbar.
         toolbar = new ToolBar(this);
-        add(toolbar, BorderLayout.NORTH);
+        loadToolbarPositionFromConfig();
         mainMenu.registerToolbar(toolbar);
 
+        // Create dockable windows.
         createWindows();
         createDockingLayout();
-        loadRecentFilesFromConfig();
         loadWindowGeometryFromConfig();
+        loadRecentFilesFromConfig();
 
-
+        // Display window in its default state.
         setVisible(true);
         DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
         DockingManager.display(outputDockable);
@@ -326,7 +334,7 @@ public class MainWindow extends JFrame {
     }
 
     private void setWorkActionsEnableness(boolean enable) {
-        getMainMenu().setExportMenuState(enable);
+        mainMenu.setExportMenuState(enable);
         MainWindowActions.MERGE_WORK_ACTION.setEnabled(enable);
         MainWindowActions.CLOSE_ACTIVE_EDITOR_ACTION.setEnabled(enable);
         MainWindowActions.CLOSE_ALL_EDITORS_ACTION.setEnabled(enable);
@@ -352,6 +360,10 @@ public class MainWindow extends JFrame {
         MainWindowActions.VIEW_PAN_UP.setEnabled(enable);
         MainWindowActions.VIEW_PAN_RIGHT.setEnabled(enable);
         MainWindowActions.VIEW_PAN_DOWN.setEnabled(enable);
+    }
+
+    public void updateMainMenuState(boolean canModify) {
+        mainMenu.updateCommandsMenuState(canModify);
     }
 
     public ScriptedActionListener getDefaultActionListener() {
@@ -442,6 +454,10 @@ public class MainWindow extends JFrame {
         }
     }
 
+    public DisplayMode getDisplayMode() {
+        return getGraphicsConfiguration().getDevice().getDisplayMode();
+    }
+
     private GraphEditorPanel getGraphEditorPanel(DockableWindow dockableWindow) {
         JComponent content = dockableWindow.getContentPanel().getContent();
         return (content instanceof GraphEditorPanel) ? (GraphEditorPanel) content : null;
@@ -484,7 +500,7 @@ public class MainWindow extends JFrame {
         }
     }
 
-    public void createDockingLayout() {
+    private void createDockingLayout() {
         PerspectiveManager pm = PerspectiveManager.getInstance();
         pm.add(new Perspective(FLEXDOCK_WORKSPACE, FLEXDOCK_WORKSPACE));
         pm.setCurrentPerspective(FLEXDOCK_WORKSPACE, true);
@@ -495,14 +511,15 @@ public class MainWindow extends JFrame {
         PerspectiveManager.setPersistenceHandler(persister);
         PerspectiveManager.setRestoreFloatingOnLoad(true);
 
+        DockingManager.setFloatingEnabled(true);
+        DockingManager.setAutoPersist(true);
+        EffectsManager.setPreview(new GhostPreview());
+
         try {
             DockingManager.loadLayoutModel();
         } catch (IOException | PersistenceException e) {
             LogUtils.logWarningLine("Window layout could not be loaded from '" + file.getAbsolutePath() + "'.");
         }
-        DockingManager.setFloatingEnabled(true);
-        DockingManager.setAutoPersist(true);
-        EffectsManager.setPreview(new GhostPreview());
 
         float xSplit = 0.888f;
         float ySplit = 0.8f;
@@ -549,7 +566,7 @@ public class MainWindow extends JFrame {
 
         // FIXME: Restoring previously saved layout does not work as expected:
         // "default" and "restored" layouts interfere with each other, which does not look nice.
-        //DockingManager.restoreLayout();
+        DockingManager.restoreLayout();
     }
 
     public void shutdown() throws OperationCancelledException {
@@ -573,12 +590,35 @@ public class MainWindow extends JFrame {
         }
         saveWindowGeometryToConfig();
         saveRecentFilesToConfig();
+        saveToolbarPositionToConfig();
 
         content.remove(rootDockingPort);
 
         outputWindow.releaseStream();
         errorWindow.releaseStream();
         setVisible(false);
+    }
+
+    private void loadToolbarPositionFromConfig() {
+        final Framework framework = Framework.getInstance();
+        String visible = framework.getConfigCoreVar(CONFIG_GUI_MAIN_TOOLBAR_VISIBILITY);
+        toolbar.setVisible(!"false".equals(visible));
+        String position = framework.getConfigCoreVar(CONFIG_GUI_MAIN_TOOLBAR_POSITION);
+        if (position != null) {
+            add(toolbar, position);
+            if (BorderLayout.EAST.equals(position) || BorderLayout.WEST.equals(position)) {
+                toolbar.setOrientation(ToolBar.VERTICAL);
+            }
+        }
+    }
+
+    private void saveToolbarPositionToConfig() {
+        final Framework framework = Framework.getInstance();
+        framework.setConfigCoreVar(CONFIG_GUI_MAIN_TOOLBAR_VISIBILITY, toolbar.isVisible() ? "true" : "false");
+        Object position = layout.getConstraints(toolbar);
+        if (position instanceof String) {
+            framework.setConfigCoreVar(CONFIG_GUI_MAIN_TOOLBAR_POSITION, (String) position);
+        }
     }
 
     public void loadWindowGeometryFromConfig() {
@@ -605,10 +645,6 @@ public class MainWindow extends JFrame {
             }
         }
         setSize(width, height);
-    }
-
-    public DisplayMode getDisplayMode() {
-        return getGraphicsConfiguration().getDevice().getDisplayMode();
     }
 
     public void saveWindowGeometryToConfig() {
@@ -1302,14 +1338,6 @@ public class MainWindow extends JFrame {
                 }
             }
         }
-    }
-
-    public MainMenu getMainMenu() {
-        return mainMenu;
-    }
-
-    public ToolBar getToolbar() {
-        return toolbar;
     }
 
     public DockableWindow getPropertyEditor() {

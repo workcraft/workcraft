@@ -28,6 +28,10 @@ public class SizeHelper {
         return (int) Math.round(getBaseSize());
     }
 
+    public static int getIconSize() {
+        return 32;
+    }
+
     public static int getToolIconSize() {
         return (int) Math.round(2.0 * getBaseSize());
     }

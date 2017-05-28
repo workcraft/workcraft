@@ -132,7 +132,14 @@ public class WorkspaceEntry implements ObservableState {
         if ((fileName == null) || fileName.isEmpty()) {
             fileName = "Untitled";
         }
-        return fileName.replace('\\', '_').replace('/', '_').replace(':', '_').replace('"', '_').replace('<', '_').replace('>', '_').replace('|', '_');
+        return fileName
+                .replace('\\', '_')
+                .replace('/', '_')
+                .replace(':', '_')
+                .replace('"', '_')
+                .replace('<', '_')
+                .replace('>', '_')
+                .replace('|', '_');
     }
 
     public Path<String> getWorkspacePath() {
@@ -174,7 +181,7 @@ public class WorkspaceEntry implements ObservableState {
         final Framework instance = Framework.getInstance();
         final MainWindow mainWindow = instance.getMainWindow();
         if (mainWindow != null) {
-            mainWindow.getMainMenu().updateCommandsMenuState(canModify);
+            mainWindow.updateMainMenuState(canModify);
             mainWindow.getPropertyView().setVisible(canModify);
         }
     }
