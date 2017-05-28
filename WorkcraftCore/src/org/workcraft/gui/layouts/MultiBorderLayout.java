@@ -22,7 +22,7 @@ import java.util.List;
  */
 public class MultiBorderLayout extends BorderLayout {
 
-    private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 7980696826487927146L;
 
     private interface DimensionGetter {
         Dimension get(Component in);

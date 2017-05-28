@@ -255,29 +255,6 @@ public class MainMenu extends JMenuBar {
         ActionMenuItem miPanCenter = new ActionMenuItem(MainWindowActions.VIEW_PAN_CENTER);
         miPanCenter.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
-// FIXME: Only the default Look and Feel works good, the others cause some problems.
-//        JMenu mnLookAndFeel = new JMenu("Look and Feel");
-//        for (final Entry<String, String> laf: LookAndFeelHelper.getLafMap().entrySet()) {
-//            JMenuItem miLAFItem = new JMenuItem();
-//            miLAFItem.setText(laf.getKey());
-//            miLAFItem.addActionListener(new ActionListener() {
-//                public void actionPerformed(ActionEvent e) {
-//                    try {
-//                        mainWindow.setLookAndFeel(laf.getValue());
-//                    } catch (OperationCancelledException e1) {
-//                    }
-//                }
-//            });
-//            mnLookAndFeel.add(miLAFItem);
-//        }
-
-// FIXME: Save-load of the layout is not functional yet.
-//      ScriptedActionMenuItem miSaveLayout = new ScriptedActionMenuItem(MainWindow.Actions.SAVE_UI_LAYOUT);
-//        miSaveLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
-//
-//        ScriptedActionMenuItem miLoadLayout = new ScriptedActionMenuItem(MainWindow.Actions.LOAD_UI_LAYOUT);
-//        miLoadLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
         ActionMenuItem miResetLayout = new ActionMenuItem(MainWindowActions.RESET_GUI_ACTION);
         miResetLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
 
@@ -293,14 +270,9 @@ public class MainMenu extends JMenuBar {
         mnView.add(miPanDown);
         mnView.addSeparator();
         mnView.add(mnWindows);
-//        mnView.add(mnLookAndFeel);
-//        mnView.addSeparator();
         mnView.add(miResetLayout);
-//        mnView.add(miSaveLayout);
-//        mnView.add(miLoadLayout);
 
         add(mnView);
-
     }
 
     private void addHelpMenu() {
