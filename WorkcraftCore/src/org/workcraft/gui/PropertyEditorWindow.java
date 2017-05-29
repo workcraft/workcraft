@@ -10,17 +10,17 @@ import org.workcraft.gui.propertyeditor.PropertyEditorTable;
 
 @SuppressWarnings("serial")
 public class PropertyEditorWindow extends JPanel {
+    private final DisabledPanel disabledPanel;
     private final PropertyEditorTable propertyTable;
     private final JScrollPane scrollProperties;
 
     public PropertyEditorWindow() {
+        disabledPanel = new DisabledPanel();
         propertyTable = new PropertyEditorTable();
-
         scrollProperties = new JScrollPane();
         scrollProperties.setViewportView(propertyTable);
-
         setLayout(new BorderLayout(0, 0));
-        add(new DisabledPanel(), BorderLayout.CENTER);
+        add(disabledPanel, BorderLayout.CENTER);
         validate();
     }
 
@@ -40,7 +40,7 @@ public class PropertyEditorWindow extends JPanel {
         if (propertyTable.getObject() != null) {
             removeAll();
             propertyTable.clearObject();
-            add(new DisabledPanel(), BorderLayout.CENTER);
+            add(disabledPanel, BorderLayout.CENTER);
             validate();
             repaint();
         }

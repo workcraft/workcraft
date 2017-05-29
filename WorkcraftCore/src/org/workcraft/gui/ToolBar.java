@@ -14,7 +14,7 @@ public class ToolBar extends JToolBar {
     private final MainWindow mainWindow;
 
     private ActionToggle gridToggle;
-    private ActionToggle rullerToggle;
+    private ActionToggle rulerToggle;
     private ActionToggle nameToggle;
     private ActionToggle labelToggle;
 
@@ -99,10 +99,10 @@ public class ToolBar extends JToolBar {
         gridToggle.addScriptedActionListener(mainWindow.getDefaultActionListener());
         add(gridToggle);
 
-        rullerToggle = new ActionToggle(MainWindowActions.TOGGLE_RULER,
+        rulerToggle = new ActionToggle(MainWindowActions.TOGGLE_RULER,
                 GUI.createIconFromSVG("images/toolbar-toggle-ruler.svg"));
-        rullerToggle.addScriptedActionListener(mainWindow.getDefaultActionListener());
-        add(rullerToggle);
+        rulerToggle.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        add(rulerToggle);
 
         nameToggle = new ActionToggle(MainWindowActions.TOGGLE_NAME,
                 GUI.createIconFromSVG("images/toolbar-toggle-name.svg"));
@@ -117,9 +117,9 @@ public class ToolBar extends JToolBar {
 
     public void refreshToggles() {
         gridToggle.setSelected(CommonEditorSettings.getGridVisibility());
-        rullerToggle.setSelected(CommonVisualSettings.getNameVisibility());
-        nameToggle.setSelected(CommonVisualSettings.getLabelVisibility());
-        labelToggle.setSelected(CommonEditorSettings.getRulerVisibility());
+        rulerToggle.setSelected(CommonEditorSettings.getRulerVisibility());
+        nameToggle.setSelected(CommonVisualSettings.getNameVisibility());
+        labelToggle.setSelected(CommonVisualSettings.getLabelVisibility());
     }
 
 }

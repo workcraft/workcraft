@@ -526,7 +526,7 @@ public class MainWindowActions {
     public static final Action TOGGLE_GRID = new Action() {
         @Override
         public String getText() {
-            return "Grid visibility";
+            return "Toggle grid visibility";
         }
         @Override
         public void run() {
@@ -538,7 +538,7 @@ public class MainWindowActions {
     public static final Action TOGGLE_RULER = new Action() {
         @Override
         public String getText() {
-            return "Ruler visibility";
+            return "Toggle ruler visibility";
         }
         @Override
         public void run() {
@@ -550,7 +550,7 @@ public class MainWindowActions {
     public static final Action TOGGLE_NAME = new Action() {
         @Override
         public String getText() {
-            return "Name visibility";
+            return "Toggle name visibility";
         }
         @Override
         public void run() {
@@ -562,7 +562,7 @@ public class MainWindowActions {
     public static final Action TOGGLE_LABEL = new Action() {
         @Override
         public String getText() {
-            return "Label visibility";
+            return "Toggle label visibility";
         }
         @Override
         public void run() {

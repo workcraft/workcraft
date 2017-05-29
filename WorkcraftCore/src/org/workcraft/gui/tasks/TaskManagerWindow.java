@@ -19,7 +19,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 
 import org.workcraft.Framework;
-import org.workcraft.gui.SmartFlowLayout;
+import org.workcraft.gui.layouts.SmartFlowLayout;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;

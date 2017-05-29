@@ -1,4 +1,4 @@
-package org.workcraft.gui;
+package org.workcraft.gui.layouts;
 
 import java.awt.Component;
 import java.awt.Container;

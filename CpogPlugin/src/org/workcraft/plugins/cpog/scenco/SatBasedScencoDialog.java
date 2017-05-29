@@ -23,7 +23,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 import org.workcraft.dom.visual.VisualTransformableNode;
-import org.workcraft.gui.SimpleFlowLayout;
+import org.workcraft.gui.layouts.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;

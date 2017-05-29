@@ -30,7 +30,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualTransformableNode;
-import org.workcraft.gui.SimpleFlowLayout;
+import org.workcraft.gui.layouts.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.gui.MyTableCellRenderer;
