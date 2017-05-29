@@ -27,6 +27,7 @@ import org.workcraft.gui.graph.tools.GraphEditorKeyListener;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.gui.graph.tools.ToolProvider;
+import org.workcraft.gui.layouts.SimpleFlowLayout;
 
 @SuppressWarnings("serial")
 public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKeyListener {
@@ -198,7 +199,7 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
     }
 
     private void setToolsForModel(VisualModel model) {
-        setLayout(new SimpleFlowLayout(5, 5));
+        setLayout(new SimpleFlowLayout(SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
 
         Class<? extends CustomToolsProvider> customTools = Annotations.getCustomToolsProvider(model.getClass());
         if (customTools != null) {

@@ -509,7 +509,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         if (titleSuffix != null) {
             title += " [" + titleSuffix + "]";
         }
-        mainWindow.setDockableTitle(mainWindow.getPropertyEditor(), title);
+        mainWindow.setPropertyEditorTitle(title);
         updatePropertyViewRequested = false;
     }
 

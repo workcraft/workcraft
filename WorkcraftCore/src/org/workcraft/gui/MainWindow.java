@@ -128,9 +128,9 @@ public class MainWindow extends JFrame {
     private JPanel content;
 
     private DefaultDockingPort rootDockingPort;
-    private DockableWindow documentPlaceholder;
     private DockableWindow outputDockable;
     private DockableWindow propertyEditorDockable;
+    private DockableWindow documentPlaceholder;
 
     private OutputWindow outputWindow;
     private ErrorWindow errorWindow;
@@ -279,17 +279,17 @@ public class MainWindow extends JFrame {
 
         // Create main menu.
         mainMenu = new MainMenu(this);
-        // FIXME: Is menuUI variable really necessary before setJMenuBar?
         MenuBarUI menuUI = mainMenu.getUI();
         setJMenuBar(mainMenu);
-        if (DesktopApi.getOs().isMac()) {
-            mainMenu.setUI(menuUI);
-        }
 
         // Tweak look-and-feel.
         SilverOceanTheme.enable();
         LookAndFeelHelper.setDefaultLookAndFeel();
         SwingUtilities.updateComponentTreeUI(this);
+        if (DesktopApi.getOs().isMac()) {
+            // Menu UI needs to be restored for OSX (global menu Look-and-Feel).
+            mainMenu.setUI(menuUI);
+        }
 
         // Create content panel and docking ports.
         layout = new BorderLayout();
@@ -424,7 +424,7 @@ public class MainWindow extends JFrame {
                 toolControlsWindow.setContent(null);
                 mainMenu.removeCommandsMenu();
                 editorInFocus = null;
-                setDockableTitle(getPropertyEditor(), TITLE_PROPERTY_EDITOR);
+                setPropertyEditorTitle(TITLE_PROPERTY_EDITOR);
             }
 
             editorWindows.remove(we, dockableWindow);
@@ -540,7 +540,7 @@ public class MainWindow extends JFrame {
                 DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.EAST_REGION,
                 xSplit);
 
-        DockableWindow propertyEditorDockable = createDockableWindow(propertyEditorWindow, TITLE_PROPERTY_EDITOR,
+        propertyEditorDockable = createDockableWindow(propertyEditorWindow, TITLE_PROPERTY_EDITOR,
                 workspaceDockable, DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
                 DockingManager.NORTH_REGION, ySplit);
 
@@ -566,7 +566,7 @@ public class MainWindow extends JFrame {
 
         // FIXME: Restoring previously saved layout does not work as expected:
         // "default" and "restored" layouts interfere with each other, which does not look nice.
-        DockingManager.restoreLayout();
+        //DockingManager.restoreLayout();
     }
 
     public void shutdown() throws OperationCancelledException {
@@ -601,23 +601,31 @@ public class MainWindow extends JFrame {
 
     private void loadToolbarPositionFromConfig() {
         final Framework framework = Framework.getInstance();
-        String visible = framework.getConfigCoreVar(CONFIG_GUI_MAIN_TOOLBAR_VISIBILITY);
-        toolbar.setVisible(!"false".equals(visible));
+
+        String visibleVal = framework.getConfigCoreVar(CONFIG_GUI_MAIN_TOOLBAR_VISIBILITY);
+        toolbar.setVisible(Boolean.valueOf(visibleVal));
+
         String position = framework.getConfigCoreVar(CONFIG_GUI_MAIN_TOOLBAR_POSITION);
-        if (position != null) {
-            add(toolbar, position);
-            if (BorderLayout.EAST.equals(position) || BorderLayout.WEST.equals(position)) {
-                toolbar.setOrientation(ToolBar.VERTICAL);
-            }
+        if (position == null) {
+            position = BorderLayout.NORTH;
         }
+        if (BorderLayout.EAST.equals(position) || BorderLayout.WEST.equals(position)) {
+            toolbar.setOrientation(ToolBar.VERTICAL);
+        } else {
+            toolbar.setOrientation(ToolBar.HORIZONTAL);
+        }
+        add(toolbar, position);
     }
 
     private void saveToolbarPositionToConfig() {
         final Framework framework = Framework.getInstance();
-        framework.setConfigCoreVar(CONFIG_GUI_MAIN_TOOLBAR_VISIBILITY, toolbar.isVisible() ? "true" : "false");
-        Object position = layout.getConstraints(toolbar);
-        if (position instanceof String) {
-            framework.setConfigCoreVar(CONFIG_GUI_MAIN_TOOLBAR_POSITION, (String) position);
+
+        String visibleVal = String.valueOf(toolbar.isVisible());
+        framework.setConfigCoreVar(CONFIG_GUI_MAIN_TOOLBAR_VISIBILITY, visibleVal);
+
+        Object positionVal = layout.getConstraints(toolbar);
+        if (positionVal instanceof String) {
+            framework.setConfigCoreVar(CONFIG_GUI_MAIN_TOOLBAR_POSITION, (String) positionVal);
         }
     }
 
@@ -1164,11 +1172,9 @@ public class MainWindow extends JFrame {
         DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
     }
 
-    public void setDockableTitle(DockableWindow dockable, String title) {
-        if (dockable != null) {
-            dockable.setTitle(title);
-            DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
-        }
+    public void setPropertyEditorTitle(String title) {
+        propertyEditorDockable.setTitle(title);
+        DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
     }
 
     public List<GraphEditorPanel> getEditors(WorkspaceEntry we) {
@@ -1338,10 +1344,6 @@ public class MainWindow extends JFrame {
                 }
             }
         }
-    }
-
-    public DockableWindow getPropertyEditor() {
-        return propertyEditorDockable;
     }
 
     public PropertyEditorWindow getPropertyView() {

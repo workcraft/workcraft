@@ -70,7 +70,7 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
     }
 
     @Override
-    public void activated(GraphEditor editor) {
+    public void activated(final GraphEditor editor) {
         super.activated(editor);
         resetState(editor);
         if (templateNode == null) {

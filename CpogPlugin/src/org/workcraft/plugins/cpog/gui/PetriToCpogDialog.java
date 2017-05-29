@@ -20,7 +20,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
-import org.workcraft.gui.SimpleFlowLayout;
+import org.workcraft.gui.layouts.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.PetriToCpogSettings;
 import org.workcraft.util.GUI;
 

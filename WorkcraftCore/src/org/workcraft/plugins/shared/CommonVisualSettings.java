@@ -221,7 +221,7 @@ public class CommonVisualSettings implements Settings {
 
     private void addLabelVisibility() {
         properties.add(new PropertyDeclaration<CommonVisualSettings, Boolean>(
-                this, "Show component labels",
+                this, "Show labels",
                 Boolean.class, true, false, false) {
             @Override
             protected void setter(CommonVisualSettings object, Boolean value) {
@@ -266,7 +266,7 @@ public class CommonVisualSettings implements Settings {
 
     private void addNameVisibility() {
         properties.add(new PropertyDeclaration<CommonVisualSettings, Boolean>(
-                this, "Show component names",
+                this, "Show names",
                 Boolean.class, true, false, false) {
             @Override
             protected void setter(CommonVisualSettings object, Boolean value) {
