@@ -73,6 +73,19 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
     public void activated(final GraphEditor editor) {
         super.activated(editor);
         resetState(editor);
+        VisualModel model = editor.getModel();
+        if (topLevelOnly) {
+            currentLevel = model.getCurrentLevel();
+            model.setCurrentLevel(model.getRoot());
+        }
+        // Create a node for storing default properties (on each activation of the tool).
+        try {
+            VisualNode defaultNode = generator.createVisualNode(generator.createMathNode());
+            model.setDefaultNode(defaultNode);
+        } catch (NodeCreationException e) {
+            throw new RuntimeException(e);
+        }
+        // Create a node for storing template properties (if it does not exist yet).
         if (templateNode == null) {
             try {
                 templateNode = generator.createVisualNode(generator.createMathNode());
@@ -80,12 +93,7 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
                 throw new RuntimeException(e);
             }
         }
-        VisualModel model = editor.getModel();
         model.setTemplateNode(templateNode);
-        if (topLevelOnly) {
-            currentLevel = model.getCurrentLevel();
-            model.setCurrentLevel(model.getRoot());
-        }
     }
 
     @Override
@@ -97,11 +105,6 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
             model.setCurrentLevel(currentLevel);
             currentLevel = null;
         }
-    }
-
-    @Override
-    public void reactivated(GraphEditor editor) {
-        templateNode = null;
     }
 
     @Override

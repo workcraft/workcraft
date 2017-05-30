@@ -7,7 +7,6 @@ import javax.swing.JPanel;
 public interface GraphEditorTool extends Tool, GraphEditorKeyListener, GraphEditorMouseListener {
     void activated(GraphEditor editor);
     void deactivated(GraphEditor editor);
-    void reactivated(GraphEditor editor);
     void setup(GraphEditor editor);
 
     void drawInUserSpace(GraphEditor editor, Graphics2D g);

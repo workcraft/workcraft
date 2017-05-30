@@ -126,18 +126,18 @@ public class DockableWindow extends AbstractDockable {
             DockableWindow dockable = (DockableWindow) d;
             boolean inTab = dockable.getComponent().getParent() instanceof JTabbedPane;
             DockableWindowContentPanel contentPanel = dockable.getContentPanel();
-            if (inTab && !dockable.isMaximized()) {
+            if (!inTab || dockable.isMaximized()) {
+                contentPanel.setHeaderVisible(true);
+            } else {
                 contentPanel.setHeaderVisible(false);
                 JTabbedPane tabbedPane = (JTabbedPane) dockable.getComponent().getParent();
-                for (int i = 0; i < tabbedPane.getComponentCount(); i++) {
+                for (int i = 0; i < tabbedPane.getTabCount(); i++) {
                     if (dockable.getComponent() == tabbedPane.getComponentAt(i)) {
                         DockableTab dockableTab = new DockableTab(dockable, actionListener);
                         tabbedPane.setTabComponentAt(i, dockableTab);
                         break;
                     }
                 }
-            } else {
-                contentPanel.setHeaderVisible(true);
             }
         }
     }

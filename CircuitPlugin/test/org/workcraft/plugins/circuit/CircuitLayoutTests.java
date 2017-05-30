@@ -55,6 +55,7 @@ public class CircuitLayoutTests {
 
             CircuitLayoutCommand command = new CircuitLayoutCommand();
             WorkspaceEntry dstWe = command.execute(srcWe);
+
             Set<String> dstInputs = new HashSet<>();
             Set<String> dstOutputs = new HashSet<>();
             Set<String> dstGates = new HashSet<>();
@@ -63,6 +64,9 @@ public class CircuitLayoutTests {
             Assert.assertEquals(srcInputs, dstInputs);
             Assert.assertEquals(srcOutputs, dstOutputs);
             Assert.assertEquals(srcGates, dstGates);
+
+            framework.closeWork(srcWe);
+            framework.closeWork(dstWe);
         }
     }
 

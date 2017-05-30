@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.swing.AbstractAction;
+import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
@@ -471,7 +472,9 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     public void updatePropertyView() {
         ModelProperties properties;
         String titleSuffix = null;
-        VisualNode templateNode = getModel().getTemplateNode();
+        VisualModel model = getModel();
+        final VisualNode defaultNode = model.getDefaultNode();
+        final VisualNode templateNode = model.getTemplateNode();
         if (templateNode != null) {
             properties = getNodeProperties(templateNode);
             for (PropertyDescriptor pd: new LinkedList<>(properties.getDescriptors())) {
@@ -481,7 +484,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
             }
             titleSuffix = TITLE_SUFFIX_TEMPLATE;
         } else {
-            Collection<Node> selection = getModel().getSelection();
+            Collection<Node> selection = model.getSelection();
             if (selection.size() == 0) {
                 properties = getModelProperties();
                 titleSuffix = TITLE_SUFFIX_MODEL;
@@ -503,6 +506,20 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
             propertyEditorWindow.clearObject();
         } else {
             propertyEditorWindow.setObject(propertiesWrapper(properties));
+            if ((templateNode != null) && (defaultNode != null)) {
+                JButton resetButton = new JButton("Defaults");
+                resetButton.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        templateNode.copyStyle(defaultNode);
+                        updatePropertyViewRequested = true;
+                    }
+                });
+                propertyEditorWindow.add(resetButton, BorderLayout.SOUTH);
+                // A hack to display reset button: toggle its visibility a couple of times.
+                resetButton.setVisible(false);
+                resetButton.setVisible(true);
+            }
         }
 
         String title = MainWindow.TITLE_PROPERTY_EDITOR;
@@ -537,6 +554,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     public ToolboxPanel getToolBox() {
         return toolboxPanel;
     }
+
     public void zoomIn() {
         SwingUtilities.invokeLater(new Runnable() {
             @Override

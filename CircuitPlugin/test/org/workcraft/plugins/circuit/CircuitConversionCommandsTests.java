@@ -60,7 +60,6 @@ public class CircuitConversionCommandsTests {
             CircuitToStgConversionCommand command = new CircuitToStgConversionCommand();
             WorkspaceEntry dstWe = command.execute(srcWe);
             Stg dstStg = WorkspaceUtils.getAs(dstWe, Stg.class);
-
             int dstStgPlaceCount = dstStg.getPlaces().size();
             Set<String> dstStgInputs = dstStg.getSignalNames(Type.INPUT, null);
             Set<String> dstStgOutputs = dstStg.getSignalNames(Type.OUTPUT, null);
@@ -68,6 +67,9 @@ public class CircuitConversionCommandsTests {
             Assert.assertEquals(2 * srcCircuitSignalCount, dstStgPlaceCount);
             Assert.assertEquals(srcCircuitInputs, dstStgInputs);
             Assert.assertEquals(srcCircuitOutputs, dstStgOutputs);
+
+            framework.closeWork(srcWe);
+            framework.closeWork(dstWe);
         }
     }
 

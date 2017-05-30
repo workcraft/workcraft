@@ -53,6 +53,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     private final ObservableStateImpl observableState = new ObservableStateImpl();
 
     private VisualNode templateNode = null;
+    private VisualNode defaultNode = null;
 
     public AbstractVisualModel() {
         this(null, null);
@@ -668,6 +669,16 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     @Override
     public VisualNode getTemplateNode() {
         return templateNode;
+    }
+
+    @Override
+    public void setDefaultNode(VisualNode node) {
+        defaultNode = node;
+    }
+
+    @Override
+    public VisualNode getDefaultNode() {
+        return defaultNode;
     }
 
     @Override

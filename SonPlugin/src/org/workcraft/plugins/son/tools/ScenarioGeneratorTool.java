@@ -255,8 +255,9 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
 
         net.clearMarking();
         initialise();
-
         editor.forceRedraw();
+        // Nodes to store template and default properties are irrelevant are undefined.
+        editor.getModel().setDefaultNode(null);
         editor.getModel().setTemplateNode(null);
     }
 

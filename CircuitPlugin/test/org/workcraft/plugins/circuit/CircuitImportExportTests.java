@@ -61,11 +61,12 @@ public class CircuitImportExportTests {
             Set<String> vInputs = new HashSet<>();
             Set<String> vOutputs = new HashSet<>();
             Set<String> vGates = new HashSet<>();
+            WorkspaceEntry vWe = null;
             try {
                 File vFile = File.createTempFile("workcraft-", ".v");
                 vFile.deleteOnExit();
                 framework.exportModel(wWe.getModelEntry(), vFile, Format.VERILOG);
-                WorkspaceEntry vWe = framework.loadWork(vFile);
+                vWe = framework.loadWork(vFile);
                 countCircuitNodes(vWe, vInputs, vOutputs, vGates);
             } catch (IOException | SerialisationException e) {
             }
@@ -73,6 +74,9 @@ public class CircuitImportExportTests {
             Assert.assertEquals(wInputs, vInputs);
             Assert.assertEquals(wOutputs, vOutputs);
             Assert.assertEquals(wGates, vGates);
+
+            framework.closeWork(wWe);
+            framework.closeWork(vWe);
         }
     }
 
