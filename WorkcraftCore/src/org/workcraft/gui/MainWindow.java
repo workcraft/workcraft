@@ -136,8 +136,8 @@ public class MainWindow extends JFrame {
     private ErrorWindow errorWindow;
     private JavaScriptWindow javaScriptWindow;
     private PropertyEditorWindow propertyEditorWindow;
-    private SimpleContainer toolControlsWindow;
     private SimpleContainer editorToolsWindow;
+    private SimpleContainer toolControlsWindow;
     private WorkspaceWindow workspaceWindow;
 
     private final ListMap<WorkspaceEntry, DockableWindow> editorWindows = new ListMap<>();
@@ -167,8 +167,8 @@ public class MainWindow extends JFrame {
         javaScriptWindow = new JavaScriptWindow();
 
         propertyEditorWindow = new PropertyEditorWindow();
-        toolControlsWindow = new SimpleContainer();
         editorToolsWindow = new SimpleContainer();
+        toolControlsWindow = new SimpleContainer();
         setMinimumSize(new Dimension(MIN_WIDTH, MIN_HEIGHT));
     }
 
@@ -393,65 +393,72 @@ public class MainWindow extends JFrame {
         if (dockableWindow == null) {
             throw new NullPointerException();
         }
-        int id = dockableWindow.getID();
         GraphEditorPanel editor = getGraphEditorPanel(dockableWindow);
         if (editor != null) {
-            // Handle editor window close
-            WorkspaceEntry we = editor.getWorkspaceEntry();
-
-            if (we.isChanged()) {
-                String title = we.getTitle();
-                int result = JOptionPane.showConfirmDialog(this,
-                        "Document '" + title + "' has unsaved changes.\n" + "Save before closing?",
-                        DIALOG_CLOSE_WORK, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
-
-                switch (result) {
-                case JOptionPane.YES_OPTION:
-                    saveWork(we);
-                    break;
-                case JOptionPane.NO_OPTION:
-                    break;
-                default:
-                    throw new OperationCancelledException("Operation cancelled by user.");
-                }
-            }
-
-            if (DockingManager.isMaximized(dockableWindow)) {
-                toggleDockableWindowMaximized(dockableWindow.getID());
-            }
-
-            if (editorInFocus == editor) {
-                toolControlsWindow.setContent(null);
-                mainMenu.removeCommandsMenu();
-                editorInFocus = null;
-                setPropertyEditorTitle(TITLE_PROPERTY_EDITOR);
-            }
-
-            editorWindows.remove(we, dockableWindow);
-            if (editorWindows.get(we).isEmpty()) {
-                final Framework framework = Framework.getInstance();
-                framework.closeWork(we);
-            }
-
-            if (editorWindows.isEmpty()) {
-                DockingManager.registerDockable(documentPlaceholder);
-                DockingManager.dock(documentPlaceholder, dockableWindow, DockingConstants.CENTER_REGION);
-                utilityWindows.add(documentPlaceholder);
-                propertyEditorWindow.removeAll();
-                toolControlsWindow.removeAll();
-                editorToolsWindow.removeAll();
-                setWorkActionsEnableness(false);
-            }
-
-            DockingManager.close(dockableWindow);
-            DockingManager.unregisterDockable(dockableWindow);
-            dockableWindow.setClosed(true);
+            closeDocableEditorWindow(dockableWindow, editor);
         } else {
-            // handle utility window close
-            mainMenu.utilityWindowClosed(id);
-            DockingManager.close(dockableWindow);
-            dockableWindow.setClosed(true);
+            closeDockableUtilityWindow(dockableWindow);
         }
+    }
+
+    private void closeDocableEditorWindow(DockableWindow dockableWindow, GraphEditorPanel editor)
+            throws OperationCancelledException {
+
+        WorkspaceEntry we = editor.getWorkspaceEntry();
+        if (we.isChanged()) {
+            String title = we.getTitle();
+            int result = JOptionPane.showConfirmDialog(this,
+                    "Document '" + title + "' has unsaved changes.\n" + "Save before closing?",
+                    DIALOG_CLOSE_WORK, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+
+            switch (result) {
+            case JOptionPane.YES_OPTION:
+                saveWork(we);
+                break;
+            case JOptionPane.NO_OPTION:
+                break;
+            default:
+                throw new OperationCancelledException("Operation cancelled by user.");
+            }
+        }
+
+        if (DockingManager.isMaximized(dockableWindow)) {
+            toggleDockableWindowMaximized(dockableWindow.getID());
+        }
+
+        if (editorInFocus == editor) {
+            editorToolsWindow.setContent(null);
+            mainMenu.removeCommandsMenu();
+            editorInFocus = null;
+            setPropertyEditorTitle(TITLE_PROPERTY_EDITOR);
+        }
+
+        editorWindows.remove(we, dockableWindow);
+        if (editorWindows.get(we).isEmpty()) {
+            final Framework framework = Framework.getInstance();
+            framework.closeWork(we);
+        }
+
+        if (editorWindows.isEmpty()) {
+            DockingManager.registerDockable(documentPlaceholder);
+            DockingManager.dock(documentPlaceholder, dockableWindow, DockingConstants.CENTER_REGION);
+            utilityWindows.add(documentPlaceholder);
+            propertyEditorWindow.removeAll();
+            editorToolsWindow.removeAll();
+            toolControlsWindow.removeAll();
+            setWorkActionsEnableness(false);
+        }
+
+        DockingManager.close(dockableWindow);
+        DockingManager.unregisterDockable(dockableWindow);
+        dockableWindow.setClosed(true);
+    }
+
+    private void closeDockableUtilityWindow(DockableWindow dockableWindow) {
+        int id = dockableWindow.getID();
+        mainMenu.utilityWindowClosed(id);
+        DockingManager.close(dockableWindow);
+        dockableWindow.setClosed(true);
     }
 
     public DisplayMode getDisplayMode() {
@@ -544,11 +551,11 @@ public class MainWindow extends JFrame {
                 workspaceDockable, DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
                 DockingManager.NORTH_REGION, ySplit);
 
-        DockableWindow toolControlsDockable = createDockableWindow(editorToolsWindow, TITLE_TOOL_CONTROLS,
+        DockableWindow toolControlsDockable = createDockableWindow(toolControlsWindow, TITLE_TOOL_CONTROLS,
                 propertyEditorDockable, DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
                 DockingManager.SOUTH_REGION, 0.4f);
 
-        DockableWindow editorToolsDockable = createDockableWindow(toolControlsWindow, TITLE_EDITOR_TOOLS,
+        DockableWindow editorToolsDockable = createDockableWindow(editorToolsWindow, TITLE_EDITOR_TOOLS,
                 toolControlsDockable, DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
                 DockingManager.SOUTH_REGION, 0.795f);
 
@@ -560,8 +567,8 @@ public class MainWindow extends JFrame {
         registerUtilityWindow(javaScriptDockable);
         registerUtilityWindow(tasksDockable);
         registerUtilityWindow(propertyEditorDockable);
-        registerUtilityWindow(editorToolsDockable);
         registerUtilityWindow(toolControlsDockable);
+        registerUtilityWindow(editorToolsDockable);
         registerUtilityWindow(workspaceDockable);
 
         // FIXME: Restoring previously saved layout does not work as expected:
@@ -602,8 +609,12 @@ public class MainWindow extends JFrame {
     private void loadToolbarPositionFromConfig() {
         final Framework framework = Framework.getInstance();
 
+        boolean visible = true;
         String visibleVal = framework.getConfigCoreVar(CONFIG_GUI_MAIN_TOOLBAR_VISIBILITY);
-        toolbar.setVisible(Boolean.valueOf(visibleVal));
+        if (visibleVal != null) {
+            visible = Boolean.valueOf(visibleVal);
+        }
+        toolbar.setVisible(visible);
 
         String position = framework.getConfigCoreVar(CONFIG_GUI_MAIN_TOOLBAR_POSITION);
         if (position == null) {
@@ -764,8 +775,8 @@ public class MainWindow extends JFrame {
             mainMenu.setMenuForWorkspaceEntry(we);
 
             ToolboxPanel toolBox = editorInFocus.getToolBox();
-            toolControlsWindow.setContent(toolBox);
-            editorToolsWindow.setContent(toolBox.getControlPanel());
+            editorToolsWindow.setContent(toolBox);
+            toolControlsWindow.setContent(toolBox.getControlPanel());
 
             GraphEditorTool selectedTool = toolBox.getSelectedTool();
             selectedTool.setup(editorInFocus);

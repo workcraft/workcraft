@@ -564,6 +564,8 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
         SONSettings.setTimeVisibility(true);
 
         editor.forceRedraw();
+        // Nodes to store template and default properties are irrelevant are undefined.
+        editor.getModel().setDefaultNode(null);
         editor.getModel().setTemplateNode(null);
     }
 

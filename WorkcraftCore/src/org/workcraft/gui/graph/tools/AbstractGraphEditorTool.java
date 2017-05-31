@@ -23,6 +23,8 @@ public abstract class AbstractGraphEditorTool implements GraphEditorTool {
     @Override
     public void activated(final GraphEditor editor) {
         editor.forceRedraw();
+        // Nodes to store template and default properties are irrelevant are undefined.
+        editor.getModel().setDefaultNode(null);
         editor.getModel().setTemplateNode(null);
         resetIssue();
     }
@@ -30,10 +32,6 @@ public abstract class AbstractGraphEditorTool implements GraphEditorTool {
     @Override
     public void deactivated(final GraphEditor editor) {
         resetIssue();
-    }
-
-    @Override
-    public void reactivated(final GraphEditor editor) {
     }
 
     @Override

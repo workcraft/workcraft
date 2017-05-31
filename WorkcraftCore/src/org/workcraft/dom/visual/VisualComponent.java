@@ -302,9 +302,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
     protected void cacheLabelRenderedText(String text, Font font, Positioning positioning, Point2D offset) {
         if (labelRenderedText.isDifferent(text, font, positioning, offset)) {
-            transformChanging();
             labelRenderedText = new RenderedText(text, font, positioning, offset);
-            transformChanged();
         }
     }
 
@@ -369,9 +367,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
 
     protected void cacheNameRenderedText(String text, Font font, Positioning positioning, Point2D offset) {
         if (nameRenderedText.isDifferent(text, font, positioning, offset)) {
-            transformChanging();
             nameRenderedText = new RenderedText(text, font, positioning, offset);
-            transformChanged();
         }
     }
 

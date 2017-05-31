@@ -179,17 +179,11 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
             selectedTool.deactivated(editor);
             setToolButtonSelected(selectedTool, false);
         }
-
         ToolTracker tracker = hotkeyMap.get(tool.getHotKeyCode());
         if (tracker != null) {
             tracker.track(tool);
         }
-
-        if (tool == selectedTool) {
-            selectedTool.reactivated(editor);
-        }
         selectedTool = tool;
-
         controlPanel.setTool(selectedTool, editor);
         setToolButtonSelected(selectedTool, true);
         selectedTool.setup(editor);

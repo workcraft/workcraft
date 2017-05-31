@@ -17,7 +17,7 @@ import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class CommandsTests {
+public class StgCommandsTests {
 
     private static final String[] TEST_STG_WORKS = {
         "org/workcraft/plugins/stg/commands/celement.stg.work",
@@ -59,6 +59,9 @@ public class CommandsTests {
             Assert.assertEquals(srcInputs, dstOutputs);
             Assert.assertEquals(srcOutputs, dstInputs);
             Assert.assertEquals(srcInternals, dstInternals);
+
+            framework.closeWork(srcWe);
+            framework.closeWork(dstWe);
         }
     }
 
@@ -111,6 +114,9 @@ public class CommandsTests {
             Assert.assertEquals(srcMinusCount, dstPlusCount);
             Assert.assertEquals(srcPlusCount, dstMinusCount);
             Assert.assertEquals(srcToggleCount, dstToggleCount);
+
+            framework.closeWork(srcWe);
+            framework.closeWork(dstWe);
         }
     }
 
@@ -151,6 +157,10 @@ public class CommandsTests {
             Assert.assertEquals(srcPlaces + srcImplicitPlaceArcs, impPlaces + impImplicitPlaceArcs);
             Assert.assertEquals(srcSignalTransitions, impSignalTransitions);
             Assert.assertEquals(srcDummyTransitions, impDummyTransitions);
+
+            framework.closeWork(srcWe);
+            framework.closeWork(expWe);
+            framework.closeWork(impWe);
         }
     }
 
@@ -188,6 +198,10 @@ public class CommandsTests {
             Assert.assertEquals(midPlaces, dstPlaces + dstImplicitPlaceArcs);
             Assert.assertEquals(midTransitions, dstDummyTransitions);
             Assert.assertEquals(0, dstSignalTransitions);
+
+            framework.closeWork(srcWe);
+            framework.closeWork(midWe);
+            framework.closeWork(dstWe);
         }
     }
 
@@ -221,6 +235,9 @@ public class CommandsTests {
             Assert.assertEquals(srcDummyTransitions, dstDummyTransitions);
             Assert.assertEquals(srcImplicitPlaceArcs + srcSignalTransitions, dstImplicitPlaceArcs);
             Assert.assertEquals(srcConnections + srcSignalTransitions, dstConnections);
+
+            framework.closeWork(srcWe);
+            framework.closeWork(dstWe);
         }
     }
 

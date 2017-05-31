@@ -123,10 +123,14 @@ public class ConnectionTool extends AbstractGraphEditorTool {
     public void activated(final GraphEditor editor) {
         super.activated(editor);
         resetState(editor);
+        VisualModel model = editor.getModel();
+        // Create a node for storing default properties (on each activation of the tool).
+        model.setDefaultNode(createDefaultTemplateNode());
+        // Create a node for storing template properties (if it does not exist yet).
         if (useTemplate && (templateNode == null)) {
             templateNode = createDefaultTemplateNode();
         }
-        editor.getModel().setTemplateNode(templateNode);
+        model.setTemplateNode(templateNode);
     }
 
     public VisualConnection createDefaultTemplateNode() {
@@ -137,11 +141,6 @@ public class ConnectionTool extends AbstractGraphEditorTool {
     public void deactivated(final GraphEditor editor) {
         super.deactivated(editor);
         resetState(editor);
-    }
-
-    @Override
-    public void reactivated(final GraphEditor editor) {
-        templateNode = null;
     }
 
     @Override
