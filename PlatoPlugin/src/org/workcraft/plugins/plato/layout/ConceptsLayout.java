@@ -4,16 +4,23 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.connections.Bezier;
+import org.workcraft.dom.visual.connections.ControlPoint;
+import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
+import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.VisualSignalTransition;
@@ -48,6 +55,7 @@ public class ConceptsLayout {
                 }
             }
 
+            createConsistencyLoops(visualStg);
             addReplicaPlaces(visualStg);
         } catch (Exception e) {
             e.printStackTrace();
@@ -78,11 +86,13 @@ public class ConceptsLayout {
             for (VisualComponent c : set) {
                 if (c instanceof VisualPlace) {
                     if (visualStg.getMathName(c).endsWith("0")) {
+                        c.setNamePositioning(Positioning.RIGHT);
                         c.setPosition(new Point2D.Double(centre.getX() - xDiff, centre.getY()));
                         if ((c.getPosition().getX() < leftmost) || (leftmost == 0.0)) {
                             leftmost = c.getPosition().getX();
                         }
                     } else {
+                        c.setNamePositioning(Positioning.LEFT);
                         c.setPosition(new Point2D.Double(centre.getX() + xDiff, centre.getY()));
                         if ((c.getPosition().getX() > rightmost) || (rightmost == 0.0)) {
                             rightmost = c.getPosition().getX();
@@ -115,6 +125,40 @@ public class ConceptsLayout {
         }
         double diff = rightmost - leftmost;
         return leftmost + (diff / 2);
+    }
+
+    private static void createConsistencyLoops(VisualStg visualStg) {
+        Collection<VisualConnection> set = visualStg.getVisualConnections();
+
+        for (VisualConnection c :  set) {
+            if (!(c instanceof VisualReadArc)) {
+                c.setConnectionType(ConnectionType.BEZIER);
+                VisualNode first = c.getFirst();
+                VisualNode second = c.getSecond();
+                Bezier bezier = (Bezier) c.getGraphic();
+                List<ControlPoint> points = bezier.getControlPoints();
+
+                if (first instanceof VisualSignalTransition) {
+                    VisualSignalTransition f = (VisualSignalTransition) first;
+                    if (f.getDirection() == SignalTransition.Direction.PLUS) {
+                        points.get(0).setPosition(new Point2D.Double(f.getCenter().getX() + 1.5, f.getCenter().getY()));
+                        points.get(1).setPosition(new Point2D.Double(second.getCenter().getX(), second.getCenter().getY() - 1.5));
+                    } else {
+                        points.get(0).setPosition(new Point2D.Double(f.getCenter().getX() - 1.5, f.getCenter().getY()));
+                        points.get(1).setPosition(new Point2D.Double(second.getCenter().getX(), second.getCenter().getY() + 1.5));
+                    }
+                } else {
+                    VisualSignalTransition s = (VisualSignalTransition) second;
+                    if (s.getDirection() == SignalTransition.Direction.PLUS) {
+                        points.get(0).setPosition(new Point2D.Double(first.getCenter().getX(), first.getCenter().getY() - 1.5));
+                        points.get(1).setPosition(new Point2D.Double(s.getCenter().getX() - 1.5, s.getCenter().getY()));
+                    } else {
+                        points.get(0).setPosition(new Point2D.Double(first.getCenter().getX(), first.getCenter().getY() + 1.5));
+                        points.get(1).setPosition(new Point2D.Double(s.getCenter().getX() + 1.5, s.getCenter().getY()));
+                    }
+                }
+            }
+        }
     }
 
     private static HashMap<Type, HashMap<String, HashSet<VisualComponent>>> groupBySignalType(VisualStg visualStg) {
