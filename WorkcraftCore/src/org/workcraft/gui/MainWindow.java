@@ -26,6 +26,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -64,6 +65,7 @@ import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
+import org.workcraft.gui.layouts.MultiBorderLayout;
 import org.workcraft.gui.propertyeditor.SettingsEditorDialog;
 import org.workcraft.gui.tasks.TaskFailureNotifier;
 import org.workcraft.gui.tasks.TaskManagerWindow;
@@ -146,6 +148,8 @@ public class MainWindow extends JFrame {
     private GraphEditorPanel editorInFocus;
     private MainMenu mainMenu;
     private ToolBar toolbar;
+    private JToolBar toolsToolbar;
+    private JToolBar controlToolbar;
 
     private String lastSavePath = null;
     private String lastOpenPath = null;
@@ -292,7 +296,7 @@ public class MainWindow extends JFrame {
         }
 
         // Create content panel and docking ports.
-        layout = new BorderLayout();
+        layout = new MultiBorderLayout();
         content = new JPanel(layout);
         setContentPane(content);
         rootDockingPort = new DefaultDockingPort(FLEXDOCK_DOCKING_PORT);
@@ -304,6 +308,10 @@ public class MainWindow extends JFrame {
         toolbar = new ToolBar(this);
         loadToolbarPositionFromConfig();
         mainMenu.registerToolbar(toolbar);
+        toolsToolbar = new JToolBar("Tools");
+        add(toolsToolbar, MultiBorderLayout.NORTH);
+        controlToolbar = new JToolBar("Controls");
+        add(controlToolbar, MultiBorderLayout.NORTH);
 
         // Create dockable windows.
         createWindows();
@@ -766,6 +774,8 @@ public class MainWindow extends JFrame {
         }
     }
 
+    JToolBar toolControls = null;
+
     public void requestFocus(GraphEditorPanel editor) {
         editor.requestFocusInWindow();
         if (editorInFocus != editor) {
@@ -775,7 +785,8 @@ public class MainWindow extends JFrame {
             mainMenu.setMenuForWorkspaceEntry(we);
 
             ToolboxPanel toolBox = editorInFocus.getToolBox();
-            editorToolsWindow.setContent(toolBox);
+            toolBox.setToolsForModel(toolsToolbar);
+            toolBox.getSelectedTool().updateToolbar(controlToolbar, editor);
             toolControlsWindow.setContent(toolBox.getControlPanel());
 
             GraphEditorTool selectedTool = toolBox.getSelectedTool();

@@ -119,7 +119,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
     public WorkspaceEntry workspaceEntry;
 
-    protected final ToolboxPanel toolboxPanel;
+    protected final ToolboxPanel toolbox;
 
     protected Viewport view;
     protected Grid grid;
@@ -153,10 +153,10 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         centerButton.setSize(size, size);
         this.add(centerButton);
 
-        toolboxPanel = new ToolboxPanel(this);
+        toolbox = new ToolboxPanel(this);
 
-        GraphEditorPanelMouseListener mouseListener = new GraphEditorPanelMouseListener(this, toolboxPanel);
-        GraphEditorPanelKeyListener keyListener = new GraphEditorPanelKeyListener(this, toolboxPanel);
+        GraphEditorPanelMouseListener mouseListener = new GraphEditorPanelMouseListener(this, toolbox);
+        GraphEditorPanelKeyListener keyListener = new GraphEditorPanelKeyListener(this, toolbox);
         GraphEditorFocusListener focusListener = new GraphEditorFocusListener(this);
 
         addMouseMotionListener(mouseListener);
@@ -246,10 +246,10 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 //        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
         g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
-        getModel().draw(g2d, toolboxPanel.getSelectedTool().getDecorator(this));
+        getModel().draw(g2d, toolbox.getSelectedTool().getDecorator(this));
 
         if (hasFocus()) {
-            toolboxPanel.getSelectedTool().drawInUserSpace(this, g2d);
+            toolbox.getSelectedTool().drawInUserSpace(this, g2d);
         }
         g2d.setTransform(screenTransform);
 
@@ -260,7 +260,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         centerButton.setVisible(rulerVisibility);
 
         if (hasFocus()) {
-            toolboxPanel.getSelectedTool().drawInScreenSpace(this, g2d);
+            toolbox.getSelectedTool().drawInScreenSpace(this, g2d);
             g2d.setTransform(screenTransform);
 
             g2d.setStroke(borderStroke);
@@ -552,7 +552,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     }
 
     public ToolboxPanel getToolBox() {
-        return toolboxPanel;
+        return toolbox;
     }
 
     public void zoomIn() {

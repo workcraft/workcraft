@@ -80,10 +80,10 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
     }
 
     @Override
-    public void createInterfacePanel(final GraphEditor editor) {
-        super.createInterfacePanel(editor);
+    public void updatePanel(JPanel panel, final GraphEditor editor) {
+        super.updatePanel(panel, editor);
 
-        //workcraft invoke this method before activate method
+        // Workcraft invokes this method before activate method.
         visualNet = (VisualSON) editor.getModel();
         net = (SON) visualNet.getMathModel();
         net.refreshAllColor();
@@ -120,13 +120,9 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
 
         statusPanel = new JPanel();
 
-        interfacePanel = new JPanel();
-        BorderLayout layout = new BorderLayout();
-        layout.setVgap(10);
-        interfacePanel.setLayout(layout);
-        interfacePanel.add(controlPanel, BorderLayout.PAGE_START);
-        interfacePanel.add(tabelPanel, BorderLayout.CENTER);
-        interfacePanel.add(statusPanel, BorderLayout.PAGE_END);
+        panel.add(controlPanel, BorderLayout.PAGE_START);
+        panel.add(tabelPanel, BorderLayout.CENTER);
+        panel.add(statusPanel, BorderLayout.PAGE_END);
 
         startButton.addActionListener(new ActionListener() {
             @Override
@@ -396,11 +392,6 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
                 e.setForegroundColor(CommonSimulationSettings.getExcitedComponentColor());
             }
         }
-    }
-
-    @Override
-    public JPanel getInterfacePanel() {
-        return interfacePanel;
     }
 
     @Override

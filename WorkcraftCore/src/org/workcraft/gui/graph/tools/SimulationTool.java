@@ -64,7 +64,6 @@ import org.workcraft.util.GUI;
 public abstract class SimulationTool extends AbstractGraphEditorTool implements ClipboardOwner {
     private VisualModel underlyingModel;
 
-    protected JPanel interfacePanel;
     protected JPanel controlPanel;
     protected JPanel infoPanel;
     protected JSplitPane splitPane;
@@ -98,8 +97,8 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
     }
 
     @Override
-    public void createInterfacePanel(final GraphEditor editor) {
-        super.createInterfacePanel(editor);
+    public void updatePanel(JPanel panel, final GraphEditor editor) {
+        super.updatePanel(panel, editor);
 
         playButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-play.svg"), "Automatic trace playback");
         stopButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-stop.svg"), "Reset trace playback");
@@ -176,12 +175,6 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         infoPanel = new JPanel();
         infoPanel.setLayout(new BorderLayout());
         infoPanel.add(splitPane, BorderLayout.CENTER);
-
-        interfacePanel = new JPanel();
-        interfacePanel.setLayout(new BorderLayout());
-        interfacePanel.add(controlPanel, BorderLayout.NORTH);
-        interfacePanel.add(infoPanel, BorderLayout.CENTER);
-        interfacePanel.setPreferredSize(new Dimension(0, 0));
 
         speedSlider.addChangeListener(new ChangeListener() {
             @Override
@@ -358,6 +351,10 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
             public void mouseReleased(MouseEvent arg0) {
             }
         });
+
+        panel.add(controlPanel, BorderLayout.NORTH);
+        panel.add(infoPanel, BorderLayout.CENTER);
+        panel.setPreferredSize(new Dimension(0, 0));
     }
 
     public void setStatePaneVisibility(boolean visible) {
@@ -783,11 +780,6 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
     @Override
     public Cursor getCursor(boolean menuKeyDown, boolean shiftKeyDown, boolean altKeyDown) {
         return Cursor.getPredefinedCursor(Cursor.HAND_CURSOR);
-    }
-
-    @Override
-    public JPanel getInterfacePanel() {
-        return interfacePanel;
     }
 
     public void setTrace(Trace mainTrace, Trace branchTrace, GraphEditor editor) {

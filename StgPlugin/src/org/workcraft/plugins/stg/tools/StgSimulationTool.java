@@ -19,6 +19,7 @@ import javax.swing.DropMode;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.TransferHandler;
@@ -391,8 +392,8 @@ public class StgSimulationTool extends PetriSimulationTool {
     }
 
     @Override
-    public void createInterfacePanel(final GraphEditor editor) {
-        super.createInterfacePanel(editor);
+    public void updatePanel(JPanel panel, final GraphEditor editor) {
+        super.updatePanel(panel, editor);
         stateTable = new StateTable(new StateTableModel());
         statePane.setViewportView(stateTable);
         traceTable.setDefaultRenderer(Object.class, new TraceTableCellRendererImplementation());

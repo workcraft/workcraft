@@ -9,7 +9,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.swing.JButton;
-import javax.swing.JPanel;
+import javax.swing.JToolBar;
 
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
@@ -32,11 +32,9 @@ public class PolicySelectionTool extends SelectionTool {
     }
 
     @Override
-    public void createInterfacePanel(final GraphEditor editor) {
-        super.createInterfacePanel(editor);
+    public void updateToolbar(JToolBar toolbar, final GraphEditor editor) {
+        super.updateToolbar(toolbar, editor);
 
-        JPanel bundlePanel = new JPanel();
-        controlPanel.add(bundlePanel);
         JButton bundleButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/policy-selection-bundle.svg"), "Bundle selected transitions (" + DesktopApi.getMenuKeyMaskName() + "+B)");
         bundleButton.addActionListener(new ActionListener() {
@@ -45,7 +43,8 @@ public class PolicySelectionTool extends SelectionTool {
                 selectionBundle(editor);
             }
         });
-        bundlePanel.add(bundleButton);
+        toolbar.add(bundleButton);
+
         JButton unbundleButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/policy-selection-unbundle.svg"), "Unbundle selected transitions (" + DesktopApi.getMenuKeyMaskName() + "+Shift+B)");
         unbundleButton.addActionListener(new ActionListener() {
@@ -54,12 +53,7 @@ public class PolicySelectionTool extends SelectionTool {
                 selectionUnbundle(editor);
             }
         });
-        bundlePanel.add(unbundleButton);
-    }
-
-    @Override
-    public JPanel getInterfacePanel() {
-        return interfacePanel;
+        toolbar.add(unbundleButton);
     }
 
     @Override

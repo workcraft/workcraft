@@ -111,11 +111,13 @@ public class CpogSelectionTool extends SelectionTool {
     private final ArrayList<VisualPage> refPages = new ArrayList<>();
     private GraphEditor editor;
     private int scenarioNo = 0;
+    protected JPanel panel;
 
     @Override
-    public void createInterfacePanel(final GraphEditor editor) {
+    public void updatePanel(JPanel panel, final GraphEditor editor) {
+        super.updatePanel(panel, editor);
         this.editor = editor;
-        super.createInterfacePanel(editor);
+
         expressionText = new JTextArea();
         expressionText.setLineWrap(false);
         expressionText.setEditable(true);
@@ -169,16 +171,14 @@ public class CpogSelectionTool extends SelectionTool {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
                 }
-
             }
         });
         buttonPanel.add(btnInsert);
 
         insertTransitives = new Checkbox("Insert Transitives", false);
-        controlPanel.add(insertTransitives);
 
-        interfacePanel.add(expressionScroll, BorderLayout.CENTER);
-        interfacePanel.add(buttonPanel, BorderLayout.SOUTH);
+        panel.add(expressionScroll, BorderLayout.CENTER);
+        panel.add(insertTransitives, BorderLayout.SOUTH);
 
         scenarioPageGroupButton(getGroupPanel());
 
@@ -202,7 +202,7 @@ public class CpogSelectionTool extends SelectionTool {
     }
 
     public JPanel getGroupPanel() {
-        Component[] comps = interfacePanel.getComponents();
+        Component[] comps = panel.getComponents();
         JPanel groupPanel = null;
         for (int i = 0; i < comps.length; i++) {
             if (comps[i] instanceof JPanel) {

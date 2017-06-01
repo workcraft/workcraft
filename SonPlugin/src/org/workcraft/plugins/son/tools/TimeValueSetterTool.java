@@ -40,8 +40,8 @@ import org.workcraft.plugins.son.TimeEstimatorSettings;
 import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.algorithm.TimeAlg;
 import org.workcraft.plugins.son.connections.SONConnection;
-import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
+import org.workcraft.plugins.son.connections.VisualSONConnection;
 import org.workcraft.plugins.son.elements.Block;
 import org.workcraft.plugins.son.elements.Condition;
 import org.workcraft.plugins.son.elements.Event;
@@ -55,9 +55,9 @@ import org.workcraft.plugins.son.elements.VisualPlaceNode;
 import org.workcraft.plugins.son.exception.TimeOutOfBoundsException;
 import org.workcraft.plugins.son.granularity.HourMins;
 import org.workcraft.plugins.son.gui.GranularityPanel;
-import org.workcraft.plugins.son.gui.TimeInputFilter;
-import org.workcraft.plugins.son.gui.TimeEstimatorDialog;
 import org.workcraft.plugins.son.gui.TimeConsistencyDialog.Granularity;
+import org.workcraft.plugins.son.gui.TimeEstimatorDialog;
+import org.workcraft.plugins.son.gui.TimeInputFilter;
 import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
@@ -69,7 +69,7 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
     protected GraphEditor editor;
     protected VisualSON visualNet;
 
-    private JPanel interfacePanel, timeInputPanel, timePropertyPanel, timeSetterPanel, buttonPanel;
+    private JPanel timeInputPanel, timePropertyPanel, timeSetterPanel, buttonPanel;
     private GranularityPanel granularityPanel;
     private JButton estimatorButton;
 
@@ -89,19 +89,14 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
     private static final String timeLabel = "Time interval: ";
 
     @Override
-    public void createInterfacePanel(final GraphEditor editor) {
-        super.createInterfacePanel(editor);
-
-        // workcraft invoke this method before activate method
+    public void updatePanel(JPanel panel, final GraphEditor editor) {
+        super.updatePanel(panel, editor);
+        // Workcraft invokes this method before activate method.
         visualNet = (VisualSON) editor.getModel();
         net = (SON) visualNet.getMathModel();
         this.editor = editor;
-
         createTimeSetterPanel();
-
-        interfacePanel = new JPanel();
-        interfacePanel.setLayout(new BorderLayout());
-        interfacePanel.add(timeSetterPanel);
+        panel.add(timeSetterPanel);
     }
 
     private void createTimeSetterPanel() {
@@ -628,11 +623,6 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
             updateTimePanel(e.getEditor(), node3);
             net.setTimeColor(selection, Color.BLACK);
         }
-    }
-
-    @Override
-    public JPanel getInterfacePanel() {
-        return interfacePanel;
     }
 
     @Override

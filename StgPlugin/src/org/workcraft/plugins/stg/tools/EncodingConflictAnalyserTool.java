@@ -45,15 +45,14 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
     private ArrayList<Core> selectedCores;
     private CoreDensityMap density;
 
-    private JPanel interfacePanel;
     private JRadioButton coresRadio;
     private JTable coresTable;
     private JRadioButton densityRadio;
     private JTable densityTable;
 
     @Override
-    public void createInterfacePanel(final GraphEditor editor) {
-        JPanel controlPanel = new JPanel();
+    public void updatePanel(JPanel panel, final GraphEditor editor) {
+        super.updatePanel(panel, editor);
 
         coresRadio = new JRadioButton("Show selected cores");
         coresRadio.addItemListener(new ItemListener() {
@@ -160,23 +159,15 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
         statusPanel.add(densityRadio, BorderLayout.NORTH);
         statusPanel.add(densityTable, BorderLayout.SOUTH);
 
-        interfacePanel = new JPanel();
-        interfacePanel.setLayout(new BorderLayout());
-        interfacePanel.add(controlPanel, BorderLayout.NORTH);
-        interfacePanel.add(infoPanel, BorderLayout.CENTER);
-        interfacePanel.add(statusPanel, BorderLayout.SOUTH);
-        interfacePanel.setPreferredSize(new Dimension(0, 0));
-
         ButtonGroup radioGroup = new ButtonGroup();
         radioGroup.add(coresRadio);
         radioGroup.add(densityRadio);
         coresRadio.setSelected(true);
         densityRadio.setSelected(true);
-    }
 
-    @Override
-    public JPanel getInterfacePanel() {
-        return interfacePanel;
+        panel.add(infoPanel, BorderLayout.CENTER);
+        panel.add(statusPanel, BorderLayout.SOUTH);
+        panel.setPreferredSize(new Dimension(0, 0));
     }
 
     @Override

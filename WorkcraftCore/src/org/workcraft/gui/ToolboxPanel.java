@@ -12,8 +12,8 @@ import java.util.HashSet;
 
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
-import javax.swing.JPanel;
 import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
 import org.workcraft.annotations.Annotations;
@@ -27,10 +27,9 @@ import org.workcraft.gui.graph.tools.GraphEditorKeyListener;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.gui.graph.tools.ToolProvider;
-import org.workcraft.gui.layouts.SimpleFlowLayout;
 
 @SuppressWarnings("serial")
-public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKeyListener {
+public class ToolboxPanel implements ToolProvider, GraphEditorKeyListener {
 
     class ToolTracker {
         ArrayList<GraphEditorTool> tools = new ArrayList<>();
@@ -74,19 +73,14 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
 
     public ToolboxPanel(GraphEditorPanel editor) {
         this.editor = editor;
-        this.setFocusable(false);
         selectedTool = null;
-        setToolsForModel(editor.getModel());
     }
 
-    public void addTool(final GraphEditorTool tool) {
-        addTool(tool, false);
-    }
-
-    public void addTool(final GraphEditorTool tool, boolean isDefault) {
+    private void addTool(final GraphEditorTool tool, boolean isDefault, JToolBar toolbar) {
         tools.add(tool);
         if (tool.requiresButton()) {
             JToggleButton button = createToolButton(tool);
+            toolbar.add(button);
             buttons.put(tool, button);
         }
         assignToolHotKey(tool, tool.getHotKeyCode());
@@ -107,7 +101,7 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
         }
     }
 
-    public JToggleButton createToolButton(final GraphEditorTool tool) {
+    private JToggleButton createToolButton(final GraphEditorTool tool) {
         JToggleButton button = new JToggleButton();
 
         button.setFocusable(false);
@@ -132,7 +126,7 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
 
         int hotKeyCode = tool.getHotKeyCode();
         if (hotKeyCode != -1) {
-            button.setToolTipText("[" + Character.toString((char) hotKeyCode) + "] " + tool.getLabel());
+            button.setToolTipText(tool.getLabel() + " (" + Character.toString((char) hotKeyCode) + ")");
         } else {
             button.setToolTipText(tool.getLabel());
         }
@@ -142,7 +136,6 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
                 selectTool(tool);
             }
         });
-        this.add(button);
         return button;
     }
 
@@ -184,7 +177,10 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
             tracker.track(tool);
         }
         selectedTool = tool;
-        controlPanel.setTool(selectedTool, editor);
+        boolean hasToolPanel = controlPanel.setTool(selectedTool, editor);
+        if (hasToolPanel) {
+            controlPanel.setVisible(hasToolPanel);
+        }
         setToolButtonSelected(selectedTool, true);
         selectedTool.setup(editor);
         selectedTool.activated(editor);
@@ -192,9 +188,9 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
         editor.repaint();
     }
 
-    private void setToolsForModel(VisualModel model) {
-        setLayout(new SimpleFlowLayout(SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
-
+    public void setToolsForModel(JToolBar toolbar) {
+        toolbar.removeAll();
+        VisualModel model = editor.getModel();
         Class<? extends CustomToolsProvider> customTools = Annotations.getCustomToolsProvider(model.getClass());
         if (customTools != null) {
             boolean isDefault = true;
@@ -206,7 +202,7 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
             }
             if (provider != null) {
                 for (GraphEditorTool tool : provider.getTools()) {
-                    addTool(tool, isDefault);
+                    addTool(tool, isDefault, toolbar);
                     isDefault = false;
                 }
             }
@@ -214,18 +210,16 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
 
         for (Class<?> cls : Annotations.getDefaultCreateButtons(model.getClass())) {
             NodeGeneratorTool tool = new NodeGeneratorTool(new DefaultNodeGenerator(cls));
-            addTool(tool);
+            addTool(tool, false, toolbar);
         }
 
         for (Class<? extends GraphEditorTool>  tool : Annotations.getCustomTools(model.getClass())) {
             try {
-                addTool(tool.newInstance());
+                addTool(tool.newInstance(), false, toolbar);
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
         }
-        doLayout();
-        this.repaint();
     }
 
     @Override
@@ -269,9 +263,9 @@ public class ToolboxPanel extends JPanel implements ToolProvider, GraphEditorKey
         return selectedTool.keyTyped(event);
     }
 
-    ToolInterfaceWindow controlPanel = new ToolInterfaceWindow();
+    ToolPanel controlPanel = new ToolPanel();
 
-    public ToolInterfaceWindow getControlPanel() {
+    public ToolPanel getControlPanel() {
         return controlPanel;
     }
 
