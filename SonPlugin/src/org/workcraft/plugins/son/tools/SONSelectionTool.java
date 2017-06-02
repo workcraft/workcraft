@@ -15,7 +15,7 @@ import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.DesktopApi;
-import org.workcraft.gui.ToolboxPanel;
+import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.GraphEditorPanel;
@@ -45,8 +45,6 @@ public class SONSelectionTool extends SelectionTool {
 
     @Override
     public void updateToolbar(JToolBar toolbar, final GraphEditor editor) {
-        super.updateToolbar(toolbar, editor);
-
         //Create groupButton
         final JButton groupButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/son-selection-group.svg"), "Group selection (" + DesktopApi.getMenuKeyMaskName() + "+G)");
@@ -283,8 +281,8 @@ public class SONSelectionTool extends SelectionTool {
 
     private void setChannelPlaceToolState(final GraphEditor editor, boolean state) {
         if (editor instanceof GraphEditorPanel) {
-            ToolboxPanel toolbox = ((GraphEditorPanel) editor).getToolBox();
-            toolbox.setToolButtonState(channelPlaceTool, state);
+            Toolbox toolbox = ((GraphEditorPanel) editor).getToolBox();
+            toolbox.setToolButtonEnableness(channelPlaceTool, state);
         }
     }
 

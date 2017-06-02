@@ -10,7 +10,7 @@ import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.ToolboxPanel;
+import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.plugins.mpsat.gui.MpsatSolution;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
@@ -47,7 +47,7 @@ final class MpsatEncodingConflictResultHandler implements Runnable {
             final Framework framework = Framework.getInstance();
             final MainWindow mainWindow = framework.getMainWindow();
             GraphEditorPanel currentEditor = mainWindow.getEditor(we);
-            final ToolboxPanel toolbox = currentEditor.getToolBox();
+            final Toolbox toolbox = currentEditor.getToolBox();
             final EncodingConflictAnalyserTool tool = toolbox.getToolInstance(EncodingConflictAnalyserTool.class);
             toolbox.selectTool(tool);
             ArrayList<Core> cores = new ArrayList<>(convertSolutionsToCores(solutions));

@@ -16,7 +16,7 @@ public interface GraphEditorTool extends Tool, GraphEditorKeyListener, GraphEdit
     String getHintText(GraphEditor editor);
 
     void updateToolbar(JToolBar toolbar, GraphEditor editor);
-    void updatePanel(JPanel panle, GraphEditor editor);
+    JPanel updatePanel(GraphEditor editor);
 
     void flashIssue(GraphEditor editor, String message);
     void showIssue(GraphEditor editor, String message);

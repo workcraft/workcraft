@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.Scanner;
 
 import org.workcraft.Framework;
-import org.workcraft.gui.ToolboxPanel;
+import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.plugins.cpog.VisualCpog;
@@ -50,7 +50,7 @@ public class ImportEventLogPGMinerCommand implements Command {
         File inputFile = getInputFile(we);
         final Framework framework = Framework.getInstance();
         final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
-        final ToolboxPanel toolbox = editor.getToolBox();
+        final Toolbox toolbox = editor.getToolBox();
         final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
         VisualCpog visualCpog = WorkspaceUtils.getAs(we, VisualCpog.class);
         try {

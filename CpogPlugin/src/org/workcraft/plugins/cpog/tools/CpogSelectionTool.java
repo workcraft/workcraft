@@ -111,11 +111,13 @@ public class CpogSelectionTool extends SelectionTool {
     private final ArrayList<VisualPage> refPages = new ArrayList<>();
     private GraphEditor editor;
     private int scenarioNo = 0;
-    protected JPanel panel;
+    private JPanel panel;
 
     @Override
-    public void updatePanel(JPanel panel, final GraphEditor editor) {
-        super.updatePanel(panel, editor);
+    public JPanel updatePanel(final GraphEditor editor) {
+        if (panel != null) {
+            return panel;
+        }
         this.editor = editor;
 
         expressionText = new JTextArea();
@@ -177,6 +179,8 @@ public class CpogSelectionTool extends SelectionTool {
 
         insertTransitives = new Checkbox("Insert Transitives", false);
 
+        panel = new JPanel();
+        panel.setLayout(new BorderLayout());
         panel.add(expressionScroll, BorderLayout.CENTER);
         panel.add(insertTransitives, BorderLayout.SOUTH);
 
@@ -184,6 +188,7 @@ public class CpogSelectionTool extends SelectionTool {
 
         final VisualCpog visualCpog = (VisualCpog) editor.getWorkspaceEntry().getModelEntry().getVisualModel();
         new RenderTypeChangedHandler(visualCpog).attach(visualCpog.getRoot());
+        return panel;
     }
 
     public void scenarioPageGroupButton(JPanel groupPanel) {

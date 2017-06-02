@@ -72,6 +72,7 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
     private JPanel timeInputPanel, timePropertyPanel, timeSetterPanel, buttonPanel;
     private GranularityPanel granularityPanel;
     private JButton estimatorButton;
+    private JPanel panel;
 
     private static final int labelheight = 20;
     private static final int labelwidth = 40;
@@ -89,14 +90,17 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
     private static final String timeLabel = "Time interval: ";
 
     @Override
-    public void updatePanel(JPanel panel, final GraphEditor editor) {
-        super.updatePanel(panel, editor);
-        // Workcraft invokes this method before activate method.
-        visualNet = (VisualSON) editor.getModel();
-        net = (SON) visualNet.getMathModel();
-        this.editor = editor;
-        createTimeSetterPanel();
-        panel.add(timeSetterPanel);
+    public JPanel updatePanel(final GraphEditor editor) {
+        if (panel == null) {
+            panel = super.updatePanel(editor);
+            // Workcraft invokes this method before activate method.
+            visualNet = (VisualSON) editor.getModel();
+            net = (SON) visualNet.getMathModel();
+            this.editor = editor;
+            createTimeSetterPanel();
+            panel.add(timeSetterPanel);
+        }
+        return panel;
     }
 
     private void createTimeSetterPanel() {

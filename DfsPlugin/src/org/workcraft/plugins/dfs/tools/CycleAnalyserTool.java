@@ -59,12 +59,15 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     protected JPanel controlPanel;
     protected JScrollPane infoPanel;
-    protected JPanel statusPanel;
     private JTable cycleTable;
     private JLabel cycleCountLabel;
+    private JPanel panel;
 
     @Override
-    public void updatePanel(JPanel panel, final GraphEditor editor) {
+    public JPanel updatePanel(final GraphEditor editor) {
+        if (panel != null) {
+            return panel;
+        }
         controlPanel = new JPanel();
         cycleTable = new JTable(new CycleTableModel());
         cycleTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -104,7 +107,6 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
             }
         });
         infoPanel = new JScrollPane(cycleTable);
-        statusPanel = new JPanel();
 
         final JTextField cycleCountText = new JTextField();
         Dimension dimension = cycleCountText.getPreferredSize();
@@ -155,10 +157,12 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         controlPanel.add(cycleCountLabel);
         controlPanel.add(cycleCountText);
 
+        panel = new JPanel();
+        panel.setLayout(new BorderLayout());
         panel.add(controlPanel, BorderLayout.PAGE_START);
         panel.add(infoPanel, BorderLayout.CENTER);
-        panel.add(statusPanel, BorderLayout.PAGE_END);
         panel.setPreferredSize(new Dimension(0, 0));
+        return panel;
     }
 
     @Override

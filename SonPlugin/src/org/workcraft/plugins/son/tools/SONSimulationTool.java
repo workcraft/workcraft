@@ -101,9 +101,9 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
     protected Map<Condition, Collection<Phase>> phases;
     protected Map<PlaceNode, Boolean> initialMarking;
 
+    protected JPanel panel;
     protected JPanel controlPanel;
     protected JScrollPane tabelPanel;
-    protected JPanel statusPanel;
     protected JTable traceTable;
 
     protected JSlider speedSlider;
@@ -142,8 +142,10 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
     }
 
     @Override
-    public void updatePanel(JPanel panel, final GraphEditor editor) {
-        super.updatePanel(panel, editor);
+    public JPanel updatePanel(final GraphEditor editor) {
+        if (panel != null) {
+            return panel;
+        }
 
         playButton = GUI.createIconButton(GUI.createIconFromSVG("images/son-simulation-play.svg"), "Automatic trace playback");
         stopButton = GUI.createIconButton(GUI.createIconFromSVG("images/son-simulation-stop.svg"), "Reset trace playback");
@@ -201,12 +203,6 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
 
         tabelPanel = new JScrollPane(traceTable);
         tabelPanel.setPreferredSize(new Dimension(1, 1));
-
-        statusPanel = new JPanel();
-
-        panel.add(controlPanel, BorderLayout.PAGE_START);
-        panel.add(tabelPanel, BorderLayout.CENTER);
-        panel.add(statusPanel, BorderLayout.PAGE_END);
 
         speedSlider.addChangeListener(new ChangeListener() {
             @Override
@@ -374,6 +370,12 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
             }
         });
         traceTable.setDefaultRenderer(Object.class, new TraceTableCellRendererImplementation());
+
+        panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(controlPanel, BorderLayout.PAGE_START);
+        panel.add(tabelPanel, BorderLayout.CENTER);
+        return panel;
     }
 
     @Override

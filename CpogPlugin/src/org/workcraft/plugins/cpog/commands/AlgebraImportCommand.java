@@ -6,7 +6,7 @@ import javax.swing.JFileChooser;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.ToolboxPanel;
+import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.tools.CpogSelectionTool;
@@ -41,7 +41,7 @@ public class AlgebraImportCommand implements Command {
             JFileChooser chooser = new JFileChooser();
             if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
                 final MainWindow mainWindow = framework.getMainWindow();
-                final ToolboxPanel toolbox = mainWindow.getCurrentToolbox();
+                final Toolbox toolbox = mainWindow.getCurrentToolbox();
                 final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
                 File file = chooser.getSelectedFile();
                 if (tool.insertCpogFromFile(file)) {

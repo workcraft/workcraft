@@ -28,6 +28,7 @@ import java.util.Set;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -52,9 +53,11 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.MainWindowActions;
 import org.workcraft.gui.Overlay;
 import org.workcraft.gui.PropertyEditorWindow;
-import org.workcraft.gui.ToolboxPanel;
+import org.workcraft.gui.ToolControlsWindow;
+import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.actions.ActionButton;
 import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
@@ -119,7 +122,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
     public WorkspaceEntry workspaceEntry;
 
-    protected final ToolboxPanel toolbox;
+    protected final Toolbox toolbox;
 
     protected Viewport view;
     protected Grid grid;
@@ -153,7 +156,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         centerButton.setSize(size, size);
         this.add(centerButton);
 
-        toolbox = new ToolboxPanel(this);
+        toolbox = new Toolbox(this);
 
         GraphEditorPanelMouseListener mouseListener = new GraphEditorPanelMouseListener(this, toolbox);
         GraphEditorPanelKeyListener keyListener = new GraphEditorPanelKeyListener(this, toolbox);
@@ -469,6 +472,29 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         return new ModelProperties(allProperties.getDescriptors());
     }
 
+    public void updateToolsView() {
+        final Framework framework = Framework.getInstance();
+        final MainWindow mainWindow = framework.getMainWindow();
+        final ToolControlsWindow toolControlsWindow = mainWindow.getToolView();
+        JToolBar modelToolbar = mainWindow.getModelToolbar();
+        JToolBar toolToolbar = mainWindow.getToolToolbar();
+
+        modelToolbar.removeAll();
+        toolbox.setToolsForModel(modelToolbar);
+        modelToolbar.setVisible(modelToolbar.getComponentCount() > 0);
+
+        GraphEditorTool selectedTool = toolbox.getSelectedTool();
+        if (selectedTool != null) {
+            toolToolbar.removeAll();
+            selectedTool.updateToolbar(toolToolbar, this);
+            toolToolbar.setVisible(false);
+            toolToolbar.setVisible(toolToolbar.getComponentCount() > 0);
+
+            JPanel panel = selectedTool.updatePanel(this);
+            toolControlsWindow.setContent(panel);
+        }
+    }
+
     public void updatePropertyView() {
         ModelProperties properties;
         String titleSuffix = null;
@@ -551,7 +577,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         return overlay;
     }
 
-    public ToolboxPanel getToolBox() {
+    public Toolbox getToolBox() {
         return toolbox;
     }
 

@@ -19,7 +19,7 @@ public class ToolBar extends JToolBar {
     private ActionToggle labelToggle;
 
     public ToolBar(final MainWindow mainWindow) {
-        super("Toolbar");
+        super("Global");
         setFloatable(true);
         this.mainWindow = mainWindow;
         addFileButtons();

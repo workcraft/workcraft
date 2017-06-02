@@ -73,6 +73,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
 
     private JSlider speedSlider;
     private JButton randomButton, playButton, stopButton, backwardButton, forwardButton;
+    private JPanel panel;
 
     // cache of "excited" containers (the ones containing the excited simulation elements)
     protected HashMap<Container, Boolean> excitedContainers = new HashMap<>();
@@ -97,8 +98,10 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
     }
 
     @Override
-    public void updatePanel(JPanel panel, final GraphEditor editor) {
-        super.updatePanel(panel, editor);
+    public JPanel updatePanel(final GraphEditor editor) {
+        if (panel != null) {
+            return panel;
+        }
 
         playButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-play.svg"), "Automatic trace playback");
         stopButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-stop.svg"), "Reset trace playback");
@@ -175,7 +178,6 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         infoPanel = new JPanel();
         infoPanel.setLayout(new BorderLayout());
         infoPanel.add(splitPane, BorderLayout.CENTER);
-
         speedSlider.addChangeListener(new ChangeListener() {
             @Override
             public void stateChanged(ChangeEvent e) {
@@ -352,9 +354,12 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
             }
         });
 
+        panel = new JPanel();
+        panel.setLayout(new BorderLayout());
         panel.add(controlPanel, BorderLayout.NORTH);
         panel.add(infoPanel, BorderLayout.CENTER);
         panel.setPreferredSize(new Dimension(0, 0));
+        return panel;
     }
 
     public void setStatePaneVisibility(boolean visible) {

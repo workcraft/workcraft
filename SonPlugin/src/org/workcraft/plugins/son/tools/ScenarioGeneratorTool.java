@@ -80,8 +80,10 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
     }
 
     @Override
-    public void updatePanel(JPanel panel, final GraphEditor editor) {
-        super.updatePanel(panel, editor);
+    public JPanel updatePanel(final GraphEditor editor) {
+        if (panel != null) {
+            return panel;
+        }
 
         // Workcraft invokes this method before activate method.
         visualNet = (VisualSON) editor.getModel();
@@ -117,12 +119,6 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
 
         tabelPanel = new JScrollPane(scenarioTable);
         tabelPanel.setPreferredSize(new Dimension(1, 1));
-
-        statusPanel = new JPanel();
-
-        panel.add(controlPanel, BorderLayout.PAGE_START);
-        panel.add(tabelPanel, BorderLayout.CENTER);
-        panel.add(statusPanel, BorderLayout.PAGE_END);
 
         startButton.addActionListener(new ActionListener() {
             @Override
@@ -220,6 +216,12 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
             public void mouseReleased(MouseEvent arg0) {
             }
         });
+
+        panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(controlPanel, BorderLayout.PAGE_START);
+        panel.add(tabelPanel, BorderLayout.CENTER);
+        return panel;
     }
 
     private void start() {

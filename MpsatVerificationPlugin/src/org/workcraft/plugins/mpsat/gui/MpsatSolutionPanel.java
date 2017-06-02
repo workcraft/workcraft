@@ -14,7 +14,7 @@ import javax.swing.JTextArea;
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.ToolboxPanel;
+import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.tools.SimulationTool;
 import org.workcraft.util.LogUtils;
@@ -75,7 +75,7 @@ public class MpsatSolutionPanel extends JPanel {
                 final Framework framework = Framework.getInstance();
                 final MainWindow mainWindow = framework.getMainWindow();
                 GraphEditorPanel editor = mainWindow.getEditor(we);
-                final ToolboxPanel toolbox = editor.getToolBox();
+                final Toolbox toolbox = editor.getToolBox();
                 final SimulationTool tool = toolbox.getToolInstance(SimulationTool.class);
                 toolbox.selectTool(tool);
                 tool.setTrace(solution.getMainTrace(), solution.getBranchTrace(), editor);

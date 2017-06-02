@@ -49,10 +49,14 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
     private JTable coresTable;
     private JRadioButton densityRadio;
     private JTable densityTable;
+    private JPanel panel;
 
     @Override
-    public void updatePanel(JPanel panel, final GraphEditor editor) {
-        super.updatePanel(panel, editor);
+    public JPanel updatePanel(final GraphEditor editor) {
+        if (panel != null) {
+            return panel;
+        }
+        panel = super.updatePanel(editor);
 
         coresRadio = new JRadioButton("Show selected cores");
         coresRadio.addItemListener(new ItemListener() {
@@ -168,6 +172,7 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
         panel.add(infoPanel, BorderLayout.CENTER);
         panel.add(statusPanel, BorderLayout.SOUTH);
         panel.setPreferredSize(new Dimension(0, 0));
+        return panel;
     }
 
     @Override

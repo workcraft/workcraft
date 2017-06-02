@@ -9,7 +9,7 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.ToolboxPanel;
+import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.graph.editors.AbstractInplaceEditor;
 import org.workcraft.gui.graph.editors.LabelInplaceEditor;
 import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
@@ -23,7 +23,7 @@ public class CommentGeneratorTool extends NodeGeneratorTool {
                 final VisualComment comment = (VisualComment) super.generate(model, where);
                 Framework framework = Framework.getInstance();
                 MainWindow mainWindow = framework.getMainWindow();
-                ToolboxPanel toolbox = mainWindow.getCurrentToolbox();
+                Toolbox toolbox = mainWindow.getCurrentToolbox();
                 GraphEditor editor = mainWindow.getCurrentEditor();
                 GraphEditorTool defaultTool = toolbox.getDefaultTool();
                 toolbox.selectTool(defaultTool);
