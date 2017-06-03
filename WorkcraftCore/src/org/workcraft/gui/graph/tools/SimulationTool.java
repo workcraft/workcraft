@@ -172,7 +172,6 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
 
         splitPane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, tracePane, statePane);
         splitPane.setOneTouchExpandable(true);
-        splitPane.setDividerLocation(150);
         splitPane.setResizeWeight(0.5);
 
         infoPanel = new JPanel();

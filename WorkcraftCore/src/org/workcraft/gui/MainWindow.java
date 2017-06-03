@@ -98,8 +98,12 @@ public class MainWindow extends JFrame {
     private static final String CONFIG_GUI_MAIN_LAST_SAVE_PATH = "gui.main.lastSavePath";
     private static final String CONFIG_GUI_MAIN_LAST_OPEN_PATH = "gui.main.lastOpenPath";
     private static final String CONFIG_GUI_MAIN_RECENT_FILE = "gui.main.recentFile";
-    private static final String CONFIG_GUI_MAIN_TOOLBAR_VISIBILITY = "gui.main.toolbar.visibility";
-    private static final String CONFIG_GUI_MAIN_TOOLBAR_POSITION = "gui.main.toolbar.position";
+    private static final String CONFIG_GUI_MAIN_TOOLBAR_GLOBAL_VISIBILITY = "gui.main.toolbar.global.visibility";
+    private static final String CONFIG_GUI_MAIN_TOOLBAR_GLOBAL_POSITION = "gui.main.toolbar.global.position";
+    private static final String CONFIG_GUI_MAIN_TOOLBAR_MODEL_VISIBILITY = "gui.main.toolbar.model.visibility";
+    private static final String CONFIG_GUI_MAIN_TOOLBAR_MODEL_POSITION = "gui.main.toolbar.model.position";
+    private static final String CONFIG_GUI_MAIN_TOOLBAR_TOOL_VISIBILITY = "gui.main.toolbar.tool.visibility";
+    private static final String CONFIG_GUI_MAIN_TOOLBAR_TOOL_POSITION = "gui.main.toolbar.tool.position";
 
     private static final int MIN_WIDTH = 800;
     private static final int MIN_HEIGHT = 450;
@@ -125,7 +129,7 @@ public class MainWindow extends JFrame {
         }
     };
 
-    private BorderLayout layout;
+    private MultiBorderLayout layout;
     private JPanel content;
 
     private DefaultDockingPort rootDockingPort;
@@ -302,14 +306,14 @@ public class MainWindow extends JFrame {
         StandardBorderManager borderManager = new StandardBorderManager(new ShadowBorder());
         rootDockingPort.setBorderManager(borderManager);
 
-        // Create toolbar.
+        // Create toolbars.
         globalToolbar = new ToolBar(this);
-        loadToolbarPositionFromConfig();
         mainMenu.registerToolbar(globalToolbar);
         modelToolbar = new JToolBar("Model tools");
-        add(modelToolbar, MultiBorderLayout.NORTH);
+        mainMenu.registerToolbar(modelToolbar);
         toolToolbar = new JToolBar("Tool controls");
-        add(toolToolbar, MultiBorderLayout.NORTH);
+        mainMenu.registerToolbar(toolToolbar);
+        loadToolbarParametersFromConfig();
 
         // Create dockable windows.
         createWindows();
@@ -459,45 +463,15 @@ public class MainWindow extends JFrame {
     }
 
     private void closeDockableUtilityWindow(DockableWindow dockableWindow) {
-        int id = dockableWindow.getID();
-        mainMenu.utilityWindowClosed(id);
+        mainMenu.setWindowVisibility(dockableWindow.getID(), false);
         DockingManager.close(dockableWindow);
         dockableWindow.setClosed(true);
-    }
-
-    public DisplayMode getDisplayMode() {
-        return getGraphicsConfiguration().getDevice().getDisplayMode();
-    }
-
-    private GraphEditorPanel getGraphEditorPanel(DockableWindow dockableWindow) {
-        JComponent content = dockableWindow.getContentPanel().getContent();
-        return (content instanceof GraphEditorPanel) ? (GraphEditorPanel) content : null;
-    }
-
-    /** For use from Javascript **/
-    public void toggleDockableWindow(int id) {
-        DockableWindow window = idToDockableWindowMap.get(id);
-        if (window != null) {
-            toggleDockableWindow(window);
-        } else {
-            System.err.println("displayDockableWindow: window with ID=" + id + " was not found.");
-        }
-    }
-
-    /** For use from Javascript **/
-    public void displayDockableWindow(int id) {
-        DockableWindow window = idToDockableWindowMap.get(id);
-        if (window != null) {
-            displayDockableWindow(window);
-        } else {
-            System.err.println("displayDockableWindow: window with ID=" + id + " was not found.");
-        }
     }
 
     public void displayDockableWindow(DockableWindow window) {
         DockingManager.display(window);
         window.setClosed(false);
-        mainMenu.utilityWindowDisplayed(window.getID());
+        mainMenu.setWindowVisibility(window.getID(), true);
     }
 
     public void toggleDockableWindow(DockableWindow window) {
@@ -509,6 +483,15 @@ public class MainWindow extends JFrame {
             } catch (OperationCancelledException e) {
             }
         }
+    }
+
+    public DisplayMode getDisplayMode() {
+        return getGraphicsConfiguration().getDevice().getDisplayMode();
+    }
+
+    private GraphEditorPanel getGraphEditorPanel(DockableWindow dockableWindow) {
+        JComponent content = dockableWindow.getContentPanel().getContent();
+        return (content instanceof GraphEditorPanel) ? (GraphEditorPanel) content : null;
     }
 
     private void createDockingLayout() {
@@ -599,7 +582,7 @@ public class MainWindow extends JFrame {
         }
         saveWindowGeometryToConfig();
         saveRecentFilesToConfig();
-        saveToolbarPositionToConfig();
+        saveToolbarParametersToConfig();
 
         content.remove(rootDockingPort);
 
@@ -608,37 +591,65 @@ public class MainWindow extends JFrame {
         setVisible(false);
     }
 
-    private void loadToolbarPositionFromConfig() {
+    private void loadToolbarParametersFromConfig() {
+        loadToolbarParametersFromConfig(globalToolbar,
+                CONFIG_GUI_MAIN_TOOLBAR_GLOBAL_VISIBILITY,
+                CONFIG_GUI_MAIN_TOOLBAR_GLOBAL_POSITION);
+
+        loadToolbarParametersFromConfig(modelToolbar,
+                CONFIG_GUI_MAIN_TOOLBAR_MODEL_VISIBILITY,
+                CONFIG_GUI_MAIN_TOOLBAR_MODEL_POSITION);
+
+        loadToolbarParametersFromConfig(toolToolbar,
+                CONFIG_GUI_MAIN_TOOLBAR_TOOL_VISIBILITY,
+                CONFIG_GUI_MAIN_TOOLBAR_TOOL_POSITION);
+    }
+
+    private void loadToolbarParametersFromConfig(JToolBar toolbar, String keyVisibility, String keyPosition) {
         final Framework framework = Framework.getInstance();
 
         boolean visible = true;
-        String visibleVal = framework.getConfigCoreVar(CONFIG_GUI_MAIN_TOOLBAR_VISIBILITY);
+        String visibleVal = framework.getConfigCoreVar(keyVisibility);
         if (visibleVal != null) {
             visible = Boolean.valueOf(visibleVal);
         }
-        globalToolbar.setVisible(visible);
+        toolbar.setVisible(visible);
 
-        String position = framework.getConfigCoreVar(CONFIG_GUI_MAIN_TOOLBAR_POSITION);
+        String position = framework.getConfigCoreVar(keyPosition);
         if (position == null) {
             position = BorderLayout.NORTH;
         }
         if (BorderLayout.EAST.equals(position) || BorderLayout.WEST.equals(position)) {
-            globalToolbar.setOrientation(ToolBar.VERTICAL);
+            toolbar.setOrientation(ToolBar.VERTICAL);
         } else {
-            globalToolbar.setOrientation(ToolBar.HORIZONTAL);
+            toolbar.setOrientation(ToolBar.HORIZONTAL);
         }
-        add(globalToolbar, position);
+        add(toolbar, position);
     }
 
-    private void saveToolbarPositionToConfig() {
+    private void saveToolbarParametersToConfig() {
+        saveToolbarParametersToConfig(globalToolbar,
+                CONFIG_GUI_MAIN_TOOLBAR_GLOBAL_VISIBILITY,
+                CONFIG_GUI_MAIN_TOOLBAR_GLOBAL_POSITION);
+
+        saveToolbarParametersToConfig(modelToolbar,
+                CONFIG_GUI_MAIN_TOOLBAR_MODEL_VISIBILITY,
+                CONFIG_GUI_MAIN_TOOLBAR_MODEL_POSITION);
+
+        saveToolbarParametersToConfig(toolToolbar,
+                CONFIG_GUI_MAIN_TOOLBAR_TOOL_VISIBILITY,
+                CONFIG_GUI_MAIN_TOOLBAR_TOOL_POSITION);
+    }
+
+    private void saveToolbarParametersToConfig(JToolBar toolbar, String keyVisibility, String keyPosition) {
         final Framework framework = Framework.getInstance();
 
-        String visibleVal = String.valueOf(globalToolbar.isVisible());
-        framework.setConfigCoreVar(CONFIG_GUI_MAIN_TOOLBAR_VISIBILITY, visibleVal);
+        String visibleVal = String.valueOf(toolbar.isVisible());
+        framework.setConfigCoreVar(keyVisibility, visibleVal);
 
-        Object positionVal = layout.getConstraints(globalToolbar);
+        Object positionVal = layout.getConstraints(toolbar);
         if (positionVal instanceof String) {
-            framework.setConfigCoreVar(CONFIG_GUI_MAIN_TOOLBAR_POSITION, (String) positionVal);
+            framework.setConfigCoreVar(keyPosition, (String) positionVal);
         }
     }
 

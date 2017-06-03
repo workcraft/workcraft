@@ -267,4 +267,23 @@ public class MultiBorderLayout extends BorderLayout {
         return max;
     }
 
+    @Override
+    public Object getConstraints(Component comp) {
+        if (comp == null) {
+            return null;
+        }
+        if (centerList.contains(comp)) {
+            return CENTER;
+        } else if (northList.contains(comp)) {
+            return NORTH;
+        } else if (southList.contains(comp)) {
+            return SOUTH;
+        } else if (westList.contains(comp)) {
+            return WEST;
+        } else if (eastList.contains(comp)) {
+            return EAST;
+        }
+        return null;
+    }
+
 }

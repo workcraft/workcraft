@@ -482,14 +482,11 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
         modelToolbar.removeAll();
         toolbox.setToolsForModel(modelToolbar);
-        modelToolbar.setVisible(modelToolbar.getComponentCount() > 0);
 
         GraphEditorTool selectedTool = toolbox.getSelectedTool();
         if (selectedTool != null) {
             toolToolbar.removeAll();
             selectedTool.updateToolbar(toolToolbar, this);
-            toolToolbar.setVisible(false);
-            toolToolbar.setVisible(toolToolbar.getComponentCount() > 0);
 
             JPanel panel = selectedTool.updatePanel(this);
             toolControlsWindow.setContent(panel);
