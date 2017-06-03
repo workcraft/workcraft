@@ -47,12 +47,17 @@ public abstract class AbstractGraphEditorTool implements GraphEditorTool {
     }
 
     @Override
-    public JPanel updatePanel(final GraphEditor editor) {
-        return null;
+    public boolean requiresPropertyEditor() {
+        return false;
     }
 
     @Override
     public void updateToolbar(JToolBar toolbar, final GraphEditor editor) {
+    }
+
+    @Override
+    public JPanel updatePanel(final GraphEditor editor) {
+        return null;
     }
 
     @Override

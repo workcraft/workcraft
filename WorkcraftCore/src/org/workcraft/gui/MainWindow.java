@@ -551,8 +551,8 @@ public class MainWindow extends JFrame {
                 DockableWindowContentPanel.CLOSE_BUTTON);
 
         DockableWindow workspaceDockable = createDockableWindow(workspaceWindow, TITLE_WORKSPACE,
-                DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.EAST_REGION,
-                xSplit);
+                DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
+                DockingManager.EAST_REGION, xSplit);
 
         propertyEditorDockable = createDockableWindow(propertyEditorWindow, TITLE_PROPERTY_EDITOR,
                 workspaceDockable, DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
@@ -785,12 +785,15 @@ public class MainWindow extends JFrame {
 
     public void updateWindowVisibility() {
         try {
-            if (toolControlsWindow.isEmpty()) {
-                displayDockableWindow(propertyEditorDockable);
-                closeDockableWindow(toolControlsDockable);
-            } else {
-                displayDockableWindow(toolControlsDockable);
+            // To preserve the layout, first display both the property editor
+            // and the tool controls. Only after that close the empty ones.
+            displayDockableWindow(propertyEditorDockable);
+            displayDockableWindow(toolControlsDockable);
+            if (propertyEditorWindow.isEmpty()) {
                 closeDockableWindow(propertyEditorDockable);
+            }
+            if (toolControlsWindow.isEmpty()) {
+                closeDockableWindow(toolControlsDockable);
             }
         } catch (OperationCancelledException e) {
         }

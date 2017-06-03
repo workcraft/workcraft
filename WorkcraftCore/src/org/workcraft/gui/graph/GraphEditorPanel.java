@@ -70,6 +70,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class GraphEditorPanel extends JPanel implements StateObserver, GraphEditor {
 
+    private static final String RESET_TO_DEFAULTS = "Reset to defaults";
     public static final String TITLE_SUFFIX_TEMPLATE = "template";
     public static final String TITLE_SUFFIX_MODEL = "model";
     public static final String TITLE_SUFFIX_SINGLE_ELEMENT = "single element";
@@ -497,43 +498,44 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
     public void updatePropertyView() {
         ModelProperties properties;
-        String titleSuffix = null;
-        VisualModel model = getModel();
+        final VisualModel model = getModel();
         final VisualNode defaultNode = model.getDefaultNode();
         final VisualNode templateNode = model.getTemplateNode();
+        String title = MainWindow.TITLE_PROPERTY_EDITOR;
         if (templateNode != null) {
             properties = getNodeProperties(templateNode);
-            for (PropertyDescriptor pd: new LinkedList<>(properties.getDescriptors())) {
+            for (final PropertyDescriptor pd: new LinkedList<>(properties.getDescriptors())) {
                 if (!pd.isTemplatable()) {
                     properties.remove(pd);
                 }
             }
-            titleSuffix = TITLE_SUFFIX_TEMPLATE;
+            title += " [" + TITLE_SUFFIX_TEMPLATE + "]";
         } else {
-            Collection<Node> selection = model.getSelection();
+            final Collection<Node> selection = model.getSelection();
             if (selection.size() == 0) {
                 properties = getModelProperties();
-                titleSuffix = TITLE_SUFFIX_MODEL;
-            } else    if (selection.size() == 1) {
-                Node node = selection.iterator().next();
+                title += " [" + TITLE_SUFFIX_MODEL + "]";
+            } else if (selection.size() == 1) {
+                final Node node = selection.iterator().next();
                 properties = getNodeProperties(node);
-                titleSuffix = TITLE_SUFFIX_SINGLE_ELEMENT;
+                title += " [" + TITLE_SUFFIX_SINGLE_ELEMENT + "]";
             } else {
                 properties = getSelectionProperties(selection);
-                int nodeCount = selection.size();
-                titleSuffix = nodeCount + " " + TITLE_SUFFIX_SELECTED_ELEMENTS;
+                final int nodeCount = selection.size();
+                title += " [" + nodeCount + " " + TITLE_SUFFIX_SELECTED_ELEMENTS + "]";
             }
         }
 
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
         final PropertyEditorWindow propertyEditorWindow = mainWindow.getPropertyView();
-        if (properties.getDescriptors().isEmpty()) {
+        GraphEditorTool selectedTool = toolbox.getSelectedTool();
+        if (!selectedTool.requiresPropertyEditor() || properties.getDescriptors().isEmpty()) {
             propertyEditorWindow.clearObject();
         } else {
             propertyEditorWindow.setObject(propertiesWrapper(properties));
             if ((templateNode != null) && (defaultNode != null)) {
-                JButton resetButton = new JButton("Defaults");
+                JButton resetButton = new JButton(RESET_TO_DEFAULTS);
                 resetButton.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
@@ -546,11 +548,6 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
                 resetButton.setVisible(false);
                 resetButton.setVisible(true);
             }
-        }
-
-        String title = MainWindow.TITLE_PROPERTY_EDITOR;
-        if (titleSuffix != null) {
-            title += " [" + titleSuffix + "]";
         }
         mainWindow.setPropertyEditorTitle(title);
         updatePropertyViewRequested = false;

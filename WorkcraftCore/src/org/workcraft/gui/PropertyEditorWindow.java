@@ -11,18 +11,16 @@ import org.workcraft.gui.propertyeditor.PropertyEditorTable;
 @SuppressWarnings("serial")
 public class PropertyEditorWindow extends JPanel {
 
-    private final DisabledPanel disabledPanel;
-    private final PropertyEditorTable propertyTable;
-    private final JScrollPane scrollPane;
+    private final DisabledPanel disabledPanel = new DisabledPanel();
+    private final PropertyEditorTable propertyTable = new PropertyEditorTable();
+    private final JScrollPane scrollPane = new JScrollPane();
+    private boolean empty;
 
     public PropertyEditorWindow() {
         setLayout(new BorderLayout());
-        disabledPanel = new DisabledPanel();
-        propertyTable = new PropertyEditorTable();
-        scrollPane = new JScrollPane();
         scrollPane.setViewportView(propertyTable);
         add(disabledPanel, BorderLayout.CENTER);
-        validate();
+        empty = true;
     }
 
     public Properties getObject() {
@@ -35,6 +33,7 @@ public class PropertyEditorWindow extends JPanel {
         add(scrollPane, BorderLayout.CENTER);
         validate();
         repaint();
+        empty = o.getDescriptors().size() == 0;
     }
 
     public void clearObject() {
@@ -45,6 +44,11 @@ public class PropertyEditorWindow extends JPanel {
             validate();
             repaint();
         }
+        empty = true;
+    }
+
+    public boolean isEmpty() {
+        return empty;
     }
 
 }

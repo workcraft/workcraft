@@ -103,6 +103,7 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
             }
         }
         selectedTool = defaultTool;
+        setToolButtonSelection(selectedTool, true);
     }
 
     private void addTool(final GraphEditorTool tool, boolean isDefault) {
@@ -146,7 +147,9 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
         } else {
             BufferedImage crop = new BufferedImage(iconSize, iconSize,
                     BufferedImage.TYPE_INT_ARGB);
-            icon.paintIcon(button, crop.getGraphics(), (iconSize - icon.getIconWidth()) / 2, (iconSize - icon.getIconHeight()) / 2);
+            int x = (iconSize - icon.getIconWidth()) / 2;
+            int y = (iconSize - icon.getIconHeight()) / 2;
+            icon.paintIcon(button, crop.getGraphics(), x, y);
             button.setIcon(new ImageIcon(crop));
             button.setPreferredSize(new Dimension(minSize, minSize));
         }

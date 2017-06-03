@@ -177,12 +177,13 @@ public class CpogSelectionTool extends SelectionTool {
         });
         buttonPanel.add(btnInsert);
 
-        insertTransitives = new Checkbox("Insert Transitives", false);
+        insertTransitives = new Checkbox("Insert transitives", false);
+        buttonPanel.add(insertTransitives);
 
         panel = new JPanel();
         panel.setLayout(new BorderLayout());
         panel.add(expressionScroll, BorderLayout.CENTER);
-        panel.add(insertTransitives, BorderLayout.SOUTH);
+        panel.add(buttonPanel, BorderLayout.SOUTH);
 
         scenarioPageGroupButton(getGroupPanel());
 
@@ -203,7 +204,9 @@ public class CpogSelectionTool extends SelectionTool {
                 editor.requestFocus();
             }
         });
-        groupPanel.add(groupPageButton, 1);
+        if (groupPanel != null) {
+            groupPanel.add(groupPageButton, 1);
+        }
     }
 
     public JPanel getGroupPanel() {
@@ -220,7 +223,7 @@ public class CpogSelectionTool extends SelectionTool {
                         for (int k = 0; k < c.length; k++) {
                             if (c[k] instanceof JButton) {
                                 JButton b = (JButton) c[k];
-                                if (b.getToolTipText() != null && b.getToolTipText().startsWith("Group selection (")) {
+                                if ((b.getToolTipText() != null) && b.getToolTipText().startsWith("Group selection (")) {
                                     groupPanel = pan;
                                 }
                             }

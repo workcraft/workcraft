@@ -31,9 +31,9 @@ public class StgPlaceGeneratorTool extends NodeGeneratorTool {
 
     @Override
     public String getHintText(final GraphEditor editor) {
-        return "Click to create an empty place. Hhold " +
+        return "Click to create an empty place. Hold " +
                 DesktopApi.getMenuKeyMaskName() +
-                "to mark it with a token. Hold Shift to make it mutex.";
+                " to mark it with a token. Hold Shift to make it mutex.";
     }
 
     @Override

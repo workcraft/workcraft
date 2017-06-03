@@ -110,6 +110,11 @@ public class SelectionTool extends AbstractGraphEditorTool {
     }
 
     @Override
+    public boolean requiresPropertyEditor() {
+        return true;
+    }
+
+    @Override
     public void updateToolbar(JToolBar toolbar, final GraphEditor editor) {
         super.updateToolbar(toolbar, editor);
 
