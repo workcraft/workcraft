@@ -101,10 +101,9 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
     protected Map<Condition, Collection<Phase>> phases;
     protected Map<PlaceNode, Boolean> initialMarking;
 
-    protected JPanel interfacePanel;
+    protected JPanel panel;
     protected JPanel controlPanel;
     protected JScrollPane tabelPanel;
-    protected JPanel statusPanel;
     protected JTable traceTable;
 
     protected JSlider speedSlider;
@@ -143,8 +142,10 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
     }
 
     @Override
-    public void createInterfacePanel(final GraphEditor editor) {
-        super.createInterfacePanel(editor);
+    public JPanel updatePanel(final GraphEditor editor) {
+        if (panel != null) {
+            return panel;
+        }
 
         playButton = GUI.createIconButton(GUI.createIconFromSVG("images/son-simulation-play.svg"), "Automatic trace playback");
         stopButton = GUI.createIconButton(GUI.createIconFromSVG("images/son-simulation-stop.svg"), "Reset trace playback");
@@ -202,13 +203,6 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
 
         tabelPanel = new JScrollPane(traceTable);
         tabelPanel.setPreferredSize(new Dimension(1, 1));
-
-        statusPanel = new JPanel();
-        interfacePanel = new JPanel();
-        interfacePanel.setLayout(new BorderLayout());
-        interfacePanel.add(controlPanel, BorderLayout.PAGE_START);
-        interfacePanel.add(tabelPanel, BorderLayout.CENTER);
-        interfacePanel.add(statusPanel, BorderLayout.PAGE_END);
 
         speedSlider.addChangeListener(new ChangeListener() {
             @Override
@@ -376,6 +370,12 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
             }
         });
         traceTable.setDefaultRenderer(Object.class, new TraceTableCellRendererImplementation());
+
+        panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(controlPanel, BorderLayout.PAGE_START);
+        panel.add(tabelPanel, BorderLayout.CENTER);
+        return panel;
     }
 
     @Override
@@ -1038,11 +1038,6 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
         } else {
             this.setReverse(editor, true);
         }
-    }
-
-    @Override
-    public JPanel getInterfacePanel() {
-        return interfacePanel;
     }
 
     @Override

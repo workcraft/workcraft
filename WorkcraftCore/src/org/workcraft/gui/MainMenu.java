@@ -45,7 +45,9 @@ public class MainMenu extends JMenuBar {
     private final MainWindow mainWindow;
     private final JMenu mnExport = new JMenu("Export");
     private final JMenu mnRecent = new JMenu("Open recent");
-    private final JMenu mnWindows = new JMenu("Windows & toolbars");
+    private final JMenu mnToolbars = new JMenu("Toolbars");
+    private final JMenu mnWindows = new JMenu("Windows");
+    private final HashMap<JToolBar, ActionCheckBoxMenuItem> toolbarItems = new HashMap<>();
     private final HashMap<Integer, ActionCheckBoxMenuItem> windowItems = new HashMap<>();
     private final LinkedList<JMenu> mnCommandsList = new LinkedList<>();
     private final JMenu mnHelp = new JMenu("Help");
@@ -269,6 +271,7 @@ public class MainMenu extends JMenuBar {
         mnView.add(miPanRight);
         mnView.add(miPanDown);
         mnView.addSeparator();
+        mnView.add(mnToolbars);
         mnView.add(mnWindows);
         mnView.add(miResetLayout);
 
@@ -350,18 +353,19 @@ public class MainMenu extends JMenuBar {
         mnExport.setEnabled(enable);
     }
 
+    public final void registerToolbar(JToolBar toolbar) {
+        ActionCheckBoxMenuItem miToolbarItem = new ActionCheckBoxMenuItem(new ToggleToolbarAction(toolbar));
+        miToolbarItem.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        miToolbarItem.setSelected(toolbar.isVisible());
+        toolbarItems.put(toolbar, miToolbarItem);
+        mnToolbars.add(miToolbarItem);
+    }
+
     public final void registerUtilityWindow(DockableWindow window) {
         ActionCheckBoxMenuItem miWindowItem = new ActionCheckBoxMenuItem(new ToggleWindowAction(window));
         miWindowItem.addScriptedActionListener(mainWindow.getDefaultActionListener());
         miWindowItem.setSelected(!window.isClosed());
         windowItems.put(window.getID(), miWindowItem);
-        mnWindows.add(miWindowItem);
-    }
-
-    public final void registerToolbar(JToolBar toolbar) {
-        ActionCheckBoxMenuItem miWindowItem = new ActionCheckBoxMenuItem(new ToggleToolbarAction(toolbar));
-        miWindowItem.addScriptedActionListener(mainWindow.getDefaultActionListener());
-        miWindowItem.setSelected(toolbar.isVisible());
         mnWindows.add(miWindowItem);
     }
 
@@ -401,17 +405,17 @@ public class MainMenu extends JMenuBar {
         mnRecent.add(miClear);
     }
 
-    public final void utilityWindowClosed(int id) {
-        ActionCheckBoxMenuItem mi = windowItems.get(id);
+    public final void setToolbarVisibility(JToolBar toolbar, boolean selected) {
+        ActionCheckBoxMenuItem mi = toolbarItems.get(toolbar);
         if (mi != null) {
-            mi.setSelected(false);
+            mi.setSelected(selected);
         }
     }
 
-    public final void utilityWindowDisplayed(int id) {
+    public final void setWindowVisibility(int id, boolean selected) {
         ActionCheckBoxMenuItem mi = windowItems.get(id);
         if (mi != null) {
-            mi.setSelected(true);
+            mi.setSelected(selected);
         }
     }
 

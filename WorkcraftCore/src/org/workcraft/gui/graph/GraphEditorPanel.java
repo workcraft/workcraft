@@ -28,6 +28,7 @@ import java.util.Set;
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JPanel;
+import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
@@ -52,9 +53,11 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.MainWindowActions;
 import org.workcraft.gui.Overlay;
 import org.workcraft.gui.PropertyEditorWindow;
-import org.workcraft.gui.ToolboxPanel;
+import org.workcraft.gui.ToolControlsWindow;
+import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.actions.ActionButton;
 import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.Properties;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
@@ -67,11 +70,56 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class GraphEditorPanel extends JPanel implements StateObserver, GraphEditor {
 
+    private static final String RESET_TO_DEFAULTS = "Reset to defaults";
     public static final String TITLE_SUFFIX_TEMPLATE = "template";
     public static final String TITLE_SUFFIX_MODEL = "model";
     public static final String TITLE_SUFFIX_SINGLE_ELEMENT = "single element";
     public static final String TITLE_SUFFIX_SELECTED_ELEMENTS = " selected elements";
     private static final int VIEWPORT_MARGIN = 25;
+
+    private final class UpdateEditorActionListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent arg0) {
+            if (updateEditorPanelRequested) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateEditor();
+                    }
+                });
+            }
+        }
+    }
+
+    private final class UpdatePropertyActionListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent arg0) {
+            if (updatePropertyViewRequested) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        updatePropertyView();
+                    }
+                });
+            }
+        }
+    }
+
+    private final class TemplateResetActionListener implements ActionListener {
+        private final VisualNode templateNode;
+        private final VisualNode defaultNode;
+
+        private TemplateResetActionListener(VisualNode templateNode, VisualNode defaultNode) {
+            this.templateNode = templateNode;
+            this.defaultNode = defaultNode;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            templateNode.copyStyle(defaultNode);
+            updatePropertyViewRequested = true;
+        }
+    }
 
     public class GraphEditorFocusListener implements FocusListener {
         private final GraphEditorPanel editor;
@@ -119,7 +167,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
     public WorkspaceEntry workspaceEntry;
 
-    protected final ToolboxPanel toolboxPanel;
+    protected final Toolbox toolbox;
 
     protected Viewport view;
     protected Grid grid;
@@ -153,10 +201,10 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         centerButton.setSize(size, size);
         this.add(centerButton);
 
-        toolboxPanel = new ToolboxPanel(this);
+        toolbox = new Toolbox(this);
 
-        GraphEditorPanelMouseListener mouseListener = new GraphEditorPanelMouseListener(this, toolboxPanel);
-        GraphEditorPanelKeyListener keyListener = new GraphEditorPanelKeyListener(this, toolboxPanel);
+        GraphEditorPanelMouseListener mouseListener = new GraphEditorPanelMouseListener(this, toolbox);
+        GraphEditorPanelKeyListener keyListener = new GraphEditorPanelKeyListener(this, toolbox);
         GraphEditorFocusListener focusListener = new GraphEditorFocusListener(this);
 
         addMouseMotionListener(mouseListener);
@@ -169,35 +217,9 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         add(overlay, BorderLayout.CENTER);
 
         // FIXME: timers need to be stopped at some point
-        Timer updateEditorPanelTimer = new Timer(CommonEditorSettings.getRedrawInterval(), new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                if (updateEditorPanelRequested) {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            updateEditor();
-                        }
-                    });
-                }
-            }
-        });
-
-        Timer updatePropertyTimer = new Timer(CommonEditorSettings.getRedrawInterval(), new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                if (updatePropertyViewRequested) {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            updatePropertyView();
-                        }
-                    });
-                }
-            }
-        });
-
+        Timer updateEditorPanelTimer = new Timer(CommonEditorSettings.getRedrawInterval(), new UpdateEditorActionListener());
         updateEditorPanelTimer.start();
+        Timer updatePropertyTimer = new Timer(CommonEditorSettings.getRedrawInterval(), new UpdatePropertyActionListener());
         updatePropertyTimer.start();
 
         // This is a hack to prevent editor panel from loosing focus on Ctrl-UP key combination
@@ -246,10 +268,10 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 //        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
         g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
-        getModel().draw(g2d, toolboxPanel.getSelectedTool().getDecorator(this));
+        getModel().draw(g2d, toolbox.getSelectedTool().getDecorator(this));
 
         if (hasFocus()) {
-            toolboxPanel.getSelectedTool().drawInUserSpace(this, g2d);
+            toolbox.getSelectedTool().drawInUserSpace(this, g2d);
         }
         g2d.setTransform(screenTransform);
 
@@ -260,7 +282,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         centerButton.setVisible(rulerVisibility);
 
         if (hasFocus()) {
-            toolboxPanel.getSelectedTool().drawInScreenSpace(this, g2d);
+            toolbox.getSelectedTool().drawInScreenSpace(this, g2d);
             g2d.setTransform(screenTransform);
 
             g2d.setStroke(borderStroke);
@@ -469,62 +491,72 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         return new ModelProperties(allProperties.getDescriptors());
     }
 
+    public void updateToolsView() {
+        final Framework framework = Framework.getInstance();
+        final MainWindow mainWindow = framework.getMainWindow();
+        final ToolControlsWindow toolControlsWindow = mainWindow.getControlsView();
+        JToolBar modelToolbar = mainWindow.getModelToolbar();
+        JToolBar toolToolbar = mainWindow.getToolToolbar();
+
+        modelToolbar.removeAll();
+        toolbox.setToolsForModel(modelToolbar);
+
+        GraphEditorTool selectedTool = toolbox.getSelectedTool();
+        if (selectedTool != null) {
+            toolToolbar.removeAll();
+            selectedTool.updateToolbar(toolToolbar, this);
+
+            JPanel panel = selectedTool.updatePanel(this);
+            toolControlsWindow.setContent(panel);
+        }
+    }
+
     public void updatePropertyView() {
         ModelProperties properties;
-        String titleSuffix = null;
-        VisualModel model = getModel();
+        final VisualModel model = getModel();
         final VisualNode defaultNode = model.getDefaultNode();
         final VisualNode templateNode = model.getTemplateNode();
+        String title = MainWindow.TITLE_PROPERTY_EDITOR;
         if (templateNode != null) {
             properties = getNodeProperties(templateNode);
-            for (PropertyDescriptor pd: new LinkedList<>(properties.getDescriptors())) {
+            for (final PropertyDescriptor pd: new LinkedList<>(properties.getDescriptors())) {
                 if (!pd.isTemplatable()) {
                     properties.remove(pd);
                 }
             }
-            titleSuffix = TITLE_SUFFIX_TEMPLATE;
+            title += " [" + TITLE_SUFFIX_TEMPLATE + "]";
         } else {
-            Collection<Node> selection = model.getSelection();
+            final Collection<Node> selection = model.getSelection();
             if (selection.size() == 0) {
                 properties = getModelProperties();
-                titleSuffix = TITLE_SUFFIX_MODEL;
-            } else    if (selection.size() == 1) {
-                Node node = selection.iterator().next();
+                title += " [" + TITLE_SUFFIX_MODEL + "]";
+            } else if (selection.size() == 1) {
+                final Node node = selection.iterator().next();
                 properties = getNodeProperties(node);
-                titleSuffix = TITLE_SUFFIX_SINGLE_ELEMENT;
+                title += " [" + TITLE_SUFFIX_SINGLE_ELEMENT + "]";
             } else {
                 properties = getSelectionProperties(selection);
-                int nodeCount = selection.size();
-                titleSuffix = nodeCount + " " + TITLE_SUFFIX_SELECTED_ELEMENTS;
+                final int nodeCount = selection.size();
+                title += " [" + nodeCount + " " + TITLE_SUFFIX_SELECTED_ELEMENTS + "]";
             }
         }
 
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
         final PropertyEditorWindow propertyEditorWindow = mainWindow.getPropertyView();
-        if (properties.getDescriptors().isEmpty()) {
+        GraphEditorTool selectedTool = toolbox.getSelectedTool();
+        if (!selectedTool.requiresPropertyEditor() || properties.getDescriptors().isEmpty()) {
             propertyEditorWindow.clearObject();
         } else {
             propertyEditorWindow.setObject(propertiesWrapper(properties));
             if ((templateNode != null) && (defaultNode != null)) {
-                JButton resetButton = new JButton("Defaults");
-                resetButton.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        templateNode.copyStyle(defaultNode);
-                        updatePropertyViewRequested = true;
-                    }
-                });
+                JButton resetButton = new JButton(RESET_TO_DEFAULTS);
+                resetButton.addActionListener(new TemplateResetActionListener(templateNode, defaultNode));
                 propertyEditorWindow.add(resetButton, BorderLayout.SOUTH);
                 // A hack to display reset button: toggle its visibility a couple of times.
                 resetButton.setVisible(false);
                 resetButton.setVisible(true);
             }
-        }
-
-        String title = MainWindow.TITLE_PROPERTY_EDITOR;
-        if (titleSuffix != null) {
-            title += " [" + titleSuffix + "]";
         }
         mainWindow.setPropertyEditorTitle(title);
         updatePropertyViewRequested = false;
@@ -551,8 +583,8 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         return overlay;
     }
 
-    public ToolboxPanel getToolBox() {
-        return toolboxPanel;
+    public Toolbox getToolBox() {
+        return toolbox;
     }
 
     public void zoomIn() {

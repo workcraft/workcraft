@@ -3,6 +3,7 @@ package org.workcraft.gui.graph.tools;
 import java.awt.Graphics2D;
 
 import javax.swing.JPanel;
+import javax.swing.JToolBar;
 
 public interface GraphEditorTool extends Tool, GraphEditorKeyListener, GraphEditorMouseListener {
     void activated(GraphEditor editor);
@@ -14,8 +15,9 @@ public interface GraphEditorTool extends Tool, GraphEditorKeyListener, GraphEdit
     Decorator getDecorator(GraphEditor editor);
     String getHintText(GraphEditor editor);
 
-    void createInterfacePanel(GraphEditor editor);
-    JPanel getInterfacePanel();
+    boolean requiresPropertyEditor();
+    void updateToolbar(JToolBar toolbar, GraphEditor editor);
+    JPanel updatePanel(GraphEditor editor);
 
     void flashIssue(GraphEditor editor, String message);
     void showIssue(GraphEditor editor, String message);

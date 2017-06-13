@@ -178,11 +178,10 @@ public class WorkspaceEntry implements ObservableState {
         MainWindowActions.EDIT_SELECT_ALL_ACTION.setEnabled(canModify && canSelect);
         MainWindowActions.EDIT_SELECT_INVERSE_ACTION.setEnabled(canModify && canSelect);
         MainWindowActions.EDIT_SELECT_NONE_ACTION.setEnabled(canModify && canSelect);
-        final Framework instance = Framework.getInstance();
-        final MainWindow mainWindow = instance.getMainWindow();
+        final Framework framework = Framework.getInstance();
+        final MainWindow mainWindow = framework.getMainWindow();
         if (mainWindow != null) {
             mainWindow.updateMainMenuState(canModify);
-            mainWindow.getPropertyView().setVisible(canModify);
         }
     }
 

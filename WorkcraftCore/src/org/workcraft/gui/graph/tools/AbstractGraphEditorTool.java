@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 
 import javax.swing.Icon;
 import javax.swing.JPanel;
+import javax.swing.JToolBar;
 import javax.swing.Timer;
 
 import org.workcraft.gui.events.GraphEditorKeyEvent;
@@ -27,6 +28,7 @@ public abstract class AbstractGraphEditorTool implements GraphEditorTool {
         editor.getModel().setDefaultNode(null);
         editor.getModel().setTemplateNode(null);
         resetIssue();
+        editor.requestFocus();
     }
 
     @Override
@@ -46,11 +48,16 @@ public abstract class AbstractGraphEditorTool implements GraphEditorTool {
     }
 
     @Override
-    public void createInterfacePanel(final GraphEditor editor) {
+    public boolean requiresPropertyEditor() {
+        return false;
     }
 
     @Override
-    public JPanel getInterfacePanel() {
+    public void updateToolbar(JToolBar toolbar, final GraphEditor editor) {
+    }
+
+    @Override
+    public JPanel updatePanel(final GraphEditor editor) {
         return null;
     }
 

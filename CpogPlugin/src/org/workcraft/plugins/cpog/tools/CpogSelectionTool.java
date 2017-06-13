@@ -111,11 +111,15 @@ public class CpogSelectionTool extends SelectionTool {
     private final ArrayList<VisualPage> refPages = new ArrayList<>();
     private GraphEditor editor;
     private int scenarioNo = 0;
+    private JPanel panel;
 
     @Override
-    public void createInterfacePanel(final GraphEditor editor) {
+    public JPanel updatePanel(final GraphEditor editor) {
+        if (panel != null) {
+            return panel;
+        }
         this.editor = editor;
-        super.createInterfacePanel(editor);
+
         expressionText = new JTextArea();
         expressionText.setLineWrap(false);
         expressionText.setEditable(true);
@@ -169,21 +173,23 @@ public class CpogSelectionTool extends SelectionTool {
                     // TODO Auto-generated catch block
                     e1.printStackTrace();
                 }
-
             }
         });
         buttonPanel.add(btnInsert);
 
-        insertTransitives = new Checkbox("Insert Transitives", false);
-        controlPanel.add(insertTransitives);
+        insertTransitives = new Checkbox("Insert transitives", false);
+        buttonPanel.add(insertTransitives);
 
-        interfacePanel.add(expressionScroll, BorderLayout.CENTER);
-        interfacePanel.add(buttonPanel, BorderLayout.SOUTH);
+        panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(expressionScroll, BorderLayout.CENTER);
+        panel.add(buttonPanel, BorderLayout.SOUTH);
 
         scenarioPageGroupButton(getGroupPanel());
 
         final VisualCpog visualCpog = (VisualCpog) editor.getWorkspaceEntry().getModelEntry().getVisualModel();
         new RenderTypeChangedHandler(visualCpog).attach(visualCpog.getRoot());
+        return panel;
     }
 
     public void scenarioPageGroupButton(JPanel groupPanel) {
@@ -198,11 +204,13 @@ public class CpogSelectionTool extends SelectionTool {
                 editor.requestFocus();
             }
         });
-        groupPanel.add(groupPageButton, 1);
+        if (groupPanel != null) {
+            groupPanel.add(groupPageButton, 1);
+        }
     }
 
     public JPanel getGroupPanel() {
-        Component[] comps = interfacePanel.getComponents();
+        Component[] comps = panel.getComponents();
         JPanel groupPanel = null;
         for (int i = 0; i < comps.length; i++) {
             if (comps[i] instanceof JPanel) {
@@ -215,7 +223,7 @@ public class CpogSelectionTool extends SelectionTool {
                         for (int k = 0; k < c.length; k++) {
                             if (c[k] instanceof JButton) {
                                 JButton b = (JButton) c[k];
-                                if (b.getToolTipText() != null && b.getToolTipText().startsWith("Group selection (")) {
+                                if ((b.getToolTipText() != null) && b.getToolTipText().startsWith("Group selection (")) {
                                     groupPanel = pan;
                                 }
                             }

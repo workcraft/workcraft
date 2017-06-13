@@ -10,7 +10,7 @@ import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.ToolboxPanel;
+import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.cpog.CpogDescriptor;
@@ -46,7 +46,7 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
                     final Framework framework = Framework.getInstance();
                     final MainWindow mainWindow = framework.getMainWindow();
                     final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
-                    final ToolboxPanel toolbox = editor.getToolBox();
+                    final Toolbox toolbox = editor.getToolBox();
                     final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
                     if (result.getOutcome() == Outcome.FAILED) {
                         JOptionPane.showMessageDialog(mainWindow, "PGMiner could not run",

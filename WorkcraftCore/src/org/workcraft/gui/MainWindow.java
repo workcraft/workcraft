@@ -26,6 +26,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
@@ -63,7 +64,7 @@ import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.gui.graph.tools.GraphEditorTool;
+import org.workcraft.gui.layouts.MultiBorderLayout;
 import org.workcraft.gui.propertyeditor.SettingsEditorDialog;
 import org.workcraft.gui.tasks.TaskFailureNotifier;
 import org.workcraft.gui.tasks.TaskManagerWindow;
@@ -97,8 +98,12 @@ public class MainWindow extends JFrame {
     private static final String CONFIG_GUI_MAIN_LAST_SAVE_PATH = "gui.main.lastSavePath";
     private static final String CONFIG_GUI_MAIN_LAST_OPEN_PATH = "gui.main.lastOpenPath";
     private static final String CONFIG_GUI_MAIN_RECENT_FILE = "gui.main.recentFile";
-    private static final String CONFIG_GUI_MAIN_TOOLBAR_VISIBILITY = "gui.main.toolbar.visibility";
-    private static final String CONFIG_GUI_MAIN_TOOLBAR_POSITION = "gui.main.toolbar.position";
+    private static final String CONFIG_GUI_MAIN_TOOLBAR_GLOBAL_VISIBILITY = "gui.main.toolbar.global.visibility";
+    private static final String CONFIG_GUI_MAIN_TOOLBAR_GLOBAL_POSITION = "gui.main.toolbar.global.position";
+    private static final String CONFIG_GUI_MAIN_TOOLBAR_MODEL_VISIBILITY = "gui.main.toolbar.model.visibility";
+    private static final String CONFIG_GUI_MAIN_TOOLBAR_MODEL_POSITION = "gui.main.toolbar.model.position";
+    private static final String CONFIG_GUI_MAIN_TOOLBAR_TOOL_VISIBILITY = "gui.main.toolbar.tool.visibility";
+    private static final String CONFIG_GUI_MAIN_TOOLBAR_TOOL_POSITION = "gui.main.toolbar.tool.position";
 
     private static final int MIN_WIDTH = 800;
     private static final int MIN_HEIGHT = 450;
@@ -124,20 +129,20 @@ public class MainWindow extends JFrame {
         }
     };
 
-    private BorderLayout layout;
+    private MultiBorderLayout layout;
     private JPanel content;
 
     private DefaultDockingPort rootDockingPort;
     private DockableWindow outputDockable;
     private DockableWindow propertyEditorDockable;
+    private DockableWindow toolControlsDockable;
     private DockableWindow documentPlaceholder;
 
     private OutputWindow outputWindow;
     private ErrorWindow errorWindow;
     private JavaScriptWindow javaScriptWindow;
     private PropertyEditorWindow propertyEditorWindow;
-    private SimpleContainer editorToolsWindow;
-    private SimpleContainer toolControlsWindow;
+    private ToolControlsWindow toolControlsWindow;
     private WorkspaceWindow workspaceWindow;
 
     private final ListMap<WorkspaceEntry, DockableWindow> editorWindows = new ListMap<>();
@@ -145,7 +150,9 @@ public class MainWindow extends JFrame {
 
     private GraphEditorPanel editorInFocus;
     private MainMenu mainMenu;
-    private ToolBar toolbar;
+    private ToolBar globalToolbar;
+    private JToolBar modelToolbar;
+    private JToolBar toolToolbar;
 
     private String lastSavePath = null;
     private String lastOpenPath = null;
@@ -167,8 +174,7 @@ public class MainWindow extends JFrame {
         javaScriptWindow = new JavaScriptWindow();
 
         propertyEditorWindow = new PropertyEditorWindow();
-        editorToolsWindow = new SimpleContainer();
-        toolControlsWindow = new SimpleContainer();
+        toolControlsWindow = new ToolControlsWindow();
         setMinimumSize(new Dimension(MIN_WIDTH, MIN_HEIGHT));
     }
 
@@ -292,7 +298,7 @@ public class MainWindow extends JFrame {
         }
 
         // Create content panel and docking ports.
-        layout = new BorderLayout();
+        layout = new MultiBorderLayout();
         content = new JPanel(layout);
         setContentPane(content);
         rootDockingPort = new DefaultDockingPort(FLEXDOCK_DOCKING_PORT);
@@ -300,10 +306,14 @@ public class MainWindow extends JFrame {
         StandardBorderManager borderManager = new StandardBorderManager(new ShadowBorder());
         rootDockingPort.setBorderManager(borderManager);
 
-        // Create toolbar.
-        toolbar = new ToolBar(this);
-        loadToolbarPositionFromConfig();
-        mainMenu.registerToolbar(toolbar);
+        // Create toolbars.
+        globalToolbar = new ToolBar(this);
+        mainMenu.registerToolbar(globalToolbar);
+        modelToolbar = new JToolBar("Model tools");
+        mainMenu.registerToolbar(modelToolbar);
+        toolToolbar = new JToolBar("Tool controls");
+        mainMenu.registerToolbar(toolToolbar);
+        loadToolbarParametersFromConfig();
 
         // Create dockable windows.
         createWindows();
@@ -427,7 +437,6 @@ public class MainWindow extends JFrame {
         }
 
         if (editorInFocus == editor) {
-            editorToolsWindow.setContent(null);
             mainMenu.removeCommandsMenu();
             editorInFocus = null;
             setPropertyEditorTitle(TITLE_PROPERTY_EDITOR);
@@ -444,7 +453,6 @@ public class MainWindow extends JFrame {
             DockingManager.dock(documentPlaceholder, dockableWindow, DockingConstants.CENTER_REGION);
             utilityWindows.add(documentPlaceholder);
             propertyEditorWindow.removeAll();
-            editorToolsWindow.removeAll();
             toolControlsWindow.removeAll();
             setWorkActionsEnableness(false);
         }
@@ -455,45 +463,15 @@ public class MainWindow extends JFrame {
     }
 
     private void closeDockableUtilityWindow(DockableWindow dockableWindow) {
-        int id = dockableWindow.getID();
-        mainMenu.utilityWindowClosed(id);
+        mainMenu.setWindowVisibility(dockableWindow.getID(), false);
         DockingManager.close(dockableWindow);
         dockableWindow.setClosed(true);
-    }
-
-    public DisplayMode getDisplayMode() {
-        return getGraphicsConfiguration().getDevice().getDisplayMode();
-    }
-
-    private GraphEditorPanel getGraphEditorPanel(DockableWindow dockableWindow) {
-        JComponent content = dockableWindow.getContentPanel().getContent();
-        return (content instanceof GraphEditorPanel) ? (GraphEditorPanel) content : null;
-    }
-
-    /** For use from Javascript **/
-    public void toggleDockableWindow(int id) {
-        DockableWindow window = idToDockableWindowMap.get(id);
-        if (window != null) {
-            toggleDockableWindow(window);
-        } else {
-            System.err.println("displayDockableWindow: window with ID=" + id + " was not found.");
-        }
-    }
-
-    /** For use from Javascript **/
-    public void displayDockableWindow(int id) {
-        DockableWindow window = idToDockableWindowMap.get(id);
-        if (window != null) {
-            displayDockableWindow(window);
-        } else {
-            System.err.println("displayDockableWindow: window with ID=" + id + " was not found.");
-        }
     }
 
     public void displayDockableWindow(DockableWindow window) {
         DockingManager.display(window);
         window.setClosed(false);
-        mainMenu.utilityWindowDisplayed(window.getID());
+        mainMenu.setWindowVisibility(window.getID(), true);
     }
 
     public void toggleDockableWindow(DockableWindow window) {
@@ -507,20 +485,32 @@ public class MainWindow extends JFrame {
         }
     }
 
+    public DisplayMode getDisplayMode() {
+        return getGraphicsConfiguration().getDevice().getDisplayMode();
+    }
+
+    private GraphEditorPanel getGraphEditorPanel(DockableWindow dockableWindow) {
+        JComponent content = dockableWindow.getContentPanel().getContent();
+        return (content instanceof GraphEditorPanel) ? (GraphEditorPanel) content : null;
+    }
+
     private void createDockingLayout() {
+        // Setup docking manger (should go before perspective manager for correctly restoring window position).
+        EffectsManager.setPreview(new GhostPreview());
+        DockingManager.setFloatingEnabled(true);
+        DockingManager.setAutoPersist(true);
+        PropertyManager.getDockingPortRoot().setTabPlacement(SwingConstants.TOP);
+
+        // Set default perspective.
         PerspectiveManager pm = PerspectiveManager.getInstance();
         pm.add(new Perspective(FLEXDOCK_WORKSPACE, FLEXDOCK_WORKSPACE));
         pm.setCurrentPerspective(FLEXDOCK_WORKSPACE, true);
-        PropertyManager.getDockingPortRoot().setTabPlacement(SwingConstants.TOP);
 
+        // Configure perspective manager (should go after docking manager for correctly restoring window position).
+        PerspectiveManager.setRestoreFloatingOnLoad(true);
         File file = new File(Framework.UILAYOUT_FILE_PATH);
         PersistenceHandler persister = new FilePersistenceHandler(file, XMLPersister.newDefaultInstance());
         PerspectiveManager.setPersistenceHandler(persister);
-        PerspectiveManager.setRestoreFloatingOnLoad(true);
-
-        DockingManager.setFloatingEnabled(true);
-        DockingManager.setAutoPersist(true);
-        EffectsManager.setPreview(new GhostPreview());
 
         try {
             DockingManager.loadLayoutModel();
@@ -544,20 +534,16 @@ public class MainWindow extends JFrame {
                 DockableWindowContentPanel.CLOSE_BUTTON);
 
         DockableWindow workspaceDockable = createDockableWindow(workspaceWindow, TITLE_WORKSPACE,
-                DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON, DockingManager.EAST_REGION,
-                xSplit);
+                DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
+                DockingManager.EAST_REGION, xSplit);
 
         propertyEditorDockable = createDockableWindow(propertyEditorWindow, TITLE_PROPERTY_EDITOR,
                 workspaceDockable, DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
                 DockingManager.NORTH_REGION, ySplit);
 
-        DockableWindow toolControlsDockable = createDockableWindow(toolControlsWindow, TITLE_TOOL_CONTROLS,
+        toolControlsDockable = createDockableWindow(toolControlsWindow, TITLE_TOOL_CONTROLS,
                 propertyEditorDockable, DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
                 DockingManager.SOUTH_REGION, 0.4f);
-
-        DockableWindow editorToolsDockable = createDockableWindow(editorToolsWindow, TITLE_EDITOR_TOOLS,
-                toolControlsDockable, DockableWindowContentPanel.HEADER | DockableWindowContentPanel.CLOSE_BUTTON,
-                DockingManager.SOUTH_REGION, 0.795f);
 
         documentPlaceholder = createDockableWindow(new DocumentPlaceholder(), TITLE_PLACEHOLDER, null, outputDockable,
                 0, DockingManager.NORTH_REGION, ySplit, "DocumentPlaceholder");
@@ -568,7 +554,6 @@ public class MainWindow extends JFrame {
         registerUtilityWindow(tasksDockable);
         registerUtilityWindow(propertyEditorDockable);
         registerUtilityWindow(toolControlsDockable);
-        registerUtilityWindow(editorToolsDockable);
         registerUtilityWindow(workspaceDockable);
 
         // FIXME: Restoring previously saved layout does not work as expected:
@@ -597,7 +582,7 @@ public class MainWindow extends JFrame {
         }
         saveWindowGeometryToConfig();
         saveRecentFilesToConfig();
-        saveToolbarPositionToConfig();
+        saveToolbarParametersToConfig();
 
         content.remove(rootDockingPort);
 
@@ -606,17 +591,31 @@ public class MainWindow extends JFrame {
         setVisible(false);
     }
 
-    private void loadToolbarPositionFromConfig() {
+    private void loadToolbarParametersFromConfig() {
+        loadToolbarParametersFromConfig(globalToolbar,
+                CONFIG_GUI_MAIN_TOOLBAR_GLOBAL_VISIBILITY,
+                CONFIG_GUI_MAIN_TOOLBAR_GLOBAL_POSITION);
+
+        loadToolbarParametersFromConfig(modelToolbar,
+                CONFIG_GUI_MAIN_TOOLBAR_MODEL_VISIBILITY,
+                CONFIG_GUI_MAIN_TOOLBAR_MODEL_POSITION);
+
+        loadToolbarParametersFromConfig(toolToolbar,
+                CONFIG_GUI_MAIN_TOOLBAR_TOOL_VISIBILITY,
+                CONFIG_GUI_MAIN_TOOLBAR_TOOL_POSITION);
+    }
+
+    private void loadToolbarParametersFromConfig(JToolBar toolbar, String keyVisibility, String keyPosition) {
         final Framework framework = Framework.getInstance();
 
         boolean visible = true;
-        String visibleVal = framework.getConfigCoreVar(CONFIG_GUI_MAIN_TOOLBAR_VISIBILITY);
+        String visibleVal = framework.getConfigCoreVar(keyVisibility);
         if (visibleVal != null) {
             visible = Boolean.valueOf(visibleVal);
         }
         toolbar.setVisible(visible);
 
-        String position = framework.getConfigCoreVar(CONFIG_GUI_MAIN_TOOLBAR_POSITION);
+        String position = framework.getConfigCoreVar(keyPosition);
         if (position == null) {
             position = BorderLayout.NORTH;
         }
@@ -628,15 +627,29 @@ public class MainWindow extends JFrame {
         add(toolbar, position);
     }
 
-    private void saveToolbarPositionToConfig() {
+    private void saveToolbarParametersToConfig() {
+        saveToolbarParametersToConfig(globalToolbar,
+                CONFIG_GUI_MAIN_TOOLBAR_GLOBAL_VISIBILITY,
+                CONFIG_GUI_MAIN_TOOLBAR_GLOBAL_POSITION);
+
+        saveToolbarParametersToConfig(modelToolbar,
+                CONFIG_GUI_MAIN_TOOLBAR_MODEL_VISIBILITY,
+                CONFIG_GUI_MAIN_TOOLBAR_MODEL_POSITION);
+
+        saveToolbarParametersToConfig(toolToolbar,
+                CONFIG_GUI_MAIN_TOOLBAR_TOOL_VISIBILITY,
+                CONFIG_GUI_MAIN_TOOLBAR_TOOL_POSITION);
+    }
+
+    private void saveToolbarParametersToConfig(JToolBar toolbar, String keyVisibility, String keyPosition) {
         final Framework framework = Framework.getInstance();
 
         String visibleVal = String.valueOf(toolbar.isVisible());
-        framework.setConfigCoreVar(CONFIG_GUI_MAIN_TOOLBAR_VISIBILITY, visibleVal);
+        framework.setConfigCoreVar(keyVisibility, visibleVal);
 
         Object positionVal = layout.getConstraints(toolbar);
         if (positionVal instanceof String) {
-            framework.setConfigCoreVar(CONFIG_GUI_MAIN_TOOLBAR_POSITION, (String) positionVal);
+            framework.setConfigCoreVar(keyPosition, (String) positionVal);
         }
     }
 
@@ -766,23 +779,46 @@ public class MainWindow extends JFrame {
         }
     }
 
-    public void requestFocus(GraphEditorPanel editor) {
-        editor.requestFocusInWindow();
-        if (editorInFocus != editor) {
+    public void requestFocus(final GraphEditorPanel editor) {
+        // Note that focus is requested differently for active tab and when it is being activated.
+        // In the former case it is via invokeLater (otherwise it does not get focused).
+        // In the latter -- directly (otherwise it causes endless reactivation).
+        if (editorInFocus == editor) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    editorInFocus.requestFocus();
+                }
+            });
+        } else {
             editorInFocus = editor;
+            editorInFocus.requestFocusInWindow();
 
-            WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
+            WorkspaceEntry we = editor.getWorkspaceEntry();
             mainMenu.setMenuForWorkspaceEntry(we);
 
-            ToolboxPanel toolBox = editorInFocus.getToolBox();
-            editorToolsWindow.setContent(toolBox);
-            toolControlsWindow.setContent(toolBox.getControlPanel());
-
-            GraphEditorTool selectedTool = toolBox.getSelectedTool();
-            selectedTool.setup(editorInFocus);
+            editorInFocus.updateToolsView();
             editorInFocus.updatePropertyView();
+            updateDockableWindowVisibility();
 
-            Framework.getInstance().updateJavaScript(we);
+            Framework framework = Framework.getInstance();
+            framework.updateJavaScript(we);
+        }
+    }
+
+    public void updateDockableWindowVisibility() {
+        try {
+            // To preserve the layout, first display both the property editor
+            // and the tool controls. Only after that close the empty ones.
+            displayDockableWindow(propertyEditorDockable);
+            displayDockableWindow(toolControlsDockable);
+            if (propertyEditorWindow.isEmpty()) {
+                closeDockableWindow(propertyEditorDockable);
+            }
+            if (toolControlsWindow.isEmpty()) {
+                closeDockableWindow(toolControlsDockable);
+            }
+        } catch (OperationCancelledException e) {
         }
     }
 
@@ -1214,12 +1250,12 @@ public class MainWindow extends JFrame {
         return editorInFocus;
     }
 
-    public ToolboxPanel getToolbox(final WorkspaceEntry we) {
+    public Toolbox getToolbox(final WorkspaceEntry we) {
         GraphEditorPanel editor = getEditor(we);
         return (editor == null) ? null : editor.getToolBox();
     }
 
-    public ToolboxPanel getCurrentToolbox() {
+    public Toolbox getCurrentToolbox() {
         GraphEditorPanel editor = getCurrentEditor();
         return (editor == null) ? null : editor.getToolBox();
     }
@@ -1336,7 +1372,7 @@ public class MainWindow extends JFrame {
         SettingsEditorDialog dialog = new SettingsEditorDialog(this);
         dialog.setVisible(true);
         refreshWorkspaceEntryTitles();
-        toolbar.refreshToggles();
+        globalToolbar.refreshToggles();
     }
 
     public void resetLayout() {
@@ -1359,6 +1395,18 @@ public class MainWindow extends JFrame {
 
     public PropertyEditorWindow getPropertyView() {
         return propertyEditorWindow;
+    }
+
+    public ToolControlsWindow getControlsView() {
+        return toolControlsWindow;
+    }
+
+    public JToolBar getModelToolbar() {
+        return modelToolbar;
+    }
+
+    public JToolBar getToolToolbar() {
+        return toolToolbar;
     }
 
     public WorkspaceWindow getWorkspaceView() {

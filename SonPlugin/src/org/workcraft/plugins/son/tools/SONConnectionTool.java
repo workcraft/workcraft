@@ -3,11 +3,9 @@ package org.workcraft.plugins.son.tools;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.BoxLayout;
-import javax.swing.ButtonGroup;
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JToolBar;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
@@ -20,37 +18,17 @@ import org.workcraft.plugins.son.elements.VisualBlock;
 
 public class SONConnectionTool extends ConnectionTool {
 
-    protected JPanel interfacePanel;
-
     private Semantics semantic = Semantics.PNLINE;
 
     @Override
-    public void createInterfacePanel(final GraphEditor editor) {
-        super.createInterfacePanel(editor);
-
-        interfacePanel = new JPanel();
-        interfacePanel.setLayout(new BoxLayout(interfacePanel, BoxLayout.Y_AXIS));
-
+    public void updateToolbar(JToolBar toolbar, final GraphEditor editor) {
         JRadioButton polyButton = new JRadioButton("Causal Connection");
         polyButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {
                 semantic = Semantics.PNLINE;
             }
         });
-
-        JRadioButton asynButton = new JRadioButton("A/Syn Communication");
-        asynButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                semantic = Semantics.ASYNLINE;
-            }
-        });
-
-        JRadioButton synButton = new JRadioButton("Synchronous Communication");
-        synButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                semantic = Semantics.SYNCLINE;
-            }
-        });
+        toolbar.add(polyButton);
 
         JRadioButton bhvButton = new JRadioButton("Behavioural Abstraction");
         bhvButton.addActionListener(new ActionListener() {
@@ -58,20 +36,9 @@ public class SONConnectionTool extends ConnectionTool {
                 semantic = Semantics.BHVLINE;
             }
         });
+        toolbar.add(bhvButton);
 
         polyButton.setSelected(true);
-
-        ButtonGroup buttonGroup = new ButtonGroup();
-        buttonGroup.add(polyButton);
-        buttonGroup.add(bhvButton);
-
-        interfacePanel.add(polyButton);
-        interfacePanel.add(bhvButton);
-    }
-
-    @Override
-    public JPanel getInterfacePanel() {
-        return interfacePanel;
     }
 
     @Override

@@ -19,6 +19,7 @@ import javax.swing.DropMode;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.TransferHandler;
@@ -70,6 +71,7 @@ public class StgSimulationTool extends PetriSimulationTool {
     protected HashMap<String, SignalData> signalDataMap = new HashMap<>();
     protected LinkedList<String> signals = new LinkedList<>();
     protected JTable stateTable;
+    private JPanel panel;
 
     public StgSimulationTool() {
         super(true);
@@ -391,18 +393,21 @@ public class StgSimulationTool extends PetriSimulationTool {
     }
 
     @Override
-    public void createInterfacePanel(final GraphEditor editor) {
-        super.createInterfacePanel(editor);
-        stateTable = new StateTable(new StateTableModel());
-        statePane.setViewportView(stateTable);
-        traceTable.setDefaultRenderer(Object.class, new TraceTableCellRendererImplementation());
+    public JPanel updatePanel(final GraphEditor editor) {
+        if (panel == null) {
+            panel = super.updatePanel(editor);
+            stateTable = new StateTable(new StateTableModel());
+            statePane.setViewportView(stateTable);
+            traceTable.setDefaultRenderer(Object.class, new TraceTableCellRendererImplementation());
+        }
+        return panel;
     }
 
     @Override
     public void updateState(final GraphEditor editor) {
         super.updateState(editor);
         updateSignalState();
-        stateTable.tableChanged(new TableModelEvent(traceTable.getModel()));
+        stateTable.tableChanged(new TableModelEvent(stateTable.getModel()));
     }
 
     public void updateSignalState() {

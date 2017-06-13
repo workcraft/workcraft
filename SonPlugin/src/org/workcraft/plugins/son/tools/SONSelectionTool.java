@@ -1,14 +1,12 @@
 package org.workcraft.plugins.son.tools;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.Collection;
 
 import javax.swing.JButton;
-import javax.swing.JPanel;
+import javax.swing.JToolBar;
 
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
@@ -17,14 +15,13 @@ import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.DesktopApi;
-import org.workcraft.gui.ToolboxPanel;
+import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.SelectionTool;
-import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.plugins.son.VisualONGroup;
 import org.workcraft.plugins.son.VisualSON;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
@@ -47,17 +44,7 @@ public class SONSelectionTool extends SelectionTool {
     }
 
     @Override
-    public void createInterfacePanel(final GraphEditor editor) {
-        super.createInterfacePanel(editor);
-
-        interfacePanel = new JPanel(new BorderLayout());
-
-        controlPanel = new JPanel(new WrapLayout(WrapLayout.CENTER, 0, 0));
-        interfacePanel.add(controlPanel, BorderLayout.PAGE_START);
-
-        JPanel groupPanel = new JPanel(new FlowLayout());
-        controlPanel.add(groupPanel);
-
+    public void updateToolbar(JToolBar toolbar, final GraphEditor editor) {
         //Create groupButton
         final JButton groupButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/son-selection-group.svg"), "Group selection (" + DesktopApi.getMenuKeyMaskName() + "+G)");
@@ -67,7 +54,7 @@ public class SONSelectionTool extends SelectionTool {
                 groupSelection(editor);
             }
         });
-        groupPanel.add(groupButton);
+        toolbar.add(groupButton);
 
         //Create blockButton
         JButton blockButton = GUI.createIconButton(GUI.createIconFromSVG(
@@ -78,8 +65,7 @@ public class SONSelectionTool extends SelectionTool {
                 selectionBlock(editor);
             }
         });
-
-        groupPanel.add(blockButton);
+        toolbar.add(blockButton);
 
         //Create pageButton
         JButton groupPageButton = GUI.createIconButton(GUI.createIconFromSVG(
@@ -90,8 +76,7 @@ public class SONSelectionTool extends SelectionTool {
                 pageSelection(editor);
             }
         });
-
-        groupPanel.add(groupPageButton);
+        toolbar.add(groupPageButton);
 
         //Create ungroupButton
         JButton ungroupButton = GUI.createIconButton(GUI.createIconFromSVG(
@@ -102,11 +87,8 @@ public class SONSelectionTool extends SelectionTool {
                 ungroupSelection(editor);
             }
         });
+        toolbar.add(ungroupButton);
 
-        groupPanel.add(ungroupButton);
-
-        JPanel levelPanel = new JPanel(new FlowLayout());
-        controlPanel.add(levelPanel);
         JButton levelUpButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/son-selection-level_up.svg"), "Level up (PageUp)");
         levelUpButton.addActionListener(new ActionListener() {
@@ -115,7 +97,7 @@ public class SONSelectionTool extends SelectionTool {
                 changeLevelUp(editor);
             }
         });
-        levelPanel.add(levelUpButton);
+        toolbar.add(levelUpButton);
 
         JButton levelDownButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/son-selection-level_down.svg"), "Level down (PageDown)");
@@ -125,10 +107,10 @@ public class SONSelectionTool extends SelectionTool {
                 changeLevelDown(editor);
             }
         });
-        levelPanel.add(levelDownButton);
+        toolbar.add(levelDownButton);
 
-        JPanel flipPanel = new JPanel(new FlowLayout());
-        controlPanel.add(flipPanel);
+        toolbar.addSeparator();
+
         JButton flipHorizontalButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/son-selection-flip_horizontal.svg"), "Flip horizontal (" + DesktopApi.getMenuKeyMaskName() + "+F)");
         flipHorizontalButton.addActionListener(new ActionListener() {
@@ -137,7 +119,8 @@ public class SONSelectionTool extends SelectionTool {
                 flipSelectionHorizontal(editor);
             }
         });
-        flipPanel.add(flipHorizontalButton);
+        toolbar.add(flipHorizontalButton);
+
         JButton flipVerticalButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/son-selection-flip_vertical.svg"), "Flip vertical (" + DesktopApi.getMenuKeyMaskName() + "+Shift+F)");
         flipVerticalButton.addActionListener(new ActionListener() {
@@ -146,10 +129,8 @@ public class SONSelectionTool extends SelectionTool {
                 flipSelectionVertical(editor);
             }
         });
-        flipPanel.add(flipVerticalButton);
+        toolbar.add(flipVerticalButton);
 
-        JPanel rotatePanel = new JPanel(new FlowLayout());
-        controlPanel.add(rotatePanel);
         JButton rotateClockwiseButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/son-selection-rotate_clockwise.svg"), "Rotate clockwise (" + DesktopApi.getMenuKeyMaskName() + "+R)");
         rotateClockwiseButton.addActionListener(new ActionListener() {
@@ -158,7 +139,8 @@ public class SONSelectionTool extends SelectionTool {
                 rotateSelectionClockwise(editor);
             }
         });
-        rotatePanel.add(rotateClockwiseButton);
+        toolbar.add(rotateClockwiseButton);
+
         JButton rotateCounterclockwiseButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/son-selection-rotate_counterclockwise.svg"), "Rotate counterclockwise (" + DesktopApi.getMenuKeyMaskName() + "+Shift+R)");
         rotateCounterclockwiseButton.addActionListener(new ActionListener() {
@@ -167,7 +149,7 @@ public class SONSelectionTool extends SelectionTool {
                 rotateSelectionCounterclockwise(editor);
             }
         });
-        rotatePanel.add(rotateCounterclockwiseButton);
+        toolbar.add(rotateCounterclockwiseButton);
     }
 
     @Override
@@ -299,8 +281,8 @@ public class SONSelectionTool extends SelectionTool {
 
     private void setChannelPlaceToolState(final GraphEditor editor, boolean state) {
         if (editor instanceof GraphEditorPanel) {
-            ToolboxPanel toolbox = ((GraphEditorPanel) editor).getToolBox();
-            toolbox.setToolButtonState(channelPlaceTool, state);
+            Toolbox toolbox = ((GraphEditorPanel) editor).getToolBox();
+            toolbox.setToolButtonEnableness(channelPlaceTool, state);
         }
     }
 

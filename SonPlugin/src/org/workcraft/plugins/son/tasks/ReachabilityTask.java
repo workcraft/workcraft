@@ -10,7 +10,7 @@ import javax.swing.JOptionPane;
 import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.ToolboxPanel;
+import org.workcraft.gui.Toolbox;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.algorithm.BSONAlg;
 import org.workcraft.plugins.son.algorithm.CSONCycleAlg;
@@ -117,7 +117,7 @@ public class ReachabilityTask implements Task<VerificationResult> {
 
     private Map<PlaceNode, Boolean> simulation() {
         Map<PlaceNode, Boolean> result;
-        final ToolboxPanel toolbox = ToolManager.getToolboxPanel(we);
+        final Toolbox toolbox = ToolManager.getToolboxPanel(we);
         final SONSimulationTool tool = toolbox.getToolInstance(SONSimulationTool.class);
         toolbox.selectTool(tool);
         result = tool.reachabilitySimulator(tool.getGraphEditor(), causalPredecessorRefs, markingRefs);

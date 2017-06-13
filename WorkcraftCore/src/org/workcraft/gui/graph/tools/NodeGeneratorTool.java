@@ -63,6 +63,11 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
         return null;
     }
 
+    @Override
+    public boolean requiresPropertyEditor() {
+        return true;
+    }
+
     private void resetState(GraphEditor editor) {
         lastGeneratedNode = null;
         warningMessage = null;
@@ -105,6 +110,14 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
             model.setCurrentLevel(currentLevel);
             currentLevel = null;
         }
+    }
+
+    @Override
+    public void setup(final GraphEditor editor) {
+        super.setup(editor);
+        editor.getWorkspaceEntry().setCanModify(false);
+        editor.getWorkspaceEntry().setCanSelect(false);
+        editor.getWorkspaceEntry().setCanCopy(false);
     }
 
     @Override

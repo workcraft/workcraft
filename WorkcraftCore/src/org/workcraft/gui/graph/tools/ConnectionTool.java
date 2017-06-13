@@ -85,6 +85,11 @@ public class ConnectionTool extends AbstractGraphEditorTool {
         return Cursor.getPredefinedCursor(Cursor.CROSSHAIR_CURSOR);
     }
 
+    @Override
+    public boolean requiresPropertyEditor() {
+        return true;
+    }
+
     private void resetState(GraphEditor editor) {
         currentPoint = null;
         currentNode = null;

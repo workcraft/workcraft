@@ -57,15 +57,17 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     protected Cycle selectedCycle = null;
     private int cycleCount = 10;
 
-    protected JPanel interfacePanel;
     protected JPanel controlPanel;
     protected JScrollPane infoPanel;
-    protected JPanel statusPanel;
     private JTable cycleTable;
     private JLabel cycleCountLabel;
+    private JPanel panel;
 
     @Override
-    public void createInterfacePanel(final GraphEditor editor) {
+    public JPanel updatePanel(final GraphEditor editor) {
+        if (panel != null) {
+            return panel;
+        }
         controlPanel = new JPanel();
         cycleTable = new JTable(new CycleTableModel());
         cycleTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
@@ -105,14 +107,6 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
             }
         });
         infoPanel = new JScrollPane(cycleTable);
-        statusPanel = new JPanel();
-
-        interfacePanel = new JPanel();
-        interfacePanel.setLayout(new BorderLayout());
-        interfacePanel.add(controlPanel, BorderLayout.PAGE_START);
-        interfacePanel.add(infoPanel, BorderLayout.CENTER);
-        interfacePanel.add(statusPanel, BorderLayout.PAGE_END);
-        interfacePanel.setPreferredSize(new Dimension(0, 0));
 
         final JTextField cycleCountText = new JTextField();
         Dimension dimension = cycleCountText.getPreferredSize();
@@ -162,11 +156,13 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         controlPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
         controlPanel.add(cycleCountLabel);
         controlPanel.add(cycleCountText);
-    }
 
-    @Override
-    public JPanel getInterfacePanel() {
-        return interfacePanel;
+        panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(controlPanel, BorderLayout.PAGE_START);
+        panel.add(infoPanel, BorderLayout.CENTER);
+        panel.setPreferredSize(new Dimension(0, 0));
+        return panel;
     }
 
     @Override

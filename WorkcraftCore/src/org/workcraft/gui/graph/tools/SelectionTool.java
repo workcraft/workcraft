@@ -1,9 +1,7 @@
 package org.workcraft.gui.graph.tools;
 
 import java.awt.BasicStroke;
-import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.Graphics2D;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -21,8 +19,8 @@ import java.util.Set;
 
 import javax.swing.Icon;
 import javax.swing.JButton;
-import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.JToolBar;
 
 import org.workcraft.Framework;
 import org.workcraft.NodeTransformer;
@@ -50,7 +48,6 @@ import org.workcraft.gui.graph.Viewport;
 import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.graph.editors.AbstractInplaceEditor;
 import org.workcraft.gui.graph.editors.LabelInplaceEditor;
-import org.workcraft.gui.layouts.WrapLayout;
 import org.workcraft.util.Commands;
 import org.workcraft.util.GUI;
 import org.workcraft.util.Hierarchy;
@@ -64,11 +61,6 @@ public class SelectionTool extends AbstractGraphEditorTool {
 
     private static final Color selectionBorderColor = new Color(200, 200, 200);
     private static final Color selectionFillColor = new Color(99, 130, 191, 32);
-
-    protected JPanel interfacePanel;
-    protected JPanel controlPanel;
-    protected JPanel infoPanel;
-    protected JPanel statusPanel;
 
     private DrugState dragState = DrugState.NONE;
     private boolean ignoreMouseButton1 = false;
@@ -118,21 +110,13 @@ public class SelectionTool extends AbstractGraphEditorTool {
     }
 
     @Override
-    public JPanel getInterfacePanel() {
-        return interfacePanel;
+    public boolean requiresPropertyEditor() {
+        return true;
     }
 
     @Override
-    public void createInterfacePanel(final GraphEditor editor) {
-        super.createInterfacePanel(editor);
-
-        interfacePanel = new JPanel(new BorderLayout());
-
-        controlPanel = new JPanel(new WrapLayout(WrapLayout.CENTER, 0, 0));
-        interfacePanel.add(controlPanel, BorderLayout.PAGE_START);
-
-        JPanel groupPanel = new JPanel(new FlowLayout());
-        controlPanel.add(groupPanel);
+    public void updateToolbar(JToolBar toolbar, final GraphEditor editor) {
+        super.updateToolbar(toolbar, editor);
 
         if (enableGroupping) {
             JButton groupButton = GUI.createIconButton(GUI.createIconFromSVG("images/selection-group.svg"),
@@ -144,7 +128,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
                     editor.requestFocus();
                 }
             });
-            groupPanel.add(groupButton);
+            toolbar.add(groupButton);
         }
 
         if (enablePaging) {
@@ -157,7 +141,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
                     editor.requestFocus();
                 }
             });
-            groupPanel.add(groupPageButton);
+            toolbar.add(groupPageButton);
         }
 
         if (enableGroupping || enablePaging) {
@@ -170,10 +154,8 @@ public class SelectionTool extends AbstractGraphEditorTool {
                     editor.requestFocus();
                 }
             });
-            groupPanel.add(ungroupButton);
+            toolbar.add(ungroupButton);
 
-            JPanel levelPanel = new JPanel(new FlowLayout());
-            controlPanel.add(levelPanel);
             JButton levelUpButton = GUI.createIconButton(GUI.createIconFromSVG("images/selection-level_up.svg"),
                     "Level up (PageUp)");
             levelUpButton.addActionListener(new ActionListener() {
@@ -183,7 +165,8 @@ public class SelectionTool extends AbstractGraphEditorTool {
                     editor.requestFocus();
                 }
             });
-            levelPanel.add(levelUpButton);
+            toolbar.add(levelUpButton);
+
             JButton levelDownButton = GUI.createIconButton(GUI.createIconFromSVG("images/selection-level_down.svg"),
                     "Level down (PageDown)");
             levelDownButton.addActionListener(new ActionListener() {
@@ -193,12 +176,12 @@ public class SelectionTool extends AbstractGraphEditorTool {
                     editor.requestFocus();
                 }
             });
-            levelPanel.add(levelDownButton);
+            toolbar.add(levelDownButton);
         }
 
+        toolbar.addSeparator();
+
         if (enableFlipping) {
-            JPanel flipPanel = new JPanel(new FlowLayout());
-            controlPanel.add(flipPanel);
             JButton flipHorizontalButton = GUI.createIconButton(GUI.createIconFromSVG("images/selection-flip_horizontal.svg"),
                     "Flip horizontal");
             flipHorizontalButton.addActionListener(new ActionListener() {
@@ -208,7 +191,8 @@ public class SelectionTool extends AbstractGraphEditorTool {
                     editor.requestFocus();
                 }
             });
-            flipPanel.add(flipHorizontalButton);
+            toolbar.add(flipHorizontalButton);
+
             JButton flipVerticalButton = GUI.createIconButton(GUI.createIconFromSVG("images/selection-flip_vertical.svg"),
                     "Flip vertical");
             flipVerticalButton.addActionListener(new ActionListener() {
@@ -218,12 +202,10 @@ public class SelectionTool extends AbstractGraphEditorTool {
                     editor.requestFocus();
                 }
             });
-            flipPanel.add(flipVerticalButton);
+            toolbar.add(flipVerticalButton);
         }
 
         if (enableRotating) {
-            JPanel rotatePanel = new JPanel(new FlowLayout());
-            controlPanel.add(rotatePanel);
             JButton rotateClockwiseButton = GUI.createIconButton(GUI.createIconFromSVG("images/selection-rotate_clockwise.svg"),
                     "Rotate clockwise");
             rotateClockwiseButton.addActionListener(new ActionListener() {
@@ -233,7 +215,8 @@ public class SelectionTool extends AbstractGraphEditorTool {
                     editor.requestFocus();
                 }
             });
-            rotatePanel.add(rotateClockwiseButton);
+            toolbar.add(rotateClockwiseButton);
+
             JButton rotateCounterclockwiseButton = GUI.createIconButton(GUI.createIconFromSVG("images/selection-rotate_counterclockwise.svg"),
                     "Rotate counterclockwise");
             rotateCounterclockwiseButton.addActionListener(new ActionListener() {
@@ -243,7 +226,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
                     editor.requestFocus();
                 }
             });
-            rotatePanel.add(rotateCounterclockwiseButton);
+            toolbar.add(rotateCounterclockwiseButton);
         }
     }
 
