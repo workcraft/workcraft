@@ -28,6 +28,7 @@ public abstract class AbstractGraphEditorTool implements GraphEditorTool {
         editor.getModel().setDefaultNode(null);
         editor.getModel().setTemplateNode(null);
         resetIssue();
+        editor.requestFocus();
     }
 
     @Override

@@ -214,7 +214,7 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
 
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
-        mainWindow.updateWindowVisibility();
+        mainWindow.updateDockableWindowVisibility();
 
         selectedTool.setup(editor);
         selectedTool.activated(editor);

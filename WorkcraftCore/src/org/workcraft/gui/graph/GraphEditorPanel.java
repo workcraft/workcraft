@@ -77,6 +77,50 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     public static final String TITLE_SUFFIX_SELECTED_ELEMENTS = " selected elements";
     private static final int VIEWPORT_MARGIN = 25;
 
+    private final class UpdateEditorActionListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent arg0) {
+            if (updateEditorPanelRequested) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        updateEditor();
+                    }
+                });
+            }
+        }
+    }
+
+    private final class UpdatePropertyActionListener implements ActionListener {
+        @Override
+        public void actionPerformed(ActionEvent arg0) {
+            if (updatePropertyViewRequested) {
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        updatePropertyView();
+                    }
+                });
+            }
+        }
+    }
+
+    private final class TemplateResetActionListener implements ActionListener {
+        private final VisualNode templateNode;
+        private final VisualNode defaultNode;
+
+        private TemplateResetActionListener(VisualNode templateNode, VisualNode defaultNode) {
+            this.templateNode = templateNode;
+            this.defaultNode = defaultNode;
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            templateNode.copyStyle(defaultNode);
+            updatePropertyViewRequested = true;
+        }
+    }
+
     public class GraphEditorFocusListener implements FocusListener {
         private final GraphEditorPanel editor;
 
@@ -173,35 +217,9 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         add(overlay, BorderLayout.CENTER);
 
         // FIXME: timers need to be stopped at some point
-        Timer updateEditorPanelTimer = new Timer(CommonEditorSettings.getRedrawInterval(), new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                if (updateEditorPanelRequested) {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            updateEditor();
-                        }
-                    });
-                }
-            }
-        });
-
-        Timer updatePropertyTimer = new Timer(CommonEditorSettings.getRedrawInterval(), new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                if (updatePropertyViewRequested) {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            updatePropertyView();
-                        }
-                    });
-                }
-            }
-        });
-
+        Timer updateEditorPanelTimer = new Timer(CommonEditorSettings.getRedrawInterval(), new UpdateEditorActionListener());
         updateEditorPanelTimer.start();
+        Timer updatePropertyTimer = new Timer(CommonEditorSettings.getRedrawInterval(), new UpdatePropertyActionListener());
         updatePropertyTimer.start();
 
         // This is a hack to prevent editor panel from loosing focus on Ctrl-UP key combination
@@ -476,7 +494,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     public void updateToolsView() {
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
-        final ToolControlsWindow toolControlsWindow = mainWindow.getToolView();
+        final ToolControlsWindow toolControlsWindow = mainWindow.getControlsView();
         JToolBar modelToolbar = mainWindow.getModelToolbar();
         JToolBar toolToolbar = mainWindow.getToolToolbar();
 
@@ -533,13 +551,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
             propertyEditorWindow.setObject(propertiesWrapper(properties));
             if ((templateNode != null) && (defaultNode != null)) {
                 JButton resetButton = new JButton(RESET_TO_DEFAULTS);
-                resetButton.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        templateNode.copyStyle(defaultNode);
-                        updatePropertyViewRequested = true;
-                    }
-                });
+                resetButton.addActionListener(new TemplateResetActionListener(templateNode, defaultNode));
                 propertyEditorWindow.add(resetButton, BorderLayout.SOUTH);
                 // A hack to display reset button: toggle its visibility a couple of times.
                 resetButton.setVisible(false);

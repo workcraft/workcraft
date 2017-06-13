@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JOptionPane;
-import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JToolBar;
 
@@ -18,8 +17,6 @@ import org.workcraft.plugins.son.connections.SONConnection.Semantics;
 import org.workcraft.plugins.son.elements.VisualBlock;
 
 public class SONConnectionTool extends ConnectionTool {
-
-    protected JPanel interfacePanel;
 
     private Semantics semantic = Semantics.PNLINE;
 

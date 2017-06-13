@@ -779,22 +779,34 @@ public class MainWindow extends JFrame {
         }
     }
 
-    public void requestFocus(GraphEditorPanel editor) {
-        editor.requestFocusInWindow();
-        if (editorInFocus != editor) {
+    public void requestFocus(final GraphEditorPanel editor) {
+        // Note that focus is requested differently for active tab and when it is being activated.
+        // In the former case it is via invokeLater (otherwise it does not get focused).
+        // In the latter -- directly (otherwise it causes endless reactivation).
+        if (editorInFocus == editor) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    editorInFocus.requestFocus();
+                }
+            });
+        } else {
             editorInFocus = editor;
+            editorInFocus.requestFocusInWindow();
 
             WorkspaceEntry we = editor.getWorkspaceEntry();
             mainMenu.setMenuForWorkspaceEntry(we);
 
-            editor.updateToolsView();
-            editor.updatePropertyView();
-            updateWindowVisibility();
-            Framework.getInstance().updateJavaScript(we);
+            editorInFocus.updateToolsView();
+            editorInFocus.updatePropertyView();
+            updateDockableWindowVisibility();
+
+            Framework framework = Framework.getInstance();
+            framework.updateJavaScript(we);
         }
     }
 
-    public void updateWindowVisibility() {
+    public void updateDockableWindowVisibility() {
         try {
             // To preserve the layout, first display both the property editor
             // and the tool controls. Only after that close the empty ones.
@@ -1385,7 +1397,7 @@ public class MainWindow extends JFrame {
         return propertyEditorWindow;
     }
 
-    public ToolControlsWindow getToolView() {
+    public ToolControlsWindow getControlsView() {
         return toolControlsWindow;
     }
 
