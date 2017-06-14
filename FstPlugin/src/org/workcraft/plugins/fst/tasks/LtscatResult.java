@@ -1,4 +1,4 @@
-package org.workcraft.plugins.fst.task;
+package org.workcraft.plugins.fst.tasks;
 
 public class LtscatResult {
     private final String stdout;
