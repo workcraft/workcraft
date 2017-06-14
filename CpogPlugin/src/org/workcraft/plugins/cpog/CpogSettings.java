@@ -16,17 +16,17 @@ public class CpogSettings implements Settings {
 
     private static final String keyScencoCommand = prefix + ".scencoCommand";
     private static final String keyEspressoCommand = prefix + ".espressoCommand";
-    private static final String keyAbcFolder = prefix + ".abcFolder";
+    private static final String keyAbcTool = prefix + ".abcTool";
     private static final String keyPGMinerCommand = prefix + ".PGMinerCommand";
 
     private static final String defaultScencoCommand = DesktopApi.getOs().isWindows() ? "tools\\ScEnco\\scenco.exe" : "tools/ScEnco/scenco";
     private static final String defaultEspressoCommand = DesktopApi.getOs().isWindows() ? "tools\\Espresso\\espresso.exe" : "tools/Espresso/espresso";
-    private static final String defaultAbcFolder = "abc/";
+    private static final String defaultAbcTool = DesktopApi.getOs().isWindows() ? "tools\\Abc\\abc.exe" : "tools/Abc/abc";
     private static final String defaultPgminerCommand = DesktopApi.getOs().isWindows() ? "tools\\PGMiner\\pgminer.exe" : "tools/PGMiner/pgminer";
 
     private static String scencoCommand = defaultScencoCommand;
     private static String espressoCommand = defaultEspressoCommand;
-    private static String abcFolder = defaultAbcFolder;
+    private static String abcTool = defaultAbcTool;
     private static String pgminerCommand = defaultPgminerCommand;
 
     public CpogSettings() {
@@ -51,12 +51,12 @@ public class CpogSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<CpogSettings, String>(
-                this, "Abc folder path", String.class, true, false, false) {
+                this, "Abc command", String.class, true, false, false) {
             protected void setter(CpogSettings object, String value) {
-                setAbcFolder(value);
+                setAbcTool(value);
             }
             protected String getter(CpogSettings object) {
-                return getAbcFolder();
+                return getAbcTool();
             }
         });
 
@@ -75,7 +75,7 @@ public class CpogSettings implements Settings {
     public void load(Config config) {
         setScencoCommand(config.getString(keyScencoCommand, defaultScencoCommand));
         setEspressoCommand(config.getString(keyEspressoCommand, defaultEspressoCommand));
-        setAbcFolder(config.getString(keyAbcFolder, defaultAbcFolder));
+        setAbcTool(config.getString(keyAbcTool, defaultAbcTool));
         setPgminerCommand(config.getString(keyPGMinerCommand, defaultPgminerCommand));
     }
 
@@ -83,7 +83,7 @@ public class CpogSettings implements Settings {
     public void save(Config config) {
         config.set(keyScencoCommand, getScencoCommand());
         config.set(keyEspressoCommand, getEspressoCommand());
-        config.set(keyAbcFolder, getAbcFolder());
+        config.set(keyAbcTool, getAbcTool());
         config.set(keyPGMinerCommand, getPgminerCommand());
     }
 
@@ -118,12 +118,12 @@ public class CpogSettings implements Settings {
         espressoCommand = value;
     }
 
-    public static String getAbcFolder() {
-        return abcFolder;
+    public static String getAbcTool() {
+        return abcTool;
     }
 
-    public static void setAbcFolder(String value) {
-        abcFolder = value;
+    public static void setAbcTool(String value) {
+        abcTool = value;
     }
 
     public static void setPgminerCommand(String value) {

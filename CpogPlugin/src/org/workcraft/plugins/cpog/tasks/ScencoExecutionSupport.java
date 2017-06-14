@@ -274,8 +274,21 @@ public class ScencoExecutionSupport {
 
             for (int k = 0; k < m; k++) {
                 Map<String, Integer> nodes = new HashMap<>();
-                // Print arcs
+
                 output.println(".scenario CPOG_" + k);
+
+                // Print GO-DONE signals
+                if (!settings.isCpogSize()) {
+                    for (VisualComponent component : scenarios.get(k).getComponents()) {
+                        if (component instanceof VisualVertex) {
+                            VisualVertex vertex = (VisualVertex) component;
+                            output.println(settings.GO_SIGNAL + " " + vertex.getLabel());
+                            output.println(vertex.getLabel() + " " + settings.DONE_SIGNAL);
+                        }
+                    }
+                }
+
+                // Print arcs
                 for (VisualConnection c : scenarios.get(k).getConnections()) {
                     if (c instanceof VisualArc) {
                         VisualArc arc = (VisualArc) c;
