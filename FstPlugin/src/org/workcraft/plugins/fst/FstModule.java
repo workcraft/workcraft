@@ -8,8 +8,10 @@ import org.workcraft.PluginManager;
 import org.workcraft.Version;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.graph.commands.Command;
+import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
+import org.workcraft.plugins.fst.commands.ExtractWindowsCommand;
 import org.workcraft.plugins.fst.commands.FsmToFstConversionCommand;
 import org.workcraft.plugins.fst.commands.FstToFsmConversionCommand;
 import org.workcraft.plugins.fst.commands.FstToStgConversionCommand;
@@ -50,6 +52,9 @@ public class FstModule implements Module {
         pm.registerClass(Command.class, PetriToFsmConversionCommand.class);
         pm.registerClass(Command.class, FsmToFstConversionCommand.class);
         pm.registerClass(Command.class, FstToFsmConversionCommand.class);
+        pm.registerClass(Command.class, ExtractWindowsCommand.class);
+
+        pm.registerClass(Settings.class, ProcessWindowsSettings.class);
 
         pm.registerClass(Command.class, new Initialiser<Command>() {
             @Override
