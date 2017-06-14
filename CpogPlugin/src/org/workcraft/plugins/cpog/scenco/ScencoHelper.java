@@ -34,7 +34,7 @@ public class ScencoHelper {
 
     // Table description
     public static final String textFirstColumnTable = "Name";
-    public static final String textSecondColumnTable = "Opcode";
+    public static final String textSecondColumnTable = "Code";
 
     // Example label for custom encoding
     public static final String dontCareBit = "?";

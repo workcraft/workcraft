@@ -1,6 +1,8 @@
 package org.workcraft.plugins.cpog;
 
 public class EncoderSettings {
+    public static final String GO_SIGNAL = "GO";
+    public static final String DONE_SIGNAL = "DONE";
 
     public enum GenerationMode {
         OPTIMAL_ENCODING("Simulated annealing"),

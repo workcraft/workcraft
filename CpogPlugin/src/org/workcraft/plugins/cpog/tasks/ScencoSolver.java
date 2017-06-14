@@ -42,7 +42,7 @@ public class ScencoSolver {
                                                           "(genlib format) inside ABC folder.";
     public static final String MSG_ABC_NOT_PRESENT = "Find out more information on " +
                                                      "\"http://www.eecs.berkeley.edu/~alanmi/abc/\" or try to " +
-                                                     "set path of the folder containing Abc inside Workcraft settings.";
+                                                     "set Abc path in Workcraft settings.";
     private static final String VERILOG_TMP_NAME = "micro.v";
 
     private final EncoderSettings settings;
@@ -53,7 +53,7 @@ public class ScencoSolver {
     // SETTING PARAMETERS FOR CALLING SCENCO
     private String scencoCommand;
     private String espressoCommand;
-    private String abcFolder;
+    private String abcTool;
     private String gatesLibrary;
     private String verbose = "";
     private String genMode = "";
@@ -170,8 +170,8 @@ public class ScencoSolver {
         instantiateParameters(n, m);
 
         if (settings.isAbcFlag()) {
-            File f = new File(abcFolder);
-            if (!f.exists() || !f.isDirectory()) {
+            File f = new File(abcTool);
+            if (!f.exists() || f.isDirectory()) {
                 FileUtils.deleteOnExitRecursively(directory);
                 args.add("ERROR");
                 args.add(MSG_ABC_NOT_PRESENT);
@@ -195,7 +195,7 @@ public class ScencoSolver {
             }
         } else {
             abcFlag = "";
-            abcFolder = "";
+            abcTool = "";
             gateLibFlag = "";
             gatesLibrary = "";
         }
@@ -307,7 +307,7 @@ public class ScencoSolver {
         if (espressoFlag != null && !espressoFlag.isEmpty()) args.add(espressoFlag);
         if (espressoCommand != null && !espressoCommand.isEmpty()) args.add(espressoCommand);
         if (abcFlag != null && !abcFlag.isEmpty()) args.add(abcFlag);
-        if (abcFolder != null && !abcFolder.isEmpty()) args.add(abcFolder);
+        if (abcTool != null && !abcTool.isEmpty()) args.add(abcTool);
         if (gateLibFlag != null && !gateLibFlag.isEmpty()) args.add(gateLibFlag);
         if (gatesLibrary != null && !gatesLibrary.isEmpty()) args.add(gatesLibrary);
         args.add("-res");
@@ -360,9 +360,13 @@ public class ScencoSolver {
                         StringTokenizer st2 = new StringTokenizer(outputLines[i], ",");
                         String el = (String) st2.nextElement();
                         if (el.equals("V")) { //formula of a vertex
-                            optVertices[v] = (String) st2.nextElement();
-                            st2.nextElement();
-                            optFormulaeVertices[v++] = (String) st2.nextElement();
+                            String vertexName = (String) st2.nextElement();
+                            if (!vertexName.equals(settings.GO_SIGNAL) &&
+                                    !vertexName.equals(settings.DONE_SIGNAL)) {
+                                optVertices[v] = vertexName;
+                                st2.nextElement();
+                                optFormulaeVertices[v++] = (String) st2.nextElement();
+                            }
                         } else {
                             optSources[a] = (String) st2.nextElement();
                             optDests[a] = (String) st2.nextElement();
@@ -469,7 +473,7 @@ public class ScencoSolver {
     private void instantiateParameters(int elements, int scenarios) {
         scencoCommand = ToolUtils.getAbsoluteCommandPath(CpogSettings.getScencoCommand());
         espressoCommand = ToolUtils.getAbsoluteCommandPath(CpogSettings.getEspressoCommand());
-        abcFolder = CpogSettings.getAbcFolder();
+        abcTool = CpogSettings.getAbcTool();
         File f = new File(CircuitSettings.getGateLibrary());
         gatesLibrary = f.getAbsolutePath();
         espressoFlag = "-e";
