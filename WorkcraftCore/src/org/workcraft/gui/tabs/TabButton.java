@@ -5,9 +5,7 @@ import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
-import javax.swing.BorderFactory;
 import javax.swing.JLabel;
-import javax.swing.border.Border;
 
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ScriptedActionListener;
@@ -16,8 +14,6 @@ public class TabButton extends JLabel implements MouseListener {
     private static final long serialVersionUID = 1L;
     private final ScriptedActionListener actionListener;
     private final Action action;
-
-    Border mouseOutBorder, mouseOverBorder;
 
     public TabButton(String label, String toolTipText, Action action, ScriptedActionListener actionListener) {
         super(label);
@@ -28,34 +24,30 @@ public class TabButton extends JLabel implements MouseListener {
         addMouseListener(this);
         setToolTipText(toolTipText);
 
-        mouseOutBorder = BorderFactory.createEmptyBorder(1, 1, 1, 1);
-        mouseOverBorder = BorderFactory.createLineBorder(Color.GRAY);
-
         this.action = action;
         this.actionListener = actionListener;
-
-        //this.setBorder(mouseOutBorder);
     }
 
+    @Override
     public void mouseClicked(MouseEvent e) {
         actionListener.actionPerformed(action);
     }
 
+    @Override
     public void mouseEntered(MouseEvent e) {
         setForeground(new Color(200, 0, 0));
-        //    this.setBorder(mouseOverBorder);
     }
 
+    @Override
     public void mouseExited(MouseEvent e) {
         setForeground(Color.GRAY);
-        //this.setBorder(mouseOutBorder);
-
     }
 
+    @Override
     public void mousePressed(MouseEvent e) {
-
     }
 
+    @Override
     public void mouseReleased(MouseEvent e) {
     }
 

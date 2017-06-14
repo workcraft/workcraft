@@ -6,25 +6,21 @@ import javax.swing.JFrame;
 import javax.swing.JTextArea;
 
 import org.apache.log4j.PropertyConfigurator;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.son.gui.OutputArea;
 import org.workcraft.plugins.son.gui.TextAreaAppender;
 
 public class OutputRedirect {
 
     public static void redirect(int height, int width, String title) {
-
         JTextArea jTextArea = new JTextArea(height, width);
-
+        jTextArea.setMargin(SizeHelper.getTextMargin());
         JFrame win = new OutputArea(jTextArea, title);
-
         win.setVisible(true);
-
         setupLog4JAppender(jTextArea);
-
     }
 
     private static void setupLog4JAppender(JTextArea jTextArea) {
-
         TextAreaAppender.setTextArea(jTextArea);
 
         Properties logProperties = new Properties();

@@ -10,7 +10,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -20,6 +19,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.layouts.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.PetriToCpogSettings;
 import org.workcraft.util.GUI;
@@ -56,9 +56,9 @@ public class PetriToCpogDialog extends JDialog {
         layout.setVGap(3);
 
         JPanel content = new JPanel(layout);
-        content.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+        content.setBorder(SizeHelper.getEmptyBorder());
 
-        content.add(settingPanel, "0, 0");
+        content.add(settingPanel, "0 0");
         content.add(buttonPanel, "0 1");
 
         setContentPane(content);

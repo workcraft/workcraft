@@ -8,7 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -112,8 +111,8 @@ public class PresetManagerPanel<T> extends JPanel {
         buttonsPanel.add(saveAsButton);
         buttonsPanel.add(manageButton);
 
-        setBorder(BorderFactory.createTitledBorder("Presets"));
-        setLayout(new BorderLayout(SizeHelper.getCompactLayoutHGap(), SizeHelper.getCompactLayoutVGap()));
+        setBorder(SizeHelper.getTitledBorder("Presets"));
+        setLayout(new BorderLayout(SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
         add(presetCombo, BorderLayout.CENTER);
         add(buttonsPanel, BorderLayout.SOUTH);
     }

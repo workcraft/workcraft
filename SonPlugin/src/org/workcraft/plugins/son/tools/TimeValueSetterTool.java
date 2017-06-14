@@ -14,7 +14,6 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.geom.Point2D;
 
-import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -26,6 +25,7 @@ import org.workcraft.Framework;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.HitMan;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
@@ -104,10 +104,10 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
     }
 
     private void createTimeSetterPanel() {
-        granularityPanel = new GranularityPanel(BorderFactory.createTitledBorder("Time Granularity"));
+        granularityPanel = new GranularityPanel(SizeHelper.getTitledBorder("Time Granularity"));
 
         timePropertyPanel = new JPanel();
-        timePropertyPanel.setBorder(BorderFactory.createTitledBorder("Time value"));
+        timePropertyPanel.setBorder(SizeHelper.getTitledBorder("Time value"));
         timePropertyPanel.setLayout(new WrapLayout());
         timePropertyPanel.setPreferredSize(new Dimension(1, labelheight * 6));
 

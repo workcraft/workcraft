@@ -780,30 +780,24 @@ public class MainWindow extends JFrame {
     }
 
     public void requestFocus(final GraphEditorPanel editor) {
-        // Note that focus is requested differently for active tab and when it is being activated.
-        // In the former case it is via invokeLater (otherwise it does not get focused).
-        // In the latter -- directly (otherwise it causes endless reactivation).
-        if (editorInFocus == editor) {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    editorInFocus.requestFocus();
-                }
-            });
-        } else {
+        if (editorInFocus != editor) {
             editorInFocus = editor;
-            editorInFocus.requestFocusInWindow();
-
-            WorkspaceEntry we = editor.getWorkspaceEntry();
-            mainMenu.setMenuForWorkspaceEntry(we);
-
             editorInFocus.updateToolsView();
             editorInFocus.updatePropertyView();
             updateDockableWindowVisibility();
 
-            Framework framework = Framework.getInstance();
-            framework.updateJavaScript(we);
+            WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
+            mainMenu.setMenuForWorkspaceEntry(we);
+            Framework.getInstance().updateJavaScript(we);
         }
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                if (editorInFocus != null) {
+                    editorInFocus.requestFocus();
+                }
+            }
+        });
     }
 
     public void updateDockableWindowVisibility() {

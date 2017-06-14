@@ -12,7 +12,6 @@ import java.awt.event.MouseListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JDialog;
@@ -23,6 +22,7 @@ import javax.swing.table.AbstractTableModel;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.son.SON;
@@ -91,7 +91,7 @@ public class TimeEstimatorDialog extends JDialog {
         defaultDurationPanel.setLayout(new FlowLayout(FlowLayout.LEFT));
 
         JPanel entirePanel = new JPanel(new BorderLayout());
-        entirePanel.setBorder(BorderFactory.createTitledBorder("Entire estimation"));
+        entirePanel.setBorder(SizeHelper.getTitledBorder("Entire estimation"));
         entirePanel.setLayout(new GridLayout(3, 0));
 
         entireEst = new JCheckBox("Estimate time value for entire SON");
@@ -113,7 +113,7 @@ public class TimeEstimatorDialog extends JDialog {
         entirePanel.add(twoDir);
 
         JPanel singlePanel = new JPanel(new BorderLayout());
-        singlePanel.setBorder(BorderFactory.createTitledBorder("Single Node estimation"));
+        singlePanel.setBorder(SizeHelper.getTitledBorder("Single Node estimation"));
         singlePanel.setLayout(new GridLayout(2, 0));
 
         intermediate = new JCheckBox("Set values for intermediate nodes");
@@ -128,8 +128,7 @@ public class TimeEstimatorDialog extends JDialog {
         // singlePanel.add(setDuration);
 
         durationPanel = new JPanel();
-        // durationPanel.setBorder(BorderFactory.createTitledBorder("Default
-        // Duration Setting"));
+        // durationPanel.setBorder(SizeHelper.getTitleBorder("Default Duration Setting"));
         durationPanel.setLayout(new BorderLayout());
         durationPanel.add(defaultDurationPanel, BorderLayout.NORTH);
         // durationPanel.add(singlePanel, BorderLayout.WEST);

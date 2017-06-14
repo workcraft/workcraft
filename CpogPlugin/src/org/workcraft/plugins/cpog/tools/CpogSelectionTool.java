@@ -121,6 +121,7 @@ public class CpogSelectionTool extends SelectionTool {
         this.editor = editor;
 
         expressionText = new JTextArea();
+        expressionText.setMargin(SizeHelper.getTextMargin());
         expressionText.setLineWrap(false);
         expressionText.setEditable(true);
         expressionText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));

@@ -19,6 +19,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 
 import org.workcraft.Framework;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.layouts.SmartFlowLayout;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.ProgressMonitor;
@@ -137,7 +138,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
         scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         Border outsideBorder = BorderFactory.createLineBorder(Color.LIGHT_GRAY);
-        Border insideBorder = BorderFactory.createEmptyBorder(2, 2, 2, 2);
+        Border insideBorder = SizeHelper.getEmptyBorder();
         Border lineBorder = BorderFactory.createCompoundBorder(outsideBorder, insideBorder);
         setBorder(lineBorder);
 

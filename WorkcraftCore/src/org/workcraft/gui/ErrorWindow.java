@@ -33,6 +33,7 @@ public class ErrorWindow extends JPanel implements ComponentListener {
 
     public ErrorWindow() {
         txtStdErr = new JTextArea();
+        txtStdErr.setMargin(SizeHelper.getTextMargin());
         txtStdErr.setLineWrap(true);
         txtStdErr.setEditable(false);
         txtStdErr.setWrapStyleWord(true);
@@ -45,9 +46,8 @@ public class ErrorWindow extends JPanel implements ComponentListener {
         JScrollPane scrollStdErr = new JScrollPane();
         scrollStdErr.setViewportView(txtStdErr);
 
-        setLayout(new BorderLayout(0, 0));
-        this.add(scrollStdErr, BorderLayout.CENTER);
-
+        setLayout(new BorderLayout());
+        add(scrollStdErr, BorderLayout.CENTER);
         addComponentListener(this);
     }
 

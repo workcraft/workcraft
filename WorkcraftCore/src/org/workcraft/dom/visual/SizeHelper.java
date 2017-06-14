@@ -2,12 +2,15 @@ package org.workcraft.dom.visual;
 
 import java.awt.Font;
 import java.awt.Image;
+import java.awt.Insets;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 
+import javax.swing.BorderFactory;
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.border.Border;
 
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
@@ -80,14 +83,6 @@ public class SizeHelper {
         return (int) Math.round(0.5 * getBaseSize());
     }
 
-    public static int getCompactLayoutHGap() {
-        return (int) Math.round(0.2 * getBaseSize());
-    }
-
-    public static int getCompactLayoutVGap() {
-        return (int) Math.round(0.2 * getBaseSize());
-    }
-
     public static int getMonospacedFontSize() {
         return (int) Math.round(0.9 * getBaseSize());
     }
@@ -123,6 +118,25 @@ public class SizeHelper {
 
     public static Icon scaleFileChooserIcon(Icon icon) {
         return scaleButtonIcon(icon, getFileChooserIconSize());
+    }
+
+    public static Border getTitledBorder(String title) {
+        return BorderFactory.createCompoundBorder(BorderFactory.createTitledBorder(title), getEmptyBorder());
+    }
+
+    public static Border getEmptyBorder() {
+        int gap = (int) Math.round(0.2 * getBaseSize());
+        return BorderFactory.createEmptyBorder(gap, gap, gap, gap);
+    }
+
+    public static Insets getTextMargin() {
+        int gap = (int) Math.round(0.2 * getBaseSize());
+        return new Insets(gap, gap, gap, gap);
+    }
+
+    public static Insets getTreeCheckboxMargin() {
+        int gap = (int) Math.round(0.2 * getBaseSize());
+        return new Insets(0, 0, 0, gap);
     }
 
 }

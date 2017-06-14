@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 
-import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComponent;
@@ -67,10 +66,8 @@ public class CreateWorkDialog extends JDialog {
     }
 
     private void initComponents() {
-        int hGap = SizeHelper.getLayoutHGap();
-        int vGap = SizeHelper.getLayoutVGap();
         JPanel contentPane = new JPanel(new BorderLayout());
-        contentPane.setBorder(BorderFactory.createEmptyBorder(hGap, vGap, hGap, vGap));
+        contentPane.setBorder(SizeHelper.getEmptyBorder());
         setContentPane(contentPane);
 
         JScrollPane modelScroll = new JScrollPane();
@@ -79,7 +76,7 @@ public class CreateWorkDialog extends JDialog {
         workTypeList.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         workTypeList.setLayoutOrientation(JList.VERTICAL_WRAP);
         workTypeList.setVisibleRowCount(0);
-        workTypeList.setBorder(BorderFactory.createEmptyBorder(hGap, vGap, hGap, vGap));
+        workTypeList.setBorder(SizeHelper.getEmptyBorder());
 
         workTypeList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             @Override
@@ -137,6 +134,8 @@ public class CreateWorkDialog extends JDialog {
         int height = SizeHelper.getListRowSize() * elements.size();
         modelScroll.setPreferredSize(new Dimension(width, height));
 
+        int hGap = SizeHelper.getLayoutHGap();
+        int vGap = SizeHelper.getLayoutVGap();
         JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, hGap, vGap));
 
         okButton = GUI.createDialogButton("OK");

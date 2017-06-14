@@ -5,7 +5,6 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
@@ -15,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.shared.presets.Preset;
 import org.workcraft.plugins.shared.presets.PresetManager;
 
@@ -35,11 +35,11 @@ public class PresetManagerDialog<T> extends JDialog {
         };
 
         TableLayout layout = new TableLayout(size);
-        layout.setVGap(4);
-        layout.setHGap(4);
+        layout.setHGap(SizeHelper.getLayoutHGap());
+        layout.setVGap(SizeHelper.getLayoutVGap());
 
         JPanel content = new JPanel(layout);
-        content.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+        content.setBorder(SizeHelper.getEmptyBorder());
 
         this.setLayout(new BorderLayout());
         this.add(content, BorderLayout.CENTER);

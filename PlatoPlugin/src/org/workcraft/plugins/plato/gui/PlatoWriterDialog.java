@@ -80,6 +80,7 @@ public class PlatoWriterDialog extends JDialog {
         content.add(conceptsLabel, BorderLayout.NORTH);
 
         conceptsText = new JTextArea();
+        conceptsText.setMargin(SizeHelper.getTextMargin());
         conceptsText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
         conceptsText.setText(getDefaultText());
         if (lastFileUsed != null && lastFileUsed.exists()) {

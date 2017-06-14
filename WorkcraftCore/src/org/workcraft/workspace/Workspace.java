@@ -127,7 +127,7 @@ public class Workspace {
     }
 
     public void fireWorkspaceChanged() {
-        // TODO : categorize and route events
+        // TODO : categorise and route events
         for (WorkspaceListener listener : workspaceListeners) {
             listener.workspaceLoaded();
         }

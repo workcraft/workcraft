@@ -12,7 +12,6 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
-import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -92,7 +91,7 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
         layout.setVGap(3);
 
         JPanel content = new JPanel(layout);
-        content.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+        content.setBorder(SizeHelper.getEmptyBorder());
 
         content.add(standardPanel, "0, 0");
         content.add(generationPanel, "0 1");
@@ -230,7 +229,7 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
         scrollPane = new JScrollPane(encodingTable);
 
         customPanel = new JPanel(new BorderLayout());
-        customPanel.setBorder(BorderFactory.createTitledBorder("Custom encoding"));
+        customPanel.setBorder(SizeHelper.getTitledBorder("Custom encoding"));
 
         JPanel propertyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
         propertyPanel.add(customEncodings);
@@ -289,8 +288,7 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
 
     private void createGenerationPanel(final int mode) {
         generationPanel = new JPanel(new SimpleFlowLayout());
-        generationPanel.setBorder(BorderFactory
-                .createTitledBorder("Search range"));
+        generationPanel.setBorder(SizeHelper.getTitledBorder("Search range"));
 
         // SPEED UP MODE
         fast = new JRadioButton("Synthesise only optimal (w.r.t. heuristic function) solutions (fast)");

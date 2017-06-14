@@ -10,7 +10,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -22,6 +21,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.layouts.SimpleFlowLayout;
 import org.workcraft.plugins.cpog.EncoderSettings;
@@ -116,7 +116,7 @@ public class SatBasedScencoDialog extends AbstractScencoDialog {
         m = scenarios.size();
 
         generationPanel = new JPanel(new SimpleFlowLayout());
-        generationPanel.setBorder(BorderFactory.createTitledBorder("Encoding parameters"));
+        generationPanel.setBorder(SizeHelper.getTitledBorder("Encoding parameters"));
 
         JLabel bitsLabel = new JLabel(ScencoHelper.textEncodingBitWidth);
         //bitsLabel.setPreferredSize(ScencoDialogSupport.dimensionBitEncodingWidthLabel);

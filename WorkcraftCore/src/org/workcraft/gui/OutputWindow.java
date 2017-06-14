@@ -29,6 +29,7 @@ public class OutputWindow extends JPanel {
 
     public OutputWindow() {
         txtStdOut = new JTextArea();
+        txtStdOut.setMargin(SizeHelper.getTextMargin());
         txtStdOut.setLineWrap(true);
         txtStdOut.setEditable(false);
         txtStdOut.setWrapStyleWord(true);
@@ -39,8 +40,9 @@ public class OutputWindow extends JPanel {
 
         JScrollPane scrollStdOut = new JScrollPane();
         scrollStdOut.setViewportView(txtStdOut);
-        setLayout(new BorderLayout(0, 0));
-        this.add(scrollStdOut, BorderLayout.CENTER);
+
+        setLayout(new BorderLayout());
+        add(scrollStdOut, BorderLayout.CENTER);
     }
 
     public void captureStream() {

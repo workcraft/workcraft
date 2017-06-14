@@ -3,7 +3,6 @@ package org.workcraft.plugins.mpsat.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -34,10 +33,8 @@ public class MpsatSolutionPanel extends JPanel {
             {TableLayout.PREFERRED, TableLayout.FILL},
         };
         TableLayout layout = new TableLayout(sizes);
-        int hGap = SizeHelper.getCompactLayoutHGap();
-        int vGap = SizeHelper.getCompactLayoutVGap();
-        layout.setHGap(hGap);
-        layout.setVGap(vGap);
+        layout.setHGap(SizeHelper.getLayoutHGap());
+        layout.setVGap(SizeHelper.getLayoutVGap());
         setLayout(layout);
 
         JLabel commentLabel = new JLabel();
@@ -53,7 +50,7 @@ public class MpsatSolutionPanel extends JPanel {
             columnCount = MAX_COLUMN_COUNT;
         }
         JTextArea traceText = new JTextArea(1, columnCount);
-        traceText.setBorder(BorderFactory.createEmptyBorder(hGap, vGap, hGap, vGap));
+        traceText.setMargin(SizeHelper.getTextMargin());
         if (solutionString.isEmpty()) {
             traceText.setText("[empty trace]");
             traceText.setEnabled(false);

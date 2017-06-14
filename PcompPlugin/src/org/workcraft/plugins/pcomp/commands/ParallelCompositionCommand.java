@@ -54,7 +54,7 @@ public class ParallelCompositionCommand implements Command {
         } else {
             MainWindow mainWindow = framework.getMainWindow();
             PcompDialog dialog = new PcompDialog(mainWindow);
-            GUI.centerAndSizeToParent(dialog, mainWindow);
+            GUI.centerToParent(dialog, mainWindow);
             Collection<Mutex> mutexes = new HashSet<>();
             if (dialog.run()) {
                 String tmpPrefix = FileUtils.getTempPrefix(we.getTitle());

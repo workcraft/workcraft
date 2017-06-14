@@ -9,7 +9,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -27,11 +26,10 @@ public class MpsatReachibilityDialog extends JDialog {
     private final JPanel contents;
 
     public MpsatReachibilityDialog(WorkspaceEntry we, String title, String message, List<MpsatSolution> solutions) {
+        JPanel solutionsPanel = new JPanel(new GridLayout(solutions.size(), 1,
+                SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
 
-        int hGap = SizeHelper.getLayoutHGap();
-        int vGap = SizeHelper.getLayoutVGap();
-        JPanel solutionsPanel = new JPanel(new GridLayout(solutions.size(), 1, hGap, vGap));
-        solutionsPanel.setBorder(BorderFactory.createEmptyBorder(hGap, vGap, hGap, vGap));
+        solutionsPanel.setBorder(SizeHelper.getEmptyBorder());
         for (MpsatSolution solution : solutions) {
             solutionsPanel.add(new MpsatSolutionPanel(we, solution, new ActionListener() {
                 @Override
@@ -65,7 +63,7 @@ public class MpsatReachibilityDialog extends JDialog {
 
         buttonsPanel.add(closeButton);
 
-        contents = new JPanel(new BorderLayout(hGap, vGap));
+        contents = new JPanel(new BorderLayout(SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
         contents.add(new JLabel(message), BorderLayout.NORTH);
         contents.add(scrollPane, BorderLayout.CENTER);
         contents.add(buttonsPanel, BorderLayout.SOUTH);
