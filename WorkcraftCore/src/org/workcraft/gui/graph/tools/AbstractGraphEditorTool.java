@@ -81,7 +81,6 @@ public abstract class AbstractGraphEditorTool implements GraphEditorTool {
         }
     }
 
-
     private void resetIssue() {
         if (issueTimer != null) {
             issueTimer.stop();

@@ -80,7 +80,6 @@ public class SelectionTool extends AbstractGraphEditorTool {
     private boolean enablePaging = true;
     private boolean enableFlipping = true;
     private boolean enableRotating = true;
-    private boolean isPanMode = false;
 
     public SelectionTool() {
         this(true, true, true, true);
@@ -234,7 +233,6 @@ public class SelectionTool extends AbstractGraphEditorTool {
     public void activated(final GraphEditor editor) {
         super.activated(editor);
         currentNode = null;
-        isPanMode = false;
     }
 
     @Override
@@ -575,23 +573,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
             }
         }
 
-        if (e.getKeyCode() == DesktopApi.getMenuKeyCode()) {
-            isPanMode = true;
-            editor.forceRedraw();
-            return true;
-        }
-
         return super.keyPressed(e);
-    }
-
-    @Override
-    public boolean keyReleased(GraphEditorKeyEvent e) {
-        if (e.getKeyCode() == DesktopApi.getMenuKeyCode()) {
-            isPanMode = false;
-            e.getEditor().forceRedraw();
-            return true;
-        }
-        return super.keyReleased(e);
     }
 
     @Override
@@ -792,14 +774,6 @@ public class SelectionTool extends AbstractGraphEditorTool {
         editor.getWorkspaceEntry().saveMemento();
         // Redraw the editor window to recalculate all the bounding boxes
         editor.forceRedraw();
-    }
-
-    @Override
-    public String getHintText(final GraphEditor editor) {
-        if (isPanMode) {
-            return "Use " + DesktopApi.getMenuKeyMaskName() + " + RMB to pan the view.";
-        }
-        return super.getHintText(editor);
     }
 
 }

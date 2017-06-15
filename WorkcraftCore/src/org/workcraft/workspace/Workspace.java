@@ -58,7 +58,6 @@ public class Workspace {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         addMount(Path.<String>empty(), getBaseDir(), true);
     }
 
@@ -215,6 +214,7 @@ public class Workspace {
         }
         mounts.clear();
         permanentMounts.clear();
+        fireWorkspaceChanged();
     }
 
     public void save() {
@@ -388,6 +388,7 @@ public class Workspace {
             openFiles.put(to, openFileFrom);
         }
         LogUtils.logInfoLine(msg);
+        fireWorkspaceChanged();
     }
 
     public MountTree getMountTree(Path<String> path) {
