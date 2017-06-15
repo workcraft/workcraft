@@ -75,8 +75,7 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
             handleSynthesisResult(mpsatReturnValue, false, RenderType.GATE);
             break;
         default:
-            final MainWindow mainWindow = Framework.getInstance().getMainWindow();
-            JOptionPane.showMessageDialog(mainWindow,
+            JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(),
                     "Warning: MPSat synthesis mode \'" + mpsatMode.getArgument() + "\' is not (yet) supported.",
                     TITLE, JOptionPane.WARNING_MESSAGE);
             break;
@@ -104,6 +103,7 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
         if (MpsatSynthesisSettings.getOpenSynthesisResult() && (verilogOutput != null)) {
             try {
                 final Framework framework = Framework.getInstance();
+                final MainWindow mainWindow = framework.getMainWindow();
                 final ByteArrayInputStream in = new ByteArrayInputStream(verilogOutput);
                 final VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
                 final Circuit circuit = verilogImporter.importCircuit(in, mutexes);
@@ -118,13 +118,13 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
                     final String title = we.getModelEntry().getModel().getTitle();
                     visualCircuit.setTitle(title);
                     if (!we.getFile().exists()) {
-                        JOptionPane.showMessageDialog(null,
+                        JOptionPane.showMessageDialog(mainWindow,
                                 "Error: Unsaved STG cannot be set as the circuit environment.",
                                 TITLE, JOptionPane.ERROR_MESSAGE);
                     } else {
                         visualCircuit.setEnvironmentFile(we.getFile());
                         if (we.isChanged()) {
-                            JOptionPane.showMessageDialog(null,
+                            JOptionPane.showMessageDialog(mainWindow,
                                     "Warning: The STG with unsaved changes is set as the circuit environment.",
                                     TITLE, JOptionPane.WARNING_MESSAGE);
                         }
@@ -133,7 +133,6 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
                         @Override
                         public void run() {
                             if (framework.isInGuiMode()) {
-                                final MainWindow mainWindow = framework.getMainWindow();
                                 final GraphEditorPanel editor = mainWindow.getCurrentEditor();
                                 editor.updatePropertyView();
                             }

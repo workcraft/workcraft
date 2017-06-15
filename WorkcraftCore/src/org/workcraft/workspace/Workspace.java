@@ -411,7 +411,7 @@ public class Workspace {
                     deleteEntry(getPath(f));
                 }
                 if (!file.delete()) {
-                    JOptionPane.showMessageDialog(null, "Deletion failed");
+                    JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(), "Deletion failed");
                 }
             } else {
                 deleteFile(path);
@@ -428,7 +428,7 @@ public class Workspace {
         openFiles.removeValue(openFile);
         final File file = getFile(path);
         if (file.exists() && !file.delete()) {
-            JOptionPane.showMessageDialog(null, "Deletion failed");
+            JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(), "Deletion failed");
         }
     }
 

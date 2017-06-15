@@ -27,6 +27,7 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.table.DefaultTableCellRenderer;
 
+import org.workcraft.Framework;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.layouts.SimpleFlowLayout;
@@ -179,7 +180,7 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (Integer.parseInt(bitsText.getText()) < bits + 1) {
-                    JOptionPane.showMessageDialog(null,
+                    JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(),
                             "Bits selected are not enough to encode all scenarios.",
                             "Not enough bits", JOptionPane.ERROR_MESSAGE);
 

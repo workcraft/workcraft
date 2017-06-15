@@ -180,7 +180,8 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
                                 SwingUtilities.invokeLater(new Runnable() {
                                     @Override
                                     public void run() {
-                                        JOptionPane.showMessageDialog(null, "Task " + description + " finished!");
+                                        JOptionPane.showMessageDialog(framework.getMainWindow(),
+                                                "Task " + description + " finished!");
                                     }
 
                                 });

@@ -87,7 +87,8 @@ public class AlgebraExpressionFromGraphsCommand implements Command {
                 e.printStackTrace();
             }
         } else {
-            JOptionPane.showMessageDialog(null, "No export selection was made",
+            JOptionPane.showMessageDialog(mainWindow,
+                    "No export selection was made",
                     DIALOG_EXPRESSION_EXPORT_ERROR, JOptionPane.ERROR_MESSAGE);
         }
     }

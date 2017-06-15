@@ -6,6 +6,8 @@ import java.util.List;
 import javax.swing.JOptionPane;
 
 import org.workcraft.Config;
+import org.workcraft.Framework;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
@@ -112,13 +114,15 @@ public class StgSettings implements Settings {
     }
 
     private void signalLevelError() {
-        JOptionPane.showMessageDialog(null,
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        JOptionPane.showMessageDialog(mainWindow,
                 "Signal level suffix must only consist of letters, numbers and underscores.",
                 "STG settings", JOptionPane.ERROR_MESSAGE);
     }
 
     private void signalLevelWarning() {
-        JOptionPane.showMessageDialog(null,
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        JOptionPane.showMessageDialog(mainWindow,
                 "Short signal level suffix increases the risk of name clashing.\n"
                         + "Consider making it at least two characters long.",
                         "STG settings", JOptionPane.WARNING_MESSAGE);

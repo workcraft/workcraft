@@ -29,6 +29,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 
+import org.workcraft.Framework;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -42,6 +43,7 @@ import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.utils.FormulaToString;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.editors.AbstractInplaceEditor;
 import org.workcraft.gui.graph.editors.LabelInplaceEditor;
@@ -259,6 +261,7 @@ public class CpogSelectionTool extends SelectionTool {
 
         CpogFormula f = null;
         final HashMap<String, VisualVertex> localVertices = new HashMap<>();
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
         try {
             f = CpogFormulaParser.parse(text,
                     new GraphFunc<String, CpogFormula>() {
@@ -362,13 +365,13 @@ public class CpogSelectionTool extends SelectionTool {
                     });
         } catch (ParseException e) {
             we.cancelMemento();
-            JOptionPane.showMessageDialog(null, e.getMessage(), "Parse error",
-                    JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(mainWindow,
+                    e.getMessage(), "Parse error", JOptionPane.ERROR_MESSAGE);
             return null;
         } catch (TokenMgrError e) {
             we.cancelMemento();
-            JOptionPane.showMessageDialog(null, e.getMessage(),
-                    "Lexical error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(mainWindow,
+                    e.getMessage(), "Lexical error", JOptionPane.ERROR_MESSAGE);
             return null;
         }
 
@@ -999,8 +1002,8 @@ public class CpogSelectionTool extends SelectionTool {
             fileIn = new Scanner(f);
         } catch (FileNotFoundException e1) {
             // TODO Auto-generated catch block
-            JOptionPane.showMessageDialog(null, e1.getMessage(),
-                    "File not found error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(),
+                    e1.getMessage(), "File not found error", JOptionPane.ERROR_MESSAGE);
             return false;
         }
 

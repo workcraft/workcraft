@@ -9,6 +9,7 @@ import java.util.Set;
 
 import javax.swing.JOptionPane;
 
+import org.workcraft.Framework;
 import org.workcraft.NodeTransformer;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
@@ -26,6 +27,7 @@ import org.workcraft.dom.visual.connections.ConnectionGraphic;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.commands.AbstractTransformationCommand;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.PetriNetUtils;
@@ -86,7 +88,8 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
         VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
         Collection<Node> nodes = collect(visualModel);
         if (nodes.size() > 1) {
-            JOptionPane.showMessageDialog(null, ERROR_MORE_THAN_ONE_TRANSITION,
+            JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(),
+                    ERROR_MORE_THAN_ONE_TRANSITION,
                     MESSAGE_TITLE, JOptionPane.ERROR_MESSAGE);
         } else if (!nodes.isEmpty()) {
             we.saveMemento();
@@ -110,26 +113,27 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
     @Override
     public void transform(Model model, Node node) {
         if ((model instanceof VisualModel) && (node instanceof VisualTransition)) {
+            MainWindow mainWindow = Framework.getInstance().getMainWindow();
             VisualModel visualModel = (VisualModel) model;
             PetriNetModel mathModel = (PetriNetModel) visualModel.getMathModel();
             VisualTransition visualTransition = (VisualTransition) node;
             Transition mathTransition = visualTransition.getReferencedTransition();
             if (hasSelfLoop(mathModel, mathTransition)) {
-                JOptionPane.showMessageDialog(null,
+                JOptionPane.showMessageDialog(mainWindow,
                         "Error: A transition with a self-loop/read-arc cannot be contracted.",
                         MESSAGE_TITLE, JOptionPane.ERROR_MESSAGE);
             } else if (needsWaitedArcs(mathModel, mathTransition)) {
-                JOptionPane.showMessageDialog(null,
+                JOptionPane.showMessageDialog(mainWindow,
                         "Error: This transformation requires weighted arcs that are currently not supported.",
                         MESSAGE_TITLE, JOptionPane.ERROR_MESSAGE);
             } else if (isLanguageChanging(mathModel, mathTransition)) {
                 contractTransition(visualModel, visualTransition);
-                JOptionPane.showMessageDialog(null,
+                JOptionPane.showMessageDialog(mainWindow,
                         "Warning: This transformation may change the language.",
                         MESSAGE_TITLE, JOptionPane.WARNING_MESSAGE);
             } else if (isSafenessViolationg(mathModel, mathTransition)) {
                 contractTransition(visualModel, visualTransition);
-                JOptionPane.showMessageDialog(null,
+                JOptionPane.showMessageDialog(mainWindow,
                         "Warning: This transformation may be not safeness-preserving.",
                         MESSAGE_TITLE, JOptionPane.WARNING_MESSAGE);
             } else {

@@ -148,8 +148,8 @@ public class PlatoWriterDialog extends JDialog {
                         conceptsText.setText(readFile(f));
                         updateLastDirUsed();
                     } catch (FileNotFoundException e1) {
-                        JOptionPane.showMessageDialog(null, e1.getMessage(), "File not found error",
-                                JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(),
+                                e1.getMessage(), "File not found error", JOptionPane.ERROR_MESSAGE);
                     }
 
                 }

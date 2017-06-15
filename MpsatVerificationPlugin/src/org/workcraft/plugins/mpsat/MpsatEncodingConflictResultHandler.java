@@ -39,13 +39,12 @@ final class MpsatEncodingConflictResultHandler implements Runnable {
     public void run() {
         MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue());
         List<MpsatSolution> solutions = mdp.getSolutions();
+        final Framework framework = Framework.getInstance();
+        final MainWindow mainWindow = framework.getMainWindow();
         if (!MpsatSolution.hasTraces(solutions)) {
-            MainWindow mainWindow = Framework.getInstance().getMainWindow();
             JOptionPane.showMessageDialog(mainWindow, "No encoding conflicts.",
                     "Verification results", JOptionPane.INFORMATION_MESSAGE);
         } else {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
             GraphEditorPanel currentEditor = mainWindow.getEditor(we);
             final Toolbox toolbox = currentEditor.getToolBox();
             final EncodingConflictAnalyserTool tool = toolbox.getToolInstance(EncodingConflictAnalyserTool.class);

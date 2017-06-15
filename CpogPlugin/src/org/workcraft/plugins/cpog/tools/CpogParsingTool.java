@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.JOptionPane;
 
+import org.workcraft.Framework;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -209,8 +210,9 @@ public class CpogParsingTool {
             originalSelection = visualCpog.selection();
             visualCpog.selectAll();
             if (visualCpog.selection().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "There are no graphs to select", "Graph to expression error",
-                                JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(),
+                        "There are no graphs to select",
+                        "Graph to expression error", JOptionPane.ERROR_MESSAGE);
                 return "";
             }
         } else {

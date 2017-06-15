@@ -12,7 +12,9 @@ import java.util.Scanner;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
+import org.workcraft.Framework;
 import org.workcraft.dom.Node;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
 import org.workcraft.gui.graph.tools.Decorator;
@@ -412,8 +414,9 @@ public class XmasVerificationTool extends AbstractGraphEditorTool implements Com
                 }
             } else if (test == 0) {
                 if (display.equals("popup")) {
+                    MainWindow mainWindow = Framework.getInstance().getMainWindow();
                     String message = "The system is deadlock-free.";
-                    JOptionPane.showMessageDialog(null, message);
+                    JOptionPane.showMessageDialog(mainWindow, message);
                 }
             }
         } catch (Exception e) {

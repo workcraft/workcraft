@@ -53,7 +53,9 @@ public class ReachabilityTask implements Task<VerificationResult> {
         causalPredecessorRefs = new HashSet<String>();
 
         if (hasConflict()) {
-            JOptionPane.showMessageDialog(null, "Model has alternative behaviours", "Fail to run reachability task", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(),
+                    "Model has alternative behaviours",
+                    "Fail to run reachability task", JOptionPane.ERROR_MESSAGE);
             return;
         }
 

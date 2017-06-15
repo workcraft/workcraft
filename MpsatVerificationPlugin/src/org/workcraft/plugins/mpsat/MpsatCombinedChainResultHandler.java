@@ -63,9 +63,9 @@ public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatC
                 violationMpsatSettings = mpsatSettings;
             }
         }
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
         if (violationMpsatSettings == null) {
             // No solution found in any of the Mpsat tasks
-            MainWindow mainWindow = Framework.getInstance().getMainWindow();
             JOptionPane.showMessageDialog(mainWindow,
                     "The following checks passed:" + verifiedMessageDetailes,
                     TITLE, JOptionPane.INFORMATION_MESSAGE);
@@ -98,7 +98,6 @@ public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatC
                 SwingUtilities.invokeLater(new MpsatCscConflictResolutionResultHandler(we, violationMpsatResult, mutexes));
                 break;
             default:
-                MainWindow mainWindow = Framework.getInstance().getMainWindow();
                 String modeString = violationMpsatSettings.getMode().getArgument();
                 JOptionPane.showMessageDialog(mainWindow,
                         "Warning: MPSat verification mode '" + modeString + "' is not (yet) supported.",

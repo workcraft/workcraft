@@ -3,6 +3,7 @@ package org.workcraft.gui.tasks;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import org.workcraft.Framework;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -29,7 +30,8 @@ public class TaskFailureNotifier extends DummyProgressMonitor<Object> {
                         message += "\n\nFollowing errors were reported:\n" + errorMessage;
                     }
 
-                    JOptionPane.showMessageDialog(null, message, "Task failed", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(),
+                            message, "Task failed", JOptionPane.ERROR_MESSAGE);
                 }
             });
         }

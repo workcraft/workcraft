@@ -16,6 +16,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import org.workcraft.Framework;
 import org.workcraft.util.GUI;
 
 @SuppressWarnings("serial")
@@ -80,8 +81,8 @@ public class PlatoIncludesDialog extends JDialog {
                         includeListModel.addElement(f.getAbsolutePath());
                         // includeList.setListData(includeListModel);
                     } catch (FileNotFoundException e1) {
-                        JOptionPane.showMessageDialog(null, e1.getMessage(), "File not found error",
-                                JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(),
+                                e1.getMessage(), "File not found error", JOptionPane.ERROR_MESSAGE);
                     }
 
                 }

@@ -67,7 +67,7 @@ public class MpsatConformationVerificationCommand extends AbstractVerificationCo
 
         Importer[] importers = {new DotGImporter()};
         JFileChooser fc = mainWindow.createOpenDialog("Open environment file", false, true, importers);
-        if (fc.showDialog(null, "Open") == JFileChooser.APPROVE_OPTION) {
+        if (fc.showDialog(mainWindow, "Open") == JFileChooser.APPROVE_OPTION) {
             File envFile = fc.getSelectedFile();
             if (mainWindow.checkFileMessageDialog(envFile, null)) {
                 Stg envStg = StgUtils.loadStg(envFile);

@@ -44,8 +44,8 @@ public class ImportConceptsCommand implements Command {
                 inputFile = f;
             } catch (FileNotFoundException e1) {
                 // TODO Auto-generated catch block
-                JOptionPane.showMessageDialog(null, e1.getMessage(),
-                        "File not found error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(),
+                        e1.getMessage(), "File not found error", JOptionPane.ERROR_MESSAGE);
                 inputFile = null;
             }
         }

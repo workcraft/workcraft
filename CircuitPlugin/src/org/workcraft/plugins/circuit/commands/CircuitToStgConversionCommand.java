@@ -5,6 +5,7 @@ import java.util.HashSet;
 import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.commands.AbstractConversionCommand;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
@@ -41,7 +42,8 @@ public class CircuitToStgConversionCommand extends AbstractConversionCommand {
             String oneName = SignalStg.getHighName(signalName);
             String zeroName = SignalStg.getLowName(signalName);
             if (interfaceSignalNames.contains(oneName) || interfaceSignalNames.contains(zeroName)) {
-                JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(),
+                MainWindow mainWindow = Framework.getInstance().getMainWindow();
+                JOptionPane.showMessageDialog(mainWindow,
                         "Complimentary STG places cannot be created for the interface signal '"
                                 + signalName + "' because of a name clash.\n"
                                 + "Either rename the port or change the signal level suffix in the STG plugin settings.",

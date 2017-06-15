@@ -85,7 +85,7 @@ public class PGMinerImportDialog extends JDialog {
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         pack();
-        this.setLocationRelativeTo(Framework.getInstance().getMainWindow());
+        setLocationRelativeTo(Framework.getInstance().getMainWindow());
     }
 
     public boolean getExtractConcurrency() {
@@ -129,13 +129,11 @@ public class PGMinerImportDialog extends JDialog {
                         if (!f.exists()) {
                             throw new FileNotFoundException();
                         }
-
                         filePath.setText(f.getAbsolutePath());
-
                     } catch (FileNotFoundException e1) {
                         // TODO Auto-generated catch block
-                        JOptionPane.showMessageDialog(null, e1.getMessage(),
-                                "File not found error", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(),
+                                e1.getMessage(), "File not found error", JOptionPane.ERROR_MESSAGE);
                     }
                 }
             }
@@ -150,7 +148,8 @@ public class PGMinerImportDialog extends JDialog {
             public void actionPerformed(ActionEvent arg0) {
                 File eventLog = new File(filePath.getText());
                 if (!eventLog.exists()) {
-                    JOptionPane.showMessageDialog(null, "The event log chosen does not exist",
+                    JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(),
+                            "The event log chosen does not exist",
                             "File not found", JOptionPane.ERROR_MESSAGE);
                 } else {
                     canImport = true;

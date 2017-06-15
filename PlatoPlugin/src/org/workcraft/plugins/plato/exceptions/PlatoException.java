@@ -13,7 +13,6 @@ import org.workcraft.util.LogUtils;
 @SuppressWarnings("serial")
 public class PlatoException extends Exception {
 
-    private static final MainWindow mainWindow = Framework.getInstance().getMainWindow();
     private final Result<? extends ExternalProcessResult> result;
 
     public PlatoException(Result<? extends ExternalProcessResult> result) {
@@ -57,17 +56,20 @@ public class PlatoException extends Exception {
     }
 
     private void ghcNotFound() {
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
         JOptionPane.showMessageDialog(mainWindow, "Stack could not run, please follow the instructions to install Stack from:\n"
                 + "https://docs.haskellstack.org/en/stable/install_and_upgrade/", "GHC not installed", JOptionPane.ERROR_MESSAGE);
     }
 
     private void conceptsCodeNotFound() {
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
         JOptionPane.showMessageDialog(mainWindow, "Concepts code could not be found. \n"
                 + "Download it from and follow the instructions to build it from https://github.com/tuura/concepts.\n"
                 + "Ensure that the preferences menu points to the correct location of the concepts folder", "Concept translation failed", JOptionPane.ERROR_MESSAGE);
     }
 
     private void conceptsNotInstalled() {
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
         String pkg = PlatoSettings.getPlatoFolderLocation();
         JOptionPane.showMessageDialog(mainWindow, "Concepts could not be run. \n"
                 + "The " + pkg + " package needs to be installed via stack. To do this: \n"
@@ -80,14 +82,14 @@ public class PlatoException extends Exception {
     }
 
     private void cannotTranslateConceptsError(String output) {
-
         System.out.println(LogUtils.PREFIX_STDERR + output);
-
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
         JOptionPane.showMessageDialog(mainWindow, "Concepts could not be translated."
                 + "\nSee console window for error information", "Concept translation failed", JOptionPane.ERROR_MESSAGE);
     }
 
     private void signalTypeNotDeclared() {
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
         JOptionPane.showMessageDialog(mainWindow, ""
                 + "One or more signals have not had their type declared. \n"
                 + "A list of these can be found in the console window.\n"
@@ -97,6 +99,7 @@ public class PlatoException extends Exception {
     }
 
     private void inconsistentStates() {
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
         JOptionPane.showMessageDialog(mainWindow, ""
                 + "One or more signals has inconsistent initial states.\n"
                 + "A list of these signals can be found in the console window.\n"
@@ -105,6 +108,7 @@ public class PlatoException extends Exception {
     }
 
     private void undefinedStates() {
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
         JOptionPane.showMessageDialog(mainWindow, ""
                 + "One or more signals has undefined initial states.\n"
                 + "A list of these signals can be found in the console window.\n"

@@ -26,8 +26,10 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
+import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualGroup;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.graph.tools.AbstractGraphEditorTool;
@@ -669,8 +671,9 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
                             }
                         } else if (test == 0) {
                             if (display.equals("popup")) {
+                                MainWindow mainWindow = Framework.getInstance().getMainWindow();
                                 String message = "The system is deadlock-free.";
-                                JOptionPane.showMessageDialog(null, message);
+                                JOptionPane.showMessageDialog(mainWindow, message);
                             }
                         }
                     } catch (Exception e1) {

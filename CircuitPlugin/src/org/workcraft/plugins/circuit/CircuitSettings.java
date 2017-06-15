@@ -9,7 +9,9 @@ import java.util.regex.Pattern;
 import javax.swing.JOptionPane;
 
 import org.workcraft.Config;
+import org.workcraft.Framework;
 import org.workcraft.gui.DesktopApi;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
@@ -187,7 +189,8 @@ public class CircuitSettings implements Settings {
                 if (parseMutexData(value) != null) {
                     setMutexData(value);
                 } else {
-                    JOptionPane.showMessageDialog(null,
+                    MainWindow mainWindow = Framework.getInstance().getMainWindow();
+                    JOptionPane.showMessageDialog(mainWindow,
                             "Mutex description format is incorrect. It should be as follows:\n" + defaultMutexData,
                             "Digital Circuit settings", JOptionPane.ERROR_MESSAGE);
                 }
