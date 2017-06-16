@@ -117,7 +117,7 @@ public class ContractJointTransformationCommand extends AbstractTransformationCo
                     newConnection.mixStyle(predConnection, succConnection);
                     ConnectionHelper.addControlPoints(newConnection, locations);
                 } catch (InvalidConnectionException e) {
-                    LogUtils.logWarningLine(e.getMessage());
+                    LogUtils.logWarning(e.getMessage());
                 }
             }
         }

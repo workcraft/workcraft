@@ -18,6 +18,7 @@ import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.VisualFsm;
+import org.workcraft.util.MessageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -37,14 +38,13 @@ public class FsmReversibilityVerificationCommand extends AbstractVerificationCom
 
     @Override
     public final void run(WorkspaceEntry we) {
-        final Framework framework = Framework.getInstance();
-        final MainWindow mainWindow = framework.getMainWindow();
         final Fsm fsm = WorkspaceUtils.getAs(we, Fsm.class);
         HashSet<State> irreversibleStates = checkReversibility(fsm);
         if (irreversibleStates.isEmpty()) {
-            JOptionPane.showMessageDialog(mainWindow, "The model is reversible.",
-                    TITLE, JOptionPane.INFORMATION_MESSAGE);
+            MessageUtils.showInfo("The model is reversible.", TITLE);
         } else {
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
             String refStr = ReferenceHelper.getNodesAsString(fsm, (Collection) irreversibleStates, 50);
             if (JOptionPane.showConfirmDialog(mainWindow,
                     "The model has irreversible states:\n" + refStr + "\n\nSelect irreversible states?\n",

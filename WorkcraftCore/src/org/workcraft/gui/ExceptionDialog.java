@@ -1,19 +1,18 @@
 package org.workcraft.gui;
 
-import java.awt.Component;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import javax.swing.JOptionPane;
+import org.workcraft.util.MessageUtils;
 
 public class ExceptionDialog {
 
-    public static void show(Component owner, Throwable cause) {
+    public static void show(Throwable cause) {
         final StringWriter writer = new StringWriter();
         cause.printStackTrace(new PrintWriter(writer));
         String name = cause.getClass().getCanonicalName();
-        JOptionPane.showMessageDialog(owner, "Exception of type " + name
-                + ": \n" + cause.getMessage() + "\n\n" + writer.toString());
+        MessageUtils.showMessage("Exception of type " + name + ": \n"
+                + cause.getMessage() + "\n\n" + writer.toString());
     }
 
 }

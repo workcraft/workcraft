@@ -81,7 +81,7 @@ public class XmasPNetGenCommand implements Command {
         try {
             sc = new Scanner(new File(file));
         } catch (FileNotFoundException e) {
-            LogUtils.logErrorLine(e.getMessage());
+            LogUtils.logError(e.getMessage());
         }
         String qs = "";
         String cn = "";
@@ -887,7 +887,7 @@ public class XmasPNetGenCommand implements Command {
 
         current = jp.nextToken();
         if (current != JsonToken.START_OBJECT) {
-            LogUtils.logErrorLine("Root should be object: quiting.");
+            LogUtils.logError("Root should be object: quiting.");
             return;
         }
 
@@ -959,7 +959,7 @@ public class XmasPNetGenCommand implements Command {
                         }
                     }
                 } else {
-                    LogUtils.logErrorLine("Records should be an array: skipping.");
+                    LogUtils.logError("Records should be an array: skipping.");
                     jp.skipChildren();
                 }
             } else {
@@ -1004,7 +1004,7 @@ public class XmasPNetGenCommand implements Command {
 
             current = jp.nextToken();
             if (current != JsonToken.START_OBJECT) {
-                LogUtils.logErrorLine("Root should be object: quiting.");
+                LogUtils.logError("Root should be object: quiting.");
                 return;
             }
 
@@ -1125,11 +1125,11 @@ public class XmasPNetGenCommand implements Command {
                             if (typeName.equals("sink")) gensink(idName, fieldgr, writer);
                         }
                     } else {
-                        LogUtils.logErrorLine("Records should be an array: skipping.");
+                        LogUtils.logError("Records should be an array: skipping.");
                         jp.skipChildren();
                     }
                 } else {
-                    LogUtils.logWarningLine("Unprocessed property: " + fieldName);
+                    LogUtils.logWarning("Unprocessed property: " + fieldName);
                     jp.skipChildren();
                 }
             }

@@ -14,8 +14,6 @@ import java.util.HashSet;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -33,6 +31,7 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.MessageUtils;
 
 public class WorkspaceEntry implements ObservableState {
     private ModelEntry modelEntry = null;
@@ -282,8 +281,7 @@ public class WorkspaceEntry implements ObservableState {
             setModelEntry(result);
             setChanged(true);
         } catch (DeserialisationException e) {
-            JOptionPane.showMessageDialog(framework.getMainWindow(), e.getMessage(), "Model insertion failed",
-                    JOptionPane.ERROR_MESSAGE);
+            MessageUtils.showError(e.getMessage());
         }
     }
 
@@ -365,8 +363,7 @@ public class WorkspaceEntry implements ObservableState {
                 VisualModel model = result.getVisualModel();
                 VisualModelTransformer.translateSelection(model, 1.0, 1.0);
             } catch (DeserialisationException e) {
-                JOptionPane.showMessageDialog(framework.getMainWindow(), e.getMessage(), "Clipboard paste failed",
-                        JOptionPane.ERROR_MESSAGE);
+                MessageUtils.showError(e.getMessage());
             }
         }
     }

@@ -21,7 +21,7 @@ public class GenlibUtils {
             try {
                 circuit.setName(component, instanceName);
             } catch (ArgumentException e) {
-                LogUtils.logWarningLine("Cannot set name '" + instanceName + "' for component '" + circuit.getName(component) + "'.");
+                LogUtils.logWarning("Cannot set name '" + instanceName + "' for component '" + circuit.getName(component) + "'.");
             }
         }
 
@@ -31,9 +31,9 @@ public class GenlibUtils {
         String setFunction = getSetFunction(gate);
         String resetFunction = getResetFunction(gate);
         if (CommonDebugSettings.getVerboseImport()) {
-            LogUtils.logInfoLine("Instantiating gate " + gate.name + " " + gate.function.name + "=" + gate.function.formula);
-            LogUtils.logInfoLine("  Set function: " + setFunction);
-            LogUtils.logInfoLine("  Reset function: " + resetFunction);
+            LogUtils.logInfo("Instantiating gate " + gate.name + " " + gate.function.name + "=" + gate.function.formula);
+            LogUtils.logInfo("  Set function: " + setFunction);
+            LogUtils.logInfo("  Reset function: " + resetFunction);
         }
         try {
             BooleanFormula setFormula = CircuitUtils.parseContactFuncton(circuit, component, setFunction);

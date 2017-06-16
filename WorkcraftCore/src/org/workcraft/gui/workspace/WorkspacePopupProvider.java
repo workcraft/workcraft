@@ -26,6 +26,7 @@ import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.trees.TreePopupProvider;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.util.Commands;
+import org.workcraft.util.MessageUtils;
 import org.workcraft.workspace.FileHandler;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
@@ -90,8 +91,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                         }
                         File newDir = workspace.getFile(Path.append(path, name));
                         if (!newDir.mkdir()) {
-                            JOptionPane.showMessageDialog(mainWindow,
-                                    "The directory could not be created.\n"
+                            MessageUtils.showWarning("The directory could not be created.\n"
                                     + "Please check that the name does not contain any special characters.");
                         } else {
                             break;

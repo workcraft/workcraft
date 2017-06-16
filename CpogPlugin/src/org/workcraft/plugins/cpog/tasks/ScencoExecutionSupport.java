@@ -14,9 +14,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
 
-import javax.swing.JOptionPane;
-
-import org.workcraft.Framework;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualTransformableNode;
@@ -44,6 +41,7 @@ import org.workcraft.plugins.cpog.VisualScenarioPage;
 import org.workcraft.plugins.cpog.VisualVertex;
 import org.workcraft.util.Func;
 import org.workcraft.util.Geometry;
+import org.workcraft.util.MessageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class ScencoExecutionSupport {
@@ -379,9 +377,7 @@ public class ScencoExecutionSupport {
                         if (enc[k].contains("2") || enc[k].contains("3") || enc[k].contains("4") ||
                                 enc[k].contains("5") || enc[k].contains("6") || enc[k].contains("7") ||
                                 enc[k].contains("8") || enc[k].contains("9")) {
-                            JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(),
-                                    "Op-code " + enc[k] + " not allowed.",
-                                    "Custom encoding error", JOptionPane.ERROR_MESSAGE);
+                            MessageUtils.showError("Op-code " + enc[k] + " not allowed");
                             output1.close();
                             return -1;
 
@@ -480,8 +476,7 @@ public class ScencoExecutionSupport {
             if (line.contains(".error")) {
                 line = br.readLine();
                 while (line.contains(".end_error") == false) {
-                    JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(),
-                            line, "scenco error", JOptionPane.ERROR_MESSAGE);
+                    MessageUtils.showError(line);
                     line = br.readLine();
                 }
                 return -1;
@@ -641,8 +636,7 @@ public class ScencoExecutionSupport {
             solution = solverCnf.solve(instance, vars, derivedVariables);
 
         } catch (Exception e) {
-            JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(),
-                    e.getMessage(), "Encoding result", JOptionPane.ERROR_MESSAGE);
+            MessageUtils.showError(e.getMessage());
             System.out.println("INFORMATION: Scenco cannot solve the CPOG.");
         }
 

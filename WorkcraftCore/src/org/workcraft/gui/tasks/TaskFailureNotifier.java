@@ -1,12 +1,11 @@
 package org.workcraft.gui.tasks;
 
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import org.workcraft.Framework;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.util.MessageUtils;
 
 public class TaskFailureNotifier extends DummyProgressMonitor<Object> {
     String errorMessage = "";
@@ -17,7 +16,7 @@ public class TaskFailureNotifier extends DummyProgressMonitor<Object> {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    String message = "Unfortunately, the task '" + description + "' has failed to complete as expected.";
+                    String message = "Task '" + description + "' has failed to complete as expected.";
 
                     if (result.getCause() != null) {
                         Throwable reason = result.getCause();
@@ -30,8 +29,7 @@ public class TaskFailureNotifier extends DummyProgressMonitor<Object> {
                         message += "\n\nFollowing errors were reported:\n" + errorMessage;
                     }
 
-                    JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(),
-                            message, "Task failed", JOptionPane.ERROR_MESSAGE);
+                    MessageUtils.showError(message);
                 }
             });
         }

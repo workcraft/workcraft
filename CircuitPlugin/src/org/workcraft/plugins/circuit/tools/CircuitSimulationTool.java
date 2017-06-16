@@ -58,15 +58,15 @@ public class CircuitSimulationTool extends StgSimulationTool {
     public void setTrace(Trace mainTrace, Trace branchTrace, GraphEditor editor) {
         Trace circuitMainTrace = convertStgTraceToCircuitTrace(mainTrace);
         if (circuitMainTrace != null) {
-            LogUtils.logMessageLine("Main trace conversion:");
-            LogUtils.logMessageLine("  original: " + mainTrace);
-            LogUtils.logMessageLine("  circuit:  " + circuitMainTrace);
+            LogUtils.logMessage("Main trace conversion:");
+            LogUtils.logMessage("  original: " + mainTrace);
+            LogUtils.logMessage("  circuit:  " + circuitMainTrace);
         }
         Trace circuitBranchTrace = convertStgTraceToCircuitTrace(branchTrace);
         if (circuitBranchTrace != null) {
-            LogUtils.logMessageLine("Branch trace conversion:");
-            LogUtils.logMessageLine("  original: " + branchTrace);
-            LogUtils.logMessageLine("  circuit:  " + circuitBranchTrace);
+            LogUtils.logMessage("Branch trace conversion:");
+            LogUtils.logMessage("  original: " + branchTrace);
+            LogUtils.logMessage("  circuit:  " + circuitBranchTrace);
         }
         super.setTrace(circuitMainTrace, circuitBranchTrace, editor);
     }

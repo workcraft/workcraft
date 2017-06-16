@@ -101,7 +101,7 @@ public class XmasConfigureCommand implements Command {
             File vsettingsFile = XmasSettings.getTempVxmVsettingsFile();
             sc = new Scanner(vsettingsFile);
         } catch (FileNotFoundException e) {
-            LogUtils.logErrorLine(e.getMessage());
+            LogUtils.logError(e.getMessage());
         }
         while (sc.hasNextLine()) {
             Scanner line = new Scanner(sc.nextLine());

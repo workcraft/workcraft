@@ -8,8 +8,6 @@ import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.List;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.Framework;
 import org.workcraft.Trace;
 import org.workcraft.dom.Node;
@@ -29,6 +27,7 @@ import org.workcraft.plugins.stg.interop.DotGImporter;
 import org.workcraft.tasks.Result;
 import org.workcraft.util.GUI;
 import org.workcraft.util.LogUtils;
+import org.workcraft.util.MessageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 final class MpsatReachabilityResultHandler implements Runnable {
@@ -97,11 +96,11 @@ final class MpsatReachabilityResultHandler implements Runnable {
                 if (stg.isEnabled(transition)) {
                     stg.fire(transition);
                 } else {
-                    LogUtils.logErrorLine("Trace transition '" + ref + "' is not enabled.");
+                    LogUtils.logError("Trace transition '" + ref + "' is not enabled.");
                     return false;
                 }
             } else {
-                LogUtils.logErrorLine("Trace transition '" + ref + "' cannot be found.");
+                LogUtils.logError("Trace transition '" + ref + "' cannot be found.");
                 return false;
             }
         }
@@ -153,10 +152,10 @@ final class MpsatReachabilityResultHandler implements Runnable {
         if ((solution != null) && (stg != null)) {
             Trace mainTrace = solution.getMainTrace();
             if (!fireTrace(stg, mainTrace)) {
-                LogUtils.logWarningLine("Cannot execute output persistency trace: " + mainTrace);
+                LogUtils.logWarning("Cannot execute output persistency trace: " + mainTrace);
             } else {
-                LogUtils.logMessageLine("Extending output persistency violation trace: ");
-                LogUtils.logMessageLine("  original:" + mainTrace);
+                LogUtils.logMessage("Extending output persistency violation trace: ");
+                LogUtils.logMessage("  original:" + mainTrace);
                 HashSet<String> enabledLocalSignals = getEnabledLocalSignals(stg);
                 for (SignalTransition transition: getEnabledSignalTransitions(stg)) {
                     stg.fire(transition);
@@ -175,7 +174,7 @@ final class MpsatReachabilityResultHandler implements Runnable {
                     }
                     stg.unFire(transition);
                 }
-                LogUtils.logMessageLine("  extended:" + mainTrace);
+                LogUtils.logMessage("  extended:" + mainTrace);
             }
         }
     }
@@ -186,10 +185,10 @@ final class MpsatReachabilityResultHandler implements Runnable {
         if ((solution != null) && (stg != null)) {
             Trace mainTrace = solution.getMainTrace();
             if (!fireTrace(stg, mainTrace)) {
-                LogUtils.logWarningLine("Cannot execute conformation violation trace: " + mainTrace);
+                LogUtils.logWarning("Cannot execute conformation violation trace: " + mainTrace);
             } else {
-                LogUtils.logMessageLine("Extending conformation violation trace: ");
-                LogUtils.logMessageLine("  original:" + mainTrace);
+                LogUtils.logMessage("Extending conformation violation trace: ");
+                LogUtils.logMessage("  original:" + mainTrace);
                 HashSet<String> enabledOutputSignals = getEnabledOutputSignals(stg);
                 for (SignalTransition transition: getDisabledOutputTransitions(stg)) {
                     String signalName = transition.getSignalName();
@@ -212,7 +211,7 @@ final class MpsatReachabilityResultHandler implements Runnable {
                         }
                     }
                 }
-                LogUtils.logMessageLine("  extended:" + mainTrace);
+                LogUtils.logMessage("  extended:" + mainTrace);
             }
         }
     }
@@ -246,7 +245,7 @@ final class MpsatReachabilityResultHandler implements Runnable {
             GUI.centerToParent(solutionsDialog, mainWindow);
             solutionsDialog.setVisible(true);
         } else {
-            JOptionPane.showMessageDialog(mainWindow, message, title, JOptionPane.INFORMATION_MESSAGE);
+            MessageUtils.showInfo(message, title);
         }
     }
 

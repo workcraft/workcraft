@@ -18,6 +18,7 @@ import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.VisualFsm;
+import org.workcraft.util.MessageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -42,8 +43,7 @@ public class FsmDeadlockVerificationCommand extends AbstractVerificationCommand 
         final Fsm fsm = WorkspaceUtils.getAs(we, Fsm.class);
         HashSet<State> deadlockStates = checkDeadlock(fsm);
         if (deadlockStates.isEmpty()) {
-            JOptionPane.showMessageDialog(mainWindow, "The model is deadlock-free.",
-                    TITLE, JOptionPane.INFORMATION_MESSAGE);
+            MessageUtils.showInfo("The model is deadlock-free.", TITLE);
         } else {
             HashSet<State> finalDeadlockStates = new HashSet<>();
             for (State state: deadlockStates) {

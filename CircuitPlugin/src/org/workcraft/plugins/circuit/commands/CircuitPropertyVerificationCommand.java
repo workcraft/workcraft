@@ -2,8 +2,6 @@ package org.workcraft.plugins.circuit.commands;
 
 import java.io.File;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.commands.AbstractVerificationCommand;
@@ -19,12 +17,11 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.GUI;
+import org.workcraft.util.MessageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class CircuitPropertyVerificationCommand extends AbstractVerificationCommand {
-
-    private static final String TITLE = "Circuit verification";
 
     @Override
     public String getDisplayName() {
@@ -48,8 +45,7 @@ public class CircuitPropertyVerificationCommand extends AbstractVerificationComm
 
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         if (circuit.getFunctionComponents().isEmpty()) {
-            JOptionPane.showMessageDialog(mainWindow, "Error: The circuit must have components.",
-                    TITLE, JOptionPane.ERROR_MESSAGE);
+            MessageUtils.showError("The circuit must have components.");
         } else {
             VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
             File envFile = visualCircuit.getEnvironmentFile();
@@ -59,9 +55,7 @@ public class CircuitPropertyVerificationCommand extends AbstractVerificationComm
                 if (envFile != null) {
                     messagePrefix = "Cannot read an STG model from the file:\n" + envFile.getAbsolutePath() + "\n\n";
                 }
-                JOptionPane.showMessageDialog(mainWindow, "Warning: " + messagePrefix
-                        + "The circuit will be verified without environment STG.",
-                        TITLE, JOptionPane.WARNING_MESSAGE);
+                MessageUtils.showWarning(messagePrefix + "The circuit will be verified without environment STG.");
             }
             File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, MpsatPropertyVerificationCommand.MPSAT_PROPERTY_PRESETS_FILE);
             MpsatPresetManager pmgr = new MpsatPresetManager(presetFile, new MpsatSettingsSerialiser(), true);

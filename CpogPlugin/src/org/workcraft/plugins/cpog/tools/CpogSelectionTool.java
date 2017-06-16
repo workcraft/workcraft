@@ -23,13 +23,11 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.text.BadLocationException;
 
-import org.workcraft.Framework;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -43,7 +41,6 @@ import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.utils.FormulaToString;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.editors.AbstractInplaceEditor;
 import org.workcraft.gui.graph.editors.LabelInplaceEditor;
@@ -70,6 +67,7 @@ import org.workcraft.plugins.cpog.formula.jj.CpogFormulaParser;
 import org.workcraft.plugins.cpog.formula.jj.ParseException;
 import org.workcraft.plugins.cpog.formula.jj.TokenMgrError;
 import org.workcraft.util.GUI;
+import org.workcraft.util.MessageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -173,7 +171,6 @@ public class CpogSelectionTool extends SelectionTool {
                     editor.getWorkspaceEntry().saveMemento();
                 } catch (BadLocationException e1) {
                     editor.getWorkspaceEntry().cancelMemento();
-                    // TODO Auto-generated catch block
                     e1.printStackTrace();
                 }
             }
@@ -261,7 +258,6 @@ public class CpogSelectionTool extends SelectionTool {
 
         CpogFormula f = null;
         final HashMap<String, VisualVertex> localVertices = new HashMap<>();
-        MainWindow mainWindow = Framework.getInstance().getMainWindow();
         try {
             f = CpogFormulaParser.parse(text,
                     new GraphFunc<String, CpogFormula>() {
@@ -365,13 +361,11 @@ public class CpogSelectionTool extends SelectionTool {
                     });
         } catch (ParseException e) {
             we.cancelMemento();
-            JOptionPane.showMessageDialog(mainWindow,
-                    e.getMessage(), "Parse error", JOptionPane.ERROR_MESSAGE);
+            MessageUtils.showError(e.getMessage(), "Parse error");
             return null;
         } catch (TokenMgrError e) {
             we.cancelMemento();
-            JOptionPane.showMessageDialog(mainWindow,
-                    e.getMessage(), "Lexical error", JOptionPane.ERROR_MESSAGE);
+            MessageUtils.showError(e.getMessage(), "Lexical error");
             return null;
         }
 
@@ -783,7 +777,6 @@ public class CpogSelectionTool extends SelectionTool {
                                     try {
                                         this.wait(5);
                                     } catch (InterruptedException e1) {
-                                        // TODO Auto-generated catch block
                                         e1.printStackTrace();
                                     }
                                 }
@@ -1001,9 +994,7 @@ public class CpogSelectionTool extends SelectionTool {
         try {
             fileIn = new Scanner(f);
         } catch (FileNotFoundException e1) {
-            // TODO Auto-generated catch block
-            JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(),
-                    e1.getMessage(), "File not found error", JOptionPane.ERROR_MESSAGE);
+            MessageUtils.showError(e1.getMessage());
             return false;
         }
 

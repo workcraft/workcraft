@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.workcraft.Framework;
@@ -14,6 +13,7 @@ import org.workcraft.plugins.plato.tasks.PlatoTask;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.FileUtils;
+import org.workcraft.util.MessageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -43,9 +43,7 @@ public class ImportConceptsCommand implements Command {
                 }
                 inputFile = f;
             } catch (FileNotFoundException e1) {
-                // TODO Auto-generated catch block
-                JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(),
-                        e1.getMessage(), "File not found error", JOptionPane.ERROR_MESSAGE);
+                MessageUtils.showError(e1.getMessage());
                 inputFile = null;
             }
         }

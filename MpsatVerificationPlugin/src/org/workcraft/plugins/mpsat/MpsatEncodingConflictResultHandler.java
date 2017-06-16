@@ -6,8 +6,6 @@ import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
@@ -19,6 +17,7 @@ import org.workcraft.plugins.stg.tools.EncodingConflictAnalyserTool;
 import org.workcraft.tasks.Result;
 import org.workcraft.util.ColorGenerator;
 import org.workcraft.util.ColorUtils;
+import org.workcraft.util.MessageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 final class MpsatEncodingConflictResultHandler implements Runnable {
@@ -39,12 +38,11 @@ final class MpsatEncodingConflictResultHandler implements Runnable {
     public void run() {
         MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue());
         List<MpsatSolution> solutions = mdp.getSolutions();
-        final Framework framework = Framework.getInstance();
-        final MainWindow mainWindow = framework.getMainWindow();
         if (!MpsatSolution.hasTraces(solutions)) {
-            JOptionPane.showMessageDialog(mainWindow, "No encoding conflicts.",
-                    "Verification results", JOptionPane.INFORMATION_MESSAGE);
+            MessageUtils.showInfo("No encoding conflicts.", "Verification results");
         } else {
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
             GraphEditorPanel currentEditor = mainWindow.getEditor(we);
             final Toolbox toolbox = currentEditor.getToolBox();
             final EncodingConflictAnalyserTool tool = toolbox.getToolInstance(EncodingConflictAnalyserTool.class);

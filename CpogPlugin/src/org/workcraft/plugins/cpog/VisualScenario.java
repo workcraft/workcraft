@@ -55,11 +55,7 @@ public class VisualScenario extends VisualGroup {
     static {
         try {
             labelFont = Font.createFont(Font.TYPE1_FONT, ClassLoader.getSystemResourceAsStream("fonts/default.pfb")).deriveFont(0.5f);
-        } catch (FontFormatException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
+        } catch (FontFormatException | IOException e) {
             e.printStackTrace();
         }
     }

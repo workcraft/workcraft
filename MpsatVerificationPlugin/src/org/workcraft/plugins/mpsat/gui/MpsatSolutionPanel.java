@@ -79,7 +79,7 @@ public class MpsatSolutionPanel extends JPanel {
                 String comment = solution.getComment();
                 if ((comment != null) && !comment.isEmpty()) {
                     comment = comment.replaceAll("\\<.*?>", "");
-                    LogUtils.logWarningLine(comment);
+                    LogUtils.logWarning(comment);
                 }
                 closeAction.actionPerformed(null);
             }

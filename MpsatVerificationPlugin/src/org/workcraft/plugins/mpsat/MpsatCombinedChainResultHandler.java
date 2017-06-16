@@ -3,11 +3,8 @@ package org.workcraft.plugins.mpsat;
 import java.util.Collection;
 import java.util.List;
 
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import org.workcraft.Framework;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat.gui.MpsatSolution;
 import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainTask;
@@ -16,10 +13,10 @@ import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.util.MessageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatCombinedChainResult> {
-    private static final String TITLE = "MPSat verification";
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
     private final MpsatCombinedChainTask task;
     private final Collection<Mutex> mutexes;
@@ -63,12 +60,9 @@ public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatC
                 violationMpsatSettings = mpsatSettings;
             }
         }
-        MainWindow mainWindow = Framework.getInstance().getMainWindow();
         if (violationMpsatSettings == null) {
             // No solution found in any of the Mpsat tasks
-            JOptionPane.showMessageDialog(mainWindow,
-                    "The following checks passed:" + verifiedMessageDetailes,
-                    TITLE, JOptionPane.INFORMATION_MESSAGE);
+            MessageUtils.showInfo("The following checks passed:" + verifiedMessageDetailes);
         } else {
             // One of the Mpsat tasks returned a solution trace
             switch (violationMpsatSettings.getMode()) {
@@ -99,16 +93,14 @@ public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatC
                 break;
             default:
                 String modeString = violationMpsatSettings.getMode().getArgument();
-                JOptionPane.showMessageDialog(mainWindow,
-                        "Warning: MPSat verification mode '" + modeString + "' is not (yet) supported.",
-                        TITLE, JOptionPane.ERROR_MESSAGE);
+                MessageUtils.showError("MPSat verification mode '" + modeString + "' is not (yet) supported.");
                 break;
             }
         }
     }
 
     private void handleFailure(final Result<? extends MpsatCombinedChainResult> result) {
-        String errorMessage = "Error: MPSat verification failed.";
+        String errorMessage = "MPSat verification failed.";
         Throwable genericCause = result.getCause();
         if (genericCause != null) {
             // Exception was thrown somewhere in the chain task run() method (not in any of the subtasks)
@@ -156,8 +148,7 @@ public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatC
                 errorMessage += "\n\nMPSat chain task returned failure status without further explanation.";
             }
         }
-        MainWindow mainWindow = Framework.getInstance().getMainWindow();
-        JOptionPane.showMessageDialog(mainWindow, errorMessage, TITLE, JOptionPane.ERROR_MESSAGE);
+        MessageUtils.showError(errorMessage);
     }
 
 }

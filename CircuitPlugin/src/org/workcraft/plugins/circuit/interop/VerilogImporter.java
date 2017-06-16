@@ -136,7 +136,7 @@ public class VerilogImporter implements Importer {
                 throw new DeserialisationException(MSG_MANY_TOP_MODULES);
             }
             if (CommonDebugSettings.getVerboseImport()) {
-                LogUtils.logInfoLine("Parsed Verilog modules");
+                LogUtils.logInfo("Parsed Verilog modules");
                 for (Module module: modules.values()) {
                     if (topModules.contains(module)) {
                         System.out.print("// Top module\n");
@@ -298,7 +298,7 @@ public class VerilogImporter implements Importer {
             circuit.setName(component, componentName);
         } catch (ArgumentException e) {
             String oldComponentName = circuit.getName(component);
-            LogUtils.logWarningLine("Cannot set name '" + componentName + "' for component '" + oldComponentName + "'.");
+            LogUtils.logWarning("Cannot set name '" + componentName + "' for component '" + oldComponentName + "'.");
         }
     }
 
@@ -340,10 +340,10 @@ public class VerilogImporter implements Importer {
         String resetFunction = ExpressionUtils.extactResetExpression(function, assign.name);
         Expression resetExpression = convertStringToExpression(resetFunction);
         if (CommonDebugSettings.getVerboseImport()) {
-            LogUtils.logInfoLine("Extracting SET and RESET from assign " + assign.name + " = " + assign.formula);
-            LogUtils.logInfoLine("  Function: " + function);
-            LogUtils.logInfoLine("  Set function: " + setFunction);
-            LogUtils.logInfoLine("  Reset function: " + resetFunction);
+            LogUtils.logInfo("Extracting SET and RESET from assign " + assign.name + " = " + assign.formula);
+            LogUtils.logInfo("  Function: " + function);
+            LogUtils.logInfo("  Set function: " + setFunction);
+            LogUtils.logInfo("  Reset function: " + resetFunction);
         }
         HashMap<String, String> connections = new HashMap<>();
         String outputName = getPrimitiveGatePinName(0);
@@ -380,7 +380,7 @@ public class VerilogImporter implements Importer {
         try {
             expression = expressionParser.parseExpression();
         } catch (org.workcraft.plugins.circuit.jj.expression.ParseException e1) {
-            LogUtils.logWarningLine("Could not parse assign expression '" + formula + "'.");
+            LogUtils.logWarning("Could not parse assign expression '" + formula + "'.");
         }
         return expression;
     }
@@ -389,7 +389,7 @@ public class VerilogImporter implements Importer {
         Library library = new Library();
         String libraryFileName = CircuitSettings.getGateLibrary();
         if ((libraryFileName == null) || libraryFileName.isEmpty()) {
-            LogUtils.logWarningLine("Gate library file is not specified.");
+            LogUtils.logWarning("Gate library file is not specified.");
         } else {
             File libraryFile = new File(libraryFileName);
             final Framework framework = Framework.getInstance();
@@ -403,10 +403,10 @@ public class VerilogImporter implements Importer {
                         genlibParser.disable_tracing();
                     }
                     library = genlibParser.parseGenlib();
-                    LogUtils.logInfoLine("Mapping the imported Verilog into the gate library '" + libraryFileName + "'.");
+                    LogUtils.logInfo("Mapping the imported Verilog into the gate library '" + libraryFileName + "'.");
                 } catch (FileNotFoundException e) {
                 } catch (org.workcraft.plugins.circuit.jj.genlib.ParseException e) {
-                    LogUtils.logWarningLine("Could not parse the gate library '" + libraryFileName + "'.");
+                    LogUtils.logWarning("Could not parse the gate library '" + libraryFileName + "'.");
                 }
             }
         }
@@ -561,7 +561,7 @@ public class VerilogImporter implements Importer {
             circuit.setName(component, verilogInstance.name);
         } catch (ArgumentException e) {
             String componentRef = circuit.getNodeReference(component);
-            LogUtils.logWarningLine("Cannot set name '" + verilogInstance.name + "' for component '" + componentRef + "'.");
+            LogUtils.logWarning("Cannot set name '" + verilogInstance.name + "' for component '" + componentRef + "'.");
         }
         Module module = modules.get(verilogInstance.moduleName);
         HashMap<String, Port> instancePorts = getModulePortMap(module);
@@ -608,7 +608,7 @@ public class VerilogImporter implements Importer {
             if (node instanceof FunctionContact) {
                 FunctionContact contact = (FunctionContact) node;
                 if (contact.isPort() && contact.isOutput()) {
-                    LogUtils.logInfoLine("Signal " + signal.name + " is restored as internal.");
+                    LogUtils.logInfo("Signal " + signal.name + " is restored as internal.");
                     circuit.remove(contact);
                     Wire wire = wires.get(signal.name);
                     if (wire != null) {
@@ -632,7 +632,7 @@ public class VerilogImporter implements Importer {
             circuit.setName(component, instanceMutex.name);
         } catch (ArgumentException e) {
             String componentRef = circuit.getNodeReference(component);
-            LogUtils.logWarningLine("Cannot set name '" + instanceMutex.name + "' for component '" + componentRef + "'.");
+            LogUtils.logWarning("Cannot set name '" + instanceMutex.name + "' for component '" + componentRef + "'.");
         }
         addMutexPin(circuit, component, moduleMutex.r1, instanceMutex.r1, wires);
         FunctionContact g1Contact = addMutexPin(circuit, component, moduleMutex.g1, instanceMutex.g1, wires);
@@ -725,7 +725,7 @@ public class VerilogImporter implements Importer {
                     wire.source.setIOType(IOType.OUTPUT);
                 }
                 String contactRef = circuit.getNodeReference(wire.source);
-                LogUtils.logInfoLine("Source contact detected: " + contactRef);
+                LogUtils.logInfo("Source contact detected: " + contactRef);
                 wire.undefined.clear();
                 result = false;
             }
@@ -739,7 +739,7 @@ public class VerilogImporter implements Importer {
                 }
             }
             String contactRefs = ReferenceHelper.getNodesAsString(circuit, (Collection) wire.undefined);
-            LogUtils.logInfoLine("Sink contacts detected: " + contactRefs);
+            LogUtils.logInfo("Sink contacts detected: " + contactRefs);
             wire.undefined.clear();
             result = false;
         }
@@ -754,30 +754,30 @@ public class VerilogImporter implements Importer {
             contacts.addAll(wire.undefined);
             if (!contacts.isEmpty()) {
                 String contactRefs = ReferenceHelper.getNodesAsString(circuit, (Collection) wire.undefined);
-                LogUtils.logErrorLine("Wire without a source is connected to the following contacts: " + contactRefs);
+                LogUtils.logError("Wire without a source is connected to the following contacts: " + contactRefs);
             }
         } else {
             String sourceRef = circuit.getNodeReference(sourceContact);
             if (!wire.undefined.isEmpty()) {
                 String contactRefs = ReferenceHelper.getNodesAsString(circuit, (Collection) wire.undefined);
-                LogUtils.logErrorLine("Wire from contact '" + sourceRef + "' has undefined sinks: " + contactRefs);
+                LogUtils.logError("Wire from contact '" + sourceRef + "' has undefined sinks: " + contactRefs);
             }
             if (sourceContact.isPort() && sourceContact.isOutput()) {
                 sourceContact.setIOType(IOType.INPUT);
-                LogUtils.logWarningLine("Source contact '" + sourceRef + "' is changed to input port.");
+                LogUtils.logWarning("Source contact '" + sourceRef + "' is changed to input port.");
             }
             if (!sourceContact.isPort() && sourceContact.isInput()) {
                 sourceContact.setIOType(IOType.OUTPUT);
-                LogUtils.logWarningLine("Source contact '" + sourceRef + "' is changed to output pin.");
+                LogUtils.logWarning("Source contact '" + sourceRef + "' is changed to output pin.");
             }
             for (FunctionContact sinkContact: wire.sinks) {
                 if (sinkContact.isPort() && sinkContact.isInput()) {
                     sinkContact.setIOType(IOType.OUTPUT);
-                    LogUtils.logWarningLine("Sink contact '" + circuit.getNodeReference(sinkContact) + "' is changed to output port.");
+                    LogUtils.logWarning("Sink contact '" + circuit.getNodeReference(sinkContact) + "' is changed to output port.");
                 }
                 if (!sinkContact.isPort() && sinkContact.isOutput()) {
                     sinkContact.setIOType(IOType.INPUT);
-                    LogUtils.logWarningLine("Sink contact '" + circuit.getNodeReference(sinkContact) + "' is changed to input pin.");
+                    LogUtils.logWarning("Sink contact '" + circuit.getNodeReference(sinkContact) + "' is changed to input pin.");
                 }
                 try {
                     circuit.connect(sourceContact, sinkContact);
@@ -794,7 +794,7 @@ public class VerilogImporter implements Importer {
                 try {
                     component.setIsZeroDelay(true);
                 } catch (ArgumentException e) {
-                    LogUtils.logWarningLine("Component '" + verilogInstance.name + "': " + e.getMessage());
+                    LogUtils.logWarning("Component '" + verilogInstance.name + "': " + e.getMessage());
                 }
             }
         }
@@ -956,16 +956,16 @@ public class VerilogImporter implements Importer {
     private BooleanFormula printFunctionSubstitution(BooleanFormula function, List<Contact> inputContacts, List<BooleanFormula> inputFunctions) {
         final BooleanFormula setFunction = BooleanUtils.dumbReplace(function, inputContacts, inputFunctions);
         if (CommonDebugSettings.getVerboseImport()) {
-            LogUtils.logInfoLine("Expression substitution");
-            LogUtils.logInfoLine("  Original: " + FormulaToString.toString(function));
+            LogUtils.logInfo("Expression substitution");
+            LogUtils.logInfo("  Original: " + FormulaToString.toString(function));
             Iterator<Contact> contactIterator = inputContacts.iterator();
             Iterator<BooleanFormula> formulaIterator = inputFunctions.iterator();
             while (contactIterator.hasNext() && formulaIterator.hasNext()) {
                 Contact contact = contactIterator.next();
                 BooleanFormula formula = formulaIterator.next();
-                LogUtils.logInfoLine("  Replacement: " + contact.getName() + " = " + FormulaToString.toString(formula));
+                LogUtils.logInfo("  Replacement: " + contact.getName() + " = " + FormulaToString.toString(formula));
             }
-            LogUtils.logInfoLine("  Result: " + FormulaToString.toString(setFunction));
+            LogUtils.logInfo("  Result: " + FormulaToString.toString(setFunction));
         }
         return setFunction;
     }

@@ -10,7 +10,6 @@ import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
@@ -27,6 +26,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.TaskMonitor;
+import org.workcraft.util.MessageUtils;
 
 @SuppressWarnings("serial")
 public class TaskManagerWindow extends JPanel implements TaskMonitor {
@@ -180,8 +180,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
                                 SwingUtilities.invokeLater(new Runnable() {
                                     @Override
                                     public void run() {
-                                        JOptionPane.showMessageDialog(framework.getMainWindow(),
-                                                "Task " + description + " finished!");
+                                        MessageUtils.showInfo("Task '" + description + "' finished!");
                                     }
 
                                 });

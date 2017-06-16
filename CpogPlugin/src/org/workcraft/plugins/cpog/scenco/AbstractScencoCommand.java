@@ -2,8 +2,6 @@ package org.workcraft.plugins.cpog.scenco;
 
 import java.awt.Window;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.commands.Command;
@@ -14,6 +12,7 @@ import org.workcraft.plugins.cpog.tasks.ScencoSolver;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.GUI;
+import org.workcraft.util.MessageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -34,11 +33,9 @@ public abstract class AbstractScencoCommand implements Command {
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
         if (!CpogParsingTool.hasEnoughScenarios(we)) {
-            JOptionPane.showMessageDialog(mainWindow, ScencoSolver.MSG_NOT_ENOUGH_SCENARIOS,
-                    ScencoSolver.ACCESS_SCENCO_ERROR, JOptionPane.ERROR_MESSAGE);
+            MessageUtils.showError(ScencoSolver.MSG_NOT_ENOUGH_SCENARIOS);
         } else if (CpogParsingTool.hasTooScenarios(we)) {
-            JOptionPane.showMessageDialog(mainWindow, ScencoSolver.MSG_TOO_MANY_SCENARIOS,
-                    ScencoSolver.ACCESS_SCENCO_ERROR, JOptionPane.ERROR_MESSAGE);
+            MessageUtils.showError(ScencoSolver.MSG_TOO_MANY_SCENARIOS);
         } else {
             AbstractScencoDialog dialog = createDialog(mainWindow, we);
             GUI.centerToParent(dialog, mainWindow);

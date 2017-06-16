@@ -250,16 +250,6 @@ public class BSONAlg extends RelationAlgorithm {
                 msg, "Fail to get phase", JOptionPane.ERROR_MESSAGE);
     }
 
-//    public Map<Condition, Collection<Phase>> getAllPhases() {
-//        try {
-//            return getAllPhases(null);
-//        } catch (UnboundedException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
-
     private Collection<Condition> forwardSearch(Node node) {
         Collection<Condition> result = new HashSet<>();
         Stack<Node> stack = new Stack<>();

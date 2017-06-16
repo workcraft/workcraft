@@ -142,7 +142,7 @@ public class ToggleBubbleTransformationCommand extends AbstractTransformationCom
                 String label = component.getLabel();
                 if (!label.isEmpty()) {
                     String ref = circuit.getNodeReference(node);
-                    LogUtils.logWarningLine("Label '" + label + "' is removed from component '" + ref + "'.");
+                    LogUtils.logWarning("Label '" + label + "' is removed from component '" + ref + "'.");
                     component.setLabel("");
                 }
                 component.invalidateRenderingResult();

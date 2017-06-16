@@ -10,7 +10,6 @@ import java.util.HashMap;
 
 import javax.swing.BorderFactory;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
@@ -22,6 +21,7 @@ import org.workcraft.Framework;
 import org.workcraft.PluginManager;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.PluginInfo;
+import org.workcraft.util.MessageUtils;
 
 @SuppressWarnings("serial")
 public class PropertyEditorTable extends JTable implements PropertyEditor {
@@ -154,8 +154,7 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
                 setValueAt(value, editingRow, editingColumn);
                 removeEditor();
             } catch (Throwable t) {
-                JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(),
-                        t.getMessage(), "Cannot change property", JOptionPane.WARNING_MESSAGE);
+                MessageUtils.showError(t.getMessage(), "Cannot change property");
             }
         }
     }

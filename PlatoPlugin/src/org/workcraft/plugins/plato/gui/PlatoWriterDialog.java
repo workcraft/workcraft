@@ -21,7 +21,6 @@ import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -31,6 +30,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.util.GUI;
+import org.workcraft.util.MessageUtils;
 
 @SuppressWarnings("serial")
 public class PlatoWriterDialog extends JDialog {
@@ -87,7 +87,6 @@ public class PlatoWriterDialog extends JDialog {
             try {
                 conceptsText.setText(readFile(lastFileUsed));
             } catch (FileNotFoundException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -148,8 +147,7 @@ public class PlatoWriterDialog extends JDialog {
                         conceptsText.setText(readFile(f));
                         updateLastDirUsed();
                     } catch (FileNotFoundException e1) {
-                        JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(),
-                                e1.getMessage(), "File not found error", JOptionPane.ERROR_MESSAGE);
+                        MessageUtils.showError(e1.getMessage());
                     }
 
                 }

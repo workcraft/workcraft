@@ -50,7 +50,7 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
             printCommandLine(this.args);
             process.start();
         } catch (IOException e) {
-            LogUtils.logErrorLine(e.getMessage());
+            LogUtils.logError(e.getMessage());
             return Result.exception(e);
         }
 
@@ -96,7 +96,7 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
     }
 
     public static  void printCommandLine(List<String> args) {
-        LogUtils.logInfoLine("Running external command: " + getCommandLine(args));
+        LogUtils.logInfo("Running external command: " + getCommandLine(args));
     }
 
     @Override
@@ -108,7 +108,8 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
         }
         monitor.stdout(data);
         if (printStdout) {
-            printData(data, LogUtils.PREFIX_STDOUT);
+            String text = new String(data);
+            LogUtils.logStdout(text);
         }
     }
 
@@ -121,7 +122,8 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
         }
         monitor.stderr(data);
         if (printStderr) {
-            printData(data, LogUtils.PREFIX_STDERR);
+            String text = new String(data);
+            LogUtils.logStderr(text);
         }
     }
 
@@ -134,11 +136,6 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
         }
         this.returnCode = returnCode;
         this.finished = true;
-    }
-
-    private void printData(byte[] data, String prefix) {
-        String text = new String(data);
-        System.out.print(prefix + text);
     }
 
 }

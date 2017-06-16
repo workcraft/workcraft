@@ -1,9 +1,6 @@
 package org.workcraft.plugins.mpsat;
 
-import javax.swing.JOptionPane;
-
-import org.workcraft.Framework;
-import org.workcraft.gui.MainWindow;
+import org.workcraft.util.MessageUtils;
 
 final class MpsatUndefinedResultHandler implements Runnable {
 
@@ -15,9 +12,7 @@ final class MpsatUndefinedResultHandler implements Runnable {
 
     @Override
     public void run() {
-        MainWindow mainWindow = Framework.getInstance().getMainWindow();
-        String title = "Verification results";
-        JOptionPane.showMessageDialog(mainWindow, message, title, JOptionPane.INFORMATION_MESSAGE);
+        MessageUtils.showInfo(message, "Verification results");
     }
 
 }

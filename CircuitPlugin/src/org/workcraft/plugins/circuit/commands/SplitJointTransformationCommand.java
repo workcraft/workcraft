@@ -108,7 +108,7 @@ public class SplitJointTransformationCommand extends AbstractTransformationComma
                             newConnection.mixStyle(predConnection, succConnection);
                             ConnectionHelper.addControlPoints(newConnection, locations);
                         } catch (InvalidConnectionException e) {
-                            LogUtils.logWarningLine(e.getMessage());
+                            LogUtils.logWarning(e.getMessage());
                         }
                     }
                 }

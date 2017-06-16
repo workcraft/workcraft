@@ -6,11 +6,8 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.references.ReferenceHelper;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitUtils;
@@ -23,13 +20,13 @@ import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.tasks.TaskManager;
+import org.workcraft.util.MessageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class CircuitStrictImplementationVerificationCommand extends AbstractVerificationCommand {
 
-    private static final String TITLE = "Circuit vetification";
-
+    @Override
     public String getDisplayName() {
         return "Strict implementation [MPSat]";
     }
@@ -64,12 +61,9 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
     }
 
     private boolean check(Circuit circuit, File envFile) {
-        final Framework framework = Framework.getInstance();
-        final MainWindow mainWindow = framework.getMainWindow();
         // Check that circuit is not empty
         if (circuit.getFunctionComponents().isEmpty()) {
-            JOptionPane.showMessageDialog(mainWindow, "The circuit must have components.",
-                    TITLE, JOptionPane.ERROR_MESSAGE);
+            MessageUtils.showError("The circuit must have components.");
             return false;
         }
         // Check that environment STG exists
@@ -79,7 +73,7 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
             if (envFile != null) {
                 message += "\n\nCannot read STG model from the file:\n" + envFile.getAbsolutePath();
             }
-            JOptionPane.showMessageDialog(mainWindow, message, TITLE, JOptionPane.ERROR_MESSAGE);
+            MessageUtils.showError(message);
             return false;
         }
         // Make sure that input signals of the circuit are also inputs in the environment STG
@@ -99,7 +93,7 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
                     + "input signals are not specified in its environment STG.";
             message += "\n\nThe following input signals are missing in the environemnt STG:\n"
                     + ReferenceHelper.getReferencesAsString(missingInputSignals, 50);
-            JOptionPane.showMessageDialog(mainWindow, message, TITLE, JOptionPane.ERROR_MESSAGE);
+            MessageUtils.showError(message);
             return false;
         }
 
@@ -130,7 +124,7 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
                 message += "\n\nNon-input signals missing in the environment STG:\n"
                         + ReferenceHelper.getReferencesAsString(missingStgSignals, 50);
             }
-            JOptionPane.showMessageDialog(mainWindow, message, TITLE, JOptionPane.ERROR_MESSAGE);
+            MessageUtils.showError(message);
             return false;
         }
         return true;

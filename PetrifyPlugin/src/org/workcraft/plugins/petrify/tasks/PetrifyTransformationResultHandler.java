@@ -3,8 +3,6 @@ package org.workcraft.plugins.petrify.tasks;
 import java.util.Collection;
 import java.util.HashMap;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.ModelDescriptor;
@@ -14,7 +12,6 @@ import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.NameManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.ExceptionDialog;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.PetriNetDescriptor;
@@ -30,6 +27,7 @@ import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.util.MessageUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -48,7 +46,6 @@ public class PetrifyTransformationResultHandler extends DummyProgressMonitor<Pet
 
     @Override
     public void finished(final Result<? extends PetrifyTransformationResult> result, String description) {
-        final Framework framework = Framework.getInstance();
         if (result.getOutcome() == Outcome.FINISHED) {
             StgModel stgModel = result.getReturnValue().getResult();
             MutexUtils.restoreMutexPlacesByContext(stgModel, mutexes);
@@ -56,18 +53,16 @@ public class PetrifyTransformationResultHandler extends DummyProgressMonitor<Pet
             final ModelDescriptor modelDescriptor = convertToPetriNet ? new PetriNetDescriptor() : new StgDescriptor();
             final ModelEntry me = new ModelEntry(modelDescriptor, model);
             final Path<String> path = we.getWorkspacePath();
+            final Framework framework = Framework.getInstance();
             this.result = framework.createWork(me, path);
         } else if (result.getOutcome() == Outcome.FAILED) {
-            MainWindow mainWindow = framework.getMainWindow();
             if (result.getCause() == null) {
                 PetrifyTransformationResult returnValue = result.getReturnValue();
                 Result<? extends ExternalProcessResult> petrifyResult = returnValue.getPetrifyResult();
                 ExternalProcessResult petrifyReturnValue = petrifyResult.getReturnValue();
-                JOptionPane.showMessageDialog(mainWindow,
-                        "Petrify output: \n\n" + petrifyReturnValue.getErrorsHeadAndTail(),
-                        "Transformation failed", JOptionPane.WARNING_MESSAGE);
+                MessageUtils.showWarning("Transformation failed. Petrify output: \n\n" + petrifyReturnValue.getErrorsHeadAndTail());
             } else {
-                ExceptionDialog.show(mainWindow, result.getCause());
+                ExceptionDialog.show(result.getCause());
             }
         }
     }

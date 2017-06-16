@@ -3,11 +3,8 @@ package org.workcraft.plugins.mpsat.commands;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.references.ReferenceHelper;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.mpsat.MpsatCombinedChainResultHandler;
 import org.workcraft.plugins.mpsat.MpsatParameters;
@@ -18,12 +15,11 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.tasks.TaskManager;
+import org.workcraft.util.MessageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class MpsatMutexImplementabilityVerificationCommand extends AbstractVerificationCommand {
-
-    private static final String TITLE = "Mutex place implementability";
 
     @Override
     public String getDisplayName() {
@@ -47,13 +43,9 @@ public class MpsatMutexImplementabilityVerificationCommand extends AbstractVerif
 
     @Override
     public void run(WorkspaceEntry we) {
-        final Framework framework = Framework.getInstance();
-        final MainWindow mainWindow = framework.getMainWindow();
         final Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         if (stg.getMutexPlaces().isEmpty()) {
-            JOptionPane.showMessageDialog(mainWindow,
-                    "Error: No mutex places found.",
-                    TITLE, JOptionPane.ERROR_MESSAGE);
+            MessageUtils.showError("No mutex places found to check implementability.");
             return;
         }
         final ArrayList<MpsatParameters> settingsList = new ArrayList<>();
@@ -69,13 +61,11 @@ public class MpsatMutexImplementabilityVerificationCommand extends AbstractVerif
         }
         if (!problematicPlaces.isEmpty()) {
             String problematicPlacesString = ReferenceHelper.getNodesAsString(stg, (Collection) problematicPlaces, 50);
-            JOptionPane.showMessageDialog(mainWindow,
-                    "Error: A mutex place must precede a pair of\n" +
+            MessageUtils.showError("A mutex place must precede a pair of\n" +
                             "output transitions, each with a single trigger.\n\n" +
                             "Problematic places are:" +
                             (problematicPlacesString.length() > 30 ? "\n" : " ") +
-                            problematicPlacesString,
-                    TITLE, JOptionPane.ERROR_MESSAGE);
+                            problematicPlacesString);
             return;
         }
         final MpsatCombinedChainTask mpsatTask = new MpsatCombinedChainTask(we, settingsList);
@@ -85,6 +75,7 @@ public class MpsatMutexImplementabilityVerificationCommand extends AbstractVerif
         if (!title.isEmpty()) {
             description += "(" + title + ")";
         }
+        final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
         Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
         final MpsatCombinedChainResultHandler monitor = new MpsatCombinedChainResultHandler(mpsatTask, mutexes);

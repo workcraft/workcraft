@@ -83,6 +83,7 @@ import org.workcraft.util.GUI;
 import org.workcraft.util.Import;
 import org.workcraft.util.ListMap;
 import org.workcraft.util.LogUtils;
+import org.workcraft.util.MessageUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -515,7 +516,7 @@ public class MainWindow extends JFrame {
         try {
             DockingManager.loadLayoutModel();
         } catch (IOException | PersistenceException e) {
-            LogUtils.logWarningLine("Window layout could not be loaded from '" + file.getAbsolutePath() + "'.");
+            LogUtils.logWarning("Window layout could not be loaded from '" + file.getAbsolutePath() + "'.");
         }
 
         float xSplit = 0.888f;
@@ -749,7 +750,6 @@ public class MainWindow extends JFrame {
     }
 
     public void createWork(Path<String> directory) throws OperationCancelledException {
-        final Framework framework = Framework.getInstance();
         CreateWorkDialog dialog = new CreateWorkDialog(this);
         dialog.pack();
         GUI.centerToParent(dialog, this);
@@ -767,14 +767,12 @@ public class MainWindow extends JFrame {
                 }
                 VisualModel visualModel = visualModelDescriptor.create(mathModel);
                 ModelEntry me = new ModelEntry(info, visualModel);
+                final Framework framework = Framework.getInstance();
                 WorkspaceEntry we = framework.createWork(me, directory, null);
                 we.setChanged(false);
             } catch (VisualModelInstantiationException e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(this,
-                        "Visual model could not be created: " + e.getMessage()
-                                + "\n\nSee the Problems window for details.",
-                        "Error", JOptionPane.ERROR_MESSAGE);
+                MessageUtils.showError("Visual model could not be created: " + e.getMessage());
             }
         }
     }
@@ -953,10 +951,7 @@ public class MainWindow extends JFrame {
                 pushRecentFile(file.getPath(), true);
                 lastOpenPath = file.getParent();
             } catch (DeserialisationException e) {
-                JOptionPane.showMessageDialog(this,
-                        "A problem was encountered while trying to load '" + file.getPath() + "'.\n"
-                        + "Please see Problems window for details.",
-                        "Load failed", JOptionPane.ERROR_MESSAGE);
+                MessageUtils.showError("A problem was encountered while trying to load '" + file.getPath() + "'.");
                 printCause(e);
             }
         }
@@ -988,10 +983,7 @@ public class MainWindow extends JFrame {
                 WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
                 framework.mergeWork(we, file);
             } catch (DeserialisationException e) {
-                JOptionPane.showMessageDialog(this,
-                        "A problem was encountered while trying to merge '" + file.getPath()
-                                + "'.\nPlease see Problems window for details.",
-                        "Load failed", JOptionPane.ERROR_MESSAGE);
+                MessageUtils.showError("A problem was encountered while trying to merge '" + file.getPath() + "'.");
                 printCause(e);
             }
         }
@@ -1028,7 +1020,7 @@ public class MainWindow extends JFrame {
                 }
             } catch (SerialisationException e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(this, e.getMessage(), "Model export failed", JOptionPane.ERROR_MESSAGE);
+                MessageUtils.showError(e.getMessage());
             }
             we.setChanged(false);
             refreshWorkspaceEntryTitle(we, true);
@@ -1070,7 +1062,7 @@ public class MainWindow extends JFrame {
             pushRecentFile(we.getFile().getPath(), true);
         } catch (SerialisationException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Model export failed", JOptionPane.ERROR_MESSAGE);
+            MessageUtils.showError(e.getMessage());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -1095,7 +1087,6 @@ public class MainWindow extends JFrame {
     }
 
     public void importFrom(File file, Importer[] importers) {
-        final Framework framework = Framework.getInstance();
         if (checkFileMessageDialog(file, null)) {
             for (Importer importer: importers) {
                 if (importer.accept(file)) {
@@ -1106,15 +1097,13 @@ public class MainWindow extends JFrame {
                             title = FileUtils.getFileNameWithoutExtension(file);
                             me.getMathModel().setTitle(title);
                         }
+                        final Framework framework = Framework.getInstance();
                         framework.createWork(me, Path.<String>empty(), file.getName());
                         lastOpenPath = file.getParent();
                         break;
-                    } catch (IOException e) {
+                    } catch (IOException | DeserialisationException e) {
                         e.printStackTrace();
-                        JOptionPane.showMessageDialog(this, e.getMessage(), "I/O error", JOptionPane.ERROR_MESSAGE);
-                    } catch (DeserialisationException e) {
-                        e.printStackTrace();
-                        JOptionPane.showMessageDialog(this, e.getMessage(), "Import error", JOptionPane.ERROR_MESSAGE);
+                        MessageUtils.showError(e.getMessage());
                     }
                 }
             }

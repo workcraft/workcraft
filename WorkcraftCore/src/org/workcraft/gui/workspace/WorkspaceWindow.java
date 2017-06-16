@@ -22,6 +22,7 @@ import org.workcraft.gui.actions.ActionMenuItem;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.trees.TreeWindow;
 import org.workcraft.util.GUI;
+import org.workcraft.util.MessageUtils;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -327,9 +328,7 @@ public class WorkspaceWindow extends JPanel {
             try {
                 framework.loadWorkspace(fc.getSelectedFile());
             } catch (DeserialisationException e) {
-                JOptionPane.showMessageDialog(mainWindow,
-                            "Workspace load failed. Please see the Problems window for details.",
-                            DIALOG_OPEN_WORKSPACE, JOptionPane.ERROR_MESSAGE);
+                MessageUtils.showError("Workspace load failed. See the Problems window for details.");
                 e.printStackTrace();
             }
         }

@@ -6,18 +6,15 @@ import java.util.LinkedList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.Config;
-import org.workcraft.Framework;
 import org.workcraft.gui.DesktopApi;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.util.MessageUtils;
 
 public class CircuitSettings implements Settings {
 
@@ -189,10 +186,7 @@ public class CircuitSettings implements Settings {
                 if (parseMutexData(value) != null) {
                     setMutexData(value);
                 } else {
-                    MainWindow mainWindow = Framework.getInstance().getMainWindow();
-                    JOptionPane.showMessageDialog(mainWindow,
-                            "Mutex description format is incorrect. It should be as follows:\n" + defaultMutexData,
-                            "Digital Circuit settings", JOptionPane.ERROR_MESSAGE);
+                    MessageUtils.showError("Mutex description format is incorrect. It should be as follows:\n" + defaultMutexData);
                 }
             }
             protected String getter(CircuitSettings object) {

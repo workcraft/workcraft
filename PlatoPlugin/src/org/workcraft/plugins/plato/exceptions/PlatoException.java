@@ -23,7 +23,7 @@ public class PlatoException extends Exception {
         try {
             if (result.getOutcome() == Outcome.FAILED) {
                 String errors = new String(result.getReturnValue().getErrors());
-                System.out.println(LogUtils.PREFIX_STDERR + errors);
+                LogUtils.logStderr(errors);
                 if (errors.contains("<no location info>")) {
                     conceptsCodeNotFound();
                 } else if (errors.contains("Could not find module") || errors.contains("Failed to load interface")) {
@@ -35,7 +35,7 @@ public class PlatoException extends Exception {
                 String output = new String(result.getReturnValue().getOutput());
                 if (!output.startsWith(".model out")) {
                     if (output.contains("Error.")) {
-                        System.out.println(LogUtils.PREFIX_STDERR + output);
+                        LogUtils.logStderr(output);
                         if (output.contains("The following signals are not declared as input, output or internal")) {
                             signalTypeNotDeclared();
                         }
@@ -82,7 +82,7 @@ public class PlatoException extends Exception {
     }
 
     private void cannotTranslateConceptsError(String output) {
-        System.out.println(LogUtils.PREFIX_STDERR + output);
+        LogUtils.logStderr(output);
         MainWindow mainWindow = Framework.getInstance().getMainWindow();
         JOptionPane.showMessageDialog(mainWindow, "Concepts could not be translated."
                 + "\nSee console window for error information", "Concept translation failed", JOptionPane.ERROR_MESSAGE);

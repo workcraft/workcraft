@@ -102,7 +102,7 @@ public class InsertBufferTransformationCommand extends AbstractTransformationCom
                 VisualConnection outputConnection = (VisualCircuitConnection) circuit.connect(outputContact, toNode);
                 ConnectionHelper.addControlPoints(outputConnection, suffixControlPoints);
             } catch (InvalidConnectionException e) {
-                LogUtils.logWarningLine(e.getMessage());
+                LogUtils.logWarning(e.getMessage());
             }
             boolean initToOne = inputContact.getReferencedFunctionContact().getInitToOne();
             outputContact.getReferencedFunctionContact().setInitToOne(initToOne);

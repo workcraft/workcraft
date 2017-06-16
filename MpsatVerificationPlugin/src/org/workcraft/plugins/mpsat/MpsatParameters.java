@@ -118,8 +118,8 @@ public class MpsatParameters {
                 String reachExpression = getExpression();
                 FileUtils.dumpString(reachFile, reachExpression);
                 if (MpsatSettings.getDebugReach()) {
-                    LogUtils.logInfoLine("Reach expression to check");
-                    LogUtils.logMessageLine(reachExpression);
+                    LogUtils.logInfo("Reach expression to check");
+                    LogUtils.logMessage(reachExpression);
                 }
 
                 args.add("-d");

@@ -96,13 +96,13 @@ public class ContractComponentTransformationCommand extends AbstractTransformati
         Collection<VisualContact> inputContacts = component.getVisualInputs();
         String componentName = circuit.getMathName(component);
         if (inputContacts.size() > 2) {
-            LogUtils.logErrorLine("Cannot contract component '" + componentName + "' with " + inputContacts.size() + " inputs.");
+            LogUtils.logError("Cannot contract component '" + componentName + "' with " + inputContacts.size() + " inputs.");
             return false;
         }
         VisualContact inputContact = component.getFirstVisualInput();
         Collection<VisualContact> outputContacts = component.getVisualOutputs();
         if (outputContacts.size() > 2) {
-            LogUtils.logErrorLine("Cannot contract component '" + componentName + "' with " + outputContacts.size() + " outputs.");
+            LogUtils.logError("Cannot contract component '" + componentName + "' with " + outputContacts.size() + " outputs.");
             return false;
         }
         VisualContact outputContact = component.getFirstVisualOutput();
@@ -118,11 +118,11 @@ public class ContractComponentTransformationCommand extends AbstractTransformati
             if (driven.isOutput() && driven.isPort()) {
                 outputPortCount++;
                 if (outputPortCount > 1) {
-                    LogUtils.logErrorLine("Cannot contract component '" + componentName + "' as it leads to fork on output ports.");
+                    LogUtils.logError("Cannot contract component '" + componentName + "' as it leads to fork on output ports.");
                     return false;
                 }
                 if ((driver != null) && driver.isInput() && driver.isPort()) {
-                    LogUtils.logErrorLine("Cannot contract component '" + componentName + "' as it leads to direct connection from input port to output port.");
+                    LogUtils.logError("Cannot contract component '" + componentName + "' as it leads to direct connection from input port to output port.");
                     return false;
                 }
             }
@@ -137,14 +137,14 @@ public class ContractComponentTransformationCommand extends AbstractTransformati
                 Collection<Contact> directDrivenSet = CircuitUtils.findDriven(mathCircuit, outputContact.getReferencedContact(), false);
                 for (Contact directDriven: directDrivenSet) {
                     if (directDriven.isOutput() && directDriven.isPort()) {
-                        LogUtils.logErrorLine("Cannot contract component '" + componentName + "' as it leads to connection of zero delay component to output port.");
+                        LogUtils.logError("Cannot contract component '" + componentName + "' as it leads to connection of zero delay component to output port.");
                         return false;
                     }
                     Node directDrivenParent = directDriven.getParent();
                     if (directDrivenParent instanceof FunctionComponent) {
                         FunctionComponent directDrivenComponent = (FunctionComponent) directDrivenParent;
                         if (directDrivenComponent.getIsZeroDelay()) {
-                            LogUtils.logErrorLine("Cannot contract component '" + componentName + "' as it leads to connection between zero delay components.");
+                            LogUtils.logError("Cannot contract component '" + componentName + "' as it leads to connection between zero delay components.");
                             return false;
                         }
                     }
@@ -167,7 +167,7 @@ public class ContractComponentTransformationCommand extends AbstractTransformati
                     newConnection.mixStyle((VisualConnection) inputConnection, (VisualConnection) outputConnection);
                     ConnectionHelper.addControlPoints(newConnection, locations);
                 } catch (InvalidConnectionException e) {
-                    LogUtils.logWarningLine(e.getMessage());
+                    LogUtils.logWarning(e.getMessage());
                 }
             }
         }

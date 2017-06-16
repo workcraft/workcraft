@@ -181,7 +181,7 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
         if (!mutexes.isEmpty()) {
             stg = StgUtils.loadStg(stgFile);
             for (Mutex mutex: mutexes) {
-                LogUtils.logInfoLine("Factored out " + mutex);
+                LogUtils.logInfo("Factored out " + mutex);
                 setMutexRequest(stg, mutex.r1);
                 stg.setSignalType(mutex.g1.name, Type.INPUT);
                 setMutexRequest(stg, mutex.r2);
@@ -199,7 +199,7 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
 
     private void setMutexRequest(Stg stg, Signal signal) {
         if (signal.type == Type.INTERNAL) {
-            LogUtils.logInfoLine("Internal signal " + signal.name + " is temporary changed to output, so it is not optimised away.");
+            LogUtils.logInfo("Internal signal " + signal.name + " is temporary changed to output, so it is not optimised away.");
             stg.setSignalType(signal.name, Type.OUTPUT);
         }
     }

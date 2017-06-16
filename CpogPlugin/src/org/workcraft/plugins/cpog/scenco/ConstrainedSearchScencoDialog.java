@@ -18,7 +18,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -27,7 +26,6 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.table.DefaultTableCellRenderer;
 
-import org.workcraft.Framework;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.gui.layouts.SimpleFlowLayout;
@@ -37,6 +35,7 @@ import org.workcraft.plugins.cpog.gui.MyTableCellRenderer;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.util.GUI;
 import org.workcraft.util.IntDocument;
+import org.workcraft.util.MessageUtils;
 
 import info.clearthought.layout.TableLayout;
 
@@ -180,9 +179,7 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (Integer.parseInt(bitsText.getText()) < bits + 1) {
-                    JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(),
-                            "Bits selected are not enough to encode all scenarios.",
-                            "Not enough bits", JOptionPane.ERROR_MESSAGE);
+                    MessageUtils.showError("Bits selected are not enough to encode all scenarios.");
 
                     bitsText.setText(String.valueOf(bits + 1));
                 }

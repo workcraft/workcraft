@@ -26,6 +26,7 @@ import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
+import org.workcraft.util.MessageUtils;
 import org.workcraft.util.Pair;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -122,7 +123,7 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
                     if (connection instanceof VisualReadArc) {
                         String predRef = stg.getNodeMathReference(predNode);
                         String succRef = stg.getNodeMathReference(succNode);
-                        LogUtils.logWarningLine("Read-arc between '" + predRef + "' and '" + succRef + "' is ignored.");
+                        LogUtils.logWarning("Read-arc between '" + predRef + "' and '" + succRef + "' is ignored.");
                         continue;
                     }
                     if (transition == succNode) {
@@ -195,10 +196,8 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
             if (split.length == 2) {
                 result = Pair.of(split[0], split[1]);
             } else {
-                JOptionPane.showMessageDialog(framework.getMainWindow(),
-                        "Error: Two suffixes are required!\n\n" +
-                        "Default suffixes " + SUFFIX_REQ + " and " + SUFFIX_ACK + " will be used.",
-                        "Handshake expansion", JOptionPane.ERROR_MESSAGE);
+                MessageUtils.showError("Two suffixes are required for handshake expansion.\n\n" +
+                        "Default suffixes " + SUFFIX_REQ + " and " + SUFFIX_ACK + " will be used.");
                 result = null;
             }
         }

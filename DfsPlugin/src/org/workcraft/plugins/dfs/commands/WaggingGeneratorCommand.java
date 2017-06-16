@@ -8,6 +8,7 @@ import org.workcraft.gui.graph.commands.ScriptableCommand;
 import org.workcraft.plugins.dfs.Dfs;
 import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.plugins.dfs.VisualRegister;
+import org.workcraft.util.MessageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -38,9 +39,7 @@ public class WaggingGeneratorCommand implements ScriptableCommand {
             }
         }
         if (selectedRegisterCount < 1) {
-            final Framework framework = Framework.getInstance();
-            JOptionPane.showMessageDialog(framework.getMainWindow(),
-                    "Select at least one register for wagging!", "Wagging", JOptionPane.ERROR_MESSAGE);
+            MessageUtils.showError("Select at least one register for wagging.");
         } else {
             int count = getWayCount();
             if (count >= 2) {
@@ -66,12 +65,10 @@ public class WaggingGeneratorCommand implements ScriptableCommand {
             try {
                 count = Integer.parseInt(ans);
                 if (count < 2) {
-                    JOptionPane.showMessageDialog(framework.getMainWindow(),
-                            "Wagging cannot be less than 2-way!", "Wagging", JOptionPane.ERROR_MESSAGE);
+                    MessageUtils.showError("Wagging cannot be less than 2-way.");
                 }
             } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(framework.getMainWindow(),
-                        "Your input is not an integer!", "Wagging", JOptionPane.ERROR_MESSAGE);
+                MessageUtils.showError("Your input is not an integer.");
             }
         }
         return count;

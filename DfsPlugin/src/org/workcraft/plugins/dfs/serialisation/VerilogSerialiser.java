@@ -101,7 +101,7 @@ public class VerilogSerialiser implements ModelSerialiser {
         String topName = dfs.getTitle();
         if ((topName == null) || topName.isEmpty()) {
             topName = "UNTITLED";
-            LogUtils.logWarningLine("The top module does not have a name. Exporting as '" + topName + "' module.");
+            LogUtils.logWarning("The top module does not have a name. Exporting as '" + topName + "' module.");
         }
         ArrayList<Pair<String, Boolean>> ports = new ArrayList<>();
         for (Node node: dfs.getAllNodes()) {

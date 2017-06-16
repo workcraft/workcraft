@@ -15,6 +15,7 @@ import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.gui.AlgebraExportDialog;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.plugins.cpog.tools.CpogSelectionTool;
+import org.workcraft.util.MessageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -64,9 +65,7 @@ public class AlgebraExpressionFromGraphsCommand implements Command {
         if (dialog.getExport()) {
             String filePath = dialog.getFilePath();
             if (filePath.compareTo(" ") == 0 || filePath == "") {
-                JOptionPane.showMessageDialog(mainWindow,
-                        "No export file has been given",
-                        DIALOG_EXPRESSION_EXPORT_ERROR, JOptionPane.ERROR_MESSAGE);
+                MessageUtils.showError("No export file has been given", DIALOG_EXPRESSION_EXPORT_ERROR);
                 return;
             }
             File file = new File(filePath);
@@ -83,13 +82,10 @@ public class AlgebraExpressionFromGraphsCommand implements Command {
                 expressions.print(exp);
                 expressions.close();
             } catch (FileNotFoundException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         } else {
-            JOptionPane.showMessageDialog(mainWindow,
-                    "No export selection was made",
-                    DIALOG_EXPRESSION_EXPORT_ERROR, JOptionPane.ERROR_MESSAGE);
+            MessageUtils.showError("No export selection was made", DIALOG_EXPRESSION_EXPORT_ERROR);
         }
     }
 

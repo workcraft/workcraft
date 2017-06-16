@@ -17,7 +17,6 @@ import java.util.UUID;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -77,6 +76,7 @@ import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.Import;
 import org.workcraft.util.LogUtils;
+import org.workcraft.util.MessageUtils;
 import org.workcraft.util.XmlUtil;
 import org.workcraft.workspace.Memento;
 import org.workcraft.workspace.ModelEntry;
@@ -302,7 +302,7 @@ public final class Framework {
 
     public void loadConfig() {
         File file = new File(CONFIG_FILE_PATH);
-        LogUtils.logMessageLine("Loading global preferences from " + file.getAbsolutePath());
+        LogUtils.logMessage("Loading global preferences from " + file.getAbsolutePath());
         config.load(file);
         loadPluginsSettings();
     }
@@ -310,7 +310,7 @@ public final class Framework {
     public void saveConfig() {
         savePluginsSettings();
         File file = new File(CONFIG_FILE_PATH);
-        LogUtils.logMessageLine("Saving global preferences to " + file.getAbsolutePath());
+        LogUtils.logMessage("Saving global preferences to " + file.getAbsolutePath());
         config.save(file);
     }
 
@@ -337,7 +337,7 @@ public final class Framework {
     }
 
     public void initJavaScript() {
-        LogUtils.logMessageLine("Initialising JavaScript...");
+        LogUtils.logMessage("Initialising JavaScript...");
         contextFactory.call(new ContextAction() {
             @Override
             public Object run(Context cx) {
@@ -563,7 +563,7 @@ public final class Framework {
 
     public WorkspaceEntry executeCommand(WorkspaceEntry we, String className) {
         if ((className == null) || className.isEmpty()) {
-            LogUtils.logErrorLine("Undefined command name.");
+            LogUtils.logError("Undefined command name.");
         } else {
             boolean found = false;
             boolean scriptable = false;
@@ -580,11 +580,11 @@ public final class Framework {
                 }
             }
             if (!found) {
-                LogUtils.logErrorLine("Command '" + className + "' is not found.");
+                LogUtils.logError("Command '" + className + "' is not found.");
             } else if (!scriptable) {
-                LogUtils.logErrorLine("Command '" + className + "' cannot be used in scripts.");
+                LogUtils.logError("Command '" + className + "' cannot be used in scripts.");
             } else {
-                LogUtils.logErrorLine("Command '" + className + "' is incompatible"
+                LogUtils.logError("Command '" + className + "' is incompatible"
                         + " with workspace entry '" + we.getWorkspacePath() + "'.");
             }
         }
@@ -623,19 +623,14 @@ public final class Framework {
             ModelDescriptor descriptor = me.getDescriptor();
             VisualModelDescriptor vmd = descriptor.getVisualModelDescriptor();
             if (vmd == null) {
-                JOptionPane.showMessageDialog(getMainWindow(),
-                        "A visual model could not be created for the selected model.\n"
-                        + descriptor.getDisplayName() + " does not have visual model support.",
-                        "Error", JOptionPane.ERROR_MESSAGE);
+                MessageUtils.showError("A visual model could not be created because '"
+                        + descriptor.getDisplayName() + "' does not have visual model support.");
             }
             try {
                 visualModel = vmd.create(me.getMathModel());
                 result = new ModelEntry(descriptor, visualModel);
             } catch (VisualModelInstantiationException e) {
-                JOptionPane.showMessageDialog(getMainWindow(),
-                        "A visual model could not be created for the selected model.\n"
-                        + "Please refer to the Problems window for details.\n",
-                        "Error", JOptionPane.ERROR_MESSAGE);
+                MessageUtils.showError("A visual model could not be created for the selected model.");
                 e.printStackTrace();
             }
             AbstractLayoutCommand layoutCommand = visualModel.getBestLayouter();
@@ -918,7 +913,7 @@ public final class Framework {
         File file = getFileByAbsoluteOrRelativePath(path);
         UUID uuid = Format.getUUID(format);
         if (uuid == null) {
-            LogUtils.logErrorLine("'" + format + "' format is not supported.");
+            LogUtils.logError("'" + format + "' format is not supported.");
         } else {
             exportModel(modelEntry, file, uuid);
         }
@@ -930,7 +925,7 @@ public final class Framework {
         if (exporter == null) {
             String modelName = modelEntry.getMathModel().getDisplayName();
             String formatDescription = Format.getDescription(uuid);
-            LogUtils.logErrorLine("Cannot find exporter to " + formatDescription + " for " + modelName + ".");
+            LogUtils.logError("Cannot find exporter to " + formatDescription + " for " + modelName + ".");
         } else {
             try {
                 Export.exportToFile(exporter, modelEntry.getModel(), file);
@@ -971,13 +966,13 @@ public final class Framework {
             title = "File access error";
         }
         if (!file.exists()) {
-            LogUtils.logErrorLine(title + ": The path  \"" + file.getPath() + "\" does not exisit.");
+            LogUtils.logError(title + ": The path  \"" + file.getPath() + "\" does not exisit.");
             result = false;
         } else if (!file.isFile()) {
-            LogUtils.logErrorLine(title + ": The path  \"" + file.getPath() + "\" is not a file.");
+            LogUtils.logError(title + ": The path  \"" + file.getPath() + "\" is not a file.");
             result = false;
         } else if (!file.canRead()) {
-            LogUtils.logErrorLine(title + ": The file  \"" + file.getPath() + "\" cannot be read.");
+            LogUtils.logError(title + ": The file  \"" + file.getPath() + "\" cannot be read.");
             result = false;
         }
         return result;

@@ -41,11 +41,7 @@ public class FormulaToGraphics {
             Map<TextAttribute, Integer> attributes = new HashMap<>();
             attributes.put(TextAttribute.SUPERSCRIPT, TextAttribute.SUPERSCRIPT_SUB);
             defaultSubFont = defaultFont.deriveFont(attributes);
-        } catch (FontFormatException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IOException e) {
-            // TODO Auto-generated catch block
+        } catch (FontFormatException | IOException e) {
             e.printStackTrace();
         }
     }

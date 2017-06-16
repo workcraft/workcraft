@@ -105,7 +105,6 @@ public class TestTool extends AbstractGraphEditorTool implements Command {
         // try {
         // //timeAlg.entireEst();
         // } catch (AlternativeStructureException e) {
-        // // TODO Auto-generated catch block
         // e.printStackTrace();
         // }
 
@@ -116,10 +115,8 @@ public class TestTool extends AbstractGraphEditorTool implements Command {
         // null);
         // System.out.println("result" + result);
         // } catch (InconsistentTimeException e) {
-        // // TODO Auto-generated catch block
         // e.printStackTrace();
         // } catch (TimeOutOfBoundsException e) {
-        // // TODO Auto-generated catch block
         // e.printStackTrace();
         // }
 

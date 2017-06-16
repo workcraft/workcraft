@@ -232,7 +232,6 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
         try {
             replica = NodeFactory.createNode(type);
         } catch (NodeCreationException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
         if (replica != null) {

@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.util.Collection;
 import java.util.HashSet;
 
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
@@ -23,11 +22,11 @@ import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.util.LogUtils;
+import org.workcraft.util.MessageUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifySynthesisResult> {
-    private static final String TITLE = "Petrify synthesis";
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
     private final WorkspaceEntry we;
     private final boolean boxSequentialComponents;
@@ -63,19 +62,19 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
     private void handleSuccess(final Result<? extends PetrifySynthesisResult> result) {
         final String log = result.getReturnValue().getLog();
         if ((log != null) && !log.isEmpty()) {
-            LogUtils.logInfoLine("Petrify synthesis log:");
+            LogUtils.logInfo("Petrify synthesis log:");
             System.out.println(log);
         }
 
         final String equations = result.getReturnValue().getEquation();
         if ((equations != null) && !equations.isEmpty()) {
-            LogUtils.logInfoLine("Petrify synthesis result in EQN format:");
+            LogUtils.logInfo("Petrify synthesis result in EQN format:");
             System.out.println(equations);
         }
 
         final String verilog = result.getReturnValue().getVerilog();
         if (PetrifySettings.getOpenSynthesisResult() && (verilog != null) && !verilog.isEmpty()) {
-            LogUtils.logInfoLine("Petrify synthesis result in Verilog format:");
+            LogUtils.logInfo("Petrify synthesis result in Verilog format:");
             System.out.println(verilog);
             try {
                 final ByteArrayInputStream in = new ByteArrayInputStream(verilog.getBytes());
@@ -84,7 +83,6 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
                 final Path<String> path = we.getWorkspacePath();
                 final ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
                 final Framework framework = Framework.getInstance();
-                final MainWindow mainWindow = framework.getMainWindow();
                 this.result = framework.createWork(me, path);
                 final VisualModel visualModel = this.result.getModelEntry().getVisualModel();
                 if (visualModel instanceof VisualCircuit) {
@@ -93,20 +91,17 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
                     final String title = we.getModelEntry().getModel().getTitle();
                     visualCircuit.setTitle(title);
                     if (!we.getFile().exists()) {
-                        JOptionPane.showMessageDialog(mainWindow,
-                                "Error: Unsaved STG cannot be set as the circuit environment.",
-                                TITLE, JOptionPane.ERROR_MESSAGE);
+                        MessageUtils.showError("Unsaved STG cannot be set as the circuit environment.");
                     } else {
                         visualCircuit.setEnvironmentFile(we.getFile());
                         if (we.isChanged()) {
-                            JOptionPane.showMessageDialog(mainWindow,
-                                    "Warning: The STG with unsaved changes is set as the circuit environment.",
-                                    TITLE, JOptionPane.WARNING_MESSAGE);
+                            MessageUtils.showWarning("The STG with unsaved changes is set as the circuit environment.");
                         }
                     }
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
+                            final MainWindow mainWindow = framework.getMainWindow();
                             if (mainWindow != null) {
                                 mainWindow.getCurrentEditor().updatePropertyView();
                             }
@@ -146,8 +141,7 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
         if (returnValue != null) {
             errorMessage += ERROR_CAUSE_PREFIX + returnValue.getStderr();
         }
-        final MainWindow mainWindow = Framework.getInstance().getMainWindow();
-        JOptionPane.showMessageDialog(mainWindow, errorMessage, TITLE, JOptionPane.ERROR_MESSAGE);
+        MessageUtils.showError(errorMessage);
     }
 
     public WorkspaceEntry getResult() {

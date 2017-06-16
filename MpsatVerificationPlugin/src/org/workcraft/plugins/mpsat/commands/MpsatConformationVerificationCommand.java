@@ -3,7 +3,6 @@ package org.workcraft.plugins.mpsat.commands;
 import java.io.File;
 
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
@@ -16,12 +15,11 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.plugins.stg.interop.DotGImporter;
+import org.workcraft.util.MessageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class MpsatConformationVerificationCommand extends AbstractVerificationCommand {
-
-    private static final String TITLE = "Conformation check";
 
     @Override
     public String getDisplayName() {
@@ -46,22 +44,19 @@ public class MpsatConformationVerificationCommand extends AbstractVerificationCo
         // Check for limitations:
         if (stg.getPlaces().isEmpty()) {
             // - The set of device STG place names is non-empty (this limitation can be easily removed).
-            JOptionPane.showMessageDialog(mainWindow, "Error: The STG must have places.",
-                    TITLE, JOptionPane.ERROR_MESSAGE);
+            MessageUtils.showError("For conformation chech the STG must have places.");
             return;
         }
 
         if (hasDisconnectedTransitions(stg)) {
             // - Each transition in the device STG must have some arcs, i.e. its preset or postset is non-empty.
-            JOptionPane.showMessageDialog(mainWindow, "Error: The STG must have no disconnected transitions.",
-                    TITLE, JOptionPane.ERROR_MESSAGE);
+            MessageUtils.showError("For conformation chech the STG must have no disconnected transitions.");
             return;
         }
 
         if (!stg.getDummyTransitions().isEmpty()) {
             // - The device STG must have no dummies.
-            JOptionPane.showMessageDialog(mainWindow, "Error: The STG must have no dummies.",
-                    TITLE, JOptionPane.ERROR_MESSAGE);
+            MessageUtils.showError("For conformation chech the STG must have no dummies.");
             return;
         }
 
@@ -72,10 +67,9 @@ public class MpsatConformationVerificationCommand extends AbstractVerificationCo
             if (mainWindow.checkFileMessageDialog(envFile, null)) {
                 Stg envStg = StgUtils.loadStg(envFile);
                 if (envStg == null) {
-                    JOptionPane.showMessageDialog(mainWindow,
-                            "Error: Cannot read an STG model from the file:\n" + envFile.getAbsolutePath() + "\n\n"
-                            + "Conformation cannot be checked without environment STG.\n",
-                            TITLE, JOptionPane.ERROR_MESSAGE);
+                    MessageUtils.showError("Cannot read an STG model from the file:\n"
+                            + envFile.getAbsolutePath() + "\n\n"
+                            + "Conformation cannot be checked without environment STG.");
                 } else {
                     final MpsatConformationTask mpsatTask = new MpsatConformationTask(we, envFile);
                     String description = "MPSat tool chain";

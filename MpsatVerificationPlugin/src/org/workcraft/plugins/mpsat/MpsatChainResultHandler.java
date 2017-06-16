@@ -2,11 +2,8 @@ package org.workcraft.plugins.mpsat;
 
 import java.util.Collection;
 
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import org.workcraft.Framework;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
@@ -14,10 +11,10 @@ import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.util.MessageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResult> {
-    private static final String TITLE = "MPSat verification";
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
     private final MpsatChainTask task;
     private final Collection<Mutex> mutexes;
@@ -77,17 +74,14 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
             SwingUtilities.invokeLater(new MpsatCscConflictResolutionResultHandler(we, mpsatResult, mutexes));
             break;
         default:
-            MainWindow mainWindow = Framework.getInstance().getMainWindow();
             String modeString = mpsatSettings.getMode().getArgument();
-            JOptionPane.showMessageDialog(mainWindow,
-                    "Warning: MPSat verification mode '" + modeString + "' is not (yet) supported.",
-                    TITLE, JOptionPane.ERROR_MESSAGE);
+            MessageUtils.showError("MPSat verification mode '" + modeString + "' is not (yet) supported.");
             break;
         }
     }
 
     private void handleFailure(final Result<? extends MpsatChainResult> result) {
-        String errorMessage = "Error: MPSat verification failed.";
+        String errorMessage = "MPSat verification failed.";
         Throwable genericCause = result.getCause();
         if (genericCause != null) {
             // Exception was thrown somewhere in the chain task run() method (not in any of the subtasks)
@@ -131,8 +125,7 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
                 errorMessage += "\n\nMPSat chain task returned failure status without further explanation.";
             }
         }
-        MainWindow mainWindow = Framework.getInstance().getMainWindow();
-        JOptionPane.showMessageDialog(mainWindow, errorMessage, TITLE, JOptionPane.ERROR_MESSAGE);
+        MessageUtils.showError(errorMessage);
     }
 
 }

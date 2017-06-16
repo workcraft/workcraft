@@ -4,7 +4,6 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
 
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
@@ -18,6 +17,7 @@ import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.util.MessageUtils;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -39,9 +39,7 @@ public class PcompResultHandler extends DummyProgressMonitor<ExternalProcessResu
             SwingUtilities.invokeAndWait(new Runnable() {
                 @Override
                 public void run() {
-
                     final Framework framework = Framework.getInstance();
-                    final MainWindow mainWindow = framework.getMainWindow();
                     final Workspace workspace = framework.getWorkspace();
                     if (result.getOutcome() == Outcome.FAILED) {
                         String message;
@@ -51,22 +49,21 @@ public class PcompResultHandler extends DummyProgressMonitor<ExternalProcessResu
                         } else {
                             message = "Pcomp errors:\n" + result.getReturnValue().getErrorsHeadAndTail();
                         }
-                        JOptionPane.showMessageDialog(mainWindow, message,
-                                "Parallel composition failed", JOptionPane.ERROR_MESSAGE);
+                        MessageUtils.showError(message);
                     } else if (result.getOutcome() == Outcome.FINISHED) {
                         try {
                             if (showInEditor) {
                                 WorkspaceEntry we = framework.loadWork(outputFile);
                                 StgModel model = WorkspaceUtils.getAs(we, StgModel.class);
                                 MutexUtils.restoreMutexPlacesByName(model, mutexes);
+                                MainWindow mainWindow = framework.getMainWindow();
                                 mainWindow.createEditorWindow(we);
                             } else {
                                 Path<String> path = Path.fromString(outputFile.getName());
                                 workspace.addMount(path, outputFile, true);
                             }
                         } catch (DeserialisationException e) {
-                            JOptionPane.showMessageDialog(mainWindow, e.getMessage(),
-                                    "Parallel composition failed", JOptionPane.ERROR_MESSAGE);
+                            MessageUtils.showError(e.getMessage());
                             e.printStackTrace();
                         }
                     }

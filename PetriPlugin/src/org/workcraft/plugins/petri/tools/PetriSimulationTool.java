@@ -69,7 +69,7 @@ public class PetriSimulationTool extends SimulationTool {
                 if (places.contains(place)) {
                     place.setTokens(state.get(place));
                 } else {
-                    ExceptionDialog.show(null, new RuntimeException("Place " + place.toString() + " is not in the model"));
+                    ExceptionDialog.show(new RuntimeException("Place " + place.toString() + " is not in the model"));
                 }
             }
         }
@@ -142,7 +142,7 @@ public class PetriSimulationTool extends SimulationTool {
                     Place place = (Place) node;
                     if (place.getCapacity() > capacity.get(place)) {
                         String placeRef = petri.getNodeReference(place);
-                        LogUtils.logWarningLine("Capacity of place '" + placeRef + "' is incresed to " + place.getCapacity() + ".");
+                        LogUtils.logWarning("Capacity of place '" + placeRef + "' is incresed to " + place.getCapacity() + ".");
                     }
                 }
             }

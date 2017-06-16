@@ -17,6 +17,7 @@ import org.workcraft.gui.graph.commands.AbstractVerificationCommand;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.graph.Graph;
 import org.workcraft.plugins.graph.Vertex;
+import org.workcraft.util.MessageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -36,14 +37,13 @@ public class GraphReachabilityVerificationCommand extends AbstractVerificationCo
 
     @Override
     public void run(WorkspaceEntry we) {
-        final Framework framework = Framework.getInstance();
-        final MainWindow mainWindow = framework.getMainWindow();
         final Graph graph = WorkspaceUtils.getAs(we, Graph.class);
         HashSet<Vertex> unreachable = checkReachability(graph);
         if (unreachable.isEmpty()) {
-            JOptionPane.showMessageDialog(mainWindow, "The graph does not have unreachable vertices.",
-                    TITLE, JOptionPane.INFORMATION_MESSAGE);
+            MessageUtils.showInfo("The graph does not have unreachable vertices.", TITLE);
         } else {
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
             String refStr = ReferenceHelper.getNodesAsString(graph, (Collection) unreachable, 50);
             if (JOptionPane.showConfirmDialog(mainWindow,
                     "The graph has unreachable vertices:\n" + refStr + "\n\nSelect unreachable vertices?",

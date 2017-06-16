@@ -132,10 +132,10 @@ public class StgUtils {
                 if (model instanceof Stg) {
                     result = (Stg) model;
                 } else {
-                    LogUtils.logErrorLine("Model in file '" + file.getAbsolutePath() + "' is not an STG.");
+                    LogUtils.logError("Model in file '" + file.getAbsolutePath() + "' is not an STG.");
                 }
             } catch (DeserialisationException e) {
-                LogUtils.logErrorLine("Cannot read STG model from file '" + file.getAbsolutePath() + "': "
+                LogUtils.logError("Cannot read STG model from file '" + file.getAbsolutePath() + "': "
                         + e.getMessage());
             }
         }
