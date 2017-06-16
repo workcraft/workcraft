@@ -11,7 +11,7 @@ import org.workcraft.plugins.cpog.untangling.PetriToCpogConverter;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.util.GUI;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -33,7 +33,7 @@ public class PetriToCpogConversionCommand extends AbstractConversionCommand {
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
         if (Hierarchy.isHierarchical(me)) {
-            MessageUtils.showError("Conditional Partial Order Graph cannot be derived from a hierarchical Petri Net.");
+            DialogUtils.showError("Conditional Partial Order Graph cannot be derived from a hierarchical Petri Net.");
             return null;
         }
         PetriToCpogSettings settings = new PetriToCpogSettings();

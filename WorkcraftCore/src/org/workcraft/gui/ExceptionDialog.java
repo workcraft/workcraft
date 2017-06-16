@@ -3,7 +3,7 @@ package org.workcraft.gui;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 
 public class ExceptionDialog {
 
@@ -11,7 +11,7 @@ public class ExceptionDialog {
         final StringWriter writer = new StringWriter();
         cause.printStackTrace(new PrintWriter(writer));
         String name = cause.getClass().getCanonicalName();
-        MessageUtils.showMessage("Exception of type " + name + ": \n"
+        DialogUtils.showMessage("Exception of type " + name + ": \n"
                 + cause.getMessage() + "\n\n" + writer.toString());
     }
 

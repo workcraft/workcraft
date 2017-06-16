@@ -35,7 +35,7 @@ import org.workcraft.plugins.cpog.gui.MyTableCellRenderer;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.util.GUI;
 import org.workcraft.util.IntDocument;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 
 import info.clearthought.layout.TableLayout;
 
@@ -179,7 +179,7 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (Integer.parseInt(bitsText.getText()) < bits + 1) {
-                    MessageUtils.showError("Bits selected are not enough to encode all scenarios.");
+                    DialogUtils.showError("Bits selected are not enough to encode all scenarios.");
 
                     bitsText.setText(String.valueOf(bits + 1));
                 }

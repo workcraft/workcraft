@@ -11,7 +11,7 @@ import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResult> {
@@ -75,7 +75,7 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
             break;
         default:
             String modeString = mpsatSettings.getMode().getArgument();
-            MessageUtils.showError("MPSat verification mode '" + modeString + "' is not (yet) supported.");
+            DialogUtils.showError("MPSat verification mode '" + modeString + "' is not (yet) supported.");
             break;
         }
     }
@@ -125,7 +125,7 @@ public class MpsatChainResultHandler extends DummyProgressMonitor<MpsatChainResu
                 errorMessage += "\n\nMPSat chain task returned failure status without further explanation.";
             }
         }
-        MessageUtils.showError(errorMessage);
+        DialogUtils.showError(errorMessage);
     }
 
 }

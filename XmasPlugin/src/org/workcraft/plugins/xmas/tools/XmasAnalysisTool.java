@@ -44,7 +44,7 @@ import org.workcraft.plugins.xmas.gui.SolutionsDialog1;
 import org.workcraft.plugins.xmas.gui.SolutionsDialog2;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.LogUtils;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -546,7 +546,7 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
                             }
                         } else if (test == 0) {
                             if (display.equals("popup")) {
-                                MessageUtils.showInfo("The system is deadlock-free.");
+                                DialogUtils.showInfo("The system is deadlock-free.");
                             }
                         }
                     } catch (Exception e1) {

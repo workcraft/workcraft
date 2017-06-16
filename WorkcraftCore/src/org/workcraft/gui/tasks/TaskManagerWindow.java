@@ -26,7 +26,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.TaskMonitor;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 
 @SuppressWarnings("serial")
 public class TaskManagerWindow extends JPanel implements TaskMonitor {
@@ -180,7 +180,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
                                 SwingUtilities.invokeLater(new Runnable() {
                                     @Override
                                     public void run() {
-                                        MessageUtils.showInfo("Task '" + description + "' finished!");
+                                        DialogUtils.showInfo("Task '" + description + "' finished!");
                                     }
 
                                 });

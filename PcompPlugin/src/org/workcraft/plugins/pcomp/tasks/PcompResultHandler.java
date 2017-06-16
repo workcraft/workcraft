@@ -17,7 +17,7 @@ import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -49,7 +49,7 @@ public class PcompResultHandler extends DummyProgressMonitor<ExternalProcessResu
                         } else {
                             message = "Pcomp errors:\n" + result.getReturnValue().getErrorsHeadAndTail();
                         }
-                        MessageUtils.showError(message);
+                        DialogUtils.showError(message);
                     } else if (result.getOutcome() == Outcome.FINISHED) {
                         try {
                             if (showInEditor) {
@@ -63,7 +63,7 @@ public class PcompResultHandler extends DummyProgressMonitor<ExternalProcessResu
                                 workspace.addMount(path, outputFile, true);
                             }
                         } catch (DeserialisationException e) {
-                            MessageUtils.showError(e.getMessage());
+                            DialogUtils.showError(e.getMessage());
                             e.printStackTrace();
                         }
                     }

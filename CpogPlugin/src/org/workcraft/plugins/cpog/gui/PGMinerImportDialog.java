@@ -20,7 +20,7 @@ import javax.swing.KeyStroke;
 
 import org.workcraft.Framework;
 import org.workcraft.util.GUI;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 
 @SuppressWarnings("serial")
 public class PGMinerImportDialog extends JDialog {
@@ -131,7 +131,7 @@ public class PGMinerImportDialog extends JDialog {
                         }
                         filePath.setText(f.getAbsolutePath());
                     } catch (FileNotFoundException e1) {
-                        MessageUtils.showError(e1.getMessage());
+                        DialogUtils.showError(e1.getMessage());
                     }
                 }
             }
@@ -146,7 +146,7 @@ public class PGMinerImportDialog extends JDialog {
             public void actionPerformed(ActionEvent arg0) {
                 File eventLog = new File(filePath.getText());
                 if (!eventLog.exists()) {
-                    MessageUtils.showError("The event log chosen does not exist");
+                    DialogUtils.showError("The event log chosen does not exist");
                 } else {
                     canImport = true;
                     setVisible(false);

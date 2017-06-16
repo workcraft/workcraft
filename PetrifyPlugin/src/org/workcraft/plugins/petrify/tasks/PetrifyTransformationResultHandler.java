@@ -27,7 +27,7 @@ import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -60,7 +60,7 @@ public class PetrifyTransformationResultHandler extends DummyProgressMonitor<Pet
                 PetrifyTransformationResult returnValue = result.getReturnValue();
                 Result<? extends ExternalProcessResult> petrifyResult = returnValue.getPetrifyResult();
                 ExternalProcessResult petrifyReturnValue = petrifyResult.getReturnValue();
-                MessageUtils.showWarning("Transformation failed. Petrify output: \n\n" + petrifyReturnValue.getErrorsHeadAndTail());
+                DialogUtils.showWarning("Transformation failed. Petrify output: \n\n" + petrifyReturnValue.getErrorsHeadAndTail());
             } else {
                 ExceptionDialog.show(result.getCause());
             }

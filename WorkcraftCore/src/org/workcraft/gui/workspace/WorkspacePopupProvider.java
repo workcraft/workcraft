@@ -11,7 +11,6 @@ import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JMenu;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
 import javax.swing.JPopupMenu;
 
 import org.workcraft.Framework;
@@ -26,7 +25,7 @@ import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.trees.TreePopupProvider;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.util.Commands;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.FileHandler;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
@@ -85,13 +84,13 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                 private void createFolder(Path<String> path) throws OperationCancelledException {
                     String name;
                     while (true) {
-                        name = JOptionPane.showInputDialog("Please enter the name of the new folder:", "");
+                        name = DialogUtils.showInput("Please enter the name of the new folder:", "");
                         if (name == null) {
                             throw new OperationCancelledException();
                         }
                         File newDir = workspace.getFile(Path.append(path, name));
                         if (!newDir.mkdir()) {
-                            MessageUtils.showWarning("The directory could not be created.\n"
+                            DialogUtils.showWarning("The directory could not be created.\n"
                                     + "Please check that the name does not contain any special characters.");
                         } else {
                             break;

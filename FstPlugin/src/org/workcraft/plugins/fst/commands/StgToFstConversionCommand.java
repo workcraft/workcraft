@@ -7,7 +7,7 @@ import org.workcraft.plugins.fst.tasks.WriteSgConversionTask;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -39,7 +39,7 @@ public class StgToFstConversionCommand extends AbstractConversionCommand {
     @Override
     public WorkspaceEntry execute(WorkspaceEntry we) {
         if (Hierarchy.isHierarchical(we.getModelEntry())) {
-            MessageUtils.showError(
+            DialogUtils.showError(
                     "Finite State Transducer cannot be derived from a hierarchical Signal Transition Graph.",
                     "Conversion error");
             return null;

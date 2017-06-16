@@ -13,7 +13,7 @@ import org.workcraft.plugins.plato.tasks.PlatoTask;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.FileUtils;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -43,7 +43,7 @@ public class ImportConceptsCommand implements Command {
                 }
                 inputFile = f;
             } catch (FileNotFoundException e1) {
-                MessageUtils.showError(e1.getMessage());
+                DialogUtils.showError(e1.getMessage());
                 inputFile = null;
             }
         }

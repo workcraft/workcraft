@@ -37,7 +37,7 @@ import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Pair;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -82,7 +82,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
         VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
         Collection<Node> nodes = collect(visualModel);
         if (nodes.size() > 1) {
-            MessageUtils.showError("One transition can be contracted at a time.");
+            DialogUtils.showError("One transition can be contracted at a time.");
         } else if (!nodes.isEmpty()) {
             we.saveMemento();
             transform(visualModel, nodes);
@@ -110,15 +110,15 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
             VisualTransition visualTransition = (VisualTransition) node;
             Transition mathTransition = visualTransition.getReferencedTransition();
             if (hasSelfLoop(mathModel, mathTransition)) {
-                MessageUtils.showError("A transition with a self-loop/read-arc cannot be contracted.");
+                DialogUtils.showError("A transition with a self-loop/read-arc cannot be contracted.");
             } else if (needsWaitedArcs(mathModel, mathTransition)) {
-                MessageUtils.showError("This transformation requires weighted arcs that are currently not supported.");
+                DialogUtils.showError("This transformation requires weighted arcs that are currently not supported.");
             } else if (isLanguageChanging(mathModel, mathTransition)) {
                 contractTransition(visualModel, visualTransition);
-                MessageUtils.showWarning("This transformation may change the language.");
+                DialogUtils.showWarning("This transformation may change the language.");
             } else if (isSafenessViolationg(mathModel, mathTransition)) {
                 contractTransition(visualModel, visualTransition);
-                MessageUtils.showWarning("This transformation may be not safeness-preserving.");
+                DialogUtils.showWarning("This transformation may be not safeness-preserving.");
             } else {
                 contractTransition(visualModel, visualTransition);
             }

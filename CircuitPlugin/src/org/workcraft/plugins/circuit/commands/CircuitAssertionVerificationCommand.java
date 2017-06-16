@@ -17,7 +17,7 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.GUI;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -45,7 +45,7 @@ public class CircuitAssertionVerificationCommand extends AbstractVerificationCom
 
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         if (circuit.getFunctionComponents().isEmpty()) {
-            MessageUtils.showError("The circuit must have components.");
+            DialogUtils.showError("The circuit must have components.");
         } else {
             VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
             File envFile = visualCircuit.getEnvironmentFile();
@@ -55,7 +55,7 @@ public class CircuitAssertionVerificationCommand extends AbstractVerificationCom
                 if (envFile != null) {
                     messagePrefix = "Cannot read an STG model from the file:\n" + envFile.getAbsolutePath() + "\n\n";
                 }
-                MessageUtils.showWarning(messagePrefix + "The circuit will be verified without environment STG.");
+                DialogUtils.showWarning(messagePrefix + "The circuit will be verified without environment STG.");
             }
             File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, MpsatAssertionVerificationCommand.MPSAT_ASSERTION_PRESETS_FILE);
             MpsatPresetManager pmgr = new MpsatPresetManager(presetFile, new MpsatSettingsSerialiser(), true);

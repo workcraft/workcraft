@@ -21,8 +21,8 @@ import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ActionMenuItem;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.trees.TreeWindow;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.GUI;
-import org.workcraft.util.MessageUtils;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -261,10 +261,11 @@ public class WorkspaceWindow extends JPanel {
                 file = new File(path);
                 if (!file.exists()) {
                     break;
-                } else if (JOptionPane.showConfirmDialog(mainWindow,
-                        "The file '" + file.getName() + "' already exists.\n\n" + "Do you want to overwrite it?",
-                        DIALOG_SAVE_WORKSPACE_AS, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-                    break;
+                } else {
+                    String msg = "The file '" + file.getName() + "' already exists.\n\n" + "Do you want to overwrite it?";
+                    if (DialogUtils.showConfirm(msg, DIALOG_SAVE_WORKSPACE_AS)) {
+                        break;
+                    }
                 }
             } else {
                 throw new OperationCancelledException("Save operation cancelled by user.");
@@ -280,17 +281,18 @@ public class WorkspaceWindow extends JPanel {
         if (framework.getWorkspace().isChanged()) {
             int result = JOptionPane.showConfirmDialog(mainWindow,
                             "Current workspace is not saved.\n" + "Save before opening?",
-                            DIALOG_OPEN_WORKSPACE, JOptionPane.YES_NO_CANCEL_OPTION,
-                            JOptionPane.QUESTION_MESSAGE);
+                            DIALOG_OPEN_WORKSPACE, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
-            if (result == JOptionPane.CANCEL_OPTION) {
-                throw new OperationCancelledException("Cancelled by user.");
-            }
-            if (result == JOptionPane.YES_OPTION) {
+            switch (result) {
+            case JOptionPane.YES_OPTION:
                 mainWindow.closeEditorWindows();
                 saveWorkspace();
-            } else {
+                break;
+            case JOptionPane.NO_OPTION:
                 mainWindow.closeEditorWindows();
+                break;
+            default:
+                throw new OperationCancelledException("Cancelled by user.");
             }
         }
     }
@@ -328,7 +330,7 @@ public class WorkspaceWindow extends JPanel {
             try {
                 framework.loadWorkspace(fc.getSelectedFile());
             } catch (DeserialisationException e) {
-                MessageUtils.showError("Workspace load failed. See the Problems window for details.");
+                DialogUtils.showError("Workspace load failed. See the Problems window for details.");
                 e.printStackTrace();
             }
         }

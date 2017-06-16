@@ -14,7 +14,7 @@ import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.DotGImporter;
 import org.workcraft.tasks.Result;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -51,7 +51,7 @@ public class MpsatCscConflictResolutionResultHandler implements Runnable {
         final StgModel model = getResolvedStg();
         if (model == null) {
             final String errorMessage = result.getReturnValue().getErrorsHeadAndTail();
-            MessageUtils.showWarning("Conflict resolution failed. MPSat output: \n" + errorMessage);
+            DialogUtils.showWarning("Conflict resolution failed. MPSat output: \n" + errorMessage);
         } else {
             MutexUtils.restoreMutexPlacesByName(model, mutexes);
             final ModelEntry me = new ModelEntry(new StgDescriptor(), model);

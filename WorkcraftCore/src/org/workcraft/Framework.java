@@ -76,7 +76,7 @@ import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.Import;
 import org.workcraft.util.LogUtils;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.XmlUtil;
 import org.workcraft.workspace.Memento;
 import org.workcraft.workspace.ModelEntry;
@@ -623,14 +623,14 @@ public final class Framework {
             ModelDescriptor descriptor = me.getDescriptor();
             VisualModelDescriptor vmd = descriptor.getVisualModelDescriptor();
             if (vmd == null) {
-                MessageUtils.showError("A visual model could not be created because '"
+                DialogUtils.showError("A visual model could not be created because '"
                         + descriptor.getDisplayName() + "' does not have visual model support.");
             }
             try {
                 visualModel = vmd.create(me.getMathModel());
                 result = new ModelEntry(descriptor, visualModel);
             } catch (VisualModelInstantiationException e) {
-                MessageUtils.showError("A visual model could not be created for the selected model.");
+                DialogUtils.showError("A visual model could not be created for the selected model.");
                 e.printStackTrace();
             }
             AbstractLayoutCommand layoutCommand = visualModel.getBestLayouter();

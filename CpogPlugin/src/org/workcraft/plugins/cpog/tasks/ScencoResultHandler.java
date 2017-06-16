@@ -19,7 +19,7 @@ import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.FileUtils;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -87,7 +87,7 @@ public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
             FileUtils.deleteOnExitRecursively(dir);
 
             //Display the error
-            MessageUtils.showError(errorMessage);
+            DialogUtils.showError(errorMessage);
         }
     }
 

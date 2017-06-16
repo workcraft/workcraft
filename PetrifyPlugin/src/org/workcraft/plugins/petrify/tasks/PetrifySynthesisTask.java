@@ -6,12 +6,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.petri.PetriNetUtils;
@@ -30,6 +27,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
@@ -72,8 +70,7 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
         // Extra arguments (should go before the file parameters)
         String extraArgs = PetrifySettings.getArgs();
         if (PetrifySettings.getAdvancedMode()) {
-            MainWindow mainWindow = Framework.getInstance().getMainWindow();
-            String tmp = JOptionPane.showInputDialog(mainWindow, "Additional parameters for Petrify:", extraArgs);
+            String tmp = DialogUtils.showInput("Additional parameters for Petrify:", extraArgs);
             if (tmp == null) {
                 return Result.cancelled();
             }
@@ -115,14 +112,11 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
         // Check for isolated marked places and temporary remove them if requested
         HashSet<Place> isolatedPlaces = PetriNetUtils.getIsolatedMarkedPlaces(stg);
         if (!isolatedPlaces.isEmpty()) {
-            MainWindow mainWindow = Framework.getInstance().getMainWindow();
             String refStr = ReferenceHelper.getNodesAsString(stg, (Collection) isolatedPlaces, 50);
-            int answer = JOptionPane.showConfirmDialog(mainWindow,
-                    "Petrify does not support isolated marked places.\n\n"
-                            + "Problematic places are:\n" + refStr + "\n\n"
-                            + "Proceed without these places?",
-                    "Petrify synthesis", JOptionPane.YES_NO_OPTION);
-            if (answer != JOptionPane.YES_OPTION) {
+            String msg = "Petrify does not support isolated marked places.\n\n"
+                    + "Problematic places are:\n" + refStr + "\n\n"
+                    + "Proceed without these places?";
+            if (!DialogUtils.showConfirm(msg, "Petrify synthesis")) {
                 return Result.cancelled();
             }
             we.captureMemento();

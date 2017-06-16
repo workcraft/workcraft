@@ -1,6 +1,6 @@
 package org.workcraft.plugins.mpsat;
 
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 
 final class MpsatUndefinedResultHandler implements Runnable {
 
@@ -12,7 +12,7 @@ final class MpsatUndefinedResultHandler implements Runnable {
 
     @Override
     public void run() {
-        MessageUtils.showInfo(message, "Verification results");
+        DialogUtils.showInfo(message, "Verification results");
     }
 
 }

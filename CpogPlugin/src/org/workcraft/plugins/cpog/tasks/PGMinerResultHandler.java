@@ -18,7 +18,7 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -47,7 +47,7 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
                     final Toolbox toolbox = editor.getToolBox();
                     final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
                     if (result.getOutcome() == Outcome.FAILED) {
-                        MessageUtils.showError("PGMiner could not run, concurrency extraction failed.");
+                        DialogUtils.showError("PGMiner could not run, concurrency extraction failed.");
                     } else {
                         if (createNewWindow) {
                             final CpogDescriptor cpogModel = new CpogDescriptor();

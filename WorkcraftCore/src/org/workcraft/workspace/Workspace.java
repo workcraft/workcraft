@@ -22,7 +22,7 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.LinkedTwoWayMap;
 import org.workcraft.util.LogUtils;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.XmlUtil;
 import org.xml.sax.SAXException;
 
@@ -411,7 +411,7 @@ public class Workspace {
                     deleteEntry(getPath(f));
                 }
                 if (!file.delete()) {
-                    MessageUtils.showError("Deletion failed");
+                    DialogUtils.showError("Deletion failed");
                 }
             } else {
                 deleteFile(path);
@@ -428,7 +428,7 @@ public class Workspace {
         openFiles.removeValue(openFile);
         final File file = getFile(path);
         if (file.exists() && !file.delete()) {
-            MessageUtils.showError("Deletion failed");
+            DialogUtils.showError("Deletion failed");
         }
     }
 

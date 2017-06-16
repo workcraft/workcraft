@@ -14,7 +14,7 @@ import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition.Type;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 
 public class CircuitSettings implements Settings {
 
@@ -186,7 +186,7 @@ public class CircuitSettings implements Settings {
                 if (parseMutexData(value) != null) {
                     setMutexData(value);
                 } else {
-                    MessageUtils.showError("Mutex description format is incorrect. It should be as follows:\n" + defaultMutexData);
+                    DialogUtils.showError("Mutex description format is incorrect. It should be as follows:\n" + defaultMutexData);
                 }
             }
             protected String getter(CircuitSettings object) {

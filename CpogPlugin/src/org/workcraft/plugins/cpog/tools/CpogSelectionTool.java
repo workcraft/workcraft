@@ -67,7 +67,7 @@ import org.workcraft.plugins.cpog.formula.jj.CpogFormulaParser;
 import org.workcraft.plugins.cpog.formula.jj.ParseException;
 import org.workcraft.plugins.cpog.formula.jj.TokenMgrError;
 import org.workcraft.util.GUI;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -361,11 +361,11 @@ public class CpogSelectionTool extends SelectionTool {
                     });
         } catch (ParseException e) {
             we.cancelMemento();
-            MessageUtils.showError(e.getMessage(), "Parse error");
+            DialogUtils.showError(e.getMessage(), "Parse error");
             return null;
         } catch (TokenMgrError e) {
             we.cancelMemento();
-            MessageUtils.showError(e.getMessage(), "Lexical error");
+            DialogUtils.showError(e.getMessage(), "Lexical error");
             return null;
         }
 
@@ -994,7 +994,7 @@ public class CpogSelectionTool extends SelectionTool {
         try {
             fileIn = new Scanner(f);
         } catch (FileNotFoundException e1) {
-            MessageUtils.showError(e1.getMessage());
+            DialogUtils.showError(e1.getMessage());
             return false;
         }
 

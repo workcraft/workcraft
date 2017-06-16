@@ -27,7 +27,7 @@ import org.workcraft.plugins.stg.interop.DotGImporter;
 import org.workcraft.tasks.Result;
 import org.workcraft.util.GUI;
 import org.workcraft.util.LogUtils;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 final class MpsatReachabilityResultHandler implements Runnable {
@@ -245,7 +245,7 @@ final class MpsatReachabilityResultHandler implements Runnable {
             GUI.centerToParent(solutionsDialog, mainWindow);
             solutionsDialog.setVisible(true);
         } else {
-            MessageUtils.showInfo(message, title);
+            DialogUtils.showInfo(message, title);
         }
     }
 

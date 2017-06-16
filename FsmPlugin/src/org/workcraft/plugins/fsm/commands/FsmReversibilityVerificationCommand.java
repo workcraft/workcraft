@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.SelectionHelper;
@@ -18,7 +16,7 @@ import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.VisualFsm;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -41,17 +39,15 @@ public class FsmReversibilityVerificationCommand extends AbstractVerificationCom
         final Fsm fsm = WorkspaceUtils.getAs(we, Fsm.class);
         HashSet<State> irreversibleStates = checkReversibility(fsm);
         if (irreversibleStates.isEmpty()) {
-            MessageUtils.showInfo("The model is reversible.", TITLE);
+            DialogUtils.showInfo("The model is reversible.", TITLE);
         } else {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
             String refStr = ReferenceHelper.getNodesAsString(fsm, (Collection) irreversibleStates, 50);
-            if (JOptionPane.showConfirmDialog(mainWindow,
-                    "The model has irreversible states:\n" + refStr + "\n\nSelect irreversible states?\n",
-                    TITLE, JOptionPane.WARNING_MESSAGE + JOptionPane.YES_NO_OPTION) == 0) {
-
-                VisualFsm visualFsm = WorkspaceUtils.getAs(we, VisualFsm.class);
+            String msg = "The model has irreversible states:\n" + refStr + "\n\nSelect irreversible states?\n";
+            if (DialogUtils.showConfirm(msg, TITLE)) {
+                final Framework framework = Framework.getInstance();
+                final MainWindow mainWindow = framework.getMainWindow();
                 mainWindow.getToolbox(we).selectToolInstance(SelectionTool.class);
+                VisualFsm visualFsm = WorkspaceUtils.getAs(we, VisualFsm.class);
                 SelectionHelper.selectByReferencedComponents(visualFsm, (HashSet) irreversibleStates);
             }
         }

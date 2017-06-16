@@ -31,7 +31,7 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 
 public class WorkspaceEntry implements ObservableState {
     private ModelEntry modelEntry = null;
@@ -281,7 +281,7 @@ public class WorkspaceEntry implements ObservableState {
             setModelEntry(result);
             setChanged(true);
         } catch (DeserialisationException e) {
-            MessageUtils.showError(e.getMessage());
+            DialogUtils.showError(e.getMessage());
         }
     }
 
@@ -363,7 +363,7 @@ public class WorkspaceEntry implements ObservableState {
                 VisualModel model = result.getVisualModel();
                 VisualModelTransformer.translateSelection(model, 1.0, 1.0);
             } catch (DeserialisationException e) {
-                MessageUtils.showError(e.getMessage());
+                DialogUtils.showError(e.getMessage());
             }
         }
     }

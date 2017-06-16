@@ -13,7 +13,7 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -40,7 +40,7 @@ public class PetriToFsmConversionResultHandler extends DummyProgressMonitor<Writ
         } else if (result.getOutcome() != Outcome.CANCELLED) {
             if (result.getCause() == null) {
                 final Result<? extends ExternalProcessResult> writeSgResult = result.getReturnValue().getResult();
-                MessageUtils.showWarning("Petrify output:\n" + writeSgResult.getReturnValue().getErrorsHeadAndTail());
+                DialogUtils.showWarning("Petrify output:\n" + writeSgResult.getReturnValue().getErrorsHeadAndTail());
             } else {
                 ExceptionDialog.show(result.getCause());
             }

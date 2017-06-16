@@ -20,7 +20,7 @@ import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -63,7 +63,7 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
     private boolean check(Circuit circuit, File envFile) {
         // Check that circuit is not empty
         if (circuit.getFunctionComponents().isEmpty()) {
-            MessageUtils.showError("The circuit must have components.");
+            DialogUtils.showError("The circuit must have components.");
             return false;
         }
         // Check that environment STG exists
@@ -73,7 +73,7 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
             if (envFile != null) {
                 message += "\n\nCannot read STG model from the file:\n" + envFile.getAbsolutePath();
             }
-            MessageUtils.showError(message);
+            DialogUtils.showError(message);
             return false;
         }
         // Make sure that input signals of the circuit are also inputs in the environment STG
@@ -93,7 +93,7 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
                     + "input signals are not specified in its environment STG.";
             message += "\n\nThe following input signals are missing in the environemnt STG:\n"
                     + ReferenceHelper.getReferencesAsString(missingInputSignals, 50);
-            MessageUtils.showError(message);
+            DialogUtils.showError(message);
             return false;
         }
 
@@ -124,7 +124,7 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
                 message += "\n\nNon-input signals missing in the environment STG:\n"
                         + ReferenceHelper.getReferencesAsString(missingStgSignals, 50);
             }
-            MessageUtils.showError(message);
+            DialogUtils.showError(message);
             return false;
         }
         return true;

@@ -15,7 +15,7 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -45,7 +45,7 @@ public class MpsatMutexImplementabilityVerificationCommand extends AbstractVerif
     public void run(WorkspaceEntry we) {
         final Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         if (stg.getMutexPlaces().isEmpty()) {
-            MessageUtils.showError("No mutex places found to check implementability.");
+            DialogUtils.showError("No mutex places found to check implementability.");
             return;
         }
         final ArrayList<MpsatParameters> settingsList = new ArrayList<>();
@@ -61,7 +61,7 @@ public class MpsatMutexImplementabilityVerificationCommand extends AbstractVerif
         }
         if (!problematicPlaces.isEmpty()) {
             String problematicPlacesString = ReferenceHelper.getNodesAsString(stg, (Collection) problematicPlaces, 50);
-            MessageUtils.showError("A mutex place must precede a pair of\n" +
+            DialogUtils.showError("A mutex place must precede a pair of\n" +
                             "output transitions, each with a single trigger.\n\n" +
                             "Problematic places are:" +
                             (problematicPlacesString.length() > 30 ? "\n" : " ") +

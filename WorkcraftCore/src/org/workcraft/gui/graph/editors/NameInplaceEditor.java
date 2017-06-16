@@ -4,7 +4,7 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class NameInplaceEditor extends AbstractInplaceEditor {
@@ -25,7 +25,7 @@ public class NameInplaceEditor extends AbstractInplaceEditor {
             model.setMathName(component, text);
             we.saveMemento();
         } catch (ArgumentException e) {
-            MessageUtils.showError(e.getMessage());
+            DialogUtils.showError(e.getMessage());
         }
     }
 

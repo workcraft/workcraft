@@ -9,7 +9,7 @@ import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -40,7 +40,7 @@ public class WtgToStgConversionResultHandler extends DummyProgressMonitor<WaverC
                     final Result<? extends ExternalProcessResult> waverResult = result.getReturnValue().getResult();
                     message = "Waver output:\n" + waverResult.getReturnValue().getErrorsHeadAndTail();
                 }
-                MessageUtils.showWarning(message);
+                DialogUtils.showWarning(message);
             }
         }
     }

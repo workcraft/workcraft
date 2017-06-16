@@ -8,7 +8,7 @@ import org.workcraft.plugins.policy.PolicyNetDescriptor;
 import org.workcraft.plugins.policy.VisualPolicyNet;
 import org.workcraft.plugins.policy.tools.PetriToPolicyConverter;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -28,7 +28,7 @@ public class PetriToPolicyConversionCommand extends AbstractConversionCommand {
     @Override
     public ModelEntry convert(ModelEntry me) {
         if (Hierarchy.isHierarchical(me)) {
-            MessageUtils.showError("Policy Net cannot be derived from a hierarchical Petri Net.");
+            DialogUtils.showError("Policy Net cannot be derived from a hierarchical Petri Net.");
             return null;
         }
         final VisualPetriNet src = me.getAs(VisualPetriNet.class);

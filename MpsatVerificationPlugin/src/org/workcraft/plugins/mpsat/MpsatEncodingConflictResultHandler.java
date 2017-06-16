@@ -17,7 +17,7 @@ import org.workcraft.plugins.stg.tools.EncodingConflictAnalyserTool;
 import org.workcraft.tasks.Result;
 import org.workcraft.util.ColorGenerator;
 import org.workcraft.util.ColorUtils;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 final class MpsatEncodingConflictResultHandler implements Runnable {
@@ -39,7 +39,7 @@ final class MpsatEncodingConflictResultHandler implements Runnable {
         MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue());
         List<MpsatSolution> solutions = mdp.getSolutions();
         if (!MpsatSolution.hasTraces(solutions)) {
-            MessageUtils.showInfo("No encoding conflicts.", "Verification results");
+            DialogUtils.showInfo("No encoding conflicts.", "Verification results");
         } else {
             final Framework framework = Framework.getInstance();
             final MainWindow mainWindow = framework.getMainWindow();

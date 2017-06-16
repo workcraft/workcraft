@@ -34,7 +34,7 @@ import org.workcraft.plugins.cpog.VisualScenarioPage;
 import org.workcraft.plugins.cpog.VisualVariable;
 import org.workcraft.plugins.cpog.VisualVertex;
 import org.workcraft.util.Func;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -208,7 +208,7 @@ public class CpogParsingTool {
             originalSelection = visualCpog.selection();
             visualCpog.selectAll();
             if (visualCpog.selection().isEmpty()) {
-                MessageUtils.showError("There are no graphs to select");
+                DialogUtils.showError("There are no graphs to select");
                 return "";
             }
         } else {

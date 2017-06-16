@@ -12,7 +12,7 @@ import org.workcraft.plugins.cpog.tasks.PGMinerResultHandler;
 import org.workcraft.plugins.cpog.tasks.PGMinerTask;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -57,7 +57,7 @@ public class ExtractSelectedGraphsPGMinerCommand implements Command {
                 if (index >= 0) {
                     graph = graph.substring(index + 2);
                 } else {
-                    MessageUtils.showError("Error: A graph which is not a scenario has been selected.\n"
+                    DialogUtils.showError("Error: A graph which is not a scenario has been selected.\n"
                             + "Please remove this from the selection, or group this as a page to continue");
                     return null;
                 }
@@ -75,7 +75,7 @@ public class ExtractSelectedGraphsPGMinerCommand implements Command {
         } catch (IOException exception) {
             exception.printStackTrace();
         } catch (ArrayIndexOutOfBoundsException e2) {
-            MessageUtils.showError("No scenarios have been selected");
+            DialogUtils.showError("No scenarios have been selected");
             throw e2;
         }
         return null;

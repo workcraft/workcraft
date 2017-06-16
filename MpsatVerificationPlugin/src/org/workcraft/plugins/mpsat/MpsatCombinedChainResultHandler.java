@@ -13,7 +13,7 @@ import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatCombinedChainResult> {
@@ -62,7 +62,7 @@ public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatC
         }
         if (violationMpsatSettings == null) {
             // No solution found in any of the Mpsat tasks
-            MessageUtils.showInfo("The following checks passed:" + verifiedMessageDetailes);
+            DialogUtils.showInfo("The following checks passed:" + verifiedMessageDetailes);
         } else {
             // One of the Mpsat tasks returned a solution trace
             switch (violationMpsatSettings.getMode()) {
@@ -93,7 +93,7 @@ public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatC
                 break;
             default:
                 String modeString = violationMpsatSettings.getMode().getArgument();
-                MessageUtils.showError("MPSat verification mode '" + modeString + "' is not (yet) supported.");
+                DialogUtils.showError("MPSat verification mode '" + modeString + "' is not (yet) supported.");
                 break;
             }
         }
@@ -148,7 +148,7 @@ public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatC
                 errorMessage += "\n\nMPSat chain task returned failure status without further explanation.";
             }
         }
-        MessageUtils.showError(errorMessage);
+        DialogUtils.showError(errorMessage);
     }
 
 }

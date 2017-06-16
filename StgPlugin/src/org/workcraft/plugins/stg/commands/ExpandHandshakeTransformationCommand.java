@@ -6,9 +6,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-import javax.swing.JOptionPane;
-
-import org.workcraft.Framework;
 import org.workcraft.NodeTransformer;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
@@ -24,9 +21,9 @@ import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
-import org.workcraft.util.MessageUtils;
 import org.workcraft.util.Pair;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -187,16 +184,14 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
 
     public Pair<String, String> getSufixes() {
         Pair<String, String> result = null;
-        final Framework framework = Framework.getInstance();
-        String ans = JOptionPane.showInputDialog(framework.getMainWindow(),
-                "Enter a pair of space-separated suffixes for handshake signals:",
+        String ans = DialogUtils.showInput("Enter a pair of space-separated suffixes for handshake signals:",
                 SUFFIX_REQ + " " + SUFFIX_ACK);
         if (ans != null) {
             String[] split = ans.trim().split("\\s");
             if (split.length == 2) {
                 result = Pair.of(split[0], split[1]);
             } else {
-                MessageUtils.showError("Two suffixes are required for handshake expansion.\n\n" +
+                DialogUtils.showError("Two suffixes are required for handshake expansion.\n\n" +
                         "Default suffixes " + SUFFIX_REQ + " and " + SUFFIX_ACK + " will be used.");
                 result = null;
             }

@@ -41,7 +41,7 @@ import org.workcraft.plugins.cpog.VisualScenarioPage;
 import org.workcraft.plugins.cpog.VisualVertex;
 import org.workcraft.util.Func;
 import org.workcraft.util.Geometry;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class ScencoExecutionSupport {
@@ -377,7 +377,7 @@ public class ScencoExecutionSupport {
                         if (enc[k].contains("2") || enc[k].contains("3") || enc[k].contains("4") ||
                                 enc[k].contains("5") || enc[k].contains("6") || enc[k].contains("7") ||
                                 enc[k].contains("8") || enc[k].contains("9")) {
-                            MessageUtils.showError("Op-code " + enc[k] + " not allowed");
+                            DialogUtils.showError("Op-code " + enc[k] + " not allowed");
                             output1.close();
                             return -1;
 
@@ -476,7 +476,7 @@ public class ScencoExecutionSupport {
             if (line.contains(".error")) {
                 line = br.readLine();
                 while (line.contains(".end_error") == false) {
-                    MessageUtils.showError(line);
+                    DialogUtils.showError(line);
                     line = br.readLine();
                 }
                 return -1;
@@ -636,7 +636,7 @@ public class ScencoExecutionSupport {
             solution = solverCnf.solve(instance, vars, derivedVariables);
 
         } catch (Exception e) {
-            MessageUtils.showError(e.getMessage());
+            DialogUtils.showError(e.getMessage());
             System.out.println("INFORMATION: Scenco cannot solve the CPOG.");
         }
 

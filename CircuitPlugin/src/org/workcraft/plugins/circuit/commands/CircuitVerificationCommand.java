@@ -2,10 +2,7 @@ package org.workcraft.plugins.circuit.commands;
 
 import java.io.File;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.Framework;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.VisualCircuit;
@@ -14,7 +11,7 @@ import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -33,7 +30,7 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
     public void run(WorkspaceEntry we) {
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         if (circuit.getFunctionComponents().isEmpty()) {
-            MessageUtils.showError("The circuit must have components.");
+            DialogUtils.showError("The circuit must have components.");
             return;
         }
 
@@ -51,23 +48,19 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
             }
             if (checkConformation) {
                 if (checkDeadlock || checkPersistency) {
-                    final Framework framework = Framework.getInstance();
-                    final MainWindow mainWindow = framework.getMainWindow();
-                    int answer = JOptionPane.showConfirmDialog(mainWindow, "Warning: " + messagePrefix
+                    boolean proceed = DialogUtils.showConfirm("Warning: " + messagePrefix
                             + "The circuit conformation cannot be checked without environment STG.\n"
                             + "Proceed with verification of the other properties?\n",
-                            "Circuit verification", JOptionPane.YES_NO_OPTION);
-
-                    boolean proceed = answer == JOptionPane.YES_OPTION;
+                            "Circuit verification");
                     checkDeadlock &= proceed;
                     checkPersistency &= proceed;
                 } else {
-                    MessageUtils.showError(messagePrefix + "The circuit conformation cannot be checked without environment STG.\n");
+                    DialogUtils.showError(messagePrefix + "The circuit conformation cannot be checked without environment STG.\n");
                     return;
                 }
                 checkConformation = false;
             } else {
-                MessageUtils.showWarning(messagePrefix + "The circuit will be verified without environment STG.\n");
+                DialogUtils.showWarning(messagePrefix + "The circuit will be verified without environment STG.\n");
             }
         }
 

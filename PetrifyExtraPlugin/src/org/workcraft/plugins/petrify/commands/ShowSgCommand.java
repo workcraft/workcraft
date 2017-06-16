@@ -10,7 +10,7 @@ import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -74,7 +74,7 @@ public class ShowSgCommand implements Command {
                             errorMessage += ERROR_CAUSE_PREFIX + returnValue.getErrorMessages();
                         }
                     }
-                    MessageUtils.showError(errorMessage);
+                    DialogUtils.showError(errorMessage);
                 }
             }
         };

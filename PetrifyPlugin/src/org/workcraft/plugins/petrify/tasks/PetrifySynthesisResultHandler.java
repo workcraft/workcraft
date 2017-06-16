@@ -22,7 +22,7 @@ import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.util.LogUtils;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -91,11 +91,11 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
                     final String title = we.getModelEntry().getModel().getTitle();
                     visualCircuit.setTitle(title);
                     if (!we.getFile().exists()) {
-                        MessageUtils.showError("Unsaved STG cannot be set as the circuit environment.");
+                        DialogUtils.showError("Unsaved STG cannot be set as the circuit environment.");
                     } else {
                         visualCircuit.setEnvironmentFile(we.getFile());
                         if (we.isChanged()) {
-                            MessageUtils.showWarning("The STG with unsaved changes is set as the circuit environment.");
+                            DialogUtils.showWarning("The STG with unsaved changes is set as the circuit environment.");
                         }
                     }
                     SwingUtilities.invokeLater(new Runnable() {
@@ -141,7 +141,7 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
         if (returnValue != null) {
             errorMessage += ERROR_CAUSE_PREFIX + returnValue.getStderr();
         }
-        MessageUtils.showError(errorMessage);
+        DialogUtils.showError(errorMessage);
     }
 
     public WorkspaceEntry getResult() {

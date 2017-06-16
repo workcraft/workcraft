@@ -5,8 +5,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.references.ReferenceHelper;
@@ -17,7 +15,7 @@ import org.workcraft.gui.graph.commands.AbstractVerificationCommand;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.graph.Graph;
 import org.workcraft.plugins.graph.Vertex;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -40,17 +38,15 @@ public class GraphReachabilityVerificationCommand extends AbstractVerificationCo
         final Graph graph = WorkspaceUtils.getAs(we, Graph.class);
         HashSet<Vertex> unreachable = checkReachability(graph);
         if (unreachable.isEmpty()) {
-            MessageUtils.showInfo("The graph does not have unreachable vertices.", TITLE);
+            DialogUtils.showInfo("The graph does not have unreachable vertices.", TITLE);
         } else {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
             String refStr = ReferenceHelper.getNodesAsString(graph, (Collection) unreachable, 50);
-            if (JOptionPane.showConfirmDialog(mainWindow,
-                    "The graph has unreachable vertices:\n" + refStr + "\n\nSelect unreachable vertices?",
-                    TITLE, JOptionPane.WARNING_MESSAGE + JOptionPane.YES_NO_OPTION) == 0) {
-
-                VisualModel visualGraph = we.getModelEntry().getVisualModel();
+            String msg = "The graph has unreachable vertices:\n" + refStr + "\n\nSelect unreachable vertices?";
+            if (DialogUtils.showConfirm(msg, TITLE)) {
+                final Framework framework = Framework.getInstance();
+                final MainWindow mainWindow = framework.getMainWindow();
                 mainWindow.getToolbox(we).selectToolInstance(SelectionTool.class);
+                VisualModel visualGraph = we.getModelEntry().getVisualModel();
                 SelectionHelper.selectByReferencedComponents(visualGraph, (HashSet) unreachable);
             }
         }

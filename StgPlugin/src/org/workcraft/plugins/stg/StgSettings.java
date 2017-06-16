@@ -7,7 +7,7 @@ import org.workcraft.Config;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 
 public class StgSettings implements Settings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
@@ -111,11 +111,11 @@ public class StgSettings implements Settings {
     }
 
     private void signalLevelError() {
-        MessageUtils.showError("Signal level suffix must only consist of letters, numbers and underscores.");
+        DialogUtils.showError("Signal level suffix must only consist of letters, numbers and underscores.");
     }
 
     private void signalLevelWarning() {
-        MessageUtils.showWarning("Short signal level suffix increases the risk of name clashing.\n"
+        DialogUtils.showWarning("Short signal level suffix increases the risk of name clashing.\n"
                         + "Consider making it at least two characters long.");
     }
 

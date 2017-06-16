@@ -21,7 +21,7 @@ import org.workcraft.Framework;
 import org.workcraft.PluginManager;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.PluginInfo;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 
 @SuppressWarnings("serial")
 public class PropertyEditorTable extends JTable implements PropertyEditor {
@@ -154,7 +154,7 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
                 setValueAt(value, editingRow, editingColumn);
                 removeEditor();
             } catch (Throwable t) {
-                MessageUtils.showError(t.getMessage(), "Cannot change property");
+                DialogUtils.showError(t.getMessage(), "Cannot change property");
             }
         }
     }

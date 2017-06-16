@@ -58,7 +58,7 @@ import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.converters.StgToDtdConverter;
 import org.workcraft.util.ColorGenerator;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Pair;
 import org.workcraft.workspace.ModelEntry;
 
@@ -475,7 +475,7 @@ public class StgSimulationTool extends PetriSimulationTool {
     public void generateTraceGraph(final GraphEditor editor) {
         final Trace trace = getCombinedTrace();
         if (trace.isEmpty()) {
-            MessageUtils.showWarning("Cannot generate a timing diagram for an empty trace.");
+            DialogUtils.showWarning("Cannot generate a timing diagram for an empty trace.");
         } else {
             final Stg stg = getUnderlyingStg();
             final LinkedList<Pair<String, Color>> visibleSignals = getVisibleSignals(stg);

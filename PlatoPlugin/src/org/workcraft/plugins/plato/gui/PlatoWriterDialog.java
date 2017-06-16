@@ -30,7 +30,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.util.GUI;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 
 @SuppressWarnings("serial")
 public class PlatoWriterDialog extends JDialog {
@@ -147,7 +147,7 @@ public class PlatoWriterDialog extends JDialog {
                         conceptsText.setText(readFile(f));
                         updateLastDirUsed();
                     } catch (FileNotFoundException e1) {
-                        MessageUtils.showError(e1.getMessage());
+                        DialogUtils.showError(e1.getMessage());
                     }
 
                 }

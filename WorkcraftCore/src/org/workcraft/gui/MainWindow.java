@@ -77,13 +77,13 @@ import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.Commands;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.GUI;
 import org.workcraft.util.Import;
 import org.workcraft.util.ListMap;
 import org.workcraft.util.LogUtils;
-import org.workcraft.util.MessageUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -568,8 +568,8 @@ public class MainWindow extends JFrame {
         final Framework framework = Framework.getInstance();
         if (framework.getWorkspace().isChanged() && !framework.getWorkspace().isTemporary()) {
             int result = JOptionPane.showConfirmDialog(this,
-                    "Current workspace has unsaved changes.\n" + "Save before closing?", DIALOG_CLOSE_WORK,
-                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    "Current workspace has unsaved changes.\n" + "Save before closing?",
+                    DIALOG_CLOSE_WORK, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
             switch (result) {
             case JOptionPane.YES_OPTION:
@@ -772,7 +772,7 @@ public class MainWindow extends JFrame {
                 we.setChanged(false);
             } catch (VisualModelInstantiationException e) {
                 e.printStackTrace();
-                MessageUtils.showError("Visual model could not be created: " + e.getMessage());
+                DialogUtils.showError("Visual model could not be created: " + e.getMessage());
             }
         }
     }
@@ -887,9 +887,8 @@ public class MainWindow extends JFrame {
                 if (!f.exists()) {
                     break;
                 }
-                if (JOptionPane.showConfirmDialog(this,
-                        "The file '" + f.getName() + "' already exists.\n" + "Overwrite it?", DIALOG_SAVE_WORK,
-                        JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                String msg = "The file '" + f.getName() + "' already exists.\n" + "Overwrite it?";
+                if (DialogUtils.showConfirm(msg, DIALOG_SAVE_WORK)) {
                     break;
                 }
             } else {
@@ -951,7 +950,7 @@ public class MainWindow extends JFrame {
                 pushRecentFile(file.getPath(), true);
                 lastOpenPath = file.getParent();
             } catch (DeserialisationException e) {
-                MessageUtils.showError("A problem was encountered while trying to load '" + file.getPath() + "'.");
+                DialogUtils.showError("A problem was encountered while trying to load '" + file.getPath() + "'.");
                 printCause(e);
             }
         }
@@ -983,7 +982,7 @@ public class MainWindow extends JFrame {
                 WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
                 framework.mergeWork(we, file);
             } catch (DeserialisationException e) {
-                MessageUtils.showError("A problem was encountered while trying to merge '" + file.getPath() + "'.");
+                DialogUtils.showError("A problem was encountered while trying to merge '" + file.getPath() + "'.");
                 printCause(e);
             }
         }
@@ -1020,7 +1019,7 @@ public class MainWindow extends JFrame {
                 }
             } catch (SerialisationException e) {
                 e.printStackTrace();
-                MessageUtils.showError(e.getMessage());
+                DialogUtils.showError(e.getMessage());
             }
             we.setChanged(false);
             refreshWorkspaceEntryTitle(we, true);
@@ -1062,7 +1061,7 @@ public class MainWindow extends JFrame {
             pushRecentFile(we.getFile().getPath(), true);
         } catch (SerialisationException e) {
             e.printStackTrace();
-            MessageUtils.showError(e.getMessage());
+            DialogUtils.showError(e.getMessage());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -1103,7 +1102,7 @@ public class MainWindow extends JFrame {
                         break;
                     } catch (IOException | DeserialisationException e) {
                         e.printStackTrace();
-                        MessageUtils.showError(e.getMessage());
+                        DialogUtils.showError(e.getMessage());
                     }
                 }
             }
@@ -1359,12 +1358,10 @@ public class MainWindow extends JFrame {
     }
 
     public void resetLayout() {
-        if (JOptionPane.showConfirmDialog(this,
-                "This will reset the GUI to the default layout.\n" + "Are you sure you want to do this?",
-                DIALOG_RESET_LAYOUT, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            if (JOptionPane.showConfirmDialog(this,
-                    "This action requires GUI restart.\n\n" + "Close all editor windows?", DIALOG_RESET_LAYOUT,
-                    JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+        String msg = "This will reset the GUI to the default layout.\n" + "Are you sure you want to do this?";
+        if (DialogUtils.showConfirm(msg, DIALOG_RESET_LAYOUT)) {
+            String msg2 = "This action requires GUI restart.\n\n" + "Close all editor windows?";
+            if (DialogUtils.showConfirm(msg2, DIALOG_RESET_LAYOUT)) {
                 try {
                     final Framework framework = Framework.getInstance();
                     framework.shutdownGUI();

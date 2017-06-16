@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
@@ -19,6 +18,7 @@ import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
@@ -41,13 +41,11 @@ public class DrawSgTask implements Task<DrawSgResult> {
 
         @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            int answer = JOptionPane.showConfirmDialog(framework.getMainWindow(),
-                    "The state graph contains " + stateCountMsg + " states."
+            String msg = "The state graph contains " + stateCountMsg + " states."
                     + "It may take a very long time to be processed.\n\n"
-                    + "Are you sure you want to display it?",
-                    "Please confirm", JOptionPane.YES_NO_OPTION);
-            hugeSgConfirmed = answer == JOptionPane.YES_OPTION;
+                    + "Are you sure you want to display it?";
+
+            hugeSgConfirmed = DialogUtils.showConfirm(msg, "Please confirm");
         }
 
         public boolean isHugeSgConfirmed() {

@@ -12,7 +12,7 @@ import org.workcraft.plugins.cpog.tasks.ScencoSolver;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.GUI;
-import org.workcraft.util.MessageUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -33,9 +33,9 @@ public abstract class AbstractScencoCommand implements Command {
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
         if (!CpogParsingTool.hasEnoughScenarios(we)) {
-            MessageUtils.showError(ScencoSolver.MSG_NOT_ENOUGH_SCENARIOS);
+            DialogUtils.showError(ScencoSolver.MSG_NOT_ENOUGH_SCENARIOS);
         } else if (CpogParsingTool.hasTooScenarios(we)) {
-            MessageUtils.showError(ScencoSolver.MSG_TOO_MANY_SCENARIOS);
+            DialogUtils.showError(ScencoSolver.MSG_TOO_MANY_SCENARIOS);
         } else {
             AbstractScencoDialog dialog = createDialog(mainWindow, we);
             GUI.centerToParent(dialog, mainWindow);
