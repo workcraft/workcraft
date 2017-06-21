@@ -21,7 +21,9 @@ public class Encoding {
     public String toString() {
         String result = "";
         Set<Variable> sortedVariables = new TreeSet<>(states.keySet());
-        for (Variable var : sortedVariables) result += getState(var).toString();
+        for (Variable var : sortedVariables) {
+            result += getState(var).getValueAsString();
+        }
         return result;
     }
 

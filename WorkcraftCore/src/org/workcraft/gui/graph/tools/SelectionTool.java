@@ -227,6 +227,8 @@ public class SelectionTool extends AbstractGraphEditorTool {
             });
             toolbar.add(rotateCounterclockwiseButton);
         }
+
+        toolbar.addSeparator();
     }
 
     @Override

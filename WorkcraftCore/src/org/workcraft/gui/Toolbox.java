@@ -136,8 +136,8 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
         button.setHorizontalAlignment(SwingConstants.LEFT);
         button.setMargin(new Insets(0, 0, 0, 0));
 
-        Insets insets = button.getInsets();
         int iconSize = SizeHelper.getToolIconSize();
+        Insets insets = button.getInsets();
         int minSize = iconSize + Math.max(insets.left + insets.right, insets.top + insets.bottom);
 
         Icon icon = tool.getIcon();
@@ -224,6 +224,8 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
         for (JToggleButton button: buttons.values()) {
             toolbar.add(button);
         }
+        // FIXME: Add separator to force the same toolbar height as the tool controls and global toolbars.
+        toolbar.addSeparator();
     }
 
     @Override

@@ -311,8 +311,10 @@ public class MainWindow extends JFrame {
         globalToolbar = new ToolBar(this);
         mainMenu.registerToolbar(globalToolbar);
         modelToolbar = new JToolBar("Model tools");
+
         mainMenu.registerToolbar(modelToolbar);
         toolToolbar = new JToolBar("Tool controls");
+
         mainMenu.registerToolbar(toolToolbar);
         loadToolbarParametersFromConfig();
 
@@ -453,9 +455,14 @@ public class MainWindow extends JFrame {
             DockingManager.registerDockable(documentPlaceholder);
             DockingManager.dock(documentPlaceholder, dockableWindow, DockingConstants.CENTER_REGION);
             utilityWindows.add(documentPlaceholder);
-            propertyEditorWindow.removeAll();
-            toolControlsWindow.removeAll();
             setWorkActionsEnableness(false);
+            modelToolbar.removeAll();
+            toolToolbar.removeAll();
+            propertyEditorWindow.clearObject();
+            toolControlsWindow.setContent(null);
+            displayDockableWindow(propertyEditorDockable);
+            closeDockableWindow(toolControlsDockable);
+            setPropertyEditorTitle(TITLE_PROPERTY_EDITOR);
         }
 
         DockingManager.close(dockableWindow);

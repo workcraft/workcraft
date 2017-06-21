@@ -11,7 +11,6 @@ public class VisualScenarioPage extends VisualPage {
 
     public VisualScenarioPage(MathNode refNode) {
         super(refNode);
-        // TODO Auto-generated constructor stub
 
         addPropertyDeclaration(new PropertyDeclaration<VisualScenarioPage, Encoding>(
                 this, PROPERTY_ENCODING, Encoding.class, true, true, true) {

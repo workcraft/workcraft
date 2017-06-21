@@ -20,7 +20,6 @@ public class ToolBar extends JToolBar {
 
     public ToolBar(final MainWindow mainWindow) {
         super("Global");
-        setFloatable(true);
         this.mainWindow = mainWindow;
         addFileButtons();
         addSeparator();
@@ -29,6 +28,7 @@ public class ToolBar extends JToolBar {
         addViewButtons();
         addSeparator();
         addShowToggles();
+        addSeparator();
         refreshToggles();
     }
 
