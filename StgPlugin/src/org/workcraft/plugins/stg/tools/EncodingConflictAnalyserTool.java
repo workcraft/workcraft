@@ -212,41 +212,35 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
             @Override
             public Decoration getDecoration(Node node) {
                 if (node instanceof VisualNamedTransition) {
-                    final String name = stg.getNodeMathReference(node);
-                    if (selectedCores == null) {
-                        final Color color = (density == null) ? null : density.getColor(name);
-                        return new Decoration() {
-                            @Override
-                            public Color getColorisation() {
-                                return null;
-                            }
-                            @Override
-                            public Color getBackground() {
-                                return color;
-                            }
-                        };
-                    } else {
-                        final ArrayList<Color> palette = new ArrayList<>();
+                    String name = stg.getNodeMathReference(node);
+                    boolean noColor = (selectedCores == null) && (density == null);
+                    final Color color = noColor ? null : density.getColor(name);
+
+                    ArrayList<Color> colors = null;
+                    if (selectedCores != null) {
+                        colors = new ArrayList<>();
                         for (Core core: selectedCores) {
                             if (core.contains(name)) {
-                                palette.add(core.getColor());
+                                colors.add(core.getColor());
                             }
                         }
-                        return new CoreDecoration() {
-                            @Override
-                            public Color getColorisation() {
-                                return null;
-                            }
-                            @Override
-                            public Color getBackground() {
-                                return null;
-                            }
-                            @Override
-                            public Color[] getColorisationPalette() {
-                                return palette.toArray(new Color[palette.size()]);
-                            }
-                        };
                     }
+                    final Color[] palette = (colors == null) ? null : colors.toArray(new Color[colors.size()]);
+
+                    return new CoreDecoration() {
+                        @Override
+                        public Color getColorisation() {
+                            return null;
+                        }
+                        @Override
+                        public Color getBackground() {
+                            return color;
+                        }
+                        @Override
+                        public Color[] getColorisationPalette() {
+                            return palette;
+                        }
+                    };
                 }
                 return null;
             }
