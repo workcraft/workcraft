@@ -35,7 +35,7 @@ public class AlgebraImportCommand implements Command {
     public void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         if (!framework.isInGuiMode()) {
-            LogUtils.logErrorLine("Tool '" + getClass().getSimpleName() + "' only works in GUI mode.");
+            LogUtils.logError("Tool '" + getClass().getSimpleName() + "' only works in GUI mode.");
         } else {
             we.captureMemento();
             JFileChooser chooser = new JFileChooser();

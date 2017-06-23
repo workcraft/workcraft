@@ -66,7 +66,7 @@ public class PlatoResultHandler extends DummyProgressMonitor<ExternalProcessResu
                         if (!info.isEmpty()) {
                             for (String s : invariants) {
                                 if (!s.isEmpty()) {
-                                    System.out.println(LogUtils.PREFIX_INFO + s);
+                                    LogUtils.logInfo(s);
                                 }
                             }
                         } else {

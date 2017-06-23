@@ -53,11 +53,11 @@ public abstract class AbstractGraphEditorTool implements GraphEditorTool {
     }
 
     @Override
-    public void updateToolbar(JToolBar toolbar, final GraphEditor editor) {
+    public void updateControlsToolbar(JToolBar toolbar, final GraphEditor editor) {
     }
 
     @Override
-    public JPanel updatePanel(final GraphEditor editor) {
+    public JPanel getControlsPanel(final GraphEditor editor) {
         return null;
     }
 
@@ -80,7 +80,6 @@ public abstract class AbstractGraphEditorTool implements GraphEditorTool {
             GUI.drawEditorMessage(editor, g, CommonEditorSettings.getHintColor(), hintText);
         }
     }
-
 
     private void resetIssue() {
         if (issueTimer != null) {

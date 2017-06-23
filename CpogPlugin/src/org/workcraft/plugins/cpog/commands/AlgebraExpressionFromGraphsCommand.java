@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintStream;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
@@ -15,6 +13,7 @@ import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.gui.AlgebraExportDialog;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.plugins.cpog.tools.CpogSelectionTool;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -64,16 +63,13 @@ public class AlgebraExpressionFromGraphsCommand implements Command {
         if (dialog.getExport()) {
             String filePath = dialog.getFilePath();
             if (filePath.compareTo(" ") == 0 || filePath == "") {
-                JOptionPane.showMessageDialog(mainWindow,
-                        "No export file has been given",
-                        DIALOG_EXPRESSION_EXPORT_ERROR, JOptionPane.ERROR_MESSAGE);
+                DialogUtils.showError("No export file has been given", DIALOG_EXPRESSION_EXPORT_ERROR);
                 return;
             }
             File file = new File(filePath);
             if (file.exists()) {
-                if (JOptionPane.showConfirmDialog(mainWindow,
-                            "The file '" + file.getName() + "' already exists.\n" + "Overwrite it?",
-                            DIALOG_SAVE_FILE, JOptionPane.YES_NO_OPTION) != JOptionPane.YES_OPTION) {
+                String msg = "The file '" + file.getName() + "' already exists.\n" + "Overwrite it?";
+                if (DialogUtils.showConfirm(msg, DIALOG_SAVE_FILE)) {
                     return;
                 }
             }
@@ -83,12 +79,10 @@ public class AlgebraExpressionFromGraphsCommand implements Command {
                 expressions.print(exp);
                 expressions.close();
             } catch (FileNotFoundException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         } else {
-            JOptionPane.showMessageDialog(null, "No export selection was made",
-                    DIALOG_EXPRESSION_EXPORT_ERROR, JOptionPane.ERROR_MESSAGE);
+            DialogUtils.showError("No export selection was made", DIALOG_EXPRESSION_EXPORT_ERROR);
         }
     }
 

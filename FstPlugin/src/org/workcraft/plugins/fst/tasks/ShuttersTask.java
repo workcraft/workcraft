@@ -118,7 +118,7 @@ public class ShuttersTask implements Task<ShuttersResult>, ExternalProcessListen
             args.add("-a");
             args.add(f.getAbsolutePath());
         } else {
-            LogUtils.logWarningLine("ABC is not installed. Visit https://bitbucket.org/alanmi/abc for more information.");
+            LogUtils.logWarning("ABC is not installed. Visit https://bitbucket.org/alanmi/abc for more information.");
         }
 
         // Positive mode related argument

@@ -2,14 +2,12 @@ package org.workcraft.plugins.cpog.tasks;
 
 import java.lang.reflect.InvocationTargetException;
 
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.exceptions.VisualModelInstantiationException;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.workspace.Path;
@@ -20,6 +18,7 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -44,13 +43,11 @@ public class PGMinerResultHandler extends DummyProgressMonitor<ExternalProcessRe
                 @Override
                 public void run() {
                     final Framework framework = Framework.getInstance();
-                    final MainWindow mainWindow = framework.getMainWindow();
                     final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
                     final Toolbox toolbox = editor.getToolBox();
                     final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
                     if (result.getOutcome() == Outcome.FAILED) {
-                        JOptionPane.showMessageDialog(mainWindow, "PGMiner could not run",
-                                "Concurrency extraction failed", JOptionPane.ERROR_MESSAGE);
+                        DialogUtils.showError("PGMiner could not run, concurrency extraction failed.");
                     } else {
                         if (createNewWindow) {
                             final CpogDescriptor cpogModel = new CpogDescriptor();

@@ -3,6 +3,7 @@ package org.workcraft.gui.trees;
 import org.workcraft.gui.workspace.Path;
 
 public class TreeListenerAdapter<Node> implements TreeListener<Node> {
+
     private final TreeListener<Node> chain;
 
     public TreeListenerAdapter(TreeListener<Node> chain) {
@@ -28,4 +29,5 @@ public class TreeListenerAdapter<Node> implements TreeListener<Node> {
     public void restructured(Path<Node> path) {
         chain.restructured(path);
     }
+
 }

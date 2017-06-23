@@ -12,6 +12,8 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.border.Border;
 
+import org.workcraft.dom.visual.SizeHelper;
+
 import info.clearthought.layout.TableLayout;
 
 @SuppressWarnings("serial")
@@ -29,7 +31,7 @@ public class TaskControl extends JPanel {
         };
 
         Border outsideBorder = BorderFactory.createLineBorder(Color.LIGHT_GRAY);
-        Border insideBorder = BorderFactory.createEmptyBorder(3, 3, 3, 3);
+        Border insideBorder = SizeHelper.getEmptyBorder();
         Border lineBorder = BorderFactory.createCompoundBorder(outsideBorder, insideBorder);
 
         setBorder(lineBorder);

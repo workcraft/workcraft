@@ -78,7 +78,7 @@ public class PNetExt {
         try {
             sc = new Scanner(new File(file));
         } catch (FileNotFoundException e) { //Catch exception if any
-            LogUtils.logErrorLine(e.getMessage());
+            LogUtils.logError(e.getMessage());
         }
         String name;
         while (sc.hasNextLine()) {

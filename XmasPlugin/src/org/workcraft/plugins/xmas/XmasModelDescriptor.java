@@ -33,7 +33,6 @@ public class XmasModelDescriptor implements ModelDescriptor {
                 try {
                     throw new VisualModelInstantiationException();
                 } catch (VisualModelInstantiationException e) {
-                    // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
                 return null;

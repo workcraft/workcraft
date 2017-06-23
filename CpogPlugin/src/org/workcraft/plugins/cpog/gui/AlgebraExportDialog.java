@@ -27,7 +27,8 @@ public class AlgebraExportDialog extends JDialog {
     private Boolean okClicked;
 
     public AlgebraExportDialog() {
-        super(Framework.getInstance().getMainWindow(), "Export graphs as algebraic expressions", ModalityType.APPLICATION_MODAL);
+        super(Framework.getInstance().getMainWindow(),
+                "Export graphs as algebraic expressions", ModalityType.APPLICATION_MODAL);
 
         filePath = new JTextField(" ", 30);
         filePath.setEditable(true);
@@ -73,7 +74,7 @@ public class AlgebraExportDialog extends JDialog {
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         pack();
-        this.setLocationRelativeTo(Framework.getInstance().getMainWindow());
+        setLocationRelativeTo(Framework.getInstance().getMainWindow());
     }
 
     public void addSelectFileBtnListener() {

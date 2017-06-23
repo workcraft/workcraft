@@ -82,6 +82,11 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
         loopSet = null;
     }
 
+    @Override
+    public boolean requiresPropertyEditor() {
+        return true;
+    }
+
     private void updateState(Circuit circuit) {
         loopSet = new HashSet<>();
         HashMap<MathNode, HashSet<CircuitComponent>> presets = new HashMap<>();

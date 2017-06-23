@@ -10,7 +10,6 @@ import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
@@ -19,6 +18,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 
 import org.workcraft.Framework;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.layouts.SmartFlowLayout;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.ProgressMonitor;
@@ -26,6 +26,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.TaskMonitor;
+import org.workcraft.util.DialogUtils;
 
 @SuppressWarnings("serial")
 public class TaskManagerWindow extends JPanel implements TaskMonitor {
@@ -137,7 +138,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
         scroll.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 
         Border outsideBorder = BorderFactory.createLineBorder(Color.LIGHT_GRAY);
-        Border insideBorder = BorderFactory.createEmptyBorder(2, 2, 2, 2);
+        Border insideBorder = SizeHelper.getEmptyBorder();
         Border lineBorder = BorderFactory.createCompoundBorder(outsideBorder, insideBorder);
         setBorder(lineBorder);
 
@@ -179,7 +180,7 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
                                 SwingUtilities.invokeLater(new Runnable() {
                                     @Override
                                     public void run() {
-                                        JOptionPane.showMessageDialog(null, "Task " + description + " finished!");
+                                        DialogUtils.showInfo("Task '" + description + "' finished!");
                                     }
 
                                 });

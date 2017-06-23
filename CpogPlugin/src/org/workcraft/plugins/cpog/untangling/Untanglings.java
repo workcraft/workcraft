@@ -151,7 +151,7 @@ public class Untanglings {
 
         // if Petri Net is not safe, stop the conversion
         if (untangling.isSafe() == false) {
-            LogUtils.logErrorLine("Untangling cannot be constructed because the Petri Net is not safe.");
+            LogUtils.logError("Untangling cannot be constructed because the Petri Net is not safe.");
             return false;
         }
         // checking correct execution of conversion
@@ -160,7 +160,7 @@ public class Untanglings {
             if (pi.getOccurrenceNet().getVertices().isEmpty() == false) {
 
                 // printing out how many processes are needed to represent the untangling representation
-                LogUtils.logInfoLine("Number of untangled processes: " + untangling.getProcesses().size());
+                LogUtils.logInfo("Number of untangled processes: " + untangling.getProcesses().size());
 
                 return true;
             }

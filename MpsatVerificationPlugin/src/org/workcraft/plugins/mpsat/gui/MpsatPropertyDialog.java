@@ -14,7 +14,6 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
 
-import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -32,9 +31,9 @@ import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.mpsat.MpsatMode;
-import org.workcraft.plugins.mpsat.MpsatPresetManager;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.MpsatParameters.SolutionMode;
+import org.workcraft.plugins.mpsat.MpsatPresetManager;
 import org.workcraft.plugins.shared.gui.PresetManagerPanel;
 import org.workcraft.plugins.shared.presets.Preset;
 import org.workcraft.plugins.shared.presets.SettingsToControlsMapper;
@@ -73,13 +72,11 @@ public class MpsatPropertyDialog extends JDialog {
             {TableLayout.PREFERRED, TableLayout.PREFERRED, TableLayout.FILL, buttonPanelHeight},
         };
         final TableLayout layout = new TableLayout(size);
-        int hGap = SizeHelper.getCompactLayoutHGap();
-        int vGap = SizeHelper.getCompactLayoutVGap();
-        layout.setHGap(hGap);
-        layout.setVGap(vGap);
+        layout.setHGap(SizeHelper.getLayoutHGap());
+        layout.setVGap(SizeHelper.getLayoutVGap());
 
         JPanel contentPanel = new JPanel(layout);
-        contentPanel.setBorder(BorderFactory.createEmptyBorder(hGap, vGap, hGap, vGap));
+        contentPanel.setBorder(SizeHelper.getEmptyBorder());
 
         contentPanel.add(presetPanel, "0 0");
         contentPanel.add(optionsPanel, "0 1");
@@ -105,7 +102,7 @@ public class MpsatPropertyDialog extends JDialog {
                 propertyText.requestFocus();
             }
         });
-        setMinimumSize(new Dimension(420, 350));
+        setMinimumSize(new Dimension(450, 450));
     }
 
     private void createPresetPanel() {
@@ -149,7 +146,7 @@ public class MpsatPropertyDialog extends JDialog {
 
     private void createOptionsPanel() {
         optionsPanel = new JPanel(new BorderLayout());
-        optionsPanel.setBorder(BorderFactory.createTitledBorder("MPSat settings"));
+        optionsPanel.setBorder(SizeHelper.getTitledBorder("MPSat settings"));
 
         modeCombo = new JComboBox<MpsatMode>();
         modeCombo.setEditable(false);
@@ -206,9 +203,10 @@ public class MpsatPropertyDialog extends JDialog {
     private void createPropertyPanel() {
         predicatePanel = new JPanel(new BorderLayout());
         String title = "Reach predicate (use '" + NamespaceHelper.getHierarchySeparator() + "' as hierarchy separator)";
-        predicatePanel.setBorder(BorderFactory.createTitledBorder(title));
+        predicatePanel.setBorder(SizeHelper.getTitledBorder(title));
 
         propertyText = new JTextArea();
+        propertyText.setMargin(SizeHelper.getTextMargin());
         propertyText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
         propertyText.setText("");
         propertyText.addKeyListener(new KeyAdapter() {
@@ -229,7 +227,8 @@ public class MpsatPropertyDialog extends JDialog {
         unsatisfiebleRadioButton.setSelected(true);
 
         JPanel propertyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT,
-                SizeHelper.getCompactLayoutHGap(), SizeHelper.getCompactLayoutVGap()));
+                SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
+
         propertyPanel.add(new JLabel("Property holds if predicate is:"));
         propertyPanel.add(satisfiebleRadioButton);
         propertyPanel.add(unsatisfiebleRadioButton);

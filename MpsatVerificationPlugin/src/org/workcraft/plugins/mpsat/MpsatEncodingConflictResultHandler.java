@@ -6,8 +6,6 @@ import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
@@ -19,6 +17,7 @@ import org.workcraft.plugins.stg.tools.EncodingConflictAnalyserTool;
 import org.workcraft.tasks.Result;
 import org.workcraft.util.ColorGenerator;
 import org.workcraft.util.ColorUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 final class MpsatEncodingConflictResultHandler implements Runnable {
@@ -40,9 +39,7 @@ final class MpsatEncodingConflictResultHandler implements Runnable {
         MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue());
         List<MpsatSolution> solutions = mdp.getSolutions();
         if (!MpsatSolution.hasTraces(solutions)) {
-            MainWindow mainWindow = Framework.getInstance().getMainWindow();
-            JOptionPane.showMessageDialog(mainWindow, "No encoding conflicts.",
-                    "Verification results", JOptionPane.INFORMATION_MESSAGE);
+            DialogUtils.showInfo("No encoding conflicts.", "Verification results");
         } else {
             final Framework framework = Framework.getInstance();
             final MainWindow mainWindow = framework.getMainWindow();

@@ -3,8 +3,6 @@ package org.workcraft.plugins.mpsat;
 import java.io.ByteArrayInputStream;
 import java.util.Collection;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.workspace.Path;
@@ -16,6 +14,7 @@ import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.DotGImporter;
 import org.workcraft.tasks.Result;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -52,9 +51,7 @@ public class MpsatCscConflictResolutionResultHandler implements Runnable {
         final StgModel model = getResolvedStg();
         if (model == null) {
             final String errorMessage = result.getReturnValue().getErrorsHeadAndTail();
-            JOptionPane.showMessageDialog(framework.getMainWindow(),
-                    "MPSat output: \n" + errorMessage,
-                    "Conflict resolution failed", JOptionPane.WARNING_MESSAGE);
+            DialogUtils.showWarning("Conflict resolution failed. MPSat output: \n" + errorMessage);
         } else {
             MutexUtils.restoreMutexPlacesByName(model, mutexes);
             final ModelEntry me = new ModelEntry(new StgDescriptor(), model);

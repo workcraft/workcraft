@@ -23,7 +23,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -68,6 +67,7 @@ import org.workcraft.plugins.cpog.formula.jj.CpogFormulaParser;
 import org.workcraft.plugins.cpog.formula.jj.ParseException;
 import org.workcraft.plugins.cpog.formula.jj.TokenMgrError;
 import org.workcraft.util.GUI;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -114,13 +114,14 @@ public class CpogSelectionTool extends SelectionTool {
     private JPanel panel;
 
     @Override
-    public JPanel updatePanel(final GraphEditor editor) {
+    public JPanel getControlsPanel(final GraphEditor editor) {
         if (panel != null) {
             return panel;
         }
         this.editor = editor;
 
         expressionText = new JTextArea();
+        expressionText.setMargin(SizeHelper.getTextMargin());
         expressionText.setLineWrap(false);
         expressionText.setEditable(true);
         expressionText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
@@ -170,7 +171,6 @@ public class CpogSelectionTool extends SelectionTool {
                     editor.getWorkspaceEntry().saveMemento();
                 } catch (BadLocationException e1) {
                     editor.getWorkspaceEntry().cancelMemento();
-                    // TODO Auto-generated catch block
                     e1.printStackTrace();
                 }
             }
@@ -361,13 +361,11 @@ public class CpogSelectionTool extends SelectionTool {
                     });
         } catch (ParseException e) {
             we.cancelMemento();
-            JOptionPane.showMessageDialog(null, e.getMessage(), "Parse error",
-                    JOptionPane.ERROR_MESSAGE);
+            DialogUtils.showError(e.getMessage(), "Parse error");
             return null;
         } catch (TokenMgrError e) {
             we.cancelMemento();
-            JOptionPane.showMessageDialog(null, e.getMessage(),
-                    "Lexical error", JOptionPane.ERROR_MESSAGE);
+            DialogUtils.showError(e.getMessage(), "Lexical error");
             return null;
         }
 
@@ -779,7 +777,6 @@ public class CpogSelectionTool extends SelectionTool {
                                     try {
                                         this.wait(5);
                                     } catch (InterruptedException e1) {
-                                        // TODO Auto-generated catch block
                                         e1.printStackTrace();
                                     }
                                 }
@@ -997,9 +994,7 @@ public class CpogSelectionTool extends SelectionTool {
         try {
             fileIn = new Scanner(f);
         } catch (FileNotFoundException e1) {
-            // TODO Auto-generated catch block
-            JOptionPane.showMessageDialog(null, e1.getMessage(),
-                    "File not found error", JOptionPane.ERROR_MESSAGE);
+            DialogUtils.showError(e1.getMessage());
             return false;
         }
 

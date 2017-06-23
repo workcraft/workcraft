@@ -160,7 +160,7 @@ public class StgSerialiserUtils {
         // Petrify does not allow spaces and special symbols in the model name, so replace them with underscores.
         String result = title.replaceAll("[^A-Za-z0-9_]", "_");
         if (!result.equals(model.getTitle())) {
-            LogUtils.logWarningLine("Model title was exported as '" + result + "'.");
+            LogUtils.logWarning("Model title was exported as '" + result + "'.");
         }
         return result;
     }

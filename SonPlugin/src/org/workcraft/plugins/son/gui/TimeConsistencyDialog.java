@@ -14,7 +14,6 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -31,6 +30,7 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import org.workcraft.dom.Node;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.TimeConsistencySettings;
@@ -409,7 +409,7 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
         createSettingPanel();
         createButtonsPanel();
         createCausalConsistencyPanel();
-        granularityPanel = new GranularityPanel(BorderFactory.createTitledBorder("Time Granularity"));
+        granularityPanel = new GranularityPanel(SizeHelper.getTitledBorder("Time Granularity"));
 
         leftPanel = new JPanel(new BorderLayout());
         leftPanel.add(granularityPanel, BorderLayout.PAGE_START);

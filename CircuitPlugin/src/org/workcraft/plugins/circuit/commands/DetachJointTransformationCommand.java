@@ -108,7 +108,7 @@ public class DetachJointTransformationCommand extends AbstractTransformationComm
                 try {
                     circuit.connect(driver, joint);
                 } catch (InvalidConnectionException e) {
-                    LogUtils.logWarningLine(e.getMessage());
+                    LogUtils.logWarning(e.getMessage());
                 }
 
                 for (Connection connection: connections) {
@@ -120,7 +120,7 @@ public class DetachJointTransformationCommand extends AbstractTransformationComm
                         newConnection.copyShape((VisualCircuitConnection) connection);
                         newConnection.copyStyle((VisualCircuitConnection) connection);
                     } catch (InvalidConnectionException e) {
-                        LogUtils.logWarningLine(e.getMessage());
+                        LogUtils.logWarning(e.getMessage());
                     }
                 }
             }

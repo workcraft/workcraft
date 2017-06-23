@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.util.Collection;
 import java.util.HashSet;
 
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
@@ -27,11 +26,11 @@ import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.LogUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynthesisChainResult> {
-    private static final String TITLE = "MPSat synthesis";
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
     private final MpsatSynthesisChainTask task;
     private final Collection<Mutex> mutexes;
@@ -75,10 +74,7 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
             handleSynthesisResult(mpsatReturnValue, false, RenderType.GATE);
             break;
         default:
-            final MainWindow mainWindow = Framework.getInstance().getMainWindow();
-            JOptionPane.showMessageDialog(mainWindow,
-                    "Warning: MPSat synthesis mode \'" + mpsatMode.getArgument() + "\' is not (yet) supported.",
-                    TITLE, JOptionPane.WARNING_MESSAGE);
+            DialogUtils.showWarning("MPSat synthesis mode \'" + mpsatMode.getArgument() + "\' is not (yet) supported.");
             break;
         }
     }
@@ -91,19 +87,20 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
         }
         final byte[] eqnOutput = mpsatResult.getFileData(MpsatSynthesisTask.EQN_FILE_NAME);
         if (eqnOutput != null) {
-            LogUtils.logInfoLine("MPSat synthesis result in EQN format:");
+            LogUtils.logInfo("MPSat synthesis result in EQN format:");
             System.out.println(new String(eqnOutput));
             System.out.println();
         }
         final byte[] verilogOutput = mpsatResult.getFileData(MpsatSynthesisTask.VERILOG_FILE_NAME);
         if (verilogOutput != null) {
-            LogUtils.logInfoLine("MPSat synthesis result in Verilog format:");
+            LogUtils.logInfo("MPSat synthesis result in Verilog format:");
             System.out.println(new String(verilogOutput));
             System.out.println();
         }
         if (MpsatSynthesisSettings.getOpenSynthesisResult() && (verilogOutput != null)) {
             try {
                 final Framework framework = Framework.getInstance();
+                final MainWindow mainWindow = framework.getMainWindow();
                 final ByteArrayInputStream in = new ByteArrayInputStream(verilogOutput);
                 final VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
                 final Circuit circuit = verilogImporter.importCircuit(in, mutexes);
@@ -118,22 +115,17 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
                     final String title = we.getModelEntry().getModel().getTitle();
                     visualCircuit.setTitle(title);
                     if (!we.getFile().exists()) {
-                        JOptionPane.showMessageDialog(null,
-                                "Error: Unsaved STG cannot be set as the circuit environment.",
-                                TITLE, JOptionPane.ERROR_MESSAGE);
+                        DialogUtils.showError("Unsaved STG cannot be set as the circuit environment.");
                     } else {
                         visualCircuit.setEnvironmentFile(we.getFile());
                         if (we.isChanged()) {
-                            JOptionPane.showMessageDialog(null,
-                                    "Warning: The STG with unsaved changes is set as the circuit environment.",
-                                    TITLE, JOptionPane.WARNING_MESSAGE);
+                            DialogUtils.showWarning("The STG with unsaved changes is set as the circuit environment.");
                         }
                     }
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
                             if (framework.isInGuiMode()) {
-                                final MainWindow mainWindow = framework.getMainWindow();
                                 final GraphEditorPanel editor = mainWindow.getCurrentEditor();
                                 editor.updatePropertyView();
                             }
@@ -161,7 +153,7 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
     }
 
     private void handleFailure(final Result<? extends MpsatSynthesisChainResult> result) {
-        String errorMessage = "Error: MPSat synthesis failed.";
+        String errorMessage = "MPSat synthesis failed.";
         final Throwable genericCause = result.getCause();
         if (genericCause != null) {
             // Exception was thrown somewhere in the chain task run() method (not in any of the subtasks)
@@ -205,8 +197,7 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
                 errorMessage += "\n\nMPSat chain task returned failure status without further explanation.";
             }
         }
-        final MainWindow mainWindow = Framework.getInstance().getMainWindow();
-        JOptionPane.showMessageDialog(mainWindow, errorMessage, TITLE, JOptionPane.ERROR_MESSAGE);
+        DialogUtils.showError(errorMessage);
     }
 
     public WorkspaceEntry getResult() {

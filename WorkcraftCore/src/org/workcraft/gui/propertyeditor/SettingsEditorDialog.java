@@ -13,12 +13,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -38,6 +36,7 @@ import org.workcraft.PluginManager;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.PluginInfo;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.GUI;
 
 public class SettingsEditorDialog extends JDialog {
@@ -224,11 +223,11 @@ public class SettingsEditorDialog extends JDialog {
 
         sectionPane.setViewportView(sectionTree);
         sectionPane.setMinimumSize(new Dimension(100, 0));
-        sectionPane.setBorder(BorderFactory.createTitledBorder("Section"));
+        sectionPane.setBorder(SizeHelper.getTitledBorder("Section"));
 
         JScrollPane propertiesPane = new JScrollPane();
         propertiesPane.setMinimumSize(new Dimension(250, 0));
-        propertiesPane.setBorder(BorderFactory.createTitledBorder("Selection properties"));
+        propertiesPane.setBorder(SizeHelper.getTitledBorder("Selection properties"));
         propertiesPane.setViewportView(propertiesTable);
 
         JSplitPane splitPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, sectionPane, propertiesPane);
@@ -303,10 +302,8 @@ public class SettingsEditorDialog extends JDialog {
             setObject(currentPage);
         } else {
             final Framework framework = Framework.getInstance();
-            int answer = JOptionPane.showConfirmDialog(framework.getMainWindow(),
-                    "This will reset all the settings to defaults.\n" + "Continue?",
-                    DIALOG_RESTORE_SETTINGS, JOptionPane.YES_NO_OPTION);
-            if (answer == JOptionPane.YES_OPTION) {
+            String msg = "This will reset all the settings to defaults.\n" + "Continue?";
+            if (DialogUtils.showConfirm(msg, DIALOG_RESTORE_SETTINGS)) {
                 framework.resetConfig();
             }
         }

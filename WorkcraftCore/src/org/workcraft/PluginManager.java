@@ -46,14 +46,14 @@ public class PluginManager implements PluginProvider {
             try {
                 final Module module = info.newInstance();
                 try {
-                    LogUtils.logMessageLine("  Loading module: " + module.getDescription());
+                    LogUtils.logMessage("  Loading module: " + module.getDescription());
                     module.init();
                 } catch (Throwable th) {
-                    LogUtils.logWarningLine("Failed to initialise module '" + module.toString() + "'.");
+                    LogUtils.logWarning("Failed to initialise module '" + module.toString() + "'.");
                     result = false;
                 }
             } catch (Exception e) {
-                LogUtils.logWarningLine("Failed to load module implementation: " + e.getMessage());
+                LogUtils.logWarning("Failed to load module implementation: " + e.getMessage());
                 result = false;
             }
         }
@@ -67,13 +67,13 @@ public class PluginManager implements PluginProvider {
                 plugins.put(Class.forName(interfaceName), pih);
             } catch (ClassNotFoundException e) {
                 String className = info.getClassName();
-                LogUtils.logWarningLine("Class '" + className + "' implements unknown interface '" + interfaceName + "'. Skipping.");
+                LogUtils.logWarning("Class '" + className + "' implements unknown interface '" + interfaceName + "'. Skipping.");
             }
         }
     }
 
     public void initPlugins() throws PluginInstantiationException {
-        LogUtils.logMessageLine("Initialising plugins...");
+        LogUtils.logMessage("Initialising plugins...");
         plugins.clear();
 
         String classPass = System.getProperty("java.class.path");
@@ -84,10 +84,10 @@ public class PluginManager implements PluginProvider {
         ArrayList<LegacyPluginInfo> pluginInfos = new ArrayList<>();
 
         for (String s: classPathLocations) {
-            LogUtils.logMessageLine("  Processing class path entry: " + s);
+            LogUtils.logMessage("  Processing class path entry: " + s);
             classes.addAll(PluginFinder.search(new File(s)));
         }
-        LogUtils.logMessageLine("" + classes.size() + " plugin(s) found.");
+        LogUtils.logMessage("" + classes.size() + " plugin(s) found.");
 
         for (Class<?> cls : classes) {
             final LegacyPluginInfo info = new LegacyPluginInfo(cls);

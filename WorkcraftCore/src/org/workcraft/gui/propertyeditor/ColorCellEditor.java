@@ -12,6 +12,9 @@ import javax.swing.JDialog;
 import javax.swing.JTable;
 import javax.swing.table.TableCellEditor;
 
+import org.workcraft.Framework;
+import org.workcraft.gui.MainWindow;
+
 @SuppressWarnings("serial")
 public class ColorCellEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
 
@@ -45,7 +48,8 @@ public class ColorCellEditor extends AbstractCellEditor implements TableCellEdit
             chooser = new JColorChooser();
         }
         if (dialog == null) {
-            dialog = JColorChooser.createDialog(null,
+            MainWindow mainWindow = Framework.getInstance().getMainWindow();
+            dialog = JColorChooser.createDialog(mainWindow,
                     "Pick a Color", true, // modal
                     chooser, approx, //OK button handler
                     null); //no CANCEL button handler

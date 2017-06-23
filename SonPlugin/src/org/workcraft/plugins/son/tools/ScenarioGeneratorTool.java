@@ -80,7 +80,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
     }
 
     @Override
-    public JPanel updatePanel(final GraphEditor editor) {
+    public JPanel getControlsPanel(final GraphEditor editor) {
         if (panel != null) {
             return panel;
         }

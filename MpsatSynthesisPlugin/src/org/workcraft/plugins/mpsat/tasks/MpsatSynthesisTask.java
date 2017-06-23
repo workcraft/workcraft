@@ -6,10 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.swing.JOptionPane;
-
-import org.workcraft.Framework;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.mpsat.MpsatSynthesisSettings;
 import org.workcraft.plugins.punf.PunfSettings;
@@ -19,6 +15,7 @@ import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.ToolUtils;
@@ -72,7 +69,7 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
                     command.add("-d");
                     command.add(gateLibraryFile.getAbsolutePath());
                 } else {
-                    LogUtils.logWarningLine("Cannot find gate library file '" + gateLibrary + "'. Using built-in gate library of MPSat.");
+                    LogUtils.logWarning("Cannot find gate library file '" + gateLibrary + "'. Using built-in gate library of MPSat.");
                 }
             }
         }
@@ -80,8 +77,7 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
         // Extra arguments (should go before the file parameters)
         String extraArgs = MpsatSynthesisSettings.getArgs();
         if (MpsatSynthesisSettings.getAdvancedMode()) {
-            MainWindow mainWindow = Framework.getInstance().getMainWindow();
-            String tmp = JOptionPane.showInputDialog(mainWindow, "Additional parameters for MPSat:", extraArgs);
+            String tmp = DialogUtils.showInput("Additional parameters for MPSat:", extraArgs);
             if (tmp == null) {
                 return Result.cancelled();
             }

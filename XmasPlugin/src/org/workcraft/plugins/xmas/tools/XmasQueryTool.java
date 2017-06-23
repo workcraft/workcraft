@@ -23,7 +23,6 @@ import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
 import org.workcraft.dom.Node;
@@ -46,6 +45,7 @@ import org.workcraft.plugins.xmas.gui.SolutionsDialog2;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -94,7 +94,7 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
         try {
             sc = new Scanner(new File(file));
         } catch (FileNotFoundException e) {
-            LogUtils.logErrorLine(e.getMessage());
+            LogUtils.logError(e.getMessage());
         }
         String targ = "";
         String larg = "";
@@ -178,7 +178,7 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
         try {
             sc = new Scanner(new File(file));
         } catch (FileNotFoundException e) {
-            LogUtils.logErrorLine(e.getMessage());
+            LogUtils.logError(e.getMessage());
         }
         String str = "";
         while (sc.hasNextLine()) {
@@ -195,7 +195,7 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
         try {
             sc = new Scanner(new File(file));
         } catch (FileNotFoundException e) {
-            LogUtils.logErrorLine(e.getMessage());
+            LogUtils.logError(e.getMessage());
         }
         while (sc.hasNextLine()) {
             Scanner line = new Scanner(sc.nextLine());
@@ -214,7 +214,7 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
         try {
             sc = new Scanner(new File(file));
         } catch (FileNotFoundException e) {
-            LogUtils.logErrorLine(e.getMessage());
+            LogUtils.logError(e.getMessage());
         }
         String str = "";
         while (sc.hasNextLine()) {
@@ -230,7 +230,7 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
         try {
             sc = new Scanner(new File(file));
         } catch (FileNotFoundException e) {
-            LogUtils.logErrorLine(e.getMessage());
+            LogUtils.logError(e.getMessage());
         }
         String str = "";
         while (sc.hasNextLine()) {
@@ -669,8 +669,7 @@ public class XmasQueryTool extends AbstractGraphEditorTool implements Command {
                             }
                         } else if (test == 0) {
                             if (display.equals("popup")) {
-                                String message = "The system is deadlock-free.";
-                                JOptionPane.showMessageDialog(null, message);
+                                DialogUtils.showInfo("The system is deadlock-free.");
                             }
                         }
                     } catch (Exception e1) {

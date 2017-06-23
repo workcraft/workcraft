@@ -18,7 +18,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -32,6 +31,7 @@ import javax.swing.ListCellRenderer;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableColumn;
 
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.algorithm.Path;
 import org.workcraft.plugins.son.algorithm.SimulationAlg;
@@ -203,7 +203,7 @@ public class ParallelSimDialog  extends JDialog {
         eventPanel.setPreferredSize(new Dimension(250, 150));
         eventPanel.setLayout(new BorderLayout());
         eventPanel.add(listScroller, BorderLayout.CENTER);
-        eventPanel.setBorder(BorderFactory.createTitledBorder("Possible parallel execution:"));
+        eventPanel.setBorder(SizeHelper.getTitledBorder("Possible parallel execution:"));
     }
 
     private void createButtonsPanel() {
@@ -246,7 +246,7 @@ public class ParallelSimDialog  extends JDialog {
         firsetColumn.setPreferredWidth(12);
 
         eventInfoPanel.setLayout(new BoxLayout(eventInfoPanel, BoxLayout.Y_AXIS));
-        eventInfoPanel.setBorder(BorderFactory.createTitledBorder("Parallel execution:"));
+        eventInfoPanel.setBorder(SizeHelper.getTitledBorder("Parallel execution:"));
         eventInfoPanel.add(table);
     }
 

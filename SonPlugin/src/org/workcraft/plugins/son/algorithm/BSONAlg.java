@@ -11,6 +11,7 @@ import java.util.Stack;
 
 import javax.swing.JOptionPane;
 
+import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.son.ONGroup;
 import org.workcraft.plugins.son.SON;
@@ -245,18 +246,9 @@ public class BSONAlg extends RelationAlgorithm {
     }
 
     protected void errMsg(String msg) {
-        JOptionPane.showMessageDialog(null, msg, "Fail to get phase", JOptionPane.ERROR_MESSAGE);
+        JOptionPane.showMessageDialog(Framework.getInstance().getMainWindow(),
+                msg, "Fail to get phase", JOptionPane.ERROR_MESSAGE);
     }
-
-//    public Map<Condition, Collection<Phase>> getAllPhases() {
-//        try {
-//            return getAllPhases(null);
-//        } catch (UnboundedException e) {
-//            // TODO Auto-generated catch block
-//            e.printStackTrace();
-//        }
-//        return null;
-//    }
 
     private Collection<Condition> forwardSearch(Node node) {
         Collection<Condition> result = new HashSet<>();

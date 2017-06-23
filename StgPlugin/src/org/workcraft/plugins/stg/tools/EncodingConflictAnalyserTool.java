@@ -52,11 +52,10 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
     private JPanel panel;
 
     @Override
-    public JPanel updatePanel(final GraphEditor editor) {
+    public JPanel getControlsPanel(final GraphEditor editor) {
         if (panel != null) {
             return panel;
         }
-        panel = super.updatePanel(editor);
 
         coresRadio = new JRadioButton("Show selected cores");
         coresRadio.addItemListener(new ItemListener() {
@@ -122,9 +121,9 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
         JScrollPane coresScroll = new JScrollPane();
         coresScroll.setViewportView(coresTable);
 
-        JPanel infoPanel = new JPanel(new BorderLayout());
-        infoPanel.add(coresRadio, BorderLayout.NORTH);
-        infoPanel.add(coresScroll, BorderLayout.CENTER);
+        JPanel coresPanel = new JPanel(new BorderLayout());
+        coresPanel.add(coresRadio, BorderLayout.NORTH);
+        coresPanel.add(coresScroll, BorderLayout.CENTER);
 
         densityRadio = new JRadioButton("Show core density map");
         densityTable = new JTable(new HeightmapTableModel());
@@ -158,10 +157,10 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
             }
         });
 
-        JPanel statusPanel = new JPanel();
-        statusPanel.setLayout(new BorderLayout());
-        statusPanel.add(densityRadio, BorderLayout.NORTH);
-        statusPanel.add(densityTable, BorderLayout.SOUTH);
+        JPanel densityPanel = new JPanel();
+        densityPanel.setLayout(new BorderLayout());
+        densityPanel.add(densityRadio, BorderLayout.NORTH);
+        densityPanel.add(densityTable, BorderLayout.SOUTH);
 
         ButtonGroup radioGroup = new ButtonGroup();
         radioGroup.add(coresRadio);
@@ -169,8 +168,10 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
         coresRadio.setSelected(true);
         densityRadio.setSelected(true);
 
-        panel.add(infoPanel, BorderLayout.CENTER);
-        panel.add(statusPanel, BorderLayout.SOUTH);
+        panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(coresPanel, BorderLayout.CENTER);
+        panel.add(densityPanel, BorderLayout.SOUTH);
         panel.setPreferredSize(new Dimension(0, 0));
         return panel;
     }

@@ -12,6 +12,7 @@ import org.mozilla.javascript.Context;
 import org.syntax.jedit.JEditTextArea;
 import org.syntax.jedit.tokenmarker.JavaScriptTokenMarker;
 import org.workcraft.Framework;
+import org.workcraft.dom.visual.SizeHelper;
 
 @SuppressWarnings("serial")
 public class JavaScriptWindow extends JPanel {
@@ -21,6 +22,7 @@ public class JavaScriptWindow extends JPanel {
 
     public JavaScriptWindow() {
         txtScript = new JEditTextArea();
+        txtScript.setBorder(SizeHelper.getEmptyBorder());
         txtScript.setTokenMarker(new JavaScriptTokenMarker());
         txtScript.addKeyListener(new java.awt.event.KeyAdapter() {
             @Override
@@ -54,7 +56,7 @@ public class JavaScriptWindow extends JPanel {
         panelInput.setMinimumSize(new Dimension(100, 100));
 
         setLayout(new BorderLayout());
-        this.add(panelInput, BorderLayout.CENTER);
+        add(panelInput, BorderLayout.CENTER);
         resetScript();
     }
 

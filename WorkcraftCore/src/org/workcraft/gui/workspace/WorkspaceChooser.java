@@ -2,13 +2,13 @@ package org.workcraft.gui.workspace;
 
 import java.util.Set;
 
-import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.WorkspaceTreeDecorator;
 import org.workcraft.gui.trees.FilteredTreeSource;
 import org.workcraft.gui.trees.TreeWindow;
@@ -28,7 +28,6 @@ public class WorkspaceChooser extends JPanel {
 
     public WorkspaceChooser(Workspace workspace, Func<Path<String>, Boolean> filter) {
         super();
-
         this.filter = filter;
 
         double[][] sizes = {
@@ -37,9 +36,9 @@ public class WorkspaceChooser extends JPanel {
         };
 
         final TableLayout mgr = new TableLayout(sizes);
-        mgr.setHGap(4);
-        mgr.setVGap(4);
-        this.setBorder(BorderFactory.createEmptyBorder(4, 4, 4, 4));
+        mgr.setHGap(SizeHelper.getLayoutHGap());
+        mgr.setVGap(SizeHelper.getLayoutVGap());
+        this.setBorder(SizeHelper.getEmptyBorder());
 
         this.setLayout(mgr);
 
@@ -63,7 +62,7 @@ public class WorkspaceChooser extends JPanel {
             }
         });
 
-        this.add(GUI.createWideLabeledComponent(nameFilter, "Search:"), "0 0");
+        this.add(GUI.createWideLabeledComponent(nameFilter, "Search: "), "0 0");
 
         filteredSource = new FilteredTreeSource<Path<String>>(workspace.getTree(), filter);
 

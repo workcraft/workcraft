@@ -77,6 +77,7 @@ import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.Commands;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.GUI;
@@ -102,8 +103,8 @@ public class MainWindow extends JFrame {
     private static final String CONFIG_GUI_MAIN_TOOLBAR_GLOBAL_POSITION = "gui.main.toolbar.global.position";
     private static final String CONFIG_GUI_MAIN_TOOLBAR_MODEL_VISIBILITY = "gui.main.toolbar.model.visibility";
     private static final String CONFIG_GUI_MAIN_TOOLBAR_MODEL_POSITION = "gui.main.toolbar.model.position";
-    private static final String CONFIG_GUI_MAIN_TOOLBAR_TOOL_VISIBILITY = "gui.main.toolbar.tool.visibility";
-    private static final String CONFIG_GUI_MAIN_TOOLBAR_TOOL_POSITION = "gui.main.toolbar.tool.position";
+    private static final String CONFIG_GUI_MAIN_TOOLBAR_CONTROL_VISIBILITY = "gui.main.toolbar.tool.visibility";
+    private static final String CONFIG_GUI_MAIN_TOOLBAR_CONTROL_POSITION = "gui.main.toolbar.tool.position";
 
     private static final int MIN_WIDTH = 800;
     private static final int MIN_HEIGHT = 450;
@@ -152,7 +153,7 @@ public class MainWindow extends JFrame {
     private MainMenu mainMenu;
     private ToolBar globalToolbar;
     private JToolBar modelToolbar;
-    private JToolBar toolToolbar;
+    private JToolBar controlToolbar;
 
     private String lastSavePath = null;
     private String lastOpenPath = null;
@@ -308,11 +309,11 @@ public class MainWindow extends JFrame {
 
         // Create toolbars.
         globalToolbar = new ToolBar(this);
-        mainMenu.registerToolbar(globalToolbar);
         modelToolbar = new JToolBar("Model tools");
+        controlToolbar = new JToolBar("Tool controls");
+        mainMenu.registerToolbar(globalToolbar);
         mainMenu.registerToolbar(modelToolbar);
-        toolToolbar = new JToolBar("Tool controls");
-        mainMenu.registerToolbar(toolToolbar);
+        mainMenu.registerToolbar(controlToolbar);
         loadToolbarParametersFromConfig();
 
         // Create dockable windows.
@@ -452,9 +453,14 @@ public class MainWindow extends JFrame {
             DockingManager.registerDockable(documentPlaceholder);
             DockingManager.dock(documentPlaceholder, dockableWindow, DockingConstants.CENTER_REGION);
             utilityWindows.add(documentPlaceholder);
-            propertyEditorWindow.removeAll();
-            toolControlsWindow.removeAll();
             setWorkActionsEnableness(false);
+            modelToolbar.removeAll();
+            controlToolbar.removeAll();
+            propertyEditorWindow.clearObject();
+            toolControlsWindow.setContent(null);
+            displayDockableWindow(propertyEditorDockable);
+            closeDockableWindow(toolControlsDockable);
+            setPropertyEditorTitle(TITLE_PROPERTY_EDITOR);
         }
 
         DockingManager.close(dockableWindow);
@@ -515,7 +521,7 @@ public class MainWindow extends JFrame {
         try {
             DockingManager.loadLayoutModel();
         } catch (IOException | PersistenceException e) {
-            LogUtils.logWarningLine("Window layout could not be loaded from '" + file.getAbsolutePath() + "'.");
+            LogUtils.logWarning("Window layout could not be loaded from '" + file.getAbsolutePath() + "'.");
         }
 
         float xSplit = 0.888f;
@@ -567,8 +573,8 @@ public class MainWindow extends JFrame {
         final Framework framework = Framework.getInstance();
         if (framework.getWorkspace().isChanged() && !framework.getWorkspace().isTemporary()) {
             int result = JOptionPane.showConfirmDialog(this,
-                    "Current workspace has unsaved changes.\n" + "Save before closing?", DIALOG_CLOSE_WORK,
-                    JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    "Current workspace has unsaved changes.\n" + "Save before closing?",
+                    DIALOG_CLOSE_WORK, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
             switch (result) {
             case JOptionPane.YES_OPTION:
@@ -600,9 +606,9 @@ public class MainWindow extends JFrame {
                 CONFIG_GUI_MAIN_TOOLBAR_MODEL_VISIBILITY,
                 CONFIG_GUI_MAIN_TOOLBAR_MODEL_POSITION);
 
-        loadToolbarParametersFromConfig(toolToolbar,
-                CONFIG_GUI_MAIN_TOOLBAR_TOOL_VISIBILITY,
-                CONFIG_GUI_MAIN_TOOLBAR_TOOL_POSITION);
+        loadToolbarParametersFromConfig(controlToolbar,
+                CONFIG_GUI_MAIN_TOOLBAR_CONTROL_VISIBILITY,
+                CONFIG_GUI_MAIN_TOOLBAR_CONTROL_POSITION);
     }
 
     private void loadToolbarParametersFromConfig(JToolBar toolbar, String keyVisibility, String keyPosition) {
@@ -636,9 +642,9 @@ public class MainWindow extends JFrame {
                 CONFIG_GUI_MAIN_TOOLBAR_MODEL_VISIBILITY,
                 CONFIG_GUI_MAIN_TOOLBAR_MODEL_POSITION);
 
-        saveToolbarParametersToConfig(toolToolbar,
-                CONFIG_GUI_MAIN_TOOLBAR_TOOL_VISIBILITY,
-                CONFIG_GUI_MAIN_TOOLBAR_TOOL_POSITION);
+        saveToolbarParametersToConfig(controlToolbar,
+                CONFIG_GUI_MAIN_TOOLBAR_CONTROL_VISIBILITY,
+                CONFIG_GUI_MAIN_TOOLBAR_CONTROL_POSITION);
     }
 
     private void saveToolbarParametersToConfig(JToolBar toolbar, String keyVisibility, String keyPosition) {
@@ -749,7 +755,6 @@ public class MainWindow extends JFrame {
     }
 
     public void createWork(Path<String> directory) throws OperationCancelledException {
-        final Framework framework = Framework.getInstance();
         CreateWorkDialog dialog = new CreateWorkDialog(this);
         dialog.pack();
         GUI.centerToParent(dialog, this);
@@ -767,43 +772,35 @@ public class MainWindow extends JFrame {
                 }
                 VisualModel visualModel = visualModelDescriptor.create(mathModel);
                 ModelEntry me = new ModelEntry(info, visualModel);
+                final Framework framework = Framework.getInstance();
                 WorkspaceEntry we = framework.createWork(me, directory, null);
                 we.setChanged(false);
             } catch (VisualModelInstantiationException e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(this,
-                        "Visual model could not be created: " + e.getMessage()
-                                + "\n\nSee the Problems window for details.",
-                        "Error", JOptionPane.ERROR_MESSAGE);
+                DialogUtils.showError("Visual model could not be created: " + e.getMessage());
             }
         }
     }
 
     public void requestFocus(final GraphEditorPanel editor) {
-        // Note that focus is requested differently for active tab and when it is being activated.
-        // In the former case it is via invokeLater (otherwise it does not get focused).
-        // In the latter -- directly (otherwise it causes endless reactivation).
-        if (editorInFocus == editor) {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    editorInFocus.requestFocus();
-                }
-            });
-        } else {
+        if (editorInFocus != editor) {
             editorInFocus = editor;
-            editorInFocus.requestFocusInWindow();
-
-            WorkspaceEntry we = editor.getWorkspaceEntry();
-            mainMenu.setMenuForWorkspaceEntry(we);
-
             editorInFocus.updateToolsView();
             editorInFocus.updatePropertyView();
             updateDockableWindowVisibility();
 
-            Framework framework = Framework.getInstance();
-            framework.updateJavaScript(we);
+            WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
+            mainMenu.setMenuForWorkspaceEntry(we);
+            Framework.getInstance().updateJavaScript(we);
         }
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                if (editorInFocus != null) {
+                    editorInFocus.requestFocus();
+                }
+            }
+        });
     }
 
     public void updateDockableWindowVisibility() {
@@ -895,9 +892,8 @@ public class MainWindow extends JFrame {
                 if (!f.exists()) {
                     break;
                 }
-                if (JOptionPane.showConfirmDialog(this,
-                        "The file '" + f.getName() + "' already exists.\n" + "Overwrite it?", DIALOG_SAVE_WORK,
-                        JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                String msg = "The file '" + f.getName() + "' already exists.\n" + "Overwrite it?";
+                if (DialogUtils.showConfirm(msg, DIALOG_SAVE_WORK)) {
                     break;
                 }
             } else {
@@ -959,10 +955,7 @@ public class MainWindow extends JFrame {
                 pushRecentFile(file.getPath(), true);
                 lastOpenPath = file.getParent();
             } catch (DeserialisationException e) {
-                JOptionPane.showMessageDialog(this,
-                        "A problem was encountered while trying to load '" + file.getPath() + "'.\n"
-                        + "Please see Problems window for details.",
-                        "Load failed", JOptionPane.ERROR_MESSAGE);
+                DialogUtils.showError("A problem was encountered while trying to load '" + file.getPath() + "'.");
                 printCause(e);
             }
         }
@@ -994,10 +987,7 @@ public class MainWindow extends JFrame {
                 WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
                 framework.mergeWork(we, file);
             } catch (DeserialisationException e) {
-                JOptionPane.showMessageDialog(this,
-                        "A problem was encountered while trying to merge '" + file.getPath()
-                                + "'.\nPlease see Problems window for details.",
-                        "Load failed", JOptionPane.ERROR_MESSAGE);
+                DialogUtils.showError("A problem was encountered while trying to merge '" + file.getPath() + "'.");
                 printCause(e);
             }
         }
@@ -1034,7 +1024,7 @@ public class MainWindow extends JFrame {
                 }
             } catch (SerialisationException e) {
                 e.printStackTrace();
-                JOptionPane.showMessageDialog(this, e.getMessage(), "Model export failed", JOptionPane.ERROR_MESSAGE);
+                DialogUtils.showError(e.getMessage());
             }
             we.setChanged(false);
             refreshWorkspaceEntryTitle(we, true);
@@ -1076,7 +1066,7 @@ public class MainWindow extends JFrame {
             pushRecentFile(we.getFile().getPath(), true);
         } catch (SerialisationException e) {
             e.printStackTrace();
-            JOptionPane.showMessageDialog(this, e.getMessage(), "Model export failed", JOptionPane.ERROR_MESSAGE);
+            DialogUtils.showError(e.getMessage());
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -1101,7 +1091,6 @@ public class MainWindow extends JFrame {
     }
 
     public void importFrom(File file, Importer[] importers) {
-        final Framework framework = Framework.getInstance();
         if (checkFileMessageDialog(file, null)) {
             for (Importer importer: importers) {
                 if (importer.accept(file)) {
@@ -1112,15 +1101,13 @@ public class MainWindow extends JFrame {
                             title = FileUtils.getFileNameWithoutExtension(file);
                             me.getMathModel().setTitle(title);
                         }
+                        final Framework framework = Framework.getInstance();
                         framework.createWork(me, Path.<String>empty(), file.getName());
                         lastOpenPath = file.getParent();
                         break;
-                    } catch (IOException e) {
+                    } catch (IOException | DeserialisationException e) {
                         e.printStackTrace();
-                        JOptionPane.showMessageDialog(this, e.getMessage(), "I/O error", JOptionPane.ERROR_MESSAGE);
-                    } catch (DeserialisationException e) {
-                        e.printStackTrace();
-                        JOptionPane.showMessageDialog(this, e.getMessage(), "Import error", JOptionPane.ERROR_MESSAGE);
+                        DialogUtils.showError(e.getMessage());
                     }
                 }
             }
@@ -1376,12 +1363,10 @@ public class MainWindow extends JFrame {
     }
 
     public void resetLayout() {
-        if (JOptionPane.showConfirmDialog(this,
-                "This will reset the GUI to the default layout.\n" + "Are you sure you want to do this?",
-                DIALOG_RESET_LAYOUT, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-            if (JOptionPane.showConfirmDialog(this,
-                    "This action requires GUI restart.\n\n" + "Close all editor windows?", DIALOG_RESET_LAYOUT,
-                    JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+        String msg = "This will reset the GUI to the default layout.\n" + "Are you sure you want to do this?";
+        if (DialogUtils.showConfirm(msg, DIALOG_RESET_LAYOUT)) {
+            String msg2 = "This action requires GUI restart.\n\n" + "Close all editor windows?";
+            if (DialogUtils.showConfirm(msg2, DIALOG_RESET_LAYOUT)) {
                 try {
                     final Framework framework = Framework.getInstance();
                     framework.shutdownGUI();
@@ -1405,8 +1390,8 @@ public class MainWindow extends JFrame {
         return modelToolbar;
     }
 
-    public JToolBar getToolToolbar() {
-        return toolToolbar;
+    public JToolBar getControlToolbar() {
+        return controlToolbar;
     }
 
     public WorkspaceWindow getWorkspaceView() {

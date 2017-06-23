@@ -87,7 +87,7 @@ public class VerilogSerialiser implements ModelSerialiser {
         String topName = circuit.getTitle();
         if ((topName == null) || topName.isEmpty()) {
             topName = "UNTITLED";
-            LogUtils.logWarningLine("The top module does not have a name. Exporting as '" + topName + "' module.");
+            LogUtils.logWarning("The top module does not have a name. Exporting as '" + topName + "' module.");
         }
         out.print(KEYWORD_MODULE + " " + topName + " (");
         String inputPorts = "";
@@ -135,7 +135,7 @@ public class VerilogSerialiser implements ModelSerialiser {
                     hasAssignments = true;
                 } else {
                     String ref = circuitInfo.getComponentReference(component);
-                    LogUtils.logErrorLine("Unmapped component '" + ref + "' cannot be exported as assign statements.");
+                    LogUtils.logError("Unmapped component '" + ref + "' cannot be exported as assign statements.");
                 }
             }
         }
@@ -153,7 +153,7 @@ public class VerilogSerialiser implements ModelSerialiser {
     private boolean writeAssigns(PrintWriter out, CircuitSignalInfo circuitInfo, FunctionComponent component) {
         boolean result = false;
         String instanceFlatName = circuitInfo.getComponentFlattenReference(component);
-        LogUtils.logWarningLine("Component '" + instanceFlatName + "' is not associated to a module and is exported as assign statements.");
+        LogUtils.logWarning("Component '" + instanceFlatName + "' is not associated to a module and is exported as assign statements.");
         for (CircuitSignalInfo.SignalInfo signalInfo: circuitInfo.getComponentSignalInfos(component)) {
             String signalName = circuitInfo.getContactSignal(signalInfo.contact);
             BooleanFormula setFormula = signalInfo.setFormula;
@@ -187,7 +187,7 @@ public class VerilogSerialiser implements ModelSerialiser {
         if (substitutionRule != null) {
             String newModuleName = substitutionRule.newName;
             if (newModuleName != null) {
-                LogUtils.logInfoLine("In component '" + instanceFlatName + "' renaming module '" + moduleName + "' to '" + newModuleName + "'.");
+                LogUtils.logInfo("In component '" + instanceFlatName + "' renaming module '" + moduleName + "' to '" + newModuleName + "'.");
                 moduleName = newModuleName;
             }
         }
@@ -205,7 +205,7 @@ public class VerilogSerialiser implements ModelSerialiser {
             String signalName = circuitInfo.getContactSignal(contact);
             if ((signalName == null) || signalName.isEmpty()) {
                 String contactName = contact.getName();
-                LogUtils.logWarningLine("In component '" + instanceFlatName + "' contact '" + contactName + "' is disconnected.");
+                LogUtils.logWarning("In component '" + instanceFlatName + "' contact '" + contactName + "' is disconnected.");
                 signalName = "";
             }
             String contactName = SubstitutionUtils.getContactSubstitutionName(contact, substitutionRule, instanceFlatName);

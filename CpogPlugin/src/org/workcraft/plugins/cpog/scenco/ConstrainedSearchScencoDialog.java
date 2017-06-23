@@ -12,14 +12,12 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
-import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
@@ -37,6 +35,7 @@ import org.workcraft.plugins.cpog.gui.MyTableCellRenderer;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.util.GUI;
 import org.workcraft.util.IntDocument;
+import org.workcraft.util.DialogUtils;
 
 import info.clearthought.layout.TableLayout;
 
@@ -92,7 +91,7 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
         layout.setVGap(3);
 
         JPanel content = new JPanel(layout);
-        content.setBorder(BorderFactory.createEmptyBorder(3, 3, 3, 3));
+        content.setBorder(SizeHelper.getEmptyBorder());
 
         content.add(standardPanel, "0, 0");
         content.add(generationPanel, "0 1");
@@ -180,9 +179,7 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
             @Override
             public void actionPerformed(ActionEvent e) {
                 if (Integer.parseInt(bitsText.getText()) < bits + 1) {
-                    JOptionPane.showMessageDialog(null,
-                            "Bits selected are not enough to encode all scenarios.",
-                            "Not enough bits", JOptionPane.ERROR_MESSAGE);
+                    DialogUtils.showError("Bits selected are not enough to encode all scenarios.");
 
                     bitsText.setText(String.valueOf(bits + 1));
                 }
@@ -230,7 +227,7 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
         scrollPane = new JScrollPane(encodingTable);
 
         customPanel = new JPanel(new BorderLayout());
-        customPanel.setBorder(BorderFactory.createTitledBorder("Custom encoding"));
+        customPanel.setBorder(SizeHelper.getTitledBorder("Custom encoding"));
 
         JPanel propertyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 3, 0));
         propertyPanel.add(customEncodings);
@@ -289,8 +286,7 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
 
     private void createGenerationPanel(final int mode) {
         generationPanel = new JPanel(new SimpleFlowLayout());
-        generationPanel.setBorder(BorderFactory
-                .createTitledBorder("Search range"));
+        generationPanel.setBorder(SizeHelper.getTitledBorder("Search range"));
 
         // SPEED UP MODE
         fast = new JRadioButton("Synthesise only optimal (w.r.t. heuristic function) solutions (fast)");

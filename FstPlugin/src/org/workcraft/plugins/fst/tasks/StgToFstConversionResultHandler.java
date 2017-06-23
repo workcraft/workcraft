@@ -3,12 +3,9 @@ package org.workcraft.plugins.fst.tasks;
 import java.awt.Color;
 import java.util.HashMap;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.ExceptionDialog;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.plugins.fst.Fst;
@@ -20,6 +17,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.ColorGenerator;
 import org.workcraft.util.ColorUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -39,25 +37,22 @@ public class StgToFstConversionResultHandler extends DummyProgressMonitor<WriteS
 
     @Override
     public void finished(final Result<? extends WriteSgConversionResult> result, final String description) {
-        final Framework framework = Framework.getInstance();
         if (result.getOutcome() == Outcome.FINISHED) {
             final Fst model = result.getReturnValue().getConversionResult();
             final ModelEntry me = new ModelEntry(new FstDescriptor(), model);
             final Path<String> path = task.getWorkspaceEntry().getWorkspacePath();
+            final Framework framework = Framework.getInstance();
             this.result = framework.createWork(me, path);
             final VisualModel visualModel = me.getVisualModel();
             if (visualModel instanceof VisualFst) {
                 highlightCscConflicts((VisualFst) visualModel);
             }
         } else if (result.getOutcome() != Outcome.CANCELLED) {
-            final MainWindow mainWindow = framework.getMainWindow();
             if (result.getCause() == null) {
                 final Result<? extends ExternalProcessResult> petrifyResult = result.getReturnValue().getResult();
-                JOptionPane.showMessageDialog(mainWindow,
-                        "Petrify output:\n" + petrifyResult.getReturnValue().getErrorsHeadAndTail(),
-                        "Conversion failed", JOptionPane.WARNING_MESSAGE);
+                DialogUtils.showWarning("Petrify output:\n" + petrifyResult.getReturnValue().getErrorsHeadAndTail());
             } else {
-                ExceptionDialog.show(mainWindow, result.getCause());
+                ExceptionDialog.show(result.getCause());
             }
         }
     }

@@ -5,14 +5,10 @@ import java.io.PrintWriter;
 import java.util.HashMap;
 import java.util.UUID;
 
-import javax.swing.JOptionPane;
-
-import org.workcraft.Framework;
 import org.workcraft.Info;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.exceptions.ArgumentException;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
@@ -21,6 +17,7 @@ import org.workcraft.plugins.circuit.verilog.SubstitutionUtils;
 import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Hierarchy;
 
 public class SdcSerialiser implements ModelSerialiser {
@@ -41,8 +38,7 @@ public class SdcSerialiser implements ModelSerialiser {
     @Override
     public ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer refs) {
         if (model instanceof Circuit) {
-            MainWindow mainWindow = Framework.getInstance().getMainWindow();
-            String instancePrefix = JOptionPane.showInputDialog(mainWindow, "Prefix to add to all instance names:", "");
+            String instancePrefix = DialogUtils.showInput("Prefix to add to all instance names:", "");
             if (instancePrefix != null) {
                 PrintWriter writer = new PrintWriter(out);
                 writer.write(Info.getGeneratedByText("// SDC file ", "\n"));

@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.SelectionHelper;
@@ -18,6 +16,7 @@ import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.VisualFsm;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -37,21 +36,18 @@ public class FsmReachabilityVerificationCommand extends AbstractVerificationComm
 
     @Override
     public final void run(WorkspaceEntry we) {
-        final Framework framework = Framework.getInstance();
-        final MainWindow mainWindow = framework.getMainWindow();
         final Fsm fsm = WorkspaceUtils.getAs(we, Fsm.class);
         HashSet<State> unreachableState = checkReachability(fsm);
         if (unreachableState.isEmpty()) {
-            JOptionPane.showMessageDialog(mainWindow, "The model does not have unreachable states.",
-                    TITLE, JOptionPane.INFORMATION_MESSAGE);
+            DialogUtils.showInfo("The model does not have unreachable states.", TITLE);
         } else {
             String refStr = ReferenceHelper.getNodesAsString(fsm, (Collection) unreachableState, 50);
-            if (JOptionPane.showConfirmDialog(mainWindow,
-                    "The model has unreachable state:\n" + refStr + "\n\nSelect unreachable states?\n",
-                    TITLE, JOptionPane.WARNING_MESSAGE + JOptionPane.YES_NO_OPTION) == 0) {
-
-                VisualFsm visualFsm = WorkspaceUtils.getAs(we, VisualFsm.class);
+            String msg = "The model has unreachable state:\n" + refStr + "\n\nSelect unreachable states?\n";
+            if (DialogUtils.showConfirm(msg, TITLE)) {
+                final Framework framework = Framework.getInstance();
+                final MainWindow mainWindow = framework.getMainWindow();
                 mainWindow.getToolbox(we).selectToolInstance(SelectionTool.class);
+                VisualFsm visualFsm = WorkspaceUtils.getAs(we, VisualFsm.class);
                 SelectionHelper.selectByReferencedComponents(visualFsm, (HashSet) unreachableState);
             }
         }

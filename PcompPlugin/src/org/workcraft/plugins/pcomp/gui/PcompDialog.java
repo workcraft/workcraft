@@ -1,7 +1,6 @@
 package org.workcraft.plugins.pcomp.gui;
 
-import info.clearthought.layout.TableLayout;
-
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Window;
 import java.awt.event.ActionEvent;
@@ -9,7 +8,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.Set;
 
-import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
 import javax.swing.JButton;
@@ -21,6 +19,7 @@ import javax.swing.JRadioButton;
 import javax.swing.KeyStroke;
 
 import org.workcraft.Framework;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.exceptions.NotSupportedException;
 import org.workcraft.gui.trees.TreeWindow;
 import org.workcraft.gui.workspace.Path;
@@ -28,6 +27,8 @@ import org.workcraft.gui.workspace.WorkspaceChooser;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.stg.StgWorkspaceFilter;
 import org.workcraft.util.GUI;
+
+import info.clearthought.layout.TableLayout;
 
 @SuppressWarnings("serial")
 public class PcompDialog extends JDialog {
@@ -45,6 +46,7 @@ public class PcompDialog extends JDialog {
         super(owner, "Parallel composition", ModalityType.DOCUMENT_MODAL);
         final JPanel content = createContents();
         setContentPane(content);
+        setMinimumSize(new Dimension(450, 450));
     }
 
     public Set<Path<String>> getSourcePaths() {
@@ -88,11 +90,10 @@ public class PcompDialog extends JDialog {
         };
 
         final JPanel content = new JPanel(new TableLayout(sizes));
+        content.setBorder(SizeHelper.getEmptyBorder());
         final Framework framework = Framework.getInstance();
         chooser = new WorkspaceChooser(framework.getWorkspace(), new StgWorkspaceFilter());
-        chooser.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createTitledBorder("Source STGs"),
-                BorderFactory.createEmptyBorder(2, 2, 2, 2)));
+        chooser.setBorder(SizeHelper.getTitledBorder("Source STGs"));
 
         chooser.setCheckBoxMode(TreeWindow.CheckBoxMode.LEAF);
         content.add(chooser, "0 0 0 1");
@@ -103,9 +104,7 @@ public class PcompDialog extends JDialog {
 
         JPanel outputOptions = new JPanel();
         outputOptions.setLayout(new BoxLayout(outputOptions, BoxLayout.Y_AXIS));
-        outputOptions.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createTitledBorder("Outputs"),
-                BorderFactory.createEmptyBorder(2, 2, 2, 2)));
+        outputOptions.setBorder(SizeHelper.getTitledBorder("Outputs"));
 
         leaveOutputs = new JRadioButton("Leave as outputs");
         internalize = new JRadioButton("Make internal");
@@ -126,9 +125,7 @@ public class PcompDialog extends JDialog {
 
         JPanel options = new JPanel();
         options.setLayout(new BoxLayout(options, BoxLayout.Y_AXIS));
-        options.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createTitledBorder("Options"),
-                BorderFactory.createEmptyBorder(2, 2, 2, 2)));
+        options.setBorder(SizeHelper.getTitledBorder("Options"));
         options.add(showInEditor, 0);
         options.add(outputOptions, 1);
         options.add(sharedOutputs, 2);

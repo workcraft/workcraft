@@ -3,12 +3,11 @@ package org.workcraft.plugins.stg;
 import java.util.LinkedList;
 import java.util.List;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.Config;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.util.DialogUtils;
 
 public class StgSettings implements Settings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
@@ -112,16 +111,12 @@ public class StgSettings implements Settings {
     }
 
     private void signalLevelError() {
-        JOptionPane.showMessageDialog(null,
-                "Signal level suffix must only consist of letters, numbers and underscores.",
-                "STG settings", JOptionPane.ERROR_MESSAGE);
+        DialogUtils.showError("Signal level suffix must only consist of letters, numbers and underscores.");
     }
 
     private void signalLevelWarning() {
-        JOptionPane.showMessageDialog(null,
-                "Short signal level suffix increases the risk of name clashing.\n"
-                        + "Consider making it at least two characters long.",
-                        "STG settings", JOptionPane.WARNING_MESSAGE);
+        DialogUtils.showWarning("Short signal level suffix increases the risk of name clashing.\n"
+                        + "Consider making it at least two characters long.");
     }
 
     @Override

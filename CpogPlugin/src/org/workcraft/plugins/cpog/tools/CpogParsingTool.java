@@ -13,8 +13,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -36,6 +34,7 @@ import org.workcraft.plugins.cpog.VisualScenarioPage;
 import org.workcraft.plugins.cpog.VisualVariable;
 import org.workcraft.plugins.cpog.VisualVertex;
 import org.workcraft.util.Func;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -209,8 +208,7 @@ public class CpogParsingTool {
             originalSelection = visualCpog.selection();
             visualCpog.selectAll();
             if (visualCpog.selection().isEmpty()) {
-                JOptionPane.showMessageDialog(null, "There are no graphs to select", "Graph to expression error",
-                                JOptionPane.ERROR_MESSAGE);
+                DialogUtils.showError("There are no graphs to select");
                 return "";
             }
         } else {
@@ -806,7 +804,6 @@ public class CpogParsingTool {
                                             arc.setCondition(parseBool(FormulaToString.toString(arc.getCondition()) + "|" + a.getBoolForm(), visualCpog));
                                         }
                                     } catch (ParseException e) {
-                                        // TODO Auto-generated catch block
                                         e.printStackTrace();
                                     }
                                 }

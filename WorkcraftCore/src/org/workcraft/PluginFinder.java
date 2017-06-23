@@ -95,12 +95,12 @@ public class PluginFinder {
                         cls.getConstructor();
                         result.add(cls);
                     } catch (NoSuchMethodException ex) {
-                        LogUtils.logWarningLine("Plugin '" + cls.getName() + "' does not have a default constructor. Skipping.");
+                        LogUtils.logWarning("Plugin '" + cls.getName() + "' does not have a default constructor. Skipping.");
                     }
                 }
             }
         } catch (LinkageError e) {
-            LogUtils.logErrorLine("Bad class: " + e.getMessage());
+            LogUtils.logError("Bad class: " + e.getMessage());
         } catch (ClassNotFoundException e) {
             throw new PluginInstantiationException(e);
         }

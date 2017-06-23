@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.swing.JOptionPane;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -23,6 +22,7 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.LinkedTwoWayMap;
 import org.workcraft.util.LogUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.XmlUtil;
 import org.xml.sax.SAXException;
 
@@ -58,7 +58,6 @@ public class Workspace {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-
         addMount(Path.<String>empty(), getBaseDir(), true);
     }
 
@@ -127,7 +126,7 @@ public class Workspace {
     }
 
     public void fireWorkspaceChanged() {
-        // TODO : categorize and route events
+        // TODO : categorise and route events
         for (WorkspaceListener listener : workspaceListeners) {
             listener.workspaceLoaded();
         }
@@ -215,6 +214,7 @@ public class Workspace {
         }
         mounts.clear();
         permanentMounts.clear();
+        fireWorkspaceChanged();
     }
 
     public void save() {
@@ -387,7 +387,8 @@ public class Workspace {
             openFiles.removeKey(from);
             openFiles.put(to, openFileFrom);
         }
-        LogUtils.logInfoLine(msg);
+        LogUtils.logInfo(msg);
+        fireWorkspaceChanged();
     }
 
     public MountTree getMountTree(Path<String> path) {
@@ -410,7 +411,7 @@ public class Workspace {
                     deleteEntry(getPath(f));
                 }
                 if (!file.delete()) {
-                    JOptionPane.showMessageDialog(null, "Deletion failed");
+                    DialogUtils.showError("Deletion failed");
                 }
             } else {
                 deleteFile(path);
@@ -427,7 +428,7 @@ public class Workspace {
         openFiles.removeValue(openFile);
         final File file = getFile(path);
         if (file.exists() && !file.delete()) {
-            JOptionPane.showMessageDialog(null, "Deletion failed");
+            DialogUtils.showError("Deletion failed");
         }
     }
 

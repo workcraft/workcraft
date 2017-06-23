@@ -14,13 +14,13 @@ import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 import org.workcraft.Framework;
 import org.workcraft.util.GUI;
+import org.workcraft.util.DialogUtils;
 
 @SuppressWarnings("serial")
 public class PGMinerImportDialog extends JDialog {
@@ -85,7 +85,7 @@ public class PGMinerImportDialog extends JDialog {
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         pack();
-        this.setLocationRelativeTo(Framework.getInstance().getMainWindow());
+        setLocationRelativeTo(Framework.getInstance().getMainWindow());
     }
 
     public boolean getExtractConcurrency() {
@@ -129,13 +129,9 @@ public class PGMinerImportDialog extends JDialog {
                         if (!f.exists()) {
                             throw new FileNotFoundException();
                         }
-
                         filePath.setText(f.getAbsolutePath());
-
                     } catch (FileNotFoundException e1) {
-                        // TODO Auto-generated catch block
-                        JOptionPane.showMessageDialog(null, e1.getMessage(),
-                                "File not found error", JOptionPane.ERROR_MESSAGE);
+                        DialogUtils.showError(e1.getMessage());
                     }
                 }
             }
@@ -150,8 +146,7 @@ public class PGMinerImportDialog extends JDialog {
             public void actionPerformed(ActionEvent arg0) {
                 File eventLog = new File(filePath.getText());
                 if (!eventLog.exists()) {
-                    JOptionPane.showMessageDialog(null, "The event log chosen does not exist",
-                            "File not found", JOptionPane.ERROR_MESSAGE);
+                    DialogUtils.showError("The event log chosen does not exist");
                 } else {
                     canImport = true;
                     setVisible(false);

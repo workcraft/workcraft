@@ -83,7 +83,7 @@ public class FileCellEditor extends AbstractCellEditor implements TableCellEdito
             }
             fc.setDialogTitle("Select file");
             GUI.sizeFileChooserToScreen(fc, mainWindow.getDisplayMode());
-            if (fc.showDialog(null, "Open") == JFileChooser.APPROVE_OPTION) {
+            if (fc.showDialog(mainWindow, "Open") == JFileChooser.APPROVE_OPTION) {
                 file = fc.getSelectedFile();
             }
         } else if (TAG_CLEAR.equals(e.getActionCommand())) {

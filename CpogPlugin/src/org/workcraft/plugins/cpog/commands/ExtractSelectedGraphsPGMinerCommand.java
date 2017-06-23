@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.Framework;
 import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.plugins.cpog.VisualCpog;
@@ -14,6 +12,7 @@ import org.workcraft.plugins.cpog.tasks.PGMinerResultHandler;
 import org.workcraft.plugins.cpog.tasks.PGMinerTask;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;
 import org.workcraft.tasks.TaskManager;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -58,10 +57,8 @@ public class ExtractSelectedGraphsPGMinerCommand implements Command {
                 if (index >= 0) {
                     graph = graph.substring(index + 2);
                 } else {
-                    JOptionPane.showMessageDialog(null,
-                            "Error: A graph which is not a scenario has been selected.\n"
-                            + "Please remove this from the selection, or group this as a page to continue",
-                            "Error", JOptionPane.ERROR_MESSAGE);
+                    DialogUtils.showError("Error: A graph which is not a scenario has been selected.\n"
+                            + "Please remove this from the selection, or group this as a page to continue");
                     return null;
                 }
                 graph = graph.trim();
@@ -78,9 +75,7 @@ public class ExtractSelectedGraphsPGMinerCommand implements Command {
         } catch (IOException exception) {
             exception.printStackTrace();
         } catch (ArrayIndexOutOfBoundsException e2) {
-            JOptionPane.showMessageDialog(null,
-                    "Error: No scenarios have been selected",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+            DialogUtils.showError("No scenarios have been selected");
             throw e2;
         }
         return null;

@@ -2,8 +2,6 @@ package org.workcraft.plugins.mpsat;
 
 import java.util.List;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat.gui.MpsatReachibilityDialog;
@@ -11,6 +9,7 @@ import org.workcraft.plugins.mpsat.gui.MpsatSolution;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.Result;
 import org.workcraft.util.GUI;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 final class MpsatDeadlockResultHandler implements Runnable {
@@ -27,16 +26,14 @@ final class MpsatDeadlockResultHandler implements Runnable {
     public void run() {
         MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue());
         List<MpsatSolution> solutions = mdp.getSolutions();
-        MainWindow mainWindow = Framework.getInstance().getMainWindow();
         if (solutions.isEmpty()) {
-            String message = "The system is deadlock-free.";
-            JOptionPane.showMessageDialog(mainWindow, message, TITLE, JOptionPane.INFORMATION_MESSAGE);
+            DialogUtils.showInfo("The system is deadlock-free.", TITLE);
         } else if (!MpsatSolution.hasTraces(solutions)) {
-            String message = "The system has a deadlock.";
-            JOptionPane.showMessageDialog(mainWindow, message, TITLE, JOptionPane.WARNING_MESSAGE);
+            DialogUtils.showWarning("The system has a deadlock.", TITLE);
         } else {
             String message = "<html><br>&#160;The system has a deadlock after the following trace(s):<br><br></html>";
             final MpsatReachibilityDialog solutionsDialog = new MpsatReachibilityDialog(we, TITLE, message, solutions);
+            MainWindow mainWindow = Framework.getInstance().getMainWindow();
             GUI.centerToParent(solutionsDialog, mainWindow);
             solutionsDialog.setVisible(true);
         }

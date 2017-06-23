@@ -95,7 +95,6 @@ public class BlockConnector {
                             VisualSONConnection newCon = visualNet.getVisualConnections((VisualComponent) block, (VisualComponent) second).iterator().next();
                             newCon.setTime(con.getTime());
                         } catch (InvalidConnectionException e) {
-                            // TODO Auto-generated catch block
                             e.printStackTrace();
                         }
                     }
@@ -220,7 +219,6 @@ public class BlockConnector {
                                 //remove value
                                 interfaceValue = interfaceValue.replace(info + ";", "");
                             } catch (InvalidConnectionException ex) {
-                                // TODO Auto-generated catch block
                                 ex.printStackTrace();
                             }
                             if (con != null) {

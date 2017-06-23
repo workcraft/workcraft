@@ -14,7 +14,6 @@ import java.awt.event.WindowEvent;
 import java.io.File;
 import java.util.ArrayList;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
@@ -27,9 +26,9 @@ import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.mpsat.MpsatMode;
-import org.workcraft.plugins.mpsat.MpsatPresetManager;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.MpsatParameters.SolutionMode;
+import org.workcraft.plugins.mpsat.MpsatPresetManager;
 import org.workcraft.plugins.shared.gui.PresetManagerPanel;
 import org.workcraft.plugins.shared.presets.Preset;
 import org.workcraft.plugins.shared.presets.SettingsToControlsMapper;
@@ -55,19 +54,17 @@ public class MpsatAssertionDialog extends JDialog {
         createButtonsPanel();
 
         int buttonPanelHeight = buttonsPanel.getPreferredSize().height;
-        int hGap = SizeHelper.getCompactLayoutHGap();
-        int vGap = SizeHelper.getCompactLayoutVGap();
         double[][] size = new double[][] {
             {TableLayout.FILL},
             {TableLayout.PREFERRED, TableLayout.FILL, buttonPanelHeight},
         };
 
         final TableLayout layout = new TableLayout(size);
-        layout.setHGap(hGap);
-        layout.setVGap(vGap);
+        layout.setHGap(SizeHelper.getLayoutHGap());
+        layout.setVGap(SizeHelper.getLayoutVGap());
 
         JPanel contentPanel = new JPanel(layout);
-        contentPanel.setBorder(BorderFactory.createEmptyBorder(hGap, vGap, hGap, vGap));
+        contentPanel.setBorder(SizeHelper.getEmptyBorder());
 
         contentPanel.add(presetPanel, "0 0");
         contentPanel.add(predicatePanel, "0 1");
@@ -92,7 +89,7 @@ public class MpsatAssertionDialog extends JDialog {
                 assertionText.requestFocus();
             }
         });
-        setMinimumSize(new Dimension(420, 350));
+        setMinimumSize(new Dimension(450, 350));
     }
 
     private void createPresetPanel() {
@@ -119,9 +116,10 @@ public class MpsatAssertionDialog extends JDialog {
     private void createAssertionPanel() {
         predicatePanel = new JPanel(new BorderLayout());
         String title = "Assertion (use '" + NamespaceHelper.getHierarchySeparator() + "' as hierarchy separator)";
-        predicatePanel.setBorder(BorderFactory.createTitledBorder(title));
+        predicatePanel.setBorder(SizeHelper.getTitledBorder(title));
 
         assertionText = new JTextArea();
+        assertionText.setMargin(SizeHelper.getTextMargin());
         assertionText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
         assertionText.setText("");
         assertionText.addKeyListener(new KeyAdapter() {
@@ -135,7 +133,7 @@ public class MpsatAssertionDialog extends JDialog {
         JScrollPane assertionScrollPane = new JScrollPane(assertionText);
 
         JPanel propertyPanel = new JPanel(new FlowLayout(FlowLayout.LEFT,
-                SizeHelper.getCompactLayoutHGap(), SizeHelper.getCompactLayoutVGap()));
+                SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
 
         predicatePanel.add(assertionScrollPane, BorderLayout.CENTER);
         predicatePanel.add(propertyPanel, BorderLayout.SOUTH);

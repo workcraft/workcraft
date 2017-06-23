@@ -1,13 +1,10 @@
 package org.workcraft.gui.graph.editors;
 
-import javax.swing.JOptionPane;
-
-import org.workcraft.Framework;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.ArgumentException;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class NameInplaceEditor extends AbstractInplaceEditor {
@@ -28,9 +25,7 @@ public class NameInplaceEditor extends AbstractInplaceEditor {
             model.setMathName(component, text);
             we.saveMemento();
         } catch (ArgumentException e) {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
-            JOptionPane.showMessageDialog(mainWindow, e.getMessage());
+            DialogUtils.showError(e.getMessage());
         }
     }
 

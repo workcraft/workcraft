@@ -89,7 +89,7 @@ public final class InsertDummyTransformationCommand extends AbstractTransformati
                 predConnection.copyStyle(connection);
                 ConnectionHelper.addControlPoints(predConnection, prefixLocationsInRootSpace);
             } catch (InvalidConnectionException e) {
-                LogUtils.logWarningLine(e.getMessage());
+                LogUtils.logWarning(e.getMessage());
             }
             try {
                 LinkedList<Point2D> suffixLocationsInRootSpace = ConnectionHelper.getSuffixControlPoints(connection, splitPoint);
@@ -100,7 +100,7 @@ public final class InsertDummyTransformationCommand extends AbstractTransformati
                 }
                 ConnectionHelper.addControlPoints(succConnection, suffixLocationsInRootSpace);
             } catch (InvalidConnectionException e) {
-                LogUtils.logWarningLine(e.getMessage());
+                LogUtils.logWarning(e.getMessage());
             }
             stg.remove(connection);
         }

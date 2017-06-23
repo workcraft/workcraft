@@ -639,7 +639,7 @@ public class MainWindowActions {
                 URI uri = new URI("https://github.com/tuura/workcraft/issues/new");
                 DesktopApi.browse(uri);
             } catch (URISyntaxException e) {
-                LogUtils.logErrorLine(e.getMessage());
+                LogUtils.logError(e.getMessage());
             }
         }
     };
@@ -655,7 +655,7 @@ public class MainWindowActions {
                 URI uri = new URI("mailto", Info.getEmail(), null);
                 DesktopApi.browse(uri);
             } catch (URISyntaxException e) {
-                LogUtils.logErrorLine(e.getMessage());
+                LogUtils.logError(e.getMessage());
             }
         }
     };

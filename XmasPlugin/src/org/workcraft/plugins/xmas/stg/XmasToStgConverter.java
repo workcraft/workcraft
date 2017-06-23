@@ -173,7 +173,7 @@ public class XmasToStgConverter extends AbstractToStgConverter {
         }
         for (VisualComponent component: remainingComponents) {
             String name = getXmasModel().getNodeMathReference(component);
-            LogUtils.logErrorLine("Cannot derive an STG for xMAS component '" + name + "' of type " + component.getClass().getName());
+            LogUtils.logError("Cannot derive an STG for xMAS component '" + name + "' of type " + component.getClass().getName());
         }
         getXmasModel().selectNone();
     }

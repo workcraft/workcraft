@@ -5,18 +5,18 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JList;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.shared.presets.Preset;
 import org.workcraft.plugins.shared.presets.PresetManager;
+import org.workcraft.util.DialogUtils;
 
 import info.clearthought.layout.TableLayout;
 
@@ -35,11 +35,11 @@ public class PresetManagerDialog<T> extends JDialog {
         };
 
         TableLayout layout = new TableLayout(size);
-        layout.setVGap(4);
-        layout.setHGap(4);
+        layout.setHGap(SizeHelper.getLayoutHGap());
+        layout.setVGap(SizeHelper.getLayoutVGap());
 
         JPanel content = new JPanel(layout);
-        content.setBorder(BorderFactory.createEmptyBorder(2, 2, 2, 2));
+        content.setBorder(SizeHelper.getEmptyBorder());
 
         this.setLayout(new BorderLayout());
         this.add(content, BorderLayout.CENTER);
@@ -60,9 +60,8 @@ public class PresetManagerDialog<T> extends JDialog {
                 if (o != null) {
                     @SuppressWarnings("unchecked")
                     Preset<T> p = (Preset<T>) o;
-                    if (JOptionPane.showConfirmDialog(PresetManagerDialog.this,
-                            "Are you sure you want to delete the preset \'" + p.getDescription() + "\'?",
-                            DIALOG_DELETE_PRESET, JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+                    String msg = "Are you sure you want to delete the preset \'" + p.getDescription() + "\'?";
+                    if (DialogUtils.showConfirm(msg, DIALOG_DELETE_PRESET)) {
                         presetManager.delete(p);
                         listDataModel.removeElement(o);
                         if (listDataModel.getSize() == 0) {
@@ -80,9 +79,8 @@ public class PresetManagerDialog<T> extends JDialog {
             public void actionPerformed(ActionEvent e) {
                 Object o = list.getSelectedValue();
                 if (o != null) {
-                    String desc = JOptionPane.showInputDialog(PresetManagerDialog.this,
-                            "Please enter the new preset description:", (
-                            (Preset<T>) o).getDescription());
+                    String initial = ((Preset<T>) o).getDescription();
+                    String desc = DialogUtils.showInput("Please enter the new preset description:", initial);
                     if (desc != null) {
                         presetManager.rename((Preset<T>) o, desc);
                     }

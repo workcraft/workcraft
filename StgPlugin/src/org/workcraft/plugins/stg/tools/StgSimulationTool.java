@@ -18,7 +18,6 @@ import javax.activation.DataHandler;
 import javax.swing.DropMode;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
@@ -59,6 +58,7 @@ import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.converters.StgToDtdConverter;
 import org.workcraft.util.ColorGenerator;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Pair;
 import org.workcraft.workspace.ModelEntry;
 
@@ -393,9 +393,9 @@ public class StgSimulationTool extends PetriSimulationTool {
     }
 
     @Override
-    public JPanel updatePanel(final GraphEditor editor) {
+    public JPanel getControlsPanel(final GraphEditor editor) {
         if (panel == null) {
-            panel = super.updatePanel(editor);
+            panel = super.getControlsPanel(editor);
             stateTable = new StateTable(new StateTableModel());
             statePane.setViewportView(stateTable);
             traceTable.setDefaultRenderer(Object.class, new TraceTableCellRendererImplementation());
@@ -473,12 +473,9 @@ public class StgSimulationTool extends PetriSimulationTool {
 
     @Override
     public void generateTraceGraph(final GraphEditor editor) {
-        final Framework framework = Framework.getInstance();
         final Trace trace = getCombinedTrace();
         if (trace.isEmpty()) {
-            JOptionPane.showMessageDialog(framework.getMainWindow(),
-                    "Cannot generate a timing diagram for an empty trace.",
-                    "Generation of Timing Diagram", JOptionPane.WARNING_MESSAGE);
+            DialogUtils.showWarning("Cannot generate a timing diagram for an empty trace.");
         } else {
             final Stg stg = getUnderlyingStg();
             final LinkedList<Pair<String, Color>> visibleSignals = getVisibleSignals(stg);
@@ -486,6 +483,7 @@ public class StgSimulationTool extends PetriSimulationTool {
             final VisualDtd dtd = converter.getVisualDtd();
             final Path<String> path = editor.getWorkspaceEntry().getWorkspacePath();
             final ModelEntry me = new ModelEntry(new DtdDescriptor(), dtd);
+            final Framework framework = Framework.getInstance();
             framework.createWork(me, path);
         }
     }

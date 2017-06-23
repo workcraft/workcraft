@@ -6,8 +6,6 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.SelectionHelper;
@@ -18,6 +16,7 @@ import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.VisualFsm;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -42,8 +41,7 @@ public class FsmDeadlockVerificationCommand extends AbstractVerificationCommand 
         final Fsm fsm = WorkspaceUtils.getAs(we, Fsm.class);
         HashSet<State> deadlockStates = checkDeadlock(fsm);
         if (deadlockStates.isEmpty()) {
-            JOptionPane.showMessageDialog(mainWindow, "The model is deadlock-free.",
-                    TITLE, JOptionPane.INFORMATION_MESSAGE);
+            DialogUtils.showInfo("The model is deadlock-free.", TITLE);
         } else {
             HashSet<State> finalDeadlockStates = new HashSet<>();
             for (State state: deadlockStates) {
@@ -62,9 +60,7 @@ public class FsmDeadlockVerificationCommand extends AbstractVerificationCommand 
                 message += "\n\nFinal deadlock states: \n" + stateStr;
             }
             message += "\n\nSelect deadlock states?\n";
-            if (JOptionPane.showConfirmDialog(mainWindow, message,
-                    TITLE, JOptionPane.WARNING_MESSAGE + JOptionPane.YES_NO_OPTION) == 0) {
-
+            if (DialogUtils.showConfirm(message, TITLE)) {
                 VisualFsm visualFsm = WorkspaceUtils.getAs(we, VisualFsm.class);
                 mainWindow.getToolbox(we).selectToolInstance(SelectionTool.class);
                 SelectionHelper.selectByReferencedComponents(visualFsm, (HashSet) deadlockStates);

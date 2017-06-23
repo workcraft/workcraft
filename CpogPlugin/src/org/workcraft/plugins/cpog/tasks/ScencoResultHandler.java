@@ -3,7 +3,6 @@ package org.workcraft.plugins.cpog.tasks;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 
-import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
@@ -20,6 +19,7 @@ import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.FileUtils;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -73,7 +73,6 @@ public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
             }
         } else if (result.getOutcome() == Outcome.FAILED) {
             final String errorMessage = getErrorMessage(result.getReturnValue());
-            final Framework framework = Framework.getInstance();
 
             // In case of an internal error, activate automatically verbose mode
             if (errorMessage.equals(INTERNAL_ERROR_MSG)) {
@@ -88,7 +87,7 @@ public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
             FileUtils.deleteOnExitRecursively(dir);
 
             //Display the error
-            JOptionPane.showMessageDialog(framework.getMainWindow(), errorMessage, "SCENCO error", JOptionPane.ERROR_MESSAGE);
+            DialogUtils.showError(errorMessage);
         }
     }
 

@@ -254,7 +254,7 @@ void header() :
         }
     |   t = <UNSUPPORTED_HEADER> <REST>
         {
-            LogUtils.logWarningLine("Unsupported keyword '" + t.image + "' in line " + t.beginLine + ". The whole line is ignored.");
+            LogUtils.logWarning("Unsupported keyword '" + t.image + "' in line " + t.beginLine + ". The whole line is ignored.");
         }
     )
 }

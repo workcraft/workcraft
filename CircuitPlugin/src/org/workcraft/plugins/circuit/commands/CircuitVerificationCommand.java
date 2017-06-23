@@ -2,10 +2,7 @@ package org.workcraft.plugins.circuit.commands;
 
 import java.io.File;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.Framework;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.VisualCircuit;
@@ -14,12 +11,11 @@ import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.tasks.TaskManager;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class CircuitVerificationCommand extends AbstractVerificationCommand {
-
-    private static final String TITLE = "Circuit vetification";
 
     public String getDisplayName() {
         return "Conformation, deadlock and output persistency (reuse unfolding) [MPSat]";
@@ -32,13 +28,9 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
 
     @Override
     public void run(WorkspaceEntry we) {
-        final Framework framework = Framework.getInstance();
-        final MainWindow mainWindow = framework.getMainWindow();
-
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         if (circuit.getFunctionComponents().isEmpty()) {
-            JOptionPane.showMessageDialog(mainWindow, "The circuit must have components.",
-                    "Error", JOptionPane.ERROR_MESSAGE);
+            DialogUtils.showError("The circuit must have components.");
             return;
         }
 
@@ -56,25 +48,19 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
             }
             if (checkConformation) {
                 if (checkDeadlock || checkPersistency) {
-                    int answer = JOptionPane.showConfirmDialog(mainWindow, "Warning: " + messagePrefix
+                    boolean proceed = DialogUtils.showConfirm("Warning: " + messagePrefix
                             + "The circuit conformation cannot be checked without environment STG.\n"
                             + "Proceed with verification of the other properties?\n",
-                            TITLE, JOptionPane.YES_NO_OPTION);
-
-                    boolean proceed = answer == JOptionPane.YES_OPTION;
+                            "Circuit verification");
                     checkDeadlock &= proceed;
                     checkPersistency &= proceed;
                 } else {
-                    JOptionPane.showMessageDialog(mainWindow, "Error: " + messagePrefix
-                            + "The circuit conformation cannot be checked without environment STG.\n",
-                            TITLE, JOptionPane.ERROR_MESSAGE);
+                    DialogUtils.showError(messagePrefix + "The circuit conformation cannot be checked without environment STG.\n");
                     return;
                 }
                 checkConformation = false;
             } else {
-                JOptionPane.showMessageDialog(mainWindow, "Warning: " + messagePrefix
-                        + "The circuit will be verified without environment STG.\n",
-                        TITLE, JOptionPane.WARNING_MESSAGE);
+                DialogUtils.showWarning(messagePrefix + "The circuit will be verified without environment STG.\n");
             }
         }
 
@@ -85,6 +71,7 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
             if (!title.isEmpty()) {
                 description += "(" + title + ")";
             }
+            final Framework framework = Framework.getInstance();
             final TaskManager taskManager = framework.getTaskManager();
             final MpsatChainResultHandler monitor = new MpsatChainResultHandler(task);
             taskManager.queue(task, description, monitor);

@@ -27,8 +27,17 @@ public class OutputWindow extends JPanel {
     protected boolean streamCaptured = false;
     private final JTextArea txtStdOut;
 
+    enum LogType {
+        INFO,
+        WARNING,
+        ERROR,
+        STDOUT,
+        STDERR,
+    }
+
     public OutputWindow() {
         txtStdOut = new JTextArea();
+        txtStdOut.setMargin(SizeHelper.getTextMargin());
         txtStdOut.setLineWrap(true);
         txtStdOut.setEditable(false);
         txtStdOut.setWrapStyleWord(true);
@@ -39,8 +48,9 @@ public class OutputWindow extends JPanel {
 
         JScrollPane scrollStdOut = new JScrollPane();
         scrollStdOut.setViewportView(txtStdOut);
-        setLayout(new BorderLayout(0, 0));
-        this.add(scrollStdOut, BorderLayout.CENTER);
+
+        setLayout(new BorderLayout());
+        add(scrollStdOut, BorderLayout.CENTER);
     }
 
     public void captureStream() {
@@ -63,7 +73,7 @@ public class OutputWindow extends JPanel {
 
     class OutputStreamView extends FilterOutputStream {
         private final JTextArea target;
-        private String oldPrefix = null;
+        private LogType oldType = null;
         private boolean needsNewLine = false;
 
         OutputStreamView(OutputStream aStream, JTextArea target) {
@@ -89,33 +99,33 @@ public class OutputWindow extends JPanel {
 
         private void print(String text) {
             Highlighter.HighlightPainter painter = null;
-            String prefix = oldPrefix;
-            if (text.startsWith(LogUtils.PREFIX_INFO)) {
-                prefix = LogUtils.PREFIX_INFO;
+            LogType type = oldType;
+            if (LogUtils.isInfoText(text)) {
+                type = LogType.INFO;
                 painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getInfoBackground());
-            } else if (text.startsWith(LogUtils.PREFIX_WARNING)) {
-                prefix = LogUtils.PREFIX_WARNING;
+            } else if (LogUtils.isWarningText(text)) {
+                type = LogType.WARNING;
                 painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getWarningBackground());
-            } else if (text.startsWith(LogUtils.PREFIX_ERROR)) {
-                prefix = LogUtils.PREFIX_ERROR;
+            } else if (LogUtils.isErrorText(text)) {
+                type = LogType.ERROR;
                 painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getErrorBackground());
-            } else if (text.startsWith(LogUtils.PREFIX_STDOUT)) {
-                prefix = LogUtils.PREFIX_STDOUT;
-                text = text.substring(prefix.length());
+            } else if (LogUtils.isStdoutText(text)) {
+                type = LogType.STDOUT;
+                text = LogUtils.getTextWithoutPrefix(text);
                 painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getStdoutBackground());
-            } else if (text.startsWith(LogUtils.PREFIX_STDERR)) {
-                prefix = LogUtils.PREFIX_STDERR;
-                text = text.substring(prefix.length());
+            } else if (LogUtils.isStderrText(text)) {
+                type = LogType.STDERR;
+                text = LogUtils.getTextWithoutPrefix(text);
                 painter = new DefaultHighlighter.DefaultHighlightPainter(CommonLogSettings.getStderrBackground());
             } else if (!text.equals("\n")) {
-                prefix = null;
+                type = null;
                 painter = new DefaultHighlighter.DefaultHighlightPainter(target.getBackground());
             }
 
-            if ((oldPrefix != null) && !oldPrefix.equals(prefix) && needsNewLine) {
+            if ((oldType != null) && (oldType != type) && needsNewLine) {
                 target.append("\n");
             }
-            oldPrefix = prefix;
+            oldType = type;
             needsNewLine = !text.endsWith("\n");
 
             int fromPos = target.getDocument().getLength();

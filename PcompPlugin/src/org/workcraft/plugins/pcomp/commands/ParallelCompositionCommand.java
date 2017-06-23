@@ -50,11 +50,11 @@ public class ParallelCompositionCommand implements Command {
     public final void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         if (!framework.isInGuiMode()) {
-            LogUtils.logErrorLine("Tool '" + getClass().getSimpleName() + "' only works in GUI mode.");
+            LogUtils.logError("Tool '" + getClass().getSimpleName() + "' only works in GUI mode.");
         } else {
             MainWindow mainWindow = framework.getMainWindow();
             PcompDialog dialog = new PcompDialog(mainWindow);
-            GUI.centerAndSizeToParent(dialog, mainWindow);
+            GUI.centerToParent(dialog, mainWindow);
             Collection<Mutex> mutexes = new HashSet<>();
             if (dialog.run()) {
                 String tmpPrefix = FileUtils.getTempPrefix(we.getTitle());

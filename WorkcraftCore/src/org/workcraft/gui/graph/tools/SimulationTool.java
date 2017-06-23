@@ -98,7 +98,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
     }
 
     @Override
-    public JPanel updatePanel(final GraphEditor editor) {
+    public JPanel getControlsPanel(final GraphEditor editor) {
         if (panel != null) {
             return panel;
         }

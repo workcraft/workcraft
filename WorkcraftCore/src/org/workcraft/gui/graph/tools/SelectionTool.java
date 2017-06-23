@@ -80,7 +80,6 @@ public class SelectionTool extends AbstractGraphEditorTool {
     private boolean enablePaging = true;
     private boolean enableFlipping = true;
     private boolean enableRotating = true;
-    private boolean isPanMode = false;
 
     public SelectionTool() {
         this(true, true, true, true);
@@ -115,8 +114,8 @@ public class SelectionTool extends AbstractGraphEditorTool {
     }
 
     @Override
-    public void updateToolbar(JToolBar toolbar, final GraphEditor editor) {
-        super.updateToolbar(toolbar, editor);
+    public void updateControlsToolbar(JToolBar toolbar, final GraphEditor editor) {
+        super.updateControlsToolbar(toolbar, editor);
 
         if (enableGroupping) {
             JButton groupButton = GUI.createIconButton(GUI.createIconFromSVG("images/selection-group.svg"),
@@ -228,13 +227,14 @@ public class SelectionTool extends AbstractGraphEditorTool {
             });
             toolbar.add(rotateCounterclockwiseButton);
         }
+
+        toolbar.addSeparator();
     }
 
     @Override
     public void activated(final GraphEditor editor) {
         super.activated(editor);
         currentNode = null;
-        isPanMode = false;
     }
 
     @Override
@@ -575,23 +575,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
             }
         }
 
-        if (e.getKeyCode() == DesktopApi.getMenuKeyCode()) {
-            isPanMode = true;
-            editor.forceRedraw();
-            return true;
-        }
-
         return super.keyPressed(e);
-    }
-
-    @Override
-    public boolean keyReleased(GraphEditorKeyEvent e) {
-        if (e.getKeyCode() == DesktopApi.getMenuKeyCode()) {
-            isPanMode = false;
-            e.getEditor().forceRedraw();
-            return true;
-        }
-        return super.keyReleased(e);
     }
 
     @Override
@@ -792,14 +776,6 @@ public class SelectionTool extends AbstractGraphEditorTool {
         editor.getWorkspaceEntry().saveMemento();
         // Redraw the editor window to recalculate all the bounding boxes
         editor.forceRedraw();
-    }
-
-    @Override
-    public String getHintText(final GraphEditor editor) {
-        if (isPanMode) {
-            return "Use " + DesktopApi.getMenuKeyMaskName() + " + RMB to pan the view.";
-        }
-        return super.getHintText(editor);
     }
 
 }

@@ -13,8 +13,8 @@ import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONSettings;
 import org.workcraft.plugins.son.TimeConsistencySettings;
 import org.workcraft.plugins.son.algorithm.ConsistencyAlg;
-import org.workcraft.plugins.son.algorithm.TimeAlg;
 import org.workcraft.plugins.son.algorithm.DFSEstimationAlg;
+import org.workcraft.plugins.son.algorithm.TimeAlg;
 import org.workcraft.plugins.son.elements.ChannelPlace;
 import org.workcraft.plugins.son.elements.Time;
 import org.workcraft.plugins.son.exception.AlternativeStructureException;
@@ -24,9 +24,8 @@ import org.workcraft.plugins.son.gui.TimeConsistencyDialog.Granularity;
 import org.workcraft.plugins.son.util.Interval;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Task;
-import org.workcraft.util.LogUtils;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.tasks.Task;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -365,6 +364,6 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
     }
 
     public void errMsg(String msg) {
-        logger.info(LogUtils.PREFIX_ERROR + msg);
+        logger.info("[ERROR] " + msg);
     }
 }

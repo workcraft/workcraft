@@ -82,11 +82,11 @@ public class Console {
             framework.execJavaScript(FileUtils.readAllTextFromSystemResource("scripts/functions.js"));
             framework.execJavaScript(FileUtils.readAllTextFromSystemResource("scripts/startup.js"));
         } catch (FileNotFoundException e) {
-            LogUtils.logWarningLine("System script file not found: " + e.getMessage());
+            LogUtils.logWarning("System script file not found: " + e.getMessage());
         } catch (IOException e) {
-            LogUtils.logErrorLine("Error reading system script file: " + e.getMessage());
+            LogUtils.logError("Error reading system script file: " + e.getMessage());
         } catch (WrappedException | org.mozilla.javascript.EcmaError e) {
-            LogUtils.logErrorLine("Startup script failed: " + e.getMessage());
+            LogUtils.logError("Startup script failed: " + e.getMessage());
         }
 
         if (framework.isInGuiMode()) {
@@ -105,15 +105,15 @@ public class Console {
                 framework.setArgs(arglist);
                 try {
                     String scriptName = arg.substring(Info.OPTION_EXEC.length());
-                    LogUtils.logMessageLine("Executing " + scriptName + "...");
+                    LogUtils.logMessage("Executing " + scriptName + "...");
                     framework.execJavaScript(new File(scriptName));
                 } catch (FileNotFoundException e) {
-                    LogUtils.logErrorLine("Script specified from command line not found: " + arg);
+                    LogUtils.logError("Script specified from command line not found: " + arg);
                 } catch (WrappedException e) {
                     e.getWrappedException().printStackTrace();
                     System.exit(1);
                 } catch (org.mozilla.javascript.RhinoException e) {
-                    LogUtils.logErrorLine(e.getMessage());
+                    LogUtils.logError(e.getMessage());
                     System.exit(1);
                 }
             }
@@ -133,14 +133,14 @@ public class Console {
                 }
 
                 try {
-                    LogUtils.logMessageLine("Shutting down...");
+                    LogUtils.logMessage("Shutting down...");
                     framework.execJavaScript(FileUtils.readAllTextFromSystemResource("scripts/shutdown.js"));
                 } catch (FileNotFoundException e) {
-                    LogUtils.logErrorLine("System script file not found: " + e.getMessage());
+                    LogUtils.logError("System script file not found: " + e.getMessage());
                 } catch (IOException e) {
-                    LogUtils.logErrorLine("IO Exception: " + e.getMessage());
+                    LogUtils.logError("IO Exception: " + e.getMessage());
                 } catch (WrappedException | org.mozilla.javascript.EcmaError e) {
-                    LogUtils.logErrorLine("Shutdown script failed: " + e.getMessage());
+                    LogUtils.logError("Shutdown script failed: " + e.getMessage());
                 }
                 System.exit(0);
             }

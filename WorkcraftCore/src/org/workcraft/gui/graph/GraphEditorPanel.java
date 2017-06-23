@@ -261,11 +261,11 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
         g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_SPEED);
-//        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        //g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
         g2d.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON);
         g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_OFF);
-//      g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-//        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
+        //g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        //g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_LCD_HRGB);
         g2d.setRenderingHint(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
 
         getModel().draw(g2d, toolbox.getSelectedTool().getDecorator(this));
@@ -494,20 +494,20 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     public void updateToolsView() {
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
-        final ToolControlsWindow toolControlsWindow = mainWindow.getControlsView();
-        JToolBar modelToolbar = mainWindow.getModelToolbar();
-        JToolBar toolToolbar = mainWindow.getToolToolbar();
 
+        JToolBar modelToolbar = mainWindow.getModelToolbar();
         modelToolbar.removeAll();
         toolbox.setToolsForModel(modelToolbar);
 
         GraphEditorTool selectedTool = toolbox.getSelectedTool();
         if (selectedTool != null) {
-            toolToolbar.removeAll();
-            selectedTool.updateToolbar(toolToolbar, this);
+            JToolBar controlToolbar = mainWindow.getControlToolbar();
+            controlToolbar.removeAll();
+            selectedTool.updateControlsToolbar(controlToolbar, this);
 
-            JPanel panel = selectedTool.updatePanel(this);
-            toolControlsWindow.setContent(panel);
+            JPanel panel = selectedTool.getControlsPanel(this);
+            ToolControlsWindow controlWindow = mainWindow.getControlsView();
+            controlWindow.setContent(panel);
         }
     }
 

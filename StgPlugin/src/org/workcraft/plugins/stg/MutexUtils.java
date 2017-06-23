@@ -7,14 +7,11 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
 
-import javax.swing.JOptionPane;
-
-import org.workcraft.Framework;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.references.ReferenceHelper;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Pair;
 
 public class MutexUtils {
@@ -40,14 +37,10 @@ public class MutexUtils {
             }
         }
         if (!problematicPlaces.isEmpty()) {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
             String problematicPlacesString = ReferenceHelper.getNodesAsString(stg, (Collection) problematicPlaces, 50);
-            int answer = JOptionPane.showConfirmDialog(mainWindow,
-                    "The following mutex places may not be implementable by mutex:\n\n" +
-                    problematicPlacesString + "\n\nProceed synthesis without theses places anyways?",
-                    "Synthesis", JOptionPane.YES_NO_OPTION);
-            if (answer != JOptionPane.YES_OPTION) {
+            String msg = "The following mutex places may not be implementable by mutex:\n\n" +
+                    problematicPlacesString + "\n\nProceed synthesis without theses places anyways?";
+            if (!DialogUtils.showConfirm(msg, "Synthesis")) {
                 result = null;
             }
         }

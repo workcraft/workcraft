@@ -7,15 +7,12 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.UUID;
 
-import javax.swing.JOptionPane;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.SerialisationException;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.petri.PetriNetModel;
@@ -32,6 +29,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
@@ -68,8 +66,7 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationResu
         // Extra arguments (should go before the file parameters)
         String extraArgs = PetrifySettings.getArgs();
         if (PetrifySettings.getAdvancedMode()) {
-            MainWindow mainWindow = Framework.getInstance().getMainWindow();
-            String tmp = JOptionPane.showInputDialog(mainWindow, "Additional parameters for Petrify:", extraArgs);
+            String tmp = DialogUtils.showInput("Additional parameters for Petrify:", extraArgs);
             if (tmp == null) {
                 return Result.cancelled();
             }
@@ -100,12 +97,10 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationResu
                 HashSet<Place> isolatedPlaces = PetriNetUtils.getIsolatedMarkedPlaces(petri);
                 if (!isolatedPlaces.isEmpty()) {
                     String refStr = ReferenceHelper.getNodesAsString(petri, (Collection) isolatedPlaces, 50);
-                    int answer = JOptionPane.showConfirmDialog(Framework.getInstance().getMainWindow(),
-                            "Petrify does not support isolated marked places.\n\n"
-                                    + "Problematic places are:\n" + refStr + "\n\n"
-                                    + "Proceed without these places?",
-                            "Petrify transformation", JOptionPane.YES_NO_OPTION);
-                    if (answer != JOptionPane.YES_OPTION) {
+                    String msg = "Petrify does not support isolated marked places.\n\n"
+                            + "Problematic places are:\n" + refStr + "\n\n"
+                            + "Proceed without these places?";
+                    if (!DialogUtils.showConfirm(msg, "Petrify transformation")) {
                         return Result.cancelled();
                     }
                     we.captureMemento();

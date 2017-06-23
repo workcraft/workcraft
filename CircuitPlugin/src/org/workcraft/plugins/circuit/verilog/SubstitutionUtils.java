@@ -36,10 +36,10 @@ public class SubstitutionUtils {
                     for (SubstitutionRule rule: rules) {
                         result.put(rule.oldName, rule);
                     }
-                    LogUtils.logInfoLine("Renaming gates and pins using the file of substitutions '" + substitutionsFileName + "'.");
+                    LogUtils.logInfo("Renaming gates and pins using the file of substitutions '" + substitutionsFileName + "'.");
                 } catch (FileNotFoundException e) {
                 } catch (ParseException e) {
-                    LogUtils.logWarningLine("Could not parse the file of substitutions '" + substitutionsFileName + "'.");
+                    LogUtils.logWarning("Could not parse the file of substitutions '" + substitutionsFileName + "'.");
                 }
             }
         }
@@ -51,7 +51,7 @@ public class SubstitutionUtils {
         if (substitutionRule != null) {
             String newContactName = substitutionRule.substitutions.get(contactName);
             if (newContactName != null) {
-                LogUtils.logInfoLine("In component '" + instanceFlatName + "' renaming contact '" + contactName + "' to '" + newContactName + "'.");
+                LogUtils.logInfo("In component '" + instanceFlatName + "' renaming contact '" + contactName + "' to '" + newContactName + "'.");
                 contactName = newContactName;
             }
         }

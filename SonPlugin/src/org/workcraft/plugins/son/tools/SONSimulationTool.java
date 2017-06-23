@@ -142,7 +142,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
     }
 
     @Override
-    public JPanel updatePanel(final GraphEditor editor) {
+    public JPanel getControlsPanel(final GraphEditor editor) {
         if (panel != null) {
             return panel;
         }

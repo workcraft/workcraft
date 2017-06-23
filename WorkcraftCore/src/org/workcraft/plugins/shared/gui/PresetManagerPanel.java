@@ -8,7 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JOptionPane;
@@ -18,6 +17,7 @@ import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.shared.presets.Preset;
 import org.workcraft.plugins.shared.presets.PresetManager;
 import org.workcraft.plugins.shared.presets.SettingsToControlsMapper;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.GUI;
 
 @SuppressWarnings("serial")
@@ -112,8 +112,8 @@ public class PresetManagerPanel<T> extends JPanel {
         buttonsPanel.add(saveAsButton);
         buttonsPanel.add(manageButton);
 
-        setBorder(BorderFactory.createTitledBorder("Presets"));
-        setLayout(new BorderLayout(SizeHelper.getCompactLayoutHGap(), SizeHelper.getCompactLayoutVGap()));
+        setBorder(SizeHelper.getTitledBorder("Presets"));
+        setLayout(new BorderLayout(SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
         add(presetCombo, BorderLayout.CENTER);
         add(buttonsPanel, BorderLayout.SOUTH);
     }
@@ -147,8 +147,7 @@ public class PresetManagerPanel<T> extends JPanel {
     }
 
     public void createPreset() {
-        String desc = JOptionPane.showInputDialog(dialogOwner, "Please enter the description of the new preset:");
-
+        String desc = DialogUtils.showInput("Please enter the description of the new preset:", "");
         if (!(desc == null || desc.isEmpty())) {
             T settings = guiMapper.getSettingsFromControls();
             Preset<T> preset = presetManager.save(settings, desc);
