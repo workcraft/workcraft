@@ -64,17 +64,25 @@ public class VisualNamedTransition extends VisualTransition implements StateObse
         Graphics2D g = r.getGraphics();
         Decoration d = r.getDecoration();
         if (d instanceof CoreDecoration) {
-            Color[] palette = ((CoreDecoration) d).getColorisationPalette();
             Rectangle2D expandedShape = BoundingBoxHelper.expand(getBoundingBoxInLocalSpace(), 0.5, 0.5);
-            double x = expandedShape.getX();
-            double y = expandedShape.getY();
-            double w = expandedShape.getWidth() / palette.length;
-            double h = expandedShape.getHeight();
-            for (Color color: palette) {
-                g.setColor(color);
-                Rectangle2D shape = new Rectangle2D.Double(x, y, w, h);
-                g.fill(shape);
-                x += w;
+            Color[] palette = ((CoreDecoration) d).getColorisationPalette();
+            if (palette == null) {
+                Color color = d.getBackground();
+                if (color != null) {
+                    g.setColor(color);
+                    g.fill(expandedShape);
+                }
+            } else {
+                double x = expandedShape.getX();
+                double y = expandedShape.getY();
+                double w = expandedShape.getWidth() / palette.length;
+                double h = expandedShape.getHeight();
+                for (Color color: palette) {
+                    g.setColor(color);
+                    Rectangle2D shape = new Rectangle2D.Double(x, y, w, h);
+                    g.fill(shape);
+                    x += w;
+                }
             }
         } else {
             Color background = d.getBackground();
