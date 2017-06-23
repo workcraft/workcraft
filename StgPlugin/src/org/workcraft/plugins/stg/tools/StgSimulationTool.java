@@ -393,9 +393,9 @@ public class StgSimulationTool extends PetriSimulationTool {
     }
 
     @Override
-    public JPanel updatePanel(final GraphEditor editor) {
+    public JPanel getControlsPanel(final GraphEditor editor) {
         if (panel == null) {
-            panel = super.updatePanel(editor);
+            panel = super.getControlsPanel(editor);
             stateTable = new StateTable(new StateTableModel());
             statePane.setViewportView(stateTable);
             traceTable.setDefaultRenderer(Object.class, new TraceTableCellRendererImplementation());

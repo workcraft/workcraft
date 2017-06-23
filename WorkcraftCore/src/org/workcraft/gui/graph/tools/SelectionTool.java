@@ -114,8 +114,8 @@ public class SelectionTool extends AbstractGraphEditorTool {
     }
 
     @Override
-    public void updateToolbar(JToolBar toolbar, final GraphEditor editor) {
-        super.updateToolbar(toolbar, editor);
+    public void updateControlsToolbar(JToolBar toolbar, final GraphEditor editor) {
+        super.updateControlsToolbar(toolbar, editor);
 
         if (enableGroupping) {
             JButton groupButton = GUI.createIconButton(GUI.createIconFromSVG("images/selection-group.svg"),

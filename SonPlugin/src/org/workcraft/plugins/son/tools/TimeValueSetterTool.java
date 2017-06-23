@@ -66,10 +66,9 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class TimeValueSetterTool extends AbstractGraphEditorTool {
 
     protected SON net;
-    protected GraphEditor editor;
     protected VisualSON visualNet;
 
-    private JPanel timeInputPanel, timePropertyPanel, timeSetterPanel, buttonPanel;
+    private JPanel timeInputPanel, timePropertyPanel;
     private GranularityPanel granularityPanel;
     private JButton estimatorButton;
     private JPanel panel;
@@ -90,20 +89,11 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
     private static final String timeLabel = "Time interval: ";
 
     @Override
-    public JPanel updatePanel(final GraphEditor editor) {
-        if (panel == null) {
-            panel = super.updatePanel(editor);
-            // Workcraft invokes this method before activate method.
-            visualNet = (VisualSON) editor.getModel();
-            net = (SON) visualNet.getMathModel();
-            this.editor = editor;
-            createTimeSetterPanel();
-            panel.add(timeSetterPanel);
+    public JPanel getControlsPanel(final GraphEditor editor) {
+        if (panel != null) {
+            return panel;
         }
-        return panel;
-    }
 
-    private void createTimeSetterPanel() {
         granularityPanel = new GranularityPanel(SizeHelper.getTitledBorder("Time Granularity"));
 
         timePropertyPanel = new JPanel();
@@ -111,16 +101,6 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
         timePropertyPanel.setLayout(new WrapLayout());
         timePropertyPanel.setPreferredSize(new Dimension(1, labelheight * 6));
 
-        createButtonPanel();
-
-        timeSetterPanel = new JPanel();
-        timeSetterPanel.setLayout(new BorderLayout());
-        timeSetterPanel.add(granularityPanel, BorderLayout.NORTH);
-        timeSetterPanel.add(timePropertyPanel, BorderLayout.CENTER);
-        timeSetterPanel.add(buttonPanel, BorderLayout.SOUTH);
-    }
-
-    private void createButtonPanel() {
         estimatorButton = new JButton("Estimate...");
         estimatorButton.setPreferredSize(buttonSize);
         estimatorButton.setEnabled(false);
@@ -128,13 +108,12 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
         JButton clearButton = new JButton("Clear");
         clearButton.setPreferredSize(buttonSize);
 
-        buttonPanel = new JPanel();
+        JPanel buttonPanel = new JPanel();
         buttonPanel.setLayout(new FlowLayout());
         buttonPanel.add(estimatorButton);
         buttonPanel.add(clearButton);
 
         estimatorButton.addActionListener(new ActionListener() {
-
             @Override
             public void actionPerformed(ActionEvent e) {
                 editor.requestFocus();
@@ -172,106 +151,17 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
                 }
             }
         });
-    }
 
-    private JPanel createTimeInputPanel(final String title, final Interval value, final Node node) {
-
-        timeInputPanel = new JPanel();
-        timeInputPanel.setLayout(new FlowLayout());
-
-        JLabel label = new JLabel();
-        label.setText(title);
-        label.setFont(font);
-        label.setPreferredSize(new Dimension(labelwidth * 3, labelheight));
-
-        final JTextField min = new JTextField();
-        min.setPreferredSize(new Dimension(labelwidth, labelheight));
-        min.setText(value.minToString());
-        ((AbstractDocument) min.getDocument()).setDocumentFilter(new TimeInputFilter());
-
-        JLabel dash = new JLabel();
-        dash.setText("-");
-
-        final JTextField max = new JTextField();
-        max.setText(value.maxToString());
-        max.setPreferredSize(new Dimension(labelwidth, labelheight));
-        ((AbstractDocument) max.getDocument()).setDocumentFilter(new TimeInputFilter());
-
-        timeInputPanel.add(label);
-        timeInputPanel.add(min);
-        timeInputPanel.add(dash);
-        timeInputPanel.add(max);
-
-        min.addFocusListener(new FocusListener() {
-            @Override
-            public void focusLost(FocusEvent e) {
-                editor.getWorkspaceEntry().saveMemento();
-                setValue(node, title, min, true);
-            }
-
-            @Override
-            public void focusGained(FocusEvent e) {
-                min.selectAll();
-            }
-        });
-
-        min.addKeyListener(new KeyListener() {
-
-            @Override
-            public void keyTyped(KeyEvent e) {
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    timeInputPanel.requestFocus();
-                }
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-            }
-
-        });
-
-        max.addFocusListener(new FocusListener() {
-            @Override
-            public void focusLost(FocusEvent e) {
-                editor.getWorkspaceEntry().saveMemento();
-                setValue(node, title, max, false);
-            }
-
-            @Override
-            public void focusGained(FocusEvent e) {
-                max.selectAll();
-            }
-        });
-
-        max.addKeyListener(new KeyListener() {
-
-            @Override
-            public void keyTyped(KeyEvent e) {
-            }
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                    timeInputPanel.requestFocus();
-                }
-            }
-
-            @Override
-            public void keyReleased(KeyEvent e) {
-            }
-
-        });
-        return timeInputPanel;
+        panel = new JPanel();
+        panel.setLayout(new BorderLayout());
+        panel.add(granularityPanel, BorderLayout.NORTH);
+        panel.add(timePropertyPanel, BorderLayout.CENTER);
+        panel.add(buttonPanel, BorderLayout.SOUTH);
+        return panel;
     }
 
     private void setValue(Node node, String title, JTextField field, boolean isMin) {
-
         autoComplete(field);
-
         if (title.equals(timeLabel)) {
             setTimeLabelValue(node, field, isMin);
         } else if (title.equals(startLabel)) {
@@ -371,7 +261,6 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
                 field.setText(value.maxToString());
             }
         }
-
     }
 
     private void setEndLabel(Node node, JTextField field, boolean isMin) {
@@ -417,11 +306,9 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
                 field.setText(value.maxToString());
             }
         }
-
     }
 
     private void setDurationLabel(Node node, JTextField field, boolean isMin) {
-
         Interval value;
         if (node instanceof VisualPlaceNode) {
             VisualPlaceNode vc = (VisualPlaceNode) node;
@@ -507,7 +394,7 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
 
             if (con.getSemantics() == Semantics.PNLINE || con.getSemantics() == Semantics.ASYNLINE) {
                 value = con.getTime();
-                timePropertyPanel.add(createTimeInputPanel(timeLabel, value, node));
+                timePropertyPanel.add(createTimeInputPanel(editor, timeLabel, value, node));
             }
         } else if (node instanceof VisualPlaceNode) {
 
@@ -517,11 +404,11 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
 
                 if (c2.isInitial()) {
                     value = c2.getStartTime();
-                    timePropertyPanel.add(createTimeInputPanel(startLabel, value, node));
+                    timePropertyPanel.add(createTimeInputPanel(editor, startLabel, value, node));
                 }
                 if (c2.isFinal()) {
                     value = c2.getEndTime();
-                    timePropertyPanel.add(createTimeInputPanel(endLabel, value, node));
+                    timePropertyPanel.add(createTimeInputPanel(editor, endLabel, value, node));
                 }
             }
 
@@ -529,18 +416,112 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
             PlaceNode c = (PlaceNode) vc.getReferencedComponent();
 
             value = c.getDuration();
-            timePropertyPanel.add(createTimeInputPanel(durationLabel, value, node));
+            timePropertyPanel.add(createTimeInputPanel(editor, durationLabel, value, node));
         } else if (node instanceof VisualBlock) {
             VisualBlock vb = (VisualBlock) node;
             Block b = vb.getReferencedComponent();
 
             value = b.getDuration();
-            timePropertyPanel.add(createTimeInputPanel(durationLabel, value, node));
+            timePropertyPanel.add(createTimeInputPanel(editor, durationLabel, value, node));
         }
 
         timePropertyPanel.revalidate();
         editor.requestFocus();
         editor.repaint();
+    }
+
+    private JPanel createTimeInputPanel(final GraphEditor editor, final String title,
+            final Interval value, final Node node) {
+        timeInputPanel = new JPanel();
+        timeInputPanel.setLayout(new FlowLayout());
+
+        JLabel label = new JLabel();
+        label.setText(title);
+        label.setFont(font);
+        label.setPreferredSize(new Dimension(labelwidth * 3, labelheight));
+
+        final JTextField min = new JTextField();
+        min.setPreferredSize(new Dimension(labelwidth, labelheight));
+        min.setText(value.minToString());
+        ((AbstractDocument) min.getDocument()).setDocumentFilter(new TimeInputFilter());
+
+        JLabel dash = new JLabel();
+        dash.setText("-");
+
+        final JTextField max = new JTextField();
+        max.setText(value.maxToString());
+        max.setPreferredSize(new Dimension(labelwidth, labelheight));
+        ((AbstractDocument) max.getDocument()).setDocumentFilter(new TimeInputFilter());
+
+        timeInputPanel.add(label);
+        timeInputPanel.add(min);
+        timeInputPanel.add(dash);
+        timeInputPanel.add(max);
+
+        min.addFocusListener(new FocusListener() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                editor.getWorkspaceEntry().saveMemento();
+                setValue(node, title, min, true);
+            }
+
+            @Override
+            public void focusGained(FocusEvent e) {
+                min.selectAll();
+            }
+        });
+
+        min.addKeyListener(new KeyListener() {
+
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    timeInputPanel.requestFocus();
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+            }
+
+        });
+
+        max.addFocusListener(new FocusListener() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                editor.getWorkspaceEntry().saveMemento();
+                setValue(node, title, max, false);
+            }
+
+            @Override
+            public void focusGained(FocusEvent e) {
+                max.selectAll();
+            }
+        });
+
+        max.addKeyListener(new KeyListener() {
+
+            @Override
+            public void keyTyped(KeyEvent e) {
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    timeInputPanel.requestFocus();
+                }
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+            }
+
+        });
+        return timeInputPanel;
     }
 
     @Override

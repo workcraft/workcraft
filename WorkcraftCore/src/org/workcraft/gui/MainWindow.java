@@ -103,8 +103,8 @@ public class MainWindow extends JFrame {
     private static final String CONFIG_GUI_MAIN_TOOLBAR_GLOBAL_POSITION = "gui.main.toolbar.global.position";
     private static final String CONFIG_GUI_MAIN_TOOLBAR_MODEL_VISIBILITY = "gui.main.toolbar.model.visibility";
     private static final String CONFIG_GUI_MAIN_TOOLBAR_MODEL_POSITION = "gui.main.toolbar.model.position";
-    private static final String CONFIG_GUI_MAIN_TOOLBAR_TOOL_VISIBILITY = "gui.main.toolbar.tool.visibility";
-    private static final String CONFIG_GUI_MAIN_TOOLBAR_TOOL_POSITION = "gui.main.toolbar.tool.position";
+    private static final String CONFIG_GUI_MAIN_TOOLBAR_CONTROL_VISIBILITY = "gui.main.toolbar.tool.visibility";
+    private static final String CONFIG_GUI_MAIN_TOOLBAR_CONTROL_POSITION = "gui.main.toolbar.tool.position";
 
     private static final int MIN_WIDTH = 800;
     private static final int MIN_HEIGHT = 450;
@@ -153,7 +153,7 @@ public class MainWindow extends JFrame {
     private MainMenu mainMenu;
     private ToolBar globalToolbar;
     private JToolBar modelToolbar;
-    private JToolBar toolToolbar;
+    private JToolBar controlToolbar;
 
     private String lastSavePath = null;
     private String lastOpenPath = null;
@@ -309,13 +309,11 @@ public class MainWindow extends JFrame {
 
         // Create toolbars.
         globalToolbar = new ToolBar(this);
-        mainMenu.registerToolbar(globalToolbar);
         modelToolbar = new JToolBar("Model tools");
-
+        controlToolbar = new JToolBar("Tool controls");
+        mainMenu.registerToolbar(globalToolbar);
         mainMenu.registerToolbar(modelToolbar);
-        toolToolbar = new JToolBar("Tool controls");
-
-        mainMenu.registerToolbar(toolToolbar);
+        mainMenu.registerToolbar(controlToolbar);
         loadToolbarParametersFromConfig();
 
         // Create dockable windows.
@@ -457,7 +455,7 @@ public class MainWindow extends JFrame {
             utilityWindows.add(documentPlaceholder);
             setWorkActionsEnableness(false);
             modelToolbar.removeAll();
-            toolToolbar.removeAll();
+            controlToolbar.removeAll();
             propertyEditorWindow.clearObject();
             toolControlsWindow.setContent(null);
             displayDockableWindow(propertyEditorDockable);
@@ -608,9 +606,9 @@ public class MainWindow extends JFrame {
                 CONFIG_GUI_MAIN_TOOLBAR_MODEL_VISIBILITY,
                 CONFIG_GUI_MAIN_TOOLBAR_MODEL_POSITION);
 
-        loadToolbarParametersFromConfig(toolToolbar,
-                CONFIG_GUI_MAIN_TOOLBAR_TOOL_VISIBILITY,
-                CONFIG_GUI_MAIN_TOOLBAR_TOOL_POSITION);
+        loadToolbarParametersFromConfig(controlToolbar,
+                CONFIG_GUI_MAIN_TOOLBAR_CONTROL_VISIBILITY,
+                CONFIG_GUI_MAIN_TOOLBAR_CONTROL_POSITION);
     }
 
     private void loadToolbarParametersFromConfig(JToolBar toolbar, String keyVisibility, String keyPosition) {
@@ -644,9 +642,9 @@ public class MainWindow extends JFrame {
                 CONFIG_GUI_MAIN_TOOLBAR_MODEL_VISIBILITY,
                 CONFIG_GUI_MAIN_TOOLBAR_MODEL_POSITION);
 
-        saveToolbarParametersToConfig(toolToolbar,
-                CONFIG_GUI_MAIN_TOOLBAR_TOOL_VISIBILITY,
-                CONFIG_GUI_MAIN_TOOLBAR_TOOL_POSITION);
+        saveToolbarParametersToConfig(controlToolbar,
+                CONFIG_GUI_MAIN_TOOLBAR_CONTROL_VISIBILITY,
+                CONFIG_GUI_MAIN_TOOLBAR_CONTROL_POSITION);
     }
 
     private void saveToolbarParametersToConfig(JToolBar toolbar, String keyVisibility, String keyPosition) {
@@ -1392,8 +1390,8 @@ public class MainWindow extends JFrame {
         return modelToolbar;
     }
 
-    public JToolBar getToolToolbar() {
-        return toolToolbar;
+    public JToolBar getControlToolbar() {
+        return controlToolbar;
     }
 
     public WorkspaceWindow getWorkspaceView() {

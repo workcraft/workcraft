@@ -21,7 +21,7 @@ public class SONConnectionTool extends ConnectionTool {
     private Semantics semantic = Semantics.PNLINE;
 
     @Override
-    public void updateToolbar(JToolBar toolbar, final GraphEditor editor) {
+    public void updateControlsToolbar(JToolBar toolbar, final GraphEditor editor) {
         JRadioButton polyButton = new JRadioButton("Causal Connection");
         polyButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent arg0) {

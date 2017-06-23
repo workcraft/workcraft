@@ -494,20 +494,20 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     public void updateToolsView() {
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
-        final ToolControlsWindow toolControlsWindow = mainWindow.getControlsView();
-        JToolBar modelToolbar = mainWindow.getModelToolbar();
-        JToolBar toolToolbar = mainWindow.getToolToolbar();
 
+        JToolBar modelToolbar = mainWindow.getModelToolbar();
         modelToolbar.removeAll();
         toolbox.setToolsForModel(modelToolbar);
 
         GraphEditorTool selectedTool = toolbox.getSelectedTool();
         if (selectedTool != null) {
-            toolToolbar.removeAll();
-            selectedTool.updateToolbar(toolToolbar, this);
+            JToolBar controlToolbar = mainWindow.getControlToolbar();
+            controlToolbar.removeAll();
+            selectedTool.updateControlsToolbar(controlToolbar, this);
 
-            JPanel panel = selectedTool.updatePanel(this);
-            toolControlsWindow.setContent(panel);
+            JPanel panel = selectedTool.getControlsPanel(this);
+            ToolControlsWindow controlWindow = mainWindow.getControlsView();
+            controlWindow.setContent(panel);
         }
     }
 

@@ -91,6 +91,11 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         initErrorSet = null;
     }
 
+    @Override
+    public boolean requiresPropertyEditor() {
+        return true;
+    }
+
     private void updateState(Circuit circuit) {
         initHighSet = new HashSet<>();
         initLowSet = new HashSet<>();

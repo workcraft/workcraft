@@ -114,7 +114,7 @@ public class CpogSelectionTool extends SelectionTool {
     private JPanel panel;
 
     @Override
-    public JPanel updatePanel(final GraphEditor editor) {
+    public JPanel getControlsPanel(final GraphEditor editor) {
         if (panel != null) {
             return panel;
         }
