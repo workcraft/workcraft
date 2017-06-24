@@ -63,10 +63,4 @@ public interface VisualModel extends Model, ObservableState {
 
     Collection<Node> hitBox(Point2D p1, Point2D p2);
     AbstractLayoutCommand getBestLayouter();
-
-    void setTemplateNode(VisualNode node);
-    VisualNode getTemplateNode();
-    void setDefaultNode(VisualNode node);
-    VisualNode getDefaultNode();
-
 }

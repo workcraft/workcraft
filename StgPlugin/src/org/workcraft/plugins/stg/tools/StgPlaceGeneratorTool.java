@@ -11,6 +11,7 @@ import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.plugins.stg.VisualStgPlace;
 import org.workcraft.util.GUI;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class StgPlaceGeneratorTool extends NodeGeneratorTool {
 
@@ -19,14 +20,15 @@ public class StgPlaceGeneratorTool extends NodeGeneratorTool {
     }
 
     @Override
-    public void mousePressed(GraphEditorMouseEvent e) {
-        VisualNode node = e.getModel().getTemplateNode();
+    public void mousePressed(GraphEditorMouseEvent event) {
+        WorkspaceEntry we = event.getEditor().getWorkspaceEntry();
+        VisualNode node = we.getTemplateNode();
         if (node instanceof VisualStgPlace) {
             VisualStgPlace place = (VisualStgPlace) node;
-            place.getReferencedComponent().setTokens(e.isMenuKeyDown() ? 1 : 0);
-            place.getReferencedComponent().setMutex(e.isShiftKeyDown());
+            place.getReferencedComponent().setTokens(event.isMenuKeyDown() ? 1 : 0);
+            place.getReferencedComponent().setMutex(event.isShiftKeyDown());
         }
-        super.mousePressed(e);
+        super.mousePressed(event);
     }
 
     @Override

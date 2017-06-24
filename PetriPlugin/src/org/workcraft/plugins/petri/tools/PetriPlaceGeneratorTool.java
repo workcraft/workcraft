@@ -11,6 +11,7 @@ import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.util.GUI;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class PetriPlaceGeneratorTool extends NodeGeneratorTool {
 
@@ -19,13 +20,14 @@ public class PetriPlaceGeneratorTool extends NodeGeneratorTool {
     }
 
     @Override
-    public void mousePressed(GraphEditorMouseEvent e) {
-        VisualNode node = e.getModel().getTemplateNode();
+    public void mousePressed(GraphEditorMouseEvent event) {
+        WorkspaceEntry we = event.getEditor().getWorkspaceEntry();
+        VisualNode node = we.getTemplateNode();
         if (node instanceof VisualPlace) {
             VisualPlace place = (VisualPlace) node;
-            place.getReferencedPlace().setTokens(e.isMenuKeyDown() ? 1 : 0);
+            place.getReferencedPlace().setTokens(event.isMenuKeyDown() ? 1 : 0);
         }
-        super.mousePressed(e);
+        super.mousePressed(event);
     }
 
     @Override

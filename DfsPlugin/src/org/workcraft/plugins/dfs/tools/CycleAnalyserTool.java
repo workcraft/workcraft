@@ -40,6 +40,7 @@ import org.workcraft.util.GUI;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.IntDocument;
 import org.workcraft.util.graph.cycle.ElementaryCyclesSearch;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class CycleAnalyserTool extends AbstractGraphEditorTool {
     // Infinity symbol in UTF-8 encoding (avoid inserting UTF symbols directly in the source code).
@@ -180,9 +181,10 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
     @Override
     public void setup(final GraphEditor editor) {
         super.setup(editor);
-        editor.getWorkspaceEntry().setCanModify(false);
-        editor.getWorkspaceEntry().setCanSelect(false);
-        editor.getWorkspaceEntry().setCanCopy(false);
+        WorkspaceEntry we = editor.getWorkspaceEntry();
+        we.setCanModify(false);
+        we.setCanSelect(false);
+        we.setCanCopy(false);
     }
 
     @Override

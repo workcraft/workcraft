@@ -19,6 +19,7 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualModelTransformer;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.FileFilters;
 import org.workcraft.gui.MainWindow;
@@ -27,22 +28,28 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.observation.ModelModifiedEvent;
 import org.workcraft.observation.ObservableState;
 import org.workcraft.observation.ObservableStateImpl;
+import org.workcraft.observation.SelectionChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.shared.CommonDebugSettings;
-import org.workcraft.util.Hierarchy;
 import org.workcraft.util.DialogUtils;
+import org.workcraft.util.Hierarchy;
 
 public class WorkspaceEntry implements ObservableState {
     private ModelEntry modelEntry = null;
     private boolean changed = true;
     private final Workspace workspace;
-    private final MementoManager history = new MementoManager();
+
     private boolean canSelect = true;
     private boolean canModify = true;
     private boolean canCopy = true;
+
+    private final MementoManager history = new MementoManager();
     private Memento capturedMemento = null;
     private Memento savedMemento = null;
+
+    private VisualNode templateNode = null;
+    private VisualNode defaultNode = null;
 
     public WorkspaceEntry(Workspace workspace) {
         this.workspace = workspace;
@@ -375,6 +382,24 @@ public class WorkspaceEntry implements ObservableState {
             model.deleteSelection();
             setChanged(true);
         }
+    }
+
+    public void setTemplateNode(VisualNode node) {
+        templateNode = node;
+        VisualModel visualModel = getModelEntry().getVisualModel();
+        visualModel.sendNotification(new SelectionChangedEvent(visualModel, null));
+    }
+
+    public VisualNode getTemplateNode() {
+        return templateNode;
+    }
+
+    public void setDefaultNode(VisualNode node) {
+        defaultNode = node;
+    }
+
+    public VisualNode getDefaultNode() {
+        return defaultNode;
     }
 
 }
