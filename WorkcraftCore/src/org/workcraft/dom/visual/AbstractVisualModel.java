@@ -52,9 +52,6 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     private final Set<Node> selection = new HashSet<>();
     private final ObservableStateImpl observableState = new ObservableStateImpl();
 
-    private VisualNode templateNode = null;
-    private VisualNode defaultNode = null;
-
     public AbstractVisualModel() {
         this(null, null);
     }
@@ -657,27 +654,6 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
         srcRoot.reparent(dstChildren, dstContainer);
 
         VisualModelTransformer.setRootSpacePositions(componentToPositionMap);
-    }
-
-    @Override
-    public void setTemplateNode(VisualNode node) {
-        templateNode = node;
-        notifySelectionChanged(null);
-    }
-
-    @Override
-    public VisualNode getTemplateNode() {
-        return templateNode;
-    }
-
-    @Override
-    public void setDefaultNode(VisualNode node) {
-        defaultNode = node;
-    }
-
-    @Override
-    public VisualNode getDefaultNode() {
-        return defaultNode;
     }
 
     @Override

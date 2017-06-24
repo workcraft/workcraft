@@ -37,6 +37,7 @@ import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
@@ -79,9 +80,10 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
     @Override
     public void setup(final GraphEditor editor) {
         super.setup(editor);
-        editor.getWorkspaceEntry().setCanModify(false);
-        editor.getWorkspaceEntry().setCanSelect(false);
-        editor.getWorkspaceEntry().setCanCopy(false);
+        WorkspaceEntry we = editor.getWorkspaceEntry();
+        we.setCanModify(false);
+        we.setCanSelect(false);
+        we.setCanCopy(false);
     }
 
     @Override

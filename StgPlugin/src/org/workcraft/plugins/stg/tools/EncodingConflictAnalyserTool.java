@@ -34,6 +34,7 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.propertyeditor.PropertyEditorTable;
 import org.workcraft.plugins.stg.VisualNamedTransition;
 import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
 
@@ -185,9 +186,10 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
     @Override
     public void setup(final GraphEditor editor) {
         super.setup(editor);
-        editor.getWorkspaceEntry().setCanModify(false);
-        editor.getWorkspaceEntry().setCanSelect(false);
-        editor.getWorkspaceEntry().setCanCopy(false);
+        WorkspaceEntry we = editor.getWorkspaceEntry();
+        we.setCanModify(false);
+        we.setCanSelect(false);
+        we.setCanCopy(false);
     }
 
     @Override

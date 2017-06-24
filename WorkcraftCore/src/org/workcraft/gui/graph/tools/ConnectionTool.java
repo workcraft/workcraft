@@ -32,6 +32,7 @@ import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.util.GUI;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class ConnectionTool extends AbstractGraphEditorTool {
 
@@ -128,14 +129,14 @@ public class ConnectionTool extends AbstractGraphEditorTool {
     public void activated(final GraphEditor editor) {
         super.activated(editor);
         resetState(editor);
-        VisualModel model = editor.getModel();
+        WorkspaceEntry we = editor.getWorkspaceEntry();
         // Create a node for storing default properties (on each activation of the tool).
-        model.setDefaultNode(createDefaultTemplateNode());
+        we.setDefaultNode(createDefaultTemplateNode());
         // Create a node for storing template properties (if it does not exist yet).
         if (useTemplate && (templateNode == null)) {
             templateNode = createDefaultTemplateNode();
         }
-        model.setTemplateNode(templateNode);
+        we.setTemplateNode(templateNode);
     }
 
     public VisualConnection createDefaultTemplateNode() {
@@ -151,9 +152,10 @@ public class ConnectionTool extends AbstractGraphEditorTool {
     @Override
     public void setup(final GraphEditor editor) {
         super.setup(editor);
-        editor.getWorkspaceEntry().setCanModify(firstNode == null);
-        editor.getWorkspaceEntry().setCanSelect(false);
-        editor.getWorkspaceEntry().setCanCopy(false);
+        WorkspaceEntry we = editor.getWorkspaceEntry();
+        we.setCanModify(firstNode == null);
+        we.setCanSelect(true);
+        we.setCanCopy(false);
     }
 
     @Override

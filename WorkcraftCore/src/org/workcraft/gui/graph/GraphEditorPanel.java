@@ -165,7 +165,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
     private static final long serialVersionUID = 1L;
 
-    public WorkspaceEntry workspaceEntry;
+    public WorkspaceEntry we;
 
     protected final Toolbox toolbox;
 
@@ -181,11 +181,11 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     private boolean updateEditorPanelRequested = true;
     private boolean updatePropertyViewRequested = true;
 
-    public GraphEditorPanel(WorkspaceEntry workspaceEntry) {
+    public GraphEditorPanel(WorkspaceEntry we) {
         super(new BorderLayout());
-        this.workspaceEntry = workspaceEntry;
+        this.we = we;
 
-        workspaceEntry.addObserver(this);
+        we.addObserver(this);
 
         view = new Viewport(0, 0, getWidth(), getHeight());
         grid = new Grid();
@@ -305,7 +305,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     }
 
     public VisualModel getModel() {
-        return workspaceEntry.getModelEntry().getVisualModel();
+        return we.getModelEntry().getVisualModel();
     }
 
     public Viewport getViewport() {
@@ -393,7 +393,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
     @Override
     public WorkspaceEntry getWorkspaceEntry() {
-        return workspaceEntry;
+        return we;
     }
 
     private Properties propertiesWrapper(final ModelProperties mix) {
@@ -405,7 +405,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
                     list.add(new PropertyDescriptor() {
                         @Override
                         public void setValue(Object value) throws InvocationTargetException {
-                            workspaceEntry.saveMemento();
+                            we.saveMemento();
                             d.setValue(value);
                         }
 
@@ -513,9 +513,8 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
 
     public void updatePropertyView() {
         ModelProperties properties;
-        final VisualModel model = getModel();
-        final VisualNode defaultNode = model.getDefaultNode();
-        final VisualNode templateNode = model.getTemplateNode();
+        final VisualNode defaultNode = we.getDefaultNode();
+        final VisualNode templateNode = we.getTemplateNode();
         String title = MainWindow.TITLE_PROPERTY_EDITOR;
         if (templateNode != null) {
             properties = getNodeProperties(templateNode);
@@ -526,6 +525,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
             }
             title += " [" + TITLE_SUFFIX_TEMPLATE + "]";
         } else {
+            final VisualModel model = getModel();
             final Collection<Node> selection = model.getSelection();
             if (selection.size() == 0) {
                 properties = getModelProperties();

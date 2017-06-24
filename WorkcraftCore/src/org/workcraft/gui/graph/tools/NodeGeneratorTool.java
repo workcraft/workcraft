@@ -19,6 +19,7 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.generators.NodeGenerator;
 import org.workcraft.util.GUI;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class NodeGeneratorTool extends AbstractGraphEditorTool {
 
@@ -78,15 +79,16 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
     public void activated(final GraphEditor editor) {
         super.activated(editor);
         resetState(editor);
-        VisualModel model = editor.getModel();
         if (topLevelOnly) {
+            VisualModel model = editor.getModel();
             currentLevel = model.getCurrentLevel();
             model.setCurrentLevel(model.getRoot());
         }
         // Create a node for storing default properties (on each activation of the tool).
+        WorkspaceEntry we = editor.getWorkspaceEntry();
         try {
             VisualNode defaultNode = generator.createVisualNode(generator.createMathNode());
-            model.setDefaultNode(defaultNode);
+            we.setDefaultNode(defaultNode);
         } catch (NodeCreationException e) {
             throw new RuntimeException(e);
         }
@@ -98,7 +100,7 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
                 throw new RuntimeException(e);
             }
         }
-        model.setTemplateNode(templateNode);
+        we.setTemplateNode(templateNode);
     }
 
     @Override
@@ -115,9 +117,10 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
     @Override
     public void setup(final GraphEditor editor) {
         super.setup(editor);
-        editor.getWorkspaceEntry().setCanModify(false);
-        editor.getWorkspaceEntry().setCanSelect(false);
-        editor.getWorkspaceEntry().setCanCopy(false);
+        WorkspaceEntry we = editor.getWorkspaceEntry();
+        we.setCanModify(true);
+        we.setCanSelect(false);
+        we.setCanCopy(false);
     }
 
     @Override

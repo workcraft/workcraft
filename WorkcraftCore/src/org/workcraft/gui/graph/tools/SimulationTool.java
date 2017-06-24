@@ -60,6 +60,7 @@ import org.workcraft.gui.propertyeditor.PropertyEditorTable;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public abstract class SimulationTool extends AbstractGraphEditorTool implements ClipboardOwner {
     private VisualModel underlyingModel;
@@ -393,9 +394,10 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
     @Override
     public void setup(final GraphEditor editor) {
         super.setup(editor);
-        editor.getWorkspaceEntry().setCanModify(false);
-        editor.getWorkspaceEntry().setCanSelect(false);
-        editor.getWorkspaceEntry().setCanCopy(false);
+        WorkspaceEntry we = editor.getWorkspaceEntry();
+        we.setCanModify(false);
+        we.setCanSelect(false);
+        we.setCanCopy(false);
     }
 
     public void generateUnderlyingModel(VisualModel model) {

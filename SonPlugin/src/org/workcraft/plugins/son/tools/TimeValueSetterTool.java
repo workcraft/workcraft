@@ -545,8 +545,8 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
 
         editor.forceRedraw();
         // Nodes to store template and default properties are irrelevant are undefined.
-        editor.getModel().setDefaultNode(null);
-        editor.getModel().setTemplateNode(null);
+        we.setDefaultNode(null);
+        we.setTemplateNode(null);
     }
 
     @Override

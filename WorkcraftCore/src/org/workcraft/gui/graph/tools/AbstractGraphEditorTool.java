@@ -15,6 +15,7 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.util.GUI;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public abstract class AbstractGraphEditorTool implements GraphEditorTool {
 
@@ -25,8 +26,9 @@ public abstract class AbstractGraphEditorTool implements GraphEditorTool {
     public void activated(final GraphEditor editor) {
         editor.forceRedraw();
         // Nodes to store template and default properties are irrelevant are undefined.
-        editor.getModel().setDefaultNode(null);
-        editor.getModel().setTemplateNode(null);
+        WorkspaceEntry we = editor.getWorkspaceEntry();
+        we.setDefaultNode(null);
+        we.setTemplateNode(null);
         resetIssue();
         editor.requestFocus();
     }
@@ -38,9 +40,10 @@ public abstract class AbstractGraphEditorTool implements GraphEditorTool {
 
     @Override
     public void setup(final GraphEditor editor) {
-        editor.getWorkspaceEntry().setCanModify(true);
-        editor.getWorkspaceEntry().setCanSelect(true);
-        editor.getWorkspaceEntry().setCanCopy(true);
+        WorkspaceEntry we = editor.getWorkspaceEntry();
+        we.setCanModify(true);
+        we.setCanSelect(true);
+        we.setCanCopy(true);
         if (editor instanceof GraphEditorPanel) {
             GraphEditorPanel panel = (GraphEditorPanel) editor;
             panel.setCursor(getCursor(false, false, false));
