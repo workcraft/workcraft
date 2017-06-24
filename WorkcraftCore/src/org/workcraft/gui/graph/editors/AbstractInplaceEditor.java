@@ -1,6 +1,6 @@
 package org.workcraft.gui.graph.editors;
 
-import java.awt.Container;
+import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
@@ -13,17 +13,23 @@ import java.util.regex.Pattern;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
 import javax.swing.InputMap;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 import javax.swing.KeyStroke;
 import javax.swing.ScrollPaneConstants;
+import javax.swing.SwingConstants;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
 import org.workcraft.dom.visual.Alignment;
 import org.workcraft.dom.visual.BoundingBoxHelper;
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.graph.Viewport;
@@ -60,11 +66,11 @@ public abstract class AbstractInplaceEditor {
 
     private final class FocusListenerImplementation implements FocusListener {
         private final JTextPane textPane;
-        private final JScrollPane scrollPane;
+        private final JComponent panel;
 
-        private FocusListenerImplementation(JTextPane textPane, JScrollPane scrollPane) {
+        private FocusListenerImplementation(JTextPane textPane, JComponent panel) {
             this.textPane = textPane;
-            this.scrollPane = scrollPane;
+            this.panel = panel;
         }
 
         @Override
@@ -75,11 +81,10 @@ public abstract class AbstractInplaceEditor {
 
         @Override
         public void focusLost(FocusEvent arg0) {
-            Container parent = scrollPane.getParent();
-            parent.remove(scrollPane);
             if (!cancelChanges) {
                 processResult(textPane.getText().replace("\n", NEWLINE_SEPARATOR));
             }
+            getEditor().getOverlay().remove(panel);
             afterEdit();
         }
     }
@@ -149,7 +154,7 @@ public abstract class AbstractInplaceEditor {
             input.put(shiftEnter, INSERT_BREAK);
         }
 
-        // Add scroll vertical bar (if necessary)
+        // Add vertical scroll (if necessary)
         final JScrollPane scrollPane = new JScrollPane(textPane);
         if (multiline) {
             scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -159,7 +164,19 @@ public abstract class AbstractInplaceEditor {
             scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
         }
 
-        // Set the size of the scrollable text editor panel
+        // Show the text editor panel
+        JPanel panel = new JPanel(new BorderLayout());
+        getEditor().getOverlay().add(panel);
+        panel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        panel.add(scrollPane, BorderLayout.CENTER);
+        if (multiline) {
+            JLabel label = new JLabel("Press Shift+Enter for a new line ");
+            label.setBorder(SizeHelper.getEmptyBorder());
+            label.setHorizontalAlignment(SwingConstants.RIGHT);
+            panel.add(label, BorderLayout.SOUTH);
+        }
+
+        // Set the size of the text editor panel
         AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(getComponent());
         Rectangle2D bbRoot = TransformHelper.transform(getComponent(), localToRootTransform).getBoundingBox();
         bbRoot = BoundingBoxHelper.move(bbRoot, offset);
@@ -170,12 +187,10 @@ public abstract class AbstractInplaceEditor {
             dh += getExtraHeight(text, bbRoot.getHeight());
         }
         Rectangle bbScreen = viewport.userToScreen(BoundingBoxHelper.expand(bbRoot, dw, dh));
-        scrollPane.setBounds(bbScreen.x, bbScreen.y, bbScreen.width, bbScreen.height);
+        panel.setBounds(bbScreen.x, bbScreen.y, bbScreen.width, bbScreen.height);
 
-        // Show the text editor panel
-        getEditor().getOverlay().add(scrollPane);
         textPane.requestFocusInWindow();
-        textPane.addFocusListener(new FocusListenerImplementation(textPane, scrollPane));
+        textPane.addFocusListener(new FocusListenerImplementation(textPane, panel));
     }
 
     public void beforeEdit() {
