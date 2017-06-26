@@ -24,7 +24,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class NodeGeneratorTool extends AbstractGraphEditorTool {
 
     private final NodeGenerator generator;
-    private VisualNode templateNode = null;
     private VisualNode lastGeneratedNode = null;
     private String warningMessage = null;
     private Container currentLevel = null;
@@ -84,23 +83,23 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
             currentLevel = model.getCurrentLevel();
             model.setCurrentLevel(model.getRoot());
         }
-        // Create a node for storing default properties (on each activation of the tool).
+    }
+
+    @Override
+    public void setPermissions(final GraphEditor editor) {
         WorkspaceEntry we = editor.getWorkspaceEntry();
+        we.setCanModify(true);
+        we.setCanSelect(false);
+        we.setCanCopy(false);
+    }
+
+    @Override
+    public VisualNode createTemplateNode() {
         try {
-            VisualNode defaultNode = generator.createVisualNode(generator.createMathNode());
-            we.setDefaultNode(defaultNode);
+            return generator.createVisualNode(generator.createMathNode());
         } catch (NodeCreationException e) {
             throw new RuntimeException(e);
         }
-        // Create a node for storing template properties (if it does not exist yet).
-        if (templateNode == null) {
-            try {
-                templateNode = generator.createVisualNode(generator.createMathNode());
-            } catch (NodeCreationException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        we.setTemplateNode(templateNode);
     }
 
     @Override
@@ -112,15 +111,6 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
             model.setCurrentLevel(currentLevel);
             currentLevel = null;
         }
-    }
-
-    @Override
-    public void setup(final GraphEditor editor) {
-        super.setup(editor);
-        WorkspaceEntry we = editor.getWorkspaceEntry();
-        we.setCanModify(true);
-        we.setCanSelect(false);
-        we.setCanCopy(false);
     }
 
     @Override
@@ -146,7 +136,7 @@ public class NodeGeneratorTool extends AbstractGraphEditorTool {
                     VisualModel model = e.getModel();
                     Point2D snapPosition = editor.snap(e.getPosition(), null);
                     lastGeneratedNode = generator.generate(model, snapPosition);
-                    lastGeneratedNode.copyStyle(templateNode);
+                    lastGeneratedNode.copyStyle(getTemplateNode());
                 }
             } catch (NodeCreationException e1) {
                 throw new RuntimeException(e1);

@@ -209,7 +209,6 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
         // Setup and activate the selected tool (before updating Property editor and Tool controls).
         selectedTool = tool;
         setToolButtonSelection(selectedTool, true);
-        selectedTool.setup(editor);
         selectedTool.activated(editor);
         // Update the content of Property editor (first) and Tool controls (second).
         editor.updatePropertyView();

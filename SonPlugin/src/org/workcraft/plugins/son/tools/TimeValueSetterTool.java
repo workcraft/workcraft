@@ -157,6 +157,7 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
         panel.add(granularityPanel, BorderLayout.NORTH);
         panel.add(timePropertyPanel, BorderLayout.CENTER);
         panel.add(buttonPanel, BorderLayout.SOUTH);
+        panel.setPreferredSize(new Dimension(0, 0));
         return panel;
     }
 
@@ -526,12 +527,10 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
 
     @Override
     public void activated(final GraphEditor editor) {
+        super.activated(editor);
         visualNet = (VisualSON) editor.getModel();
         net = (SON) visualNet.getMathModel();
-        WorkspaceEntry we = editor.getWorkspaceEntry();
-        we.setCanSelect(false);
         settings = new TimeEstimatorSettings();
-
         net.refreshAllColor();
         net.clearMarking();
 
@@ -542,21 +541,26 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
         visibility = SONSettings.getTimeVisibility();
         // set visibility to true
         SONSettings.setTimeVisibility(true);
-
         editor.forceRedraw();
-        // Nodes to store template and default properties are irrelevant are undefined.
-        we.setDefaultNode(null);
-        we.setTemplateNode(null);
     }
 
     @Override
     public void deactivated(final GraphEditor editor) {
+        super.deactivated(editor);
         if (!visibility) {
             TimeAlg.removeProperties(net);
         }
         SONSettings.setTimeVisibility(visibility);
         net.refreshAllColor();
         net.clearMarking();
+    }
+
+    @Override
+    public void setPermissions(final GraphEditor editor) {
+        WorkspaceEntry we = editor.getWorkspaceEntry();
+        we.setCanModify(false);
+        we.setCanSelect(false);
+        we.setCanCopy(true);
     }
 
     @Override

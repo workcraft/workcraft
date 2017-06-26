@@ -804,7 +804,6 @@ public class MainWindow extends JFrame {
                 if (editorInFocus != null) {
                     editorInFocus.requestFocus();
                 }
-                System.out.println(editorInFocus);
             }
         });
     }
@@ -815,12 +814,12 @@ public class MainWindow extends JFrame {
             // and the tool controls. Only after that close the one of them (if empty).
             displayDockableWindow(propertyEditorDockable);
             displayDockableWindow(toolControlsDockable);
-            if (propertyEditorWindow.isEmpty()) {
-                closeDockableWindow(propertyEditorDockable);
-            }
             if (toolControlsWindow.isEmpty()) {
                 closeDockableWindow(toolControlsDockable);
+            } else if (propertyEditorWindow.isEmpty()) {
+                closeDockableWindow(propertyEditorDockable);
             }
+
         } catch (OperationCancelledException e) {
         }
     }

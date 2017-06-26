@@ -10,6 +10,7 @@ import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.Timer;
 
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.GraphEditorPanel;
@@ -21,16 +22,27 @@ public abstract class AbstractGraphEditorTool implements GraphEditorTool {
 
     private Timer issueTimer = null;
     private String issueText = null;
+    private VisualNode templateNode = null;
 
     @Override
     public void activated(final GraphEditor editor) {
-        editor.forceRedraw();
-        // Nodes to store template and default properties are irrelevant are undefined.
+        setPermissions(editor);
+        // Set mouse cursor
+        if (editor instanceof GraphEditorPanel) {
+            GraphEditorPanel panel = (GraphEditorPanel) editor;
+            panel.setCursor(getCursor(false, false, false));
+        }
         WorkspaceEntry we = editor.getWorkspaceEntry();
-        we.setDefaultNode(null);
-        we.setTemplateNode(null);
+        // Create a node for storing template properties (if it does not exist yet).
+        if (templateNode == null) {
+            templateNode = createTemplateNode();
+        }
+        we.setTemplateNode(templateNode);
+        // Create a node for storing default properties (on each activation of the tool).
+        we.setDefaultNode(createTemplateNode());
         resetIssue();
-        editor.requestFocus();
+        // Initialise Controls panel, so all its elements are created
+        getControlsPanel(editor);
     }
 
     @Override
@@ -39,15 +51,21 @@ public abstract class AbstractGraphEditorTool implements GraphEditorTool {
     }
 
     @Override
-    public void setup(final GraphEditor editor) {
+    public void setPermissions(final GraphEditor editor) {
         WorkspaceEntry we = editor.getWorkspaceEntry();
         we.setCanModify(true);
         we.setCanSelect(true);
         we.setCanCopy(true);
-        if (editor instanceof GraphEditorPanel) {
-            GraphEditorPanel panel = (GraphEditorPanel) editor;
-            panel.setCursor(getCursor(false, false, false));
-        }
+    }
+
+    @Override
+    public VisualNode createTemplateNode() {
+        return null;
+    }
+
+    @Override
+    public VisualNode getTemplateNode() {
+        return templateNode;
     }
 
     @Override

@@ -18,7 +18,7 @@ public class CpogToolsProvider implements CustomToolsProvider {
 
         result.add(new CpogSelectionTool());
         result.add(new CommentGeneratorTool());
-        result.add(new ConnectionTool(false, true, true, true));
+        result.add(new ConnectionTool(false, true, true));
 
         result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Vertex.class)));
         result.add(new NodeGeneratorTool(new DefaultNodeGenerator(Variable.class)));

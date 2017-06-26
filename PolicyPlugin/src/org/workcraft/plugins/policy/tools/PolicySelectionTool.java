@@ -35,8 +35,9 @@ public class PolicySelectionTool extends SelectionTool {
     public void updateControlsToolbar(JToolBar toolbar, final GraphEditor editor) {
         super.updateControlsToolbar(toolbar, editor);
 
-        JButton bundleButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/policy-selection-bundle.svg"), "Bundle selected transitions (" + DesktopApi.getMenuKeyMaskName() + "+B)");
+        JButton bundleButton = GUI.createIconButton(
+                GUI.createIconFromSVG("images/policy-selection-bundle.svg"),
+                "Bundle selected transitions (" + DesktopApi.getMenuKeyMaskName() + "-B)");
         bundleButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -45,8 +46,9 @@ public class PolicySelectionTool extends SelectionTool {
         });
         toolbar.add(bundleButton);
 
-        JButton unbundleButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/policy-selection-unbundle.svg"), "Unbundle selected transitions (" + DesktopApi.getMenuKeyMaskName() + "+Shift+B)");
+        JButton unbundleButton = GUI.createIconButton(
+                GUI.createIconFromSVG("images/policy-selection-unbundle.svg"),
+                "Unbundle selected transitions (" + DesktopApi.getMenuKeyMaskName() + "+Shift-B)");
         unbundleButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -54,6 +56,9 @@ public class PolicySelectionTool extends SelectionTool {
             }
         });
         toolbar.add(unbundleButton);
+        if (toolbar.getComponentCount() > 0) {
+            toolbar.addSeparator();
+        }
     }
 
     @Override

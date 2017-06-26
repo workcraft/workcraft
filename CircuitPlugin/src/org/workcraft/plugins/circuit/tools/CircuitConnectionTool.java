@@ -17,7 +17,7 @@ public class CircuitConnectionTool extends ConnectionTool {
     }
 
     @Override
-    public VisualConnection createDefaultTemplateNode() {
+    public VisualConnection createTemplateNode() {
         VisualCircuitConnection result = new VisualCircuitConnection();
         result.setArrowLength(0.0);
         return result;

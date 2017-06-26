@@ -46,8 +46,9 @@ public class SONSelectionTool extends SelectionTool {
     @Override
     public void updateControlsToolbar(JToolBar toolbar, final GraphEditor editor) {
         //Create groupButton
-        final JButton groupButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/son-selection-group.svg"), "Group selection (" + DesktopApi.getMenuKeyMaskName() + "+G)");
+        final JButton groupButton = GUI.createIconButton(
+                GUI.createIconFromSVG("images/son-selection-group.svg"),
+                "Group selection (" + DesktopApi.getMenuKeyMaskName() + "-G)");
         groupButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -57,8 +58,9 @@ public class SONSelectionTool extends SelectionTool {
         toolbar.add(groupButton);
 
         //Create blockButton
-        JButton blockButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/son-selection-block.svg"), "Group selection into a block (Alt+B)");
+        JButton blockButton = GUI.createIconButton(
+                GUI.createIconFromSVG("images/son-selection-block.svg"),
+                "Group selection into a block (Alt-B)");
         blockButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -68,8 +70,9 @@ public class SONSelectionTool extends SelectionTool {
         toolbar.add(blockButton);
 
         //Create pageButton
-        JButton groupPageButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/son-selection-page.svg"), "Group selection into a page (Alt+G)");
+        JButton groupPageButton = GUI.createIconButton(
+                GUI.createIconFromSVG("images/son-selection-page.svg"),
+                "Group selection into a page (Alt-G)");
         groupPageButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -79,8 +82,9 @@ public class SONSelectionTool extends SelectionTool {
         toolbar.add(groupPageButton);
 
         //Create ungroupButton
-        JButton ungroupButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/son-selection-ungroup.svg"), "Ungroup selection (" + DesktopApi.getMenuKeyMaskName() + "+Shift+G)");
+        JButton ungroupButton = GUI.createIconButton(
+                GUI.createIconFromSVG("images/son-selection-ungroup.svg"),
+                "Ungroup selection (" + DesktopApi.getMenuKeyMaskName() + "+Shift-G)");
         ungroupButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -89,8 +93,8 @@ public class SONSelectionTool extends SelectionTool {
         });
         toolbar.add(ungroupButton);
 
-        JButton levelUpButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/son-selection-level_up.svg"), "Level up (PageUp)");
+        JButton levelUpButton = GUI.createIconButton(
+                GUI.createIconFromSVG("images/son-selection-level_up.svg"), "Level up (PageUp)");
         levelUpButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -99,8 +103,8 @@ public class SONSelectionTool extends SelectionTool {
         });
         toolbar.add(levelUpButton);
 
-        JButton levelDownButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/son-selection-level_down.svg"), "Level down (PageDown)");
+        JButton levelDownButton = GUI.createIconButton(
+                GUI.createIconFromSVG("images/son-selection-level_down.svg"), "Level down (PageDown)");
         levelDownButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -111,8 +115,9 @@ public class SONSelectionTool extends SelectionTool {
 
         toolbar.addSeparator();
 
-        JButton flipHorizontalButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/son-selection-flip_horizontal.svg"), "Flip horizontal (" + DesktopApi.getMenuKeyMaskName() + "+F)");
+        JButton flipHorizontalButton = GUI.createIconButton(
+                GUI.createIconFromSVG("images/son-selection-flip_horizontal.svg"),
+                "Flip horizontal (" + DesktopApi.getMenuKeyMaskName() + "-F)");
         flipHorizontalButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -121,8 +126,9 @@ public class SONSelectionTool extends SelectionTool {
         });
         toolbar.add(flipHorizontalButton);
 
-        JButton flipVerticalButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/son-selection-flip_vertical.svg"), "Flip vertical (" + DesktopApi.getMenuKeyMaskName() + "+Shift+F)");
+        JButton flipVerticalButton = GUI.createIconButton(
+                GUI.createIconFromSVG("images/son-selection-flip_vertical.svg"),
+                "Flip vertical (" + DesktopApi.getMenuKeyMaskName() + "+Shift-F)");
         flipVerticalButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -131,8 +137,9 @@ public class SONSelectionTool extends SelectionTool {
         });
         toolbar.add(flipVerticalButton);
 
-        JButton rotateClockwiseButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/son-selection-rotate_clockwise.svg"), "Rotate clockwise (" + DesktopApi.getMenuKeyMaskName() + "+R)");
+        JButton rotateClockwiseButton = GUI.createIconButton(
+                GUI.createIconFromSVG("images/son-selection-rotate_clockwise.svg"),
+                "Rotate clockwise (" + DesktopApi.getMenuKeyMaskName() + "-R)");
         rotateClockwiseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -141,8 +148,9 @@ public class SONSelectionTool extends SelectionTool {
         });
         toolbar.add(rotateClockwiseButton);
 
-        JButton rotateCounterclockwiseButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/son-selection-rotate_counterclockwise.svg"), "Rotate counterclockwise (" + DesktopApi.getMenuKeyMaskName() + "+Shift+R)");
+        JButton rotateCounterclockwiseButton = GUI.createIconButton(
+                GUI.createIconFromSVG("images/son-selection-rotate_counterclockwise.svg"),
+                "Rotate counterclockwise (" + DesktopApi.getMenuKeyMaskName() + "+Shift-R)");
         rotateCounterclockwiseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -150,6 +158,8 @@ public class SONSelectionTool extends SelectionTool {
             }
         });
         toolbar.add(rotateCounterclockwiseButton);
+
+        toolbar.addSeparator();
     }
 
     @Override

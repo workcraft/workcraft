@@ -118,8 +118,9 @@ public class SelectionTool extends AbstractGraphEditorTool {
         super.updateControlsToolbar(toolbar, editor);
 
         if (enableGroupping) {
-            JButton groupButton = GUI.createIconButton(GUI.createIconFromSVG("images/selection-group.svg"),
-                    "Group selection (" + DesktopApi.getMenuKeyMaskName() + "+G)");
+            JButton groupButton = GUI.createIconButton(
+                    GUI.createIconFromSVG("images/selection-group.svg"),
+                    "Group selection (" + DesktopApi.getMenuKeyMaskName() + "-G)");
             groupButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -131,8 +132,9 @@ public class SelectionTool extends AbstractGraphEditorTool {
         }
 
         if (enablePaging) {
-            JButton groupPageButton = GUI.createIconButton(GUI.createIconFromSVG("images/selection-page.svg"),
-                    "Combine selection into a page (Alt+G)");
+            JButton groupPageButton = GUI.createIconButton(
+                    GUI.createIconFromSVG("images/selection-page.svg"),
+                    "Combine selection into a page (Alt-G)");
             groupPageButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -144,8 +146,9 @@ public class SelectionTool extends AbstractGraphEditorTool {
         }
 
         if (enableGroupping || enablePaging) {
-            JButton ungroupButton = GUI.createIconButton(GUI.createIconFromSVG("images/selection-ungroup.svg"),
-                    "Ungroup selection (" + DesktopApi.getMenuKeyMaskName() + "+Shift+G)");
+            JButton ungroupButton = GUI.createIconButton(
+                    GUI.createIconFromSVG("images/selection-ungroup.svg"),
+                    "Ungroup selection (" + DesktopApi.getMenuKeyMaskName() + "+Shift-G)");
             ungroupButton.addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent e) {
@@ -155,7 +158,8 @@ public class SelectionTool extends AbstractGraphEditorTool {
             });
             toolbar.add(ungroupButton);
 
-            JButton levelUpButton = GUI.createIconButton(GUI.createIconFromSVG("images/selection-level_up.svg"),
+            JButton levelUpButton = GUI.createIconButton(
+                    GUI.createIconFromSVG("images/selection-level_up.svg"),
                     "Level up (PageUp)");
             levelUpButton.addActionListener(new ActionListener() {
                 @Override
@@ -166,7 +170,8 @@ public class SelectionTool extends AbstractGraphEditorTool {
             });
             toolbar.add(levelUpButton);
 
-            JButton levelDownButton = GUI.createIconButton(GUI.createIconFromSVG("images/selection-level_down.svg"),
+            JButton levelDownButton = GUI.createIconButton(
+                    GUI.createIconFromSVG("images/selection-level_down.svg"),
                     "Level down (PageDown)");
             levelDownButton.addActionListener(new ActionListener() {
                 @Override
@@ -177,11 +182,12 @@ public class SelectionTool extends AbstractGraphEditorTool {
             });
             toolbar.add(levelDownButton);
         }
-
-        toolbar.addSeparator();
-
+        if (toolbar.getComponentCount() > 0) {
+            toolbar.addSeparator();
+        }
         if (enableFlipping) {
-            JButton flipHorizontalButton = GUI.createIconButton(GUI.createIconFromSVG("images/selection-flip_horizontal.svg"),
+            JButton flipHorizontalButton = GUI.createIconButton(
+                    GUI.createIconFromSVG("images/selection-flip_horizontal.svg"),
                     "Flip horizontal");
             flipHorizontalButton.addActionListener(new ActionListener() {
                 @Override
@@ -192,7 +198,8 @@ public class SelectionTool extends AbstractGraphEditorTool {
             });
             toolbar.add(flipHorizontalButton);
 
-            JButton flipVerticalButton = GUI.createIconButton(GUI.createIconFromSVG("images/selection-flip_vertical.svg"),
+            JButton flipVerticalButton = GUI.createIconButton(
+                    GUI.createIconFromSVG("images/selection-flip_vertical.svg"),
                     "Flip vertical");
             flipVerticalButton.addActionListener(new ActionListener() {
                 @Override
@@ -205,7 +212,8 @@ public class SelectionTool extends AbstractGraphEditorTool {
         }
 
         if (enableRotating) {
-            JButton rotateClockwiseButton = GUI.createIconButton(GUI.createIconFromSVG("images/selection-rotate_clockwise.svg"),
+            JButton rotateClockwiseButton = GUI.createIconButton(
+                    GUI.createIconFromSVG("images/selection-rotate_clockwise.svg"),
                     "Rotate clockwise");
             rotateClockwiseButton.addActionListener(new ActionListener() {
                 @Override
@@ -216,7 +224,8 @@ public class SelectionTool extends AbstractGraphEditorTool {
             });
             toolbar.add(rotateClockwiseButton);
 
-            JButton rotateCounterclockwiseButton = GUI.createIconButton(GUI.createIconFromSVG("images/selection-rotate_counterclockwise.svg"),
+            JButton rotateCounterclockwiseButton = GUI.createIconButton(
+                    GUI.createIconFromSVG("images/selection-rotate_counterclockwise.svg"),
                     "Rotate counterclockwise");
             rotateCounterclockwiseButton.addActionListener(new ActionListener() {
                 @Override
@@ -227,8 +236,9 @@ public class SelectionTool extends AbstractGraphEditorTool {
             });
             toolbar.add(rotateCounterclockwiseButton);
         }
-
-        toolbar.addSeparator();
+        if (toolbar.getComponentCount() > 0) {
+            toolbar.addSeparator();
+        }
     }
 
     @Override
@@ -239,8 +249,17 @@ public class SelectionTool extends AbstractGraphEditorTool {
 
     @Override
     public void deactivated(GraphEditor editor) {
+        super.deactivated(editor);
         editor.getModel().selectNone();
         currentNode = null;
+    }
+
+    @Override
+    public void setPermissions(final GraphEditor editor) {
+        WorkspaceEntry we = editor.getWorkspaceEntry();
+        we.setCanModify(true);
+        we.setCanSelect(true);
+        we.setCanCopy(true);
     }
 
     @Override

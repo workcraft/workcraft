@@ -168,6 +168,7 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
 
     @Override
     public void activated(final GraphEditor editor) {
+        super.activated(editor);
         dfs = (VisualDfs) editor.getModel();
         cycleTable.clearSelection();
         selectedCycle = null;
@@ -175,24 +176,23 @@ public class CycleAnalyserTool extends AbstractGraphEditorTool {
         if ((cycles != null) && (cycleCountLabel != null)) {
             cycleCountLabel.setText("Cycle count (out of " + cycles.size() + "):");
         }
-        super.activated(editor);
-    }
-
-    @Override
-    public void setup(final GraphEditor editor) {
-        super.setup(editor);
-        WorkspaceEntry we = editor.getWorkspaceEntry();
-        we.setCanModify(false);
-        we.setCanSelect(false);
-        we.setCanCopy(false);
     }
 
     @Override
     public void deactivated(final GraphEditor editor) {
+        super.deactivated(editor);
         cycles = null;
         selectedCycle = null;
         dfs = null;
         cycleTable.clearSelection();
+    }
+
+    @Override
+    public void setPermissions(final GraphEditor editor) {
+        WorkspaceEntry we = editor.getWorkspaceEntry();
+        we.setCanModify(false);
+        we.setCanSelect(false);
+        we.setCanCopy(false);
     }
 
     @Override
