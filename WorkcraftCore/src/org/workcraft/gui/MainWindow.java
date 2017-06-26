@@ -468,6 +468,11 @@ public class MainWindow extends JFrame {
         dockableWindow.setClosed(true);
     }
 
+    private void setToolbarVisibility(JToolBar toolbar, boolean visibility) {
+        mainMenu.setToolbarVisibility(toolbar, visibility);
+        toolbar.setVisible(visibility);
+    }
+
     private void closeDockableUtilityWindow(DockableWindow dockableWindow) {
         mainMenu.setWindowVisibility(dockableWindow.getID(), false);
         DockingManager.close(dockableWindow);
@@ -619,7 +624,7 @@ public class MainWindow extends JFrame {
         if (visibleVal != null) {
             visible = Boolean.valueOf(visibleVal);
         }
-        toolbar.setVisible(visible);
+        setToolbarVisibility(toolbar, visible);
 
         String position = framework.getConfigCoreVar(keyPosition);
         if (position == null) {
@@ -799,6 +804,7 @@ public class MainWindow extends JFrame {
                 if (editorInFocus != null) {
                     editorInFocus.requestFocus();
                 }
+                System.out.println(editorInFocus);
             }
         });
     }
@@ -806,7 +812,7 @@ public class MainWindow extends JFrame {
     public void updateDockableWindowVisibility() {
         try {
             // To preserve the layout, first display both the property editor
-            // and the tool controls. Only after that close the empty ones.
+            // and the tool controls. Only after that close the one of them (if empty).
             displayDockableWindow(propertyEditorDockable);
             displayDockableWindow(toolControlsDockable);
             if (propertyEditorWindow.isEmpty()) {
