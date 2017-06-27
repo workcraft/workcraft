@@ -98,9 +98,10 @@ public class PetriSimulationTool extends SimulationTool {
     @Override
     public boolean isEnabledNode(Node node) {
         boolean result = false;
-        if (node instanceof Transition) {
+        PetriNetModel petri = getUnderlyingPetri();
+        if ((petri != null) && (node instanceof Transition)) {
             Transition transition = (Transition) node;
-            result = getUnderlyingPetri().isEnabled(transition);
+            result = petri.isEnabled(transition);
         }
         return result;
     }
@@ -176,8 +177,8 @@ public class PetriSimulationTool extends SimulationTool {
     }
 
     protected void coloriseTokens(Transition transition) {
-        VisualPetriNet visualPetri = (VisualPetriNet) getUnderlyingModel();
-        VisualTransition vt = visualPetri.getVisualTransition(transition);
+        VisualPetriNet model = (VisualPetriNet) getUnderlyingModel();
+        VisualTransition vt = model.getVisualTransition(transition);
         if (vt == null) return;
         Color tokenColor = Color.black;
         ColorGenerator tokenColorGenerator = vt.getTokenColorGenerator();
@@ -186,7 +187,7 @@ public class PetriSimulationTool extends SimulationTool {
             tokenColor = tokenColorGenerator.updateColor();
         } else {
             // combine preset token colours
-            for (Connection c: visualPetri.getConnections(vt)) {
+            for (Connection c: model.getConnections(vt)) {
                 if ((c.getSecond() == vt) && (c instanceof VisualConnection)) {
                     VisualConnection vc = (VisualConnection) c;
                     if (vc.isTokenColorPropagator() && (vc.getFirst() instanceof VisualPlace)) {
@@ -197,7 +198,7 @@ public class PetriSimulationTool extends SimulationTool {
             }
         }
         // propagate the colour to postset tokens
-        for (Connection c: visualPetri.getConnections(vt)) {
+        for (Connection c: model.getConnections(vt)) {
             if ((c.getFirst() == vt) && (c instanceof VisualConnection)) {
                 VisualConnection vc = (VisualConnection) c;
                 if (vc.isTokenColorPropagator() && (vc.getSecond() instanceof VisualPlace)) {

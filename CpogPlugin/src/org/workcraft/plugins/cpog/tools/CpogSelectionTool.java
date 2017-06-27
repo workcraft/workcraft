@@ -194,7 +194,7 @@ public class CpogSelectionTool extends SelectionTool {
 
     public void scenarioPageGroupButton(JPanel groupPanel) {
         JButton groupPageButton = GUI.createIconButton(GUI.createIconFromSVG(
-                "images/selection-page.svg"), "Combine selection as a scenario (Alt+G)");
+                "images/selection-page.svg"), "Combine selection as a scenario (Alt-G)");
         groupPageButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

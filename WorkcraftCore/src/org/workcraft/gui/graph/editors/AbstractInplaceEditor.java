@@ -143,7 +143,7 @@ public abstract class AbstractInplaceEditor {
         float fontSize = font.getSize2D() * (float) viewport.getTransform().getScaleY();
         textPane.setFont(font.deriveFont(fontSize));
 
-        // Set actions for Shift+Enter, Enter, and Esc
+        // Set actions for Shift-Enter, Enter, and Esc
         InputMap input = textPane.getInputMap();
         ActionMap actions = textPane.getActionMap();
         input.put(enter, TEXT_SUBMIT);
@@ -170,7 +170,7 @@ public abstract class AbstractInplaceEditor {
         panel.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         panel.add(scrollPane, BorderLayout.CENTER);
         if (multiline) {
-            JLabel label = new JLabel("Press Shift+Enter for a new line ");
+            JLabel label = new JLabel("Press Shift-Enter for a new line ");
             label.setBorder(SizeHelper.getEmptyBorder());
             label.setHorizontalAlignment(SwingConstants.RIGHT);
             panel.add(label, BorderLayout.SOUTH);

@@ -60,8 +60,8 @@ public class SONConnectionTool extends ConnectionTool {
 
     @Override
     public void deactivated(GraphEditor editor) {
-        semantic = Semantics.PNLINE;
         super.deactivated(editor);
+        semantic = Semantics.PNLINE;
     }
 
 }

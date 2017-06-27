@@ -44,7 +44,6 @@ public class ConnectionTool extends AbstractGraphEditorTool {
 
     protected boolean forbidSelfLoops = true;
     protected boolean directedArcs = true;
-    protected boolean useTemplate = true;
     protected boolean allLevels = true;
 
     private Point2D firstPoint = null;
@@ -53,16 +52,14 @@ public class ConnectionTool extends AbstractGraphEditorTool {
     protected VisualNode currentNode = null;
     private boolean mouseLeftFirstNode = false;
     private LinkedList<Point2D> controlPoints = null;
-    private VisualConnection templateNode = null;
 
     public ConnectionTool() {
-        this(true, true, true, true);
+        this(true, true, true);
     }
 
-    public ConnectionTool(boolean forbidSelfLoops, boolean directedArcs, boolean useTemplate, boolean allLevels) {
+    public ConnectionTool(boolean forbidSelfLoops, boolean directedArcs, boolean allLevels) {
         this.forbidSelfLoops = forbidSelfLoops;
         this.directedArcs = directedArcs;
-        this.useTemplate = useTemplate;
         this.allLevels = allLevels;
     }
 
@@ -98,10 +95,10 @@ public class ConnectionTool extends AbstractGraphEditorTool {
         firstNode = null;
         mouseLeftFirstNode = false;
         editor.getModel().selectNone();
-        setup(editor);
+        setPermissions(editor);
     }
 
-    protected void updateState(GraphEditor editor) {
+    protected void updateCurrentNode(GraphEditor editor) {
         if (allLevels) {
             currentNode = (VisualNode) HitMan.hitDeepest(currentPoint, editor.getModel());
         } else {
@@ -129,18 +126,6 @@ public class ConnectionTool extends AbstractGraphEditorTool {
     public void activated(final GraphEditor editor) {
         super.activated(editor);
         resetState(editor);
-        WorkspaceEntry we = editor.getWorkspaceEntry();
-        // Create a node for storing default properties (on each activation of the tool).
-        we.setDefaultNode(createDefaultTemplateNode());
-        // Create a node for storing template properties (if it does not exist yet).
-        if (useTemplate && (templateNode == null)) {
-            templateNode = createDefaultTemplateNode();
-        }
-        we.setTemplateNode(templateNode);
-    }
-
-    public VisualConnection createDefaultTemplateNode() {
-        return new VisualConnection();
     }
 
     @Override
@@ -150,12 +135,16 @@ public class ConnectionTool extends AbstractGraphEditorTool {
     }
 
     @Override
-    public void setup(final GraphEditor editor) {
-        super.setup(editor);
+    public void setPermissions(GraphEditor editor) {
         WorkspaceEntry we = editor.getWorkspaceEntry();
-        we.setCanModify(firstNode == null);
+        we.setCanModify(true);
         we.setCanSelect(true);
         we.setCanCopy(false);
+    }
+
+    @Override
+    public VisualConnection createTemplateNode() {
+        return new VisualConnection();
     }
 
     @Override
@@ -195,7 +184,7 @@ public class ConnectionTool extends AbstractGraphEditorTool {
     @Override
     public void mouseMoved(GraphEditorMouseEvent e) {
         currentPoint = e.getPosition();
-        updateState(e.getEditor());
+        updateCurrentNode(e.getEditor());
         e.getEditor().repaint();
     }
 
@@ -203,7 +192,7 @@ public class ConnectionTool extends AbstractGraphEditorTool {
     public void mousePressed(GraphEditorMouseEvent e) {
         currentPoint = e.getPosition();
         GraphEditor editor = e.getEditor();
-        updateState(editor);
+        updateCurrentNode(editor);
         if (e.getButton() == MouseEvent.BUTTON1) {
             if (currentNode == null) {
                 if (firstNode != null) {
@@ -295,7 +284,7 @@ public class ConnectionTool extends AbstractGraphEditorTool {
                 }
             }
             if (connection != null) {
-                connection.copyStyle(templateNode);
+                connection.copyStyle(getTemplateNode());
                 if (controlPoints.isEmpty() && (firstNode == currentNode)) {
                     // Self-loop without predefined control points.
                     connection.getGraphic().setDefaultControlPoints();

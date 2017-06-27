@@ -179,23 +179,23 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
 
     @Override
     public void activated(final GraphEditor editor) {
-        stg = (VisualStg) editor.getModel();
         super.activated(editor);
-    }
-
-    @Override
-    public void setup(final GraphEditor editor) {
-        super.setup(editor);
-        WorkspaceEntry we = editor.getWorkspaceEntry();
-        we.setCanModify(false);
-        we.setCanSelect(false);
-        we.setCanCopy(false);
+        stg = (VisualStg) editor.getModel();
     }
 
     @Override
     public void deactivated(final GraphEditor editor) {
+        super.deactivated(editor);
         stg = null;
         coresTable.clearSelection();
+    }
+
+    @Override
+    public void setPermissions(final GraphEditor editor) {
+        WorkspaceEntry we = editor.getWorkspaceEntry();
+        we.setCanModify(false);
+        we.setCanSelect(false);
+        we.setCanCopy(false);
     }
 
     @Override

@@ -104,20 +104,30 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
             return panel;
         }
 
-        playButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-play.svg"), "Automatic trace playback");
-        stopButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-stop.svg"), "Reset trace playback");
-        backwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-backward.svg"), "Step backward");
-        forwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-forward.svg"), "Step forward");
-        randomButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-random_play.svg"), "Random playback");
+        playButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-play.svg"),
+                "Automatic trace playback");
+        stopButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-stop.svg"),
+                "Reset trace playback");
+        backwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-backward.svg"),
+                "Step backward ([)");
+        forwardButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-forward.svg"),
+                "Step forward (])");
+        randomButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-random_play.svg"),
+                "Random playback");
 
         speedSlider = new JSlider(-1000, 1000, 0);
         speedSlider.setToolTipText("Simulation playback speed");
 
-        JButton generateGraphButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-trace-graph.svg"), "Generate trace digram");
-        JButton copyStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-trace-copy.svg"), "Copy trace to clipboard");
-        JButton pasteStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-trace-paste.svg"), "Paste trace from clipboard");
-        JButton mergeTraceButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-trace-merge.svg"), "Merge branch into trace");
-        JButton saveInitStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-marking-save.svg"), "Save current state as initial");
+        JButton generateGraphButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-trace-graph.svg"),
+                "Generate trace digram");
+        JButton copyStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-trace-copy.svg"),
+                "Copy trace to clipboard");
+        JButton pasteStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-trace-paste.svg"),
+                "Paste trace from clipboard");
+        JButton mergeTraceButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-trace-merge.svg"),
+                "Merge branch into trace");
+        JButton saveInitStateButton = GUI.createIconButton(GUI.createIconFromSVG("images/simulation-marking-save.svg"),
+                "Save current state as initial");
 
         FlowLayout flowLayout = new FlowLayout();
         int buttonWidth = (int) Math.round(playButton.getPreferredSize().getWidth() + flowLayout.getHgap());
@@ -369,13 +379,12 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
 
     @Override
     public void activated(final GraphEditor editor) {
-        editor.getWorkspaceEntry().captureMemento();
-        generateUnderlyingModel(editor.getModel());
-        initialState = readModelState();
         super.activated(editor);
+        generateUnderlyingModel(editor.getModel());
+        editor.getWorkspaceEntry().captureMemento();
+        initialState = readModelState();
         setStatePaneVisibility(false);
         resetTraces(editor);
-        editor.forceRedraw();
     }
 
     @Override
@@ -392,8 +401,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
     }
 
     @Override
-    public void setup(final GraphEditor editor) {
-        super.setup(editor);
+    public void setPermissions(final GraphEditor editor) {
         WorkspaceEntry we = editor.getWorkspaceEntry();
         we.setCanModify(false);
         we.setCanSelect(false);

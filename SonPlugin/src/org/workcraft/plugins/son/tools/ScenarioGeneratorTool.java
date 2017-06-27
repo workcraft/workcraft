@@ -219,8 +219,9 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
 
         panel = new JPanel();
         panel.setLayout(new BorderLayout());
-        panel.add(controlPanel, BorderLayout.PAGE_START);
+        panel.add(controlPanel, BorderLayout.NORTH);
         panel.add(tabelPanel, BorderLayout.CENTER);
+        panel.setPreferredSize(new Dimension(0, 0));
         return panel;
     }
 
@@ -246,17 +247,30 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
 
     @Override
     public void activated(final GraphEditor editor) {
+        super.activated(editor);
         this.editor = editor;
-        WorkspaceEntry we = editor.getWorkspaceEntry();
         BlockConnector.blockBoundingConnector(visualNet);
-        we.setCanSelect(false);
-
         net.clearMarking();
         initialise();
         editor.forceRedraw();
-        // Nodes to store template and default properties are irrelevant are undefined.
-        we.setDefaultNode(null);
-        we.setTemplateNode(null);
+    }
+
+    @Override
+    public void deactivated(final GraphEditor editor) {
+        super.deactivated(editor);
+        BlockConnector.blockInternalConnector(visualNet);
+        exportScenarios();
+        scenarioRef.clear();
+        net.refreshAllColor();
+        net.clearMarking();
+    }
+
+    @Override
+    public void setPermissions(final GraphEditor editor) {
+        WorkspaceEntry we = editor.getWorkspaceEntry();
+        we.setCanModify(false);
+        we.setCanSelect(false);
+        we.setCanCopy(false);
     }
 
     @Override
@@ -265,15 +279,6 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
         saveList = scenarioTable.getSaveList();
         scenarioRef = scenarioTable.getScenarioRef();
         updateState(editor);
-    }
-
-    @Override
-    public void deactivated(final GraphEditor editor) {
-        BlockConnector.blockInternalConnector(visualNet);
-        exportScenarios();
-        scenarioRef.clear();
-        net.refreshAllColor();
-        net.clearMarking();
     }
 
     private void exportScenarios() {

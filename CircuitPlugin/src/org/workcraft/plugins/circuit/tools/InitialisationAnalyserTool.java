@@ -72,25 +72,25 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
     @Override
     public void activated(final GraphEditor editor) {
+        super.activated(editor);
         Circuit circuit = (Circuit) editor.getModel().getMathModel();
         updateState(circuit);
-        super.activated(editor);
-    }
-
-    @Override
-    public void setup(final GraphEditor editor) {
-        super.setup(editor);
-        WorkspaceEntry we = editor.getWorkspaceEntry();
-        we.setCanModify(false);
-        we.setCanSelect(false);
-        we.setCanCopy(false);
     }
 
     @Override
     public void deactivated(final GraphEditor editor) {
+        super.deactivated(editor);
         initHighSet = null;
         initLowSet = null;
         initErrorSet = null;
+    }
+
+    @Override
+    public void setPermissions(final GraphEditor editor) {
+        WorkspaceEntry we = editor.getWorkspaceEntry();
+        we.setCanModify(false);
+        we.setCanSelect(false);
+        we.setCanCopy(false);
     }
 
     @Override

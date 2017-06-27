@@ -206,18 +206,17 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
         if (tracker != null) {
             tracker.track(tool);
         }
+        // Setup and activate the selected tool (before updating Property editor and Tool controls).
         selectedTool = tool;
         setToolButtonSelection(selectedTool, true);
-
-        editor.updateToolsView();
+        selectedTool.activated(editor);
+        // Update the content of Property editor (first) and Tool controls (second).
         editor.updatePropertyView();
-
+        editor.updateToolsView();
+        // Update visibility of Property editor and Tool controls.
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
         mainWindow.updateDockableWindowVisibility();
-
-        selectedTool.setup(editor);
-        selectedTool.activated(editor);
     }
 
     public void setToolsForModel(JToolBar toolbar) {
