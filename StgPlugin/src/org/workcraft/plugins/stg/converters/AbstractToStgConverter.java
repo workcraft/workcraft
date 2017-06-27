@@ -8,6 +8,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
+import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.Movable;
@@ -97,7 +98,15 @@ public abstract class AbstractToStgConverter {
 
     public VisualConnection createReadArc(VisualPlace p, VisualSignalTransition t, boolean propagateTokenColor) throws InvalidConnectionException {
         VisualConnection connection = null;
-        if (p != null && t != null) {
+        if ((p != null) && (t != null)) {
+            Connection consumingArc = stg.getConnection(p, t);
+            if (consumingArc != null) {
+                stg.remove(consumingArc);
+            }
+            Connection producingArc = stg.getConnection(t, p);
+            if (producingArc != null) {
+                stg.remove(producingArc);
+            }
             connection = stg.connectUndirected(p, t);
             connection.setTokenColorPropagator(propagateTokenColor);
         }
