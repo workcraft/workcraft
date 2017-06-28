@@ -37,7 +37,9 @@ public class PetrifyCscConflictResolutionCommand implements ScriptableCommand {
 
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
-        Collection<Mutex> mutexes = MutexUtils.getMutexes(WorkspaceUtils.getAs(we, Stg.class));
+        Stg stg = WorkspaceUtils.getAs(we, Stg.class);
+        Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
+        MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
         final PetrifyTransformationResultHandler monitor = new PetrifyTransformationResultHandler(we, false, mutexes);
         taskManager.execute(task, "Petrify CSC conflicts resolution", monitor);
         return monitor.getResult();
@@ -50,7 +52,9 @@ public class PetrifyCscConflictResolutionCommand implements ScriptableCommand {
 
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
-        Collection<Mutex> mutexes = MutexUtils.getMutexes(WorkspaceUtils.getAs(we, Stg.class));
+        Stg stg = WorkspaceUtils.getAs(we, Stg.class);
+        Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
+        MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
         final PetrifyTransformationResultHandler monitor = new PetrifyTransformationResultHandler(we, false, mutexes);
         taskManager.queue(task, "Petrify CSC conflicts resolution", monitor);
     }

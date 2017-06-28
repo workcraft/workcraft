@@ -28,6 +28,7 @@ public abstract class PetrifyAbstractSynthesisCommand extends AbstractSynthesisC
         if (mutexes == null) {
             return null;
         }
+        MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
         final PetrifySynthesisTask task = new PetrifySynthesisTask(we, getSynthesisParameter(), mutexes);
@@ -45,6 +46,7 @@ public abstract class PetrifyAbstractSynthesisCommand extends AbstractSynthesisC
         if (mutexes == null) {
             return;
         }
+        MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
         final PetrifySynthesisTask task = new PetrifySynthesisTask(we, getSynthesisParameter(), mutexes);

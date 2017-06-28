@@ -42,7 +42,9 @@ public class MpsatCscConflictResolutionCommand implements Command {
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
         final MpsatChainTask mpsatTask = new MpsatChainTask(we, settings);
-        Collection<Mutex> mutexes = MutexUtils.getMutexes(WorkspaceUtils.getAs(we, Stg.class));
+        Stg stg = WorkspaceUtils.getAs(we, Stg.class);
+        Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
+        MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
         final MpsatChainResultHandler monitor = new MpsatChainResultHandler(mpsatTask, mutexes);
         taskManager.queue(mpsatTask, "Resolution of CSC conflicts", monitor);
     }

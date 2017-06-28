@@ -40,6 +40,7 @@ public abstract class MpsatAbstractSynthesisCommand extends AbstractSynthesisCom
         if (mutexes == null) {
             return null;
         }
+        MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
         final MpsatSynthesisParameters settings = new MpsatSynthesisParameters("Logic synthesis", getSynthesisMode(), 0);
@@ -56,6 +57,7 @@ public abstract class MpsatAbstractSynthesisCommand extends AbstractSynthesisCom
         if (mutexes == null) {
             return;
         }
+        MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
         final MpsatSynthesisParameters settings = new MpsatSynthesisParameters("Logic synthesis", getSynthesisMode(), 0);
