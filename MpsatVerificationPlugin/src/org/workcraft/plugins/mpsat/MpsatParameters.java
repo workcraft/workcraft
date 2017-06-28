@@ -219,7 +219,7 @@ public class MpsatParameters {
     private static final String REACH_MUTEX_G1 = "/* insert g1 name here */";
     private static final String REACH_MUTEX_R2 = "/* insert r2 name here */";
     private static final String REACH_MUTEX_G2 = "/* insert g2 name here */";
-    private static final String REACH_IMPLICIT_MUTEX =
+    private static final String REACH_MUTEX_IMPLEMENTABILITY =
             "// For given signals r1, r2, g1, g2, check whether g1/g2 can be implemented by a mutex\n" +
             "// with requests r1/r2 and grants g1/g2. It is very similar to the \"strict implementation\",\n" +
             "// i.e. we are looking for a \"bad\" state where the next-state values of the grants differ\n" +
@@ -235,13 +235,13 @@ public class MpsatParameters {
             "    ('g2 ^ ($r2 & ~$g1))\n" +
             "}\n";
 
-    public static MpsatParameters getImplicitMutexSettings(Mutex mutex) {
-        String reach = REACH_IMPLICIT_MUTEX
+    public static MpsatParameters getMutexImplementabilitySettings(Mutex mutex) {
+        String reach = REACH_MUTEX_IMPLEMENTABILITY
                 .replace(REACH_MUTEX_R1, mutex.r1.name)
                 .replace(REACH_MUTEX_G1, mutex.g1.name)
                 .replace(REACH_MUTEX_R2, mutex.r2.name)
                 .replace(REACH_MUTEX_G2, mutex.g2.name);
-        String propertName = "Mutex place implementability for '" + mutex.name + "'";
+        String propertName = "Implementability of mutex place '" + mutex.name + "'";
         return new MpsatParameters(propertName, MpsatMode.STG_REACHABILITY, 0,
                 MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(), reach, true);
     }

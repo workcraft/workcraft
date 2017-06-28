@@ -12,6 +12,7 @@ import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.util.DialogUtils;
+import org.workcraft.util.LogUtils;
 import org.workcraft.util.Pair;
 
 public class MutexUtils {
@@ -154,6 +155,23 @@ public class MutexUtils {
                     stgPlace.setMutex(true);
                 }
             }
+        }
+    }
+
+    public static void logInfoPossiblyImplementableMutex(Collection<Mutex> mutexes) {
+        logInfoMutex(mutexes, "Possibly implementable (structuraly detected) mutex places: ");
+    }
+
+    public static void logInfoMutex(Collection<Mutex> mutexes, String prefix) {
+        String s = "";
+        for (Mutex mutex: mutexes) {
+            if (!s.isEmpty()) {
+                s += ", ";
+            }
+            s += mutex.name;
+        }
+        if (!s.isEmpty()) {
+            LogUtils.logInfo(prefix + s);
         }
     }
 

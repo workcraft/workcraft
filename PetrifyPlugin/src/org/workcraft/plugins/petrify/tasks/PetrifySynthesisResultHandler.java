@@ -3,6 +3,8 @@ package org.workcraft.plugins.petrify.tasks;
 import java.io.ByteArrayInputStream;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.swing.SwingUtilities;
 
@@ -21,13 +23,18 @@ import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
-import org.workcraft.util.LogUtils;
 import org.workcraft.util.DialogUtils;
+import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifySynthesisResult> {
+
+    private static final Pattern patternAddingStateSignal =
+            Pattern.compile("Adding state signal: (.*)\n", Pattern.UNIX_LINES);
+
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
+
     private final WorkspaceEntry we;
     private final boolean boxSequentialComponents;
     private final boolean boxCombinationalComponents;
@@ -73,9 +80,25 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
         }
 
         final String verilog = result.getReturnValue().getVerilog();
-        if (PetrifySettings.getOpenSynthesisResult() && (verilog != null) && !verilog.isEmpty()) {
+        if ((verilog != null) && !verilog.isEmpty()) {
             LogUtils.logInfo("Petrify synthesis result in Verilog format:");
             System.out.println(verilog);
+        }
+
+        String errorMessage = new String(result.getReturnValue().getStderr());
+        String signalNames = "";
+        Matcher matcher = patternAddingStateSignal.matcher(errorMessage);
+        while (matcher.find()) {
+            if (!signalNames.isEmpty()) {
+                signalNames += ", ";
+            }
+            signalNames += matcher.group(1);
+        }
+        if (!signalNames.isEmpty()) {
+            LogUtils.logWarning("Petrify automatically resolved CSC conflicts by inserting new signals: " + signalNames);
+        }
+
+        if (PetrifySettings.getOpenSynthesisResult() && (verilog != null) && !verilog.isEmpty()) {
             try {
                 final ByteArrayInputStream in = new ByteArrayInputStream(verilog.getBytes());
                 final VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);

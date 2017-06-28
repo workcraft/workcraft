@@ -9,9 +9,9 @@ import org.workcraft.gui.graph.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.mpsat.MpsatCombinedChainResultHandler;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainTask;
-import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.MutexUtils;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.Pair;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -60,6 +60,7 @@ public class MpsatCombinedVerificationCommand extends AbstractVerificationComman
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
         Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
+        MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
         final MpsatCombinedChainResultHandler monitor = new MpsatCombinedChainResultHandler(mpsatTask, mutexes);
         taskManager.queue(mpsatTask, description, monitor);
     }

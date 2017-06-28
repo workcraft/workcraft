@@ -44,16 +44,17 @@ public class MpsatMutexImplementabilityVerificationCommand extends AbstractVerif
     @Override
     public void run(WorkspaceEntry we) {
         final Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-        if (stg.getMutexPlaces().isEmpty()) {
+        Collection<StgPlace> mutexPlaces = stg.getMutexPlaces();
+        if (mutexPlaces.isEmpty()) {
             DialogUtils.showError("No mutex places found to check implementability.");
             return;
         }
         final ArrayList<MpsatParameters> settingsList = new ArrayList<>();
         final ArrayList<StgPlace> problematicPlaces = new ArrayList<>();
-        for (StgPlace place: stg.getMutexPlaces()) {
+        for (StgPlace place: mutexPlaces) {
             Mutex mutex = MutexUtils.getMutex(stg, place);
             if (mutex != null) {
-                MpsatParameters settings = MpsatParameters.getImplicitMutexSettings(mutex);
+                MpsatParameters settings = MpsatParameters.getMutexImplementabilitySettings(mutex);
                 settingsList.add(settings);
             } else {
                 problematicPlaces.add(place);
@@ -78,6 +79,7 @@ public class MpsatMutexImplementabilityVerificationCommand extends AbstractVerif
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
         Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
+        MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
         final MpsatCombinedChainResultHandler monitor = new MpsatCombinedChainResultHandler(mpsatTask, mutexes);
         taskManager.queue(mpsatTask, description, monitor);
     }

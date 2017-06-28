@@ -63,7 +63,8 @@ public class ParallelCompositionCommand implements Command {
                 for (Path<String> path : dialog.getSourcePaths()) {
                     Workspace workspace = framework.getWorkspace();
                     WorkspaceEntry inputWe = workspace.getWork(path);
-                    Collection<Mutex> inputMutexes = MutexUtils.getMutexes(WorkspaceUtils.getAs(inputWe, Stg.class));
+                    Stg stg = WorkspaceUtils.getAs(inputWe, Stg.class);
+                    Collection<Mutex> inputMutexes = MutexUtils.getMutexes(stg);
                     if (inputMutexes != null) {
                         mutexes.addAll(inputMutexes);
                     }
@@ -78,6 +79,7 @@ public class ParallelCompositionCommand implements Command {
                         dialog.getMode(), dialog.isSharedOutputsChecked(), dialog.isImprovedPcompChecked(),
                         tmpDirectory);
 
+                MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
                 PcompResultHandler pcompResult = new PcompResultHandler(dialog.showInEditor(), outputFile, mutexes);
                 TaskManager taskManager = framework.getTaskManager();
                 taskManager.queue(pcompTask, "Running parallel composition [PComp]", pcompResult);
