@@ -34,7 +34,7 @@ public class PetriPlaceGeneratorTool extends NodeGeneratorTool {
     public String getHintText(final GraphEditor editor) {
         return "Click to create an empty place (hold " +
                 DesktopApi.getMenuKeyMaskName() +
-                "to mark it with a token).";
+                " to mark it with a token).";
     }
 
     @Override
