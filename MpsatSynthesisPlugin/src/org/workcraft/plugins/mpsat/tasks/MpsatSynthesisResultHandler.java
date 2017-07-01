@@ -11,6 +11,7 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.GraphEditorPanel;
+import org.workcraft.gui.graph.commands.AbstractLayoutCommand;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitDescriptor;
@@ -25,8 +26,8 @@ import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.LogUtils;
 import org.workcraft.util.DialogUtils;
+import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -149,6 +150,11 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
             } else {
                 component.setRenderType(renderType);
             }
+        }
+        // Redo layout as component shape may have changed.
+        AbstractLayoutCommand layoutCommand = visualCircuit.getBestLayouter();
+        if (layoutCommand != null) {
+            layoutCommand.layout(visualCircuit);
         }
     }
 

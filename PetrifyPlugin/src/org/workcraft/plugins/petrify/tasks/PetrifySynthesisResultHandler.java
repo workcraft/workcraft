@@ -12,6 +12,7 @@ import org.workcraft.Framework;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.graph.commands.AbstractLayoutCommand;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitDescriptor;
@@ -155,6 +156,11 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
                     component.setRenderType(RenderType.BOX);
                 }
             }
+        }
+        // Redo layout as component shape may have changed.
+        AbstractLayoutCommand layoutCommand = visualCircuit.getBestLayouter();
+        if (layoutCommand != null) {
+            layoutCommand.layout(visualCircuit);
         }
     }
 
