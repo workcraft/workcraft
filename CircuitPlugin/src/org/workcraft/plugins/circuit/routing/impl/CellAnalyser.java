@@ -75,8 +75,10 @@ public class CellAnalyser {
             }
         }
 
-
         if (dx != 0) {
+            if (isForeignHorizontalSource(targetX, targetY)) {
+                return false;
+            }
 
             if (isSameHorizontalSource(x, y) && !isSameHorizontalSource(targetX, targetY)) {
                 return false;
@@ -85,12 +87,16 @@ public class CellAnalyser {
             if (isBlockedHorizontally(x, y)) {
                 return false;
             }
+
             if (isBlockedHorizontally(targetX, targetY)) {
                 return false;
             }
         }
 
         if (dy != 0) {
+            if (isForeignVerticalSource(targetX, targetY)) {
+                return false;
+            }
 
             if (isSameVerticalSource(x, y) && !isSameVerticalSource(targetX, targetY)) {
                 return false;
@@ -99,12 +105,21 @@ public class CellAnalyser {
             if (isBlockedVertically(x, y)) {
                 return false;
             }
+
             if (isBlockedVertically(targetX, targetY)) {
                 return false;
             }
         }
 
         return true;
+    }
+
+    private boolean isForeignVerticalSource(int x, int y) {
+        return cells.getVerticalSourcePort(x, y) != null && !sourcePort.equals(cells.getVerticalSourcePort(x, y));
+    }
+
+    private boolean isForeignHorizontalSource(int x, int y) {
+        return cells.getHorizontalSourcePort(x, y) != null && !sourcePort.equals(cells.getHorizontalSourcePort(x, y));
     }
 
     private boolean isSameVerticalSource(int x, int y) {
