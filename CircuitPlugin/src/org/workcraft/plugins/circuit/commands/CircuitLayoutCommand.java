@@ -56,7 +56,9 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
             VisualCircuit circuit = (VisualCircuit) model;
             if (!skipLayoutPlacement()) {
                 setComponentPosition(circuit);
+                alignBasicGates(circuit);
                 alignPorts(circuit);
+                distributeOverlappingPorts(circuit);
             }
             prepareConnections(circuit);
             if (!skipLayoutRouting()) {
@@ -79,12 +81,13 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
     private void setComponentPosition(VisualCircuit circuit) {
         double dx = CircuitLayoutSettings.getSpacingHorizontal();
         double dy = CircuitLayoutSettings.getSpacingVertical();
-        LinkedList<HashSet<VisualComponent>> layers = rankComponents(circuit);
+        LinkedList<HashSet<VisualComponent>> layers = filterBasicGates(circuit, rankComponents(circuit));
         double x = (1.0 - layers.size()) * dx / 2.0;
         for (HashSet<VisualComponent> layer: layers) {
             double y = (1.0 - layer.size()) * dy / 2.0;
             for (VisualComponent component: layer) {
-                Point2D pos = new Point2D.Double(x, y);
+                double xOffset = (component instanceof VisualContact) ? 3.0 : 0.0;
+                Point2D pos = new Point2D.Double(x - xOffset, y);
                 component.setPosition(pos);
                 if (component instanceof VisualCircuitComponent) {
                     VisualCircuitComponent circuitComponent = (VisualCircuitComponent) component;
@@ -157,6 +160,37 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
         return result;
     }
 
+    private LinkedList<HashSet<VisualComponent>> filterBasicGates(VisualCircuit circuit, LinkedList<HashSet<VisualComponent>> layers) {
+        LinkedList<HashSet<VisualComponent>> result = new LinkedList<>();
+        for (HashSet<VisualComponent> layer: layers) {
+            HashSet<VisualComponent> filteredLayer = new HashSet<VisualComponent>();
+            for (VisualComponent component: layer) {
+                if (component instanceof VisualContact) {
+                    filteredLayer.add(component);
+                } else if (component instanceof VisualCircuitComponent) {
+                    VisualCircuitComponent circuitComponent = (VisualCircuitComponent) component;
+                    if (!isBasicGate(circuitComponent)) {
+                        filteredLayer.add(component);
+                    } else {
+                        VisualContact output = circuitComponent.getFirstVisualOutput();
+                        Collection<VisualContact> driven = CircuitUtils.findDriven(circuit, output);
+                        if (driven.size() != 1) {
+                            filteredLayer.add(component);
+                        }
+                    }
+                }
+            }
+            if (!filteredLayer.isEmpty()) {
+                result.add(filteredLayer);
+            }
+        }
+        return result;
+    }
+
+    private boolean isBasicGate(VisualCircuitComponent component) {
+        return (component.getVisualOutputs().size() == 1) && (component.getVisualInputs().size() == 1);
+    }
+
     private void prepareConnections(VisualCircuit circuit) {
         circuit.selectNone();
         // Split joints
@@ -203,12 +237,36 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
         }
     }
 
+    private void alignBasicGates(VisualCircuit circuit) {
+        for (VisualCircuitComponent component: Hierarchy.getDescendantsOfType(circuit.getRoot(), VisualCircuitComponent.class)) {
+            if (isBasicGate(component)) {
+                VisualContact output = component.getFirstVisualOutput();
+                Collection<VisualContact> drivens = CircuitUtils.findDriven(circuit, output);
+                if (drivens.size() == 1) {
+                    VisualContact driven = drivens.iterator().next();
+                    double x = driven.getRootSpaceX();
+                    double y = driven.getRootSpaceY();
+                    if (driven.isPort()) {
+                        VisualContact input = component.getFirstVisualInput();
+                        VisualContact driver = CircuitUtils.findDriver(circuit, input);
+                        if (driven != null) {
+                            y = driver.getRootSpaceY();
+                        }
+                    }
+                    component.setRootSpacePosition(new Point2D.Double(x - 2.5, y));
+                    setContactPositions(component);
+                }
+            }
+        }
+    }
+
     private void alignPorts(VisualCircuit circuit) {
         for (VisualContact contact: circuit.getVisualPorts()) {
             if (contact.isOutput()) {
                 VisualContact driver = CircuitUtils.findDriver(circuit, contact);
                 if (driver != null) {
-                    contact.setRootSpaceY(driver.getRootSpaceY());
+                    double y = driver.getRootSpaceY();
+                    contact.setRootSpaceY(y);
                 }
             }
             if (contact.isInput()) {
@@ -220,6 +278,45 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
                 }
                 if (count > 0) {
                     contact.setRootSpaceY(y / (double) count);
+                }
+            }
+        }
+    }
+
+    private void distributeOverlappingPorts(VisualCircuit circuit) {
+        double dy2 = CircuitLayoutSettings.getSpacingVertical() / 2.0;
+        // Distribute overlapping output ports.
+        for (VisualContact contact1: circuit.getVisualPorts()) {
+            if (!contact1.isOutput()) continue;
+            double y = contact1.getRootSpaceY();
+            for (VisualContact contact2: circuit.getVisualPorts()) {
+                if (!contact2.isOutput()) continue;
+                if (contact2 == contact1) continue;
+                if (Math.abs(contact2.getRootSpaceY() - y) < 0.01) {
+                    VisualContact driver1 = CircuitUtils.findDriver(circuit, contact1);
+                    VisualContact driver2 = CircuitUtils.findDriver(circuit, contact2);
+                    if (driver1.getRootSpaceX() < driver2.getRootSpaceX()) {
+                        contact1.setRootSpaceY(y - dy2);
+                    } else {
+                        contact2.setRootSpaceY(y - dy2);
+                    }
+                }
+            }
+        }
+        // Distribute overlapping input ports.
+        for (VisualContact contact1: circuit.getVisualPorts()) {
+            if (!contact1.isInput()) continue;
+            double y = contact1.getRootSpaceY();
+            for (VisualContact contact2: circuit.getVisualPorts()) {
+                if (!contact2.isInput()) continue;
+                if (contact2 == contact1) continue;
+                if (Math.abs(contact2.getRootSpaceY() - y) < 0.01) {
+                    Collection<VisualContact> driven1 = CircuitUtils.findDriven(circuit, contact1);
+                    if (driven1.size() > 1) {
+                        contact1.setRootSpaceY(y - dy2);
+                    } else {
+                        contact2.setRootSpaceY(y - dy2);
+                    }
                 }
             }
         }
