@@ -36,6 +36,7 @@ import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
+import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.LayoutException;
@@ -54,6 +55,8 @@ import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
+import org.workcraft.observation.ModelModifiedEvent;
+import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.layout.DotLayoutCommand;
 import org.workcraft.plugins.layout.RandomLayoutCommand;
@@ -72,11 +75,12 @@ import org.workcraft.tasks.Task;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.Commands;
 import org.workcraft.util.DataAccumulator;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
+import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Import;
 import org.workcraft.util.LogUtils;
-import org.workcraft.util.DialogUtils;
 import org.workcraft.util.XmlUtil;
 import org.workcraft.workspace.Memento;
 import org.workcraft.workspace.ModelEntry;
@@ -632,6 +636,12 @@ public final class Framework {
             } catch (VisualModelInstantiationException e) {
                 DialogUtils.showError("A visual model could not be created for the selected model.");
                 e.printStackTrace();
+            }
+            // FIXME: Send notification to components, so their dimensions are updated before layout.
+            for (VisualComponent component: Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualComponent.class)) {
+                if (component instanceof StateObserver) {
+                    ((StateObserver) component).notify(new ModelModifiedEvent(visualModel));
+                }
             }
             AbstractLayoutCommand layoutCommand = visualModel.getBestLayouter();
             if (layoutCommand == null) {
