@@ -10,6 +10,9 @@ import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
 import org.apache.fop.svg.PDFTranscoder;
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.SerialisationException;
@@ -24,6 +27,9 @@ public class PDFExporter implements Exporter {
         Transcoder transcoder = new PDFTranscoder();
         TranscoderInput transcoderInput = new TranscoderInput(svg);
         TranscoderOutput transcoderOutput = new TranscoderOutput(out);
+        // Configure logj4 output and set INFO verbosity.
+        BasicConfigurator.configure();
+        Logger.getRootLogger().setLevel(Level.INFO);
         try {
             transcoder.transcode(transcoderInput, transcoderOutput);
         } catch (TranscoderException e) {

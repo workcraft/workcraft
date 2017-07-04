@@ -22,11 +22,11 @@ public class CircuitLayoutSettings implements Settings {
     private static final String keySnapMinor = prefix + ".snapMinor";
     private static final String keyDebugRouting = prefix + ".debugRouting";
 
-    private static final double defaultSpacingHorizontal = 12.0;
-    private static final double defaultSpacingVertical = 6.0;
+    private static final double defaultSpacingHorizontal = 5.0;
+    private static final double defaultSpacingVertical = 2.0;
     private static final double defaultMarginObstacle = 1.0;
     private static final double defaultMarginObstacleBusy = 0.5;
-    private static final double defaultMarginSegment = 0.25;
+    private static final double defaultMarginSegment = 0.1;
     private static final double defaultSnapMajor = 1.0;
     private static final double defaultSnapMinor = 0.5;
     private static final boolean defaultDebugRouting = false;

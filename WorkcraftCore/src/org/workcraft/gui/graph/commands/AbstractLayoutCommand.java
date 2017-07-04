@@ -26,7 +26,7 @@ public abstract class AbstractLayoutCommand implements ScriptableCommand {
         layout(model);
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
-        if (!framework.isInGuiMode() && (mainWindow != null)) {
+        if (framework.isInGuiMode() && (mainWindow != null)) {
             final GraphEditorPanel editor = mainWindow.getCurrentEditor();
             editor.zoomFit();
         }
