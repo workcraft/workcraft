@@ -25,7 +25,7 @@ public class SVGExporter implements Exporter {
     @Override
     public void export(Model model, OutputStream out) throws IOException, SerialisationException {
         if (model == null) {
-            throw new SerialisationException("Not a visual model");
+            throw new SerialisationException("Non-visual model cannot be exported as SVG file.");
         }
         try {
             Document doc = XmlUtil.createDocument();

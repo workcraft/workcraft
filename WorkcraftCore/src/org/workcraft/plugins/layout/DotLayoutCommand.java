@@ -35,6 +35,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.TaskManager;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.ToolUtils;
@@ -207,7 +208,7 @@ public class DotLayoutCommand extends AbstractLayoutCommand {
                     new String(res.getReturnValue().getErrors()));
             }
         } catch (IOException | ModelValidationException | SerialisationException e) {
-            throw new RuntimeException(e);
+            DialogUtils.showError(e.getMessage());
         }
     }
 

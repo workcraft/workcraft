@@ -40,7 +40,7 @@ public class Format {
         } else if (format.equals(PNG)) {
             return ".png (Portable Network Graphics)";
         } else if (format.equals(DOT)) {
-            return ".dot (GraphViz dot)";
+            return ".dot (Graphviz DOT)";
         } else if (format.equals(VERILOG)) {
             return ".v (Verilog netlist)";
         } else if (format.equals(SDC)) {
