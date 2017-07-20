@@ -26,7 +26,7 @@ import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
 
-public class StgSerialiserUtils {
+public class SerialiserUtils {
 
     private static final String KEYWORD_MODEL = ".model";
     private static final String KEYWORD_NAME = ".name";
@@ -146,7 +146,7 @@ public class StgSerialiserUtils {
         }
     }
 
-    private static String getClearTitle(Model model) {
+    public static String getClearTitle(Model model) {
         String title = model.getTitle();
         // Non-empty model name must be present in .model line of .g file.
         // Otherwise Petrify will use the full file name (possibly with bad characters) as a Verilog module name.

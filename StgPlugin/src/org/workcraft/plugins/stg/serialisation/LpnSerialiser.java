@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.workcraft.dom.Model;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.serialisation.StgSerialiserUtils.Style;
+import org.workcraft.plugins.stg.serialisation.SerialiserUtils.Style;
 import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
@@ -25,7 +25,7 @@ public class LpnSerialiser implements ModelSerialiser {
 
     @Override
     public ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer refs) {
-        StgSerialiserUtils.writeModel(model, out, Style.LPN);
+        SerialiserUtils.writeModel(model, out, Style.LPN);
         return new ReferenceResolver();
     }
 
