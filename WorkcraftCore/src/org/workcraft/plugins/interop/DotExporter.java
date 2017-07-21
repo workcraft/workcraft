@@ -59,12 +59,18 @@ public class DotExporter implements Exporter {
     public void export(Model model, OutputStream outStream) throws IOException,
             ModelValidationException, SerialisationException {
 
-        final List<ExportNode> dotExportNodes = new ArrayList<>();
-        VisualModel visualModel = null;
-        if (model instanceof VisualModel) {
-            visualModel = (VisualModel) model;
+        if (!(model instanceof VisualModel)) {
+            throw new SerialisationException("Non-visual model cannot be exported to Graphviz DOT file.");
         }
-        for (VisualComponent component : Hierarchy.getDescendantsOfType(visualModel.getRoot(), VisualComponent.class)) {
+        VisualModel visualModel = (VisualModel) model;
+        final List<ExportNode> dotExportNodes = new ArrayList<>();
+        Collection<VisualComponent> components = Hierarchy.getChildrenOfType(visualModel.getRoot(), VisualComponent.class);
+        for (VisualComponent component: components) {
+            if (!component.getChildren().isEmpty()) {
+                throw new SerialisationException("Hierarchical model cannot be exported to Graphviz DOT file.");
+            }
+        }
+        for (VisualComponent component: components) {
             String id = visualModel.getNodeReference(component);
             Rectangle2D bb = component.getBoundingBoxInLocalSpace();
             if ((id != null) && (bb != null)) {
@@ -77,7 +83,8 @@ public class DotExporter implements Exporter {
                     }
                 }
                 String comment = visualModel.getNodeMathReference(component);
-                dotExportNodes.add(new ExportNode(id, bb.getWidth(), bb.getHeight(), destinations, comment));
+                ExportNode dotExportNode = new ExportNode(id, bb.getWidth(), bb.getHeight(), destinations, comment);
+                dotExportNodes.add(dotExportNode);
             }
         }
         export(dotExportNodes, outStream);
@@ -94,7 +101,7 @@ public class DotExporter implements Exporter {
 
     @Override
     public String getDescription() {
-        return ".dot (GraphViz dot graph format)";
+        return ".dot (Graphviz DOT graph format)";
     }
 
     @Override
