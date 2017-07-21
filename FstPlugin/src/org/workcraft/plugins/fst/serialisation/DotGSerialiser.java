@@ -18,6 +18,7 @@ import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.Signal;
 import org.workcraft.plugins.fst.Signal.Type;
 import org.workcraft.plugins.fst.SignalEvent;
+import org.workcraft.plugins.stg.serialisation.SerialiserUtils;
 import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
@@ -37,6 +38,7 @@ public class DotGSerialiser implements ModelSerialiser {
     public ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer refs) {
         PrintWriter writer = new PrintWriter(out);
         writer.write(Info.getGeneratedByText("# SG file ", "\n"));
+        writer.write(".model " + SerialiserUtils.getClearTitle(model) + "\n");
 
         ReferenceResolver resolver = new ReferenceResolver();
 
