@@ -388,17 +388,19 @@ public class MpsatParameters {
             "    // PDEV is the set of places with the names in PDEV_NAMES.\n" +
             "    // XML-based PUNF / MPSAT are needed here to process dead places correctly.\n" +
             "    PDEV = gather nm in PDEV_NAMES { P nm },\n" +
-            "    // PDEV_EXT includes PDEV and places with the same preset and postset ignoring context as some place in PDEV\n" +
-            "    PDEV_EXT = gather p in PLACES s.t.\n" +
-            "        p in PDEV\n" +
-            "        |\n" +
-            "        let pre_p=pre p, post_p=post p, s_pre_p=pre_p \\ post_p, s_post_p=post_p \\ pre_p {\n" +
-            "            exists q in PDEV {\n" +
-            "                let pre_q=pre q, post_q=post q {\n" +
-            "                    pre_q \\ post_q=s_pre_p & post_q \\ pre_q=s_post_p\n" +
-            "                }\n" +
+            "    // PDEV_EXT includes PDEV and places with the names of the form p@num, where p is a place in PDEV.\n" +
+            "    // Such places appeared during optimisation of the unfolding prefix due to splitting places\n" +
+            "    // incident with multiple read arcs (-r option of punf).\n" +
+            "    // Note that such a place must have the same preset and postset (ignoring context) as p.\n" +
+            "    PDEV_EXT = PDEV + gather p in PP \".*@[0-9]+\" s.t.\n" +
+            "    let name_p=name p, pre_p=pre p, post_p=post p, s_pre_p=pre_p \\ post_p, s_post_p=post_p \\ pre_p {\n" +
+            "        exists q in PDEV {\n" +
+            "            let name_q=name q, pre_q=pre q, post_q=post q {\n" +
+            "                name_p[..len name_q] = name_q + \"@\" &\n" +
+            "                pre_q \\ post_q=s_pre_p & post_q \\ pre_q=s_post_p\n" +
             "            }\n" +
             "        }\n" +
+            "    }\n" +
             "    { p },\n" +
             "    // TDEV is the set of device transitions.\n" +
             "    // XML-based PUNF / MPSAT are needed here to process dead transitions correctly.\n" +
