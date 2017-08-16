@@ -96,8 +96,7 @@ public class MainWindow extends JFrame {
     private static final String CONFIG_GUI_MAIN_MAXIMISED = "gui.main.maximised";
     private static final String CONFIG_GUI_MAIN_WIDTH = "gui.main.width";
     private static final String CONFIG_GUI_MAIN_HEIGHT = "gui.main.height";
-    private static final String CONFIG_GUI_MAIN_LAST_SAVE_PATH = "gui.main.lastSavePath";
-    private static final String CONFIG_GUI_MAIN_LAST_OPEN_PATH = "gui.main.lastOpenPath";
+    private static final String CONFIG_GUI_MAIN_LAST_DIRECTORY = "gui.main.lastDirectory";
     private static final String CONFIG_GUI_MAIN_RECENT_FILE = "gui.main.recentFile";
     private static final String CONFIG_GUI_MAIN_TOOLBAR_GLOBAL_VISIBILITY = "gui.main.toolbar.global.visibility";
     private static final String CONFIG_GUI_MAIN_TOOLBAR_GLOBAL_POSITION = "gui.main.toolbar.global.position";
@@ -155,8 +154,7 @@ public class MainWindow extends JFrame {
     private JToolBar modelToolbar;
     private JToolBar controlToolbar;
 
-    private String lastSavePath = null;
-    private String lastOpenPath = null;
+    private String lastDirectory = null;
     private final LinkedHashSet<String> recentFiles = new LinkedHashSet<>();
 
     private int dockableIDCounter = 0;
@@ -700,8 +698,7 @@ public class MainWindow extends JFrame {
 
     public void loadRecentFilesFromConfig() {
         final Framework framework = Framework.getInstance();
-        lastSavePath = framework.getConfigCoreVar(CONFIG_GUI_MAIN_LAST_SAVE_PATH);
-        lastOpenPath = framework.getConfigCoreVar(CONFIG_GUI_MAIN_LAST_OPEN_PATH);
+        lastDirectory = framework.getConfigCoreVar(CONFIG_GUI_MAIN_LAST_DIRECTORY);
         for (int i = 0; i < CommonEditorSettings.getRecentCount(); i++) {
             String entry = framework.getConfigCoreVar(CONFIG_GUI_MAIN_RECENT_FILE + i);
             pushRecentFile(entry, false);
@@ -711,11 +708,8 @@ public class MainWindow extends JFrame {
 
     public void saveRecentFilesToConfig() {
         final Framework framework = Framework.getInstance();
-        if (lastSavePath != null) {
-            framework.setConfigCoreVar(CONFIG_GUI_MAIN_LAST_SAVE_PATH, lastSavePath);
-        }
-        if (lastOpenPath != null) {
-            framework.setConfigCoreVar(CONFIG_GUI_MAIN_LAST_OPEN_PATH, lastOpenPath);
+        if (lastDirectory != null) {
+            framework.setConfigCoreVar(CONFIG_GUI_MAIN_LAST_DIRECTORY, lastDirectory);
         }
         int recentCount = CommonEditorSettings.getRecentCount();
         String[] tmp = recentFiles.toArray(new String[recentCount]);
@@ -837,10 +831,8 @@ public class MainWindow extends JFrame {
         fc.setDialogType(JFileChooser.OPEN_DIALOG);
         fc.setDialogTitle(title);
         GUI.sizeFileChooserToScreen(fc, getDisplayMode());
-        if (lastOpenPath != null) {
-            fc.setCurrentDirectory(new File(lastOpenPath));
-        } else if (lastSavePath != null) {
-            fc.setCurrentDirectory(new File(lastSavePath));
+        if (lastDirectory != null) {
+            fc.setCurrentDirectory(new File(lastDirectory));
         }
         fc.setAcceptAllFileFilterUsed(false);
         fc.setMultiSelectionEnabled(multiSelection);
@@ -864,10 +856,8 @@ public class MainWindow extends JFrame {
         fc.setSelectedFile(file);
         if (file.exists()) {
             fc.setCurrentDirectory(file.getParentFile());
-        } else if (lastSavePath != null) {
-            fc.setCurrentDirectory(new File(lastSavePath));
-        } else if (lastOpenPath != null) {
-            fc.setCurrentDirectory(new File(lastOpenPath));
+        } else if (lastDirectory != null) {
+            fc.setCurrentDirectory(new File(lastDirectory));
         }
         // Set file filters
         fc.setAcceptAllFileFilterUsed(false);
@@ -958,7 +948,7 @@ public class MainWindow extends JFrame {
                     createEditorWindow(we);
                 }
                 pushRecentFile(file.getPath(), true);
-                lastOpenPath = file.getParent();
+                lastDirectory = file.getParent();
             } catch (DeserialisationException e) {
                 DialogUtils.showError("A problem was encountered while trying to load '" + file.getPath() + "'.");
                 printCause(e);
@@ -1033,7 +1023,7 @@ public class MainWindow extends JFrame {
             }
             we.setChanged(false);
             refreshWorkspaceEntryTitle(we, true);
-            lastSavePath = we.getFile().getParent();
+            lastDirectory = we.getFile().getParent();
             pushRecentFile(path, true);
         }
     }
@@ -1067,7 +1057,7 @@ public class MainWindow extends JFrame {
             }
             we.setChanged(false);
             refreshWorkspaceEntryTitle(we, true);
-            lastSavePath = we.getFile().getParent();
+            lastDirectory = we.getFile().getParent();
             pushRecentFile(we.getFile().getPath(), true);
         } catch (SerialisationException e) {
             e.printStackTrace();
@@ -1108,7 +1098,7 @@ public class MainWindow extends JFrame {
                         }
                         final Framework framework = Framework.getInstance();
                         framework.createWork(me, Path.<String>empty(), file.getName());
-                        lastOpenPath = file.getParent();
+                        lastDirectory = file.getParent();
                         break;
                     } catch (IOException | DeserialisationException e) {
                         e.printStackTrace();
@@ -1130,7 +1120,7 @@ public class MainWindow extends JFrame {
         final TaskManager taskManager = framework.getTaskManager();
         final TaskFailureNotifier monitor = new TaskFailureNotifier();
         taskManager.queue(exportTask, "Exporting " + title, monitor);
-        lastSavePath = fc.getCurrentDirectory().getPath();
+        lastDirectory = fc.getCurrentDirectory().getPath();
     }
 
     private String getFileNameForCurrentWork() {
