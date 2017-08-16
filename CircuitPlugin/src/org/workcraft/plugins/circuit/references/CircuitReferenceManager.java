@@ -33,6 +33,7 @@ public class CircuitReferenceManager extends HierarchicalUniqueNameReferenceMana
 
     @Override
     public void setName(Node node, String name) {
+        super.setName(node, name);
         // support for the older models
         if (Identifier.isNumber(name) && (node instanceof Contact)) {
             String nodeName = ((Contact) node).getName();
@@ -48,14 +49,13 @@ public class CircuitReferenceManager extends HierarchicalUniqueNameReferenceMana
             name = getPrefix(node) + name;
         }
         if (node instanceof Contact) {
-            // propagate info to the node itself
+            // propagate info to the contact itself
             ((Contact) node).setName(name);
         }
         if (node instanceof CircuitComponent) {
-            // propagate info to the node itself
+            // propagate info to the component itself
             ((CircuitComponent) node).setName(name);
         }
-        super.setName(node, name);
     }
 
 }
