@@ -262,6 +262,10 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         if (e instanceof PropertyChangedEvent) {
             PropertyChangedEvent pc = (PropertyChangedEvent) e;
             String propertyName = pc.getPropertyName();
+            if (propertyName.equals(Contact.PROPERTY_NAME)) {
+                // This is needed to recalculate the map of contact name to position.
+                invalidateRenderingResult();
+            }
             if (propertyName.equals(VisualContact.PROPERTY_DIRECTION)) {
                 VisualContact mainContact = getMainVisualOutput();
                 if ((mainContact == pc.getSender()) && (getRenderingResult() != null)) {
