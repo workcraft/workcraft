@@ -214,4 +214,8 @@ public class MultiSet<T> implements Set<T> {
         return result;
     }
 
+    public Set<T> toSet() {
+        return map.keySet();
+    }
+
 }

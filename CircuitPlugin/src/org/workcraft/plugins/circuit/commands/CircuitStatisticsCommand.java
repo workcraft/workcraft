@@ -90,7 +90,7 @@ public class CircuitStatisticsCommand extends AbstractStatisticsCommand {
     private String getDistribution(MultiSet<Integer> multiset) {
         String result = "";
         int max = 0;
-        for (Integer i: multiset) {
+        for (Integer i: multiset.toSet()) {
             if (i > max) {
                 max = i;
             }

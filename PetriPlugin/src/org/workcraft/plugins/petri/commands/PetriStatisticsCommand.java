@@ -61,10 +61,10 @@ public class PetriStatisticsCommand extends AbstractStatisticsCommand {
             if (transitionPostset.size() > 1) {
                 forkCount++;
             }
-            if (transitionPreset.isEmpty() && !transitionPostset.isEmpty()) {
+            if (transitionPreset.isEmpty()) {
                 sourceTransitionCount++;
             }
-            if (!transitionPreset.isEmpty() && transitionPostset.isEmpty()) {
+            if (transitionPostset.isEmpty()) {
                 sinkTransitionCount++;
             }
             if (transitionPreset.isEmpty() && transitionPostset.isEmpty()) {
@@ -99,10 +99,10 @@ public class PetriStatisticsCommand extends AbstractStatisticsCommand {
             if (placePostset.size() > 1) {
                 choiceCount++;
             }
-            if (placePreset.isEmpty() && !placePostset.isEmpty()) {
+            if (placePreset.isEmpty()) {
                 sourcePlaceCount++;
             }
-            if (!placePreset.isEmpty() && placePostset.isEmpty()) {
+            if (placePostset.isEmpty()) {
                 sinkPlaceCount++;
             }
             if (placePreset.isEmpty() && placePostset.isEmpty()) {
@@ -123,18 +123,17 @@ public class PetriStatisticsCommand extends AbstractStatisticsCommand {
         return "Petri net analysis:"
                 + "\n  Transition count -  " + transitions.size()
                 + "\n    * Fork / join -  " + forkCount + " / " + joinCount
-                + "\n    * Source / sink / isolated -  " + sourceTransitionCount + " / " + sinkTransitionCount
-                + " / " + isolatedTransitionCount
+                + "\n    * Source / sink -  " + sourceTransitionCount + " / " + sinkTransitionCount
                 + "\n    * Max fanin / fanout -  " + maxTransitionFanin + " / " + maxTransitionFanout
                 + "\n  Place count -  " + places.size()
                 + "\n    * Choice / merge -  " + choiceCount + " / " + mergeCount
-                + "\n    * Source / sink / isolated -  " + sourcePlaceCount + " / " + sinkPlaceCount
-                + " / " + isolatedPlaceCount
+                + "\n    * Source / sink  -  " + sourcePlaceCount + " / " + sinkPlaceCount
                 + "\n    * Max fanin / fanout -  " + maxPlaceFanin + " / " + maxPlaceFanout
                 + "\n    * Token / marked -  " + tokenCount + " / " + markedCount
                 + "\n  Arc count -  " + connections.size()
                 + "\n    * Producing / consuming -  " + producingArcCount + " / " + consumingArcCount
-                + "\n    * Self-loop -  " + selfLoopCount;
+                + "\n    * Self-loop -  " + selfLoopCount
+                + "\n  Disconnected transitions / places -  " + isolatedTransitionCount + " / " + isolatedPlaceCount;
     }
 
 }
