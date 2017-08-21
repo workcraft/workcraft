@@ -19,6 +19,7 @@ import org.workcraft.plugins.circuit.commands.CircuitLayoutRoutingCommand;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutSettings;
 import org.workcraft.plugins.circuit.commands.CircuitPersistencyVerificationCommand;
 import org.workcraft.plugins.circuit.commands.CircuitPropertyVerificationCommand;
+import org.workcraft.plugins.circuit.commands.CircuitStatisticsCommand;
 import org.workcraft.plugins.circuit.commands.CircuitStrictImplementationVerificationCommand;
 import org.workcraft.plugins.circuit.commands.CircuitToStgConversionCommand;
 import org.workcraft.plugins.circuit.commands.CircuitVerificationCommand;
@@ -72,6 +73,7 @@ public class CircuitModule implements Module {
         pm.registerClass(Command.class, ContractComponentTransformationCommand.class);
         pm.registerClass(Command.class, InsertBufferTransformationCommand.class);
         pm.registerClass(Command.class, ToggleBubbleTransformationCommand.class);
+        pm.registerClass(Command.class, CircuitStatisticsCommand.class);
 
         pm.registerClass(ModelDescriptor.class, CircuitDescriptor.class);
         pm.registerClass(XMLSerialiser.class, FunctionSerialiser.class);
