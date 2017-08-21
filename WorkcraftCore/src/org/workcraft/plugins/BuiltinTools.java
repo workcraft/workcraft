@@ -17,6 +17,7 @@ import org.workcraft.plugins.shared.CommonSatSettings;
 import org.workcraft.plugins.shared.CommonSignalSettings;
 import org.workcraft.plugins.shared.CommonSimulationSettings;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.plugins.statistics.BasicStatisticsCommand;
 import org.workcraft.plugins.transform.CopyLabelTransformationCommand;
 import org.workcraft.plugins.transform.StraightenConnectionTransformationCommand;
 
@@ -43,6 +44,7 @@ public class BuiltinTools implements Module {
 
         pm.registerClass(Command.class, CopyLabelTransformationCommand.class);
         pm.registerClass(Command.class, StraightenConnectionTransformationCommand.class);
+        pm.registerClass(Command.class, BasicStatisticsCommand.class);
     }
 
     @Override
