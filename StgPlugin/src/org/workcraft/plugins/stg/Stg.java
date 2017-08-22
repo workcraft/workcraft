@@ -30,6 +30,7 @@ import org.workcraft.plugins.stg.propertydescriptors.TypePropertyDescriptor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.MultiSet;
 import org.workcraft.util.Pair;
 import org.workcraft.util.SetUtils;
 import org.workcraft.util.Triple;
@@ -474,6 +475,15 @@ public class Stg extends AbstractMathModel implements StgModel {
             }
         }
         return properties;
+    }
+
+    @Override
+    public MultiSet<String> getStatistics() {
+        MultiSet<String> result = new MultiSet<>();
+        result.add("Place", getPlaces().size());
+        result.add("Transition", getTransitions().size());
+        result.add("Arc", getConnections().size());
+        return result;
     }
 
 }

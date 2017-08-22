@@ -24,7 +24,7 @@ import org.workcraft.plugins.policy.Bundle;
 import org.workcraft.plugins.policy.PolicyNet;
 import org.workcraft.plugins.policy.VisualBundledTransition;
 import org.workcraft.plugins.policy.VisualPolicyNet;
-import org.workcraft.plugins.shared.CommonSimulationSettings;
+import org.workcraft.plugins.shared.CommonDecorationSettings;
 import org.workcraft.util.Func;
 
 public class PolicySimulationTool extends PetriSimulationTool {
@@ -99,12 +99,12 @@ public class PolicySimulationTool extends PetriSimulationTool {
                     return new Decoration() {
                         @Override
                         public Color getColorisation() {
-                            return isExcited ? CommonSimulationSettings.getExcitedComponentColor() : null;
+                            return isExcited ? CommonDecorationSettings.getExcitedComponentColor() : null;
                         }
 
                         @Override
                         public Color getBackground() {
-                            return isSuggested ? CommonSimulationSettings.getSuggestedComponentColor() : null;
+                            return isSuggested ? CommonDecorationSettings.getSuggestedComponentColor() : null;
                         }
                     };
                 }

@@ -34,7 +34,7 @@ import org.workcraft.plugins.circuit.VisualJoint;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.shared.CommonSimulationSettings;
+import org.workcraft.plugins.shared.CommonDecorationSettings;
 import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
@@ -296,11 +296,11 @@ public class CircuitSimulationTool extends StgSimulationTool {
         return new Decoration() {
             @Override
             public Color getColorisation() {
-                return isExcited ? CommonSimulationSettings.getExcitedComponentColor() : null;
+                return isExcited ? CommonDecorationSettings.getExcitedComponentColor() : null;
             }
             @Override
             public Color getBackground() {
-                return isSuggested ? CommonSimulationSettings.getSuggestedComponentColor() : null;
+                return isSuggested ? CommonDecorationSettings.getSuggestedComponentColor() : null;
             }
         };
     }
@@ -325,11 +325,11 @@ public class CircuitSimulationTool extends StgSimulationTool {
         return new StateDecoration() {
             @Override
             public Color getColorisation() {
-                return isExcited ? CommonSimulationSettings.getExcitedComponentColor() : null;
+                return isExcited ? CommonDecorationSettings.getExcitedComponentColor() : null;
             }
             @Override
             public Color getBackground() {
-                Color  colorisation = isSuggested ? CommonSimulationSettings.getSuggestedComponentColor() : null;
+                Color  colorisation = isSuggested ? CommonDecorationSettings.getSuggestedComponentColor() : null;
                 if (isOne && !isZero) {
                     return Coloriser.colorise(CircuitSettings.getActiveWireColor(), colorisation);
                 }

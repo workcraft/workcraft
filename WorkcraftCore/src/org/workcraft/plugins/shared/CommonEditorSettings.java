@@ -33,6 +33,8 @@ public class CommonEditorSettings implements Settings {
     private static final String keyBackgroundColor = prefix + ".backgroundColor";
     private static final String keyGridVisibility = prefix + ".gridVisibility";
     private static final String keyLightGrid = prefix + ".lightGrid";
+    private static final String keyLightGridSize = prefix + ".lightGridSize";
+    private static final String keyGridColor = prefix + ".gridColor";
     private static final String keyRulerVisibility = prefix + ".rulerVisibility";
     private static final String keyHintVisibility = prefix + ".hintVisibility";
     private static final String keyHintColor = prefix + ".hintColor";
@@ -48,6 +50,8 @@ public class CommonEditorSettings implements Settings {
     private static final Color defaultBackgroundColor = Color.WHITE;
     private static final boolean defaultGridVisibility = true;
     private static final boolean defaultLightGrid = true;
+    private static final double defaultLightGridSize = 1.0;
+    private static final Color defaultGridColor = new Color(225, 225, 225);
     private static final boolean defaultRulerVisibility = false;
     private static final boolean defaultHintVisibility = true;
     private static final Color defaultHintColor = Color.BLACK;
@@ -63,6 +67,8 @@ public class CommonEditorSettings implements Settings {
     private static Color backgroundColor = defaultBackgroundColor;
     private static boolean gridVisibility = defaultGridVisibility;
     private static boolean lightGrid = defaultLightGrid;
+    private static double lightGridSize = defaultLightGridSize;
+    private static Color gridColor = defaultGridColor;
     private static boolean rulerVisibility = defaultRulerVisibility;
     private static boolean hintVisibility = defaultHintVisibility;
     private static Color hintColor = defaultHintColor;
@@ -103,6 +109,29 @@ public class CommonEditorSettings implements Settings {
             }
             protected Boolean getter(CommonEditorSettings object) {
                 return getLightGrid();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CommonEditorSettings, Double>(
+                this, "Light grid size (mm)",
+                Double.class, true, false, false) {
+            @Override
+            protected void setter(CommonEditorSettings object, Double value) {
+                setLightGridSize(value);
+            }
+            @Override
+            protected Double getter(CommonEditorSettings object) {
+                return getLightGridSize();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<CommonEditorSettings, Color>(
+                this, "Grid color", Color.class, true, false, false) {
+            protected void setter(CommonEditorSettings object, Color value) {
+                setGridColor(value);
+            }
+            protected Color getter(CommonEditorSettings object) {
+                return getGridColor();
             }
         });
 
@@ -227,6 +256,8 @@ public class CommonEditorSettings implements Settings {
         setBackgroundColor(config.getColor(keyBackgroundColor, defaultBackgroundColor));
         setGridVisibility(config.getBoolean(keyGridVisibility, defaultGridVisibility));
         setLightGrid(config.getBoolean(keyLightGrid, defaultLightGrid));
+        setLightGridSize(config.getDouble(keyLightGridSize, defaultLightGridSize));
+        setGridColor(config.getColor(keyGridColor, defaultGridColor));
         setRulerVisibility(config.getBoolean(keyRulerVisibility, defaultRulerVisibility));
         setHintVisibility(config.getBoolean(keyHintVisibility, defaultHintVisibility));
         setHintColor(config.getColor(keyHintColor, defaultHintColor));
@@ -245,6 +276,8 @@ public class CommonEditorSettings implements Settings {
         config.setColor(keyBackgroundColor, getBackgroundColor());
         config.setBoolean(keyGridVisibility, getGridVisibility());
         config.setBoolean(keyLightGrid, getLightGrid());
+        config.setDouble(keyLightGridSize, getLightGridSize());
+        config.setColor(keyGridColor, getGridColor());
         config.setBoolean(keyRulerVisibility, getRulerVisibility());
         config.setBoolean(keyHintVisibility, getHintVisibility());
         config.setColor(keyHintColor, getHintColor());
@@ -290,6 +323,22 @@ public class CommonEditorSettings implements Settings {
 
     public static Boolean getLightGrid() {
         return lightGrid;
+    }
+
+    public static double getLightGridSize() {
+        return lightGridSize;
+    }
+
+    public static void setLightGridSize(double value) {
+        lightGridSize = value;
+    }
+
+    public static Color getGridColor() {
+        return gridColor;
+    }
+
+    public static void setGridColor(Color value) {
+        gridColor = value;
     }
 
     public static void setRulerVisibility(Boolean value) {

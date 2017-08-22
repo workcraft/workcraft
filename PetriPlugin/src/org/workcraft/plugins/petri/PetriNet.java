@@ -16,6 +16,7 @@ import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.MultiSet;
 
 @VisualClass (org.workcraft.plugins.petri.VisualPetriNet.class)
 public class PetriNet extends AbstractMathModel implements PetriNetModel {
@@ -186,6 +187,15 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
         MathConnection con = new MathConnection((MathNode) first, (MathNode) second);
         Hierarchy.getNearestContainer(first, second).add(con);
         return con;
+    }
+
+    @Override
+    public MultiSet<String> getStatistics() {
+        MultiSet<String> result = new MultiSet<>();
+        result.add("Place", getPlaces().size());
+        result.add("Transition", getTransitions().size());
+        result.add("Arc", getConnections().size());
+        return result;
     }
 
 }

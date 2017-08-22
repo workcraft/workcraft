@@ -13,6 +13,7 @@ import org.workcraft.plugins.petri.commands.DirectedArcToReadArcTransformationCo
 import org.workcraft.plugins.petri.commands.DualArcToReadArcTransformationCommand;
 import org.workcraft.plugins.petri.commands.MergePlaceTransformationCommand;
 import org.workcraft.plugins.petri.commands.MergeTransitionTransformationCommand;
+import org.workcraft.plugins.petri.commands.PetriStatisticsCommand;
 import org.workcraft.plugins.petri.commands.ProxyDirectedArcPlaceTransformationCommand;
 import org.workcraft.plugins.petri.commands.ProxyReadArcPlaceTransformationCommand;
 import org.workcraft.plugins.petri.commands.ReadArcToDualArcTransformationCommand;
@@ -51,6 +52,7 @@ public class PetriNetModule implements Module {
         pm.registerClass(Command.class, ProxyReadArcPlaceTransformationCommand.class);
         pm.registerClass(Command.class, MergePlaceTransformationCommand.class);
         pm.registerClass(Command.class, MergeTransitionTransformationCommand.class);
+        pm.registerClass(Command.class, PetriStatisticsCommand.class);
     }
 
     private void initCompatibilityManager() {

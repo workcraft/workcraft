@@ -57,7 +57,7 @@ import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.layouts.WrapLayout;
-import org.workcraft.plugins.shared.CommonSimulationSettings;
+import org.workcraft.plugins.shared.CommonDecorationSettings;
 import org.workcraft.plugins.son.BlockConnector;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.SONSettings;
@@ -915,7 +915,7 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
 
         for (TransitionNode e : enabled) {
             //e.setFillColor(CommonSimulationSettings.getEnabledForegroundColor());
-            e.setForegroundColor(CommonSimulationSettings.getExcitedComponentColor());
+            e.setForegroundColor(CommonDecorationSettings.getExcitedComponentColor());
         }
 
         StepRef refStep = null;

@@ -18,6 +18,7 @@ import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Identifier;
+import org.workcraft.util.MultiSet;
 
 public class Circuit extends AbstractMathModel {
 
@@ -124,6 +125,14 @@ public class Circuit extends AbstractMathModel {
                 return arg.isDriver();
             }
         });
+    }
+
+    @Override
+    public MultiSet<String> getStatistics() {
+        MultiSet<String> result = new MultiSet<>();
+        result.add("Component", getFunctionComponents().size());
+        result.add("Port", getPorts().size());
+        return result;
     }
 
 }

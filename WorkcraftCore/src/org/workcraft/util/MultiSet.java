@@ -2,14 +2,14 @@ package org.workcraft.util;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Set;
 
 public class MultiSet<T> implements Set<T> {
 
-    private final HashMap<T, Integer> map = new HashMap<>();
+    private final LinkedHashMap<T, Integer> map = new LinkedHashMap<>();
 
     @Override
     public int size() {
@@ -212,6 +212,10 @@ public class MultiSet<T> implements Set<T> {
             result = map.get(o);
         }
         return result;
+    }
+
+    public Set<T> toSet() {
+        return map.keySet();
     }
 
 }

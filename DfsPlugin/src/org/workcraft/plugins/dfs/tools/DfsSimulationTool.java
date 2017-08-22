@@ -41,7 +41,7 @@ import org.workcraft.plugins.dfs.stg.RegisterStg;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.plugins.shared.CommonSimulationSettings;
+import org.workcraft.plugins.shared.CommonDecorationSettings;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
 import org.workcraft.util.Func;
@@ -240,12 +240,12 @@ public class DfsSimulationTool extends StgSimulationTool {
                     return new LogicDecoration() {
                         @Override
                         public Color getColorisation() {
-                            return isExcited ? CommonSimulationSettings.getExcitedComponentColor() : null;
+                            return isExcited ? CommonDecorationSettings.getExcitedComponentColor() : null;
                         }
 
                         @Override
                         public Color getBackground() {
-                            return isSuggested ? CommonSimulationSettings.getSuggestedComponentColor() : null;
+                            return isSuggested ? CommonDecorationSettings.getSuggestedComponentColor() : null;
                         }
 
                         @Override
@@ -261,12 +261,12 @@ public class DfsSimulationTool extends StgSimulationTool {
                     return new RegisterDecoration() {
                         @Override
                         public Color getColorisation() {
-                            return isExcited ? CommonSimulationSettings.getExcitedComponentColor() : null;
+                            return isExcited ? CommonDecorationSettings.getExcitedComponentColor() : null;
                         }
 
                         @Override
                         public Color getBackground() {
-                            return isSuggested ? CommonSimulationSettings.getSuggestedComponentColor() : null;
+                            return isSuggested ? CommonDecorationSettings.getSuggestedComponentColor() : null;
                         }
 
                         @Override
@@ -292,12 +292,12 @@ public class DfsSimulationTool extends StgSimulationTool {
                     return new CounterflowLogicDecoration() {
                         @Override
                         public Color getColorisation() {
-                            return isExcited ? CommonSimulationSettings.getExcitedComponentColor() : null;
+                            return isExcited ? CommonDecorationSettings.getExcitedComponentColor() : null;
                         }
 
                         @Override
                         public Color getBackground() {
-                            return isSuggested ? CommonSimulationSettings.getSuggestedComponentColor() : null;
+                            return isSuggested ? CommonDecorationSettings.getSuggestedComponentColor() : null;
                         }
 
                         @Override
@@ -328,12 +328,12 @@ public class DfsSimulationTool extends StgSimulationTool {
                     return new CounterflowRegisterDecoration() {
                         @Override
                         public Color getColorisation() {
-                            return isExcited ? CommonSimulationSettings.getExcitedComponentColor() : null;
+                            return isExcited ? CommonDecorationSettings.getExcitedComponentColor() : null;
                         }
 
                         @Override
                         public Color getBackground() {
-                            return isSuggested ? CommonSimulationSettings.getSuggestedComponentColor() : null;
+                            return isSuggested ? CommonDecorationSettings.getSuggestedComponentColor() : null;
                         }
 
                         @Override
@@ -389,12 +389,12 @@ public class DfsSimulationTool extends StgSimulationTool {
                     return new BinaryRegisterDecoration() {
                         @Override
                         public Color getColorisation() {
-                            return isExcited ? CommonSimulationSettings.getExcitedComponentColor() : null;
+                            return isExcited ? CommonDecorationSettings.getExcitedComponentColor() : null;
                         }
 
                         @Override
                         public Color getBackground() {
-                            return isSuggested ? CommonSimulationSettings.getSuggestedComponentColor() : null;
+                            return isSuggested ? CommonDecorationSettings.getSuggestedComponentColor() : null;
                         }
 
                         @Override

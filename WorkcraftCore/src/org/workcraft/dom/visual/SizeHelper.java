@@ -19,8 +19,12 @@ public class SizeHelper {
     private static final double FONT_SIZE = CommonVisualSettings.getFontSize();
     private static final double ICON_SCALE_THRESHOLD = 0.2;
 
-    public static int getScreenDpi() {
+    public static double getScreenDpi() {
         return Toolkit.getDefaultToolkit().getScreenResolution();
+    }
+
+    public static double getScreenDpmm() {
+        return getScreenDpi() * 0.0393701;
     }
 
     public static double getBaseSize() {

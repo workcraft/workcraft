@@ -2,6 +2,8 @@ package org.workcraft.gui.graph.tools;
 
 import java.awt.Color;
 
+import org.workcraft.plugins.shared.CommonDecorationSettings;
+
 public interface Decoration {
     Color getColorisation();
     Color getBackground();
@@ -21,7 +23,7 @@ public interface Decoration {
     class Shaded implements Decoration {
         @Override
         public Color getColorisation() {
-            return Color.LIGHT_GRAY;
+            return CommonDecorationSettings.getShadedComponentColor();
         }
         @Override
         public Color getBackground() {
@@ -33,7 +35,7 @@ public interface Decoration {
     class Highlighted implements Decoration {
         @Override
         public Color getColorisation() {
-            return new Color(1.0f, 0.5f, 0.0f).brighter();
+            return CommonDecorationSettings.getHighlightedComponentColor();
         }
         @Override
         public Color getBackground() {
@@ -45,7 +47,7 @@ public interface Decoration {
     class Selected implements Decoration {
         @Override
         public Color getColorisation() {
-            return new Color(99, 130, 191).brighter();
+            return CommonDecorationSettings.getSelectedComponentColor();
         }
         @Override
         public Color getBackground() {

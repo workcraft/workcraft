@@ -24,7 +24,7 @@ import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
-import org.workcraft.plugins.shared.CommonSimulationSettings;
+import org.workcraft.plugins.shared.CommonDecorationSettings;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
@@ -149,12 +149,12 @@ public class FstSimulationTool extends StgSimulationTool {
         return new Decoration() {
             @Override
             public Color getColorisation() {
-                return isExcited ? CommonSimulationSettings.getExcitedComponentColor() : null;
+                return isExcited ? CommonDecorationSettings.getExcitedComponentColor() : null;
             }
 
             @Override
             public Color getBackground() {
-                return isSuggested ? CommonSimulationSettings.getSuggestedComponentColor() : null;
+                return isSuggested ? CommonDecorationSettings.getSuggestedComponentColor() : null;
             }
         };
     }
@@ -168,7 +168,7 @@ public class FstSimulationTool extends StgSimulationTool {
         return new Decoration() {
             @Override
             public Color getColorisation() {
-                return isMarkedPlace ? CommonSimulationSettings.getExcitedComponentColor() : null;
+                return isMarkedPlace ? CommonDecorationSettings.getExcitedComponentColor() : null;
             }
             @Override
             public Color getBackground() {

@@ -15,6 +15,7 @@ import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.MultiSet;
 
 public abstract class AbstractMathModel extends AbstractModel implements MathModel {
 
@@ -137,6 +138,15 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
             }
             setNamespaceRecursively(manager, provider, srcModel, srcRoot, srcChildren);
         }
+    }
+
+    public MultiSet<String> getStatistics() {
+        MultiSet<String> result = new MultiSet<>();
+        for (MathNode node: Hierarchy.getDescendantsOfType(getRoot(), MathNode.class)) {
+            String categoryName = node.getClass().getSimpleName();
+            result.add(categoryName);
+        }
+        return result;
     }
 
 }

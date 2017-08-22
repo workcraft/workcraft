@@ -22,6 +22,7 @@ import org.workcraft.plugins.stg.commands.MirrorSignalTransformationCommand;
 import org.workcraft.plugins.stg.commands.MirrorTransitionTransformationCommand;
 import org.workcraft.plugins.stg.commands.PetriToStgConversionCommand;
 import org.workcraft.plugins.stg.commands.SignalToDummyTransitionTransformationCommand;
+import org.workcraft.plugins.stg.commands.StgStatisticsCommand;
 import org.workcraft.plugins.stg.commands.StgToPetriConversionCommand;
 import org.workcraft.plugins.stg.interop.DotGExporter;
 import org.workcraft.plugins.stg.interop.DotGImporter;
@@ -76,6 +77,7 @@ public class StgModule implements Module {
         pm.registerClass(Command.class, InsertDummyTransformationCommand.class);
         pm.registerClass(Command.class, ExpandHandshakeTransformationCommand.class);
         pm.registerClass(Command.class, ExpandHandshakeReqAckTransformationCommand.class);
+        pm.registerClass(Command.class, StgStatisticsCommand.class);
     }
 
     private void initCompatibilityManager() {
