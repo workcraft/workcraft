@@ -23,12 +23,12 @@ public class BasicStatisticsCommand extends AbstractStatisticsCommand {
         for (String categoryName: statistics.toSet()) {
             String displayName = renameCategory(categoryName);
             if ((displayName == null) || displayName.isEmpty()) continue;
-            s += "  " + displayName + " -  " + statistics.count(categoryName) + "\n";
+            s += "\n  " + displayName + " -  " + statistics.count(categoryName);
         }
         if (s.isEmpty()) {
             return "The model is empty.";
         }
-        return "Component count:\n" + s;
+        return "Component count:" + s;
     }
 
     public String renameCategory(String categoryName) {
