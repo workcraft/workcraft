@@ -1,7 +1,6 @@
 package org.workcraft.gui.graph;
 
 import java.awt.BasicStroke;
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -10,6 +9,7 @@ import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.util.LinkedList;
 
+import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 
 /**
@@ -35,10 +35,6 @@ public class Grid implements ViewportListener {
     protected int[][] minorLinePositionsScreen;
 
     protected Stroke stroke;
-
-    protected Color majorLinesColor = new Color(200, 200, 200);
-    protected Color minorLinesColor = new Color(240, 240, 240);
-    protected Color guideLinesColor = Color.RED;
 
     protected double majorInterval = 10.0;
 
@@ -102,40 +98,6 @@ public class Grid implements ViewportListener {
      */
     public void setMinThreshold(double minThreshold) {
         this.minThreshold = minThreshold;
-    }
-
-    /**
-     * @return
-     * The major grid lines drawing color.
-     */
-    public Color getMajorLinesColor() {
-        return majorLinesColor;
-    }
-
-    /**
-     * Set the major grid lines drawing color.
-     * @param majorLinesColor
-     * The new color
-     */
-    public void setMajorLinesColor(Color majorLinesColor) {
-        this.majorLinesColor = majorLinesColor;
-    }
-
-    /**
-     * @return
-     * The minor grid lines drawing color.
-     */
-    public Color getMinorLinesColor() {
-        return minorLinesColor;
-    }
-
-    /**
-     *  Set the minor grid lines drawing color.
-     * @param minorLinesColor
-     *  The new color
-     */
-    public void setMinorLinesColor(Color minorLinesColor) {
-        this.minorLinesColor = minorLinesColor;
     }
 
     /**
@@ -253,14 +215,15 @@ public class Grid implements ViewportListener {
             minorLinePositionsScreen[1][y - bottom] = (int) pScreen.getY();
         }
 
+        double d = Math.max(1.0, CommonEditorSettings.getLightGridSize() * SizeHelper.getScreenDpmm() / 3.0);
         for (int x = left; x <= right; x++) {
             int xScreen = minorLinePositionsScreen[0][x - left];
             for (int y = bottom; y <= top; y++) {
                 int yScreen = minorLinePositionsScreen[1][y - bottom];
-                minorLinesPath.moveTo(xScreen - 1, yScreen);
-                minorLinesPath.lineTo(xScreen + 1, yScreen);
-                minorLinesPath.moveTo(xScreen, yScreen - 1);
-                minorLinesPath.lineTo(xScreen, yScreen + 1);
+                minorLinesPath.moveTo(xScreen - d, yScreen);
+                minorLinesPath.lineTo(xScreen + d, yScreen);
+                minorLinesPath.moveTo(xScreen, yScreen - d);
+                minorLinesPath.lineTo(xScreen, yScreen + d);
             }
         }
     }
@@ -361,14 +324,15 @@ public class Grid implements ViewportListener {
             majorLinePositionsScreen[1][y - bottom] = (int) pScreen.getY();
         }
 
+        double d = Math.max(1.0, CommonEditorSettings.getLightGridSize() * SizeHelper.getScreenDpmm() / 2.0);
         for (int x = left; x <= right; x++) {
             int xScreen = majorLinePositionsScreen[0][x - left];
             for (int y = bottom; y <= top; y++) {
                 int yScreen = majorLinePositionsScreen[1][y - bottom];
-                majorLinesPath.moveTo(xScreen - 1, yScreen);
-                majorLinesPath.lineTo(xScreen + 1, yScreen);
-                majorLinesPath.moveTo(xScreen, yScreen - 1);
-                majorLinesPath.lineTo(xScreen, yScreen + 1);
+                majorLinesPath.moveTo(xScreen - d, yScreen);
+                majorLinesPath.lineTo(xScreen + d, yScreen);
+                majorLinesPath.moveTo(xScreen, yScreen - d);
+                majorLinesPath.lineTo(xScreen, yScreen + d);
             }
         }
     }
@@ -433,9 +397,9 @@ public class Grid implements ViewportListener {
      */
     public void draw(Graphics2D g) {
         g.setStroke(stroke);
-        g.setColor(minorLinesColor);
+        g.setColor(CommonEditorSettings.getGridColor());
         g.draw(minorLinesPath);
-        g.setColor(majorLinesColor);
+        g.setColor(CommonEditorSettings.getGridColor().darker());
         g.draw(majorLinesPath);
     }
 

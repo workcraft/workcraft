@@ -27,7 +27,7 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
-import org.workcraft.plugins.shared.CommonSimulationSettings;
+import org.workcraft.plugins.shared.CommonDecorationSettings;
 import org.workcraft.plugins.son.BlockConnector;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.VisualSON;
@@ -396,7 +396,7 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
         if (startButton.isSelected()) {
             setColors(net.getNodes(), greyoutColor);
             for (TransitionNode e : enabled) {
-                e.setForegroundColor(CommonSimulationSettings.getExcitedComponentColor());
+                e.setForegroundColor(CommonDecorationSettings.getExcitedComponentColor());
             }
         }
     }

@@ -18,7 +18,7 @@ import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.shared.CommonSimulationSettings;
+import org.workcraft.plugins.shared.CommonDecorationSettings;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
 import org.workcraft.plugins.xmas.VisualXmas;
@@ -194,11 +194,11 @@ public class XmasSimulationTool extends StgSimulationTool {
         return new Decoration() {
             @Override
             public Color getColorisation() {
-                return isExcited ? CommonSimulationSettings.getExcitedComponentColor() : null;
+                return isExcited ? CommonDecorationSettings.getExcitedComponentColor() : null;
             }
             @Override
             public Color getBackground() {
-                Color  colorisation = isSuggested ? CommonSimulationSettings.getExcitedComponentColor() : null;
+                Color  colorisation = isSuggested ? CommonDecorationSettings.getExcitedComponentColor() : null;
                 Color contactColor = isReady ? (isInput ? COLOR_CONTACT_TRDY : COLOR_CONTACT_IRDY) : COLOR_CONTACT_NOT_READY;
                 return Coloriser.colorise(contactColor, colorisation);
             }
@@ -248,11 +248,11 @@ public class XmasSimulationTool extends StgSimulationTool {
             }
             @Override
             public Color getColorisation() {
-                return isExcited ? CommonSimulationSettings.getExcitedComponentColor() : null;
+                return isExcited ? CommonDecorationSettings.getExcitedComponentColor() : null;
             }
             @Override
             public Color getBackground() {
-                return isSuggested ? CommonSimulationSettings.getSuggestedComponentColor() : null;
+                return isSuggested ? CommonDecorationSettings.getSuggestedComponentColor() : null;
             }
         };
     }
@@ -271,11 +271,11 @@ public class XmasSimulationTool extends StgSimulationTool {
             }
             @Override
             public Color getColorisation() {
-                return isExcited ? CommonSimulationSettings.getExcitedComponentColor() : null;
+                return isExcited ? CommonDecorationSettings.getExcitedComponentColor() : null;
             }
             @Override
             public Color getBackground() {
-                return isSuggested ? CommonSimulationSettings.getSuggestedComponentColor() : null;
+                return isSuggested ? CommonDecorationSettings.getSuggestedComponentColor() : null;
             }
         };
     }
@@ -294,11 +294,11 @@ public class XmasSimulationTool extends StgSimulationTool {
             }
             @Override
             public Color getColorisation() {
-                return isExcited ? CommonSimulationSettings.getExcitedComponentColor() : null;
+                return isExcited ? CommonDecorationSettings.getExcitedComponentColor() : null;
             }
             @Override
             public Color getBackground() {
-                return isSuggested ? CommonSimulationSettings.getSuggestedComponentColor() : null;
+                return isSuggested ? CommonDecorationSettings.getSuggestedComponentColor() : null;
             }
         };
     }

@@ -48,6 +48,7 @@ import org.workcraft.gui.graph.Viewport;
 import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.graph.editors.AbstractInplaceEditor;
 import org.workcraft.gui.graph.editors.LabelInplaceEditor;
+import org.workcraft.plugins.shared.CommonDecorationSettings;
 import org.workcraft.util.Commands;
 import org.workcraft.util.GUI;
 import org.workcraft.util.Hierarchy;
@@ -58,9 +59,6 @@ public class SelectionTool extends AbstractGraphEditorTool {
 
     private enum DrugState { NONE, MOVE, SELECT };
     private enum SelectionMode { NONE, ADD, REMOVE, REPLACE };
-
-    private static final Color selectionBorderColor = new Color(200, 200, 200);
-    private static final Color selectionFillColor = new Color(99, 130, 191, 32);
 
     private DrugState dragState = DrugState.NONE;
     private boolean ignoreMouseButton1 = false;
@@ -602,9 +600,11 @@ public class SelectionTool extends AbstractGraphEditorTool {
         if ((dragState == DrugState.SELECT) && (selectionBox != null)) {
             Viewport viewport = editor.getViewport();
             g.setStroke(new BasicStroke((float) viewport.pixelSizeInUserSpace().getX()));
-            g.setColor(selectionFillColor);
+            Color borderColor = CommonDecorationSettings.getSelectedComponentColor();
+            Color fillColor = new Color(borderColor.getRed(), borderColor.getGreen(), borderColor.getBlue(), 35);
+            g.setColor(fillColor);
             g.fill(selectionBox);
-            g.setColor(selectionBorderColor);
+            g.setColor(borderColor);
             g.draw(selectionBox);
         }
     }
