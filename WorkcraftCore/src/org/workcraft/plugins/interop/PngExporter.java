@@ -3,25 +3,23 @@ package org.workcraft.plugins.interop;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.UUID;
 
 import org.apache.batik.transcoder.Transcoder;
 import org.apache.batik.transcoder.TranscoderException;
 import org.apache.batik.transcoder.TranscoderInput;
 import org.apache.batik.transcoder.TranscoderOutput;
-import org.apache.fop.render.ps.PSTranscoder;
+import org.apache.batik.transcoder.image.PNGTranscoder;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
-import org.workcraft.serialisation.Format;
 
-public class PSExporter implements Exporter {
+public class PngExporter implements Exporter {
 
     @Override
     public void export(Model model, OutputStream out) throws IOException, SerialisationException {
-        InputStream svg = SVGExportUtils.stream(model);
-        Transcoder transcoder = new PSTranscoder();
+        InputStream svg = SvgExportUtils.stream(model);
+        Transcoder transcoder = new PNGTranscoder();
         TranscoderInput transcoderInput = new TranscoderInput(svg);
         TranscoderOutput transcoderOutput = new TranscoderOutput(out);
         try {
@@ -29,16 +27,6 @@ public class PSExporter implements Exporter {
         } catch (TranscoderException e) {
             throw new SerialisationException(e);
         }
-    }
-
-    @Override
-    public String getDescription() {
-        return ".ps (FOP PS transcoder)";
-    }
-
-    @Override
-    public String getExtenstion() {
-        return ".ps";
     }
 
     @Override
@@ -51,8 +39,8 @@ public class PSExporter implements Exporter {
     }
 
     @Override
-    public UUID getTargetFormat() {
-        return Format.PS;
+    public PngFormat getFormat() {
+        return PngFormat.getInstance();
     }
 
 }

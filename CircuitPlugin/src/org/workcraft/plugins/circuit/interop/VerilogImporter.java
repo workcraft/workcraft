@@ -101,13 +101,13 @@ public class VerilogImporter implements Importer {
     }
 
     @Override
-    public boolean accept(File file) {
-        return file.getName().endsWith(".v");
+    public VerilogFormat getFormat() {
+        return VerilogFormat.getInstance();
     }
 
     @Override
-    public String getDescription() {
-        return "Verilog (.v)";
+    public boolean accept(File file) {
+        return file.getName().endsWith(".v");
     }
 
     @Override

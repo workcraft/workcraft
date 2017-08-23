@@ -71,6 +71,7 @@ import org.workcraft.gui.tasks.TaskManagerWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.interop.Exporter;
+import org.workcraft.interop.Format;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.shared.CommonEditorSettings;
@@ -879,8 +880,9 @@ public class MainWindow extends JFrame {
                         path += FileFilters.DOCUMENT_EXTENSION;
                     }
                 } else {
-                    if (!path.endsWith(exporter.getExtenstion())) {
-                        path += exporter.getExtenstion();
+                    String extension = exporter.getFormat().getExtension();
+                    if (!path.endsWith(extension)) {
+                        path += extension;
                     }
                 }
                 File f = new File(path);
@@ -1110,7 +1112,7 @@ public class MainWindow extends JFrame {
     }
 
     public void export(Exporter exporter) throws OperationCancelledException {
-        String title = "Export as " + exporter.getDescription();
+        String title = "Export as " + exporter.getFormat().getDescription();
         File file = new File(getFileNameForCurrentWork());
         JFileChooser fc = createSaveDialog(title, file, exporter);
         String path = getValidSavePath(fc, exporter);
@@ -1405,7 +1407,8 @@ public class MainWindow extends JFrame {
         }
 
         public String getDescription() {
-            return importer.getDescription();
+            Format format = importer.getFormat();
+            return format.getDescription() + " (*" + format.getExtension() + ")";
         }
     }
 
@@ -1417,11 +1420,12 @@ public class MainWindow extends JFrame {
         }
 
         public boolean accept(File f) {
-            return f.isDirectory() || f.getName().endsWith(exporter.getExtenstion());
+            return f.isDirectory() || f.getName().endsWith(exporter.getFormat().getExtension());
         }
 
         public String getDescription() {
-            return exporter.getDescription();
+            Format format = exporter.getFormat();
+            return format.getDescription() + " (*" + format.getExtension() + ")";
         }
     }
 

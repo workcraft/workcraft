@@ -23,11 +23,11 @@ import org.workcraft.plugins.dtd.SignalTransition.Direction;
 import org.workcraft.plugins.wtg.State;
 import org.workcraft.plugins.wtg.Waveform;
 import org.workcraft.plugins.wtg.Wtg;
-import org.workcraft.serialisation.Format;
+import org.workcraft.plugins.wtg.interop.WtgFormat;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
 
-public class DotGSerialiser implements ModelSerialiser {
+public class WtgSerialiser implements ModelSerialiser {
 
     private static final String KEYWORDS_INPUTS = ".inputs";
     private static final String KEYWORD_OUTPUTS = ".outputs";
@@ -110,18 +110,8 @@ public class DotGSerialiser implements ModelSerialiser {
     }
 
     @Override
-    public String getDescription() {
-        return "Workcraft WTG serialiser";
-    }
-
-    @Override
-    public String getExtension() {
-        return ".wtg";
-    }
-
-    @Override
     public UUID getFormatUUID() {
-        return Format.WTG;
+        return WtgFormat.getInstance().getUuid();
     }
 
     private void write(PrintWriter out, Wtg wtg, ReferenceProducer refs) {

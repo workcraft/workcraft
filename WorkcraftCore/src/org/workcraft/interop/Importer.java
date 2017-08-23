@@ -7,7 +7,7 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.workspace.ModelEntry;
 
 public interface Importer {
+    Format getFormat();
     boolean accept(File file);
-    String getDescription();
     ModelEntry importFrom(InputStream in) throws DeserialisationException, IOException;
 }

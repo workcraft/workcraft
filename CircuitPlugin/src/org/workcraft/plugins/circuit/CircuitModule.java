@@ -54,11 +54,22 @@ public class CircuitModule implements Module {
     private void initPluginManager() {
         final Framework framework = Framework.getInstance();
         PluginManager pm = framework.getPluginManager();
+        pm.registerClass(ModelDescriptor.class, CircuitDescriptor.class);
+        pm.registerClass(XMLSerialiser.class, FunctionSerialiser.class);
+        pm.registerClass(XMLDeserialiser.class, FunctionDeserialiser.class);
+        pm.registerClass(Settings.class, CircuitSettings.class);
+
+        pm.registerClass(Exporter.class, VerilogExporter.class);
+        pm.registerClass(Importer.class, VerilogImporter.class);
+        pm.registerClass(Importer.class, GenlibImporter.class);
+        pm.registerClass(Exporter.class, SdcExporter.class);
+
         pm.registerClass(Command.class, CircuitLayoutCommand.class);
         pm.registerClass(Command.class, CircuitLayoutPlacementCommand.class);
         pm.registerClass(Command.class, CircuitLayoutRoutingCommand.class);
-        pm.registerClass(Command.class, CircuitToStgConversionCommand.class);
+        pm.registerClass(Settings.class, CircuitLayoutSettings.class);
 
+        pm.registerClass(Command.class, CircuitToStgConversionCommand.class);
         pm.registerClass(Command.class, CircuitConformationVerificationCommand.class);
         pm.registerClass(Command.class, CircuitDeadlockVerificationCommand.class);
         pm.registerClass(Command.class, CircuitPersistencyVerificationCommand.class);
@@ -74,16 +85,6 @@ public class CircuitModule implements Module {
         pm.registerClass(Command.class, InsertBufferTransformationCommand.class);
         pm.registerClass(Command.class, ToggleBubbleTransformationCommand.class);
         pm.registerClass(Command.class, CircuitStatisticsCommand.class);
-
-        pm.registerClass(ModelDescriptor.class, CircuitDescriptor.class);
-        pm.registerClass(XMLSerialiser.class, FunctionSerialiser.class);
-        pm.registerClass(XMLDeserialiser.class, FunctionDeserialiser.class);
-        pm.registerClass(Settings.class, CircuitSettings.class);
-        pm.registerClass(Exporter.class, VerilogExporter.class);
-        pm.registerClass(Importer.class, VerilogImporter.class);
-        pm.registerClass(Importer.class, GenlibImporter.class);
-        pm.registerClass(Exporter.class, SdcExporter.class);
-        pm.registerClass(Settings.class, CircuitLayoutSettings.class);
     }
 
     private void initCompatibilityManager() {

@@ -8,10 +8,10 @@ import java.io.InputStream;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.SerialisationException;
 
-public class SVGExportUtils {
+public class SvgExportUtils {
 
     public static InputStream stream(Model model) throws IOException, SerialisationException {
-        SVGExporter svgExporter = new SVGExporter();
+        SvgExporter svgExporter = new SvgExporter();
         ByteArrayOutputStream svgOut = new ByteArrayOutputStream();
         svgExporter.export(model, svgOut);
         return new ByteArrayInputStream(svgOut.toByteArray());

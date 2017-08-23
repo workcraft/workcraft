@@ -13,7 +13,7 @@ import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.ProcessWindowsSettings;
 import org.workcraft.plugins.fst.VisualFst;
-import org.workcraft.plugins.fst.interop.DotGExporter;
+import org.workcraft.plugins.fst.interop.SgExporter;
 import org.workcraft.plugins.fst.tasks.LtscatResultHandler;
 import org.workcraft.plugins.fst.tasks.LtscatTask;
 import org.workcraft.tasks.TaskManager;
@@ -56,7 +56,7 @@ public class ExtractWindowsCommand implements Command, MenuOrdering  {
         File scriptFile;
         String sgFileName = we.getTitle() + ProcessWindowsSettings.getExportedFstExtension();
         String scriptFileName = ProcessWindowsSettings.getScriptName();
-        DotGExporter exporter = new DotGExporter();
+        SgExporter exporter = new SgExporter();
 
         // temporary directory
         String prefix = FileUtils.getTempPrefix(we.getTitle());

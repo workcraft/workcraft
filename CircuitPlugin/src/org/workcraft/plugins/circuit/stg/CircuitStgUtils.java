@@ -17,7 +17,7 @@ import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.plugins.stg.VisualStg;
-import org.workcraft.serialisation.Format;
+import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.SubtaskMonitor;
@@ -119,7 +119,7 @@ public class CircuitStgUtils {
 
         Framework framework = Framework.getInstance();
         PluginManager pluginManager = framework.getPluginManager();
-        Exporter stgExporter = Export.chooseBestExporter(pluginManager, stg, Format.STG);
+        Exporter stgExporter = Export.chooseBestExporter(pluginManager, stg, StgFormat.getInstance());
         if (stgExporter == null) {
             throw new RuntimeException("Exporter not available: model class " + stg.getClass().getName() + " to .g format.");
         }

@@ -5,7 +5,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.UUID;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.Model;
@@ -14,7 +13,9 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.ExternalProcessListener;
+import org.workcraft.interop.Format;
 import org.workcraft.plugins.fsm.Fsm;
+import org.workcraft.plugins.fst.interop.SgFormat;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.Place;
@@ -22,8 +23,8 @@ import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.interop.DotGImporter;
-import org.workcraft.serialisation.Format;
+import org.workcraft.plugins.stg.interop.StgImporter;
+import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -125,7 +126,7 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationResu
                     String out = FileUtils.readAllText(outFile);
                     ByteArrayInputStream outStream = new ByteArrayInputStream(out.getBytes());
                     try {
-                        outStg = new DotGImporter().importSTG(outStream);
+                        outStg = new StgImporter().importSTG(outStream);
                     } catch (DeserialisationException e) {
                         return Result.exception(e);
                     }
@@ -152,13 +153,13 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationResu
 
     private File getInputFile(Model model, File directory) {
         final Framework framework = Framework.getInstance();
-        UUID format = null;
+        Format format = null;
         String extension = null;
         if (model instanceof PetriNetModel) {
-            format = Format.STG;
+            format = StgFormat.getInstance();
             extension = ".g";
         } else if (model instanceof Fsm) {
-            format = Format.SG;
+            format = SgFormat.getInstance();
             extension = ".sg";
         }
         if (format == null) {

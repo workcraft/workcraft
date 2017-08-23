@@ -24,11 +24,11 @@ import org.workcraft.plugins.stg.commands.PetriToStgConversionCommand;
 import org.workcraft.plugins.stg.commands.SignalToDummyTransitionTransformationCommand;
 import org.workcraft.plugins.stg.commands.StgStatisticsCommand;
 import org.workcraft.plugins.stg.commands.StgToPetriConversionCommand;
-import org.workcraft.plugins.stg.interop.DotGExporter;
-import org.workcraft.plugins.stg.interop.DotGImporter;
 import org.workcraft.plugins.stg.interop.LpnExporter;
 import org.workcraft.plugins.stg.interop.LpnImporter;
-import org.workcraft.plugins.stg.serialisation.DotGSerialiser;
+import org.workcraft.plugins.stg.interop.StgExporter;
+import org.workcraft.plugins.stg.interop.StgImporter;
+import org.workcraft.plugins.stg.serialisation.AstgSerialiser;
 import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcDeserialiser;
 import org.workcraft.plugins.stg.serialisation.ImplicitPlaceArcSerialiser;
 import org.workcraft.serialisation.ModelSerialiser;
@@ -52,17 +52,17 @@ public class StgModule implements Module {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
         pm.registerClass(ModelDescriptor.class, StgDescriptor.class);
+        pm.registerClass(Settings.class, StgSettings.class);
 
         pm.registerClass(XMLSerialiser.class, ImplicitPlaceArcSerialiser.class);
         pm.registerClass(XMLDeserialiser.class, ImplicitPlaceArcDeserialiser.class);
+        pm.registerClass(ModelSerialiser.class, AstgSerialiser.class);
 
-        pm.registerClass(Exporter.class, DotGExporter.class);
+        pm.registerClass(Exporter.class, StgExporter.class);
+        pm.registerClass(Importer.class, StgImporter.class);
+
         pm.registerClass(Exporter.class, LpnExporter.class);
-        pm.registerClass(Importer.class, DotGImporter.class);
         pm.registerClass(Importer.class, LpnImporter.class);
-
-        pm.registerClass(ModelSerialiser.class, DotGSerialiser.class);
-        pm.registerClass(Settings.class, StgSettings.class);
 
         pm.registerClass(Command.class, MirrorSignalTransformationCommand.class);
         pm.registerClass(Command.class, MirrorTransitionTransformationCommand.class);

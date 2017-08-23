@@ -12,35 +12,42 @@ import org.workcraft.PluginProvider;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.interop.WorkMathFormat;
 import org.workcraft.serialisation.DeserialisationResult;
-import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelDeserialiser;
 import org.workcraft.serialisation.ReferenceResolver;
 import org.workcraft.serialisation.References;
 import org.workcraft.serialisation.xml.XMLDeserialisationManager;
-import org.workcraft.util.XmlUtil;
+import org.workcraft.util.XmlUtils;
 import org.xml.sax.SAXException;
 
 public class XMLModelDeserialiser implements ModelDeserialiser {
 
-    PluginProvider plugins;
+    private final PluginProvider plugins;
+
     public XMLModelDeserialiser(PluginProvider plugins) {
         this.plugins = plugins;
     }
 
+    @Override
+    public UUID getFormatUUID() {
+        return WorkMathFormat.getInstance().getUuid();
+    }
+
+    @Override
     public DeserialisationResult deserialise(InputStream is, ReferenceResolver extRef,
             Model underlyingModel) throws DeserialisationException {
         try {
             XMLDeserialisationManager deserialisation = new XMLDeserialisationManager();
             deserialisation.processPlugins(plugins);
 
-            Document doc = XmlUtil.loadDocument(is);
+            Document doc = XmlUtils.loadDocument(is);
             Element modelElement = doc.getDocumentElement();
 
             deserialisation.begin(extRef);
 
             // 1st pass -- init instances
-            Element rootElement = XmlUtil.getChildElement("root", modelElement);
+            Element rootElement = XmlUtils.getChildElement("root", modelElement);
             Node root = (Node) deserialisation.initInstance(rootElement);
 
             // 2nd pass -- finalise instances
@@ -64,11 +71,4 @@ public class XMLModelDeserialiser implements ModelDeserialiser {
         }
     }
 
-    public String getDescription() {
-        return "Workcraft XML deserialiser";
-    }
-
-    public UUID getFormatUUID() {
-        return Format.workcraftXML;
-    }
 }

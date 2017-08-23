@@ -4,6 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.interop.Exporter;
+import org.workcraft.interop.Format;
 
 public class ExportAction extends Action {
     private final Exporter exporter;
@@ -22,8 +23,10 @@ public class ExportAction extends Action {
         }
     }
 
+    @Override
     public String getText() {
-        return exporter.getDescription();
+        Format format = exporter.getFormat();
+        return format.getExtension() + "(" + format.getDescription() + ")";
     }
 
 }

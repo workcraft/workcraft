@@ -20,7 +20,7 @@ import org.workcraft.plugins.serialisation.xml.IntDeserialiser;
 import org.workcraft.plugins.serialisation.xml.IntSerialiser;
 import org.workcraft.plugins.serialisation.xml.StringDeserialiser;
 import org.workcraft.plugins.serialisation.xml.StringSerialiser;
-import org.workcraft.util.XmlUtil;
+import org.workcraft.util.XmlUtils;
 
 public class BasicTypesSerialisation {
 
@@ -32,7 +32,7 @@ public class BasicTypesSerialisation {
     @Test
     public void enumTest() {
         try {
-            Document doc = XmlUtil.createDocument();
+            Document doc = XmlUtils.createDocument();
             EnumSerialiser s = new EnumSerialiser();
             EnumDeserialiser ds = new EnumDeserialiser();
 
@@ -52,7 +52,7 @@ public class BasicTypesSerialisation {
     @Test
     public void intTest() {
         try {
-            Document doc = XmlUtil.createDocument();
+            Document doc = XmlUtils.createDocument();
             IntSerialiser s = new IntSerialiser();
             IntDeserialiser ds = new IntDeserialiser();
 
@@ -72,7 +72,7 @@ public class BasicTypesSerialisation {
     @Test
     public void doubleTest() {
         try {
-            Document doc = XmlUtil.createDocument();
+            Document doc = XmlUtils.createDocument();
             DoubleSerialiser s = new DoubleSerialiser();
             DoubleDeserialiser ds = new DoubleDeserialiser();
 
@@ -97,7 +97,7 @@ public class BasicTypesSerialisation {
     @Test
     public void transformTest() {
         try {
-            Document doc = XmlUtil.createDocument();
+            Document doc = XmlUtils.createDocument();
             AffineTransformSerialiser s = new AffineTransformSerialiser();
             AffineTransformDeserialiser ds = new AffineTransformDeserialiser();
 
@@ -117,7 +117,7 @@ public class BasicTypesSerialisation {
     @Test
     public void stringTest() {
         try {
-            Document doc = XmlUtil.createDocument();
+            Document doc = XmlUtils.createDocument();
             StringSerialiser s = new StringSerialiser();
             StringDeserialiser ds = new StringDeserialiser();
 

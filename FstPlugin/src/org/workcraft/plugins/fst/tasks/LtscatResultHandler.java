@@ -12,7 +12,7 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.fst.ProcessWindowsSettings;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.interop.DotGImporter;
+import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.tasks.DummyProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -50,7 +50,7 @@ public class LtscatResultHandler extends DummyProgressMonitor<LtscatResult>  {
                 Path<String> path = we.getWorkspacePath();
                 Path<String> directory = path.getParent();
                 String name = FileUtils.getFileNameWithoutExtension(file);
-                DotGImporter importer = new DotGImporter();
+                StgImporter importer = new StgImporter();
                 InputStream inputStream = null;
                 StgModel model = null;
 

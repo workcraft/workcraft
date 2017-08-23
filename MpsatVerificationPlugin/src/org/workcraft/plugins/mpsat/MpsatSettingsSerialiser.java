@@ -3,20 +3,20 @@ package org.workcraft.plugins.mpsat;
 import org.w3c.dom.Element;
 import org.workcraft.plugins.mpsat.MpsatParameters.SolutionMode;
 import org.workcraft.plugins.shared.presets.SettingsSerialiser;
-import org.workcraft.util.XmlUtil;
+import org.workcraft.util.XmlUtils;
 
 public class MpsatSettingsSerialiser implements SettingsSerialiser<MpsatParameters> {
 
     public MpsatParameters fromXML(Element element) {
-        String name = XmlUtil.readStringAttr(element, "name");
+        String name = XmlUtils.readStringAttr(element, "name");
         MpsatMode mode = MpsatMode.getModeByArgument(element.getAttribute("mode"));
-        int verbosity = XmlUtil.readIntAttr(element, "verbosity", 0);
-        int solutionNumberLimit = XmlUtil.readIntAttr(element, "solutionNumberLimit", -1);
-        SolutionMode solutionMode = SolutionMode.valueOf(XmlUtil.readStringAttr(element, "solutionMode"));
+        int verbosity = XmlUtils.readIntAttr(element, "verbosity", 0);
+        int solutionNumberLimit = XmlUtils.readIntAttr(element, "solutionNumberLimit", -1);
+        SolutionMode solutionMode = SolutionMode.valueOf(XmlUtils.readStringAttr(element, "solutionMode"));
 
-        Element re = XmlUtil.getChildElement("reach", element);
+        Element re = XmlUtils.getChildElement("reach", element);
         String reach = re.getTextContent();
-        boolean inversePredicate = XmlUtil.readBoolAttr(element, "inversePredicate");
+        boolean inversePredicate = XmlUtils.readBoolAttr(element, "inversePredicate");
 
         return new MpsatParameters(name, mode, verbosity, solutionMode, solutionNumberLimit, reach, inversePredicate);
     }

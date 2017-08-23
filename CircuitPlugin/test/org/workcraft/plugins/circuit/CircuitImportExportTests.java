@@ -13,7 +13,7 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.gui.DesktopApi;
-import org.workcraft.serialisation.Format;
+import org.workcraft.plugins.circuit.interop.VerilogFormat;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -65,7 +65,7 @@ public class CircuitImportExportTests {
             try {
                 File vFile = File.createTempFile("workcraft-", ".v");
                 vFile.deleteOnExit();
-                framework.exportModel(wWe.getModelEntry(), vFile, Format.VERILOG);
+                framework.exportModel(wWe.getModelEntry(), vFile, VerilogFormat.getInstance());
                 vWe = framework.loadWork(vFile);
                 countCircuitNodes(vWe, vInputs, vOutputs, vGates);
             } catch (IOException | SerialisationException e) {

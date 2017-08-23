@@ -5,7 +5,6 @@ import java.awt.geom.Rectangle2D;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.UUID;
 
 import javax.xml.parsers.ParserConfigurationException;
 
@@ -17,10 +16,9 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.interop.Exporter;
-import org.workcraft.serialisation.Format;
-import org.workcraft.util.XmlUtil;
+import org.workcraft.util.XmlUtils;
 
-public class SVGExporter implements Exporter {
+public class SvgExporter implements Exporter {
 
     @Override
     public void export(Model model, OutputStream out) throws IOException, SerialisationException {
@@ -28,7 +26,7 @@ public class SVGExporter implements Exporter {
             throw new SerialisationException("Non-visual model cannot be exported as SVG file.");
         }
         try {
-            Document doc = XmlUtil.createDocument();
+            Document doc = XmlUtils.createDocument();
             SVGGraphics2D g2d = new SVGGraphics2D(doc);
             g2d.scale(50, 50);
             Rectangle2D bounds = ((VisualGroup) model.getRoot()).getBoundingBoxInLocalSpace();
@@ -42,16 +40,6 @@ public class SVGExporter implements Exporter {
     }
 
     @Override
-    public String getDescription() {
-        return ".svg (Batik SVG generator)";
-    }
-
-    @Override
-    public String getExtenstion() {
-        return ".svg";
-    }
-
-    @Override
     public int getCompatibility(Model model) {
         if (model instanceof VisualModel) {
             return Exporter.GENERAL_COMPATIBILITY;
@@ -61,8 +49,8 @@ public class SVGExporter implements Exporter {
     }
 
     @Override
-    public UUID getTargetFormat() {
-        return Format.SVG;
+    public SvgFormat getFormat() {
+        return SvgFormat.getInstance();
     }
 
 }

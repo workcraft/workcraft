@@ -14,7 +14,7 @@ import org.workcraft.plugins.PluginInfo;
 import org.workcraft.serialisation.ReferenceResolver;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.ConstructorParametersMatcher;
-import org.workcraft.util.XmlUtil;
+import org.workcraft.util.XmlUtils;
 
 public class XMLDeserialisationManager implements DeserialiserFactory, NodeInitialiser, NodeFinaliser {
 
@@ -54,7 +54,7 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
         state.setObject(ref, instance);
 
         if (instance instanceof Container) {
-            for (Element subNodeElement : XmlUtil.getChildElements("node", element)) {
+            for (Element subNodeElement : XmlUtils.getChildElements("node", element)) {
                 Object subNode = initInstance(subNodeElement);
 
                 if (subNode instanceof Node) {

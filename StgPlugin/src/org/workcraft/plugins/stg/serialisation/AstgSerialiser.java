@@ -7,12 +7,12 @@ import java.util.UUID;
 import org.workcraft.dom.Model;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.plugins.stg.serialisation.SerialiserUtils.Style;
-import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
 
-public class DotGSerialiser implements ModelSerialiser {
+public class AstgSerialiser implements ModelSerialiser {
 
     class ReferenceResolver implements ReferenceProducer {
         HashMap<Object, String> refMap = new HashMap<>();
@@ -35,18 +35,8 @@ public class DotGSerialiser implements ModelSerialiser {
     }
 
     @Override
-    public String getDescription() {
-        return "Workcraft STG serialiser";
-    }
-
-    @Override
-    public String getExtension() {
-        return ".g";
-    }
-
-    @Override
     public UUID getFormatUUID() {
-        return Format.STG;
+        return StgFormat.getInstance().getUuid();
     }
 
 }

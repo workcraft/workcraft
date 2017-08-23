@@ -13,7 +13,7 @@ import org.workcraft.dom.Model;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
-import org.workcraft.serialisation.Format;
+import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -71,7 +71,7 @@ public class DrawSgTask implements Task<DrawSgResult> {
             File stgFile = new File(directory, STG_FILE_NAME);
             stgFile.deleteOnExit();
             Model model = WorkspaceUtils.getAs(we, PetriNetModel.class);
-            ExportTask exportTask = Export.createExportTask(model, stgFile, Format.STG, framework.getPluginManager());
+            ExportTask exportTask = Export.createExportTask(model, stgFile, StgFormat.getInstance(), framework.getPluginManager());
             final Result<? extends Object> dotGResult = framework.getTaskManager().execute(exportTask, "Exporting to .g");
 
             if (dotGResult.getOutcome() != Outcome.FINISHED) {

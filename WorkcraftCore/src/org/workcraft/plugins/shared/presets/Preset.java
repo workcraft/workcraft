@@ -1,7 +1,7 @@
 package org.workcraft.plugins.shared.presets;
 
 import org.w3c.dom.Element;
-import org.workcraft.util.XmlUtil;
+import org.workcraft.util.XmlUtils;
 
 public class Preset<T> {
     private String description;
@@ -15,8 +15,8 @@ public class Preset<T> {
     }
 
     public Preset(Element e, SettingsSerialiser<T> serialiser) {
-        this.description = XmlUtil.readStringAttr(e, "description");
-        this.settings = serialiser.fromXML(XmlUtil.getChildElement("settings", e));
+        this.description = XmlUtils.readStringAttr(e, "description");
+        this.settings = serialiser.fromXML(XmlUtils.getChildElement("settings", e));
         this.builtIn = false;
     }
 

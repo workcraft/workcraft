@@ -6,7 +6,7 @@ import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.serialisation.xml.CustomXMLSerialiser;
 import org.workcraft.serialisation.xml.NodeSerialiser;
-import org.workcraft.util.XmlUtil;
+import org.workcraft.util.XmlUtils;
 
 public class VisualConnectionSerialiser implements CustomXMLSerialiser {
 
@@ -21,7 +21,7 @@ public class VisualConnectionSerialiser implements CustomXMLSerialiser {
         element.setAttribute("second", internalReferences.getReference(vcon.getSecond()));
         element.setAttribute("ref", externalReferences.getReference(vcon.getReferencedConnection()));
 
-        Element graphicElement = XmlUtil.createChildElement("graphic", element);
+        Element graphicElement = XmlUtils.createChildElement("graphic", element);
 
         nodeSerialiser.serialise(graphicElement, vcon.getGraphic());
     }

@@ -11,7 +11,7 @@ import javax.xml.parsers.ParserConfigurationException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.workcraft.util.XmlUtil;
+import org.workcraft.util.XmlUtils;
 import org.xml.sax.SAXException;
 
 public class PresetManager<T> {
@@ -25,8 +25,8 @@ public class PresetManager<T> {
 
         try {
             if (presetFile.exists()) {
-                Document doc = XmlUtil.loadDocument(presetFile);
-                for (Element p : XmlUtil.getChildElements("preset", doc.getDocumentElement())) {
+                Document doc = XmlUtils.loadDocument(presetFile);
+                for (Element p : XmlUtils.getChildElements("preset", doc.getDocumentElement())) {
                     presets.add(new Preset<T>(p, serialiser));
                 }
             }
@@ -37,7 +37,7 @@ public class PresetManager<T> {
 
     private void savePresets() {
         try {
-            Document doc = XmlUtil.createDocument();
+            Document doc = XmlUtils.createDocument();
 
             Element root = doc.createElement("presets");
             doc.appendChild(root);
@@ -51,7 +51,7 @@ public class PresetManager<T> {
                 }
             }
 
-            XmlUtil.saveDocument(doc, presetFile);
+            XmlUtils.saveDocument(doc, presetFile);
         } catch (ParserConfigurationException | IOException e) {
             throw new RuntimeException(e);
         }

@@ -18,13 +18,13 @@ import org.workcraft.workspace.ModelEntry;
 public class GenlibImporter implements Importer {
 
     @Override
-    public boolean accept(File file) {
-        return file.getName().endsWith(".lib");
+    public GenlibFormat getFormat() {
+        return GenlibFormat.getInstance();
     }
 
     @Override
-    public String getDescription() {
-        return "Genlib (.lib)";
+    public boolean accept(File file) {
+        return file.getName().endsWith(".lib");
     }
 
     @Override
