@@ -10,7 +10,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.serialisation.ReferenceProducer;
-import org.workcraft.util.XmlUtil;
+import org.workcraft.util.XmlUtils;
 
 public class XMLSerialisationManager implements SerialiserFactory, NodeSerialiser {
     private final HashMap<String, XMLSerialiser> serialisers = new HashMap<>();
@@ -49,7 +49,7 @@ public class XMLSerialisationManager implements SerialiserFactory, NodeSerialise
             Container container = (Container) object;
             ArrayList<Node> children = new ArrayList<>(container.getChildren());
             for (Node child : children) {
-                Element childElement = XmlUtil.createChildElement("node", element);
+                Element childElement = XmlUtils.createChildElement("node", element);
                 serialise(childElement, child);
             }
         }

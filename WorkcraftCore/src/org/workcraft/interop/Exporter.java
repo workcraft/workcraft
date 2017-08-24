@@ -1,7 +1,6 @@
 package org.workcraft.interop;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.UUID;
 
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.ModelValidationException;
@@ -12,9 +11,7 @@ public interface Exporter {
     int GENERAL_COMPATIBILITY = 1;
     int BEST_COMPATIBILITY = 10;
 
-    void export(Model model, OutputStream out) throws IOException, ModelValidationException, SerialisationException;
-    String getDescription();
-    String getExtenstion();
+    Format getFormat();
     int getCompatibility(Model model);
-    UUID getTargetFormat();
+    void export(Model model, OutputStream out) throws IOException, ModelValidationException, SerialisationException;
 }

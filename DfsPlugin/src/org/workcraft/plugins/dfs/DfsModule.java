@@ -80,6 +80,8 @@ public class DfsModule implements Module {
     private void initPluginManager() {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
+        pm.registerClass(ModelDescriptor.class, DfsDescriptor.class);
+        pm.registerClass(Settings.class, DfsSettings.class);
 
         pm.registerClass(Command.class, DfsToStgConversionCommand.class);
 
@@ -88,9 +90,6 @@ public class DfsModule implements Module {
         pm.registerClass(Command.class, DfsPersisitencyVerificationCommand.class);
         pm.registerClass(Command.class, DfsCombinedVerificationCommand.class);
         pm.registerClass(Command.class, MergeComponentTransformationCommand.class);
-
-        pm.registerClass(ModelDescriptor.class, DfsDescriptor.class);
-        pm.registerClass(Settings.class, DfsSettings.class);
 
         pm.registerClass(Command.class, new Initialiser<Command>() {
             @Override

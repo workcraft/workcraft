@@ -8,7 +8,7 @@ import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.exceptions.FormatException;
-import org.workcraft.util.XmlUtil;
+import org.workcraft.util.XmlUtils;
 
 public class LegacyPluginInfo implements Initialiser<Object> {
     private String displayName;
@@ -57,12 +57,12 @@ public class LegacyPluginInfo implements Initialiser<Object> {
     }
 
     public LegacyPluginInfo(Element element) throws FormatException {
-        className = XmlUtil.readStringAttr(element, "class");
+        className = XmlUtils.readStringAttr(element, "class");
         if (className == null || className.isEmpty()) {
             throw new FormatException();
         }
 
-        displayName = XmlUtil.readStringAttr(element, "displayName");
+        displayName = XmlUtils.readStringAttr(element, "displayName");
         if (displayName.isEmpty()) {
             displayName = className.substring(className.lastIndexOf('.') + 1);
         }
@@ -76,8 +76,8 @@ public class LegacyPluginInfo implements Initialiser<Object> {
     }
 
     public void toXml(Element element) {
-        XmlUtil.writeStringAttr(element, "class", className);
-        XmlUtil.writeStringAttr(element, "displayName", displayName);
+        XmlUtils.writeStringAttr(element, "class", className);
+        XmlUtils.writeStringAttr(element, "displayName", displayName);
 
         for (String i : interfaceNames) {
             Element e = element.getOwnerDocument().createElement("interface");

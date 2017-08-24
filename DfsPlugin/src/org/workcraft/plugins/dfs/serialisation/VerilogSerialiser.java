@@ -18,7 +18,7 @@ import org.workcraft.plugins.dfs.Dfs;
 import org.workcraft.plugins.dfs.PopRegister;
 import org.workcraft.plugins.dfs.PushRegister;
 import org.workcraft.plugins.dfs.Register;
-import org.workcraft.serialisation.Format;
+import org.workcraft.plugins.dfs.interop.VerilogFormat;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.util.LogUtils;
@@ -77,18 +77,8 @@ public class VerilogSerialiser implements ModelSerialiser {
     }
 
     @Override
-    public String getDescription() {
-        return "Workcraft Verilog serialiser";
-    }
-
-    @Override
-    public String getExtension() {
-        return ".v";
-    }
-
-    @Override
     public UUID getFormatUUID() {
-        return Format.VERILOG;
+        return VerilogFormat.getInstance().getUuid();
     }
 
     private void writeModule(PrintWriter out, Dfs dfs) {

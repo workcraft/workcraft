@@ -21,7 +21,7 @@ import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
-import org.workcraft.serialisation.Format;
+import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -161,12 +161,12 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
 
     private File getInputFile(Stg stg, File directory) {
         final Framework framework = Framework.getInstance();
-        Exporter stgExporter = Export.chooseBestExporter(framework.getPluginManager(), stg, Format.STG);
+        Exporter stgExporter = Export.chooseBestExporter(framework.getPluginManager(), stg, StgFormat.getInstance());
         if (stgExporter == null) {
             throw new RuntimeException("Exporter not available: model class " + stg.getClass().getName() + " to format STG.");
         }
 
-        File stgFile = new File(directory, "spec" + stgExporter.getExtenstion());
+        File stgFile = new File(directory, "spec" + StgFormat.getInstance().getExtension());
         ExportTask exportTask = new ExportTask(stgExporter, stg, stgFile.getAbsolutePath());
         Result<? extends Object> exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
         if (exportResult.getOutcome() != Outcome.FINISHED) {
@@ -181,7 +181,7 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
                 setMutexRequest(stg, mutex.r2);
                 stg.setSignalType(mutex.g2.name, Type.INPUT);
             }
-            stgFile = new File(directory, "spec-mutex" + stgExporter.getExtenstion());
+            stgFile = new File(directory, "spec-mutex" + StgFormat.getInstance().getExtension());
             exportTask = new ExportTask(stgExporter, stg, stgFile.getAbsolutePath());
             exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
             if (exportResult.getOutcome() != Outcome.FINISHED) {

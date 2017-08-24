@@ -13,11 +13,11 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.fst.Fst;
-import org.workcraft.plugins.fst.interop.DotGImporter;
+import org.workcraft.plugins.fst.interop.SgImporter;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petrify.tasks.WriteSgTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
-import org.workcraft.serialisation.Format;
+import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -74,7 +74,7 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
             // Common variables
             monitor.progressUpdate(0.05);
             PetriNetModel petri = WorkspaceUtils.getAs(we, PetriNetModel.class);
-            Exporter petriExporter = Export.chooseBestExporter(framework.getPluginManager(), petri, Format.STG);
+            Exporter petriExporter = Export.chooseBestExporter(framework.getPluginManager(), petri, StgFormat.getInstance());
             if (petriExporter == null) {
                 throw new RuntimeException("Exporter not available: model class " + petri.getClass().getName() + " to format STG.");
             }
@@ -110,7 +110,7 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
                 if (writeSgResult.getOutcome() == Outcome.FINISHED) {
                     try {
                         ByteArrayInputStream in = new ByteArrayInputStream(writeSgResult.getReturnValue().getOutput());
-                        final Fst fst = new DotGImporter().importSG(in);
+                        final Fst fst = new SgImporter().importSG(in);
                         return Result.finished(new WriteSgConversionResult(null, fst));
                     } catch (DeserialisationException e) {
                         return Result.exception(e);

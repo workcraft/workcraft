@@ -11,41 +11,32 @@ import org.w3c.dom.Element;
 import org.workcraft.PluginProvider;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.SerialisationException;
-import org.workcraft.serialisation.Format;
+import org.workcraft.interop.WorkMathFormat;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.serialisation.xml.XMLSerialisationManager;
-import org.workcraft.util.XmlUtil;
+import org.workcraft.util.XmlUtils;
 
 public class XMLModelSerialiser implements ModelSerialiser {
-    XMLSerialisationManager serialisation = new XMLSerialisationManager();
+
+    private final XMLSerialisationManager serialisation = new XMLSerialisationManager();
 
     public XMLModelSerialiser(PluginProvider mock) {
         serialisation.processPlugins(mock);
     }
 
-    public String getDescription() {
-        return "Workcraft XML serialiser";
+    @Override
+    public UUID getFormatUUID() {
+        return WorkMathFormat.getInstance().getUuid();
     }
 
+    @Override
     public boolean isApplicableTo(Model model) {
         return true;
     }
 
-    public boolean isApplicableTo(VisualModel model) {
-        return true;
-    }
-
-    public UUID getFormatUUID() {
-        return Format.workcraftXML;
-    }
-
-    public String getExtension() {
-        return ".xml";
-    }
-
+    @Override
     public ReferenceProducer serialise(final Model model, OutputStream out, ReferenceProducer refs)
             throws SerialisationException {
         try {
@@ -60,7 +51,7 @@ public class XMLModelSerialiser implements ModelSerialiser {
                 }
             };
 
-            Document doc = XmlUtil.createDocument();
+            Document doc = XmlUtils.createDocument();
 
             Element modelElement = doc.createElement("model");
             Element rootElement = doc.createElement("root");
@@ -74,7 +65,7 @@ public class XMLModelSerialiser implements ModelSerialiser {
 
             doc.appendChild(modelElement);
             modelElement.appendChild(rootElement);
-            XmlUtil.writeDocument(doc, out);
+            XmlUtils.writeDocument(doc, out);
 
             return internalRefs;
         } catch (ParserConfigurationException e) {
@@ -83,4 +74,5 @@ public class XMLModelSerialiser implements ModelSerialiser {
             throw new SerialisationException(e);
         }
     }
+
 }

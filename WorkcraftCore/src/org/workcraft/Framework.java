@@ -54,6 +54,7 @@ import org.workcraft.gui.graph.commands.ScriptableCommand;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.interop.Exporter;
+import org.workcraft.interop.Format;
 import org.workcraft.interop.Importer;
 import org.workcraft.observation.ModelModifiedEvent;
 import org.workcraft.observation.StateObserver;
@@ -64,7 +65,6 @@ import org.workcraft.plugins.serialisation.XMLModelDeserialiser;
 import org.workcraft.plugins.serialisation.XMLModelSerialiser;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.serialisation.DeserialisationResult;
-import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.tasks.DefaultTaskManager;
@@ -81,7 +81,7 @@ import org.workcraft.util.FileUtils;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Import;
 import org.workcraft.util.LogUtils;
-import org.workcraft.util.XmlUtil;
+import org.workcraft.util.XmlUtils;
 import org.workcraft.workspace.Memento;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Stamp;
@@ -323,6 +323,9 @@ public final class Framework {
         config.set(key, value);
     }
 
+    /**
+     * Used in functions.js JavaScript wrapper.
+     */
     public void setConfigVar(String key, String value) {
         setConfigCoreVar(key, value);
         // For consistency, update plugin settings.
@@ -334,6 +337,9 @@ public final class Framework {
         return config.get(key);
     }
 
+    /**
+     * Used in functions.js JavaScript wrapper.
+     */
     public String getConfigVar(String key) {
         // For consistency, flush plugin settings.
         savePluginsSettings();
@@ -440,10 +446,16 @@ public final class Framework {
         }
     }
 
+    /**
+     * Used in functions.js JavaScript wrapper.
+     */
     public void execJavaScriptResource(String resourceName) throws IOException {
         execJavaScript(FileUtils.readAllTextFromSystemResource(resourceName));
     }
 
+    /**
+     * Used in functions.js JavaScript wrapper.
+     */
     public void execJavaScriptFile(String filePath) throws IOException {
         execJavaScript(FileUtils.readAllText(new File(filePath)), globalScope);
     }
@@ -553,6 +565,9 @@ public final class Framework {
         contextFactory.call(setargs);
     }
 
+    /**
+     * Used in functions.js JavaScript wrapper.
+     */
     public void runCommand(WorkspaceEntry we, String className) {
         if (className != null) {
             for (Command command: Commands.getApplicableCommands(we)) {
@@ -565,6 +580,9 @@ public final class Framework {
         }
     }
 
+    /**
+     * Used in functions.js JavaScript wrapper.
+     */
     public WorkspaceEntry executeCommand(WorkspaceEntry we, String className) {
         if ((className == null) || className.isEmpty()) {
             LogUtils.logError("Undefined command name.");
@@ -657,6 +675,9 @@ public final class Framework {
         return result;
     }
 
+    /**
+     * Used in functions.js JavaScript wrapper.
+     */
     public WorkspaceEntry loadWork(String path) throws DeserialisationException {
         File file = getFileByAbsoluteOrRelativePath(path);
         if (checkFileMessageLog(file, null)) {
@@ -801,6 +822,9 @@ public final class Framework {
         return loadModel(memo);
     }
 
+    /**
+     * Used in functions.js JavaScript wrapper.
+     */
     public void saveWork(WorkspaceEntry we, String path) throws SerialisationException {
         if (we == null) return;
         saveModel(we.getModelEntry(), path);
@@ -849,7 +873,7 @@ public final class Framework {
             }
             // serialise meta data
             zos.putNextEntry(new ZipEntry(META_WORK_ENTRY));
-            Document metaDoc = XmlUtil.createDocument();
+            Document metaDoc = XmlUtils.createDocument();
             Element metaRoot = metaDoc.createElement(META_WORK_ELEMENT);
             metaDoc.appendChild(metaRoot);
 
@@ -882,7 +906,7 @@ public final class Framework {
                 metaRoot.appendChild(visualElement);
             }
 
-            XmlUtil.writeDocument(metaDoc, zos);
+            XmlUtils.writeDocument(metaDoc, zos);
             zos.closeEntry();
             zos.close();
         } catch (ParserConfigurationException | IOException e) {
@@ -914,31 +938,27 @@ public final class Framework {
         }
     }
 
-    public void exportWork(WorkspaceEntry we, String path, String format) throws SerialisationException {
-        exportModel(we.getModelEntry(), path, format);
-    }
-
-    public void exportModel(ModelEntry modelEntry, String path, String format) throws SerialisationException {
-        if (modelEntry == null) return;
+    /**
+     * Used in functions.js JavaScript wrapper.
+     */
+    public void exportWork(WorkspaceEntry we, String path, String formatName) throws SerialisationException {
         File file = getFileByAbsoluteOrRelativePath(path);
-        UUID uuid = Format.getUUID(format);
-        if (uuid == null) {
-            LogUtils.logError("'" + format + "' format is not supported.");
-        } else {
-            exportModel(modelEntry, file, uuid);
-        }
+        exportModel(we.getModelEntry(), file, formatName, null);
     }
 
-    public void exportModel(ModelEntry modelEntry, File file, UUID uuid) throws SerialisationException {
-        if (modelEntry == null) return;
-        Exporter exporter = Export.chooseBestExporter(getPluginManager(), modelEntry.getMathModel(), uuid);
+    public void exportModel(ModelEntry me, File file, Format format) throws SerialisationException {
+        exportModel(me, file, format.getName(), format.getUuid());
+    }
+
+    private void exportModel(ModelEntry me, File file, String formatName, UUID formatUuid) throws SerialisationException {
+        if (me == null) return;
+        Exporter exporter = Export.chooseBestExporter(getPluginManager(), me.getMathModel(), formatName, formatUuid);
         if (exporter == null) {
-            String modelName = modelEntry.getMathModel().getDisplayName();
-            String formatDescription = Format.getDescription(uuid);
-            LogUtils.logError("Cannot find exporter to " + formatDescription + " for " + modelName + ".");
+            String modelName = me.getMathModel().getDisplayName();
+            LogUtils.logError("Cannot find exporter to " + formatName + " for " + modelName + ".");
         } else {
             try {
-                Export.exportToFile(exporter, modelEntry.getModel(), file);
+                Export.exportToFile(exporter, me.getModel(), file);
             } catch (IOException | ModelValidationException e) {
                 throw new SerialisationException(e);
             }

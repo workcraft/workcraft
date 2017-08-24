@@ -31,7 +31,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
-public class XmlUtil {
+public class XmlUtils {
+
     public static List<Element> getChildElements(String tagName, Element element) {
         LinkedList<Element> result = new LinkedList<>();
         NodeList nl = element.getChildNodes();

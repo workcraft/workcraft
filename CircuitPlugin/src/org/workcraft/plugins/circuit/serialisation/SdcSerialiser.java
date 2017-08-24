@@ -12,9 +12,9 @@ import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
+import org.workcraft.plugins.circuit.interop.SdcFormat;
 import org.workcraft.plugins.circuit.verilog.SubstitutionRule;
 import org.workcraft.plugins.circuit.verilog.SubstitutionUtils;
-import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.util.DialogUtils;
@@ -57,18 +57,8 @@ public class SdcSerialiser implements ModelSerialiser {
     }
 
     @Override
-    public String getDescription() {
-        return "Workcraft SDC serialiser";
-    }
-
-    @Override
-    public String getExtension() {
-        return ".sdc";
-    }
-
-    @Override
     public UUID getFormatUUID() {
-        return Format.SDC;
+        return SdcFormat.getInstance().getUuid();
     }
 
     private void writeCircuit(PrintWriter out, Circuit circuit, String instancPrefix) {

@@ -9,7 +9,7 @@ import org.workcraft.serialisation.ReferenceResolver;
 import org.workcraft.serialisation.xml.CustomXMLDeserialiser;
 import org.workcraft.serialisation.xml.NodeFinaliser;
 import org.workcraft.serialisation.xml.NodeInitialiser;
-import org.workcraft.util.XmlUtil;
+import org.workcraft.util.XmlUtils;
 
 public class BezierDeserialiser implements CustomXMLDeserialiser {
     @Override
@@ -41,8 +41,8 @@ public class BezierDeserialiser implements CustomXMLDeserialiser {
             ReferenceResolver externalReferenceResolver,
             NodeInitialiser nodeInitialiser) throws DeserialisationException {
 
-        Element cp1e = XmlUtil.getChildElement("cp1", element);
-        Element cp2e = XmlUtil.getChildElement("cp2", element);
+        Element cp1e = XmlUtils.getChildElement("cp1", element);
+        Element cp2e = XmlUtils.getChildElement("cp2", element);
 
         BezierControlPoint cp1 = (BezierControlPoint) nodeInitialiser.initInstance(cp1e);
         BezierControlPoint cp2 = (BezierControlPoint) nodeInitialiser.initInstance(cp2e);

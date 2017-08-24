@@ -23,7 +23,7 @@ import org.workcraft.util.FileUtils;
 import org.workcraft.util.LinkedTwoWayMap;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.DialogUtils;
-import org.workcraft.util.XmlUtil;
+import org.workcraft.util.XmlUtils;
 import org.xml.sax.SAXException;
 
 public class Workspace {
@@ -184,16 +184,16 @@ public class Workspace {
         clear();
         this.workspaceFile = workspaceFile;
         try {
-            Document doc = XmlUtil.loadDocument(workspaceFile.getPath());
+            Document doc = XmlUtils.loadDocument(workspaceFile.getPath());
             Element xmlroot = doc.getDocumentElement();
 
             if (xmlroot.getNodeName() != "workcraft-workspace") {
                 throw new DeserialisationException("not a Workcraft workspace file");
             }
-            List<Element> mounts = XmlUtil.getChildElements("mount", xmlroot);
+            List<Element> mounts = XmlUtils.getChildElements("mount", xmlroot);
             for (Element mountElement : mounts) {
-                final String mountPoint = XmlUtil.readStringAttr(mountElement, "mountPoint");
-                final String filePath = XmlUtil.readStringAttr(mountElement, "filePath");
+                final String mountPoint = XmlUtils.readStringAttr(mountElement, "mountPoint");
+                final String filePath = XmlUtils.readStringAttr(mountElement, "filePath");
                 File file = new File(filePath);
                 if (!file.isAbsolute()) {
                     file = new File(getBaseDir(), file.getPath());
@@ -274,7 +274,7 @@ public class Workspace {
         }
 
         try {
-            XmlUtil.saveDocument(doc, file);
+            XmlUtils.saveDocument(doc, file);
             changed = false;
             fireWorkspaceSaved();
             setTemporary(false);

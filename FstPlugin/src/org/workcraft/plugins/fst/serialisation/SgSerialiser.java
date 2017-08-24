@@ -18,12 +18,12 @@ import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.Signal;
 import org.workcraft.plugins.fst.Signal.Type;
 import org.workcraft.plugins.fst.SignalEvent;
+import org.workcraft.plugins.fst.interop.SgFormat;
 import org.workcraft.plugins.stg.serialisation.SerialiserUtils;
-import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
 
-public class DotGSerialiser implements ModelSerialiser {
+public class SgSerialiser implements ModelSerialiser {
 
     class ReferenceResolver implements ReferenceProducer {
         HashMap<Object, String> refMap = new HashMap<>();
@@ -57,18 +57,8 @@ public class DotGSerialiser implements ModelSerialiser {
     }
 
     @Override
-    public String getDescription() {
-        return "Workcraft SG serialiser";
-    }
-
-    @Override
-    public String getExtension() {
-        return ".sg";
-    }
-
-    @Override
     public UUID getFormatUUID() {
-        return Format.SG;
+        return SgFormat.getInstance().getUuid();
     }
 
     private String getSrialisedNodeName(Fsm fsm, Node node) {

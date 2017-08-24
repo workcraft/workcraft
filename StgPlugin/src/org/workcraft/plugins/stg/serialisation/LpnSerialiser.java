@@ -7,8 +7,8 @@ import java.util.UUID;
 import org.workcraft.dom.Model;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.interop.LpnFormat;
 import org.workcraft.plugins.stg.serialisation.SerialiserUtils.Style;
-import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
 
@@ -35,18 +35,8 @@ public class LpnSerialiser implements ModelSerialiser {
     }
 
     @Override
-    public String getDescription() {
-        return "Workcraft LPN serialiser";
-    }
-
-    @Override
-    public String getExtension() {
-        return ".lpn";
-    }
-
-    @Override
     public UUID getFormatUUID() {
-        return Format.LPN;
+        return LpnFormat.getInstance().getUuid();
     }
 
 }

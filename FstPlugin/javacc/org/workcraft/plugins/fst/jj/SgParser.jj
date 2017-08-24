@@ -11,7 +11,7 @@ options
     DEBUG_TOKEN_MANAGER = false;
 }
 
-PARSER_BEGIN(DotGParser)
+PARSER_BEGIN(SgParser)
 package org.workcraft.plugins.fst.jj;
 import java.util.HashSet;
 import java.util.HashMap;
@@ -29,7 +29,7 @@ import org.workcraft.util.LogUtils;
 import org.workcraft.util.Pair;
 import org.workcraft.exceptions.FormatException;
 
-public class DotGParser
+public class SgParser
 {
     private HashMap<String, Type> signals;
     private HashSet<String> dummies;
@@ -56,7 +56,7 @@ public class DotGParser
     }
 }
 
-PARSER_END(DotGParser)
+PARSER_END(SgParser)
 
 <*>
 SKIP :

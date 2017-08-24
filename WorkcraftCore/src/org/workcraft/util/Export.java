@@ -11,8 +11,8 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
+import org.workcraft.interop.Format;
 import org.workcraft.plugins.PluginInfo;
-import org.workcraft.serialisation.Format;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -78,43 +78,46 @@ public class Export {
         }
     }
 
-    public static Exporter chooseBestExporter(PluginProvider provider, Model model, UUID targetFormat) {
+    public static Exporter chooseBestExporter(PluginProvider provider, Model model, Format format) {
+        return chooseBestExporter(provider, model, format.getName(), format.getUuid());
+    }
+
+    public static Exporter chooseBestExporter(PluginProvider provider, Model model, String formatName, UUID formatUuid) {
         Iterable<PluginInfo<? extends Exporter>> plugins = provider.getPlugins(Exporter.class);
-
-        Exporter best = null;
+        Exporter bestExporter = null;
         int bestCompatibility = Exporter.NOT_COMPATIBLE;
-
         for (PluginInfo<? extends Exporter> info : plugins) {
             Exporter exporter = info.getSingleton();
-
-            if (exporter.getTargetFormat().equals(targetFormat)) {
+            Format exporterFormat = exporter.getFormat();
+            boolean formatMatchByName = (formatName != null) && formatName.equalsIgnoreCase(exporterFormat.getName());
+            boolean formatMatchByUuid = (formatUuid != null) && formatUuid.equals(exporterFormat.getUuid());
+            if (formatMatchByName || formatMatchByUuid) {
                 int compatibility = exporter.getCompatibility(model);
                 if (compatibility > bestCompatibility) {
                     bestCompatibility = compatibility;
-                    best = exporter;
+                    bestExporter = exporter;
                 }
             }
         }
-
-        return best;
+        return bestExporter;
     }
 
-    public static void exportToFile(Model model, File file, UUID targetFormat, PluginProvider provider)
+    public static void exportToFile(Model model, File file, Format format, PluginProvider provider)
             throws IOException, ModelValidationException, SerialisationException {
-        Exporter exporter = chooseBestExporter(provider, model, targetFormat);
+        Exporter exporter = chooseBestExporter(provider, model, format);
         if (exporter == null) {
             throw new SerialisationException("No exporter available for model type " + model.getDisplayName()
-                    + " to produce format " + Format.getDescription(targetFormat));
+                    + " to produce format " + format.getDescription());
         }
         exportToFile(exporter, model, file);
     }
 
-    public static ExportTask createExportTask(Model model, File file, UUID targetFormat, PluginProvider provider)
+    public static ExportTask createExportTask(Model model, File file, Format format, PluginProvider provider)
             throws SerialisationException {
-        Exporter exporter = chooseBestExporter(provider, model, targetFormat);
+        Exporter exporter = chooseBestExporter(provider, model, format);
         if (exporter == null) {
             throw new SerialisationException("No exporter available for model type " + model.getDisplayName()
-                    + " to produce format " + Format.getDescription(targetFormat));
+                    + " to produce format " + format.getDescription());
         }
         return new ExportTask(exporter, model, file.getAbsolutePath());
     }

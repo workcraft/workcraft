@@ -12,7 +12,7 @@ import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.MutexUtils;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.interop.DotGImporter;
+import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.tasks.Result;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
@@ -39,7 +39,7 @@ public class MpsatCscConflictResolutionResultHandler implements Runnable {
             return null;
         }
         try {
-            return new DotGImporter().importSTG(new ByteArrayInputStream(content));
+            return new StgImporter().importSTG(new ByteArrayInputStream(content));
         } catch (final DeserialisationException e) {
             throw new RuntimeException(e);
         }

@@ -18,9 +18,9 @@ import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitSignalInfo;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
+import org.workcraft.plugins.circuit.interop.VerilogFormat;
 import org.workcraft.plugins.circuit.verilog.SubstitutionRule;
 import org.workcraft.plugins.circuit.verilog.SubstitutionUtils;
-import org.workcraft.serialisation.Format;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.util.LogUtils;
@@ -61,18 +61,8 @@ public class VerilogSerialiser implements ModelSerialiser {
     }
 
     @Override
-    public String getDescription() {
-        return "Workcraft Verilog serialiser";
-    }
-
-    @Override
-    public String getExtension() {
-        return ".v";
-    }
-
-    @Override
     public UUID getFormatUUID() {
-        return Format.VERILOG;
+        return VerilogFormat.getInstance().getUuid();
     }
 
     private void writeCircuit(PrintWriter out, Circuit circuit) {

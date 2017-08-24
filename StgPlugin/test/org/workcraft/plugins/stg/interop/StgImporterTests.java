@@ -19,7 +19,7 @@ import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Import;
 import org.workcraft.workspace.ModelEntry;
 
-public class DotGImporterTests {
+public class StgImporterTests {
 
     @Test
     public void test1() throws IOException, DeserialisationException {
@@ -46,7 +46,7 @@ public class DotGImporterTests {
         writer.close();
         fileStream.close();
 
-        ModelEntry importedEntry = Import.importFromFile(new DotGImporter(), tempFile);
+        ModelEntry importedEntry = Import.importFromFile(new StgImporter(), tempFile);
         Stg imported = (Stg) importedEntry.getModel();
 
         Assert.assertEquals(6, Hierarchy.getChildrenOfType(imported.getRoot(), Transition.class).size());
@@ -58,7 +58,7 @@ public class DotGImporterTests {
     public void test2() throws Throwable {
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         final InputStream test = classLoader.getResourceAsStream("org/workcraft/plugins/stg/interop/test2.g");
-        StgModel imported = new DotGImporter().importSTG(test);
+        StgModel imported = new StgImporter().importSTG(test);
         Assert.assertEquals(17, imported.getTransitions().size());
         Assert.assertEquals(0, imported.getDummyTransitions().size());
 

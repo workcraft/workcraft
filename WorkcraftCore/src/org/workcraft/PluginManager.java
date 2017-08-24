@@ -14,6 +14,7 @@ import org.workcraft.util.ListMap;
 import org.workcraft.util.LogUtils;
 
 public class PluginManager implements PluginProvider {
+
     public static final String VERSION_STAMP = "d971444cbd86148695f3427118632aca";
 
     private final ListMap<Class<?>, PluginInfo<?>> plugins = new ListMap<>();

@@ -14,7 +14,7 @@ import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.StgUtils;
-import org.workcraft.plugins.stg.interop.DotGImporter;
+import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -60,7 +60,7 @@ public class MpsatConformationVerificationCommand extends AbstractVerificationCo
             return;
         }
 
-        Importer[] importers = {new DotGImporter()};
+        Importer[] importers = {new StgImporter()};
         JFileChooser fc = mainWindow.createOpenDialog("Open environment file", false, true, importers);
         if (fc.showDialog(mainWindow, "Open") == JFileChooser.APPROVE_OPTION) {
             File envFile = fc.getSelectedFile();

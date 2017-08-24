@@ -15,7 +15,7 @@ import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.serialisation.Format;
+import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -43,13 +43,13 @@ public class CheckDataflowPersistencydTask extends MpsatChainTask {
             VisualDfs dfs = WorkspaceUtils.getAs(we, VisualDfs.class);
             DfsToStgConverter converter = new DfsToStgConverter(dfs);
             StgModel model = (StgModel) converter.getStgModel().getMathModel();
-            Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, Format.STG);
+            Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, StgFormat.getInstance());
             if (exporter == null) {
                 throw new RuntimeException("Exporter not available: model class " + model.getClass().getName() + " to format STG.");
             }
             monitor.progressUpdate(0.10);
 
-            File netFile = new File(directory, "net" + exporter.getExtenstion());
+            File netFile = new File(directory, "net" + StgFormat.getInstance().getExtension());
             ExportTask exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
             SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
             Result<? extends Object> exportResult = framework.getTaskManager().execute(

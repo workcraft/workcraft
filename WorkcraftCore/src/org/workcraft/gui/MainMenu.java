@@ -34,6 +34,7 @@ import org.workcraft.gui.actions.ToggleWindowAction;
 import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.interop.Exporter;
+import org.workcraft.interop.Format;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.util.Commands;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -150,7 +151,8 @@ public class MainMenu extends JMenuBar {
     }
 
     private void addExporter(Exporter exporter) {
-        String text = exporter.getDescription();
+        Format format = exporter.getFormat();
+        String text = format.getDescription() + " (*" + format.getExtension() + ")";
         ActionMenuItem miExport = new ActionMenuItem(new ExportAction(exporter), text);
 
         miExport.addScriptedActionListener(mainWindow.getDefaultActionListener());

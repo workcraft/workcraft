@@ -23,7 +23,7 @@ import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.StgPlace;
-import org.workcraft.plugins.stg.interop.DotGImporter;
+import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.tasks.Result;
 import org.workcraft.util.GUI;
 import org.workcraft.util.LogUtils;
@@ -58,7 +58,7 @@ final class MpsatReachabilityResultHandler implements Runnable {
             return null;
         }
         try {
-            DotGImporter importer = new DotGImporter();
+            StgImporter importer = new StgImporter();
             return importer.importSTG(new ByteArrayInputStream(content));
         } catch (DeserialisationException e) {
             throw new RuntimeException(e);

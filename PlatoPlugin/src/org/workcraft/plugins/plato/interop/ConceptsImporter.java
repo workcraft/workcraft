@@ -7,20 +7,25 @@ import java.io.InputStream;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.interop.Importer;
+import org.workcraft.plugins.plato.exceptions.PlatoException;
 import org.workcraft.plugins.plato.tasks.PlatoResultHandler;
 import org.workcraft.plugins.plato.tasks.PlatoTask;
-import org.workcraft.plugins.plato.exceptions.PlatoException;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.interop.DotGImporter;
+import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.workspace.ModelEntry;
 
-public class PlatoImporter implements Importer {
+public class ConceptsImporter implements Importer {
 
     private File inputFile;
+
+    @Override
+    public ConceptsFormat getFormat() {
+        return ConceptsFormat.getInstance();
+    }
 
     @Override
     public boolean accept(File file) {
@@ -32,11 +37,6 @@ public class PlatoImporter implements Importer {
     }
 
     @Override
-    public String getDescription() {
-        return "Concepts file (.hs)";
-    }
-
-    @Override
     public ModelEntry importFrom(InputStream in) throws DeserialisationException {
         try {
             PlatoTask task = new PlatoTask(inputFile);
@@ -45,7 +45,7 @@ public class PlatoImporter implements Importer {
             if (result.getOutcome() == Outcome.FINISHED) {
                 String output = new String(result.getReturnValue().getOutput());
                 if (output.startsWith(".model")) {
-                    DotGImporter importer = new DotGImporter();
+                    StgImporter importer = new StgImporter();
                     ByteArrayInputStream is = new ByteArrayInputStream(result.getReturnValue().getOutput());
                     StgModel stg = importer.importSTG(is);
                     return new ModelEntry(new StgDescriptor(), (Model) stg);

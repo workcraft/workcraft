@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
-import java.util.UUID;
 
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
@@ -17,7 +16,6 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
-import org.workcraft.serialisation.Format;
 import org.workcraft.util.Hierarchy;
 
 public class DotExporter implements Exporter {
@@ -100,18 +98,8 @@ public class DotExporter implements Exporter {
     }
 
     @Override
-    public String getDescription() {
-        return ".dot (Graphviz DOT graph format)";
-    }
-
-    @Override
-    public String getExtenstion() {
-        return ".dot";
-    }
-
-    @Override
-    public UUID getTargetFormat() {
-        return Format.DOT;
+    public DotFormat getFormat() {
+        return DotFormat.getInstance();
     }
 
 }

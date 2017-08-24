@@ -9,9 +9,9 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.interop.DotGImporter;
+import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.plugins.wtg.Wtg;
-import org.workcraft.serialisation.Format;
+import org.workcraft.plugins.wtg.interop.WtgFormat;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -42,7 +42,7 @@ public class WaverConversionTask implements Task<WaverConversionResult> {
             // Common variables
             monitor.progressUpdate(0.05);
             Wtg wtg = WorkspaceUtils.getAs(we, Wtg.class);
-            Exporter wtgExporter = Export.chooseBestExporter(framework.getPluginManager(), wtg, Format.WTG);
+            Exporter wtgExporter = Export.chooseBestExporter(framework.getPluginManager(), wtg, WtgFormat.getInstance());
             if (wtgExporter == null) {
                 throw new RuntimeException("Exporter not available: model class " + wtg.getClass().getName() + " to format STG.");
             }
@@ -72,7 +72,7 @@ public class WaverConversionTask implements Task<WaverConversionResult> {
             if (waverResult.getOutcome() == Outcome.FINISHED) {
                 try {
                     ByteArrayInputStream in = new ByteArrayInputStream(waverResult.getReturnValue().getOutput());
-                    final StgModel stg = new DotGImporter().importSTG(in);
+                    final StgModel stg = new StgImporter().importSTG(in);
                     return Result.finished(new WaverConversionResult(null, (Stg) stg));
                 } catch (DeserialisationException e) {
                     return Result.exception(e);

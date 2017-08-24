@@ -15,7 +15,7 @@ import org.workcraft.dom.visual.Dependent;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.serialisation.ReferenceResolver;
 import org.workcraft.util.ConstructorParametersMatcher;
-import org.workcraft.util.XmlUtil;
+import org.workcraft.util.XmlUtils;
 
 class DefaultNodeDeserialiser {
     private final DeserialiserFactory fac;
@@ -37,7 +37,7 @@ class DefaultNodeDeserialiser {
         }
 
         try {
-            List<Element> propertyElements = XmlUtil.getChildElements("property", currentLevelElement);
+            List<Element> propertyElements = XmlUtils.getChildElements("property", currentLevelElement);
             HashMap<String, Element> nameMap = new HashMap<>();
 
             for (Element e : propertyElements) {
@@ -108,7 +108,7 @@ class DefaultNodeDeserialiser {
             Class<?> cls = Class.forName(className);
             String shortClassName = cls.getSimpleName();
 
-            Element currentLevelElement = XmlUtil.getChildElement(shortClassName, element);
+            Element currentLevelElement = XmlUtils.getChildElement(shortClassName, element);
 
             Object instance;
 
@@ -171,7 +171,7 @@ class DefaultNodeDeserialiser {
     }
 
     void doInitialisation(Element element, Object instance, Class<?> currentLevel, ReferenceResolver externalReferenceResolver) throws DeserialisationException {
-        Element currentLevelElement = XmlUtil.getChildElement(currentLevel.getSimpleName(), element);
+        Element currentLevelElement = XmlUtils.getChildElement(currentLevel.getSimpleName(), element);
         if (currentLevelElement != null) {
             autoDeserialiseProperties(currentLevelElement, instance, currentLevel, externalReferenceResolver);
         }
@@ -196,7 +196,7 @@ class DefaultNodeDeserialiser {
             ReferenceResolver externalReferenceResolver,
             Class<?> currentLevel)
             throws DeserialisationException {
-        Element currentLevelElement = XmlUtil.getChildElement(currentLevel.getSimpleName(), element);
+        Element currentLevelElement = XmlUtils.getChildElement(currentLevel.getSimpleName(), element);
         if (currentLevelElement != null) {
             try {
                 XMLDeserialiser deserialiser = fac.getDeserialiserFor(currentLevel.getName());
