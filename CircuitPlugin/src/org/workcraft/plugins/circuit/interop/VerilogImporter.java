@@ -590,15 +590,27 @@ public class VerilogImporter implements Importer {
 
     private void insertMutexes(HashMap<String, Module> modules, Collection<Mutex> mutexes, Circuit circuit,
             HashMap<String, Wire> wires) {
+        LinkedList<String> internalSignals = new LinkedList<>();
         if (!mutexes.isEmpty()) {
             Mutex moduleMutex = CircuitSettings.parseMutexData();
             if ((moduleMutex != null) && (moduleMutex.name != null)) {
                 for (Mutex instanceMutex: mutexes) {
+                    if (instanceMutex.g1.type == Type.INTERNAL) {
+                        internalSignals.add(instanceMutex.g1.name);
+                    }
+                    if (instanceMutex.g2.type == Type.INTERNAL) {
+                        internalSignals.add(instanceMutex.g2.name);
+                    }
                     createMutex(circuit, instanceMutex, moduleMutex, wires, modules);
                     removeTemporaryOutput(circuit, wires, instanceMutex.r1);
                     removeTemporaryOutput(circuit, wires, instanceMutex.r2);
                 }
             }
+        }
+        if (!internalSignals.isEmpty()) {
+            LogUtils.logWarning("Mutex grants are exposed as output ports: "
+                    + ReferenceHelper.getReferencesAsString(internalSignals)
+                    + "\nThis is necessary for verification of the circuit against its environment STG.");
         }
     }
 
@@ -663,10 +675,16 @@ public class VerilogImporter implements Importer {
         Node node = circuit.getNodeByReference(signal.name);
         if (node instanceof FunctionContact) {
             FunctionContact port = (FunctionContact) node;
-            if (signal.type == Type.INPUT) {
+            switch (signal.type) {
+            case INPUT:
                 port.setIOType(IOType.INPUT);
-            } else {
+                break;
+            case INTERNAL:
                 port.setIOType(IOType.OUTPUT);
+                break;
+            case OUTPUT:
+                port.setIOType(IOType.OUTPUT);
+                break;
             }
             Wire wire = getOrCreateWire(signal.name, wires);
             wire.sinks.add(port);

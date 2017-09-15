@@ -40,7 +40,7 @@ public class MutexUtils {
         if (!problematicPlaces.isEmpty()) {
             String problematicPlacesString = ReferenceHelper.getNodesAsString(stg, (Collection) problematicPlaces, 50);
             String msg = "The following mutex places may not be implementable by mutex:\n\n" +
-                    problematicPlacesString + "\n\nProceed synthesis without theses places anyways?";
+                    problematicPlacesString + "\n\nProceed synthesis without these places anyways?";
             if (!DialogUtils.showConfirm(msg, "Synthesis")) {
                 result = null;
             }
@@ -78,7 +78,7 @@ public class MutexUtils {
         }
         SignalTransition tSucc1 = (SignalTransition) succ1;
         SignalTransition tSucc2 = (SignalTransition) succ2;
-        if ((tSucc1.getSignalType() != Type.OUTPUT) || (tSucc2.getSignalType() != Type.OUTPUT)) {
+        if ((tSucc1.getSignalType() == Type.INPUT) || (tSucc2.getSignalType() == Type.INPUT)) {
             return null;
         }
         g1 = new Signal(tSucc1.getSignalName(), tSucc1.getSignalType());
