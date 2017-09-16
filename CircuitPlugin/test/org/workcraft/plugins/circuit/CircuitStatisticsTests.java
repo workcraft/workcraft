@@ -20,11 +20,11 @@ public class CircuitStatisticsTests {
                     "  Port -  2",
             "Circuit analysis:\n" +
                     "  Component count -  1\n" +
-                    "    * Fanin distribution (0 / 1 / 2 ...) -  0 / 1\n" +
                     "  Port count -  2\n" +
                     "    * Input / output -  1 / 1\n" +
+                    "  Fanin distribution (0 / 1 / 2 ...) -  0 / 1\n" +
                     "  Fanout distribution (0 / 1 / 2 ...) -  0 / 2\n" +
-                    "  Disconnected components / ports / pins -  0 / 0 / 0",
+                    "  Isolated components / ports / pins -  0 / 0 / 0",
         },
         {"org/workcraft/plugins/circuit/celement-decomposed-tm.circuit.work",
             "Component count:\n" +
@@ -32,11 +32,11 @@ public class CircuitStatisticsTests {
                     "  Port -  3",
             "Circuit analysis:\n" +
                     "  Component count -  5\n" +
-                    "    * Fanin distribution (0 / 1 / 2 ...) -  0 / 0 / 4 / 1\n" +
                     "  Port count -  3\n" +
                     "    * Input / output -  2 / 1\n" +
+                    "  Fanin distribution (0 / 1 / 2 ...) -  0 / 0 / 4 / 1\n" +
                     "  Fanout distribution (0 / 1 / 2 ...) -  0 / 2 / 5\n" +
-                    "  Disconnected components / ports / pins -  0 / 0 / 0",
+                    "  Isolated components / ports / pins -  0 / 0 / 0",
         },
         {"org/workcraft/plugins/circuit/vme-tm.circuit.work",
             "Component count:\n" +
@@ -44,11 +44,11 @@ public class CircuitStatisticsTests {
                     "  Port -  6",
             "Circuit analysis:\n" +
                     "  Component count -  21\n" +
-                    "    * Fanin distribution (0 / 1 / 2 ...) -  0 / 12 / 2 / 1 / 1 / 4 / 1\n" +
                     "  Port count -  6\n" +
                     "    * Input / output -  3 / 3\n" +
+                    "  Fanin distribution (0 / 1 / 2 ...) -  0 / 12 / 2 / 1 / 1 / 4 / 1\n" +
                     "  Fanout distribution (0 / 1 / 2 ...) -  0 / 17 / 1 / 1 / 2 / 0 / 1 / 0 / 2\n" +
-                    "  Disconnected components / ports / pins -  0 / 0 / 0",
+                    "  Isolated components / ports / pins -  0 / 0 / 0",
         },
     };
 

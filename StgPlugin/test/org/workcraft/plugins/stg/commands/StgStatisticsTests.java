@@ -28,12 +28,13 @@ public class StgStatisticsTests {
                     "  Place count -  8\n" +
                     "    * Choice / merge -  0 / 0\n" +
                     "    * Source / sink -  0 / 0\n" +
+                    "    * Mutex -  0\n" +
                     "    * Max fanin / fanout -  1 / 1\n" +
-                    "    * Token / marked -  2 / 2\n" +
                     "  Arc count -  16\n" +
                     "    * Producing / consuming -  8 / 8\n" +
                     "    * Self-loop -  0\n" +
-                    "  Disconnected transitions / places -  0 / 0",
+                    "  Token count / marked places -  2 / 2\n" +
+                    "  Isolated transitions / places -  0 / 0",
         },
         {"org/workcraft/plugins/stg/commands/buck.stg.work",
             "Component count:\n" +
@@ -50,12 +51,13 @@ public class StgStatisticsTests {
                     "  Place count -  29\n" +
                     "    * Choice / merge -  1 / 1\n" +
                     "    * Source / sink -  0 / 0\n" +
+                    "    * Mutex -  0\n" +
                     "    * Max fanin / fanout -  3 / 3\n" +
-                    "    * Token / marked -  1 / 1\n" +
                     "  Arc count -  62\n" +
                     "    * Producing / consuming -  31 / 31\n" +
                     "    * Self-loop -  0\n" +
-                    "  Disconnected transitions / places -  0 / 0",
+                    "  Token count / marked places -  1 / 1\n" +
+                    "  Isolated transitions / places -  0 / 0",
         },
         {"org/workcraft/plugins/stg/commands/vme.stg.work",
             "Component count:\n" +
@@ -72,12 +74,13 @@ public class StgStatisticsTests {
                     "  Place count -  17\n" +
                     "    * Choice / merge -  2 / 2\n" +
                     "    * Source / sink -  0 / 0\n" +
+                    "    * Mutex -  0\n" +
                     "    * Max fanin / fanout -  2 / 2\n" +
-                    "    * Token / marked -  2 / 2\n" +
                     "  Arc count -  38\n" +
                     "    * Producing / consuming -  19 / 19\n" +
                     "    * Self-loop -  0\n" +
-                    "  Disconnected transitions / places -  0 / 0",
+                    "  Token count / marked places -  2 / 2\n" +
+                    "  Isolated transitions / places -  0 / 0",
         },
     };
 

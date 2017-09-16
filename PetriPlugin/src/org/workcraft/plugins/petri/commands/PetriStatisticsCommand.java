@@ -129,11 +129,11 @@ public class PetriStatisticsCommand extends AbstractStatisticsCommand {
                 + "\n    * Choice / merge -  " + choiceCount + " / " + mergeCount
                 + "\n    * Source / sink  -  " + sourcePlaceCount + " / " + sinkPlaceCount
                 + "\n    * Max fanin / fanout -  " + maxPlaceFanin + " / " + maxPlaceFanout
-                + "\n    * Token / marked -  " + tokenCount + " / " + markedCount
                 + "\n  Arc count -  " + connections.size()
                 + "\n    * Producing / consuming -  " + producingArcCount + " / " + consumingArcCount
                 + "\n    * Self-loop -  " + selfLoopCount
-                + "\n  Disconnected transitions / places -  " + isolatedTransitionCount + " / " + isolatedPlaceCount;
+                + "\n  Token count / marked places -  " + tokenCount + " / " + markedCount
+                + "\n  Isolated transitions / places -  " + isolatedTransitionCount + " / " + isolatedPlaceCount;
     }
 
 }

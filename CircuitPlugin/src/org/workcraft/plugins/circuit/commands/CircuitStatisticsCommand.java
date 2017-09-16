@@ -79,11 +79,11 @@ public class CircuitStatisticsCommand extends AbstractStatisticsCommand {
 
         return "Circuit analysis:"
                 + "\n  Component count -  " + components.size()
-                + "\n    * Fanin distribution (0 / 1 / 2 ...) -  " + getDistribution(fanin)
                 + "\n  Port count -  " + ports.size()
                 + "\n    * Input / output -  " + inputPortCount + " / " + outputPortCount
+                + "\n  Fanin distribution (0 / 1 / 2 ...) -  " + getDistribution(fanin)
                 + "\n  Fanout distribution (0 / 1 / 2 ...) -  " + getDistribution(fanout)
-                + "\n  Disconnected components / ports / pins -  " + isolatedComponentCount + " / " + isolatedPortCount
+                + "\n  Isolated components / ports / pins -  " + isolatedComponentCount + " / " + isolatedPortCount
                 + " / " + isolatedPinCount;
     }
 
