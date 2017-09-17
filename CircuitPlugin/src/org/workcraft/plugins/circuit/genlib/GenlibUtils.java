@@ -1,5 +1,11 @@
 package org.workcraft.plugins.circuit.genlib;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+
+import org.workcraft.Framework;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.plugins.circuit.Circuit;
@@ -8,6 +14,7 @@ import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.expression.ExpressionUtils;
+import org.workcraft.plugins.circuit.jj.genlib.GenlibParser;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.util.LogUtils;
 
@@ -62,6 +69,33 @@ public class GenlibUtils {
             result = ExpressionUtils.extactResetExpression(gate.function.formula, gate.seq);
         }
         return result;
+    }
+
+    public static Library readLibrary(String fileName) {
+        Library library = new Library();
+        if ((fileName == null) || fileName.isEmpty()) {
+            LogUtils.logWarning("Gate library file is not specified.");
+        } else {
+            File file = new File(fileName);
+            final Framework framework = Framework.getInstance();
+            if (framework.checkFileMessageLog(file, "Gate library access error")) {
+                try {
+                    InputStream genlibInputStream = new FileInputStream(fileName);
+                    GenlibParser genlibParser = new GenlibParser(genlibInputStream);
+                    if (CommonDebugSettings.getParserTracing()) {
+                        genlibParser.enable_tracing();
+                    } else {
+                        genlibParser.disable_tracing();
+                    }
+                    library = genlibParser.parseGenlib();
+                    LogUtils.logInfo("Mapping the imported Verilog into the gate library '" + fileName + "'.");
+                } catch (FileNotFoundException e) {
+                } catch (org.workcraft.plugins.circuit.jj.genlib.ParseException e) {
+                    LogUtils.logWarning("Could not parse the gate library '" + fileName + "'.");
+                }
+            }
+        }
+        return library;
     }
 
 }

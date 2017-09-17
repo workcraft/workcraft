@@ -103,31 +103,31 @@ List<Gate> parseGates() :
 Gate parseGate() :
 {
     String name;
+    double size;
     Function function;
 }
 {
     (
-        <GATE>
-        name = parseModuleName() <NUMERAL> function = parseFunction()
+        <GATE> name = parseModuleName() size = parseSize() function = parseFunction()
         (
            parsePin()
         )*
     )
     {
-        return new Gate(name, function, null, false);
+        return new Gate(name, size, function, null, false);
     }
 }
 
 Gate parseLatch() :
 {
     String name;
+    double size;
     Function function;
     String next;
 }
 {
     (
-        <LATCH>
-        name = parseModuleName() <NUMERAL> function = parseFunction()
+        <LATCH> name = parseModuleName() size = parseSize() function = parseFunction()
         (
            parsePin()
         )*
@@ -136,7 +136,7 @@ Gate parseLatch() :
         [ parseConstraint() ]
     )
     {
-        return new Gate(name, function, next, false);
+        return new Gate(name, size, function, next, false);
     }
 }
 
@@ -156,6 +156,17 @@ String parseModuleName() :
             return s.substring(1, s.length()-1);
         }
     )
+}
+
+double parseSize() :
+{
+    Token sizeToken;
+}
+{
+    sizeToken = <NUMERAL>
+    {
+        return Double.parseDouble(sizeToken.image);
+    }
 }
 
 Function parseFunction() :

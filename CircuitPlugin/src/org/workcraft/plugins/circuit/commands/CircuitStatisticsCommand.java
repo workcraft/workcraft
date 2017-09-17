@@ -4,9 +4,13 @@ import java.util.Collection;
 
 import org.workcraft.gui.graph.commands.AbstractStatisticsCommand;
 import org.workcraft.plugins.circuit.Circuit;
+import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
+import org.workcraft.plugins.circuit.genlib.Gate;
+import org.workcraft.plugins.circuit.genlib.GenlibUtils;
+import org.workcraft.plugins.circuit.genlib.Library;
 import org.workcraft.util.MultiSet;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -61,14 +65,14 @@ public class CircuitStatisticsCommand extends AbstractStatisticsCommand {
             }
         }
 
-        int inputPortCount = 0;
-        int outputPortCount = 0;
+        int inPortCount = 0;
+        int outPortCount = 0;
         int isolatedPortCount = 0;
         for (Contact port: ports) {
             if (port.isOutput()) {
-                outputPortCount++;
+                outPortCount++;
             } else {
-                inputPortCount++;
+                inPortCount++;
                 Collection<Contact> driven = CircuitUtils.findDriven(circuit, port, false);
                 fanout.add(driven.size());
             }
@@ -77,13 +81,32 @@ public class CircuitStatisticsCommand extends AbstractStatisticsCommand {
             }
         }
 
+        String libraryFileName = CircuitSettings.getGateLibrary();
+        Library library = GenlibUtils.readLibrary(libraryFileName);
+        double gateArea = 0.0;
+        int mappedCount = 0;
+        MultiSet<String> namedComponents = new MultiSet<>();
+        for (FunctionComponent component: components) {
+            if (component.isMapped()) {
+                mappedCount++;
+                String moduleName = component.getModule();
+                Gate gate = library.get(moduleName);
+                if (gate != null) {
+                    gateArea += gate.size;
+                } else {
+                    namedComponents.add(moduleName);
+                }
+            }
+        }
+
         return "Circuit analysis:"
-                + "\n  Component count -  " + components.size()
-                + "\n  Port count -  " + ports.size()
-                + "\n    * Input / output -  " + inputPortCount + " / " + outputPortCount
+                + "\n  Component count (mapped / unmapped) -  " + components.size()
+                + " (" + mappedCount + " / " + (components.size() - mappedCount) + ")"
+                + (mappedCount == 0 ? "" : "\n  Area of mapped components -  " + gateArea + getNamedComponentArea(namedComponents))
+                + "\n  Port count (input / output) -  " + ports.size() + " (" + inPortCount + " / " + outPortCount + ")"
                 + "\n  Fanin distribution (0 / 1 / 2 ...) -  " + getDistribution(fanin)
                 + "\n  Fanout distribution (0 / 1 / 2 ...) -  " + getDistribution(fanout)
-                + "\n  Isolated components / ports / pins -  " + isolatedComponentCount + " / " + isolatedPortCount
+                + "\n  Disconnected components / ports / pins -  " + isolatedComponentCount + " / " + isolatedPortCount
                 + " / " + isolatedPinCount;
     }
 
@@ -100,6 +123,15 @@ public class CircuitStatisticsCommand extends AbstractStatisticsCommand {
                 result += " / ";
             }
             result += multiset.count(i);
+        }
+        return result;
+    }
+
+    private String getNamedComponentArea(MultiSet<String> multiset) {
+        String result = "";
+        for (String s: multiset.toSet()) {
+            int count = multiset.count(s);
+            result += " + " + (count > 1 ? count + "*" : "") + s;
         }
         return result;
     }
