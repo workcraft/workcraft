@@ -138,20 +138,26 @@ public class CircuitStatisticsCommand extends AbstractStatisticsCommand {
                 + "\n  Literal count combinational / sequential (set + reset) -  "
                 + combLiteralCount + " / " + seqLiteralCount + " (" + seqSetLiteralCount + " + " + seqResetLiteralCount + ")"
                 + "\n  Port count (input + output) -  " + ports.size() + " (" + inPortCount + " + " + outPortCount + ")"
-                + "\n  Fanin distribution (0 / 1 / 2 ...) -  " + getDistribution(fanin)
-                + "\n  Fanout distribution (0 / 1 / 2 ...) -  " + getDistribution(fanout)
+                + "\n  Max fanin / fanout -  " + getMaxValue(fanin) + " / " + getMaxValue(fanout)
+                + "\n  Fanin distribution [0 / 1 / 2 ...] -  " + getDistribution(fanin)
+                + "\n  Fanout distribution [0 / 1 / 2 ...] -  " + getDistribution(fanout)
                 + "\n  Isolated components / ports / pins -  "
                 + isolatedComponentCount + " / " + isolatedPortCount + " / " + isolatedPinCount;
     }
 
-    private String getDistribution(MultiSet<Integer> multiset) {
-        String result = "";
-        int max = 0;
+    private int getMaxValue(MultiSet<Integer> multiset) {
+        int result = 0;
         for (Integer i: multiset.toSet()) {
-            if (i > max) {
-                max = i;
+            if (i > result) {
+                result = i;
             }
         }
+        return result;
+    }
+
+    private String getDistribution(MultiSet<Integer> multiset) {
+        String result = "";
+        int max = getMaxValue(multiset);
         for (int i = 0; i <= Math.min(max, MAX_DISTRIBUTION); ++i) {
             if (!result.isEmpty()) {
                 result += " / ";
