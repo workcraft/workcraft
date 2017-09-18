@@ -34,7 +34,13 @@ public class StgStatisticsTests {
                     + "\n    * Producing / consuming -  8 / 8"
                     + "\n    * Self-loop -  0"
                     + "\n  Token count / marked places -  2 / 2"
-                    + "\n  Isolated transitions / places -  0 / 0",
+                    + "\n  Isolated transitions / places -  0 / 0"
+                    + "\n  Net type:"
+                    + "\n    * Marked graph -  true"
+                    + "\n    * State machine -  false"
+                    + "\n    * Free choice -  true"
+                    + "\n    * Extended free choice -  true"
+                    + "\n    * Pure -  true",
         },
         {"org/workcraft/plugins/stg/commands/buck.stg.work",
             "Component count:"
@@ -57,7 +63,13 @@ public class StgStatisticsTests {
                     + "\n    * Producing / consuming -  31 / 31"
                     + "\n    * Self-loop -  0"
                     + "\n  Token count / marked places -  1 / 1"
-                    + "\n  Isolated transitions / places -  0 / 0",
+                    + "\n  Isolated transitions / places -  0 / 0"
+                    + "\n  Net type:"
+                    + "\n    * Marked graph -  false"
+                    + "\n    * State machine -  false"
+                    + "\n    * Free choice -  true"
+                    + "\n    * Extended free choice -  true"
+                    + "\n    * Pure -  true",
         },
         {"org/workcraft/plugins/stg/commands/vme.stg.work",
             "Component count:"
@@ -80,7 +92,13 @@ public class StgStatisticsTests {
                     + "\n    * Producing / consuming -  19 / 19"
                     + "\n    * Self-loop -  0"
                     + "\n  Token count / marked places -  2 / 2"
-                    + "\n  Isolated transitions / places -  0 / 0",
+                    + "\n  Isolated transitions / places -  0 / 0"
+                    + "\n  Net type:"
+                    + "\n    * Marked graph -  false"
+                    + "\n    * State machine -  false"
+                    + "\n    * Free choice -  false"
+                    + "\n    * Extended free choice -  false"
+                    + "\n    * Pure -  true",
         },
     };
 

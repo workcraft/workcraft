@@ -7,6 +7,7 @@ import java.util.Set;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.gui.graph.commands.AbstractStatisticsCommand;
+import org.workcraft.plugins.petri.PetriNetChecker;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.DummyTransition;
@@ -175,7 +176,13 @@ public class StgStatisticsCommand extends AbstractStatisticsCommand {
                 + "\n    * Producing / consuming -  " + producingArcCount + " / " + consumingArcCount
                 + "\n    * Self-loop -  " + selfLoopCount
                 + "\n  Token count / marked places -  " + tokenCount + " / " + markedCount
-                + "\n  Isolated transitions / places -  " + isolatedTransitionCount + " / " + isolatedPlaceCount;
+                + "\n  Isolated transitions / places -  " + isolatedTransitionCount + " / " + isolatedPlaceCount
+                + "\n  Net type:"
+                + "\n    * Marked graph -  " + PetriNetChecker.isMarkedGraph(stg)
+                + "\n    * State machine -  " + PetriNetChecker.isStateMachine(stg)
+                + "\n    * Free choice -  " + PetriNetChecker.isFreeChoice(stg)
+                + "\n    * Extended free choice -  " + PetriNetChecker.isExtendedFreeChoice(stg)
+                + "\n    * Pure -  " + PetriNetChecker.isPure(stg);
     }
 
 }
