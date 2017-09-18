@@ -2,12 +2,14 @@ package org.workcraft.plugins.circuit.commands;
 
 import java.util.Collection;
 
+import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.gui.graph.commands.AbstractStatisticsCommand;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
+import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.genlib.Gate;
 import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.Library;
@@ -16,6 +18,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class CircuitStatisticsCommand extends AbstractStatisticsCommand {
+
+    private static final int MAX_DISTRIBUTION = 9;
 
     @Override
     public String getDisplayName() {
@@ -99,15 +103,45 @@ public class CircuitStatisticsCommand extends AbstractStatisticsCommand {
             }
         }
 
+        int combCount = 0;
+        int seqCount = 0;
+        int undefinedCount = 0;
+        int combLiteralCount = 0;
+        int seqSetLiteralCount = 0;
+        int seqResetLiteralCount = 0;
+        for (FunctionComponent component: components) {
+            for (FunctionContact contact: component.getFunctionContacts()) {
+                if (!contact.isOutput()) continue;
+                if (contact.getSetFunction() == null) {
+                    undefinedCount++;
+                } else {
+                    if (contact.getResetFunction() == null) {
+                        combCount++;
+                        combLiteralCount += BooleanUtils.countLiterals(contact.getSetFunction());
+                    } else {
+                        seqCount++;
+                        seqSetLiteralCount += BooleanUtils.countLiterals(contact.getSetFunction());
+                        seqResetLiteralCount += BooleanUtils.countLiterals(contact.getResetFunction());
+                    }
+                }
+            }
+        }
+        int driverCount = combCount + seqCount + undefinedCount;
+        int seqLiteralCount = seqSetLiteralCount + seqResetLiteralCount;
+
         return "Circuit analysis:"
-                + "\n  Component count (mapped / unmapped) -  " + components.size()
-                + " (" + mappedCount + " / " + (components.size() - mappedCount) + ")"
+                + "\n  Component count (mapped + unmapped) -  " + components.size()
+                + " (" + mappedCount + " + " + (components.size() - mappedCount) + ")"
                 + (mappedCount == 0 ? "" : "\n  Area of mapped components -  " + gateArea + getNamedComponentArea(namedComponents))
-                + "\n  Port count (input / output) -  " + ports.size() + " (" + inPortCount + " / " + outPortCount + ")"
+                + "\n  Driver pin count (combinational + sequential + undefined) -  "
+                + driverCount + " (" + combCount + " + " + seqCount + " + " + undefinedCount + ")"
+                + "\n  Literal count combinational / sequential (set + reset) -  "
+                + combLiteralCount + " / " + seqLiteralCount + " (" + seqSetLiteralCount + " + " + seqResetLiteralCount + ")"
+                + "\n  Port count (input + output) -  " + ports.size() + " (" + inPortCount + " + " + outPortCount + ")"
                 + "\n  Fanin distribution (0 / 1 / 2 ...) -  " + getDistribution(fanin)
                 + "\n  Fanout distribution (0 / 1 / 2 ...) -  " + getDistribution(fanout)
-                + "\n  Disconnected components / ports / pins -  " + isolatedComponentCount + " / " + isolatedPortCount
-                + " / " + isolatedPinCount;
+                + "\n  Isolated components / ports / pins -  "
+                + isolatedComponentCount + " / " + isolatedPortCount + " / " + isolatedPinCount;
     }
 
     private String getDistribution(MultiSet<Integer> multiset) {
@@ -118,11 +152,14 @@ public class CircuitStatisticsCommand extends AbstractStatisticsCommand {
                 max = i;
             }
         }
-        for (int i = 0; i <= max; ++i) {
+        for (int i = 0; i <= Math.min(max, MAX_DISTRIBUTION); ++i) {
             if (!result.isEmpty()) {
                 result += " / ";
             }
             result += multiset.count(i);
+        }
+        if (max > MAX_DISTRIBUTION) {
+            result += " ...";
         }
         return result;
     }
