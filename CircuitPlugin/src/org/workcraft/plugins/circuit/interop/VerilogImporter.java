@@ -55,6 +55,7 @@ import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 
@@ -577,9 +578,10 @@ public class VerilogImporter implements Importer {
             }
         }
         if (!internalSignals.isEmpty()) {
-            LogUtils.logWarning("Mutex grants are exposed as output ports: "
-                    + ReferenceHelper.getReferencesAsString(internalSignals)
-                    + "\nThis is necessary for verification of the circuit against its environment STG.");
+            DialogUtils.showWarning("Mutex grants will be exposed as output ports: "
+                    + ReferenceHelper.getReferencesAsString(internalSignals) + ".\n\n"
+                    + "This is necessary (due to technical reasons) for verification\n"
+                    + "of a circuit with mutex against its environment STG.");
         }
     }
 
