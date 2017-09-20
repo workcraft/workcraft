@@ -2,8 +2,6 @@ package org.workcraft.plugins.circuit.interop;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
@@ -15,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.workcraft.Framework;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
@@ -48,7 +45,6 @@ import org.workcraft.plugins.circuit.genlib.Gate;
 import org.workcraft.plugins.circuit.genlib.GenlibUtils;
 import org.workcraft.plugins.circuit.genlib.Library;
 import org.workcraft.plugins.circuit.jj.expression.ExpressionParser;
-import org.workcraft.plugins.circuit.jj.genlib.GenlibParser;
 import org.workcraft.plugins.circuit.jj.verilog.VerilogParser;
 import org.workcraft.plugins.circuit.verilog.Assign;
 import org.workcraft.plugins.circuit.verilog.Instance;
@@ -59,6 +55,7 @@ import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 
@@ -222,7 +219,8 @@ public class VerilogImporter implements Importer {
             Gate gate = createPrimitiveGate(verilogInstance);
             if (gate == null) {
                 if (library == null) {
-                    library = readGenlib();
+                    String libraryFileName = CircuitSettings.getGateLibrary();
+                    library = GenlibUtils.readLibrary(libraryFileName);
                 }
                 gate = library.get(verilogInstance.moduleName);
             }
@@ -385,34 +383,6 @@ public class VerilogImporter implements Importer {
         return expression;
     }
 
-    private Library readGenlib() {
-        Library library = new Library();
-        String libraryFileName = CircuitSettings.getGateLibrary();
-        if ((libraryFileName == null) || libraryFileName.isEmpty()) {
-            LogUtils.logWarning("Gate library file is not specified.");
-        } else {
-            File libraryFile = new File(libraryFileName);
-            final Framework framework = Framework.getInstance();
-            if (framework.checkFileMessageLog(libraryFile, "Gate library access error")) {
-                try {
-                    InputStream genlibInputStream = new FileInputStream(libraryFileName);
-                    GenlibParser genlibParser = new GenlibParser(genlibInputStream);
-                    if (CommonDebugSettings.getParserTracing()) {
-                        genlibParser.enable_tracing();
-                    } else {
-                        genlibParser.disable_tracing();
-                    }
-                    library = genlibParser.parseGenlib();
-                    LogUtils.logInfo("Mapping the imported Verilog into the gate library '" + libraryFileName + "'.");
-                } catch (FileNotFoundException e) {
-                } catch (org.workcraft.plugins.circuit.jj.genlib.ParseException e) {
-                    LogUtils.logWarning("Could not parse the gate library '" + libraryFileName + "'.");
-                }
-            }
-        }
-        return library;
-    }
-
     private HashMap<String, Wire> createPorts(Circuit circuit, Module module) {
         HashMap<String, Wire> wires = new HashMap<>();
         for (Port verilogPort: module.ports) {
@@ -486,7 +456,7 @@ public class VerilogImporter implements Importer {
             expression = "!" + expression;
         }
         Function function = new Function(PRIMITIVE_GATE_OUTPUT_NAME, expression);
-        return new Gate("", function, null, true);
+        return new Gate("", 0.0, function, null, true);
     }
 
     private String getPrimitiveOperator(String primitiveName) {
@@ -590,15 +560,28 @@ public class VerilogImporter implements Importer {
 
     private void insertMutexes(HashMap<String, Module> modules, Collection<Mutex> mutexes, Circuit circuit,
             HashMap<String, Wire> wires) {
+        LinkedList<String> internalSignals = new LinkedList<>();
         if (!mutexes.isEmpty()) {
             Mutex moduleMutex = CircuitSettings.parseMutexData();
             if ((moduleMutex != null) && (moduleMutex.name != null)) {
                 for (Mutex instanceMutex: mutexes) {
+                    if (instanceMutex.g1.type == Type.INTERNAL) {
+                        internalSignals.add(instanceMutex.g1.name);
+                    }
+                    if (instanceMutex.g2.type == Type.INTERNAL) {
+                        internalSignals.add(instanceMutex.g2.name);
+                    }
                     createMutex(circuit, instanceMutex, moduleMutex, wires, modules);
                     removeTemporaryOutput(circuit, wires, instanceMutex.r1);
                     removeTemporaryOutput(circuit, wires, instanceMutex.r2);
                 }
             }
+        }
+        if (!internalSignals.isEmpty()) {
+            DialogUtils.showWarning("Mutex grants will be exposed as output ports: "
+                    + ReferenceHelper.getReferencesAsString(internalSignals) + ".\n\n"
+                    + "This is necessary (due to technical reasons) for verification\n"
+                    + "of a circuit with mutex against its environment STG.");
         }
     }
 
@@ -663,10 +646,16 @@ public class VerilogImporter implements Importer {
         Node node = circuit.getNodeByReference(signal.name);
         if (node instanceof FunctionContact) {
             FunctionContact port = (FunctionContact) node;
-            if (signal.type == Type.INPUT) {
+            switch (signal.type) {
+            case INPUT:
                 port.setIOType(IOType.INPUT);
-            } else {
+                break;
+            case INTERNAL:
                 port.setIOType(IOType.OUTPUT);
+                break;
+            case OUTPUT:
+                port.setIOType(IOType.OUTPUT);
+                break;
             }
             Wire wire = getOrCreateWire(signal.name, wires);
             wire.sinks.add(port);

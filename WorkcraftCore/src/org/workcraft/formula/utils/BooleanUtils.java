@@ -80,4 +80,12 @@ public class BooleanUtils {
         return result;
     }
 
+    public static Integer countLiterals(BooleanFormula formula) {
+        Integer result = null;
+        if (formula != null) {
+            result = formula.accept(new FormulaToLiteralCount());
+        }
+        return result;
+    }
+
 }

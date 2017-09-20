@@ -2,16 +2,24 @@ package org.workcraft.plugins.circuit.commands;
 
 import java.util.Collection;
 
+import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.gui.graph.commands.AbstractStatisticsCommand;
 import org.workcraft.plugins.circuit.Circuit;
+import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
+import org.workcraft.plugins.circuit.FunctionContact;
+import org.workcraft.plugins.circuit.genlib.Gate;
+import org.workcraft.plugins.circuit.genlib.GenlibUtils;
+import org.workcraft.plugins.circuit.genlib.Library;
 import org.workcraft.util.MultiSet;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class CircuitStatisticsCommand extends AbstractStatisticsCommand {
+
+    private static final int MAX_DISTRIBUTION = 9;
 
     @Override
     public String getDisplayName() {
@@ -61,14 +69,14 @@ public class CircuitStatisticsCommand extends AbstractStatisticsCommand {
             }
         }
 
-        int inputPortCount = 0;
-        int outputPortCount = 0;
+        int inPortCount = 0;
+        int outPortCount = 0;
         int isolatedPortCount = 0;
         for (Contact port: ports) {
             if (port.isOutput()) {
-                outputPortCount++;
+                outPortCount++;
             } else {
-                inputPortCount++;
+                inPortCount++;
                 Collection<Contact> driven = CircuitUtils.findDriven(circuit, port, false);
                 fanout.add(driven.size());
             }
@@ -77,29 +85,96 @@ public class CircuitStatisticsCommand extends AbstractStatisticsCommand {
             }
         }
 
+        String libraryFileName = CircuitSettings.getGateLibrary();
+        Library library = GenlibUtils.readLibrary(libraryFileName);
+        double gateArea = 0.0;
+        int mappedCount = 0;
+        MultiSet<String> namedComponents = new MultiSet<>();
+        for (FunctionComponent component: components) {
+            if (component.isMapped()) {
+                mappedCount++;
+                String moduleName = component.getModule();
+                Gate gate = library.get(moduleName);
+                if (gate != null) {
+                    gateArea += gate.size;
+                } else {
+                    namedComponents.add(moduleName);
+                }
+            }
+        }
+
+        int combCount = 0;
+        int seqCount = 0;
+        int undefinedCount = 0;
+        int combLiteralCount = 0;
+        int seqSetLiteralCount = 0;
+        int seqResetLiteralCount = 0;
+        for (FunctionComponent component: components) {
+            for (FunctionContact contact: component.getFunctionContacts()) {
+                if (!contact.isOutput()) continue;
+                if (contact.getSetFunction() == null) {
+                    undefinedCount++;
+                } else {
+                    if (contact.getResetFunction() == null) {
+                        combCount++;
+                        combLiteralCount += BooleanUtils.countLiterals(contact.getSetFunction());
+                    } else {
+                        seqCount++;
+                        seqSetLiteralCount += BooleanUtils.countLiterals(contact.getSetFunction());
+                        seqResetLiteralCount += BooleanUtils.countLiterals(contact.getResetFunction());
+                    }
+                }
+            }
+        }
+        int driverCount = combCount + seqCount + undefinedCount;
+        int seqLiteralCount = seqSetLiteralCount + seqResetLiteralCount;
+
         return "Circuit analysis:"
-                + "\n  Component count -  " + components.size()
-                + "\n    * Fanin distribution (0 / 1 / 2 ...) -  " + getDistribution(fanin)
-                + "\n  Port count -  " + ports.size()
-                + "\n    * Input / output -  " + inputPortCount + " / " + outputPortCount
-                + "\n  Fanout distribution (0 / 1 / 2 ...) -  " + getDistribution(fanout)
-                + "\n  Disconnected components / ports / pins -  " + isolatedComponentCount + " / " + isolatedPortCount
-                + " / " + isolatedPinCount;
+                + "\n  Component count (mapped + unmapped) -  " + components.size()
+                + " (" + mappedCount + " + " + (components.size() - mappedCount) + ")"
+                + (mappedCount == 0 ? "" : "\n  Area of mapped components -  " + gateArea + getNamedComponentArea(namedComponents))
+                + "\n  Driver pin count (combinational + sequential + undefined) -  "
+                + driverCount + " (" + combCount + " + " + seqCount + " + " + undefinedCount + ")"
+                + "\n  Literal count combinational / sequential (set + reset) -  "
+                + combLiteralCount + " / " + seqLiteralCount + " (" + seqSetLiteralCount + " + " + seqResetLiteralCount + ")"
+                + "\n  Port count (input + output) -  " + ports.size() + " (" + inPortCount + " + " + outPortCount + ")"
+                + "\n  Max fanin / fanout -  " + getMaxValue(fanin) + " / " + getMaxValue(fanout)
+                + "\n  Fanin distribution [0 / 1 / 2 ...] -  " + getDistribution(fanin)
+                + "\n  Fanout distribution [0 / 1 / 2 ...] -  " + getDistribution(fanout)
+                + "\n  Isolated components / ports / pins -  "
+                + isolatedComponentCount + " / " + isolatedPortCount + " / " + isolatedPinCount;
+    }
+
+    private int getMaxValue(MultiSet<Integer> multiset) {
+        int result = 0;
+        for (Integer i: multiset.toSet()) {
+            if (i > result) {
+                result = i;
+            }
+        }
+        return result;
     }
 
     private String getDistribution(MultiSet<Integer> multiset) {
         String result = "";
-        int max = 0;
-        for (Integer i: multiset.toSet()) {
-            if (i > max) {
-                max = i;
-            }
-        }
-        for (int i = 0; i <= max; ++i) {
+        int max = getMaxValue(multiset);
+        for (int i = 0; i <= Math.min(max, MAX_DISTRIBUTION); ++i) {
             if (!result.isEmpty()) {
                 result += " / ";
             }
             result += multiset.count(i);
+        }
+        if (max > MAX_DISTRIBUTION) {
+            result += " ...";
+        }
+        return result;
+    }
+
+    private String getNamedComponentArea(MultiSet<String> multiset) {
+        String result = "";
+        for (String s: multiset.toSet()) {
+            int count = multiset.count(s);
+            result += " + " + (count > 1 ? count + "*" : "") + s;
         }
         return result;
     }

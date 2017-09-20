@@ -43,7 +43,7 @@ public class DialogUtils {
     }
 
     public static void showWarning(String msg) {
-        showError(msg, TITLE_WARNING);
+        showWarning(msg, TITLE_WARNING);
     }
 
     public static void showWarning(String msg, String title) {

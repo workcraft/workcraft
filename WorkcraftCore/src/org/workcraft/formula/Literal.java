@@ -1,6 +1,7 @@
 package org.workcraft.formula;
 
 public class Literal implements BooleanFormula {
+
     private BooleanVariable variable;
     private boolean negation;
 
@@ -43,4 +44,5 @@ public class Literal implements BooleanFormula {
     public <T> T accept(BooleanVisitor<T> visitor) {
         return (negation ? BooleanOperations.not(variable) : variable).accept(visitor);
     }
+
 }

@@ -63,7 +63,7 @@ public class MpsatMutexImplementabilityVerificationCommand extends AbstractVerif
         if (!problematicPlaces.isEmpty()) {
             String problematicPlacesString = ReferenceHelper.getNodesAsString(stg, (Collection) problematicPlaces, 50);
             DialogUtils.showError("A mutex place must precede a pair of\n" +
-                            "output transitions, each with a single trigger.\n\n" +
+                            "non-input transitions, each with a single trigger.\n\n" +
                             "Problematic places are:" +
                             (problematicPlacesString.length() > 30 ? "\n" : " ") +
                             problematicPlacesString);

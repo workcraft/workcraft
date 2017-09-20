@@ -15,7 +15,7 @@ public class CommonLogSettings implements Settings {
     private static final String keyTextColor = prefix + ".textColor";
     private static final String keyInfoBackground = prefix + ".infoBackground";
     private static final String keyWarningBackground = prefix + ".warningBackground";
-    private static final String keyErrorBackground = prefix + ".warningBackground";
+    private static final String keyErrorBackground = prefix + ".errorBackground";
     private static final String keyStdoutBackground = prefix + ".stdoutBackground";
     private static final String keyStderrBackground = prefix + ".stderrBackground";
 
