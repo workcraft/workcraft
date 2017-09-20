@@ -8,12 +8,9 @@ matrix:
       env: TARGET=pmd
     - jdk: oraclejdk8
       env: TARGET=cpd
-    - jdk: openjdk7
-      env: TARGET=test
-      group: deprecated-2017Q1
-    - jdk: oraclejdk7
-      env: TARGET=test
     - jdk: oraclejdk8
+      env: TARGET=test
+    - jdk: openjdk8
       env: TARGET=test
     - os: osx
       osx_image: xcode8.2
