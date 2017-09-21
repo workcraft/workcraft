@@ -86,20 +86,20 @@ public class CircuitStatisticsTests {
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         for (String[] testCircuitWorkStatistics: TEST_CIRCUIT_WORKS_STATISTICS) {
             String circuitWork = testCircuitWorkStatistics[0];
-            URL srcUrl = classLoader.getResource(circuitWork);
-            WorkspaceEntry srcWe = framework.loadWork(srcUrl.getFile());
+            URL url = classLoader.getResource(circuitWork);
+            WorkspaceEntry we = framework.loadWork(url.getFile());
 
             BasicStatisticsCommand basicStatisticsCommand = new BasicStatisticsCommand();
-            String basicStatistics = basicStatisticsCommand.getStatistics(srcWe);
+            String basicStatistics = basicStatisticsCommand.execute(we);
             String expectedBasicStatistics = testCircuitWorkStatistics[1];
             Assert.assertEquals(basicStatistics, expectedBasicStatistics);
 
             CircuitStatisticsCommand advancedStatisticsCommand = new CircuitStatisticsCommand();
-            String advancedStatistics = advancedStatisticsCommand.getStatistics(srcWe);
+            String advancedStatistics = advancedStatisticsCommand.execute(we);
             String expectedAdvancedStatistics = testCircuitWorkStatistics[2];
             Assert.assertEquals(advancedStatistics, expectedAdvancedStatistics);
 
-            framework.closeWork(srcWe);
+            framework.closeWork(we);
         }
     }
 

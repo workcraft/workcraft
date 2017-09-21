@@ -1,4 +1,4 @@
-package org.workcraft;
+package org.workcraft.tasks;
 
 import java.awt.BorderLayout;
 import java.awt.Container;
@@ -10,8 +10,6 @@ import javax.swing.JDialog;
 import javax.swing.SwingUtilities;
 
 import org.workcraft.gui.tasks.TaskControl;
-import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.tasks.Result;
 import org.workcraft.util.GUI;
 
 final class OperationCancelDialog<T> extends JDialog implements ProgressMonitor<T> {
@@ -27,7 +25,9 @@ final class OperationCancelDialog<T> extends JDialog implements ProgressMonitor<
         content.setLayout(new BorderLayout(2, 2));
         content.add(taskControl, BorderLayout.CENTER);
         pack();
-        GUI.centerToParent(this, parent);
+        if (parent != null) {
+            GUI.centerToParent(this, parent);
+        }
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
         addWindowListener(new WindowAdapter() {

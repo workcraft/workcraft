@@ -2,6 +2,12 @@ package org.workcraft.gui.graph.commands;
 
 import org.workcraft.workspace.WorkspaceEntry;
 
-public interface ScriptableCommand extends Command {
-    WorkspaceEntry execute(WorkspaceEntry we);
+public interface ScriptableCommand<T> extends Command {
+
+    T execute(WorkspaceEntry we);
+
+    default void run(WorkspaceEntry we) {
+        execute(we);
+    }
+
 }

@@ -10,7 +10,7 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public abstract class AbstractTransformationCommand implements ScriptableCommand, MenuOrdering {
+public abstract class AbstractTransformationCommand implements ScriptableCommand<Void>, MenuOrdering {
 
     @Override
     public final String getSection() {
@@ -28,19 +28,14 @@ public abstract class AbstractTransformationCommand implements ScriptableCommand
     }
 
     @Override
-    public WorkspaceEntry execute(WorkspaceEntry we) {
+    public Void execute(WorkspaceEntry we) {
         VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
         Collection<Node> nodes = collect(visualModel);
         if (!nodes.isEmpty()) {
             we.saveMemento();
             transform(visualModel, nodes);
         }
-        return we;
-    }
-
-    @Override
-    public final void run(WorkspaceEntry we) {
-        execute(we);
+        return null;
     }
 
     public Collection<Node> collect(Model model) {

@@ -5,7 +5,7 @@ import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public abstract class AbstractStatisticsCommand implements ScriptableCommand {
+public abstract class AbstractStatisticsCommand implements ScriptableCommand<String> {
 
     @Override
     public final String getSection() {
@@ -18,15 +18,12 @@ public abstract class AbstractStatisticsCommand implements ScriptableCommand {
     }
 
     @Override
-    public final WorkspaceEntry execute(WorkspaceEntry we) {
-        DialogUtils.showInfo(getStatistics(we), "Statistics");
-        return we;
-    }
-
-    @Override
-    public final void run(WorkspaceEntry we) {
-        execute(we);
+    public final String execute(WorkspaceEntry we) {
+        String result = getStatistics(we);
+        DialogUtils.showInfo(result, "Statistics");
+        return result;
     }
 
     public abstract String getStatistics(WorkspaceEntry we);
+
 }

@@ -9,7 +9,7 @@ import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class WaggingGeneratorCommand implements ScriptableCommand {
+public class WaggingGeneratorCommand implements ScriptableCommand<Void> {
 
     @Override
     public String getDisplayName() {
@@ -27,7 +27,7 @@ public class WaggingGeneratorCommand implements ScriptableCommand {
     }
 
     @Override
-    public final WorkspaceEntry execute(WorkspaceEntry we) {
+    public final Void execute(WorkspaceEntry we) {
         final VisualDfs dfs = WorkspaceUtils.getAs(we, VisualDfs.class);
         int selectedRegisterCount = 0;
         for (Node node: dfs.getSelection()) {
@@ -45,12 +45,7 @@ public class WaggingGeneratorCommand implements ScriptableCommand {
                 generator.run();
             }
         }
-        return we;
-    }
-
-    @Override
-    public final void run(WorkspaceEntry we) {
-        execute(we);
+        return null;
     }
 
     public int getWayCount() {

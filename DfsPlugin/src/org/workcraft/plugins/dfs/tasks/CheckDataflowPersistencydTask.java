@@ -45,7 +45,8 @@ public class CheckDataflowPersistencydTask extends MpsatChainTask {
             StgModel model = (StgModel) converter.getStgModel().getMathModel();
             Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, StgFormat.getInstance());
             if (exporter == null) {
-                throw new RuntimeException("Exporter not available: model class " + model.getClass().getName() + " to format STG.");
+                String modelClassName = model.getClass().getName();
+                throw new RuntimeException("Exporter not available: model class " + modelClassName + " to format STG.");
             }
             monitor.progressUpdate(0.10);
 

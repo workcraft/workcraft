@@ -1,8 +1,9 @@
 package org.workcraft.gui.graph.commands;
 
 import org.workcraft.MenuOrdering;
+import org.workcraft.workspace.WorkspaceEntry;
 
-public abstract class AbstractSynthesisCommand implements ScriptableCommand, MenuOrdering {
+public abstract class AbstractSynthesisCommand implements ScriptableCommand<WorkspaceEntry>, MenuOrdering {
 
     @Override
     public final String getSection() {

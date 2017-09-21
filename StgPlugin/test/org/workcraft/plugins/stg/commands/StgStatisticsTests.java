@@ -114,20 +114,20 @@ public class StgStatisticsTests {
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         for (String[] testStgWorkStatistics: TEST_STG_WORKS_STATISTICS) {
             String stgWork = testStgWorkStatistics[0];
-            URL srcUrl = classLoader.getResource(stgWork);
-            WorkspaceEntry srcWe = framework.loadWork(srcUrl.getFile());
+            URL url = classLoader.getResource(stgWork);
+            WorkspaceEntry we = framework.loadWork(url.getFile());
 
             BasicStatisticsCommand basicStatisticsCommand = new BasicStatisticsCommand();
-            String basicStatistics = basicStatisticsCommand.getStatistics(srcWe);
+            String basicStatistics = basicStatisticsCommand.execute(we);
             String expectedBasicStatistics = testStgWorkStatistics[1];
             Assert.assertEquals(basicStatistics, expectedBasicStatistics);
 
             StgStatisticsCommand advancedStatisticsCommand = new StgStatisticsCommand();
-            String advancedStatistics = advancedStatisticsCommand.getStatistics(srcWe);
+            String advancedStatistics = advancedStatisticsCommand.execute(we);
             String expectedAdvancedStatistics = testStgWorkStatistics[2];
             Assert.assertEquals(advancedStatistics, expectedAdvancedStatistics);
 
-            framework.closeWork(srcWe);
+            framework.closeWork(we);
         }
     }
 

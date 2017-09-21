@@ -45,28 +45,27 @@ public class CircuitLayoutTests {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         for (String testCircuitWork: TEST_CIRCUIT_WORKS) {
-            URL srcUrl = classLoader.getResource(testCircuitWork);
+            URL url = classLoader.getResource(testCircuitWork);
 
-            WorkspaceEntry srcWe = framework.loadWork(srcUrl.getFile());
+            WorkspaceEntry we = framework.loadWork(url.getFile());
             Set<String> srcInputs = new HashSet<>();
             Set<String> srcOutputs = new HashSet<>();
             Set<String> srcGates = new HashSet<>();
-            countCircuitNodes(srcWe, srcInputs, srcOutputs, srcGates);
+            countCircuitNodes(we, srcInputs, srcOutputs, srcGates);
 
             CircuitLayoutCommand command = new CircuitLayoutCommand();
-            WorkspaceEntry dstWe = command.execute(srcWe);
+            command.execute(we);
 
             Set<String> dstInputs = new HashSet<>();
             Set<String> dstOutputs = new HashSet<>();
             Set<String> dstGates = new HashSet<>();
-            countCircuitNodes(dstWe, dstInputs, dstOutputs, dstGates);
+            countCircuitNodes(we, dstInputs, dstOutputs, dstGates);
 
             Assert.assertEquals(srcInputs, dstInputs);
             Assert.assertEquals(srcOutputs, dstOutputs);
             Assert.assertEquals(srcGates, dstGates);
 
-            framework.closeWork(srcWe);
-            framework.closeWork(dstWe);
+            framework.closeWork(we);
         }
     }
 

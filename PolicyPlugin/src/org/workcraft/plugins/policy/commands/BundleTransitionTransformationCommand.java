@@ -29,7 +29,7 @@ public class BundleTransitionTransformationCommand extends AbstractTransformatio
     }
 
     @Override
-    public WorkspaceEntry execute(WorkspaceEntry we) {
+    public Void execute(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         we.saveMemento();
         final VisualPolicyNet policy = WorkspaceUtils.getAs(we, VisualPolicyNet.class);
@@ -42,7 +42,7 @@ public class BundleTransitionTransformationCommand extends AbstractTransformatio
             final GraphEditorPanel editor = mainWindow.getCurrentEditor();
             editor.repaint();
         }
-        return we;
+        return null;
     }
 
     @Override

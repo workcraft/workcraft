@@ -13,7 +13,7 @@ import org.workcraft.tasks.TaskManager;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class PetrifyCscConflictResolutionCommand implements ScriptableCommand {
+public class PetrifyCscConflictResolutionCommand implements ScriptableCommand<WorkspaceEntry> {
 
     @Override
     public String getSection() {

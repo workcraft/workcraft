@@ -67,11 +67,7 @@ import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.serialisation.DeserialisationResult;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
-import org.workcraft.tasks.DefaultTaskManager;
-import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.tasks.ProgressMonitorArray;
-import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Task;
+import org.workcraft.tasks.ExtendedTaskManager;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.Commands;
 import org.workcraft.util.DataAccumulator;
@@ -135,25 +131,6 @@ public final class Framework {
     public static final String COMMON_REF_WORK_ATTRIBUTE = "ref";
 
     private static Framework instance = null;
-
-    private final class ExtendedTaskManager extends DefaultTaskManager {
-        @Override
-        public <T> Result<? extends T> rawExecute(Task<T> task, String description, ProgressMonitor<? super T> observer) {
-            if (!SwingUtilities.isEventDispatchThread()) {
-                return super.rawExecute(task, description, observer);
-            } else {
-                OperationCancelDialog<T> cancelDialog = new OperationCancelDialog<>(mainWindow, description);
-                ProgressMonitorArray<T> observers = new ProgressMonitorArray<>();
-                if (observer != null) {
-                    observers.add(observer);
-                }
-                observers.add(cancelDialog);
-                this.queue(task, description, observers);
-                cancelDialog.setVisible(true);
-                return cancelDialog.getResult();
-            }
-        }
-    }
 
     class ExecuteScriptAction implements ContextAction {
         private final String script;
@@ -583,7 +560,7 @@ public final class Framework {
     /**
      * Used in functions.js JavaScript wrapper.
      */
-    public WorkspaceEntry executeCommand(WorkspaceEntry we, String className) {
+    public <T> T executeCommand(WorkspaceEntry we, String className) {
         if ((className == null) || className.isEmpty()) {
             LogUtils.logError("Undefined command name.");
         } else {
@@ -591,14 +568,12 @@ public final class Framework {
             boolean scriptable = false;
             for (Command command: Commands.getCommands()) {
                 String commandClassName = command.getClass().getSimpleName();
-                if (className.equals(commandClassName)) {
-                    found = true;
-                    if (command instanceof ScriptableCommand) {
-                        scriptable = true;
-                        if (command.isApplicableTo(we)) {
-                            return Commands.execute(we, (ScriptableCommand) command);
-                        }
-                    }
+                if (!className.equals(commandClassName)) continue;
+                found = true;
+                if (command instanceof ScriptableCommand) {
+                    scriptable = true;
+                    ScriptableCommand<T> scriptableCommand = (ScriptableCommand<T>) command;
+                    return Commands.execute(we, scriptableCommand);
                 }
             }
             if (!found) {

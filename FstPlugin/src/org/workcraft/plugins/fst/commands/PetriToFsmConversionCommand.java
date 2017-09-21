@@ -28,7 +28,8 @@ public class PetriToFsmConversionCommand extends AbstractConversionCommand {
     public WorkspaceEntry execute(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         if (Hierarchy.isHierarchical(we.getModelEntry())) {
-            DialogUtils.showError("Finite State Machine cannot be derived from a hierarchical Petri Net.", "Conversion error");
+            DialogUtils.showError("Finite State Machine cannot be derived from a hierarchical Petri Net.",
+                    "Conversion error");
             return null;
         }
         final TaskManager taskManager = framework.getTaskManager();

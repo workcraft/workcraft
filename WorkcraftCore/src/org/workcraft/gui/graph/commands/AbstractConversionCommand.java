@@ -6,7 +6,7 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public abstract class AbstractConversionCommand implements ScriptableCommand, MenuOrdering {
+public abstract class AbstractConversionCommand implements ScriptableCommand<WorkspaceEntry>, MenuOrdering {
 
     @Override
     public final String getSection() {
@@ -33,11 +33,6 @@ public abstract class AbstractConversionCommand implements ScriptableCommand, Me
             final Path<String> desiredPath = we.getWorkspacePath();
             return framework.createWork(meDst, desiredPath);
         }
-    }
-
-    @Override
-    public final void run(WorkspaceEntry we) {
-        execute(we);
     }
 
     public abstract ModelEntry convert(ModelEntry me);

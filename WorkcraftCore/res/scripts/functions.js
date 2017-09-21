@@ -61,16 +61,15 @@ function print(msg) {
 	java.lang.System.out.print(msg);
 }
 
-function println(msg) {
-	java.lang.System.out.println(msg);
-}
-
 function printErr(msg) {
 	java.lang.System.err.print(msg);
 }
 
-function printlnErr(msg) {
-	java.lang.System.err.println(msg);
+function fprint(fileName, text) {
+file = new java.io.FileWriter(fileName);
+	writer = new java.io.BufferedWriter(file);
+	writer.write(text);
+	writer.close();
 }
 
 function startGUI() {

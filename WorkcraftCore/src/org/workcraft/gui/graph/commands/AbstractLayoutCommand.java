@@ -7,7 +7,7 @@ import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public abstract class AbstractLayoutCommand implements ScriptableCommand {
+public abstract class AbstractLayoutCommand implements ScriptableCommand<Void> {
 
     @Override
     public final String getSection() {
@@ -20,7 +20,7 @@ public abstract class AbstractLayoutCommand implements ScriptableCommand {
     }
 
     @Override
-    public final WorkspaceEntry execute(WorkspaceEntry we) {
+    public final Void execute(WorkspaceEntry we) {
         we.saveMemento();
         VisualModel model = WorkspaceUtils.getAs(we, VisualModel.class);
         layout(model);
@@ -30,12 +30,7 @@ public abstract class AbstractLayoutCommand implements ScriptableCommand {
             final GraphEditorPanel editor = mainWindow.getCurrentEditor();
             editor.zoomFit();
         }
-        return we;
-    }
-
-    @Override
-    public final void run(WorkspaceEntry we) {
-        execute(we);
+        return null;
     }
 
     public abstract void layout(VisualModel model);
