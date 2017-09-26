@@ -16,7 +16,7 @@ size() { wc -c < $1; }
 wantsize=$(size $want)
 gotsize=$(size $got)
 
-[[ $wantsize == $gotsize ]] || err "$want (expected) and $got have different sizes"
+[[ $wantsize == $gotsize ]] || diff $want $got || err "$want (expected) and $got have different sizes"
 
 # keep it around if tests didn't succeed to help debugging
 rm -f $got

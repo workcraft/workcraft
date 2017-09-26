@@ -14,7 +14,7 @@ import org.workcraft.plugins.circuit.commands.CircuitLayoutCommand;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class CircuitLayoutTests {
+public class CircuitLayoutCommandTests {
 
     private static final String[] TEST_CIRCUIT_WORKS = {
         "org/workcraft/plugins/circuit/buffer-tm.circuit.work",

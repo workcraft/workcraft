@@ -42,7 +42,7 @@ public class PlatoStgConversionCommand extends AbstractConversionCommand {
         } else {
             final Framework framework = Framework.getInstance();
             final TaskManager taskManager = framework.getTaskManager();
-            WorkspaceEntry we = framework.getMainWindow().getCurrentWorkspaceEntry();
+            WorkspaceEntry we = framework.getWorkspaceEntry(me);
             File inputFile = dialog.getFile();
             dotLayout = dialog.getDotLayoutState();
             PlatoTask task = new PlatoTask(inputFile, dialog.getIncludeList(), false);

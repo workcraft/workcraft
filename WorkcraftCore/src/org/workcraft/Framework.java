@@ -1004,4 +1004,13 @@ public final class Framework {
         return workingDirectory;
     }
 
+    public WorkspaceEntry getWorkspaceEntry(ModelEntry me) {
+        for (WorkspaceEntry we: getWorkspace().getWorks()) {
+            if (we.getModelEntry() == me) {
+                return we;
+            }
+        }
+        return null;
+    }
+
 }

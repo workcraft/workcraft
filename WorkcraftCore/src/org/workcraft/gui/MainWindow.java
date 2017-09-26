@@ -1186,8 +1186,6 @@ public class MainWindow extends JFrame {
 
     public void refreshWorkspaceEntryTitle(WorkspaceEntry we, boolean updateHeaders) {
         for (DockableWindow window: editorWindows.get(we)) {
-            // final GraphEditorPanel editor = getCurrentEditor();
-            // String title = getTitle(we, editor.getModel());
             String title = getTitle(we);
             window.setTitle(title);
         }
@@ -1242,10 +1240,6 @@ public class MainWindow extends JFrame {
     public Toolbox getCurrentToolbox() {
         GraphEditorPanel editor = getCurrentEditor();
         return (editor == null) ? null : editor.getToolBox();
-    }
-
-    public WorkspaceEntry getCurrentWorkspaceEntry() {
-        return getCurrentEditor().getWorkspaceEntry();
     }
 
     public void repaintCurrentEditor() {

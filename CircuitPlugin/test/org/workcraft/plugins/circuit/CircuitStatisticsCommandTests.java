@@ -12,7 +12,7 @@ import org.workcraft.plugins.circuit.commands.CircuitStatisticsCommand;
 import org.workcraft.plugins.statistics.BasicStatisticsCommand;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class CircuitStatisticsTests {
+public class CircuitStatisticsCommandTests {
 
     private static final String[][] TEST_CIRCUIT_WORKS_STATISTICS = {
         {"org/workcraft/plugins/circuit/buffer-tm.circuit.work",

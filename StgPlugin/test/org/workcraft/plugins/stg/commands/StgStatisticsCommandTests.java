@@ -10,7 +10,7 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.statistics.BasicStatisticsCommand;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class StgStatisticsTests {
+public class StgStatisticsCommandTests {
 
     private static final String[][] TEST_STG_WORKS_STATISTICS = {
         {"org/workcraft/plugins/stg/commands/celement.stg.work",

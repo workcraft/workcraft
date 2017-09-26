@@ -12,34 +12,44 @@ import org.workcraft.tasks.Result.Outcome;
 public class MpsatUtils {
 
     public static List<MpsatSolution> getCombinedChainSolutions(Result<? extends MpsatCombinedChainResult> combinedChainResult) {
-        if ((combinedChainResult != null) && (combinedChainResult.getOutcome() == Outcome.FINISHED) && (combinedChainResult.getReturnValue() != null)) {
+        LinkedList<MpsatSolution> solutions = null;
+        if ((combinedChainResult != null) && (combinedChainResult.getOutcome() == Outcome.FINISHED)) {
+            solutions = new LinkedList<>();
             MpsatCombinedChainResult returnValue = combinedChainResult.getReturnValue();
-            List<Result<? extends ExternalProcessResult>> mpsatResultList = returnValue.getMpsatResultList();
-            LinkedList<MpsatSolution> solutions = new LinkedList<>();
-            for (int index = 0; index < mpsatResultList.size(); ++index) {
-                Result<? extends ExternalProcessResult> mpsatResult = mpsatResultList.get(index);
-                solutions.addAll(getSolutions(mpsatResult));
+            if (returnValue != null) {
+                List<Result<? extends ExternalProcessResult>> mpsatResultList = returnValue.getMpsatResultList();
+                for (int index = 0; index < mpsatResultList.size(); ++index) {
+                    Result<? extends ExternalProcessResult> mpsatResult = mpsatResultList.get(index);
+                    solutions.addAll(getSolutions(mpsatResult));
+                }
             }
-            return solutions;
         }
-        return null;
+        return solutions;
     }
 
     public static List<MpsatSolution> getChainSolutions(Result<? extends MpsatChainResult> chainResult) {
-        if ((chainResult != null) && (chainResult.getOutcome() == Outcome.FINISHED) && (chainResult.getReturnValue() != null)) {
+        LinkedList<MpsatSolution> solutions = null;
+        if ((chainResult != null) && (chainResult.getOutcome() == Outcome.FINISHED)) {
+            solutions = new LinkedList<>();
             MpsatChainResult returnValue = chainResult.getReturnValue();
-            Result<? extends ExternalProcessResult> mpsatResult = returnValue.getMpsatResult();
-            return getSolutions(mpsatResult);
+            if (returnValue != null) {
+                Result<? extends ExternalProcessResult> mpsatResult = returnValue.getMpsatResult();
+                solutions.addAll(getSolutions(mpsatResult));
+            }
         }
-        return null;
+        return solutions;
     }
 
     public static List<MpsatSolution> getSolutions(Result<? extends ExternalProcessResult> result) {
-        if ((result != null) && (result.getOutcome() == Outcome.FINISHED) && (result.getReturnValue() != null)) {
+        LinkedList<MpsatSolution> solutions = null;
+        if ((result != null) && (result.getOutcome() == Outcome.FINISHED)) {
+            solutions = new LinkedList<>();
             ExternalProcessResult returnValue = result.getReturnValue();
-            return getSolutions(returnValue);
+            if (returnValue != null) {
+                solutions.addAll(getSolutions(returnValue));
+            }
         }
-        return null;
+        return solutions;
     }
 
     public static List<MpsatSolution> getSolutions(ExternalProcessResult value) {
@@ -58,7 +68,7 @@ public class MpsatUtils {
     public static Boolean getChainOutcome(Result<? extends MpsatChainResult> chainResult) {
         List<MpsatSolution> solutions = getChainSolutions(chainResult);
         if (solutions != null) {
-            return hasTraces(solutions);
+            return !hasTraces(solutions);
         }
         return null;
     }

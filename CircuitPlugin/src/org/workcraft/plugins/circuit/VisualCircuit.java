@@ -27,8 +27,6 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
-import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
@@ -43,6 +41,8 @@ import org.workcraft.plugins.circuit.routing.impl.RouterTask;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.workspace.ModelEntry;
+import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 @DisplayName("Digital Circuit")
@@ -296,12 +296,12 @@ public class VisualCircuit extends AbstractVisualModel {
     }
 
     private WorkspaceEntry getWorkspaceEntry() {
-        final Framework framework = Framework.getInstance();
-        final MainWindow mainWindow = framework.getMainWindow();
-        if (mainWindow != null) {
-            GraphEditorPanel editor = mainWindow.getCurrentEditor();
-            if (editor != null) {
-                return editor.getWorkspaceEntry();
+        Framework framework = Framework.getInstance();
+        Workspace workspace = framework.getWorkspace();
+        for (WorkspaceEntry we: workspace.getWorks()) {
+            ModelEntry me = we.getModelEntry();
+            if (this == me.getVisualModel()) {
+                return we;
             }
         }
         return null;

@@ -10,24 +10,37 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.circuit.commands.CircuitToStgConversionCommand;
+import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class CircuitConversionCommandsTests {
+public class CircuitConversionCommandTests {
 
     private static final String[] TEST_CIRCUIT_WORKS = {
-        "org/workcraft/plugins/circuit/buffer-tm.circuit.work",
-//        "org/workcraft/plugins/circuit/celement-tm.circuit.work",
-//        "org/workcraft/plugins/circuit/vme-tm.circuit.work",
+        "org/workcraft/plugins/circuit/buffer.circuit.work",
+        "org/workcraft/plugins/circuit/celement.circuit.work",
     };
 
     @BeforeClass
     public static void initPlugins() {
         final Framework framework = Framework.getInstance();
         framework.initPlugins();
+        switch (DesktopApi.getOs()) {
+        case LINUX:
+            PcompSettings.setCommand("../dist-template/linux/tools/UnfoldingTools/pcomp");
+            break;
+        case MACOS:
+            PcompSettings.setCommand("../dist-template/osx/Contents/Resources/tools/UnfoldingTools/pcomp");
+            break;
+        case WINDOWS:
+            PcompSettings.setCommand("..\\dist-template\\windows\\tools\\UnfoldingTools\\pcomp.exe");
+            break;
+        default:
+        }
     }
 
     @Test
@@ -39,6 +52,9 @@ public class CircuitConversionCommandsTests {
 
             WorkspaceEntry srcWe = framework.loadWork(srcUrl.getFile());
             Circuit srcCircuit = WorkspaceUtils.getAs(srcWe, Circuit.class);
+
+            VisualCircuit srcVisualCircuit = WorkspaceUtils.getAs(srcWe, VisualCircuit.class);
+            srcVisualCircuit.setEnvironmentFile(null);
 
             Set<String> srcCircuitInputs = new HashSet<>();
             Set<String> srcCircuitOutputs = new HashSet<>();

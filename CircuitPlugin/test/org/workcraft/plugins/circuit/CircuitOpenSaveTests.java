@@ -9,7 +9,7 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class CircuitOpenSaveCommandsTests {
+public class CircuitOpenSaveTests {
 
     private static final String[] TEST_CIRCUIT_WORKS = {
         "org/workcraft/plugins/circuit/celement.circuit.work",
