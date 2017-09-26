@@ -98,6 +98,8 @@ public final class Framework {
     public static final String UILAYOUT_FILE_PATH = SETTINGS_DIRECTORY_PATH + File.separator + UILAYOUT_FILE_NAME;
 
     private static final String FRAMEWORK_VARIABLE = "framework";
+    private static final String WORKSPACE_ENTRY_VARIABLE = "workspaceEntry";
+    private static final String MODEL_ENTRY_VARIABLE = "modelEntry";
     private static final String MATH_MODEL_VARIABLE = "mathModel";
     private static final String VISUAL_MODEL_VARIABLE = "visualModel";
 
@@ -347,12 +349,15 @@ public final class Framework {
 
     public void updateJavaScript(WorkspaceEntry we) {
         ScriptableObject jsGlobalScope = getJavaScriptGlobalScope();
-        ModelEntry modelEntry = we.getModelEntry();
+        setJavaScriptProperty(WORKSPACE_ENTRY_VARIABLE, we, jsGlobalScope, true);
 
-        VisualModel visualModel = modelEntry.getVisualModel();
+        ModelEntry me = we.getModelEntry();
+        setJavaScriptProperty(MODEL_ENTRY_VARIABLE, me, jsGlobalScope, true);
+
+        VisualModel visualModel = me.getVisualModel();
         setJavaScriptProperty(VISUAL_MODEL_VARIABLE, visualModel, jsGlobalScope, true);
 
-        MathModel mathModel = modelEntry.getMathModel();
+        MathModel mathModel = me.getMathModel();
         setJavaScriptProperty(MATH_MODEL_VARIABLE, mathModel, jsGlobalScope, true);
     }
 
