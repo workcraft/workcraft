@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.workcraft.NodeFactory;
 import org.workcraft.annotations.MouseListeners;
+import org.workcraft.commands.AbstractLayoutCommand;
 import org.workcraft.dom.AbstractModel;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.DefaultHangingConnectionRemover;
@@ -29,7 +30,6 @@ import org.workcraft.dom.visual.connections.DefaultAnchorGenerator;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
-import org.workcraft.gui.graph.commands.AbstractLayoutCommand;
 import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.TitlePropertyDescriptor;

@@ -2,8 +2,8 @@ package org.workcraft.plugins.circuit.commands;
 
 import java.util.Collection;
 
+import org.workcraft.commands.AbstractStatisticsCommand;
 import org.workcraft.formula.utils.BooleanUtils;
-import org.workcraft.gui.graph.commands.AbstractStatisticsCommand;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.CircuitUtils;

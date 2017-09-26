@@ -3,13 +3,16 @@ package org.workcraft.plugins.circuit.commands;
 import java.io.File;
 
 import org.workcraft.Framework;
-import org.workcraft.gui.graph.commands.AbstractVerificationCommand;
+import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.tasks.CheckCircuitTask;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
+import org.workcraft.plugins.mpsat.MpsatUtils;
+import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
+import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -17,6 +20,7 @@ import org.workcraft.workspace.WorkspaceUtils;
 
 public class CircuitVerificationCommand extends AbstractVerificationCommand {
 
+    @Override
     public String getDisplayName() {
         return "Conformation, deadlock and output persistency (reuse unfolding) [MPSat]";
     }
@@ -27,16 +31,58 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
-        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
-        if (circuit.getFunctionComponents().isEmpty()) {
-            DialogUtils.showError("The circuit must have components.");
-            return;
-        }
-
+    public Boolean execute(WorkspaceEntry we) {
         boolean checkConformation = checkConformation();
         boolean checkDeadlock = checkDeadlock();
         boolean checkPersistency = checkPersistency();
+        if (identifyChecks(we, checkConformation, checkDeadlock, checkPersistency)) {
+            if (checkConformation || checkDeadlock || checkPersistency) {
+                Framework framework = Framework.getInstance();
+                TaskManager manager = framework.getTaskManager();
+                CheckCircuitTask task = new CheckCircuitTask(we, checkConformation, checkDeadlock, checkPersistency);
+                String description = MpsatUtils.getToolchainDescription(we.getTitle());
+                Result<? extends MpsatChainResult> result = manager.execute(task, description);
+                return MpsatUtils.getChainOutcome(result);
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public void run(WorkspaceEntry we) {
+        boolean checkConformation = checkConformation();
+        boolean checkDeadlock = checkDeadlock();
+        boolean checkPersistency = checkPersistency();
+        if (identifyChecks(we, checkConformation, checkDeadlock, checkPersistency)) {
+            if (checkConformation || checkDeadlock || checkPersistency) {
+                Framework framework = Framework.getInstance();
+                TaskManager manager = framework.getTaskManager();
+                CheckCircuitTask task = new CheckCircuitTask(we, checkConformation, checkDeadlock, checkPersistency);
+                String description = MpsatUtils.getToolchainDescription(we.getTitle());
+                MpsatChainResultHandler monitor = new MpsatChainResultHandler(task);
+                manager.queue(task, description, monitor);
+            }
+        }
+    }
+
+    public boolean checkDeadlock() {
+        return true;
+    }
+
+    public boolean checkPersistency() {
+        return true;
+    }
+
+    public boolean checkConformation() {
+        return true;
+    }
+
+    private boolean identifyChecks(WorkspaceEntry we, boolean checkConformation, boolean checkDeadlock, boolean checkPersistency) {
+        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
+        if (circuit.getFunctionComponents().isEmpty()) {
+            DialogUtils.showError("The circuit must have components.");
+            return false;
+        }
 
         VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
         File envFile = visualCircuit.getEnvironmentFile();
@@ -56,37 +102,13 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
                     checkPersistency &= proceed;
                 } else {
                     DialogUtils.showError(messagePrefix + "The circuit conformation cannot be checked without environment STG.\n");
-                    return;
+                    return false;
                 }
                 checkConformation = false;
             } else {
                 DialogUtils.showWarning(messagePrefix + "The circuit will be verified without environment STG.\n");
             }
         }
-
-        if (checkConformation || checkDeadlock || checkPersistency) {
-            final CheckCircuitTask task = new CheckCircuitTask(we, checkConformation, checkDeadlock, checkPersistency);
-            String description = "MPSat tool chain";
-            String title = we.getTitle();
-            if (!title.isEmpty()) {
-                description += "(" + title + ")";
-            }
-            final Framework framework = Framework.getInstance();
-            final TaskManager taskManager = framework.getTaskManager();
-            final MpsatChainResultHandler monitor = new MpsatChainResultHandler(task);
-            taskManager.queue(task, description, monitor);
-        }
-    }
-
-    public boolean checkDeadlock() {
-        return true;
-    }
-
-    public boolean checkPersistency() {
-        return true;
-    }
-
-    public boolean checkConformation() {
         return true;
     }
 

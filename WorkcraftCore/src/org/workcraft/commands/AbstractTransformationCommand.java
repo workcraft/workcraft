@@ -1,4 +1,4 @@
-package org.workcraft.gui.graph.commands;
+package org.workcraft.commands;
 
 import java.util.Collection;
 import java.util.HashSet;

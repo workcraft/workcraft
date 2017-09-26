@@ -4,7 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.Initialiser;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
-import org.workcraft.gui.graph.commands.Command;
+import org.workcraft.commands.Command;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.petrify.commands.ShowSgCommand;
 

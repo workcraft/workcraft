@@ -1,7 +1,7 @@
 package org.workcraft.plugins.dfs.commands;
 
+import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.dom.Node;
-import org.workcraft.gui.graph.commands.ScriptableCommand;
 import org.workcraft.plugins.dfs.Dfs;
 import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.plugins.dfs.VisualRegister;

@@ -6,7 +6,7 @@ import org.workcraft.Framework;
 import org.workcraft.Initialiser;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
-import org.workcraft.gui.graph.commands.Command;
+import org.workcraft.commands.Command;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.petrify.commands.PetrifyComplexGateSynthesisCommand;
 import org.workcraft.plugins.petrify.commands.PetrifyCscConflictResolutionCommand;

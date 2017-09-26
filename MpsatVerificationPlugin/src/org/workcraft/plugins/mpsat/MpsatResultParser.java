@@ -8,7 +8,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.workcraft.Trace;
-import org.workcraft.plugins.mpsat.gui.MpsatSolution;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 
 public class MpsatResultParser {
@@ -34,7 +33,7 @@ public class MpsatResultParser {
             throw new RuntimeException(e);
         }
 
-        solutions = new LinkedList<MpsatSolution>();
+        solutions = new LinkedList<>();
         Matcher matcherReachability0 = patternReachability0.matcher(mpsatOutput);
         while (matcherReachability0.find()) {
             MpsatSolution solution = new MpsatSolution(null, null);

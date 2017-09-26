@@ -4,9 +4,9 @@ import java.io.File;
 import java.util.Scanner;
 
 import org.workcraft.Framework;
+import org.workcraft.commands.Command;
 import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.graph.GraphEditorPanel;
-import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.gui.PGMinerImportDialog;
 import org.workcraft.plugins.cpog.tasks.PGMinerResultHandler;

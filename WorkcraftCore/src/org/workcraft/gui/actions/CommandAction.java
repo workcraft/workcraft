@@ -1,8 +1,8 @@
 package org.workcraft.gui.actions;
 
 import org.workcraft.Framework;
+import org.workcraft.commands.Command;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.graph.commands.Command;
 
 public class CommandAction extends Action {
     Command command;

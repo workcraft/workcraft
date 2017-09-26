@@ -1,8 +1,8 @@
-package org.workcraft.gui.graph.commands;
+package org.workcraft.commands;
 
 import org.workcraft.MenuOrdering;
 
-public abstract class AbstractVerificationCommand implements Command, MenuOrdering {
+public abstract class AbstractVerificationCommand implements ScriptableCommand<Boolean>, MenuOrdering {
 
     @Override
     public final String getSection() {

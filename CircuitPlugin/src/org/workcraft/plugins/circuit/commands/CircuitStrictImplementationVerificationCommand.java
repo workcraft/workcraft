@@ -7,8 +7,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.workcraft.Framework;
+import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.dom.references.ReferenceHelper;
-import org.workcraft.gui.graph.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact;
@@ -16,9 +16,12 @@ import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.tasks.CheckStrictImplementationTask;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
+import org.workcraft.plugins.mpsat.MpsatUtils;
+import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
+import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -42,21 +45,33 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
     }
 
     @Override
+    public Boolean execute(WorkspaceEntry we) {
+        VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
+        File envFile = visualCircuit.getEnvironmentFile();
+        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
+        if (check(circuit, envFile)) {
+            Framework framework = Framework.getInstance();
+            TaskManager manager = framework.getTaskManager();
+            CheckStrictImplementationTask task = new CheckStrictImplementationTask(we);
+            String description = MpsatUtils.getToolchainDescription(we.getTitle());
+            Result<? extends MpsatChainResult> result = manager.execute(task, description);
+            return MpsatUtils.getChainOutcome(result);
+        }
+        return null;
+    }
+
+    @Override
     public void run(WorkspaceEntry we) {
         VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
         File envFile = visualCircuit.getEnvironmentFile();
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         if (check(circuit, envFile)) {
-            final CheckStrictImplementationTask task = new CheckStrictImplementationTask(we);
-            String description = "MPSat tool chain";
-            String title = we.getTitle();
-            if (!title.isEmpty()) {
-                description += "(" + title + ")";
-            }
-            final Framework framework = Framework.getInstance();
-            final TaskManager taskManager = framework.getTaskManager();
-            final MpsatChainResultHandler monitor = new MpsatChainResultHandler(task);
-            taskManager.queue(task, description, monitor);
+            Framework framework = Framework.getInstance();
+            TaskManager manager = framework.getTaskManager();
+            CheckStrictImplementationTask task = new CheckStrictImplementationTask(we);
+            String description = MpsatUtils.getToolchainDescription(we.getTitle());
+            MpsatChainResultHandler monitor = new MpsatChainResultHandler(task);
+            manager.queue(task, description, monitor);
         }
     }
 
@@ -129,4 +144,5 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
         }
         return true;
     }
+
 }

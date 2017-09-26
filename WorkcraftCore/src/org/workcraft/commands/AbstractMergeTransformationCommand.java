@@ -1,4 +1,4 @@
-package org.workcraft.gui.graph.commands;
+package org.workcraft.commands;
 
 import java.awt.geom.Point2D;
 import java.util.ArrayList;

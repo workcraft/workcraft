@@ -1,6 +1,4 @@
-package org.workcraft.plugins.mpsat.gui;
-
-import java.util.List;
+package org.workcraft.plugins.mpsat;
 
 import org.workcraft.Trace;
 
@@ -43,17 +41,6 @@ public class MpsatSolution {
         if (branchTrace != null) {
             result += "\n";
             result += branchTrace.toString();
-        }
-        return result;
-    }
-
-    public static boolean hasTraces(List<MpsatSolution> solutions) {
-        boolean result = false;
-        for (MpsatSolution solution : solutions) {
-            if ((solution.getMainTrace() != null) || (solution.getBranchTrace() != null)) {
-                result = true;
-                break;
-            }
         }
         return result;
     }

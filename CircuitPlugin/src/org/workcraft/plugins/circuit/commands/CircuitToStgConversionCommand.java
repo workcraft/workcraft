@@ -2,7 +2,7 @@ package org.workcraft.plugins.circuit.commands;
 
 import java.util.HashSet;
 
-import org.workcraft.gui.graph.commands.AbstractConversionCommand;
+import org.workcraft.commands.AbstractConversionCommand;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.circuit.stg.CircuitStgUtils;

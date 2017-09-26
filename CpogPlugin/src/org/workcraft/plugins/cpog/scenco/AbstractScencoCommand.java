@@ -3,8 +3,8 @@ package org.workcraft.plugins.cpog.scenco;
 import java.awt.Window;
 
 import org.workcraft.Framework;
+import org.workcraft.commands.Command;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.tasks.ScencoExternalToolTask;
 import org.workcraft.plugins.cpog.tasks.ScencoResultHandler;

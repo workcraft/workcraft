@@ -1,7 +1,7 @@
 package org.workcraft.plugins.wtg.commands;
 
 import org.workcraft.Framework;
-import org.workcraft.gui.graph.commands.AbstractConversionCommand;
+import org.workcraft.commands.AbstractConversionCommand;
 import org.workcraft.plugins.wtg.Wtg;
 import org.workcraft.plugins.wtg.tasks.WaverConversionTask;
 import org.workcraft.plugins.wtg.tasks.WtgToStgConversionResultHandler;

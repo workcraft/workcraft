@@ -19,7 +19,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import org.workcraft.gui.graph.commands.Command;
+import org.workcraft.commands.Command;
 import org.workcraft.plugins.xmas.Xmas;
 import org.workcraft.plugins.xmas.XmasSettings;
 import org.workcraft.util.LogUtils;

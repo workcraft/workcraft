@@ -18,6 +18,7 @@ import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 
 import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.plugins.mpsat.MpsatSolution;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 

@@ -7,11 +7,11 @@ import java.util.HashSet;
 import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
+import org.workcraft.commands.AbstractLayoutCommand;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.GraphEditorPanel;
-import org.workcraft.gui.graph.commands.AbstractLayoutCommand;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitDescriptor;

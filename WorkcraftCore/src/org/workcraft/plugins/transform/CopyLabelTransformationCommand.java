@@ -3,12 +3,12 @@ package org.workcraft.plugins.transform;
 import java.util.Collection;
 import java.util.HashSet;
 
+import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.gui.graph.commands.AbstractTransformationCommand;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;

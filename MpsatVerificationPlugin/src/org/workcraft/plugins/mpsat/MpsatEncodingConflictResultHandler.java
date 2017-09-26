@@ -10,7 +10,6 @@ import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.graph.GraphEditorPanel;
-import org.workcraft.plugins.mpsat.gui.MpsatSolution;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.tools.Core;
 import org.workcraft.plugins.stg.tools.EncodingConflictAnalyserTool;
@@ -38,7 +37,7 @@ final class MpsatEncodingConflictResultHandler implements Runnable {
     public void run() {
         MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue());
         List<MpsatSolution> solutions = mdp.getSolutions();
-        if (!MpsatSolution.hasTraces(solutions)) {
+        if (!MpsatUtils.hasTraces(solutions)) {
             DialogUtils.showInfo("No encoding conflicts.", "Verification results");
         } else {
             final Framework framework = Framework.getInstance();

@@ -8,10 +8,10 @@ import java.util.HashSet;
 
 import org.workcraft.Framework;
 import org.workcraft.PluginManager;
+import org.workcraft.commands.Command;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.pcomp.gui.PcompDialog;
 import org.workcraft.plugins.pcomp.tasks.PcompResultHandler;

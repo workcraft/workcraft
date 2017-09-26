@@ -1,6 +1,6 @@
 package org.workcraft.plugins.xmas.commands;
 
-import org.workcraft.gui.graph.commands.AbstractConversionCommand;
+import org.workcraft.commands.AbstractConversionCommand;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.xmas.VisualXmas;
 import org.workcraft.plugins.xmas.Xmas;

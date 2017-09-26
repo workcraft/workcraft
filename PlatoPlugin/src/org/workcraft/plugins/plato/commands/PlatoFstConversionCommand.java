@@ -3,7 +3,7 @@ package org.workcraft.plugins.plato.commands;
 import java.io.File;
 
 import org.workcraft.Framework;
-import org.workcraft.gui.graph.commands.AbstractConversionCommand;
+import org.workcraft.commands.AbstractConversionCommand;
 import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.plato.gui.PlatoWriterDialog;
 import org.workcraft.plugins.plato.tasks.PlatoResultHandler;

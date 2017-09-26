@@ -1,6 +1,6 @@
 package org.workcraft.plugins.policy.commands;
 
-import org.workcraft.gui.graph.commands.AbstractConversionCommand;
+import org.workcraft.commands.AbstractConversionCommand;
 import org.workcraft.plugins.petri.PetriNetDescriptor;
 import org.workcraft.plugins.policy.PolicyNet;
 import org.workcraft.plugins.policy.VisualPolicyNet;

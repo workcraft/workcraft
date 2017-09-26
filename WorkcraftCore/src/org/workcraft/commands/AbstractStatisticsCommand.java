@@ -1,4 +1,4 @@
-package org.workcraft.gui.graph.commands;
+package org.workcraft.commands;
 
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.util.DialogUtils;

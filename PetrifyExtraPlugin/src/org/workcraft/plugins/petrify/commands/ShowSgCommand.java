@@ -1,8 +1,8 @@
 package org.workcraft.plugins.petrify.commands;
 
 import org.workcraft.Framework;
+import org.workcraft.commands.Command;
 import org.workcraft.gui.DesktopApi;
-import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petrify.tasks.DrawSgResult;
 import org.workcraft.plugins.petrify.tasks.DrawSgTask;

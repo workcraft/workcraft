@@ -2,8 +2,8 @@ package org.workcraft.plugins.dfs.commands;
 
 import java.util.Set;
 
+import org.workcraft.commands.AbstractMergeTransformationCommand;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.gui.graph.commands.AbstractMergeTransformationCommand;
 import org.workcraft.plugins.dfs.VisualControlRegister;
 import org.workcraft.plugins.dfs.VisualCounterflowLogic;
 import org.workcraft.plugins.dfs.VisualCounterflowRegister;

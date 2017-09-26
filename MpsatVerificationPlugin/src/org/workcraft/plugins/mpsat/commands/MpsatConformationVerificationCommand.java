@@ -5,16 +5,19 @@ import java.io.File;
 import javax.swing.JFileChooser;
 
 import org.workcraft.Framework;
+import org.workcraft.commands.AbstractVerificationCommand;
+import org.workcraft.commands.CommandUtils;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.graph.commands.AbstractVerificationCommand;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
+import org.workcraft.plugins.mpsat.MpsatUtils;
 import org.workcraft.plugins.mpsat.tasks.MpsatConformationTask;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.plugins.stg.interop.StgImporter;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -37,9 +40,15 @@ public class MpsatConformationVerificationCommand extends AbstractVerificationCo
     }
 
     @Override
+    public Boolean execute(WorkspaceEntry we) {
+        CommandUtils.commandRequiresGui(getClass().getSimpleName());
+        return null;
+    }
+
+    @Override
     public final void run(WorkspaceEntry we) {
-        final Framework framework = Framework.getInstance();
-        final MainWindow mainWindow = framework.getMainWindow();
+        Framework framework = Framework.getInstance();
+        MainWindow mainWindow = framework.getMainWindow();
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         // Check for limitations:
         if (stg.getPlaces().isEmpty()) {
@@ -71,14 +80,11 @@ public class MpsatConformationVerificationCommand extends AbstractVerificationCo
                             + envFile.getAbsolutePath() + "\n\n"
                             + "Conformation cannot be checked without environment STG.");
                 } else {
-                    final MpsatConformationTask mpsatTask = new MpsatConformationTask(we, envFile);
-                    String description = "MPSat tool chain";
-                    String title = we.getTitle();
-                    if (!title.isEmpty()) {
-                        description += "(" + title + ")";
-                    }
-                    MpsatChainResultHandler monitor = new MpsatChainResultHandler(mpsatTask);
-                    framework.getTaskManager().queue(mpsatTask, description, monitor);
+                    TaskManager manager = framework.getTaskManager();
+                    MpsatConformationTask task = new MpsatConformationTask(we, envFile);
+                    String description = MpsatUtils.getToolchainDescription(we.getTitle());
+                    MpsatChainResultHandler monitor = new MpsatChainResultHandler(task);
+                    manager.queue(task, description, monitor);
                 }
             }
         }

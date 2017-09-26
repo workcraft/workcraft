@@ -5,7 +5,6 @@ import java.util.List;
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat.gui.MpsatReachibilityDialog;
-import org.workcraft.plugins.mpsat.gui.MpsatSolution;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.Result;
 import org.workcraft.util.GUI;
@@ -28,7 +27,7 @@ final class MpsatDeadlockResultHandler implements Runnable {
         List<MpsatSolution> solutions = mdp.getSolutions();
         if (solutions.isEmpty()) {
             DialogUtils.showInfo("The system is deadlock-free.", TITLE);
-        } else if (!MpsatSolution.hasTraces(solutions)) {
+        } else if (!MpsatUtils.hasTraces(solutions)) {
             DialogUtils.showWarning("The system has a deadlock.", TITLE);
         } else {
             String message = "<html><br>&#160;The system has a deadlock after the following trace(s):<br><br></html>";

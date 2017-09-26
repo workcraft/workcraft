@@ -5,7 +5,6 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
-import org.workcraft.plugins.mpsat.gui.MpsatSolution;
 import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
@@ -44,7 +43,7 @@ public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatC
     private void handleSuccess(final Result<? extends MpsatCombinedChainResult> result, WorkspaceEntry we) {
         MpsatCombinedChainResult returnValue = result.getReturnValue();
         List<Result<? extends ExternalProcessResult>> mpsatResultList = returnValue.getMpsatResultList();
-        List<MpsatParameters> mpsatSettingsList = result.getReturnValue().getMpsatSettingsList();
+        List<MpsatParameters> mpsatSettingsList = returnValue.getMpsatSettingsList();
         Result<? extends ExternalProcessResult> violationMpsatResult = null;
         MpsatParameters violationMpsatSettings = null;
         String verifiedMessageDetailes = "";
@@ -53,7 +52,7 @@ public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatC
             MpsatParameters mpsatSettings = mpsatSettingsList.get(index);
             MpsatResultParser mdp = new MpsatResultParser(mpsatResult.getReturnValue());
             List<MpsatSolution> solutions = mdp.getSolutions();
-            if (!MpsatSolution.hasTraces(solutions)) {
+            if (!MpsatUtils.hasTraces(solutions)) {
                 verifiedMessageDetailes += "\n * " + mpsatSettings.getName();
             } else {
                 violationMpsatResult = mpsatResult;

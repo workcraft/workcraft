@@ -1,6 +1,6 @@
 package org.workcraft.plugins.mpsat.commands;
 
-import org.workcraft.gui.graph.commands.Command;
+import org.workcraft.commands.Command;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.workspace.WorkspaceEntry;

@@ -7,13 +7,13 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import org.workcraft.NodeTransformer;
+import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.ConnectionHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.gui.graph.commands.AbstractTransformationCommand;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualJoint;

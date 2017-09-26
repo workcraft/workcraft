@@ -3,7 +3,7 @@ package org.workcraft.plugins.petrify.commands;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.workcraft.gui.graph.commands.AbstractConversionCommand;
+import org.workcraft.commands.AbstractConversionCommand;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.stg.Mutex;

@@ -1,7 +1,7 @@
 package org.workcraft.plugins.fst.commands;
 
 import org.workcraft.Framework;
-import org.workcraft.gui.graph.commands.AbstractConversionCommand;
+import org.workcraft.commands.AbstractConversionCommand;
 import org.workcraft.plugins.fst.tasks.PetriToFsmConversionResultHandler;
 import org.workcraft.plugins.fst.tasks.WriteSgConversionTask;
 import org.workcraft.plugins.petri.PetriNet;

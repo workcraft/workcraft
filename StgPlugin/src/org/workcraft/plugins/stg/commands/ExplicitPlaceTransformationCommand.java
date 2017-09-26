@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.HashSet;
 
 import org.workcraft.NodeTransformer;
+import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
-import org.workcraft.gui.graph.commands.AbstractTransformationCommand;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.workspace.ModelEntry;

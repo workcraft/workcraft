@@ -6,12 +6,12 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import org.workcraft.Framework;
+import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.graph.commands.AbstractVerificationCommand;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.graph.Graph;
 import org.workcraft.plugins.graph.Vertex;
@@ -34,7 +34,7 @@ public class GraphReachabilityVerificationCommand extends AbstractVerificationCo
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public Boolean execute(WorkspaceEntry we) {
         final Graph graph = WorkspaceUtils.getAs(we, Graph.class);
         HashSet<Vertex> unreachable = checkReachability(graph);
         if (unreachable.isEmpty()) {
@@ -50,6 +50,7 @@ public class GraphReachabilityVerificationCommand extends AbstractVerificationCo
                 SelectionHelper.selectByReferencedComponents(visualGraph, (HashSet) unreachable);
             }
         }
+        return unreachable.isEmpty();
     }
 
     private HashSet<Vertex> checkReachability(final Graph graph) {
