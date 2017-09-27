@@ -1,6 +1,6 @@
 package org.workcraft.plugins.fsm.commands;
 
-import org.workcraft.gui.graph.commands.AbstractConversionCommand;
+import org.workcraft.commands.AbstractConversionCommand;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.fsm.converters.FsmToGraphConverter;
 import org.workcraft.plugins.graph.Graph;

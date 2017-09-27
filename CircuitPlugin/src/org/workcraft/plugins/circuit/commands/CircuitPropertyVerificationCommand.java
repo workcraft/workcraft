@@ -3,21 +3,23 @@ package org.workcraft.plugins.circuit.commands;
 import java.io.File;
 
 import org.workcraft.Framework;
+import org.workcraft.commands.AbstractVerificationCommand;
+import org.workcraft.commands.CommandUtils;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.graph.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.tasks.CustomCheckCircuitTask;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
+import org.workcraft.plugins.mpsat.MpsatUtils;
 import org.workcraft.plugins.mpsat.MpsatSettingsSerialiser;
 import org.workcraft.plugins.mpsat.commands.MpsatPropertyVerificationCommand;
 import org.workcraft.plugins.mpsat.gui.MpsatPropertyDialog;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.GUI;
 import org.workcraft.util.DialogUtils;
+import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -39,9 +41,15 @@ public class CircuitPropertyVerificationCommand extends AbstractVerificationComm
     }
 
     @Override
+    public Boolean execute(WorkspaceEntry we) {
+        CommandUtils.commandRequiresGui(getClass().getSimpleName());
+        return null;
+    }
+
+    @Override
     public void run(WorkspaceEntry we) {
-        final Framework framework = Framework.getInstance();
-        final MainWindow mainWindow = framework.getMainWindow();
+        Framework framework = Framework.getInstance();
+        MainWindow mainWindow = framework.getMainWindow();
 
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
         if (circuit.getFunctionComponents().isEmpty()) {
@@ -64,15 +72,11 @@ public class CircuitPropertyVerificationCommand extends AbstractVerificationComm
             GUI.centerToParent(dialog, mainWindow);
             dialog.setVisible(true);
             if (dialog.getModalResult() == 1) {
-                final CustomCheckCircuitTask task = new CustomCheckCircuitTask(we, dialog.getSettings());
-                String description = "MPSat tool chain";
-                String title = we.getTitle();
-                if (!title.isEmpty()) {
-                    description += "(" + title + ")";
-                }
-                final TaskManager taskManager = framework.getTaskManager();
-                final MpsatChainResultHandler monitor = new MpsatChainResultHandler(task);
-                taskManager.queue(task, description, monitor);
+                TaskManager manager = framework.getTaskManager();
+                CustomCheckCircuitTask task = new CustomCheckCircuitTask(we, dialog.getSettings());
+                String description = MpsatUtils.getToolchainDescription(we.getTitle());
+                MpsatChainResultHandler monitor = new MpsatChainResultHandler(task);
+                manager.queue(task, description, monitor);
             }
         }
     }

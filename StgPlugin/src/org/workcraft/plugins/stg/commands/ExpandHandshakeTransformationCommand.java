@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 
 import org.workcraft.NodeTransformer;
+import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
@@ -15,7 +16,6 @@ import org.workcraft.dom.visual.MixUtils;
 import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.gui.graph.commands.AbstractTransformationCommand;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.SignalTransition.Type;

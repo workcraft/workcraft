@@ -11,9 +11,9 @@ import java.util.List;
 import org.workcraft.Framework;
 import org.workcraft.MenuOrdering;
 import org.workcraft.MenuOrdering.Position;
+import org.workcraft.commands.Command;
+import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.PluginManager;
-import org.workcraft.gui.graph.commands.Command;
-import org.workcraft.gui.graph.commands.ScriptableCommand;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -115,22 +115,18 @@ public class Commands {
     }
 
     public static void run(WorkspaceEntry we, Command command) {
-        if (command.isApplicableTo(we)) {
-            command.run(we);
-        } else {
-            String commandName = command.getClass().getSimpleName();
-            String displayName = we.getModelEntry().getDescriptor().getDisplayName();
-            Path<String> workspacePath = we.getWorkspacePath();
-            throw new RuntimeException("Command '" + commandName + "' is incompatible with "
-                    + displayName + " (workspace entry '" + workspacePath + "').");
-        }
+        checkCommandApplicability(we, command);
+        command.run(we);
     }
 
-    public static WorkspaceEntry execute(WorkspaceEntry we, ScriptableCommand command) {
-        String commandName = command.getClass().getSimpleName();
-        if (command.isApplicableTo(we)) {
-            return command.execute(we);
-        } else {
+    public static <T> T execute(WorkspaceEntry we, ScriptableCommand<T> command) {
+        checkCommandApplicability(we, command);
+        return command.execute(we);
+    }
+
+    private static void checkCommandApplicability(WorkspaceEntry we, Command command) {
+        if (!command.isApplicableTo(we)) {
+            String commandName = command.getClass().getSimpleName();
             String displayName = we.getModelEntry().getDescriptor().getDisplayName();
             Path<String> workspacePath = we.getWorkspacePath();
             throw new RuntimeException("Command '" + commandName + "' is incompatible with "

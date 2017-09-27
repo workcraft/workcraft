@@ -31,6 +31,9 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.workcraft.commands.AbstractLayoutCommand;
+import org.workcraft.commands.Command;
+import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.Node;
@@ -48,9 +51,6 @@ import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.FileFilters;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.graph.commands.AbstractLayoutCommand;
-import org.workcraft.gui.graph.commands.Command;
-import org.workcraft.gui.graph.commands.ScriptableCommand;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.interop.Exporter;
@@ -67,11 +67,7 @@ import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.serialisation.DeserialisationResult;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
-import org.workcraft.tasks.DefaultTaskManager;
-import org.workcraft.tasks.ProgressMonitor;
-import org.workcraft.tasks.ProgressMonitorArray;
-import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Task;
+import org.workcraft.tasks.ExtendedTaskManager;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.Commands;
 import org.workcraft.util.DataAccumulator;
@@ -102,6 +98,8 @@ public final class Framework {
     public static final String UILAYOUT_FILE_PATH = SETTINGS_DIRECTORY_PATH + File.separator + UILAYOUT_FILE_NAME;
 
     private static final String FRAMEWORK_VARIABLE = "framework";
+    private static final String WORKSPACE_ENTRY_VARIABLE = "workspaceEntry";
+    private static final String MODEL_ENTRY_VARIABLE = "modelEntry";
     private static final String MATH_MODEL_VARIABLE = "mathModel";
     private static final String VISUAL_MODEL_VARIABLE = "visualModel";
 
@@ -135,25 +133,6 @@ public final class Framework {
     public static final String COMMON_REF_WORK_ATTRIBUTE = "ref";
 
     private static Framework instance = null;
-
-    private final class ExtendedTaskManager extends DefaultTaskManager {
-        @Override
-        public <T> Result<? extends T> rawExecute(Task<T> task, String description, ProgressMonitor<? super T> observer) {
-            if (!SwingUtilities.isEventDispatchThread()) {
-                return super.rawExecute(task, description, observer);
-            } else {
-                OperationCancelDialog<T> cancelDialog = new OperationCancelDialog<>(mainWindow, description);
-                ProgressMonitorArray<T> observers = new ProgressMonitorArray<>();
-                if (observer != null) {
-                    observers.add(observer);
-                }
-                observers.add(cancelDialog);
-                this.queue(task, description, observers);
-                cancelDialog.setVisible(true);
-                return cancelDialog.getResult();
-            }
-        }
-    }
 
     class ExecuteScriptAction implements ContextAction {
         private final String script;
@@ -370,12 +349,15 @@ public final class Framework {
 
     public void updateJavaScript(WorkspaceEntry we) {
         ScriptableObject jsGlobalScope = getJavaScriptGlobalScope();
-        ModelEntry modelEntry = we.getModelEntry();
+        setJavaScriptProperty(WORKSPACE_ENTRY_VARIABLE, we, jsGlobalScope, true);
 
-        VisualModel visualModel = modelEntry.getVisualModel();
+        ModelEntry me = we.getModelEntry();
+        setJavaScriptProperty(MODEL_ENTRY_VARIABLE, me, jsGlobalScope, true);
+
+        VisualModel visualModel = me.getVisualModel();
         setJavaScriptProperty(VISUAL_MODEL_VARIABLE, visualModel, jsGlobalScope, true);
 
-        MathModel mathModel = modelEntry.getMathModel();
+        MathModel mathModel = me.getMathModel();
         setJavaScriptProperty(MATH_MODEL_VARIABLE, mathModel, jsGlobalScope, true);
     }
 
@@ -583,7 +565,7 @@ public final class Framework {
     /**
      * Used in functions.js JavaScript wrapper.
      */
-    public WorkspaceEntry executeCommand(WorkspaceEntry we, String className) {
+    public <T> T executeCommand(WorkspaceEntry we, String className) {
         if ((className == null) || className.isEmpty()) {
             LogUtils.logError("Undefined command name.");
         } else {
@@ -591,14 +573,12 @@ public final class Framework {
             boolean scriptable = false;
             for (Command command: Commands.getCommands()) {
                 String commandClassName = command.getClass().getSimpleName();
-                if (className.equals(commandClassName)) {
-                    found = true;
-                    if (command instanceof ScriptableCommand) {
-                        scriptable = true;
-                        if (command.isApplicableTo(we)) {
-                            return Commands.execute(we, (ScriptableCommand) command);
-                        }
-                    }
+                if (!className.equals(commandClassName)) continue;
+                found = true;
+                if (command instanceof ScriptableCommand) {
+                    scriptable = true;
+                    ScriptableCommand<T> scriptableCommand = (ScriptableCommand<T>) command;
+                    return Commands.execute(we, scriptableCommand);
                 }
             }
             if (!found) {
@@ -1022,6 +1002,15 @@ public final class Framework {
 
     public File getWorkingDirectory() {
         return workingDirectory;
+    }
+
+    public WorkspaceEntry getWorkspaceEntry(ModelEntry me) {
+        for (WorkspaceEntry we: getWorkspace().getWorks()) {
+            if (we.getModelEntry() == me) {
+                return we;
+            }
+        }
+        return null;
     }
 
 }

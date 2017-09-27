@@ -3,9 +3,9 @@ package org.workcraft.plugins.stg.commands;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.workcraft.commands.AbstractMergeTransformationCommand;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.gui.graph.commands.AbstractMergeTransformationCommand;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualDummyTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;

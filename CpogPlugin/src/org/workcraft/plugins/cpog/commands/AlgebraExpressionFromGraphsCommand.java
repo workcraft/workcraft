@@ -5,10 +5,10 @@ import java.io.FileNotFoundException;
 import java.io.PrintStream;
 
 import org.workcraft.Framework;
+import org.workcraft.commands.Command;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.graph.GraphEditorPanel;
-import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.gui.AlgebraExportDialog;
 import org.workcraft.plugins.cpog.tools.CpogParsingTool;

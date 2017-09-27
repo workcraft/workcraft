@@ -2,8 +2,8 @@ package org.workcraft.plugins.petri.commands;
 
 import java.util.Set;
 
+import org.workcraft.commands.AbstractMergeTransformationCommand;
 import org.workcraft.dom.visual.VisualComponent;
-import org.workcraft.gui.graph.commands.AbstractMergeTransformationCommand;
 import org.workcraft.plugins.petri.VisualPetriNet;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.workspace.WorkspaceEntry;

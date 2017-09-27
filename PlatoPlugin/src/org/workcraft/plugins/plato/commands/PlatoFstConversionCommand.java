@@ -3,7 +3,7 @@ package org.workcraft.plugins.plato.commands;
 import java.io.File;
 
 import org.workcraft.Framework;
-import org.workcraft.gui.graph.commands.AbstractConversionCommand;
+import org.workcraft.commands.AbstractConversionCommand;
 import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.plato.gui.PlatoWriterDialog;
 import org.workcraft.plugins.plato.tasks.PlatoResultHandler;
@@ -42,7 +42,7 @@ public class PlatoFstConversionCommand extends AbstractConversionCommand {
         } else {
             final Framework framework = Framework.getInstance();
             final TaskManager taskManager = framework.getTaskManager();
-            WorkspaceEntry we = framework.getMainWindow().getCurrentWorkspaceEntry();
+            WorkspaceEntry we = framework.getWorkspaceEntry(me);
             File inputFile = dialog.getFile();
             dotLayout = dialog.getDotLayoutState();
             PlatoTask task = new PlatoTask(inputFile, dialog.getIncludeList(), true);

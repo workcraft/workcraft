@@ -1,11 +1,11 @@
 package org.workcraft.plugins.policy.commands;
 
 import org.workcraft.Framework;
+import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.GraphEditorPanel;
-import org.workcraft.gui.graph.commands.AbstractTransformationCommand;
 import org.workcraft.plugins.policy.VisualPolicyNet;
 import org.workcraft.plugins.policy.tools.PolicyToPetriConverter;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -29,7 +29,7 @@ public class BundleTransitionTransformationCommand extends AbstractTransformatio
     }
 
     @Override
-    public WorkspaceEntry execute(WorkspaceEntry we) {
+    public Void execute(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         we.saveMemento();
         final VisualPolicyNet policy = WorkspaceUtils.getAs(we, VisualPolicyNet.class);
@@ -42,7 +42,7 @@ public class BundleTransitionTransformationCommand extends AbstractTransformatio
             final GraphEditorPanel editor = mainWindow.getCurrentEditor();
             editor.repaint();
         }
-        return we;
+        return null;
     }
 
     @Override

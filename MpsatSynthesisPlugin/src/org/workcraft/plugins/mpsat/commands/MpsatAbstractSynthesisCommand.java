@@ -3,7 +3,7 @@ package org.workcraft.plugins.mpsat.commands;
 import java.util.LinkedList;
 
 import org.workcraft.Framework;
-import org.workcraft.gui.graph.commands.AbstractSynthesisCommand;
+import org.workcraft.commands.AbstractSynthesisCommand;
 import org.workcraft.plugins.mpsat.MpsatSynthesisMode;
 import org.workcraft.plugins.mpsat.MpsatSynthesisParameters;
 import org.workcraft.plugins.mpsat.tasks.MpsatSynthesisChainTask;

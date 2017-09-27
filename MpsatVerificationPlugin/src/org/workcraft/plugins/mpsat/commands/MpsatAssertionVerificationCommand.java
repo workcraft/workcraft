@@ -3,10 +3,12 @@ package org.workcraft.plugins.mpsat.commands;
 import java.io.File;
 
 import org.workcraft.Framework;
+import org.workcraft.commands.AbstractVerificationCommand;
+import org.workcraft.commands.CommandUtils;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.graph.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
+import org.workcraft.plugins.mpsat.MpsatUtils;
 import org.workcraft.plugins.mpsat.MpsatSettingsSerialiser;
 import org.workcraft.plugins.mpsat.gui.MpsatAssertionDialog;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
@@ -36,20 +38,27 @@ public class MpsatAssertionVerificationCommand extends AbstractVerificationComma
     }
 
     @Override
+    public Boolean execute(WorkspaceEntry we) {
+        CommandUtils.commandRequiresGui(getClass().getSimpleName());
+        return null;
+    }
+
+    @Override
     public void run(WorkspaceEntry we) {
+        Framework framework = Framework.getInstance();
+        MainWindow mainWindow = framework.getMainWindow();
         File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, MPSAT_ASSERTION_PRESETS_FILE);
         MpsatPresetManager pmgr = new MpsatPresetManager(presetFile, new MpsatSettingsSerialiser(), true);
-        final Framework framework = Framework.getInstance();
-        MainWindow mainWindow = framework.getMainWindow();
         MpsatAssertionDialog dialog = new MpsatAssertionDialog(mainWindow, pmgr);
         dialog.pack();
         GUI.centerToParent(dialog, mainWindow);
         dialog.setVisible(true);
         if (dialog.getModalResult() == 1) {
-            final MpsatChainTask mpsatTask = new MpsatChainTask(we, dialog.getSettings());
-            final TaskManager taskManager = framework.getTaskManager();
-            final MpsatChainResultHandler monitor = new MpsatChainResultHandler(mpsatTask);
-            taskManager.queue(mpsatTask, "MPSat tool chain", monitor);
+            TaskManager manager = framework.getTaskManager();
+            MpsatChainTask task = new MpsatChainTask(we, dialog.getSettings());
+            String description = MpsatUtils.getToolchainDescription(we.getTitle());
+            MpsatChainResultHandler monitor = new MpsatChainResultHandler(task);
+            manager.queue(task, description, monitor);
         }
     }
 

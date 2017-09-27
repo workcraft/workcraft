@@ -6,7 +6,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 
 import org.workcraft.Framework;
-import org.workcraft.gui.graph.commands.Command;
+import org.workcraft.commands.Command;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.tasks.PGMinerResultHandler;
 import org.workcraft.plugins.cpog.tasks.PGMinerTask;

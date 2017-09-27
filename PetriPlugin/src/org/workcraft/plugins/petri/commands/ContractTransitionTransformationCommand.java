@@ -8,6 +8,7 @@ import java.util.LinkedList;
 import java.util.Set;
 
 import org.workcraft.NodeTransformer;
+import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
@@ -24,7 +25,6 @@ import org.workcraft.dom.visual.connections.ConnectionGraphic;
 import org.workcraft.dom.visual.connections.Polyline;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.gui.graph.commands.AbstractTransformationCommand;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.Place;
@@ -34,10 +34,10 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.petri.VisualTransition;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
-import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Pair;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -78,7 +78,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
     }
 
     @Override
-    public WorkspaceEntry execute(WorkspaceEntry we) {
+    public Void execute(WorkspaceEntry we) {
         VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
         Collection<Node> nodes = collect(visualModel);
         if (nodes.size() > 1) {
@@ -88,7 +88,7 @@ public class ContractTransitionTransformationCommand extends AbstractTransformat
             transform(visualModel, nodes);
             visualModel.selectNone();
         }
-        return we;
+        return null;
     }
 
     @Override

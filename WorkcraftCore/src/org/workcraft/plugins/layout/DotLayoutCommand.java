@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.workcraft.Framework;
+import org.workcraft.commands.AbstractLayoutCommand;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.ConnectionHelper;
@@ -24,7 +25,6 @@ import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
 import org.workcraft.exceptions.LayoutException;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
-import org.workcraft.gui.graph.commands.AbstractLayoutCommand;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.interop.DotFormat;
 import org.workcraft.plugins.layout.jj.DotParser;

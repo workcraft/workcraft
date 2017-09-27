@@ -3,7 +3,7 @@ package org.workcraft.plugins.mpsat;
 import org.workcraft.Framework;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
-import org.workcraft.gui.graph.commands.Command;
+import org.workcraft.commands.Command;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.mpsat.commands.MpsatComplexGateSynthesisCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatGeneralisedCelementSynthesisCommand;

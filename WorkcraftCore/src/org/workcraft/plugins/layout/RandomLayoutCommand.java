@@ -4,13 +4,13 @@ import java.awt.geom.Point2D;
 import java.util.Collection;
 import java.util.Random;
 
+import org.workcraft.commands.AbstractLayoutCommand;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.dom.visual.VisualTransformableNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
-import org.workcraft.gui.graph.commands.AbstractLayoutCommand;
 import org.workcraft.util.Hierarchy;
 
 public class RandomLayoutCommand extends AbstractLayoutCommand {

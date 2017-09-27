@@ -15,7 +15,6 @@ import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat.gui.MpsatReachibilityDialog;
-import org.workcraft.plugins.mpsat.gui.MpsatSolution;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
@@ -234,7 +233,7 @@ final class MpsatReachabilityResultHandler implements Runnable {
         String title = "Verification results";
         String message = getMessage(!solutions.isEmpty());
         MainWindow mainWindow = Framework.getInstance().getMainWindow();
-        if (MpsatSolution.hasTraces(solutions)) {
+        if (MpsatUtils.hasTraces(solutions)) {
             String traceInfo = "";
             if (!isOutputPersistency) {
                 String traceChearacteristic = settings.getInversePredicate() ? "problematic" : "sought";

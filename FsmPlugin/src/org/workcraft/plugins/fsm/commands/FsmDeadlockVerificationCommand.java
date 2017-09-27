@@ -7,10 +7,10 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import org.workcraft.Framework;
+import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.graph.commands.AbstractVerificationCommand;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.Fsm;
@@ -35,7 +35,7 @@ public class FsmDeadlockVerificationCommand extends AbstractVerificationCommand 
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public Boolean execute(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
         final Fsm fsm = WorkspaceUtils.getAs(we, Fsm.class);
@@ -66,6 +66,7 @@ public class FsmDeadlockVerificationCommand extends AbstractVerificationCommand 
                 SelectionHelper.selectByReferencedComponents(visualFsm, (HashSet) deadlockStates);
             }
         }
+        return deadlockStates.isEmpty();
     }
 
     private HashSet<State> checkDeadlock(final Fsm fsm) {

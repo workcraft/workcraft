@@ -1,8 +1,8 @@
 package org.workcraft.plugins.son.commands;
 
 import org.workcraft.Framework;
+import org.workcraft.commands.Command;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.plugins.son.BlockConnector;
 import org.workcraft.plugins.son.OutputRedirect;
 import org.workcraft.plugins.son.SON;

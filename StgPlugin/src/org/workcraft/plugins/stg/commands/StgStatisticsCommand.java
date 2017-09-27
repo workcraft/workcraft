@@ -4,9 +4,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.workcraft.commands.AbstractStatisticsCommand;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
-import org.workcraft.gui.graph.commands.AbstractStatisticsCommand;
 import org.workcraft.plugins.petri.PetriNetChecker;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;

@@ -3,7 +3,7 @@ package org.workcraft.plugins.petrify.commands;
 import java.util.LinkedList;
 
 import org.workcraft.Framework;
-import org.workcraft.gui.graph.commands.AbstractSynthesisCommand;
+import org.workcraft.commands.AbstractSynthesisCommand;
 import org.workcraft.plugins.petrify.tasks.PetrifySynthesisResultHandler;
 import org.workcraft.plugins.petrify.tasks.PetrifySynthesisTask;
 import org.workcraft.plugins.stg.Mutex;

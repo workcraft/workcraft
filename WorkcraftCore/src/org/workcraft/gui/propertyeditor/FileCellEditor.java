@@ -17,6 +17,7 @@ import javax.swing.table.TableCellEditor;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -73,7 +74,8 @@ public class FileCellEditor extends AbstractCellEditor implements TableCellEdito
             }
             final MainWindow mainWindow = framework.getMainWindow();
             if (!fcConfigured) {
-                WorkspaceEntry we = mainWindow.getCurrentWorkspaceEntry();
+                GraphEditorPanel editor = mainWindow.getCurrentEditor();
+                WorkspaceEntry we = editor.getWorkspaceEntry();
                 File file = we.getFile();
                 File dir = file.exists() ? file.getParentFile() : null;
                 if ((dir != null) && dir.exists()) {

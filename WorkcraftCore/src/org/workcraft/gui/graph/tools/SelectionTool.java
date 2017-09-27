@@ -24,6 +24,7 @@ import javax.swing.JToolBar;
 
 import org.workcraft.Framework;
 import org.workcraft.NodeTransformer;
+import org.workcraft.commands.Command;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.BoundingBoxHelper;
@@ -45,7 +46,6 @@ import org.workcraft.gui.actions.PopupToolAction;
 import org.workcraft.gui.events.GraphEditorKeyEvent;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.Viewport;
-import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.graph.editors.AbstractInplaceEditor;
 import org.workcraft.gui.graph.editors.LabelInplaceEditor;
 import org.workcraft.plugins.shared.CommonDecorationSettings;

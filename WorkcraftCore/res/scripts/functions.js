@@ -55,23 +55,31 @@ function loadConfig() {
 }
 
 
-// Miscileneous
+// Text output
 
 function print(msg) {
-	java.lang.System.out.print(msg);
-}
-
-function println(msg) {
 	java.lang.System.out.println(msg);
 }
 
-function printErr(msg) {
-	java.lang.System.err.print(msg);
-}
-
-function printlnErr(msg) {
+function eprint(msg) {
 	java.lang.System.err.println(msg);
 }
+
+function write(text) {
+	java.lang.System.out.print(text);
+}
+
+function write(text, fileName) {
+	dir = framework.getWorkingDirectory();
+	file = new java.io.File(dir, fileName);
+	fileWriter = new java.io.FileWriter(file);
+	bufferedWriter = new java.io.BufferedWriter(fileWriter);
+	bufferedWriter.write(text);
+	bufferedWriter.close();
+}
+
+
+// GUI and exit
 
 function startGUI() {
 	framework.startGUI();
@@ -81,18 +89,10 @@ function stopGUI() {
 	framework.shutdownGUI();
 }
 
-function shutdownGUI() {
-	framework.shutdownGUI();
-}
-
 function quit() {
 	framework.shutdown();
 }
 
 function exit() {
-	framework.shutdown();
-}
-
-function shutdown() {
 	framework.shutdown();
 }

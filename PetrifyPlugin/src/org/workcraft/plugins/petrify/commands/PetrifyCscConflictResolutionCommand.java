@@ -3,7 +3,7 @@ package org.workcraft.plugins.petrify.commands;
 import java.util.Collection;
 
 import org.workcraft.Framework;
-import org.workcraft.gui.graph.commands.ScriptableCommand;
+import org.workcraft.commands.ScriptableCommand;
 import org.workcraft.plugins.petrify.tasks.PetrifyTransformationResultHandler;
 import org.workcraft.plugins.petrify.tasks.PetrifyTransformationTask;
 import org.workcraft.plugins.stg.Mutex;
@@ -13,7 +13,7 @@ import org.workcraft.tasks.TaskManager;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class PetrifyCscConflictResolutionCommand implements ScriptableCommand {
+public class PetrifyCscConflictResolutionCommand implements ScriptableCommand<WorkspaceEntry> {
 
     @Override
     public String getSection() {

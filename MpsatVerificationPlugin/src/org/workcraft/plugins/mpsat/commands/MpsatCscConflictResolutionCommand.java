@@ -3,7 +3,7 @@ package org.workcraft.plugins.mpsat.commands;
 import java.util.Collection;
 
 import org.workcraft.Framework;
-import org.workcraft.gui.graph.commands.Command;
+import org.workcraft.commands.Command;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;

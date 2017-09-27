@@ -1,9 +1,9 @@
 package org.workcraft.plugins.statistics;
 
+import org.workcraft.commands.AbstractStatisticsCommand;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.CommentNode;
 import org.workcraft.dom.math.MathConnection;
-import org.workcraft.gui.graph.commands.AbstractStatisticsCommand;
 import org.workcraft.util.MultiSet;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;

@@ -1,29 +1,38 @@
 package org.workcraft.plugins.mpsat.commands;
 
 import org.workcraft.Framework;
-import org.workcraft.gui.graph.commands.AbstractVerificationCommand;
+import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.MpsatParameters;
+import org.workcraft.plugins.mpsat.MpsatUtils;
+import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
+import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public abstract class MpsatAbstractVerificationCommand extends AbstractVerificationCommand {
 
     @Override
-    public void run(WorkspaceEntry we) {
-        final MpsatParameters settings = getSettings(we);
-        final MpsatChainTask mpsatTask = new MpsatChainTask(we, settings);
+    public Boolean execute(WorkspaceEntry we) {
+        Framework framework = Framework.getInstance();
+        TaskManager manager = framework.getTaskManager();
+        MpsatParameters settings = getSettings(we);
+        MpsatChainTask task = new MpsatChainTask(we, settings);
+        String description = MpsatUtils.getToolchainDescription(we.getTitle());
+        Result<? extends MpsatChainResult> result = manager.execute(task, description);
+        return MpsatUtils.getChainOutcome(result);
+    }
 
-        String description = "MPSat tool chain";
-        String title = we.getTitle();
-        if (!title.isEmpty()) {
-            description += "(" + title + ")";
-        }
-        final Framework framework = Framework.getInstance();
-        final TaskManager taskManager = framework.getTaskManager();
-        final MpsatChainResultHandler monitor = new MpsatChainResultHandler(mpsatTask);
-        taskManager.queue(mpsatTask, description, monitor);
+    @Override
+    public void run(WorkspaceEntry we) {
+        Framework framework = Framework.getInstance();
+        TaskManager manager = framework.getTaskManager();
+        MpsatParameters settings = getSettings(we);
+        MpsatChainTask task = new MpsatChainTask(we, settings);
+        String description = MpsatUtils.getToolchainDescription(we.getTitle());
+        MpsatChainResultHandler monitor = new MpsatChainResultHandler(task);
+        manager.queue(task, description, monitor);
     }
 
     public abstract MpsatParameters getSettings(WorkspaceEntry we);

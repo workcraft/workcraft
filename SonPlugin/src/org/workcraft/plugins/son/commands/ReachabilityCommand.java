@@ -1,7 +1,7 @@
 package org.workcraft.plugins.son.commands;
 
 import org.workcraft.Framework;
-import org.workcraft.gui.graph.commands.Command;
+import org.workcraft.commands.Command;
 import org.workcraft.plugins.son.SON;
 import org.workcraft.plugins.son.tasks.ReachabilityTask;
 import org.workcraft.tasks.TaskManager;

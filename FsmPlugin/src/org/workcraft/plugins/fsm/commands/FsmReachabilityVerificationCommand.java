@@ -7,10 +7,10 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 import org.workcraft.Framework;
+import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.graph.commands.AbstractVerificationCommand;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.Fsm;
@@ -35,22 +35,23 @@ public class FsmReachabilityVerificationCommand extends AbstractVerificationComm
     }
 
     @Override
-    public final void run(WorkspaceEntry we) {
+    public final Boolean execute(WorkspaceEntry we) {
         final Fsm fsm = WorkspaceUtils.getAs(we, Fsm.class);
-        HashSet<State> unreachableState = checkReachability(fsm);
-        if (unreachableState.isEmpty()) {
+        HashSet<State> unreachableStates = checkReachability(fsm);
+        if (unreachableStates.isEmpty()) {
             DialogUtils.showInfo("The model does not have unreachable states.", TITLE);
         } else {
-            String refStr = ReferenceHelper.getNodesAsString(fsm, (Collection) unreachableState, 50);
+            String refStr = ReferenceHelper.getNodesAsString(fsm, (Collection) unreachableStates, 50);
             String msg = "The model has unreachable state:\n" + refStr + "\n\nSelect unreachable states?\n";
             if (DialogUtils.showConfirm(msg, TITLE)) {
                 final Framework framework = Framework.getInstance();
                 final MainWindow mainWindow = framework.getMainWindow();
                 mainWindow.getToolbox(we).selectToolInstance(SelectionTool.class);
                 VisualFsm visualFsm = WorkspaceUtils.getAs(we, VisualFsm.class);
-                SelectionHelper.selectByReferencedComponents(visualFsm, (HashSet) unreachableState);
+                SelectionHelper.selectByReferencedComponents(visualFsm, (HashSet) unreachableStates);
             }
         }
+        return unreachableStates.isEmpty();
     }
 
     private HashSet<State> checkReachability(final Fsm fsm) {

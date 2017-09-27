@@ -1,8 +1,8 @@
 package org.workcraft.plugins.cpog.commands;
 
 import org.workcraft.Framework;
+import org.workcraft.commands.AbstractConversionCommand;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.graph.commands.AbstractConversionCommand;
 import org.workcraft.plugins.cpog.CpogDescriptor;
 import org.workcraft.plugins.cpog.PetriToCpogSettings;
 import org.workcraft.plugins.cpog.VisualCpog;

@@ -67,23 +67,33 @@ public class GUI {
     }
 
     public static void centerToParent(Window frame, Window parent) {
-        Dimension parentSize = parent.getSize();
-        Dimension mySize = frame.getSize();
-        Point q = parent.getLocationOnScreen();
-        frame.setLocation(((parentSize.width - mySize.width) / 2) + q.x, ((parentSize.height - mySize.height) / 2) + q.y);
+        if ((frame != null) && (parent != null)) {
+            Dimension parentSize = parent.getSize();
+            Dimension mySize = frame.getSize();
+            Point q = parent.getLocationOnScreen();
+            int x = ((parentSize.width - mySize.width) / 2) + q.x;
+            int y = ((parentSize.height - mySize.height) / 2) + q.y;
+            frame.setLocation(x, y);
+        }
     }
 
     public static void centerAndSizeToParent(Window frame, Window parent) {
-        Dimension parentSize = parent.getSize();
-        frame.setSize(parentSize.width / 2, parentSize.height / 2);
-        centerToParent(frame, parent);
+        if ((frame != null) && (parent != null)) {
+            Dimension parentSize = parent.getSize();
+            frame.setSize(parentSize.width / 2, parentSize.height / 2);
+            centerToParent(frame, parent);
+        }
     }
 
     public static void centerToParent(JComponent frame, Window parent) {
-        Dimension parentSize = parent.getSize();
-        Dimension mySize = frame.getSize();
-        Point q = parent.getLocationOnScreen();
-        frame.setLocation(((parentSize.width - mySize.width) / 2) + q.x, ((parentSize.height - mySize.height) / 2) + q.y);
+        if ((frame != null) && (parent != null)) {
+            Dimension parentSize = parent.getSize();
+            Dimension mySize = frame.getSize();
+            Point q = parent.getLocationOnScreen();
+            int x = ((parentSize.width - mySize.width) / 2) + q.x;
+            int y = ((parentSize.height - mySize.height) / 2) + q.y;
+            frame.setLocation(x, y);
+        }
     }
 
     public static void sizeFileChooserToScreen(JFileChooser fc, DisplayMode mode) {

@@ -8,8 +8,8 @@ import java.io.PrintWriter;
 
 import org.workcraft.Framework;
 import org.workcraft.MenuOrdering;
+import org.workcraft.commands.Command;
 import org.workcraft.gui.DesktopApi;
-import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.ProcessWindowsSettings;
 import org.workcraft.plugins.fst.VisualFst;

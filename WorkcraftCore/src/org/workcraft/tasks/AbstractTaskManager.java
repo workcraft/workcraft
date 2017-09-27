@@ -42,13 +42,7 @@ public abstract class AbstractTaskManager implements TaskManager {
 
     @Override
     public final <T> void queue(final Task<T> task, final String description) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                rawExecute(task, description, null);
-            }
-        }
-        ).start();
+        queue(task, description, null);
     }
 
     @Override

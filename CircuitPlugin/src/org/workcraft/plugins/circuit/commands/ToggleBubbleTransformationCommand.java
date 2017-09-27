@@ -5,12 +5,12 @@ import java.util.HashSet;
 import java.util.LinkedList;
 
 import org.workcraft.NodeTransformer;
+import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanOperations;
 import org.workcraft.formula.utils.BooleanUtils;
-import org.workcraft.gui.graph.commands.AbstractTransformationCommand;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;

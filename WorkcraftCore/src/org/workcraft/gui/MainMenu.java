@@ -23,6 +23,7 @@ import javax.swing.KeyStroke;
 
 import org.workcraft.Framework;
 import org.workcraft.MenuOrdering.Position;
+import org.workcraft.commands.Command;
 import org.workcraft.PluginManager;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.actions.ActionCheckBoxMenuItem;
@@ -31,7 +32,6 @@ import org.workcraft.gui.actions.CommandAction;
 import org.workcraft.gui.actions.ExportAction;
 import org.workcraft.gui.actions.ToggleToolbarAction;
 import org.workcraft.gui.actions.ToggleWindowAction;
-import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Format;

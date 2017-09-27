@@ -51,6 +51,7 @@ import org.jvnet.substance.SubstanceLookAndFeel;
 import org.jvnet.substance.api.SubstanceConstants.TabContentPaneBorderKind;
 import org.workcraft.Framework;
 import org.workcraft.PluginManager;
+import org.workcraft.commands.Command;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.dom.VisualModelDescriptor;
 import org.workcraft.dom.math.MathModel;
@@ -62,7 +63,6 @@ import org.workcraft.exceptions.VisualModelInstantiationException;
 import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.actions.ScriptedActionListener;
 import org.workcraft.gui.graph.GraphEditorPanel;
-import org.workcraft.gui.graph.commands.Command;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.layouts.MultiBorderLayout;
 import org.workcraft.gui.propertyeditor.SettingsEditorDialog;
@@ -1186,8 +1186,6 @@ public class MainWindow extends JFrame {
 
     public void refreshWorkspaceEntryTitle(WorkspaceEntry we, boolean updateHeaders) {
         for (DockableWindow window: editorWindows.get(we)) {
-            // final GraphEditorPanel editor = getCurrentEditor();
-            // String title = getTitle(we, editor.getModel());
             String title = getTitle(we);
             window.setTitle(title);
         }
@@ -1242,10 +1240,6 @@ public class MainWindow extends JFrame {
     public Toolbox getCurrentToolbox() {
         GraphEditorPanel editor = getCurrentEditor();
         return (editor == null) ? null : editor.getToolBox();
-    }
-
-    public WorkspaceEntry getCurrentWorkspaceEntry() {
-        return getCurrentEditor().getWorkspaceEntry();
     }
 
     public void repaintCurrentEditor() {
