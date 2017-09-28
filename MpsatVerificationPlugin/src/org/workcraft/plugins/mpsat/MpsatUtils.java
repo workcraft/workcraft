@@ -34,7 +34,9 @@ public class MpsatUtils {
             MpsatChainResult returnValue = chainResult.getReturnValue();
             if (returnValue != null) {
                 Result<? extends ExternalProcessResult> mpsatResult = returnValue.getMpsatResult();
-                solutions.addAll(getSolutions(mpsatResult));
+                if (mpsatResult != null) {
+                    solutions.addAll(getSolutions(mpsatResult));
+                }
             }
         }
         return solutions;
@@ -60,7 +62,7 @@ public class MpsatUtils {
     public static Boolean getCombinedChainOutcome(Result<? extends MpsatCombinedChainResult> combinedChainResult) {
         List<MpsatSolution> solutions = getCombinedChainSolutions(combinedChainResult);
         if (solutions != null) {
-            return hasTraces(solutions);
+            return !hasTraces(solutions);
         }
         return null;
     }

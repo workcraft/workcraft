@@ -247,4 +247,25 @@ public class FileUtils {
         }
     }
 
+    public static boolean checkAvailability(File file, String title) {
+        boolean result = true;
+        if (title == null) {
+            title = "File access error";
+        }
+        if (file == null) {
+            DialogUtils.showError("The file name is undefined.\n", title);
+            result = false;
+        } else if (!file.exists()) {
+            DialogUtils.showError("The path  \"" + file.getPath() + "\" does not exisit.\n", title);
+            result = false;
+        } else if (!file.isFile()) {
+            DialogUtils.showError("The path  \"" + file.getPath() + "\" is not a file.\n", title);
+            result = false;
+        } else if (!file.canRead()) {
+            DialogUtils.showError("The file  \"" + file.getPath() + "\" cannot be read.\n", title);
+            result = false;
+        }
+        return result;
+    }
+
 }
