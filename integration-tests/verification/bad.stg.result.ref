@@ -1,0 +1,10 @@
+Combined check: false
+Consistency: true
+Deadlock-freeness: false
+Input properness: true
+Output persistency: false
+CSC: true
+USC: false
+DI interface: false
+Normalcy: false
+Mutex implementability: null
