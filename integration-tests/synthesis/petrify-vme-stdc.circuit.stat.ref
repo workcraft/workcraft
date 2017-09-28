@@ -1,0 +1,6 @@
+Circuit analysis:
+  Component count (mapped + unmapped) -  8 (0 + 8)
+  Driver pin count (combinational + sequential + undefined) -  8 (6 + 2 + 0)
+  Literal count combinational / sequential (set + reset) -  22 / 8 (4 + 4)
+  Port count (input + output) -  6 (3 + 3)
+  Isolated components / ports / pins -  0 / 0 / 0
