@@ -19,6 +19,15 @@ REF_FILE_PATTERN="*.ref"
 
 [[ $(basename $PWD) == $DIR ]] && cd ..
 
+# Symbolic links to libraries and tools directories
+if [[ $OSTYPE == darwin* ]]; then
+   [[ -e libraries ]] || ln -s dist-template/osx/Contents/Resources/libraries
+   [[ -e tools ]] || ln -s dist-template/osx/Contents/Resources/tools
+else
+   [[ -e libraries ]] || ln -s dist-template/linux/libraries
+   [[ -e tools ]] || ln -s dist-template/linux/tools
+fi
+
 echo "Running integration tests:"
 for test_dir in ${DIR}/${TEST_DIR_PATTERN}; do
     [[ -d $test_dir ]] || continue

@@ -152,7 +152,6 @@ public class MpsatSynthesisCommandsTests {
         Assert.assertEquals(expectedGateCount, dstGateCount);
     }
 
-
     private Set<String> getMutexNames(Stg stg) {
         HashSet<String> result = new HashSet<>();
         for (StgPlace place: stg.getMutexPlaces()) {

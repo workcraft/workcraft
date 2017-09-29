@@ -142,7 +142,8 @@ public class CircuitStatisticsCommand extends AbstractStatisticsCommand {
                 + "\n  Fanin distribution [0 / 1 / 2 ...] -  " + getDistribution(fanin)
                 + "\n  Fanout distribution [0 / 1 / 2 ...] -  " + getDistribution(fanout)
                 + "\n  Isolated components / ports / pins -  "
-                + isolatedComponentCount + " / " + isolatedPortCount + " / " + isolatedPinCount;
+                + isolatedComponentCount + " / " + isolatedPortCount + " / " + isolatedPinCount
+                + "\n";
     }
 
     private int getMaxValue(MultiSet<Integer> multiset) {

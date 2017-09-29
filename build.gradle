@@ -134,6 +134,7 @@ apply plugin: 'com.github.kt3k.coveralls'
 def coverallsProjects = subprojects.findAll {
     it.name == 'CircuitPlugin' ||
     it.name == 'MpsatSynthesisPlugin' ||
+    it.name == 'MpsatVerificationPlugin' ||
     it.name == 'PetrifyPlugin' ||
     it.name == 'PetriPlugin' ||
     it.name == 'StgPlugin' ||

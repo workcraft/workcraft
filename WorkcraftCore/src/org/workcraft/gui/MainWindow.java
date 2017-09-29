@@ -943,7 +943,7 @@ public class MainWindow extends JFrame {
     public WorkspaceEntry openWork(File file) {
         final Framework framework = Framework.getInstance();
         WorkspaceEntry we = null;
-        if (checkFileMessageDialog(file, null)) {
+        if (FileUtils.checkAvailability(file, null)) {
             try {
                 we = framework.loadWork(file);
                 if (we.getModelEntry().isVisual()) {
@@ -1088,7 +1088,7 @@ public class MainWindow extends JFrame {
     }
 
     public void importFrom(File file, Importer[] importers) {
-        if (checkFileMessageDialog(file, null)) {
+        if (FileUtils.checkAvailability(file, null)) {
             for (Importer importer: importers) {
                 if (importer.accept(file)) {
                     try {
@@ -1156,30 +1156,9 @@ public class MainWindow extends JFrame {
         return prefix + we.getTitle() + suffix;
     }
 
-    public boolean checkFileMessageDialog(File file, String title) {
-        boolean result = true;
-        if (title == null) {
-            title = "File access error";
-        }
-        if (!file.exists()) {
-            JOptionPane.showMessageDialog(this, "The path  \"" + file.getPath() + "\" does not exisit.\n", title,
-                    JOptionPane.ERROR_MESSAGE);
-            result = false;
-        } else if (!file.isFile()) {
-            JOptionPane.showMessageDialog(this, "The path  \"" + file.getPath() + "\" is not a file.\n", title,
-                    JOptionPane.ERROR_MESSAGE);
-            result = false;
-        } else if (!file.canRead()) {
-            JOptionPane.showMessageDialog(this, "The file  \"" + file.getPath() + "\" cannot be read.\n", title,
-                    JOptionPane.ERROR_MESSAGE);
-            result = false;
-        }
-        return result;
-    }
-
     public void openExternally(String fileName, String errorTitle) {
         File file = new File(fileName);
-        if (checkFileMessageDialog(file, errorTitle)) {
+        if (FileUtils.checkAvailability(file, errorTitle)) {
             DesktopApi.open(file);
         }
     }

@@ -140,7 +140,8 @@ public class PetriStatisticsCommand extends AbstractStatisticsCommand {
                 + "\n    * State machine -  " + PetriNetChecker.isStateMachine(petri)
                 + "\n    * Free choice -  " + PetriNetChecker.isFreeChoice(petri)
                 + "\n    * Extended free choice -  " + PetriNetChecker.isExtendedFreeChoice(petri)
-                + "\n    * Pure -  " + PetriNetChecker.isPure(petri);
+                + "\n    * Pure -  " + PetriNetChecker.isPure(petri)
+                + "\n";
     }
 
 }

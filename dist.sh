@@ -84,10 +84,11 @@ for platform in $platforms; do
 
     cp -r $template_dir/* $dist_path/
 
-    # Set `Resources' as the distribution path on OS X
+    # Set Resources as the distribution path on OS X
     if [ "$platform" = "osx" ]; then
-        # Update Info.plist with version tag
-        sed -i.bk "s/__VERSION__/$tag/" $dist_path/Contents/Info.plist
+        # Update Info.plist with version tag (OS X `sed -i` requires backup extension, e.g. `sed -i.bak`)
+        sed -i.bak "s/__VERSION__/$tag/" ${dist_path}/Contents/Info.plist
+        rm -f ${dist_path}/Contents/Info.plist.bak
 
         dist_path=$dist_path/Contents/Resources
     fi

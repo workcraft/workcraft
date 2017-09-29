@@ -28,7 +28,7 @@ public class BasicStatisticsCommand extends AbstractStatisticsCommand {
         if (s.isEmpty()) {
             return "The model is empty.";
         }
-        return "Component count:" + s;
+        return "Component count:" + s + "\n";
     }
 
     public String renameCategory(String categoryName) {
