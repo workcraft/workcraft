@@ -1,11 +1,10 @@
 // Editor helper functions
 
-importPackage(java.util);
-
 function select() {
-    var result = new LinkedList();
+    var result = new java.utils.LinkedList();
     for (var i = 0; i < arguments.length; i++) {
-        result.add(visualModel.getNodeByReference(arguments[i]));
+        node = visualModel.getNodeByReference(arguments[i]);
+        result.add(node);
     }
     visualModel.select(result);
 }

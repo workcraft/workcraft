@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.jar.JarEntry;
@@ -13,7 +14,7 @@ import java.util.jar.JarFile;
 public class ResourceUtils {
 
     public static Set<String> getResources(String path) throws URISyntaxException, IOException {
-        HashSet<String> result = new HashSet<String>();
+        HashMap<String, URL> resourceToDirMap = new HashMap<String, URL>();
         if (!path.endsWith("/")) {
             path += "/";
         }
@@ -21,9 +22,15 @@ public class ResourceUtils {
         Enumeration<URL> dirUrls = classLoader.getResources(path);
         while (dirUrls.hasMoreElements()) {
             URL dirUrl = dirUrls.nextElement();
-            result.addAll(getResources(path, dirUrl));
+            for (String resource: getResources(path, dirUrl)) {
+                if (resourceToDirMap.containsKey(resource)) {
+                    LogUtils.logError("Skipping resource '" + resource + "' from '" + dirUrl
+                            + "' as it is already present in '" + resourceToDirMap.get(resource) + "'");
+                }
+                resourceToDirMap.put(resource, dirUrl);
+            }
         }
-        return result;
+        return new HashSet<>(resourceToDirMap.keySet());
     }
 
     private static Set<String> getResources(String path, URL url) throws URISyntaxException, IOException {

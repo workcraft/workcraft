@@ -79,14 +79,8 @@ public class Console {
                 LogUtils.logMessage("  Executing script: " + scriptName);
                 framework.execJavaScriptResource(scriptName);
             }
-        } catch (FileNotFoundException e) {
-            LogUtils.logWarning("System script file not found: " + e.getMessage());
-        } catch (IOException e) {
-            LogUtils.logError("Error reading system script file: " + e.getMessage());
-        } catch (WrappedException | org.mozilla.javascript.EcmaError e) {
-            LogUtils.logError("Startup script failed: " + e.getMessage());
-        } catch (URISyntaxException e) {
-            LogUtils.logError(": " + e.getMessage());
+        } catch (IOException | URISyntaxException e) {
+            LogUtils.logError("Cannot read script files: " + e.getMessage());
         }
         // NOTE: Config needs to be loaded before GUI.
         framework.loadConfig();
