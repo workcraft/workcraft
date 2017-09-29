@@ -4,7 +4,7 @@ import java.io.File;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
-import org.workcraft.commands.CommandUtils;
+import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
@@ -40,7 +40,7 @@ public class MpsatPropertyVerificationCommand extends AbstractVerificationComman
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        CommandUtils.commandRequiresGui(getClass().getSimpleName());
+        ScriptableCommandUtils.showErrorRequiresGui(getClass().getSimpleName());
         return null;
     }
 

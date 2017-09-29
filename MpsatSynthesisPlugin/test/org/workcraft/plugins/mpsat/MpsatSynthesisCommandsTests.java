@@ -28,9 +28,9 @@ import org.workcraft.workspace.WorkspaceUtils;
 public class MpsatSynthesisCommandsTests {
 
     @BeforeClass
-    public static void initPlugins() {
+    public static void init() {
         final Framework framework = Framework.getInstance();
-        framework.initPlugins();
+        framework.init();
         switch (DesktopApi.getOs()) {
         case LINUX:
             PunfSettings.setCommand("../dist-template/linux/tools/UnfoldingTools/punf");
@@ -78,27 +78,27 @@ public class MpsatSynthesisCommandsTests {
 
     @Test
     public void bufferTechnologyMappingSynthesis() {
-        testTechnologyMappingSynthesisCommad("org/workcraft/plugins/mpsat/buffer-compact.stg.work", 1);
+        testTechnologyMappingSynthesisCommand("org/workcraft/plugins/mpsat/buffer-compact.stg.work", 1);
     }
 
     @Test
     public void celementTechnologyMappingSynthesis() {
-        testTechnologyMappingSynthesisCommad("org/workcraft/plugins/mpsat/celement-compact.stg.work", 1);
+        testTechnologyMappingSynthesisCommand("org/workcraft/plugins/mpsat/celement-compact.stg.work", 1);
     }
 
     @Test
     public void constTechnologyMappingSynthesis() {
-        testTechnologyMappingSynthesisCommad("org/workcraft/plugins/mpsat/const.stg.work", 5);
+        testTechnologyMappingSynthesisCommand("org/workcraft/plugins/mpsat/const.stg.work", 5);
     }
 
     @Test
     public void arbitrationTechnologyMappingSynthesis() {
-        testTechnologyMappingSynthesisCommad("org/workcraft/plugins/mpsat/arbitration-3.stg.work", 6);
+        testTechnologyMappingSynthesisCommand("org/workcraft/plugins/mpsat/arbitration-3.stg.work", 6);
     }
 
     //@Test
     public void edcTechnologyMappingSynthesis() {
-        testTechnologyMappingSynthesisCommad("org/workcraft/plugins/mpsat/edc-csc.stg.work", 10);
+        testTechnologyMappingSynthesisCommand("org/workcraft/plugins/mpsat/edc-csc.stg.work", 10);
     }
 
     private void testComplexGateSynthesisCommand(String testStgWork, int expectedGateCount) {
@@ -109,7 +109,7 @@ public class MpsatSynthesisCommandsTests {
         }
     }
 
-    private void testTechnologyMappingSynthesisCommad(String testStgWork, int expectedGateCount) {
+    private void testTechnologyMappingSynthesisCommand(String testStgWork, int expectedGateCount) {
         try {
             testSynthesisCommand(MpsatTechnologyMappingSynthesisCommand.class, testStgWork, expectedGateCount);
         } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {

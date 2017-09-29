@@ -6,6 +6,7 @@ import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Version;
 import org.workcraft.commands.Command;
+import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.plugins.petri.commands.CollapseProxyTransformationCommand;
 import org.workcraft.plugins.petri.commands.ContractTransitionTransformationCommand;
@@ -52,7 +53,9 @@ public class PetriNetModule implements Module {
         pm.registerClass(Command.class, ProxyReadArcPlaceTransformationCommand.class);
         pm.registerClass(Command.class, MergePlaceTransformationCommand.class);
         pm.registerClass(Command.class, MergeTransitionTransformationCommand.class);
-        pm.registerClass(Command.class, PetriStatisticsCommand.class);
+
+        ScriptableCommandUtils.register(PetriStatisticsCommand.class, "statPetri",
+                "advanced complexity estimates for the Petri net");
     }
 
     private void initCompatibilityManager() {

@@ -1,3 +1,3 @@
 we = load('vme.stg.work');
-export(we, 'vme.stg.g', 'STG');
+exportStg(we, 'vme.stg.g');
 exit();

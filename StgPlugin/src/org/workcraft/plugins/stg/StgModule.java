@@ -6,6 +6,7 @@ import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Version;
 import org.workcraft.commands.Command;
+import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Exporter;
@@ -77,7 +78,9 @@ public class StgModule implements Module {
         pm.registerClass(Command.class, InsertDummyTransformationCommand.class);
         pm.registerClass(Command.class, ExpandHandshakeTransformationCommand.class);
         pm.registerClass(Command.class, ExpandHandshakeReqAckTransformationCommand.class);
-        pm.registerClass(Command.class, StgStatisticsCommand.class);
+
+        ScriptableCommandUtils.register(StgStatisticsCommand.class, "statStg",
+                "advanced complexity estimates for the STG");
     }
 
     private void initCompatibilityManager() {

@@ -27,9 +27,9 @@ import org.workcraft.workspace.WorkspaceUtils;
 public class PetrifySynthesisCommandsTests {
 
     @BeforeClass
-    public static void initPlugins() {
+    public static void init() {
         final Framework framework = Framework.getInstance();
-        framework.initPlugins();
+        framework.init();
         switch (DesktopApi.getOs()) {
         case LINUX:
             PetrifySettings.setCommand("../dist-template/linux/tools/PetrifyTools/petrify");

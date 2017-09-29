@@ -109,9 +109,9 @@ public class StgStatisticsCommandTests {
     };
 
     @BeforeClass
-    public static void initPlugins() {
+    public static void init() {
         final Framework framework = Framework.getInstance();
-        framework.initPlugins();
+        framework.init();
     }
 
     @Test

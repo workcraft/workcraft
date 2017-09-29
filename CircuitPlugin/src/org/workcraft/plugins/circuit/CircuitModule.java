@@ -6,18 +6,19 @@ import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Version;
 import org.workcraft.commands.Command;
+import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.circuit.commands.CircuitAssertionVerificationCommand;
 import org.workcraft.plugins.circuit.commands.CircuitConformationVerificationCommand;
-import org.workcraft.plugins.circuit.commands.CircuitDeadlockVerificationCommand;
+import org.workcraft.plugins.circuit.commands.CircuitDeadlockFreenessVerificationCommand;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutCommand;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutPlacementCommand;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutRoutingCommand;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutSettings;
-import org.workcraft.plugins.circuit.commands.CircuitPersistencyVerificationCommand;
+import org.workcraft.plugins.circuit.commands.CircuitOutputPersistencyVerificationCommand;
 import org.workcraft.plugins.circuit.commands.CircuitPropertyVerificationCommand;
 import org.workcraft.plugins.circuit.commands.CircuitStatisticsCommand;
 import org.workcraft.plugins.circuit.commands.CircuitStrictImplementationVerificationCommand;
@@ -70,11 +71,18 @@ public class CircuitModule implements Module {
         pm.registerClass(Settings.class, CircuitLayoutSettings.class);
 
         pm.registerClass(Command.class, CircuitToStgConversionCommand.class);
-        pm.registerClass(Command.class, CircuitConformationVerificationCommand.class);
-        pm.registerClass(Command.class, CircuitDeadlockVerificationCommand.class);
-        pm.registerClass(Command.class, CircuitPersistencyVerificationCommand.class);
-        pm.registerClass(Command.class, CircuitVerificationCommand.class);
-        pm.registerClass(Command.class, CircuitStrictImplementationVerificationCommand.class);
+
+        ScriptableCommandUtils.register(CircuitVerificationCommand.class, "checkCircuitCombined",
+                "combined check of the circuit for deadlock freeness, conformation to environment and output persistency");
+        ScriptableCommandUtils.register(CircuitConformationVerificationCommand.class, "checkCircuitConformation",
+                "check the circuit for conformation to environment");
+        ScriptableCommandUtils.register(CircuitDeadlockFreenessVerificationCommand.class, "checkCircuitDeadlockFreeness",
+                "check the circuit for deadlock freeness");
+        ScriptableCommandUtils.register(CircuitOutputPersistencyVerificationCommand.class, "checkCircuitOutputPersistency",
+                "check the circuit for output persistency");
+        ScriptableCommandUtils.register(CircuitStrictImplementationVerificationCommand.class, "checkCircuitStrictImplementation",
+                "check the circuit for strict implementation of its signals according to the environment");
+
         pm.registerClass(Command.class, CircuitPropertyVerificationCommand.class);
         pm.registerClass(Command.class, CircuitAssertionVerificationCommand.class);
 
@@ -84,7 +92,9 @@ public class CircuitModule implements Module {
         pm.registerClass(Command.class, ContractComponentTransformationCommand.class);
         pm.registerClass(Command.class, InsertBufferTransformationCommand.class);
         pm.registerClass(Command.class, ToggleBubbleTransformationCommand.class);
-        pm.registerClass(Command.class, CircuitStatisticsCommand.class);
+
+        ScriptableCommandUtils.register(CircuitStatisticsCommand.class, "statCircuit",
+                "advanced complexity estimates for the circuit");
     }
 
     private void initCompatibilityManager() {

@@ -4,6 +4,7 @@ import org.workcraft.Framework;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.commands.Command;
+import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.layout.DotLayoutCommand;
 import org.workcraft.plugins.layout.DotLayoutSettings;
@@ -44,7 +45,9 @@ public class BuiltinTools implements Module {
 
         pm.registerClass(Command.class, CopyLabelTransformationCommand.class);
         pm.registerClass(Command.class, StraightenConnectionTransformationCommand.class);
-        pm.registerClass(Command.class, BasicStatisticsCommand.class);
+
+        ScriptableCommandUtils.register(BasicStatisticsCommand.class, "statModel",
+                "node and arc count for the graph (all models are supported)");
     }
 
     @Override

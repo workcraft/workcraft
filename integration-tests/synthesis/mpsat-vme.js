@@ -1,20 +1,20 @@
-we = load('vme.stg.work');
-csc = executeCommand(we, 'MpsatCscConflictResolutionCommand');
+stgWork = load('vme.stg.work');
+cscStgWork = resolveCscConflictMpsat(stgWork);
 
-cgCircuit = executeCommand(csc, 'MpsatComplexGateSynthesisCommand');
-cgStat = executeCommand(cgCircuit, 'CircuitStatisticsCommand');
+cgCircuitWork = synthComplexGateMpsat(cscStgWork);
+cgStat = statCircuit(cgCircuitWork);
 write(cgStat, 'mpsat-vme-cg.circuit.stat');
 
-stdcCircuit = executeCommand(csc, 'MpsatStandardCelementSynthesisCommand');
-stdcStat = executeCommand(cgCircuit, 'CircuitStatisticsCommand');
-write(stdcStat, 'mpsat-vme-stdc.circuit.stat');
-
-gcCircuit = executeCommand(csc, 'MpsatGeneralisedCelementSynthesisCommand');
-gcStat = executeCommand(gcCircuit, 'CircuitStatisticsCommand');
+gcCircuitWork = synthGeneralisedCelementMpsat(cscStgWork);
+gcStat = statCircuit(gcCircuitWork);
 write(gcStat, 'mpsat-vme-gc.circuit.stat');
 
-tmCircuit = executeCommand(csc, 'MpsatTechnologyMappingSynthesisCommand');
-tmStat = executeCommand(tmCircuit, 'CircuitStatisticsCommand');
+stdcCircuitWork = synthGeneralisedCelementMpsat(cscStgWork);
+stdcStat = statCircuit(cgCircuitWork);
+write(stdcStat, 'mpsat-vme-stdc.circuit.stat');
+
+tmCircuitWork = synthTechnologyMappingMpsat(cscStgWork);
+tmStat = statCircuit(tmCircuitWork);
 write(tmStat, 'mpsat-vme-tm.circuit.stat');
 
 exit();

@@ -68,12 +68,10 @@ public class Console {
         System.out.println();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        // NOTE: JavaScript needs to be initialised before GUI.
-        framework.initJavaScript();
-        // NOTE: Plugins need to be loaded before GUI (because of assigning PropertyProviders)
+        // NOTE: JavaScript and Plugins needs to be initialised before GUI (because of assigning PropertyProviders)
         // and before config (because of plugin-specific settings).
-        framework.initPlugins();
-        // NOTE: Scripts should run after JavaScript, plugins, config and GUI.
+        framework.init();
+        // NOTE: Scripts should run after JavaScript, plugins, config (and possibly before GUI).
         try {
             for (String scriptName: ResourceUtils.getResources("scripts/")) {
                 LogUtils.logMessage("  Executing script: " + scriptName);

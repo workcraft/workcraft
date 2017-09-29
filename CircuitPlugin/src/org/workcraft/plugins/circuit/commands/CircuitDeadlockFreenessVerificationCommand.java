@@ -1,6 +1,6 @@
 package org.workcraft.plugins.circuit.commands;
 
-public class CircuitPersistencyVerificationCommand extends CircuitVerificationCommand {
+public class CircuitDeadlockFreenessVerificationCommand extends CircuitVerificationCommand {
 
     @Override
     public int getPriority() {
@@ -9,7 +9,7 @@ public class CircuitPersistencyVerificationCommand extends CircuitVerificationCo
 
     @Override
     public String getDisplayName() {
-        return "Output persistency [MPSat]";
+        return "Deadlock freeness [MPSat]";
     }
 
     @Override
@@ -18,7 +18,7 @@ public class CircuitPersistencyVerificationCommand extends CircuitVerificationCo
     }
 
     @Override
-    public boolean checkDeadlock() {
+    public boolean checkPersistency() {
         return false;
     }
 

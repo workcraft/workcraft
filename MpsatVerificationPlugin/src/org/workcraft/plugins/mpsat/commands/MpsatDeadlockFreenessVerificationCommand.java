@@ -5,7 +5,7 @@ import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class MpsatDeadlockVerificationCommand extends MpsatAbstractVerificationCommand {
+public class MpsatDeadlockFreenessVerificationCommand extends MpsatAbstractVerificationCommand {
 
     @Override
     public String getDisplayName() {

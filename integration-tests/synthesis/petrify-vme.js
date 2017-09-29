@@ -1,20 +1,20 @@
-we = load('vme.stg.work');
-csc = executeCommand(we, 'PetrifyCscConflictResolutionCommand');
+stgWork = load('vme.stg.work');
+cscStgWork = resolveCscConflictPetrify(stgWork);
 
-cgCircuit = executeCommand(csc, 'PetrifyComplexGateSynthesisCommand');
-cgStat = executeCommand(cgCircuit, 'CircuitStatisticsCommand');
+cgCircuitWork = synthComplexGatePetrify(cscStgWork);
+cgStat = statCircuit(cgCircuitWork);
 write(cgStat, 'petrify-vme-cg.circuit.stat');
 
-stdcCircuit = executeCommand(csc, 'PetrifyStandardCelementSynthesisCommand');
-stdcStat = executeCommand(stdcCircuit, 'CircuitStatisticsCommand');
-write(stdcStat, 'petrify-vme-stdc.circuit.stat');
-
-gcCircuit = executeCommand(csc, 'PetrifyGeneralisedCelementSynthesisCommand');
-gcStat = executeCommand(gcCircuit, 'CircuitStatisticsCommand');
+gcCircuitWork = synthGeneralisedCelementPetrify(cscStgWork);
+gcStat = statCircuit(gcCircuitWork);
 write(gcStat, 'petrify-vme-gc.circuit.stat');
 
-tmCircuit = executeCommand(csc, 'PetrifyTechnologyMappingSynthesisCommand');
-tmStat = executeCommand(tmCircuit, 'CircuitStatisticsCommand');
+stdcCircuitWork = synthStandardCelementPetrify(cscStgWork);
+stdcStat = statCircuit(stdcCircuitWork);
+write(stdcStat, 'petrify-vme-stdc.circuit.stat');
+
+tmCircuitWork = synthTechnologyMappingPetrify(cscStgWork);
+tmStat = statCircuit(tmCircuitWork);
 write(tmStat, 'petrify-vme-tm.circuit.stat');
 
 exit();

@@ -11,9 +11,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -131,6 +134,9 @@ public final class Framework {
     public static final String COMMON_CLASS_WORK_ATTRIBUTE = "class";
     public static final String COMMON_NODE_WORK_ATTRIBUTE = "node";
     public static final String COMMON_REF_WORK_ATTRIBUTE = "ref";
+
+    private static final Pattern JAVASCRIPT_FUNCTION_PATTERN =
+            Pattern.compile("\\s*function\\s+(\\w+)\\s*\\(.*\\).*");
 
     private static Framework instance = null;
 
@@ -250,6 +256,7 @@ public final class Framework {
     private File workingDirectory = null;
     private MainWindow mainWindow;
     public Memento clipboard;
+    private final HashMap<String, String> javascriptHelp = new HashMap<>();
 
     private Framework() {
         pluginManager = new PluginManager();
@@ -325,7 +332,20 @@ public final class Framework {
         return getConfigCoreVar(key);
     }
 
-    public void initJavaScript() {
+    public void init() {
+        initJavaScript();
+        initPlugins();
+    }
+
+    private void initPlugins() {
+        try {
+            pluginManager.initPlugins();
+        } catch (PluginInstantiationException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void initJavaScript() {
         LogUtils.logMessage("Initialising JavaScript...");
         contextFactory.call(new ContextAction() {
             @Override
@@ -363,6 +383,31 @@ public final class Framework {
 
     public ScriptableObject getJavaScriptGlobalScope() {
         return globalScope;
+    }
+
+    public void registerJavaScriptFunction(String function, String help) {
+        Matcher matcher = JAVASCRIPT_FUNCTION_PATTERN.matcher(function);
+        if (matcher.find()) {
+            String name = matcher.group(1);
+            addJavaScriptHelp(name, help);
+            execJavaScript(function, globalScope);
+        } else {
+            LogUtils.logWarning("Cannot determine the function name in the following JavaScript code:\n" + function);
+        }
+    }
+
+    public void addJavaScriptHelp(String name, String help) {
+        javascriptHelp.put(name, help);
+    }
+
+    public void getJavaScriptHelp(String regex) {
+        Pattern pattern = Pattern.compile(regex);
+        for (String name: javascriptHelp.keySet()) {
+            Matcher matcher = pattern.matcher(name);
+            if (matcher.find()) {
+                LogUtils.logMessage(name + " - " + javascriptHelp.get(name));
+            }
+        }
     }
 
     public void setJavaScriptProperty(final String name, final Object object,
@@ -942,14 +987,6 @@ public final class Framework {
             } catch (IOException | ModelValidationException e) {
                 throw new SerialisationException(e);
             }
-        }
-    }
-
-    public void initPlugins() {
-        try {
-            pluginManager.initPlugins();
-        } catch (PluginInstantiationException e) {
-            e.printStackTrace();
         }
     }
 
