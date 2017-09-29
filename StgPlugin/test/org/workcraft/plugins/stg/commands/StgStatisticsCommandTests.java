@@ -17,7 +17,8 @@ public class StgStatisticsCommandTests {
             "Component count:"
                     + "\n  Place -  8"
                     + "\n  Transition -  6"
-                    + "\n  Arc -  16",
+                    + "\n  Arc -  16"
+                    + "\n",
             "Signal Transition Graph analysis:"
                     + "\n  Transition count -  6"
                     + "\n    * Input / output / internal / dummy -  4 / 2 / 0 / 0"
@@ -40,13 +41,15 @@ public class StgStatisticsCommandTests {
                     + "\n    * State machine -  false"
                     + "\n    * Free choice -  true"
                     + "\n    * Extended free choice -  true"
-                    + "\n    * Pure -  true",
+                    + "\n    * Pure -  true"
+                    + "\n",
         },
         {"org/workcraft/plugins/stg/commands/buck.stg.work",
             "Component count:"
                     + "\n  Place -  29"
                     + "\n  Transition -  28"
-                    + "\n  Arc -  62",
+                    + "\n  Arc -  62"
+                    + "\n",
             "Signal Transition Graph analysis:"
                     + "\n  Transition count -  28"
                     + "\n    * Input / output / internal / dummy -  20 / 8 / 0 / 0"
@@ -69,13 +72,15 @@ public class StgStatisticsCommandTests {
                     + "\n    * State machine -  false"
                     + "\n    * Free choice -  true"
                     + "\n    * Extended free choice -  true"
-                    + "\n    * Pure -  true",
+                    + "\n    * Pure -  true"
+                    + "\n",
         },
         {"org/workcraft/plugins/stg/commands/vme.stg.work",
             "Component count:"
                     + "\n  Place -  17"
                     + "\n  Transition -  17"
-                    + "\n  Arc -  38",
+                    + "\n  Arc -  38"
+                    + "\n",
             "Signal Transition Graph analysis:"
                     + "\n  Transition count -  17"
                     + "\n    * Input / output / internal / dummy -  7 / 10 / 0 / 0"
@@ -98,7 +103,8 @@ public class StgStatisticsCommandTests {
                     + "\n    * State machine -  false"
                     + "\n    * Free choice -  false"
                     + "\n    * Extended free choice -  false"
-                    + "\n    * Pure -  true",
+                    + "\n    * Pure -  true"
+                    + "\n",
         },
     };
 

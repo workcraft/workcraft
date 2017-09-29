@@ -43,7 +43,8 @@ public class MpsatCscConflictResolutionCommandTests {
 
     @Test
     public void vmeCscConflictResolution() throws DeserialisationException {
-        testCscConflictResolutionCommand("org/workcraft/plugins/mpsat/vme.stg.work", new String[] {"csc1", "csc2"});
+        String[] cscSignals = DesktopApi.getOs().isMac() ? new String[]{"csc1", "csc"} : new String[]{"csc1", "csc2"};
+        testCscConflictResolutionCommand("org/workcraft/plugins/mpsat/vme.stg.work", cscSignals);
     }
 
     @Test

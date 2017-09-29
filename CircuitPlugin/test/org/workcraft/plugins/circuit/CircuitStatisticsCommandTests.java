@@ -18,7 +18,8 @@ public class CircuitStatisticsCommandTests {
         {"org/workcraft/plugins/circuit/buffer-tm.circuit.work",
             "Component count:"
                     + "\n  Component -  1"
-                    + "\n  Port -  2",
+                    + "\n  Port -  2"
+                    + "\n",
             "Circuit analysis:"
                     + "\n  Component count (mapped + unmapped) -  1 (1 + 0)"
                     + "\n  Area of mapped components -  0.0"
@@ -28,12 +29,14 @@ public class CircuitStatisticsCommandTests {
                     + "\n  Max fanin / fanout -  1 / 1"
                     + "\n  Fanin distribution [0 / 1 / 2 ...] -  0 / 1"
                     + "\n  Fanout distribution [0 / 1 / 2 ...] -  0 / 2"
-                    + "\n  Isolated components / ports / pins -  0 / 0 / 0",
+                    + "\n  Isolated components / ports / pins -  0 / 0 / 0"
+                    + "\n",
         },
         {"org/workcraft/plugins/circuit/celement-decomposed-tm.circuit.work",
             "Component count:"
                     + "\n  Component -  5"
-                    + "\n  Port -  3",
+                    + "\n  Port -  3"
+                    + "\n",
             "Circuit analysis:"
                     + "\n  Component count (mapped + unmapped) -  5 (5 + 0)"
                     + "\n  Area of mapped components -  72.0"
@@ -43,12 +46,14 @@ public class CircuitStatisticsCommandTests {
                     + "\n  Max fanin / fanout -  3 / 2"
                     + "\n  Fanin distribution [0 / 1 / 2 ...] -  0 / 0 / 4 / 1"
                     + "\n  Fanout distribution [0 / 1 / 2 ...] -  0 / 2 / 5"
-                    + "\n  Isolated components / ports / pins -  0 / 0 / 0",
+                    + "\n  Isolated components / ports / pins -  0 / 0 / 0"
+                    + "\n",
         },
         {"org/workcraft/plugins/circuit/vme-tm.circuit.work",
             "Component count:"
                     + "\n  Component -  21"
-                    + "\n  Port -  6",
+                    + "\n  Port -  6"
+                    + "\n",
             "Circuit analysis:"
                     + "\n  Component count (mapped + unmapped) -  21 (21 + 0)"
                     + "\n  Area of mapped components -  292.0"
@@ -58,7 +63,8 @@ public class CircuitStatisticsCommandTests {
                     + "\n  Max fanin / fanout -  6 / 8"
                     + "\n  Fanin distribution [0 / 1 / 2 ...] -  0 / 12 / 2 / 1 / 1 / 4 / 1"
                     + "\n  Fanout distribution [0 / 1 / 2 ...] -  0 / 17 / 1 / 1 / 2 / 0 / 1 / 0 / 2"
-                    + "\n  Isolated components / ports / pins -  0 / 0 / 0",
+                    + "\n  Isolated components / ports / pins -  0 / 0 / 0"
+                    + "\n",
         },
     };
 

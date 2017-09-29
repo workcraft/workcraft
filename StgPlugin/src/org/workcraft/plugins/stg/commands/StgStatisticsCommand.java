@@ -182,7 +182,8 @@ public class StgStatisticsCommand extends AbstractStatisticsCommand {
                 + "\n    * State machine -  " + PetriNetChecker.isStateMachine(stg)
                 + "\n    * Free choice -  " + PetriNetChecker.isFreeChoice(stg)
                 + "\n    * Extended free choice -  " + PetriNetChecker.isExtendedFreeChoice(stg)
-                + "\n    * Pure -  " + PetriNetChecker.isPure(stg);
+                + "\n    * Pure -  " + PetriNetChecker.isPure(stg)
+                + "\n";
     }
 
 }
