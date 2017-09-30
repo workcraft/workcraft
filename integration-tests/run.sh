@@ -2,7 +2,7 @@
 
 # Error out, possibly with a message
 function error() {
-    echo " ... ERROR"
+    echo "ERROR"
     echo >&2 "$@"
     exit 1
 }
@@ -14,8 +14,9 @@ function size() {
 
 DIR="integration-tests"
 TEST_DIR_PATTERN="*"
-TEST_FILE_PATTERN="*.sh"
 REF_FILE_PATTERN="*.ref"
+SCRIPT_FILE="test.sh"
+LOG_FILE="workcraft.log"
 
 [[ $(basename $PWD) == $DIR ]] && cd ..
 
@@ -32,14 +33,13 @@ echo "Running integration tests:"
 for test_dir in ${DIR}/${TEST_DIR_PATTERN}; do
     [[ -d $test_dir ]] || continue
 
-    echo -n "* ${test_dir}:"
+    script_file=${test_dir}/${SCRIPT_FILE}
+    [[ -f ${script_file} ]] || continue
 
-    for test_file in ${test_dir}/${TEST_FILE_PATTERN}; do
-        [[ -f ${test_file} ]] || continue
+    log_file=${test_dir}/${LOG_FILE}
 
-        echo -n " $(basename ${test_file})"
-        . ${test_file}
-    done
+    echo -n "* $(basename ${test_dir}) ... "
+    . ${script_file}
 
     for ref_file in ${test_dir}/${REF_FILE_PATTERN}; do
         [[ -f $ref_file ]] || continue
@@ -55,9 +55,14 @@ for test_dir in ${DIR}/${TEST_DIR_PATTERN}; do
             rm -f $cur_file
         else
             # Note the new line before diff output
-            error $"Files ${ref_file} (reference) and ${cur_file} (current) differ:
-`diff $ref_file $cur_file`"
+            error "
+Files ${ref_file} (reference) and ${cur_file} (current) differ:
+`diff $ref_file $cur_file`
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+`cat $log_file`"
         fi
     done
-    echo "... OK"
+    rm -f ${log_file}
+    echo "OK"
 done
+echo "Success!"

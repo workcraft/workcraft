@@ -1,5 +1,11 @@
 stgWork = load('vme.stg.work');
-cscStgWork = resolveCscConflictMpsat(stgWork);
+
+if (checkStgCsc(stgWork) == 'true') {
+    cscStgWork = stgWork;
+} else {
+    cscStgWork = resolveCscConflictMpsat(stgWork);
+    save(cscStgWork, 'vme-csc.stg.work');
+}
 
 cgCircuitWork = synthComplexGateMpsat(cscStgWork);
 cgStat = statCircuit(cgCircuitWork);

@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -400,14 +401,19 @@ public final class Framework {
         javascriptHelp.put(name, help);
     }
 
-    public void getJavaScriptHelp(String regex) {
+    public String getJavaScriptHelp(String regex, boolean searchDescription) {
+        String result = "";
         Pattern pattern = Pattern.compile(regex);
-        for (String name: javascriptHelp.keySet()) {
-            Matcher matcher = pattern.matcher(name);
-            if (matcher.find()) {
-                LogUtils.logMessage(name + " - " + javascriptHelp.get(name));
+        for (Entry<String, String> entry: javascriptHelp.entrySet()) {
+            String name = entry.getKey();
+            String description = entry.getValue();
+            Matcher nameMatcher = pattern.matcher(name);
+            Matcher descriptionMatcher = pattern.matcher(description);
+            if (nameMatcher.find() || (searchDescription && descriptionMatcher.find())) {
+                result += name + " - " + description + "\n";
             }
         }
+        return result;
     }
 
     public void setJavaScriptProperty(final String name, final Object object,
@@ -1038,6 +1044,9 @@ public final class Framework {
     }
 
     public File getWorkingDirectory() {
+        if (workingDirectory == null) {
+            setWorkingDirectory(System.getProperty("user.dir"));
+        }
         return workingDirectory;
     }
 

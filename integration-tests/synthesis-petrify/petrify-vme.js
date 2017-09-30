@@ -1,5 +1,10 @@
 stgWork = load('vme.stg.work');
-cscStgWork = resolveCscConflictPetrify(stgWork);
+if (checkStgCsc(stgWork) == 'true') {
+    cscStgWork = stgWork;
+} else {
+    cscStgWork = resolveCscConflictPetrify(stgWork);
+    save(cscStgWork, 'vme-csc.stg.work');
+}
 
 cgCircuitWork = synthComplexGatePetrify(cscStgWork);
 cgStat = statCircuit(cgCircuitWork);
