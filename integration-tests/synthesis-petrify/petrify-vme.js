@@ -1,24 +1,18 @@
 stgWork = load('vme.stg.work');
-if (checkStgCsc(stgWork) == 'true') {
-    cscStgWork = stgWork;
-} else {
-    cscStgWork = resolveCscConflictPetrify(stgWork);
-    save(cscStgWork, 'vme-csc.stg.work');
-}
 
-cgCircuitWork = synthComplexGatePetrify(cscStgWork);
+cgCircuitWork = synthComplexGatePetrify(stgWork);
 cgStat = statCircuit(cgCircuitWork);
 write(cgStat, 'petrify-vme-cg.circuit.stat');
 
-gcCircuitWork = synthGeneralisedCelementPetrify(cscStgWork);
+gcCircuitWork = synthGeneralisedCelementPetrify(stgWork);
 gcStat = statCircuit(gcCircuitWork);
 write(gcStat, 'petrify-vme-gc.circuit.stat');
 
-stdcCircuitWork = synthStandardCelementPetrify(cscStgWork);
+stdcCircuitWork = synthStandardCelementPetrify(stgWork);
 stdcStat = statCircuit(stdcCircuitWork);
 write(stdcStat, 'petrify-vme-stdc.circuit.stat');
 
-tmCircuitWork = synthTechnologyMappingPetrify(cscStgWork);
+tmCircuitWork = synthTechnologyMappingPetrify(stgWork);
 tmStat = statCircuit(tmCircuitWork);
 write(tmStat, 'petrify-vme-tm.circuit.stat');
 
