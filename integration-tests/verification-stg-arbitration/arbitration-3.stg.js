@@ -1,14 +1,14 @@
-stgWork = load('arbitration-3.stg.work');
+work = load('arbitration-3.stg.work');
 write(
-    'Combined check: ' + checkStgCombined(stgWork) + '\n' +
-    'Consistency: ' + checkStgConsistency(stgWork) + '\n' +
-    'Deadlock-freeness: ' + checkStgDeadlockFreeness(stgWork) + '\n' +
-    'Input properness: ' + checkStgInputProperness(stgWork) + '\n' +
-    'Output persistency: ' + checkStgOutputPersistency(stgWork) + '\n' +
-    'CSC: ' + checkStgCsc(stgWork) + '\n' +
-    'USC: ' + checkStgUsc(stgWork) + '\n' +
-    'DI interface: ' + checkStgDiInterface(stgWork) + '\n' +
-    'Normalcy: ' + checkStgNormalcy(stgWork) + '\n' +
-    'Mutex implementability: ' + checkStgMutexImplementability(stgWork) + '\n',
+    'Combined check: ' + checkStgCombined(work) + '\n' +
+    'Consistency: ' + checkStgConsistency(work) + '\n' +
+    'Deadlock-freeness: ' + checkStgDeadlockFreeness(work) + '\n' +
+    'Input properness: ' + checkStgInputProperness(work) + '\n' +
+    'Output persistency: ' + checkStgOutputPersistency(work) + '\n' +
+    'CSC: ' + checkStgCsc(work) + '\n' +
+    'USC: ' + checkStgUsc(work) + '\n' +
+    'DI interface: ' + checkStgDiInterface(work) + '\n' +
+    'Normalcy: ' + checkStgNormalcy(work) + '\n' +
+    'Mutex implementability: ' + checkStgMutexImplementability(work) + '\n',
     'arbitration-3.stg.result');
 exit();

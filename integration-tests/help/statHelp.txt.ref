@@ -1,0 +1,4 @@
+statCircuit - advanced complexity estimates for the circuit
+statModel - node and arc count for the graph (all models are supported)
+statPetri - advanced complexity estimates for the Petri net
+statStg - advanced complexity estimates for the STG

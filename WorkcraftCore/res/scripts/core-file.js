@@ -1,37 +1,63 @@
 // File operations
 
-function load(path) {
-    return framework.loadWork(path);
+framework.addJavaScriptHelp("load", "load a model from the work file 'fileName' and return its work");
+
+function load(fileName) {
+    return framework.loadWork(fileName);
 }
 
-function import(path) {
-    return framework.loadWork(path);
+
+framework.addJavaScriptHelp("import", "import a model from a given 'fileName' (the model type is determined by extension) and return its work");
+
+function import(fileName) {
+    return framework.loadWork(fileName);
 }
 
-function save(work, path) {
-    framework.saveWork(work, path);
+
+framework.addJavaScriptHelp("save", "save the given 'work' to the file 'fileName'");
+
+function save(work, fileName) {
+    framework.saveWork(work, fileName);
 }
 
-function exportSvg(work, path) {
-    framework.exportWork(work, path, 'SVG');
+
+framework.addJavaScriptHelp("exportSvg", "export the specified 'work' as a Scalable Vector Graphics (*.svg) 'fileName'");
+
+function exportSvg(work, fileName) {
+    framework.exportWork(work, fileName, 'SVG');
 }
 
-function exportPng(work, path) {
-    framework.exportWork(work, path, 'PNG');
+
+framework.addJavaScriptHelp("exportPng", "export the specified 'work' as a Portable Network Graphics (*.png) 'fileName'");
+
+function exportPng(work, fileName) {
+    framework.exportWork(work, fileName, 'PNG');
 }
 
-function exportPdf(work, path) {
-    framework.exportWork(work, path, 'PDF');
+
+framework.addJavaScriptHelp("exportPdf", "export the specified 'work' as a Portable Document Format (*.pdf) 'fileName'");
+
+function exportPdf(work, fileName) {
+    framework.exportWork(work, fileName, 'PDF');
 }
 
-function exportPs(work, path) {
-    framework.exportWork(work, path, 'PS');
+
+framework.addJavaScriptHelp("exportPs", "export the specified 'work' as a PostScript (*.ps) 'fileName'");
+
+function exportPs(work, fileName) {
+    framework.exportWork(work, fileName, 'PS');
 }
 
-function exportEps(work, path) {
-    framework.exportWork(work, path, 'EPS');
+
+framework.addJavaScriptHelp("exportEps", "export the specified 'work' as an Encapsulated PostScript (*.eps) 'fileName'");
+
+function exportEps(work, fileName) {
+    framework.exportWork(work, fileName, 'EPS');
 }
 
-function exportDot(work, path) {
-    framework.exportWork(work, path, 'DOT');
+
+framework.addJavaScriptHelp("exportDot", "export the specified 'work' as a GraphViz (*.dot) 'fileName'");
+
+function exportDot(work, fileName) {
+    framework.exportWork(work, fileName, 'DOT');
 }

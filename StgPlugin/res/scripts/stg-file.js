@@ -1,7 +1,12 @@
-function exportStg(work, path) {
-    framework.exportWork(work, path, 'STG');
+framework.addJavaScriptHelp("exportStgG", "export the specified STG 'work' as a Signal Transition Graph (*.g) 'fileName'");
+
+function exportStgG(work, fileName) {
+    framework.exportWork(work, fileName, 'STG');
 }
 
-function exportLpn(work, path) {
-    framework.exportWork(work, path, 'LPN');
+
+framework.addJavaScriptHelp("exportStgLpn", "export the specified STG 'work' as a Labeled Petri Net (*.lpn) 'fileName'");
+
+function exportStgLpn(work, fileName) {
+    framework.exportWork(work, fileName, 'LPN');
 }

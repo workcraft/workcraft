@@ -1,3 +1,3 @@
 we = load('vme-tm.circuit.work');
-exportVerilog(we, 'vme-tm.circuit.v');
+exportCircuitVerilog(we, 'vme-tm.circuit.v');
 exit();

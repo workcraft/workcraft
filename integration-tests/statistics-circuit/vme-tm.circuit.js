@@ -1,4 +1,4 @@
-we = load('vme-tm.circuit.work');
-stat = executeCommand(we, 'CircuitStatisticsCommand');
+work = load('vme-tm.circuit.work');
+stat = statCircuit(work);
 write(stat, 'vme-tm.circuit.stat');
 exit();

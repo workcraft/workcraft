@@ -1,15 +1,15 @@
-checkStgDiInterface - check the STG for delay-insensitive interface
-checkCircuitConformation - check the circuit for conformation to environment
-checkStgDeadlockFreeness - check the STG (or Petri net) for deadlock freeness
-checkStgInputProperness - check the STG for input properness
 checkCircuitCombined - combined check of the circuit for deadlock freeness, conformation to environment and output persistency
-checkCircuitStrictImplementation - check the circuit for strict implementation of its signals according to the environment
-checkCircuitOutputPersistency - check the circuit for output persistency
-checkStgCsc - check the STG for complete state coding
-checkStgCombined - combined check of the STG for consistency, deadlock freeness, input properness and output persistency
-checkStgNormalcy - check the STG for normalcy
-checkStgUsc - check the STG for unique state coding
-checkStgConsistency - check the STG for consistency
-checkStgOutputPersistency - check the STG for output persistency
+checkCircuitConformation - check the circuit for conformation to environment
 checkCircuitDeadlockFreeness - check the circuit for deadlock freeness
+checkCircuitOutputPersistency - check the circuit for output persistency
+checkCircuitStrictImplementation - check the circuit for strict implementation of its signals according to the environment
+checkStgCombined - combined check of the STG for consistency, deadlock freeness, input properness and output persistency
+checkStgConsistency - check the STG for consistency
+checkStgCsc - check the STG for complete state coding
+checkStgDeadlockFreeness - check the STG (or Petri net) for deadlock freeness
+checkStgDiInterface - check the STG for delay-insensitive interface
+checkStgInputProperness - check the STG for input properness
 checkStgMutexImplementability - check the STG for implementability of its mutex places
+checkStgNormalcy - check the STG for normalcy
+checkStgOutputPersistency - check the STG for output persistency
+checkStgUsc - check the STG for unique state coding

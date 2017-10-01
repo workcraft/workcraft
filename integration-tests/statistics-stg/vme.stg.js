@@ -1,4 +1,4 @@
-we = load('vme.stg.work');
-stat = executeCommand(we, 'StgStatisticsCommand');
+work = load('vme.stg.work');
+stat = statStg(work);
 write(stat, 'vme.stg.stat');
 exit();

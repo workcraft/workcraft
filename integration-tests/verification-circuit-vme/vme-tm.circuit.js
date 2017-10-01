@@ -1,9 +1,9 @@
-circuitWork = load('vme-tm.circuit.work');
+work = load('vme-tm.circuit.work');
 write(
-    'Combined check: ' + checkCircuitCombined(circuitWork) + '\n' +
-    'Deadlock-freeness: ' + checkCircuitDeadlockFreeness(circuitWork) + '\n' +
-    'Conformation: ' + checkCircuitConformation(circuitWork) + '\n' +
-    'Output persistency: ' + checkCircuitOutputPersistency(circuitWork) + '\n' +
-    'Strict implementation: ' + checkCircuitStrictImplementation(circuitWork) + '\n',
+    'Combined check: ' + checkCircuitCombined(work) + '\n' +
+    'Deadlock-freeness: ' + checkCircuitDeadlockFreeness(work) + '\n' +
+    'Conformation: ' + checkCircuitConformation(work) + '\n' +
+    'Output persistency: ' + checkCircuitOutputPersistency(work) + '\n' +
+    'Strict implementation: ' + checkCircuitStrictImplementation(work) + '\n',
     'vme-tm.circuit.result');
 exit();

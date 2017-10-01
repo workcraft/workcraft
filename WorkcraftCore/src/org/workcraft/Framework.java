@@ -10,7 +10,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -386,23 +388,28 @@ public final class Framework {
         return globalScope;
     }
 
-    public void registerJavaScriptFunction(String function, String help) {
+    public void registerJavaScriptFunction(String function, String description) {
         Matcher matcher = JAVASCRIPT_FUNCTION_PATTERN.matcher(function);
         if (matcher.find()) {
             String name = matcher.group(1);
-            addJavaScriptHelp(name, help);
+            addJavaScriptHelp(name, description);
             execJavaScript(function, globalScope);
         } else {
             LogUtils.logWarning("Cannot determine the function name in the following JavaScript code:\n" + function);
         }
     }
 
-    public void addJavaScriptHelp(String name, String help) {
-        javascriptHelp.put(name, help);
+    public void addJavaScriptHelp(String name, String description) {
+        if (javascriptHelp.containsKey(name)) {
+            LogUtils.logWarning("Overwriting JavaScrip function '" + name + "':\n"
+                    + "  Old description: " + javascriptHelp.get(name) + "\n"
+                    + "  New description: " + description);
+        }
+        javascriptHelp.put(name, description);
     }
 
     public String getJavaScriptHelp(String regex, boolean searchDescription) {
-        String result = "";
+        ArrayList<String> result = new ArrayList<>();
         Pattern pattern = Pattern.compile(regex);
         for (Entry<String, String> entry: javascriptHelp.entrySet()) {
             String name = entry.getKey();
@@ -410,10 +417,11 @@ public final class Framework {
             Matcher nameMatcher = pattern.matcher(name);
             Matcher descriptionMatcher = pattern.matcher(description);
             if (nameMatcher.find() || (searchDescription && descriptionMatcher.find())) {
-                result += name + " - " + description + "\n";
+                result.add(name + " - " + description);
             }
         }
-        return result;
+        Collections.sort(result);
+        return String.join("\n", result);
     }
 
     public void setJavaScriptProperty(final String name, final Object object,
