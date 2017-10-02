@@ -73,15 +73,15 @@ public class CircuitModule implements Module {
         pm.registerClass(Command.class, CircuitToStgConversionCommand.class);
 
         ScriptableCommandUtils.register(CircuitVerificationCommand.class, "checkCircuitCombined",
-                "combined check of the circuit for deadlock freeness, conformation to environment and output persistency");
+                "combined check of the Circuit 'work' for deadlock freeness, conformation to environment and output persistency");
         ScriptableCommandUtils.register(CircuitConformationVerificationCommand.class, "checkCircuitConformation",
-                "check the circuit for conformation to environment");
+                "check the Circuit 'work' for conformation to environment");
         ScriptableCommandUtils.register(CircuitDeadlockFreenessVerificationCommand.class, "checkCircuitDeadlockFreeness",
-                "check the circuit for deadlock freeness");
+                "check the Circuit 'work' for deadlock freeness");
         ScriptableCommandUtils.register(CircuitOutputPersistencyVerificationCommand.class, "checkCircuitOutputPersistency",
-                "check the circuit for output persistency");
+                "check the Circuit 'work' for output persistency");
         ScriptableCommandUtils.register(CircuitStrictImplementationVerificationCommand.class, "checkCircuitStrictImplementation",
-                "check the circuit for strict implementation of its signals according to the environment");
+                "check the Circuit 'work' for strict implementation of its signals according to the environment");
 
         pm.registerClass(Command.class, CircuitPropertyVerificationCommand.class);
         pm.registerClass(Command.class, CircuitAssertionVerificationCommand.class);
@@ -94,7 +94,7 @@ public class CircuitModule implements Module {
         pm.registerClass(Command.class, ToggleBubbleTransformationCommand.class);
 
         ScriptableCommandUtils.register(CircuitStatisticsCommand.class, "statCircuit",
-                "advanced complexity estimates for the circuit");
+                "advanced complexity estimates for the Circuit 'work'");
     }
 
     private void initCompatibilityManager() {

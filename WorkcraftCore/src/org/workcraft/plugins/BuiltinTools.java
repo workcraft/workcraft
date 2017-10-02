@@ -47,7 +47,7 @@ public class BuiltinTools implements Module {
         pm.registerClass(Command.class, StraightenConnectionTransformationCommand.class);
 
         ScriptableCommandUtils.register(BasicStatisticsCommand.class, "statModel",
-                "node and arc count for the graph (all models are supported)");
+                "node and arc count for the model 'work' (all model types are supported)");
     }
 
     @Override

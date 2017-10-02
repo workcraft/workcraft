@@ -65,13 +65,13 @@ public class PetrifyModule implements Module {
                 "resolve complete state coding conflicts with Petrify backend");
 
         ScriptableCommandUtils.register(PetrifyComplexGateSynthesisCommand.class, "synthComplexGatePetrify",
-                "logic synthesis of the STG into a complex gate circuit using Petrify backend");
+                "logic synthesis of the STG 'work' into a complex gate circuit using Petrify backend");
         ScriptableCommandUtils.register(PetrifyGeneralisedCelementSynthesisCommand.class, "synthGeneralisedCelementPetrify",
-                "synthesis of the STG into a generalised C-element circuit using Petrify");
+                "synthesis of the STG 'work' into a generalised C-element circuit using Petrify");
         ScriptableCommandUtils.register(PetrifyStandardCelementSynthesisCommand.class, "synthStandardCelementPetrify",
-                "synthesis of the STG into a standard C-element circuit using Petrify backend");
+                "synthesis of the STG 'work' into a standard C-element circuit using Petrify backend");
         ScriptableCommandUtils.register(PetrifyTechnologyMappingSynthesisCommand.class, "synthTechnologyMappingPetrify",
-                "technology mapping of the STG into a circuit using Petrify backend");
+                "technology mapping of the STG 'work' into a circuit using Petrify backend");
 
         pm.registerClass(Command.class, new Initialiser<Command>() {
             @Override

@@ -1,8 +1,8 @@
-synthComplexGateMpsat - logic synthesis of the STG into a complex gate circuit using MPSat backend
-synthComplexGatePetrify - logic synthesis of the STG into a complex gate circuit using Petrify backend
-synthGeneralisedCelementMpsat - synthesis of the STG into a generalised C-element circuit using MPSat
-synthGeneralisedCelementPetrify - synthesis of the STG into a generalised C-element circuit using Petrify
-synthStandardCelementMpsat - synthesis of the STG into a standard C-element circuit using MPSat backend
-synthStandardCelementPetrify - synthesis of the STG into a standard C-element circuit using Petrify backend
-synthTechnologyMappingMpsat - technology mapping of the STG into a circuit using MPSat backend
-synthTechnologyMappingPetrify - technology mapping of the STG into a circuit using Petrify backend
+synthComplexGateMpsat(work) - logic synthesis of the STG 'work' into a complex gate circuit using MPSat backend
+synthComplexGatePetrify(work) - logic synthesis of the STG 'work' into a complex gate circuit using Petrify backend
+synthGeneralisedCelementMpsat(work) - synthesis of the STG 'work' into a generalised C-element circuit using MPSat
+synthGeneralisedCelementPetrify(work) - synthesis of the STG 'work' into a generalised C-element circuit using Petrify
+synthStandardCelementMpsat(work) - synthesis of the STG 'work' into a standard C-element circuit using MPSat backend
+synthStandardCelementPetrify(work) - synthesis of the STG 'work' into a standard C-element circuit using Petrify backend
+synthTechnologyMappingMpsat(work) - technology mapping of the STG 'work' into a circuit using MPSat backend
+synthTechnologyMappingPetrify(work) - technology mapping of the STG 'work' into a circuit using Petrify backend

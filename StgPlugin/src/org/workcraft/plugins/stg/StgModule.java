@@ -80,7 +80,7 @@ public class StgModule implements Module {
         pm.registerClass(Command.class, ExpandHandshakeReqAckTransformationCommand.class);
 
         ScriptableCommandUtils.register(StgStatisticsCommand.class, "statStg",
-                "advanced complexity estimates for the STG");
+                "advanced complexity estimates for the STG 'work'");
     }
 
     private void initCompatibilityManager() {

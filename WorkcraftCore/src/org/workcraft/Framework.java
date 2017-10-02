@@ -139,7 +139,9 @@ public final class Framework {
     public static final String COMMON_REF_WORK_ATTRIBUTE = "ref";
 
     private static final Pattern JAVASCRIPT_FUNCTION_PATTERN =
-            Pattern.compile("\\s*function\\s+(\\w+)\\s*\\(.*\\).*");
+            Pattern.compile("\\s*function\\s+(\\w+)\\s*\\((.*)\\).*");
+    private static final int JAVASCRIPT_FUNCTION_NAME_GROUP = 1;
+    private static final int JAVASCRIPT_FUNCTION_PARAMS_GROUP = 2;
 
     private static Framework instance = null;
 
@@ -243,6 +245,23 @@ public final class Framework {
         }
     }
 
+    private class JavascriptItem {
+        public final String name;
+        public final String params;
+        public final String description;
+
+        JavascriptItem(String name, String params, String description) {
+            this.name = name;
+            this.params = params;
+            this.description = description;
+        }
+
+        @Override
+        public String toString() {
+            return name + (params == null ? "" : "(" + params + ")") + " - " + description;
+        }
+    }
+
     private final PluginManager pluginManager;
     private final TaskManager taskManager;
     private final CompatibilityManager compatibilityManager;
@@ -259,7 +278,7 @@ public final class Framework {
     private File workingDirectory = null;
     private MainWindow mainWindow;
     public Memento clipboard;
-    private final HashMap<String, String> javascriptHelp = new HashMap<>();
+    private final HashMap<String, JavascriptItem> javascriptHelp = new HashMap<>();
 
     private Framework() {
         pluginManager = new PluginManager();
@@ -391,33 +410,35 @@ public final class Framework {
     public void registerJavaScriptFunction(String function, String description) {
         Matcher matcher = JAVASCRIPT_FUNCTION_PATTERN.matcher(function);
         if (matcher.find()) {
-            String name = matcher.group(1);
-            addJavaScriptHelp(name, description);
+            String name = matcher.group(JAVASCRIPT_FUNCTION_NAME_GROUP);
+            String params = matcher.group(JAVASCRIPT_FUNCTION_PARAMS_GROUP);
+            addJavaScriptHelp(name, params, description);
             execJavaScript(function, globalScope);
         } else {
             LogUtils.logWarning("Cannot determine the function name in the following JavaScript code:\n" + function);
         }
     }
 
-    public void addJavaScriptHelp(String name, String description) {
+    public void addJavaScriptHelp(String name, String params, String description) {
+        JavascriptItem item = new JavascriptItem(name, params, description);
         if (javascriptHelp.containsKey(name)) {
             LogUtils.logWarning("Overwriting JavaScrip function '" + name + "':\n"
-                    + "  Old description: " + javascriptHelp.get(name) + "\n"
-                    + "  New description: " + description);
+                    + "  Old: " + javascriptHelp.get(name) + "\n"
+                    + "  New: " + item);
         }
-        javascriptHelp.put(name, description);
+        javascriptHelp.put(name, item);
     }
 
     public String getJavaScriptHelp(String regex, boolean searchDescription) {
         ArrayList<String> result = new ArrayList<>();
         Pattern pattern = Pattern.compile(regex);
-        for (Entry<String, String> entry: javascriptHelp.entrySet()) {
+        for (Entry<String, JavascriptItem> entry: javascriptHelp.entrySet()) {
             String name = entry.getKey();
-            String description = entry.getValue();
+            JavascriptItem item = entry.getValue();
             Matcher nameMatcher = pattern.matcher(name);
-            Matcher descriptionMatcher = pattern.matcher(description);
+            Matcher descriptionMatcher = pattern.matcher(item.description);
             if (nameMatcher.find() || (searchDescription && descriptionMatcher.find())) {
-                result.add(name + " - " + description);
+                result.add(item.toString());
             }
         }
         Collections.sort(result);

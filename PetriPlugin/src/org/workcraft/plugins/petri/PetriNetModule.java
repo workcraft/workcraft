@@ -55,7 +55,7 @@ public class PetriNetModule implements Module {
         pm.registerClass(Command.class, MergeTransitionTransformationCommand.class);
 
         ScriptableCommandUtils.register(PetriStatisticsCommand.class, "statPetri",
-                "advanced complexity estimates for the Petri net");
+                "advanced complexity estimates for the Petri net 'work'");
     }
 
     private void initCompatibilityManager() {
