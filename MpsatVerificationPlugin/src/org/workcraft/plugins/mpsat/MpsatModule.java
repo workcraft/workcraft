@@ -54,6 +54,7 @@ public class MpsatModule implements Module {
         ScriptableCommandUtils.register(MpsatMutexImplementabilityVerificationCommand.class, "checkStgMutexImplementability",
                 "check the STG 'work' for implementability of its mutex places");
 
+        // TODO: Need a way to pass the environment file from the JavaScript wrapper
         pm.registerClass(Command.class, MpsatConformationVerificationCommand.class);
         pm.registerClass(Command.class, MpsatPropertyVerificationCommand.class);
         pm.registerClass(Command.class, MpsatAssertionVerificationCommand.class);

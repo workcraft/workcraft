@@ -65,12 +65,32 @@ public class CircuitModule implements Module {
         pm.registerClass(Importer.class, GenlibImporter.class);
         pm.registerClass(Exporter.class, SdcExporter.class);
 
-        pm.registerClass(Command.class, CircuitLayoutCommand.class);
-        pm.registerClass(Command.class, CircuitLayoutPlacementCommand.class);
-        pm.registerClass(Command.class, CircuitLayoutRoutingCommand.class);
+        ScriptableCommandUtils.register(CircuitLayoutCommand.class, "layoutCircuit",
+                "place components and route wires of the Circuit 'work'");
+        ScriptableCommandUtils.register(CircuitLayoutPlacementCommand.class, "layoutCircuitPlacement",
+                "place components of the Circuit 'work'");
+        ScriptableCommandUtils.register(CircuitLayoutRoutingCommand.class, "layoutCircuitRouting",
+                "route wires of the Circuit 'work'");
         pm.registerClass(Settings.class, CircuitLayoutSettings.class);
 
-        pm.registerClass(Command.class, CircuitToStgConversionCommand.class);
+        ScriptableCommandUtils.register(ContractJointTransformationCommand.class, "transformCircuitContractJoint",
+                "transform the given Circuit 'work' by contracting selected (or all) joints");
+        ScriptableCommandUtils.register(SplitJointTransformationCommand.class, "transformCircuitSplitJoint",
+                "transform the given Circuit 'work' by splitting selected (or all) joints");
+        ScriptableCommandUtils.register(DetachJointTransformationCommand.class, "transformCircuitDetachJoint",
+                "transform the given Circuit 'work' by detaching selected (or all joints)");
+        ScriptableCommandUtils.register(ContractComponentTransformationCommand.class, "transformCircuitContractComponent",
+                "transform the given Circuit 'work' by contracting selected single-input/single-output components");
+        ScriptableCommandUtils.register(InsertBufferTransformationCommand.class, "transformCircuitInsertBuffer",
+                "transform the given Circuit 'work' by inserting buffers into selected wires");
+        ScriptableCommandUtils.register(ToggleBubbleTransformationCommand.class, "transformCircuitToggleBubble",
+                "transform the given Circuit 'work' by toggling inversion of selected contacts and outputs of selected components");
+
+        ScriptableCommandUtils.register(CircuitStatisticsCommand.class, "statCircuit",
+                "advanced complexity estimates for the Circuit 'work'");
+
+        ScriptableCommandUtils.register(CircuitToStgConversionCommand.class, "convertCircuitToStg",
+                "convert the Circuit 'work' to an STG");
 
         ScriptableCommandUtils.register(CircuitVerificationCommand.class, "checkCircuitCombined",
                 "combined check of the Circuit 'work' for deadlock freeness, conformation to environment and output persistency");
@@ -85,16 +105,6 @@ public class CircuitModule implements Module {
 
         pm.registerClass(Command.class, CircuitPropertyVerificationCommand.class);
         pm.registerClass(Command.class, CircuitAssertionVerificationCommand.class);
-
-        pm.registerClass(Command.class, ContractJointTransformationCommand.class);
-        pm.registerClass(Command.class, SplitJointTransformationCommand.class);
-        pm.registerClass(Command.class, DetachJointTransformationCommand.class);
-        pm.registerClass(Command.class, ContractComponentTransformationCommand.class);
-        pm.registerClass(Command.class, InsertBufferTransformationCommand.class);
-        pm.registerClass(Command.class, ToggleBubbleTransformationCommand.class);
-
-        ScriptableCommandUtils.register(CircuitStatisticsCommand.class, "statCircuit",
-                "advanced complexity estimates for the Circuit 'work'");
     }
 
     private void initCompatibilityManager() {

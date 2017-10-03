@@ -56,22 +56,26 @@ public class PetrifyModule implements Module {
 
         pm.registerClass(Settings.class, PetrifySettings.class);
 
-        ScriptableCommandUtils.register(PetrifyNetConversionCommand.class);
-        ScriptableCommandUtils.register(PetrifyUntoggleConversionCommand.class);
-        ScriptableCommandUtils.register(PetrifyHideDummyConversionCommand.class);
-        ScriptableCommandUtils.register(PetrifyHideConversionCommand.class);
+        ScriptableCommandUtils.register(PetrifyNetConversionCommand.class, "convertPetriSynthesis",
+                "convert the given Petri net, STG, FSM or FST 'work' into a new work using net synthesis");
+        ScriptableCommandUtils.register(PetrifyUntoggleConversionCommand.class, "convertStgUntoggle",
+                "convert the given STG 'work' into a new work where the selected (or all) transitions are untoggled");
+        ScriptableCommandUtils.register(PetrifyHideDummyConversionCommand.class, "convertStgHideDummy",
+                "convert the given STG 'work' into a new work without dummies");
+        ScriptableCommandUtils.register(PetrifyHideConversionCommand.class, "convertPetriHideTransition",
+                "convert the given Petri net or STG 'work' into a new work hiding selected signals and dummies");
 
         ScriptableCommandUtils.register(PetrifyCscConflictResolutionCommand.class, "resolveCscConflictPetrify",
                 "resolve complete state coding conflicts with Petrify backend");
 
         ScriptableCommandUtils.register(PetrifyComplexGateSynthesisCommand.class, "synthComplexGatePetrify",
-                "logic synthesis of the STG 'work' into a complex gate circuit using Petrify backend");
+                "logic synthesis of the STG 'work' into a complex gate Circuit work using Petrify backend");
         ScriptableCommandUtils.register(PetrifyGeneralisedCelementSynthesisCommand.class, "synthGeneralisedCelementPetrify",
-                "synthesis of the STG 'work' into a generalised C-element circuit using Petrify");
+                "synthesis of the STG 'work' into a generalised C-element Circuit work using Petrify");
         ScriptableCommandUtils.register(PetrifyStandardCelementSynthesisCommand.class, "synthStandardCelementPetrify",
-                "synthesis of the STG 'work' into a standard C-element circuit using Petrify backend");
+                "synthesis of the STG 'work' into a standard C-element Circuit work using Petrify backend");
         ScriptableCommandUtils.register(PetrifyTechnologyMappingSynthesisCommand.class, "synthTechnologyMappingPetrify",
-                "technology mapping of the STG 'work' into a circuit using Petrify backend");
+                "technology mapping of the STG 'work' into a Circuit work using Petrify backend");
 
         pm.registerClass(Command.class, new Initialiser<Command>() {
             @Override

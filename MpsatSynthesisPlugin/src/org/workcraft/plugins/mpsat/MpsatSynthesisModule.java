@@ -19,13 +19,13 @@ public class MpsatSynthesisModule implements Module {
         pm.registerClass(Settings.class, MpsatSynthesisSettings.class);
 
         ScriptableCommandUtils.register(MpsatComplexGateSynthesisCommand.class, "synthComplexGateMpsat",
-                "logic synthesis of the STG 'work' into a complex gate circuit using MPSat backend");
+                "logic synthesis of the STG 'work' into a complex gate Circuit work using MPSat backend");
         ScriptableCommandUtils.register(MpsatGeneralisedCelementSynthesisCommand.class, "synthGeneralisedCelementMpsat",
-                "synthesis of the STG 'work' into a generalised C-element circuit using MPSat");
+                "synthesis of the STG 'work' into a generalised C-element Circuit work using MPSat backend");
         ScriptableCommandUtils.register(MpsatStandardCelementSynthesisCommand.class, "synthStandardCelementMpsat",
-                "synthesis of the STG 'work' into a standard C-element circuit using MPSat backend");
+                "synthesis of the STG 'work' into a standard C-element Circuit work using MPSat backend");
         ScriptableCommandUtils.register(MpsatTechnologyMappingSynthesisCommand.class, "synthTechnologyMappingMpsat",
-                "technology mapping of the STG 'work' into a circuit using MPSat backend");
+                "technology mapping of the STG 'work' into a Circuit work using MPSat backend");
     }
 
     @Override
