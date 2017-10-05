@@ -518,8 +518,9 @@ public final class Framework {
     /**
      * Used in functions.js JavaScript wrapper.
      */
-    public void execJavaScriptFile(String filePath) throws IOException {
-        execJavaScript(FileUtils.readAllText(new File(filePath)), globalScope);
+    public void execJavaScriptFile(String path) throws IOException {
+        File file = getFileByAbsoluteOrRelativePath(path);
+        execJavaScript(FileUtils.readAllText(file), globalScope);
     }
 
     public Script compileJavaScript(String source, String sourceName) {
@@ -773,6 +774,9 @@ public final class Framework {
                 path = getWorkspace().createWorkPath(parent, desiredName);
             }
             we = createWork(me, path, false, false);
+            if (we.getModelEntry().isVisual() && (mainWindow != null)) {
+                mainWindow.createEditorWindow(we);
+            }
         }
         return we;
     }
@@ -887,7 +891,23 @@ public final class Framework {
      */
     public void saveWork(WorkspaceEntry we, String path) throws SerialisationException {
         if (we == null) return;
+        File destination = getFileByAbsoluteOrRelativePath(path);
+        Path<String> wsFrom = we.getWorkspacePath();
+        Path<String> wsTo = workspace.getPath(destination);
+        if (wsTo == null) {
+            wsTo = workspace.tempMountExternalFile(destination);
+        }
+        if (wsFrom != wsTo) {
+            try {
+                workspace.moveEntry(wsFrom, wsTo);
+            } catch (IOException e) {
+            }
+        }
         saveModel(we.getModelEntry(), path);
+        we.setChanged(false);
+        if (mainWindow != null) {
+            mainWindow.refreshWorkspaceEntryTitle(we, true);
+        }
     }
 
     public void saveModel(ModelEntry modelEntry, String path) throws SerialisationException {

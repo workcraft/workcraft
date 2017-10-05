@@ -86,7 +86,6 @@ import org.workcraft.util.Import;
 import org.workcraft.util.ListMap;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
-import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 
 @SuppressWarnings("serial")
@@ -750,6 +749,14 @@ public class MainWindow extends JFrame {
         mainMenu.setRecentMenu(new ArrayList<String>(recentFiles));
     }
 
+    public void setLastDirectory(String value) {
+        lastDirectory = value;
+    }
+
+    public String getLastDirectory() {
+        return lastDirectory;
+    }
+
     public void createWork() throws OperationCancelledException {
         createWork(Path.<String>empty());
     }
@@ -946,9 +953,6 @@ public class MainWindow extends JFrame {
         if (FileUtils.checkAvailability(file, null)) {
             try {
                 we = framework.loadWork(file);
-                if (we.getModelEntry().isVisual()) {
-                    createEditorWindow(we);
-                }
                 pushRecentFile(file.getPath(), true);
                 lastDirectory = file.getParent();
             } catch (DeserialisationException e) {
@@ -1011,22 +1015,7 @@ public class MainWindow extends JFrame {
             saveWorkAs(we);
         } else {
             String path = we.getFile().getPath();
-            try {
-                if (we.getModelEntry() != null) {
-                    final Framework framework = Framework.getInstance();
-                    framework.saveWork(we, path);
-                } else {
-                    throw new RuntimeException(
-                            "Cannot save workspace entry - it does not have an associated Workcraft model.");
-                }
-            } catch (SerialisationException e) {
-                e.printStackTrace();
-                DialogUtils.showError(e.getMessage());
-            }
-            we.setChanged(false);
-            refreshWorkspaceEntryTitle(we, true);
-            lastDirectory = we.getFile().getParent();
-            pushRecentFile(path, true);
+            saveWork(we, path);
         }
     }
 
@@ -1037,36 +1026,21 @@ public class MainWindow extends JFrame {
         }
         JFileChooser fc = createSaveDialog("Save work as", file, null);
         String path = getValidSavePath(fc, null);
-        try {
-            File destination = new File(path);
-            final Framework framework = Framework.getInstance();
-            Workspace ws = framework.getWorkspace();
+        saveWork(we, path);
+    }
 
-            Path<String> wsFrom = we.getWorkspacePath();
-            Path<String> wsTo = ws.getPath(destination);
-            if (wsTo == null) {
-                wsTo = ws.tempMountExternalFile(destination);
-            }
-            if (wsFrom != wsTo) {
-                ws.moveEntry(wsFrom, wsTo);
-            }
-
-            if (we.getModelEntry() != null) {
-                framework.saveWork(we, path);
-            } else {
-                throw new RuntimeException(
-                        "Cannot save workspace entry - it does not have an associated Workcraft model.");
-            }
-            we.setChanged(false);
-            refreshWorkspaceEntryTitle(we, true);
-            lastDirectory = we.getFile().getParent();
-            pushRecentFile(we.getFile().getPath(), true);
-        } catch (SerialisationException e) {
-            e.printStackTrace();
-            DialogUtils.showError(e.getMessage());
-        } catch (IOException e) {
-            throw new RuntimeException(e);
+    private void saveWork(WorkspaceEntry we, String path) {
+        if (we.getModelEntry() == null) {
+            throw new RuntimeException(
+                    "Cannot save workspace entry - it does not have an associated Workcraft model.");
         }
+        try {
+            Framework.getInstance().saveWork(we, path);
+        } catch (SerialisationException e) {
+            DialogUtils.showError(e.getMessage());
+        }
+        lastDirectory = we.getFile().getParent();
+        pushRecentFile(we.getFile().getPath(), true);
     }
 
     public void importFrom() {
