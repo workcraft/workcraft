@@ -1,6 +1,6 @@
-help('export', 'exportHelp.txt');
-help('stat', 'statHelp.txt');
-help('check', 'checkHelp.txt');
-help('synth', 'synthHelp.txt');
-help('transform', 'transformHelp.txt');
+helpRegex('export.*', 'exportHelp.txt');
+helpRegex('stat.*', 'statHelp.txt');
+helpRegex('check.*', 'checkHelp.txt');
+helpRegex('synth.*', 'synthHelp.txt');
+helpRegex('transform.*', 'transformHelp.txt');
 exit();

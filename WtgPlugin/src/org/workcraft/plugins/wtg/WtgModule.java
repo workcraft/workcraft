@@ -3,7 +3,7 @@ package org.workcraft.plugins.wtg;
 import org.workcraft.Framework;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
-import org.workcraft.commands.Command;
+import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Exporter;
@@ -29,7 +29,8 @@ public class WtgModule  implements Module {
 
         pm.registerClass(Exporter.class, WtgExporter.class);
 
-        pm.registerClass(Command.class, WtgToStgConversionCommand.class);
+        ScriptableCommandUtils.register(WtgToStgConversionCommand.class, "convertWtgToStg",
+                "convert the given WTG 'work' into a new STG work");
     }
 
 }

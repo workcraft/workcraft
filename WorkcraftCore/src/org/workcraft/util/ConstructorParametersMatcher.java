@@ -4,6 +4,7 @@ import java.lang.reflect.Constructor;
 import java.util.ArrayList;
 
 public class ConstructorParametersMatcher {
+
     private static class ConstructorInfo<T> implements MethodParametersMatcher.MethodInfo {
         ConstructorInfo(Constructor<? extends T> constructor) {
             this.constructor = constructor;
@@ -17,7 +18,7 @@ public class ConstructorParametersMatcher {
         }
     }
 
-    @SuppressWarnings("unchecked") // java sucks
+    @SuppressWarnings("unchecked")
     public <T> Constructor<? extends T> match(Class<? extends T> c, Class<?>... parameters) throws NoSuchMethodException {
         ArrayList<ConstructorInfo<T>> constructors = new ArrayList<>();
         for (Constructor<?> constructor : c.getConstructors()) {
@@ -37,4 +38,5 @@ public class ConstructorParametersMatcher {
             throw new NoSuchMethodException("Unable to find a constructor for class " + c.getCanonicalName() + " with parameters (" + s + ")");
         }
     }
+
 }

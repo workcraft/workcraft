@@ -3,6 +3,15 @@ checkCircuitConformation(work) - check the Circuit 'work' for conformation to en
 checkCircuitDeadlockFreeness(work) - check the Circuit 'work' for deadlock freeness
 checkCircuitOutputPersistency(work) - check the Circuit 'work' for output persistency
 checkCircuitStrictImplementation(work) - check the Circuit 'work' for strict implementation of its signals according to the environment
+checkDfsCombined(work) -  combined check of the DFS 'work' for deadlock freeness and output persistency
+checkDfsDeadlockFreeness(work) - check the DFS 'work' for deadlock freeness
+checkDfsOutputPersistency(work) - check the DFS 'work' for output persistency
+checkFsmDeadlockFreeness(work) - check the FSM or FST 'work' for deadlock freeness
+checkFsmDeterminism(work) - check the FSM or FST 'work' for determinism
+checkFsmReachability(work) - check the FSM or FST 'work' for reachability of all states
+checkFsmReversibility(work) - check the FSM or FST 'work' for reversibility of all states
+checkGraphReachability(work) - check the Graph 'work' for reachability of all its nodes
+checkPolicyDeadlockFreeness(work) - check the Policy net 'work' for deadlock freeness
 checkStgCombined(work) - combined check of the STG 'work' for consistency, deadlock freeness, input properness and output persistency
 checkStgConsistency(work) - check the STG 'work' for consistency
 checkStgCsc(work) - check the STG 'work' for complete state coding

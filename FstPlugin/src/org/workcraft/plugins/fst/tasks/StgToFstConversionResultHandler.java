@@ -38,15 +38,17 @@ public class StgToFstConversionResultHandler extends DummyProgressMonitor<WriteS
     @Override
     public void finished(final Result<? extends WriteSgConversionResult> result, final String description) {
         if (result.getOutcome() == Outcome.FINISHED) {
-            final Fst model = result.getReturnValue().getConversionResult();
-            final ModelEntry me = new ModelEntry(new FstDescriptor(), model);
-            final Path<String> path = task.getWorkspaceEntry().getWorkspacePath();
-            final Framework framework = Framework.getInstance();
-            this.result = framework.createWork(me, path);
-            final VisualModel visualModel = me.getVisualModel();
+            Fst model = result.getReturnValue().getConversionResult();
+            ModelEntry me = new ModelEntry(new FstDescriptor(), model);
+            Path<String> path = task.getWorkspaceEntry().getWorkspacePath();
+            Framework framework = Framework.getInstance();
+            WorkspaceEntry we = framework.createWork(me, path);
+            // NOTE: WorkspaceEntry with a new ModelEntry is created
+            VisualModel visualModel = we.getModelEntry().getVisualModel();
             if (visualModel instanceof VisualFst) {
                 highlightCscConflicts((VisualFst) visualModel);
             }
+            this.result = we;
         } else if (result.getOutcome() != Outcome.CANCELLED) {
             if (result.getCause() == null) {
                 final Result<? extends ExternalProcessResult> petrifyResult = result.getReturnValue().getResult();

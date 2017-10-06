@@ -22,7 +22,7 @@ import org.workcraft.util.ToolUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class ExtractWindowsCommand implements Command, MenuOrdering  {
+public class ExtractWindowsCommand implements Command, MenuOrdering {
 
     @Override
     public final String getSection() {

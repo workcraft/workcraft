@@ -1,4 +1,3 @@
-convertPetriSynthesis(work) - convert the given Petri net, STG, FSM or FST 'work' into a new work using net synthesis
 synthComplexGateMpsat(work) - logic synthesis of the STG 'work' into a complex gate Circuit work using MPSat backend
 synthComplexGatePetrify(work) - logic synthesis of the STG 'work' into a complex gate Circuit work using Petrify backend
 synthGeneralisedCelementMpsat(work) - synthesis of the STG 'work' into a generalised C-element Circuit work using MPSat backend

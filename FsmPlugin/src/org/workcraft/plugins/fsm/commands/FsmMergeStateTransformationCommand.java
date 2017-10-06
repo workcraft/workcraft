@@ -9,7 +9,7 @@ import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public final class MergeStateTransformationCommand extends AbstractMergeTransformationCommand {
+public final class FsmMergeStateTransformationCommand extends AbstractMergeTransformationCommand {
 
     @Override
     public String getDisplayName() {

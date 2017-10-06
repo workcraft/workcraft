@@ -15,7 +15,7 @@ import org.workcraft.plugins.dfs.VisualRegister;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public final class MergeComponentTransformationCommand extends AbstractMergeTransformationCommand {
+public final class DfsMergeComponentTransformationCommand extends AbstractMergeTransformationCommand {
 
     @Override
     public String getDisplayName() {
