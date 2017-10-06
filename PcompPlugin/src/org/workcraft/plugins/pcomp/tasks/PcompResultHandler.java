@@ -8,7 +8,6 @@ import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.Mutex;
@@ -56,8 +55,6 @@ public class PcompResultHandler extends DummyProgressMonitor<ExternalProcessResu
                                 WorkspaceEntry we = framework.loadWork(outputFile);
                                 StgModel model = WorkspaceUtils.getAs(we, StgModel.class);
                                 MutexUtils.restoreMutexPlacesByName(model, mutexes);
-                                MainWindow mainWindow = framework.getMainWindow();
-                                mainWindow.createEditorWindow(we);
                             } else {
                                 Path<String> path = Path.fromString(outputFile.getName());
                                 workspace.addMount(path, outputFile, true);

@@ -21,9 +21,9 @@ import org.workcraft.workspace.WorkspaceUtils;
 public class MpsatCscConflictResolutionCommandTests {
 
     @BeforeClass
-    public static void initPlugins() {
+    public static void init() {
         final Framework framework = Framework.getInstance();
-        framework.initPlugins();
+        framework.init();
         switch (DesktopApi.getOs()) {
         case LINUX:
             PunfSettings.setCommand("../dist-template/linux/tools/UnfoldingTools/punf");

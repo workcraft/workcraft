@@ -10,10 +10,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -132,6 +138,11 @@ public final class Framework {
     public static final String COMMON_NODE_WORK_ATTRIBUTE = "node";
     public static final String COMMON_REF_WORK_ATTRIBUTE = "ref";
 
+    private static final Pattern JAVASCRIPT_FUNCTION_PATTERN =
+            Pattern.compile("\\s*function\\s+(\\w+)\\s*\\((.*)\\).*");
+    private static final int JAVASCRIPT_FUNCTION_NAME_GROUP = 1;
+    private static final int JAVASCRIPT_FUNCTION_PARAMS_GROUP = 2;
+
     private static Framework instance = null;
 
     class ExecuteScriptAction implements ContextAction {
@@ -234,6 +245,23 @@ public final class Framework {
         }
     }
 
+    private class JavascriptItem {
+        public final String name;
+        public final String params;
+        public final String description;
+
+        JavascriptItem(String name, String params, String description) {
+            this.name = name;
+            this.params = params;
+            this.description = description;
+        }
+
+        @Override
+        public String toString() {
+            return name + (params == null ? "" : "(" + params + ")") + " - " + description;
+        }
+    }
+
     private final PluginManager pluginManager;
     private final TaskManager taskManager;
     private final CompatibilityManager compatibilityManager;
@@ -250,6 +278,7 @@ public final class Framework {
     private File workingDirectory = null;
     private MainWindow mainWindow;
     public Memento clipboard;
+    private final HashMap<String, JavascriptItem> javascriptHelp = new HashMap<>();
 
     private Framework() {
         pluginManager = new PluginManager();
@@ -325,7 +354,20 @@ public final class Framework {
         return getConfigCoreVar(key);
     }
 
-    public void initJavaScript() {
+    public void init() {
+        initJavaScript();
+        initPlugins();
+    }
+
+    private void initPlugins() {
+        try {
+            pluginManager.initPlugins();
+        } catch (PluginInstantiationException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void initJavaScript() {
         LogUtils.logMessage("Initialising JavaScript...");
         contextFactory.call(new ContextAction() {
             @Override
@@ -363,6 +405,44 @@ public final class Framework {
 
     public ScriptableObject getJavaScriptGlobalScope() {
         return globalScope;
+    }
+
+    public void registerJavaScriptFunction(String function, String description) {
+        Matcher matcher = JAVASCRIPT_FUNCTION_PATTERN.matcher(function);
+        if (matcher.find()) {
+            String name = matcher.group(JAVASCRIPT_FUNCTION_NAME_GROUP);
+            String params = matcher.group(JAVASCRIPT_FUNCTION_PARAMS_GROUP);
+            addJavaScriptHelp(name, params, description);
+            execJavaScript(function, globalScope);
+        } else {
+            LogUtils.logWarning("Cannot determine the function name in the following JavaScript code:\n" + function);
+        }
+    }
+
+    public void addJavaScriptHelp(String name, String params, String description) {
+        JavascriptItem item = new JavascriptItem(name, params, description);
+        if (javascriptHelp.containsKey(name)) {
+            LogUtils.logWarning("Overwriting JavaScrip function '" + name + "':\n"
+                    + "  Old: " + javascriptHelp.get(name) + "\n"
+                    + "  New: " + item);
+        }
+        javascriptHelp.put(name, item);
+    }
+
+    public String getJavaScriptHelp(String regex, boolean searchDescription) {
+        ArrayList<String> result = new ArrayList<>();
+        Pattern pattern = Pattern.compile(regex);
+        for (Entry<String, JavascriptItem> entry: javascriptHelp.entrySet()) {
+            String name = entry.getKey();
+            JavascriptItem item = entry.getValue();
+            Matcher nameMatcher = pattern.matcher(name);
+            Matcher descriptionMatcher = pattern.matcher(item.description);
+            if (nameMatcher.find() || (searchDescription && descriptionMatcher.find())) {
+                result.add(item.toString());
+            }
+        }
+        Collections.sort(result);
+        return String.join("\n", result);
     }
 
     public void setJavaScriptProperty(final String name, final Object object,
@@ -438,8 +518,9 @@ public final class Framework {
     /**
      * Used in functions.js JavaScript wrapper.
      */
-    public void execJavaScriptFile(String filePath) throws IOException {
-        execJavaScript(FileUtils.readAllText(new File(filePath)), globalScope);
+    public void execJavaScriptFile(String path) throws IOException {
+        File file = getFileByAbsoluteOrRelativePath(path);
+        execJavaScript(FileUtils.readAllText(file), globalScope);
     }
 
     public Script compileJavaScript(String source, String sourceName) {
@@ -693,6 +774,9 @@ public final class Framework {
                 path = getWorkspace().createWorkPath(parent, desiredName);
             }
             we = createWork(me, path, false, false);
+            if (we.getModelEntry().isVisual() && (mainWindow != null)) {
+                mainWindow.createEditorWindow(we);
+            }
         }
         return we;
     }
@@ -807,7 +891,23 @@ public final class Framework {
      */
     public void saveWork(WorkspaceEntry we, String path) throws SerialisationException {
         if (we == null) return;
+        File destination = getFileByAbsoluteOrRelativePath(path);
+        Path<String> wsFrom = we.getWorkspacePath();
+        Path<String> wsTo = workspace.getPath(destination);
+        if (wsTo == null) {
+            wsTo = workspace.tempMountExternalFile(destination);
+        }
+        if (wsFrom != wsTo) {
+            try {
+                workspace.moveEntry(wsFrom, wsTo);
+            } catch (IOException e) {
+            }
+        }
         saveModel(we.getModelEntry(), path);
+        we.setChanged(false);
+        if (mainWindow != null) {
+            mainWindow.refreshWorkspaceEntryTitle(we, true);
+        }
     }
 
     public void saveModel(ModelEntry modelEntry, String path) throws SerialisationException {
@@ -945,14 +1045,6 @@ public final class Framework {
         }
     }
 
-    public void initPlugins() {
-        try {
-            pluginManager.initPlugins();
-        } catch (PluginInstantiationException e) {
-            e.printStackTrace();
-        }
-    }
-
     public void restartGUI() throws OperationCancelledException {
         guiRestartRequested = true;
         shutdownGUI();
@@ -1001,6 +1093,9 @@ public final class Framework {
     }
 
     public File getWorkingDirectory() {
+        if (workingDirectory == null) {
+            setWorkingDirectory(System.getProperty("user.dir"));
+        }
         return workingDirectory;
     }
 

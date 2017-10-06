@@ -2,13 +2,12 @@ package org.workcraft.plugins.fsm;
 
 import org.workcraft.CompatibilityManager;
 import org.workcraft.Framework;
-import org.workcraft.Initialiser;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Version;
-import org.workcraft.commands.AbstractContractTransformationCommand;
-import org.workcraft.commands.Command;
+import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.dom.ModelDescriptor;
+import org.workcraft.plugins.fsm.commands.FsmContractStateTransformationCommand;
 import org.workcraft.plugins.fsm.commands.FsmDeadlockVerificationCommand;
 import org.workcraft.plugins.fsm.commands.FsmDeterminismVerificationCommand;
 import org.workcraft.plugins.fsm.commands.FsmReachabilityVerificationCommand;
@@ -16,22 +15,13 @@ import org.workcraft.plugins.fsm.commands.FsmReversibilityVerificationCommand;
 import org.workcraft.plugins.fsm.commands.FsmToGraphConversionCommand;
 import org.workcraft.plugins.fsm.commands.FsmToPetriConversionCommand;
 import org.workcraft.plugins.fsm.commands.GraphToFsmConversionCommand;
-import org.workcraft.plugins.fsm.commands.MergeStateTransformationCommand;
+import org.workcraft.plugins.fsm.commands.FsmMergeStateTransformationCommand;
 import org.workcraft.plugins.fsm.serialisation.EventDeserialiser;
 import org.workcraft.plugins.fsm.serialisation.EventSerialiser;
 import org.workcraft.serialisation.xml.XMLDeserialiser;
 import org.workcraft.serialisation.xml.XMLSerialiser;
-import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
 
 public class FsmModule  implements Module {
-
-    private final class ContractStateTransformationCommand extends AbstractContractTransformationCommand {
-        @Override
-        public boolean isApplicableTo(WorkspaceEntry we) {
-            return WorkspaceUtils.isApplicable(we, Fsm.class);
-        }
-    }
 
     @Override
     public String getDescription() {
@@ -53,21 +43,26 @@ public class FsmModule  implements Module {
         pm.registerClass(XMLSerialiser.class, EventSerialiser.class);
         pm.registerClass(XMLDeserialiser.class, EventDeserialiser.class);
 
-        pm.registerClass(Command.class, FsmToGraphConversionCommand.class);
-        pm.registerClass(Command.class, GraphToFsmConversionCommand.class);
-        pm.registerClass(Command.class, FsmToPetriConversionCommand.class);
-        pm.registerClass(Command.class, FsmDeadlockVerificationCommand.class);
-        pm.registerClass(Command.class, FsmDeterminismVerificationCommand.class);
-        pm.registerClass(Command.class, FsmReachabilityVerificationCommand.class);
-        pm.registerClass(Command.class, FsmReversibilityVerificationCommand.class);
-        pm.registerClass(Command.class, MergeStateTransformationCommand.class);
+        ScriptableCommandUtils.register(FsmToGraphConversionCommand.class, "convertFsmToGraph",
+                "convert the given FSM 'work' into a new Graph work");
+        ScriptableCommandUtils.register(GraphToFsmConversionCommand.class, "convertGraphToFsm",
+                "convert the given Graph 'work' into a new FSM work");
+        ScriptableCommandUtils.register(FsmToPetriConversionCommand.class, "convertFsmToPetri",
+                "convert the given FSM 'work' into a new Petri net work");
 
-        pm.registerClass(Command.class, new Initialiser<Command>() {
-            @Override
-            public Command create() {
-                return new ContractStateTransformationCommand();
-            }
-        });
+        ScriptableCommandUtils.register(FsmDeadlockVerificationCommand.class, "checkFsmDeadlockFreeness",
+                "check the FSM or FST 'work' for deadlock freeness");
+        ScriptableCommandUtils.register(FsmDeterminismVerificationCommand.class, "checkFsmDeterminism",
+                "check the FSM or FST 'work' for determinism");
+        ScriptableCommandUtils.register(FsmReachabilityVerificationCommand.class, "checkFsmReachability",
+                "check the FSM or FST 'work' for reachability of all states");
+        ScriptableCommandUtils.register(FsmReversibilityVerificationCommand.class, "checkFsmReversibility",
+                "check the FSM or FST 'work' for reversibility of all states");
+
+        ScriptableCommandUtils.register(FsmMergeStateTransformationCommand.class, "transformFsmMergeState",
+                "transform the given FSM or FST 'work' by merging selected states");
+        ScriptableCommandUtils.register(FsmContractStateTransformationCommand.class, "transformFsmContractState",
+                "transform the given FSM or FST 'work' by contracting selected states");
     }
 
     private void initCompatibilityManager() {

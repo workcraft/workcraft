@@ -13,7 +13,7 @@ import org.workcraft.plugins.mpsat.commands.MpsatCombinedVerificationCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatConformationVerificationCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatConsistencyVerificationCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatCscVerificationCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatDeadlockVerificationCommand;
+import org.workcraft.plugins.mpsat.commands.MpsatDeadlockFreenessVerificationCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatDiInterfaceVerificationCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatInputPropernessVerificationCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatMutexImplementabilityVerificationCommand;
@@ -27,9 +27,9 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class MpsatVerificationCommandTests {
 
     @BeforeClass
-    public static void initPlugins() {
+    public static void init() {
         final Framework framework = Framework.getInstance();
-        framework.initPlugins();
+        framework.init();
         switch (DesktopApi.getOs()) {
         case LINUX:
             PcompSettings.setCommand("../dist-template/linux/tools/UnfoldingTools/pcomp");
@@ -55,7 +55,7 @@ public class MpsatVerificationCommandTests {
         testVerificationCommands("org/workcraft/plugins/mpsat/vme.stg.work",
                 true,  // combined
                 true,  // consistency
-                true,  // deadlock
+                true,  // deadlock freeness
                 true,  // input properness
                 true,  // output persistency
                 false, // CSC
@@ -72,7 +72,7 @@ public class MpsatVerificationCommandTests {
         testVerificationCommands("org/workcraft/plugins/mpsat/arbitration-3.stg.work",
                 true,  // combined
                 true,  // consistency
-                true,  // deadlock
+                true,  // deadlock freeness
                 true,  // input properness
                 true,  // output persistency
                 true,  // CSC
@@ -89,7 +89,7 @@ public class MpsatVerificationCommandTests {
         testVerificationCommands("org/workcraft/plugins/mpsat/bad.stg.work",
                 false, // combined
                 true,  // consistency
-                false, // deadlock
+                false, // deadlock freeness
                 true,  // input properness
                 false, // output persistency
                 true,  // CSC
@@ -106,7 +106,7 @@ public class MpsatVerificationCommandTests {
         testVerificationCommands("org/workcraft/plugins/mpsat/cycle.stg.work",
                 true, // combined
                 true,  // consistency
-                true, // deadlock
+                true, // deadlock freeness
                 true,  // input properness
                 true, // output persistency
                 true,  // CSC
@@ -119,7 +119,7 @@ public class MpsatVerificationCommandTests {
     }
 
     private void testVerificationCommands(String work, Boolean combined,
-            Boolean consistency, Boolean deadlock,
+            Boolean consistency, Boolean deadlockFreeness,
             Boolean inputProperness, Boolean outputPersistency,
             Boolean csc, Boolean usc,
             Boolean diInterface, Boolean normalcy,
@@ -138,8 +138,8 @@ public class MpsatVerificationCommandTests {
         MpsatConsistencyVerificationCommand consistencyCommand = new MpsatConsistencyVerificationCommand();
         Assert.assertEquals(consistency, consistencyCommand.execute(we));
 
-        MpsatDeadlockVerificationCommand deadlockCommand = new MpsatDeadlockVerificationCommand();
-        Assert.assertEquals(deadlock, deadlockCommand.execute(we));
+        MpsatDeadlockFreenessVerificationCommand deadlockCommand = new MpsatDeadlockFreenessVerificationCommand();
+        Assert.assertEquals(deadlockFreeness, deadlockCommand.execute(we));
 
         MpsatInputPropernessVerificationCommand inputPropernessCommand = new MpsatInputPropernessVerificationCommand();
         Assert.assertEquals(inputProperness, inputPropernessCommand.execute(we));

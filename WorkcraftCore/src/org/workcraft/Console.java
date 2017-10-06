@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URISyntaxException;
 import java.util.LinkedList;
 
 import org.mozilla.javascript.Context;
@@ -13,8 +14,8 @@ import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.FileFilters;
 import org.workcraft.gui.MainWindow;
-import org.workcraft.util.FileUtils;
 import org.workcraft.util.LogUtils;
+import org.workcraft.util.ResourceUtils;
 
 public class Console {
     static {
@@ -67,26 +68,22 @@ public class Console {
         System.out.println();
 
         BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-        // NOTE: JavaScript needs to be initialised before GUI.
-        framework.initJavaScript();
-        // NOTE: Plugins need to be loaded before GUI (because of assigning PropertyProviders)
+        // NOTE: JavaScript and Plugins needs to be initialised before GUI (because of assigning PropertyProviders)
         // and before config (because of plugin-specific settings).
-        framework.initPlugins();
+        framework.init();
+        // NOTE: Scripts should run after JavaScript, plugins, config (and possibly before GUI).
+        try {
+            for (String scriptName: ResourceUtils.getResources("scripts/")) {
+                LogUtils.logMessage("  Executing script: " + scriptName);
+                framework.execJavaScriptResource(scriptName);
+            }
+        } catch (IOException | URISyntaxException e) {
+            LogUtils.logError("Cannot read script files: " + e.getMessage());
+        }
         // NOTE: Config needs to be loaded before GUI.
         framework.loadConfig();
         if (startGUI) {
             framework.startGUI();
-        }
-        // NOTE: Scripts should run after JavaScript, plugins, config anf GUI.
-        try {
-            framework.execJavaScript(FileUtils.readAllTextFromSystemResource("scripts/functions.js"));
-            framework.execJavaScript(FileUtils.readAllTextFromSystemResource("scripts/startup.js"));
-        } catch (FileNotFoundException e) {
-            LogUtils.logWarning("System script file not found: " + e.getMessage());
-        } catch (IOException e) {
-            LogUtils.logError("Error reading system script file: " + e.getMessage());
-        } catch (WrappedException | org.mozilla.javascript.EcmaError e) {
-            LogUtils.logError("Startup script failed: " + e.getMessage());
         }
 
         if (framework.isInGuiMode()) {
@@ -127,21 +124,10 @@ public class Console {
                 } catch (OperationCancelledException e) {
                     framework.abortShutdown();
                 }
-
                 if (!framework.shutdownRequested()) {
                     continue;
                 }
-
-                try {
-                    LogUtils.logMessage("Shutting down...");
-                    framework.execJavaScript(FileUtils.readAllTextFromSystemResource("scripts/shutdown.js"));
-                } catch (FileNotFoundException e) {
-                    LogUtils.logError("System script file not found: " + e.getMessage());
-                } catch (IOException e) {
-                    LogUtils.logError("IO Exception: " + e.getMessage());
-                } catch (WrappedException | org.mozilla.javascript.EcmaError e) {
-                    LogUtils.logError("Shutdown script failed: " + e.getMessage());
-                }
+                LogUtils.logMessage("Shutting down...");
                 System.exit(0);
             }
 
@@ -174,4 +160,5 @@ public class Console {
             }
         }
     }
+
 }

@@ -9,7 +9,6 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.util.Import;
 import org.workcraft.workspace.FileHandler;
-import org.workcraft.workspace.WorkspaceEntry;
 
 public class WorkcraftOpen implements FileHandler {
 
@@ -26,8 +25,7 @@ public class WorkcraftOpen implements FileHandler {
         final Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
         try {
-            WorkspaceEntry we = framework.loadWork(file);
-            mainWindow.createEditorWindow(we);
+            framework.loadWork(file);
         } catch (DeserialisationException e) {
             e.printStackTrace();
             JOptionPane.showMessageDialog(mainWindow, e.getMessage(), "Import error", JOptionPane.ERROR_MESSAGE);

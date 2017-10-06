@@ -6,18 +6,19 @@ import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Version;
 import org.workcraft.commands.Command;
+import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.circuit.commands.CircuitAssertionVerificationCommand;
 import org.workcraft.plugins.circuit.commands.CircuitConformationVerificationCommand;
-import org.workcraft.plugins.circuit.commands.CircuitDeadlockVerificationCommand;
+import org.workcraft.plugins.circuit.commands.CircuitDeadlockFreenessVerificationCommand;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutCommand;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutPlacementCommand;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutRoutingCommand;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutSettings;
-import org.workcraft.plugins.circuit.commands.CircuitPersistencyVerificationCommand;
+import org.workcraft.plugins.circuit.commands.CircuitOutputPersistencyVerificationCommand;
 import org.workcraft.plugins.circuit.commands.CircuitPropertyVerificationCommand;
 import org.workcraft.plugins.circuit.commands.CircuitStatisticsCommand;
 import org.workcraft.plugins.circuit.commands.CircuitStrictImplementationVerificationCommand;
@@ -64,27 +65,46 @@ public class CircuitModule implements Module {
         pm.registerClass(Importer.class, GenlibImporter.class);
         pm.registerClass(Exporter.class, SdcExporter.class);
 
-        pm.registerClass(Command.class, CircuitLayoutCommand.class);
-        pm.registerClass(Command.class, CircuitLayoutPlacementCommand.class);
-        pm.registerClass(Command.class, CircuitLayoutRoutingCommand.class);
+        ScriptableCommandUtils.register(CircuitLayoutCommand.class, "layoutCircuit",
+                "place components and route wires of the Circuit 'work'");
+        ScriptableCommandUtils.register(CircuitLayoutPlacementCommand.class, "layoutCircuitPlacement",
+                "place components of the Circuit 'work'");
+        ScriptableCommandUtils.register(CircuitLayoutRoutingCommand.class, "layoutCircuitRouting",
+                "route wires of the Circuit 'work'");
         pm.registerClass(Settings.class, CircuitLayoutSettings.class);
 
-        pm.registerClass(Command.class, CircuitToStgConversionCommand.class);
-        pm.registerClass(Command.class, CircuitConformationVerificationCommand.class);
-        pm.registerClass(Command.class, CircuitDeadlockVerificationCommand.class);
-        pm.registerClass(Command.class, CircuitPersistencyVerificationCommand.class);
-        pm.registerClass(Command.class, CircuitVerificationCommand.class);
-        pm.registerClass(Command.class, CircuitStrictImplementationVerificationCommand.class);
+        ScriptableCommandUtils.register(ContractJointTransformationCommand.class, "transformCircuitContractJoint",
+                "transform the given Circuit 'work' by contracting selected (or all) joints");
+        ScriptableCommandUtils.register(SplitJointTransformationCommand.class, "transformCircuitSplitJoint",
+                "transform the given Circuit 'work' by splitting selected (or all) joints");
+        ScriptableCommandUtils.register(DetachJointTransformationCommand.class, "transformCircuitDetachJoint",
+                "transform the given Circuit 'work' by detaching selected (or all joints)");
+        ScriptableCommandUtils.register(ContractComponentTransformationCommand.class, "transformCircuitContractComponent",
+                "transform the given Circuit 'work' by contracting selected single-input/single-output components");
+        ScriptableCommandUtils.register(InsertBufferTransformationCommand.class, "transformCircuitInsertBuffer",
+                "transform the given Circuit 'work' by inserting buffers into selected wires");
+        ScriptableCommandUtils.register(ToggleBubbleTransformationCommand.class, "transformCircuitToggleBubble",
+                "transform the given Circuit 'work' by toggling inversion of selected contacts and outputs of selected components");
+
+        ScriptableCommandUtils.register(CircuitStatisticsCommand.class, "statCircuit",
+                "advanced complexity estimates for the Circuit 'work'");
+
+        ScriptableCommandUtils.register(CircuitToStgConversionCommand.class, "convertCircuitToStg",
+                "convert the Circuit 'work' to an STG");
+
+        ScriptableCommandUtils.register(CircuitVerificationCommand.class, "checkCircuitCombined",
+                "combined check of the Circuit 'work' for deadlock freeness, conformation to environment and output persistency");
+        ScriptableCommandUtils.register(CircuitConformationVerificationCommand.class, "checkCircuitConformation",
+                "check the Circuit 'work' for conformation to environment");
+        ScriptableCommandUtils.register(CircuitDeadlockFreenessVerificationCommand.class, "checkCircuitDeadlockFreeness",
+                "check the Circuit 'work' for deadlock freeness");
+        ScriptableCommandUtils.register(CircuitOutputPersistencyVerificationCommand.class, "checkCircuitOutputPersistency",
+                "check the Circuit 'work' for output persistency");
+        ScriptableCommandUtils.register(CircuitStrictImplementationVerificationCommand.class, "checkCircuitStrictImplementation",
+                "check the Circuit 'work' for strict implementation of its signals according to the environment");
+
         pm.registerClass(Command.class, CircuitPropertyVerificationCommand.class);
         pm.registerClass(Command.class, CircuitAssertionVerificationCommand.class);
-
-        pm.registerClass(Command.class, ContractJointTransformationCommand.class);
-        pm.registerClass(Command.class, SplitJointTransformationCommand.class);
-        pm.registerClass(Command.class, DetachJointTransformationCommand.class);
-        pm.registerClass(Command.class, ContractComponentTransformationCommand.class);
-        pm.registerClass(Command.class, InsertBufferTransformationCommand.class);
-        pm.registerClass(Command.class, ToggleBubbleTransformationCommand.class);
-        pm.registerClass(Command.class, CircuitStatisticsCommand.class);
     }
 
     private void initCompatibilityManager() {

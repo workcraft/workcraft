@@ -3,7 +3,7 @@ package org.workcraft.plugins.graph;
 import org.workcraft.Framework;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
-import org.workcraft.commands.Command;
+import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.plugins.graph.commands.GraphReachabilityVerificationCommand;
 import org.workcraft.plugins.graph.commands.GraphToPetriConversionCommand;
@@ -29,8 +29,10 @@ public class GraphModule implements Module {
         pm.registerClass(XMLSerialiser.class, VertexSerialiser.class);
         pm.registerClass(XMLDeserialiser.class, VertexDeserialiser.class);
 
-        pm.registerClass(Command.class, GraphToPetriConversionCommand.class);
-        pm.registerClass(Command.class, GraphReachabilityVerificationCommand.class);
+        ScriptableCommandUtils.register(GraphToPetriConversionCommand.class, "convertGraphToPetri",
+                "convert the given Graph 'work' into a new Petri net work");
+        ScriptableCommandUtils.register(GraphReachabilityVerificationCommand.class, "checkGraphReachability",
+                "check the Graph 'work' for reachability of all its nodes");
     }
 
 }

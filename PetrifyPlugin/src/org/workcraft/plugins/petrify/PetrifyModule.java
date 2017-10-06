@@ -1,52 +1,23 @@
 package org.workcraft.plugins.petrify;
 
-import java.util.ArrayList;
-
 import org.workcraft.Framework;
-import org.workcraft.Initialiser;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
-import org.workcraft.commands.Command;
+import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.petrify.commands.PetrifyComplexGateSynthesisCommand;
 import org.workcraft.plugins.petrify.commands.PetrifyCscConflictResolutionCommand;
 import org.workcraft.plugins.petrify.commands.PetrifyGeneralisedCelementSynthesisCommand;
 import org.workcraft.plugins.petrify.commands.PetrifyHideConversionCommand;
 import org.workcraft.plugins.petrify.commands.PetrifyHideDummyConversionCommand;
+import org.workcraft.plugins.petrify.commands.PetrifyHideErConversionCommand;
 import org.workcraft.plugins.petrify.commands.PetrifyNetConversionCommand;
+import org.workcraft.plugins.petrify.commands.PetrifyNetErConversionCommand;
 import org.workcraft.plugins.petrify.commands.PetrifyStandardCelementSynthesisCommand;
 import org.workcraft.plugins.petrify.commands.PetrifyTechnologyMappingSynthesisCommand;
 import org.workcraft.plugins.petrify.commands.PetrifyUntoggleConversionCommand;
 
 public class PetrifyModule implements Module {
-
-    private final class PetrifyNetErConversionCommand extends PetrifyNetConversionCommand {
-        @Override
-        public String getDisplayName() {
-            return "Net synthesis [Petrify with -er option]";
-        }
-
-        @Override
-        public ArrayList<String> getArgs() {
-            ArrayList<String> args = super.getArgs();
-            args.add("-er");
-            return args;
-        }
-    }
-
-    private final class PetrifyHideErConversionCommand extends PetrifyHideConversionCommand {
-        @Override
-        public String getDisplayName() {
-            return "Net synthesis hiding selected signals and dummies [Petrify with -er option]";
-        }
-
-        @Override
-        public ArrayList<String> getArgs() {
-            ArrayList<String> args = super.getArgs();
-            args.add("-er");
-            return args;
-        }
-    }
 
     @Override
     public void init() {
@@ -55,29 +26,32 @@ public class PetrifyModule implements Module {
 
         pm.registerClass(Settings.class, PetrifySettings.class);
 
-        pm.registerClass(Command.class, PetrifyUntoggleConversionCommand.class);
-        pm.registerClass(Command.class, PetrifyCscConflictResolutionCommand.class);
-        pm.registerClass(Command.class, PetrifyComplexGateSynthesisCommand.class);
-        pm.registerClass(Command.class, PetrifyGeneralisedCelementSynthesisCommand.class);
-        pm.registerClass(Command.class, PetrifyStandardCelementSynthesisCommand.class);
-        pm.registerClass(Command.class, PetrifyTechnologyMappingSynthesisCommand.class);
-        pm.registerClass(Command.class, PetrifyHideDummyConversionCommand.class);
-        pm.registerClass(Command.class, PetrifyNetConversionCommand.class);
-        pm.registerClass(Command.class, PetrifyHideConversionCommand.class);
+        ScriptableCommandUtils.register(PetrifyNetConversionCommand.class, "convertPetriSynthesis",
+                "convert the given Petri net/FSM or STG/FST 'work' into a new Petri net or STG work using net synthesis");
+        ScriptableCommandUtils.register(PetrifyNetErConversionCommand.class, "convertPetriSynthesisEr",
+                "convert the given Petri net/FSM or STG/FST 'work' into a new Petri net or STG work using net synthesis"
+                + " with a different label for each excitation region");
+        ScriptableCommandUtils.register(PetrifyUntoggleConversionCommand.class, "convertStgUntoggle",
+                "convert the given STG 'work' into a new work where the selected (or all) transitions are untoggled");
+        ScriptableCommandUtils.register(PetrifyHideDummyConversionCommand.class, "convertStgHideDummy",
+                "convert the given STG 'work' into a new work without dummies");
+        ScriptableCommandUtils.register(PetrifyHideConversionCommand.class, "convertPetriHideTransition",
+                "convert the given Petri net or STG 'work' into a new Petri net or STG work hiding selected signals and dummies");
+        ScriptableCommandUtils.register(PetrifyHideErConversionCommand.class, "convertPetriHideErTransition",
+                "convert the given Petri net or STG 'work' into a new Petri net or STG work hiding selected signals and dummies"
+                + " with a different label for each excitation region");
 
-        pm.registerClass(Command.class, new Initialiser<Command>() {
-            @Override
-            public Command create() {
-                return new PetrifyNetErConversionCommand();
-            }
-        });
+        ScriptableCommandUtils.register(PetrifyCscConflictResolutionCommand.class, "resolveCscConflictPetrify",
+                "resolve complete state coding conflicts with Petrify backend");
 
-        pm.registerClass(Command.class, new Initialiser<Command>() {
-            @Override
-            public Command create() {
-                return new PetrifyHideErConversionCommand();
-            }
-        });
+        ScriptableCommandUtils.register(PetrifyComplexGateSynthesisCommand.class, "synthComplexGatePetrify",
+                "logic synthesis of the STG 'work' into a complex gate Circuit work using Petrify backend");
+        ScriptableCommandUtils.register(PetrifyGeneralisedCelementSynthesisCommand.class, "synthGeneralisedCelementPetrify",
+                "synthesis of the STG 'work' into a generalised C-element Circuit work using Petrify");
+        ScriptableCommandUtils.register(PetrifyStandardCelementSynthesisCommand.class, "synthStandardCelementPetrify",
+                "synthesis of the STG 'work' into a standard C-element Circuit work using Petrify backend");
+        ScriptableCommandUtils.register(PetrifyTechnologyMappingSynthesisCommand.class, "synthTechnologyMappingPetrify",
+                "technology mapping of the STG 'work' into a Circuit work using Petrify backend");
     }
 
     @Override

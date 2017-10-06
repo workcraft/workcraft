@@ -327,15 +327,9 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
                 for (VisualContact contact2: circuit.getVisualPorts()) {
                     if (!contact2.isInput()) continue;
                     if (contact2 == contact1) continue;
-                    if (Math.abs(contact2.getRootSpaceY() - y) < 1.0) {
-                        Collection<VisualContact> driven1 = CircuitUtils.findDriven(circuit, contact1);
-                        if (driven1.size() > 1) {
-                            contact1.setRootSpaceY(contact2.getRootSpaceY() - 1.0);
-                        } else {
-                            contact2.setRootSpaceY(contact1.getRootSpaceY() - 1.0);
-                        }
-                        done = false;
-                    }
+                    if (Math.abs(contact2.getRootSpaceY() - y) > 0.5) continue;
+                    contact2.setRootSpaceY(contact1.getRootSpaceY() + 1.0);
+                    done = false;
                 }
             }
         }
@@ -351,16 +345,9 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
                 for (VisualContact contact2: circuit.getVisualPorts()) {
                     if (!contact2.isOutput()) continue;
                     if (contact2 == contact1) continue;
-                    if (Math.abs(contact2.getRootSpaceY() - y) < 1.0) {
-                        VisualContact driver1 = CircuitUtils.findDriver(circuit, contact1);
-                        VisualContact driver2 = CircuitUtils.findDriver(circuit, contact2);
-                        if (driver1.getRootSpaceX() < driver2.getRootSpaceX()) {
-                            contact1.setRootSpaceY(contact2.getRootSpaceY() - 1.0);
-                        } else {
-                            contact2.setRootSpaceY(contact1.getRootSpaceY() - 1.0);
-                        }
-                        done = false;
-                    }
+                    if (Math.abs(contact2.getRootSpaceY() - y) > 0.5) continue;
+                    contact2.setRootSpaceY(contact1.getRootSpaceY() + 1.0);
+                    done = false;
                 }
             }
         }

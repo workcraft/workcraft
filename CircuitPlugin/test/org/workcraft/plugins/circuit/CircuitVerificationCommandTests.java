@@ -9,8 +9,8 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.circuit.commands.CircuitConformationVerificationCommand;
-import org.workcraft.plugins.circuit.commands.CircuitDeadlockVerificationCommand;
-import org.workcraft.plugins.circuit.commands.CircuitPersistencyVerificationCommand;
+import org.workcraft.plugins.circuit.commands.CircuitDeadlockFreenessVerificationCommand;
+import org.workcraft.plugins.circuit.commands.CircuitOutputPersistencyVerificationCommand;
 import org.workcraft.plugins.circuit.commands.CircuitStrictImplementationVerificationCommand;
 import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.pcomp.PcompSettings;
@@ -19,20 +19,10 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class CircuitVerificationCommandTests {
 
-    private static final String[] TEST_CIRCUIT_WORKS = {
-        "org/workcraft/plugins/circuit/buffer.circuit.work",
-        "org/workcraft/plugins/circuit/celement.circuit.work",
-    };
-
-    private static final String[] TEST_TM_CIRCUIT_WORKS = {
-        "org/workcraft/plugins/circuit/celement-decomposed-tm.circuit.work",
-        "org/workcraft/plugins/circuit/vme-tm.circuit.work",
-    };
-
     @BeforeClass
-    public static void initPlugins() {
+    public static void init() {
         final Framework framework = Framework.getInstance();
-        framework.initPlugins();
+        framework.init();
         switch (DesktopApi.getOs()) {
         case LINUX:
             PcompSettings.setCommand("../dist-template/linux/tools/UnfoldingTools/pcomp");
@@ -54,48 +44,72 @@ public class CircuitVerificationCommandTests {
     }
 
     @Test
-    public void testCircuitVerificationCommands() throws DeserialisationException {
-        final Framework framework = Framework.getInstance();
-        final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        for (String testCircuitWork: TEST_CIRCUIT_WORKS) {
-            URL url = classLoader.getResource(testCircuitWork);
-            WorkspaceEntry we = framework.loadWork(url.getFile());
-
-            CircuitDeadlockVerificationCommand deadlockVerificationCommand = new CircuitDeadlockVerificationCommand();
-            Assert.assertTrue(deadlockVerificationCommand.execute(we));
-
-            CircuitConformationVerificationCommand conformationVerificationCommand = new CircuitConformationVerificationCommand();
-            Assert.assertTrue(conformationVerificationCommand.execute(we));
-
-            CircuitPersistencyVerificationCommand persistencyVerificationCommand = new CircuitPersistencyVerificationCommand();
-            Assert.assertTrue(persistencyVerificationCommand.execute(we));
-
-            CircuitStrictImplementationVerificationCommand strictImpVerificationCommand = new CircuitStrictImplementationVerificationCommand();
-            Assert.assertTrue(strictImpVerificationCommand.execute(we));
-
-            framework.closeWork(we);
-        }
+    public void bufferVerification() throws DeserialisationException {
+        testCircuitVerificationCommands("org/workcraft/plugins/circuit/buffer.circuit.work",
+                true,  // combined
+                true,  // conformation
+                true,  // deadlock freeness
+                true,  // output persistency
+                true   // strict implementation
+        );
     }
 
     @Test
-    public void testMappedCircuitVerificationCommands() throws DeserialisationException {
+    public void celementVerification() throws DeserialisationException {
+        testCircuitVerificationCommands("org/workcraft/plugins/circuit/celement.circuit.work",
+                true,  // combined
+                true,  // conformation
+                true,  // deadlock freeness
+                true,  // output persistency
+                true   // strict implementation
+        );
+    }
+
+    @Test
+    public void mappedCelementVerification() throws DeserialisationException {
+        testCircuitVerificationCommands("org/workcraft/plugins/circuit/celement-decomposed-tm.circuit.work",
+                true,  // combined
+                true,  // conformation
+                true,  // deadlock freeness
+                true,  // output persistency
+                null   // strict implementation
+        );
+    }
+
+    @Test
+    public void mappedVmeVerification() throws DeserialisationException {
+        testCircuitVerificationCommands("org/workcraft/plugins/circuit/vme-tm.circuit.work",
+                true,  // combined
+                true,  // conformation
+                true,  // deadlock freeness
+                true,  // output persistency
+                null   // strict implementation
+        );
+    }
+
+    private void testCircuitVerificationCommands(String testStgWork, Boolean combined,
+            Boolean conformation, Boolean deadlockFreeness, Boolean outputPersistency,
+            Boolean strictImplementation) throws DeserialisationException {
+
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        for (String testCircuitWork: TEST_TM_CIRCUIT_WORKS) {
-            URL url = classLoader.getResource(testCircuitWork);
-            WorkspaceEntry we = framework.loadWork(url.getFile());
+        URL url = classLoader.getResource(testStgWork);
 
-            CircuitDeadlockVerificationCommand deadlockVerificationCommand = new CircuitDeadlockVerificationCommand();
-            Assert.assertTrue(deadlockVerificationCommand.execute(we));
+        WorkspaceEntry we = framework.loadWork(url.getFile());
 
-            CircuitConformationVerificationCommand conformationVerificationCommand = new CircuitConformationVerificationCommand();
-            Assert.assertTrue(conformationVerificationCommand.execute(we));
+        CircuitConformationVerificationCommand conformationCommand = new CircuitConformationVerificationCommand();
+        Assert.assertEquals(conformation, conformationCommand.execute(we));
 
-            CircuitPersistencyVerificationCommand persistencyVerificationCommand = new CircuitPersistencyVerificationCommand();
-            Assert.assertTrue(persistencyVerificationCommand.execute(we));
+        CircuitDeadlockFreenessVerificationCommand deadlockFreenessCommand = new CircuitDeadlockFreenessVerificationCommand();
+        Assert.assertEquals(deadlockFreeness, deadlockFreenessCommand.execute(we));
 
-            framework.closeWork(we);
-        }
+        CircuitOutputPersistencyVerificationCommand outputPersistencyCommand = new CircuitOutputPersistencyVerificationCommand();
+        Assert.assertEquals(outputPersistency, outputPersistencyCommand.execute(we));
+
+        CircuitStrictImplementationVerificationCommand strictImplementationCommand = new CircuitStrictImplementationVerificationCommand();
+        Assert.assertEquals(strictImplementation, strictImplementationCommand.execute(we));
+
+        framework.closeWork(we);
     }
 
 }

@@ -5,7 +5,7 @@ import org.workcraft.Framework;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Version;
-import org.workcraft.commands.Command;
+import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Exporter;
@@ -64,20 +64,36 @@ public class StgModule implements Module {
         pm.registerClass(Exporter.class, LpnExporter.class);
         pm.registerClass(Importer.class, LpnImporter.class);
 
-        pm.registerClass(Command.class, MirrorSignalTransformationCommand.class);
-        pm.registerClass(Command.class, MirrorTransitionTransformationCommand.class);
-        pm.registerClass(Command.class, ImplicitPlaceTransformationCommand.class);
-        pm.registerClass(Command.class, ExplicitPlaceTransformationCommand.class);
-        pm.registerClass(Command.class, SignalToDummyTransitionTransformationCommand.class);
-        pm.registerClass(Command.class, DummyToSignalTransitionTransformationCommand.class);
-        pm.registerClass(Command.class, ContractNamedTransitionTransformationCommand.class);
-        pm.registerClass(Command.class, PetriToStgConversionCommand.class);
-        pm.registerClass(Command.class, StgToPetriConversionCommand.class);
-        pm.registerClass(Command.class, MergeTransitionTransformationCommand.class);
-        pm.registerClass(Command.class, InsertDummyTransformationCommand.class);
-        pm.registerClass(Command.class, ExpandHandshakeTransformationCommand.class);
-        pm.registerClass(Command.class, ExpandHandshakeReqAckTransformationCommand.class);
-        pm.registerClass(Command.class, StgStatisticsCommand.class);
+        ScriptableCommandUtils.register(MirrorSignalTransformationCommand.class, "transformStgMirrorSignal",
+                "transform the given STG 'work' by mirroring selected (or all) signals");
+        ScriptableCommandUtils.register(MirrorTransitionTransformationCommand.class, "transformStgMirrorTransition",
+                "transform the given STG 'work' by mirroring selected (or all) transition sign");
+        ScriptableCommandUtils.register(ImplicitPlaceTransformationCommand.class, "transformStgImplicitPlace",
+                "transform the given STG 'work' by making selected (or all) places implicit");
+        ScriptableCommandUtils.register(ExplicitPlaceTransformationCommand.class, "transformStgExplicitPlace",
+                "transform the given STG 'work' by making selected (or all) places explicit");
+        ScriptableCommandUtils.register(SignalToDummyTransitionTransformationCommand.class, "transformStgSignalToDummyTransition",
+                "transform the given STG 'work' by converting selected signal transitions to dummies");
+        ScriptableCommandUtils.register(DummyToSignalTransitionTransformationCommand.class, "transformStgDummyToSignalTransition",
+                "transform the given STG 'work' by converting selected dummies to signal transitions");
+        ScriptableCommandUtils.register(ContractNamedTransitionTransformationCommand.class, "transformStgContractNamedTransition",
+                "transform the given STG 'work' by contracting a selected transition");
+        ScriptableCommandUtils.register(MergeTransitionTransformationCommand.class, "transformStgMergeTransition",
+                "transform the given STG 'work' by merging selected transitions");
+        ScriptableCommandUtils.register(InsertDummyTransformationCommand.class, "transformStgInsertDummy",
+                "transform the given STG 'work' by inserting dummies into selected arcs");
+        ScriptableCommandUtils.register(ExpandHandshakeTransformationCommand.class, "transformStgExpandHandshake",
+                "transform the given STG 'work' by expanding selected handshake transitions");
+        ScriptableCommandUtils.register(ExpandHandshakeReqAckTransformationCommand.class, "transformStgExpandHandshakeReqAck",
+                "transform the given STG 'work' by expanding selected handshake transitions by adding _req and _ack suffixes");
+
+        ScriptableCommandUtils.register(PetriToStgConversionCommand.class, "convertPetriToStg",
+                "convert the given Petri net 'work' into a new STG work");
+        ScriptableCommandUtils.register(StgToPetriConversionCommand.class, "convertStgToPetri",
+                "convert the given STG 'work' into a new Petri net work");
+
+        ScriptableCommandUtils.register(StgStatisticsCommand.class, "statStg",
+                "advanced complexity estimates for the STG 'work'");
     }
 
     private void initCompatibilityManager() {

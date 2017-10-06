@@ -2,69 +2,27 @@ package org.workcraft.plugins.dfs;
 
 import org.workcraft.CompatibilityManager;
 import org.workcraft.Framework;
-import org.workcraft.Initialiser;
 import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Version;
-import org.workcraft.commands.AbstractContractTransformationCommand;
 import org.workcraft.commands.Command;
+import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.dfs.commands.DfsCombinedVerificationCommand;
+import org.workcraft.plugins.dfs.commands.DfsContractComponentTransformationCommand;
 import org.workcraft.plugins.dfs.commands.DfsDeadlockVerificationCommand;
+import org.workcraft.plugins.dfs.commands.DfsMergeComponentTransformationCommand;
 import org.workcraft.plugins.dfs.commands.DfsPersisitencyVerificationCommand;
 import org.workcraft.plugins.dfs.commands.DfsToStgConversionCommand;
-import org.workcraft.plugins.dfs.commands.MergeComponentTransformationCommand;
+import org.workcraft.plugins.dfs.commands.WaggingGenerator2WayCommand;
+import org.workcraft.plugins.dfs.commands.WaggingGenerator3WayCommand;
+import org.workcraft.plugins.dfs.commands.WaggingGenerator4WayCommand;
 import org.workcraft.plugins.dfs.commands.WaggingGeneratorCommand;
 import org.workcraft.plugins.dfs.interop.VerilogExporter;
-import org.workcraft.workspace.WorkspaceEntry;
-import org.workcraft.workspace.WorkspaceUtils;
 
 public class DfsModule implements Module {
-
-    private final class WaggingGenerator2WayCommand extends WaggingGeneratorCommand {
-        @Override
-        public String getDisplayName() {
-            return "2-way wagging";
-        }
-
-        @Override
-        public int getWayCount() {
-            return 2;
-        }
-    }
-
-    private final class WaggingGenerator3WayCommand extends WaggingGeneratorCommand {
-        @Override
-        public String getDisplayName() {
-            return "3-way wagging";
-        }
-
-        @Override
-        public int getWayCount() {
-            return 3;
-        }
-    }
-
-    private final class WaggingGenerator4WayCommand extends WaggingGeneratorCommand {
-        @Override
-        public String getDisplayName() {
-            return "4-way wagging";
-        }
-
-        @Override
-        public int getWayCount() {
-            return 4;
-        }
-    }
-
-    private final class ContractComponentTransformationCommand extends AbstractContractTransformationCommand {
-        @Override
-        public boolean isApplicableTo(WorkspaceEntry we) {
-            return WorkspaceUtils.isApplicable(we, Dfs.class);
-        }
-    }
 
     @Override
     public String getDescription() {
@@ -81,45 +39,31 @@ public class DfsModule implements Module {
         final Framework framework = Framework.getInstance();
         final PluginManager pm = framework.getPluginManager();
         pm.registerClass(ModelDescriptor.class, DfsDescriptor.class);
+        pm.registerClass(Exporter.class, VerilogExporter.class);
         pm.registerClass(Settings.class, DfsSettings.class);
 
-        pm.registerClass(Command.class, DfsToStgConversionCommand.class);
+        ScriptableCommandUtils.register(DfsToStgConversionCommand.class, "convertDfsToStg",
+                "convert the given DFS 'work' into a new STG work");
 
+        ScriptableCommandUtils.register(DfsDeadlockVerificationCommand.class, "checkDfsDeadlockFreeness",
+                "check the DFS 'work' for deadlock freeness");
+        ScriptableCommandUtils.register(DfsPersisitencyVerificationCommand.class, "checkDfsOutputPersistency",
+                "check the DFS 'work' for output persistency");
+        ScriptableCommandUtils.register(DfsCombinedVerificationCommand.class, "checkDfsCombined",
+                " combined check of the DFS 'work' for deadlock freeness and output persistency");
+
+        ScriptableCommandUtils.register(DfsMergeComponentTransformationCommand.class, "transformDfsMergeComponent",
+                " transform the given DFS 'work' by merging selected components");
+        ScriptableCommandUtils.register(DfsContractComponentTransformationCommand.class, "transformDfsContractComponent",
+                " transform the given DFS 'work' by contracting selected components");
+        ScriptableCommandUtils.register(WaggingGenerator2WayCommand.class, "transformDfsWagging2Way",
+                "transform the given DFS 'work' by applying 2-way wagging to the selected pipeline section");
+        ScriptableCommandUtils.register(WaggingGenerator3WayCommand.class, "transformDfsWagging3Way",
+                "transform the given DFS 'work' by applying 3-way wagging to the selected pipeline section");
+        ScriptableCommandUtils.register(WaggingGenerator4WayCommand.class, "transformDfsWagging4Way",
+                "transform the given DFS 'work' by applying 4-way wagging to the selected pipeline section");
+        // Do not register generic WaggingGeneratorCommand as it requires user input
         pm.registerClass(Command.class, WaggingGeneratorCommand.class);
-        pm.registerClass(Command.class, DfsDeadlockVerificationCommand.class);
-        pm.registerClass(Command.class, DfsPersisitencyVerificationCommand.class);
-        pm.registerClass(Command.class, DfsCombinedVerificationCommand.class);
-        pm.registerClass(Command.class, MergeComponentTransformationCommand.class);
-
-        pm.registerClass(Command.class, new Initialiser<Command>() {
-            @Override
-            public Command create() {
-                return new WaggingGenerator2WayCommand();
-            }
-        });
-
-        pm.registerClass(Command.class, new Initialiser<Command>() {
-            @Override
-            public Command create() {
-                return new WaggingGenerator3WayCommand();
-            }
-        });
-
-        pm.registerClass(Command.class, new Initialiser<Command>() {
-            @Override
-            public Command create() {
-                return new WaggingGenerator4WayCommand();
-            }
-        });
-
-        pm.registerClass(Command.class, new Initialiser<Command>() {
-            @Override
-            public Command create() {
-                return new ContractComponentTransformationCommand();
-            }
-        });
-
-        pm.registerClass(Exporter.class, VerilogExporter.class);
     }
 
     private void initCompatibilityManager() {

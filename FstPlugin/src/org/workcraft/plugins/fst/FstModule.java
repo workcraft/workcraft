@@ -6,6 +6,7 @@ import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.Version;
 import org.workcraft.commands.Command;
+import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Exporter;
@@ -45,12 +46,19 @@ public class FstModule implements Module {
         pm.registerClass(Exporter.class, SgExporter.class);
         pm.registerClass(Importer.class, SgImporter.class);
 
-        pm.registerClass(Command.class, StgToFstConversionCommand.class);
-        pm.registerClass(Command.class, StgToBinaryFstConversionCommand.class);
-        pm.registerClass(Command.class, FstToStgConversionCommand.class);
-        pm.registerClass(Command.class, PetriToFsmConversionCommand.class);
-        pm.registerClass(Command.class, FsmToFstConversionCommand.class);
-        pm.registerClass(Command.class, FstToFsmConversionCommand.class);
+        ScriptableCommandUtils.register(StgToFstConversionCommand.class, "convertStgToFst",
+                "convert the given STG 'work' into a new FST work");
+        ScriptableCommandUtils.register(StgToBinaryFstConversionCommand.class, "convertStgToBinaryFst",
+                "convert the given STG 'work' into a new binary FST work");
+        ScriptableCommandUtils.register(FstToStgConversionCommand.class, "convertFstToStg",
+                "convert the given FST 'work' into a new STG work");
+        ScriptableCommandUtils.register(PetriToFsmConversionCommand.class, "convertPetriToFsm",
+                "convert the given Petri net 'work' into a new FSM work");
+        ScriptableCommandUtils.register(FsmToFstConversionCommand.class, "convertFsmToFst",
+                "convert the given FSM 'work' into a new FST work");
+        ScriptableCommandUtils.register(FstToFsmConversionCommand.class, "convertFstToFsm",
+                "convert the given FST 'work' into a new FSM work");
+
         pm.registerClass(Command.class, ExtractWindowsCommand.class);
     }
 
