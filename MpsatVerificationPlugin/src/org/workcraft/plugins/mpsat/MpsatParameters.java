@@ -220,19 +220,45 @@ public class MpsatParameters {
     private static final String REACH_MUTEX_R2 = "/* insert r2 name here */";
     private static final String REACH_MUTEX_G2 = "/* insert g2 name here */";
     private static final String REACH_MUTEX_IMPLEMENTABILITY =
-            "// For given signals r1, r2, g1, g2, check whether g1/g2 can be implemented by a mutex\n" +
-            "// with requests r1/r2 and grants g1/g2. It is very similar to the \"strict implementation\",\n" +
-            "// i.e. we are looking for a \"bad\" state where the next-state values of the grants differ\n" +
-            "// from [g1] = r1 & ~g2 and [g2] = r2 & ~g1.\n" +
+            "// For given signals r1, r2, g1, g2, check whether g1/g2 can be implemented\n" +
+            "// by a mutex with requests r1/r2 and grants g1/g2.\n" +
+            "// The properties to check are:\n" +
+            "//   r1&~g2 => nxt(g1)\n" +
+            "//   ~r1 => ~nxt(g1)\n" +
+            "//   r2&g2 => ~nxt(g1)\n" +
+            "// (and the symmetric constraints for nxt(g2)).\n" +
+            "// Furthemore, the mutual exclusion of the critical sections is checked:\n" +
+            "// ~( (r1&g1) & (r2&g2) )\n" +
+            "// Note that the latter property does not follow from the above constraints\n" +
+            "// for the next state functions of the grants.\n" +
             "let\n" +
-            "    r1 = S\"" + REACH_MUTEX_R1 + "\",\n" +
-            "    g1 = S\"" + REACH_MUTEX_G1 + "\",\n" +
-            "    r2 = S\"" + REACH_MUTEX_R2 + "\",\n" +
-            "    g2 = S\"" + REACH_MUTEX_G2 + "\"\n" +
+            "    r1s = S\"" + REACH_MUTEX_R1 + "\",\n" +
+            "    g1s = S\"" + REACH_MUTEX_G1 + "\",\n" +
+            "    r2s = S\"" + REACH_MUTEX_R2 + "\",\n" +
+            "    g2s = S\"" + REACH_MUTEX_G2 + "\",\n" +
+            "    r1 = $r1s,\n" +
+            "    g1 = $g1s,\n" +
+            "    r2 = $r2s,\n" +
+            "    g2 = $g2s,\n" +
+            "    g1nxt = 'g1s,\n" +
+            "    g2nxt = 'g2s\n" +
             "{\n" +
-            "    ('g1 ^ ($r1 & ~$g2))\n" +
+            "    // constraints on nxt(g1)\n" +
+            "    r1 & ~g2 & ~g1nxt // negation of r1&~g2 => nxt(g1)\n" +
             "    |\n" +
-            "    ('g2 ^ ($r2 & ~$g1))\n" +
+            "    ~r1 & g1nxt // negation of ~r1 => ~nxt(g1)\n" +
+            "    |\n" +
+            "    r2 & g2 & g1nxt // negation of r2&g2 => ~nxt(g1)\n" +
+            "    |\n" +
+            "    // constraints on nxt(g2)\n" +
+            "    r2 & ~g1 & ~g2nxt // negation of r2&~g1 => nxt(g2)\n" +
+            "    |\n" +
+            "    ~r2 & g2nxt // negation of ~r2 => ~nxt(g2)\n" +
+            "    |\n" +
+            "    r1 & g1 & g2nxt // negation of r1&g1 => ~nxt(g2)\n" +
+            "    |\n" +
+            "    // mutual exclusion of critical sections\n" +
+            "    r1 & g1 & r2 & g2\n" +
             "}\n";
 
     public static MpsatParameters getMutexImplementabilitySettings(Mutex mutex) {

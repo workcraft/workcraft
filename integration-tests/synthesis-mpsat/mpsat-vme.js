@@ -1,6 +1,6 @@
 stgWork = load('vme.stg.work');
 
-if (checkStgCsc(stgWork) == 'true') {
+if (checkStgCsc(stgWork) == true) {
     cscStgWork = stgWork;
 } else {
     cscStgWork = resolveCscConflictMpsat(stgWork);
