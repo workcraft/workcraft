@@ -73,6 +73,10 @@ subprojects {
     dependencies {
         compile fileTree(dir: '../ThirdParty', include: ['*.jar'])
         compile fileTree(dir: '../ThirdParty/batik', include: ['*.jar'])
+//        compile group: 'org.apache.xmlgraphics', name: 'batik-transcoder', version: '1.9.1'
+//        compile group: 'org.apache.xmlgraphics', name: 'batik-codec', version: '1.9.1'
+//        compile group: 'org.apache.xmlgraphics', name: 'fop', version: '2.2'
+
 
         testCompile 'junit:junit:4.12'
         javacc 'net.java.dev.javacc:javacc:7.0.2'
