@@ -8,6 +8,7 @@ import org.workcraft.plugins.interop.DotExporter;
 import org.workcraft.plugins.interop.EpsExporter;
 import org.workcraft.plugins.interop.PdfExporter;
 import org.workcraft.plugins.interop.PngExporter;
+import org.workcraft.plugins.interop.PsExporter;
 import org.workcraft.plugins.interop.SvgExporter;
 
 public class BuiltinExporters implements Module {
@@ -19,6 +20,7 @@ public class BuiltinExporters implements Module {
         pm.registerClass(Exporter.class, DotExporter.class);
         pm.registerClass(Exporter.class, SvgExporter.class);
         pm.registerClass(Exporter.class, PdfExporter.class);
+        pm.registerClass(Exporter.class, PsExporter.class);
         pm.registerClass(Exporter.class, EpsExporter.class);
         pm.registerClass(Exporter.class, PngExporter.class);
     }

@@ -1032,7 +1032,12 @@ public final class Framework {
 
     private void exportModel(ModelEntry me, File file, String formatName, UUID formatUuid) throws SerialisationException {
         if (me == null) return;
+        // Try to find exporter for math model first
         Exporter exporter = Export.chooseBestExporter(getPluginManager(), me.getMathModel(), formatName, formatUuid);
+        if (exporter == null) {
+            // If no exporter found for math model, then try to find exporter for visual model
+            exporter = Export.chooseBestExporter(getPluginManager(), me.getVisualModel(), formatName, formatUuid);
+        }
         if (exporter == null) {
             String modelName = me.getMathModel().getDisplayName();
             LogUtils.logError("Cannot find exporter to " + formatName + " for " + modelName + ".");
