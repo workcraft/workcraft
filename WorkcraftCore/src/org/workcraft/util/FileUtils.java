@@ -155,6 +155,9 @@ public class FileUtils {
         writer.close();
     }
 
+    /**
+     * Reads all text from the file using the default charset.
+     */
     public static String readAllText(File file) throws IOException {
         InputStream stream = new FileInputStream(file);
         try {
@@ -165,8 +168,8 @@ public class FileUtils {
     }
 
     /**
-     * Reads all text from the stream using the default charset. Does not close
-     * the stream.
+     * Reads all text from the stream using the default charset.
+     * Does not close the stream.
      */
     public static String readAllText(InputStream stream) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
@@ -179,6 +182,28 @@ public class FileUtils {
             result.append(s);
             result.append('\n');
         }
+    }
+
+    /**
+     * Reads first count characters from the file using the default charset.
+     */
+    public static String readHeader(File file, int count) throws IOException {
+        InputStream stream = new FileInputStream(file);
+        try {
+            return readHeader(stream, count);
+        } finally {
+            stream.close();
+        }
+    }
+
+    /**
+     * Reads first count characters from a stream using the default charset.
+     * Does not close the stream.
+     */
+    public static String readHeader(InputStream stream, int count) throws IOException {
+        byte[] buf = new byte[count];
+        int len = stream.read(buf);
+        return new String(buf, 0, len);
     }
 
     public static void moveFile(File from, File to) throws IOException {

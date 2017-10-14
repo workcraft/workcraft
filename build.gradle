@@ -64,6 +64,13 @@ subprojects {
         arguments = [grammar_encoding: 'UTF-8', static: 'false']
     }
 
+    test {
+        testLogging {
+            events "failed"
+            exceptionFormat "full"
+        }
+    }
+
     task cleanJavacc(type: Delete) {
         delete 'src-gen'
     }

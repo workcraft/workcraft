@@ -8,9 +8,6 @@ import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.util.LinkedList;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
-import org.apache.log4j.Logger;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.WrappedException;
 import org.workcraft.exceptions.OperationCancelledException;
@@ -69,11 +66,6 @@ public class Console {
         System.out.println(Info.getFullTitle());
         System.out.println(Info.getCopyright());
         System.out.println();
-
-        // Configure logj4 output and set INFO verbosity.
-        // This is necessary for some plugins (e.g. PdfExporter) that use log4j.
-        BasicConfigurator.configure();
-        Logger.getRootLogger().setLevel(Level.INFO);
 
         // NOTE: JavaScript and Plugins needs to be initialised before GUI (because of assigning PropertyProviders)
         // and before config (because of plugin-specific settings).

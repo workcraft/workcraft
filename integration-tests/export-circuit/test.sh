@@ -4,20 +4,28 @@ script_file=${test_dir}/vme-tm.circuit.js
 
 ./workcraft -nogui -dir:${test_dir} -exec:${script_file} >${log_file}
 
+
 # Post-processing
 result_file=${test_dir}/vme-tm.circuit.txt
-function report_file_size() {
-    if [[ -e $1 ]]; then
-        file_size=$(size $1)
-        file_kb_size=$(( ($file_size + 512) / 1024 ))
-        echo "$(basename $1) ${file_kb_size}KB" >> ${result_file}
-        rm -f $1
+function report_file_header() {
+    file_name=$1
+    header_size=$2
+    options=$3
+    if [[ -e $file_name ]]; then
+        header=$(head -c $header_size $file_name)
+    fi
+    echo "$(basename $file_name):" >> ${result_file}
+    echo "${header}" >> ${result_file}
+    echo >> ${result_file}
+    if [[ "$options" == "remove" ]]; then
+        rm -f $file_name
     fi
 }
 
 rm -f ${result_file}
-report_file_size ${test_dir}/vme-tm.circuit.svg
-report_file_size ${test_dir}/vme-tm.circuit.png
-report_file_size ${test_dir}/vme-tm.circuit.pdf
-report_file_size ${test_dir}/vme-tm.circuit.eps
-report_file_size ${test_dir}/vme-tm.circuit.ps
+report_file_header ${test_dir}/vme-tm.circuit.v 169 keep
+report_file_header ${test_dir}/vme-tm.circuit.svg 155 remove
+report_file_header ${test_dir}/vme-tm.circuit.png 8 remove
+report_file_header ${test_dir}/vme-tm.circuit.pdf 9 remove
+report_file_header ${test_dir}/vme-tm.circuit.eps 24 remove
+report_file_header ${test_dir}/vme-tm.circuit.ps 14 remove
