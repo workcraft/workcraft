@@ -67,7 +67,6 @@ public class Console {
         System.out.println(Info.getCopyright());
         System.out.println();
 
-        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         // NOTE: JavaScript and Plugins needs to be initialised before GUI (because of assigning PropertyProviders)
         // and before config (because of plugin-specific settings).
         framework.init();
@@ -116,6 +115,7 @@ public class Console {
             }
         }
 
+        BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
         while (true) {
             if (framework.shutdownRequested()) {
                 try {

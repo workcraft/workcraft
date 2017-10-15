@@ -26,6 +26,9 @@ import java.util.zip.ZipOutputStream;
 import javax.swing.SwingUtilities;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.apache.log4j.BasicConfigurator;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextAction;
 import org.mozilla.javascript.ContextFactory;
@@ -355,6 +358,10 @@ public final class Framework {
     }
 
     public void init() {
+        // Configure logj4 output and set INFO verbosity.
+        // This is necessary for some plugins (e.g. PdfExporter) that use log4j.
+        BasicConfigurator.configure();
+        Logger.getRootLogger().setLevel(Level.INFO);
         initJavaScript();
         initPlugins();
     }
@@ -1032,7 +1039,12 @@ public final class Framework {
 
     private void exportModel(ModelEntry me, File file, String formatName, UUID formatUuid) throws SerialisationException {
         if (me == null) return;
-        Exporter exporter = Export.chooseBestExporter(getPluginManager(), me.getMathModel(), formatName, formatUuid);
+        // Try to find exporter for visual model first
+        Exporter exporter = Export.chooseBestExporter(getPluginManager(), me.getVisualModel(), formatName, formatUuid);
+        if (exporter == null) {
+            // If no exporter found for visual model, then try to find exporter for math model
+            exporter = Export.chooseBestExporter(getPluginManager(), me.getMathModel(), formatName, formatUuid);
+        }
         if (exporter == null) {
             String modelName = me.getMathModel().getDisplayName();
             LogUtils.logError("Cannot find exporter to " + formatName + " for " + modelName + ".");
