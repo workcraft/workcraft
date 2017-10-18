@@ -15,7 +15,7 @@ import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitDescriptor;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
-import org.workcraft.tasks.DummyProgressMonitor;
+import org.workcraft.tasks.BasicProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.FileUtils;
@@ -23,7 +23,7 @@ import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
+public class ScencoResultHandler extends BasicProgressMonitor<ScencoResult> {
     public static final String INTERNAL_ERROR_MSG = "Internal error. Contact developers at " + Info.getHomepage();
 
     private ScencoExternalToolTask scenco;
@@ -37,8 +37,9 @@ public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
     }
 
     @Override
-    public void finished(Result<? extends ScencoResult> result, String description) {
-        if (result.getOutcome() == Outcome.FINISHED) {
+    public void finished(Result<? extends ScencoResult> result) {
+        super.finished(result);
+        if (result.getOutcome() == Outcome.SUCCESS) {
             String[] stdoutLines = result.getReturnValue().getStdout().split("\n");
             String resultDirectory = result.getReturnValue().getResultDirectory();
             solver.handleResult(stdoutLines, resultDirectory);
@@ -71,7 +72,7 @@ public class ScencoResultHandler extends DummyProgressMonitor<ScencoResult> {
                     throw new RuntimeException(e);
                 }
             }
-        } else if (result.getOutcome() == Outcome.FAILED) {
+        } else if (result.getOutcome() == Outcome.FAILURE) {
             final String errorMessage = getErrorMessage(result.getReturnValue());
 
             // In case of an internal error, activate automatically verbose mode

@@ -36,7 +36,7 @@ public class PetrifyUntoggleConversionCommand extends PetrifyAbstractConversionC
         Collection<Mutex> mutexes = getMutexes(we);
         final PetrifyTransformationResultHandler monitor = new PetrifyTransformationResultHandler(we, !hasSignals, mutexes);
         taskManager.execute(task, "Petrify signal transition untoggle", monitor);
-        return monitor.getResult();
+        return monitor.waitForHandledResult();
     }
 
 }

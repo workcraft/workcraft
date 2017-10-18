@@ -9,13 +9,13 @@ import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.tasks.DummyProgressMonitor;
+import org.workcraft.tasks.AbstractResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatCombinedChainResult> {
+public class MpsatCombinedChainResultHandler extends AbstractResultHandler<MpsatCombinedChainResult> {
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
     private final MpsatCombinedChainTask task;
     private final Collection<Mutex> mutexes;
@@ -26,17 +26,12 @@ public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatC
     }
 
     @Override
-    public void finished(final Result<? extends MpsatCombinedChainResult> result, String description) {
-        switch (result.getOutcome()) {
-        case FINISHED:
-            final WorkspaceEntry we = task.getWorkspaceEntry();
+    public void handleResult(final Result<? extends MpsatCombinedChainResult> result) {
+        if (result.getOutcome() == Outcome.SUCCESS) {
+            WorkspaceEntry we = task.getWorkspaceEntry();
             handleSuccess(result, we);
-            break;
-        case FAILED:
+        } else if (result.getOutcome() == Outcome.FAILURE) {
             handleFailure(result);
-            break;
-        default:
-            break;
         }
     }
 
@@ -109,13 +104,13 @@ public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatC
             Result<? extends Object> exportResult = (returnValue == null) ? null : returnValue.getExportResult();
             Result<? extends ExternalProcessResult> punfResult = (returnValue == null) ? null : returnValue.getPunfResult();
             List<Result<? extends ExternalProcessResult>> mpsatResultList = (returnValue == null) ? null : returnValue.getMpsatResultList();
-            if ((exportResult != null) && (exportResult.getOutcome() == Outcome.FAILED)) {
+            if ((exportResult != null) && (exportResult.getOutcome() == Outcome.FAILURE)) {
                 errorMessage += "\n\nCould not export the model as a .g file.";
                 Throwable exportCause = exportResult.getCause();
                 if (exportCause != null) {
                     errorMessage += ERROR_CAUSE_PREFIX + exportCause.toString();
                 }
-            } else if ((punfResult != null) && (punfResult.getOutcome() == Outcome.FAILED)) {
+            } else if ((punfResult != null) && (punfResult.getOutcome() == Outcome.FAILURE)) {
                 errorMessage += "\n\nPunf could not build the unfolding prefix.";
                 Throwable punfCause = punfResult.getCause();
                 if (punfCause != null) {
@@ -130,7 +125,7 @@ public class MpsatCombinedChainResultHandler extends DummyProgressMonitor<MpsatC
             } else if (mpsatResultList != null) {
                 errorMessage += "\n\nMPSat did not execute as expected.";
                 for (Result<? extends ExternalProcessResult> mpsatResult: mpsatResultList) {
-                    if ((mpsatResult != null) && (mpsatResult.getOutcome() == Outcome.FAILED)) {
+                    if ((mpsatResult != null) && (mpsatResult.getOutcome() == Outcome.FAILURE)) {
                         Throwable mpsatCause = mpsatResult.getCause();
                         if (mpsatCause != null) {
                             errorMessage += ERROR_CAUSE_PREFIX + mpsatCause.toString();

@@ -12,7 +12,7 @@ import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.FstDescriptor;
 import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
-import org.workcraft.tasks.DummyProgressMonitor;
+import org.workcraft.tasks.AbstractExtendedResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.ColorGenerator;
@@ -21,42 +21,41 @@ import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class StgToFstConversionResultHandler extends DummyProgressMonitor<WriteSgConversionResult> {
+public class StgToFstConversionResultHandler extends AbstractExtendedResultHandler<WriteSgConversionResult, WorkspaceEntry> {
 
     private final ColorGenerator colorGenerator = new ColorGenerator(ColorUtils.getHsbPalette(
             new float[]{0.45f, 0.15f, 0.70f, 0.25f, 0.05f, 0.80f, 0.55f, 0.20f, 075f, 0.50f},
             new float[]{0.30f}, new float[]{0.9f, 0.7f, 0.5f}));
 
     private final WriteSgConversionTask task;
-    private WorkspaceEntry result;
 
     public StgToFstConversionResultHandler(final WriteSgConversionTask task) {
         this.task = task;
-        this.result = null;
     }
 
     @Override
-    public void finished(final Result<? extends WriteSgConversionResult> result, final String description) {
-        if (result.getOutcome() == Outcome.FINISHED) {
+    public WorkspaceEntry handleResult(final Result<? extends WriteSgConversionResult> result) {
+        WorkspaceEntry weResult = null;
+        if (result.getOutcome() == Outcome.SUCCESS) {
             Fst model = result.getReturnValue().getConversionResult();
             ModelEntry me = new ModelEntry(new FstDescriptor(), model);
             Path<String> path = task.getWorkspaceEntry().getWorkspacePath();
             Framework framework = Framework.getInstance();
-            WorkspaceEntry we = framework.createWork(me, path);
+            weResult = framework.createWork(me, path);
             // NOTE: WorkspaceEntry with a new ModelEntry is created
-            VisualModel visualModel = we.getModelEntry().getVisualModel();
+            VisualModel visualModel = weResult.getModelEntry().getVisualModel();
             if (visualModel instanceof VisualFst) {
                 highlightCscConflicts((VisualFst) visualModel);
             }
-            this.result = we;
-        } else if (result.getOutcome() != Outcome.CANCELLED) {
-            if (result.getCause() == null) {
+        } else if (result.getOutcome() == Outcome.FAILURE) {
+            if (result.getCause() != null) {
+                ExceptionDialog.show(result.getCause());
+            } else {
                 final Result<? extends ExternalProcessResult> petrifyResult = result.getReturnValue().getResult();
                 DialogUtils.showWarning("Petrify output:\n" + petrifyResult.getReturnValue().getErrorsHeadAndTail());
-            } else {
-                ExceptionDialog.show(result.getCause());
             }
         }
+        return weResult;
     }
 
     protected void highlightCscConflicts(final VisualFst visualFst) {
@@ -79,10 +78,6 @@ public class StgToFstConversionResultHandler extends DummyProgressMonitor<WriteS
                 }
             }
         }
-    }
-
-    public WorkspaceEntry getResult() {
-        return result;
     }
 
 }

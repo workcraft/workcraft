@@ -41,7 +41,7 @@ public class PGMinerTask implements Task<ExternalProcessResult> {
             SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
             Result<? extends ExternalProcessResult> result = task.run(mon);
 
-            if (result.getOutcome() != Outcome.FINISHED) {
+            if (result.getOutcome() != Outcome.SUCCESS) {
                 return result;
             }
 
@@ -50,9 +50,9 @@ public class PGMinerTask implements Task<ExternalProcessResult> {
                     retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), null);
 
             if (retVal.getReturnCode() == 0) {
-                return Result.finished(finalResult);
+                return Result.success(finalResult);
             } else {
-                return Result.failed(finalResult);
+                return Result.failure(finalResult);
             }
         } catch (NullPointerException e) {
             //Open window dialog was cancelled, do nothing

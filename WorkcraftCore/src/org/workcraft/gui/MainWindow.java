@@ -1087,8 +1087,9 @@ public class MainWindow extends JFrame {
         Task<Object> exportTask = new Export.ExportTask(exporter, model, path);
         final Framework framework = Framework.getInstance();
         final TaskManager taskManager = framework.getTaskManager();
-        final TaskFailureNotifier monitor = new TaskFailureNotifier();
-        taskManager.queue(exportTask, "Exporting " + title, monitor);
+        String description = "Exporting " + title;
+        final TaskFailureNotifier monitor = new TaskFailureNotifier(description);
+        taskManager.queue(exportTask, description, monitor);
         lastDirectory = fc.getCurrentDirectory().getPath();
     }
 

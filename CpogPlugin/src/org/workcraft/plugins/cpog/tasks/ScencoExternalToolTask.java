@@ -31,7 +31,7 @@ public class ScencoExternalToolTask implements Task<ScencoResult>, ExternalProce
         if (args.get(0).contains("ERROR")) {
             we.cancelMemento();
             ScencoResult result = new ScencoResult(args.get(1), args.get(2), resultDirectoryPath);
-            return new Result<ScencoResult>(Outcome.FAILED, result);
+            return new Result<ScencoResult>(Outcome.FAILURE, result);
         }
 
         // Running the tool through external process interface
@@ -40,16 +40,16 @@ public class ScencoExternalToolTask implements Task<ScencoResult>, ExternalProce
         Result<? extends ExternalProcessResult> result = task.run(mon);
 
         // Handling the result
-        if (result.getOutcome() == Outcome.CANCELLED) {
+        if (result.getOutcome() == Outcome.CANCEL) {
             we.cancelMemento();
-            return new Result<ScencoResult>(Outcome.CANCELLED);
+            return new Result<ScencoResult>(Outcome.CANCEL);
         } else {
             final Outcome outcome;
             if (result.getReturnValue().getReturnCode() == 0) {
-                outcome = Outcome.FINISHED;
+                outcome = Outcome.SUCCESS;
             } else {
                 we.cancelMemento();
-                outcome = Outcome.FAILED;
+                outcome = Outcome.FAILURE;
             }
             String stdout = new String(result.getReturnValue().getOutput());
             ScencoResult finalResult = new ScencoResult(stdout, resultDirectoryPath);

@@ -27,11 +27,8 @@ import org.workcraft.workspace.Workspace;
 @SuppressWarnings("serial")
 public class WorkspaceWindow extends JPanel {
     private static final String CONFIG_WORKSPACE_LAST_DIRECTORY = "gui.workspace.lastDirectory";
-    
     private static final String DIALOG_OPEN_WORKSPACE = "Open workspace";
     private static final String DIALOG_SAVE_WORKSPACE_AS = "Save workspace as...";
-
-    
 
     private String lastDirectory = null;
 

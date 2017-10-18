@@ -62,11 +62,11 @@ public class CheckStrictImplementationTask extends MpsatChainTask {
             // Write environment STG into a .g file
             File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.ASTG_FILE_EXT);
             Result<? extends Object> envExportResult = CircuitStgUtils.exportStg(envStg, envStgFile, directory, monitor);
-            if (envExportResult.getOutcome() != Outcome.FINISHED) {
-                if (envExportResult.getOutcome() == Outcome.CANCELLED) {
-                    return new Result<MpsatChainResult>(Outcome.CANCELLED);
+            if (envExportResult.getOutcome() != Outcome.SUCCESS) {
+                if (envExportResult.getOutcome() == Outcome.CANCEL) {
+                    return new Result<MpsatChainResult>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainResult>(Outcome.FAILED,
+                return new Result<MpsatChainResult>(Outcome.FAILURE,
                         new MpsatChainResult(envExportResult, null, null, null, toolchainPreparationSettings));
             }
             monitor.progressUpdate(0.20);
@@ -79,11 +79,11 @@ public class CheckStrictImplementationTask extends MpsatChainTask {
             SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<>(monitor);
             punfResult = taskManager.execute(punfTask, "Unfolding .g", punfMonitor);
 
-            if (punfResult.getOutcome() != Outcome.FINISHED) {
-                if (punfResult.getOutcome() == Outcome.CANCELLED) {
-                    return new Result<MpsatChainResult>(Outcome.CANCELLED);
+            if (punfResult.getOutcome() != Outcome.SUCCESS) {
+                if (punfResult.getOutcome() == Outcome.CANCEL) {
+                    return new Result<MpsatChainResult>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainResult>(Outcome.FAILED,
+                return new Result<MpsatChainResult>(Outcome.FAILURE,
                         new MpsatChainResult(envExportResult, null, punfResult, null, toolchainPreparationSettings));
             }
             monitor.progressUpdate(0.50);
@@ -108,25 +108,25 @@ public class CheckStrictImplementationTask extends MpsatChainTask {
             Result<? extends ExternalProcessResult>  mpsatResult = taskManager.execute(
                     mpsatTask, "Running strict implementation check [MPSat]", mpsatMonitor);
 
-            if (mpsatResult.getOutcome() != Outcome.FINISHED) {
-                if (mpsatResult.getOutcome() == Outcome.CANCELLED) {
-                    return new Result<MpsatChainResult>(Outcome.CANCELLED);
+            if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
+                if (mpsatResult.getOutcome() == Outcome.CANCEL) {
+                    return new Result<MpsatChainResult>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainResult>(Outcome.FAILED,
+                return new Result<MpsatChainResult>(Outcome.FAILURE,
                         new MpsatChainResult(envExportResult, null, punfResult, mpsatResult, mpsatSettings));
             }
             monitor.progressUpdate(0.80);
 
             MpsatResultParser mpsatParser = new MpsatResultParser(mpsatResult.getReturnValue());
             if (!mpsatParser.getSolutions().isEmpty()) {
-                return new Result<MpsatChainResult>(Outcome.FINISHED,
+                return new Result<MpsatChainResult>(Outcome.SUCCESS,
                         new MpsatChainResult(envExportResult, null, punfResult, mpsatResult, mpsatSettings,
                                 "Circuit does not strictly implement the environment after the following trace(s):"));
             }
             monitor.progressUpdate(1.00);
 
             // Success
-            return new Result<MpsatChainResult>(Outcome.FINISHED,
+            return new Result<MpsatChainResult>(Outcome.SUCCESS,
                     new MpsatChainResult(envExportResult, null, punfResult, mpsatResult, mpsatSettings,
                             "The circuit strictly implements its environment."));
 

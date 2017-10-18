@@ -21,7 +21,7 @@ public class ExtendedTaskManager extends DefaultTaskManager {
             observers.add(cancelDialog);
             this.queue(task, description, observers);
             cancelDialog.setVisible(true);
-            return cancelDialog.getResult();
+            return cancelDialog.waitResult();
         }
     }
 

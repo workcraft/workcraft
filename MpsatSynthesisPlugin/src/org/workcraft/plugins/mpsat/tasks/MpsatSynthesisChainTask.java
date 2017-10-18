@@ -55,11 +55,11 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> 
             Result<? extends Object> exportResult = framework.getTaskManager().execute(
                     exportTask, "Exporting .g", subtaskMonitor);
 
-            if (exportResult.getOutcome() != Outcome.FINISHED) {
-                if (exportResult.getOutcome() == Outcome.CANCELLED) {
-                    return new Result<MpsatSynthesisChainResult>(Outcome.CANCELLED);
+            if (exportResult.getOutcome() != Outcome.SUCCESS) {
+                if (exportResult.getOutcome() == Outcome.CANCEL) {
+                    return new Result<MpsatSynthesisChainResult>(Outcome.CANCEL);
                 }
-                return new Result<MpsatSynthesisChainResult>(Outcome.FAILED,
+                return new Result<MpsatSynthesisChainResult>(Outcome.FAILURE,
                         new MpsatSynthesisChainResult(exportResult, null, null, null, settings));
             }
             if (!mutexes.isEmpty()) {
@@ -72,11 +72,11 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> 
                 exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
                 exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
 
-                if (exportResult.getOutcome() != Outcome.FINISHED) {
-                    if (exportResult.getOutcome() == Outcome.CANCELLED) {
-                        return new Result<MpsatSynthesisChainResult>(Outcome.CANCELLED);
+                if (exportResult.getOutcome() != Outcome.SUCCESS) {
+                    if (exportResult.getOutcome() == Outcome.CANCEL) {
+                        return new Result<MpsatSynthesisChainResult>(Outcome.CANCEL);
                     }
-                    return new Result<MpsatSynthesisChainResult>(Outcome.FAILED,
+                    return new Result<MpsatSynthesisChainResult>(Outcome.FAILURE,
                             new MpsatSynthesisChainResult(exportResult, null, null, null, settings));
                 }
             }
@@ -88,11 +88,11 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> 
             PunfTask punfTask = new PunfTask(netFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
             Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", subtaskMonitor);
 
-            if (punfResult.getOutcome() != Outcome.FINISHED) {
-                if (punfResult.getOutcome() == Outcome.CANCELLED) {
-                    return new Result<MpsatSynthesisChainResult>(Outcome.CANCELLED);
+            if (punfResult.getOutcome() != Outcome.SUCCESS) {
+                if (punfResult.getOutcome() == Outcome.CANCEL) {
+                    return new Result<MpsatSynthesisChainResult>(Outcome.CANCEL);
                 }
-                return new Result<MpsatSynthesisChainResult>(Outcome.FAILED,
+                return new Result<MpsatSynthesisChainResult>(Outcome.FAILURE,
                         new MpsatSynthesisChainResult(exportResult, null, punfResult, null, settings));
             }
             monitor.progressUpdate(0.66);
@@ -104,16 +104,16 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> 
             Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
                     mpsatTask, "Running synthesis [MPSat]", subtaskMonitor);
 
-            if (mpsatResult.getOutcome() != Outcome.FINISHED) {
-                if (mpsatResult.getOutcome() == Outcome.CANCELLED) {
-                    return new Result<MpsatSynthesisChainResult>(Outcome.CANCELLED);
+            if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
+                if (mpsatResult.getOutcome() == Outcome.CANCEL) {
+                    return new Result<MpsatSynthesisChainResult>(Outcome.CANCEL);
                 }
-                return new Result<MpsatSynthesisChainResult>(Outcome.FAILED,
+                return new Result<MpsatSynthesisChainResult>(Outcome.FAILURE,
                         new MpsatSynthesisChainResult(exportResult, null, punfResult, mpsatResult, settings));
             }
             monitor.progressUpdate(1.0);
 
-            return new Result<MpsatSynthesisChainResult>(Outcome.FINISHED,
+            return new Result<MpsatSynthesisChainResult>(Outcome.SUCCESS,
                     new MpsatSynthesisChainResult(exportResult, null, punfResult, mpsatResult, settings));
         } catch (Throwable e) {
             return new Result<MpsatSynthesisChainResult>(e);

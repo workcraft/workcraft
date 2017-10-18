@@ -3,9 +3,9 @@ package org.workcraft.tasks;
 public class Result<T> {
 
     public enum Outcome {
-        FINISHED,
-        CANCELLED,
-        FAILED
+        SUCCESS,
+        CANCEL,
+        FAILURE
     }
 
     private final Outcome outcome;
@@ -25,13 +25,13 @@ public class Result<T> {
     }
 
     public Result(Throwable exception) {
-        this.outcome = Outcome.FAILED;
+        this.outcome = Outcome.FAILURE;
         this.cause = exception;
         this.result = null;
     }
 
     public Result(T result) {
-        this.outcome = Outcome.FINISHED;
+        this.outcome = Outcome.SUCCESS;
         this.cause = null;
         this.result = result;
     }
@@ -52,16 +52,16 @@ public class Result<T> {
         return new Result<R>(e);
     }
 
-    public static <R> Result<R> cancelled() {
-        return new Result<R>(Outcome.CANCELLED);
+    public static <R> Result<R> cancelation() {
+        return new Result<R>(Outcome.CANCEL);
     }
 
-    public static <R> Result<R> finished(R res) {
+    public static <R> Result<R> success(R res) {
         return new Result<R>(res);
     }
 
-    public static <R> Result<R> failed(R res) {
-        return new Result<R>(Outcome.FAILED, res);
+    public static <R> Result<R> failure(R res) {
+        return new Result<R>(Outcome.FAILURE, res);
     }
 
 }

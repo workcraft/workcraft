@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import org.workcraft.util.DataAccumulator;
 
-public class SubtaskMonitor<T> implements ProgressMonitor<T> {
+public class SubtaskMonitor<T> extends BasicProgressMonitor<T> {
     private final ProgressMonitor<?> parent;
 
     private final DataAccumulator stdoutAccum = new DataAccumulator();
@@ -12,10 +12,6 @@ public class SubtaskMonitor<T> implements ProgressMonitor<T> {
 
     public SubtaskMonitor(ProgressMonitor<?> parent) {
         this.parent = parent;
-    }
-
-    @Override
-    public void finished(Result<? extends T> result, String description) {
     }
 
     @Override
@@ -41,10 +37,6 @@ public class SubtaskMonitor<T> implements ProgressMonitor<T> {
         }
     }
 
-    @Override
-    public void progressUpdate(double completion) {
-    }
-
     public byte[] getStderrData() {
         return stderrAccum.getData();
     }
@@ -52,4 +44,5 @@ public class SubtaskMonitor<T> implements ProgressMonitor<T> {
     public byte[] getStdoutData() {
         return stdoutAccum.getData();
     }
+
 }

@@ -42,7 +42,7 @@ public class PetrifyCscConflictResolutionCommand implements ScriptableCommand<Wo
         MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
         final PetrifyTransformationResultHandler monitor = new PetrifyTransformationResultHandler(we, false, mutexes);
         taskManager.execute(task, "Petrify CSC conflicts resolution", monitor);
-        return monitor.getResult();
+        return monitor.waitForHandledResult();
     }
 
     @Override

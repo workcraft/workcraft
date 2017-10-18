@@ -6,32 +6,31 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgDescriptor;
-import org.workcraft.tasks.DummyProgressMonitor;
+import org.workcraft.tasks.AbstractExtendedResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class WtgToStgConversionResultHandler extends DummyProgressMonitor<WaverConversionResult> {
+public class WtgToStgConversionResultHandler extends AbstractExtendedResultHandler<WaverConversionResult, WorkspaceEntry> {
 
     private final WaverConversionTask task;
-    private WorkspaceEntry result;
 
     public WtgToStgConversionResultHandler(final WaverConversionTask task) {
         this.task = task;
-        this.result = null;
     }
 
     @Override
-    public void finished(final Result<? extends WaverConversionResult> result, final String description) {
-        final Framework framework = Framework.getInstance();
-        if (result.getOutcome() == Outcome.FINISHED) {
+    public WorkspaceEntry handleResult(final Result<? extends WaverConversionResult> result) {
+        WorkspaceEntry weResult = null;
+        if (result.getOutcome() == Outcome.SUCCESS) {
             final Stg model = result.getReturnValue().getConversionResult();
             final ModelEntry me = new ModelEntry(new StgDescriptor(), model);
             final Path<String> path = task.getWorkspaceEntry().getWorkspacePath();
-            this.result = framework.createWork(me, path);
-        } else if (result.getOutcome() != Outcome.CANCELLED) {
+            final Framework framework = Framework.getInstance();
+            weResult = framework.createWork(me, path);
+        } else if (result.getOutcome() == Outcome.FAILURE) {
             if (result.getCause() != null) {
                 ExceptionDialog.show(result.getCause());
             } else {
@@ -43,10 +42,7 @@ public class WtgToStgConversionResultHandler extends DummyProgressMonitor<WaverC
                 DialogUtils.showWarning(message);
             }
         }
-    }
-
-    public WorkspaceEntry getResult() {
-        return result;
+        return weResult;
     }
 
 }

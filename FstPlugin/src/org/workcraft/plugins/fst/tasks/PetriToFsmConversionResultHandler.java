@@ -10,25 +10,24 @@ import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.fst.converters.FstToFsmConverter;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
-import org.workcraft.tasks.DummyProgressMonitor;
+import org.workcraft.tasks.AbstractExtendedResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class PetriToFsmConversionResultHandler extends DummyProgressMonitor<WriteSgConversionResult> {
+public class PetriToFsmConversionResultHandler extends AbstractExtendedResultHandler<WriteSgConversionResult, WorkspaceEntry> {
     private final WriteSgConversionTask task;
-    private WorkspaceEntry result;
 
     public PetriToFsmConversionResultHandler(final WriteSgConversionTask task) {
         this.task = task;
-        this.result = null;
     }
 
     @Override
-    public void finished(final Result<? extends WriteSgConversionResult> result, final String description) {
-        if (result.getOutcome() == Outcome.FINISHED) {
+    public WorkspaceEntry handleResult(final Result<? extends WriteSgConversionResult> result) {
+        WorkspaceEntry weResult = null;
+        if (result.getOutcome() == Outcome.SUCCESS) {
             final VisualFst fst = new VisualFst(result.getReturnValue().getConversionResult());
             final VisualFsm fsm = new VisualFsm(new Fsm());
             final FstToFsmConverter converter = new FstToFsmConverter(fst, fsm);
@@ -36,8 +35,8 @@ public class PetriToFsmConversionResultHandler extends DummyProgressMonitor<Writ
             final ModelEntry me = new ModelEntry(new FsmDescriptor(), model);
             final Path<String> path = task.getWorkspaceEntry().getWorkspacePath();
             final Framework framework = Framework.getInstance();
-            this.result = framework.createWork(me, path);
-        } else if (result.getOutcome() != Outcome.CANCELLED) {
+            weResult = framework.createWork(me, path);
+        } else if (result.getOutcome() == Outcome.FAILURE) {
             if (result.getCause() == null) {
                 final Result<? extends ExternalProcessResult> writeSgResult = result.getReturnValue().getResult();
                 DialogUtils.showWarning("Petrify output:\n" + writeSgResult.getReturnValue().getErrorsHeadAndTail());
@@ -45,10 +44,7 @@ public class PetriToFsmConversionResultHandler extends DummyProgressMonitor<Writ
                 ExceptionDialog.show(result.getCause());
             }
         }
-    }
-
-    public WorkspaceEntry getResult() {
-        return result;
+        return weResult;
     }
 
 }

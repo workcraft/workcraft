@@ -56,11 +56,11 @@ public class WaverConversionTask implements Task<WaverConversionResult> {
             Result<? extends Object> wtgExportResult = framework.getTaskManager().execute(
                     wtgExportTask, "Exporting .wtg", subtaskMonitor);
 
-            if (wtgExportResult.getOutcome() != Outcome.FINISHED) {
-                if (wtgExportResult.getOutcome() == Outcome.CANCELLED) {
-                    return new Result<WaverConversionResult>(Outcome.CANCELLED);
+            if (wtgExportResult.getOutcome() != Outcome.SUCCESS) {
+                if (wtgExportResult.getOutcome() == Outcome.CANCEL) {
+                    return new Result<WaverConversionResult>(Outcome.CANCEL);
                 }
-                return new Result<WaverConversionResult>(Outcome.FAILED);
+                return new Result<WaverConversionResult>(Outcome.FAILURE);
             }
             monitor.progressUpdate(0.20);
 
@@ -69,22 +69,22 @@ public class WaverConversionTask implements Task<WaverConversionResult> {
             Result<? extends ExternalProcessResult> waverResult = framework.getTaskManager().execute(
                     waverTask, "Building state graph", subtaskMonitor);
 
-            if (waverResult.getOutcome() == Outcome.FINISHED) {
+            if (waverResult.getOutcome() == Outcome.SUCCESS) {
                 try {
                     ByteArrayInputStream in = new ByteArrayInputStream(waverResult.getReturnValue().getOutput());
                     final StgModel stg = new StgImporter().importSTG(in);
-                    return Result.finished(new WaverConversionResult(null, (Stg) stg));
+                    return Result.success(new WaverConversionResult(null, (Stg) stg));
                 } catch (DeserialisationException e) {
                     return Result.exception(e);
                 }
             }
-            if (waverResult.getOutcome() == Outcome.CANCELLED) {
-                return Result.cancelled();
+            if (waverResult.getOutcome() == Outcome.CANCEL) {
+                return Result.cancelation();
             }
             if (waverResult.getCause() != null) {
                 return Result.exception(waverResult.getCause());
             } else {
-                return Result.failed(new WaverConversionResult(waverResult, null));
+                return Result.failure(new WaverConversionResult(waverResult, null));
             }
         } catch (Throwable e) {
             return new Result<WaverConversionResult>(e);

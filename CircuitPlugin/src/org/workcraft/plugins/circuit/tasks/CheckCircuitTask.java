@@ -96,11 +96,11 @@ public class CheckCircuitTask extends MpsatChainTask {
             String devStgName = (envStg != null ? StgUtils.DEVICE_FILE_NAME : StgUtils.SYSTEM_FILE_NAME) + StgUtils.ASTG_FILE_EXT;
             File devStgFile = new File(directory, devStgName);
             Result<? extends Object> devExportResult = CircuitStgUtils.exportStg(devStg, devStgFile, directory, monitor);
-            if (devExportResult.getOutcome() != Outcome.FINISHED) {
-                if (devExportResult.getOutcome() == Outcome.CANCELLED) {
-                    return new Result<MpsatChainResult>(Outcome.CANCELLED);
+            if (devExportResult.getOutcome() != Outcome.SUCCESS) {
+                if (devExportResult.getOutcome() == Outcome.CANCEL) {
+                    return new Result<MpsatChainResult>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainResult>(Outcome.FAILED,
+                return new Result<MpsatChainResult>(Outcome.FAILURE,
                         new MpsatChainResult(devExportResult, null, null, null, toolchainPreparationSettings));
             }
             monitor.progressUpdate(0.10);
@@ -115,11 +115,11 @@ public class CheckCircuitTask extends MpsatChainTask {
                 } else {
                     File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.ASTG_FILE_EXT);
                     Result<? extends Object> envExportResult = CircuitStgUtils.exportStg(envStg, envStgFile, directory, monitor);
-                    if (envExportResult.getOutcome() != Outcome.FINISHED) {
-                        if (envExportResult.getOutcome() == Outcome.CANCELLED) {
-                            return new Result<MpsatChainResult>(Outcome.CANCELLED);
+                    if (envExportResult.getOutcome() != Outcome.SUCCESS) {
+                        if (envExportResult.getOutcome() == Outcome.CANCEL) {
+                            return new Result<MpsatChainResult>(Outcome.CANCEL);
                         }
-                        return new Result<MpsatChainResult>(Outcome.FAILED,
+                        return new Result<MpsatChainResult>(Outcome.FAILURE,
                                 new MpsatChainResult(envExportResult, null, null, null, toolchainPreparationSettings));
                     }
 
@@ -127,11 +127,11 @@ public class CheckCircuitTask extends MpsatChainTask {
                     sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + StgUtils.ASTG_FILE_EXT);
                     placesFile = new File(directory, StgUtils.PLACES_FILE_NAME + StgUtils.LIST_FILE_EXT);
                     pcompResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envStgFile, sysStgFile, placesFile, directory, monitor);
-                    if (pcompResult.getOutcome() != Outcome.FINISHED) {
-                        if (pcompResult.getOutcome() == Outcome.CANCELLED) {
-                            return new Result<MpsatChainResult>(Outcome.CANCELLED);
+                    if (pcompResult.getOutcome() != Outcome.SUCCESS) {
+                        if (pcompResult.getOutcome() == Outcome.CANCEL) {
+                            return new Result<MpsatChainResult>(Outcome.CANCEL);
                         }
-                        return new Result<MpsatChainResult>(Outcome.FAILED,
+                        return new Result<MpsatChainResult>(Outcome.FAILURE,
                                 new MpsatChainResult(devExportResult, pcompResult, null, null, toolchainPreparationSettings));
                     }
                 }
@@ -154,11 +154,11 @@ public class CheckCircuitTask extends MpsatChainTask {
                     StgUtils.convertInternalSignalsToDummies(envStg);
                     File envModStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + fileSuffix + StgUtils.ASTG_FILE_EXT);
                     Result<? extends Object> envModExportResult = CircuitStgUtils.exportStg(envStg, envModStgFile, directory, monitor);
-                    if (envModExportResult.getOutcome() != Outcome.FINISHED) {
-                        if (envModExportResult.getOutcome() == Outcome.CANCELLED) {
-                            return new Result<MpsatChainResult>(Outcome.CANCELLED);
+                    if (envModExportResult.getOutcome() != Outcome.SUCCESS) {
+                        if (envModExportResult.getOutcome() == Outcome.CANCEL) {
+                            return new Result<MpsatChainResult>(Outcome.CANCEL);
                         }
-                        return new Result<MpsatChainResult>(Outcome.FAILED,
+                        return new Result<MpsatChainResult>(Outcome.FAILURE,
                                 new MpsatChainResult(envModExportResult, null, null, null, toolchainPreparationSettings));
                     }
 
@@ -166,11 +166,11 @@ public class CheckCircuitTask extends MpsatChainTask {
                     sysModStgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + fileSuffix + StgUtils.ASTG_FILE_EXT);
                     placesModFile = new File(directory, StgUtils.PLACES_FILE_NAME + fileSuffix + StgUtils.LIST_FILE_EXT);
                     pcompModResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envModStgFile, sysModStgFile, placesModFile, directory, monitor);
-                    if (pcompModResult.getOutcome() != Outcome.FINISHED) {
-                        if (pcompModResult.getOutcome() == Outcome.CANCELLED) {
-                            return new Result<MpsatChainResult>(Outcome.CANCELLED);
+                    if (pcompModResult.getOutcome() != Outcome.SUCCESS) {
+                        if (pcompModResult.getOutcome() == Outcome.CANCEL) {
+                            return new Result<MpsatChainResult>(Outcome.CANCEL);
                         }
-                        return new Result<MpsatChainResult>(Outcome.FAILED,
+                        return new Result<MpsatChainResult>(Outcome.FAILURE,
                                 new MpsatChainResult(devExportResult, pcompModResult, null, null, toolchainPreparationSettings));
                     }
                 }
@@ -187,11 +187,11 @@ public class CheckCircuitTask extends MpsatChainTask {
                 SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<>(monitor);
                 punfResult = manager.execute(punfTask, "Unfolding .g", punfMonitor);
 
-                if (punfResult.getOutcome() != Outcome.FINISHED) {
-                    if (punfResult.getOutcome() == Outcome.CANCELLED) {
-                        return new Result<MpsatChainResult>(Outcome.CANCELLED);
+                if (punfResult.getOutcome() != Outcome.SUCCESS) {
+                    if (punfResult.getOutcome() == Outcome.CANCEL) {
+                        return new Result<MpsatChainResult>(Outcome.CANCEL);
                     }
-                    return new Result<MpsatChainResult>(Outcome.FAILED,
+                    return new Result<MpsatChainResult>(Outcome.FAILURE,
                             new MpsatChainResult(devExportResult, pcompResult, punfResult, null, toolchainPreparationSettings));
                 }
             }
@@ -207,11 +207,11 @@ public class CheckCircuitTask extends MpsatChainTask {
                     SubtaskMonitor<Object> punfModMonitor = new SubtaskMonitor<>(monitor);
                     punfModResult = manager.execute(punfModTask, "Unfolding .g", punfModMonitor);
 
-                    if (punfModResult.getOutcome() != Outcome.FINISHED) {
-                        if (punfModResult.getOutcome() == Outcome.CANCELLED) {
-                            return new Result<MpsatChainResult>(Outcome.CANCELLED);
+                    if (punfModResult.getOutcome() != Outcome.SUCCESS) {
+                        if (punfModResult.getOutcome() == Outcome.CANCEL) {
+                            return new Result<MpsatChainResult>(Outcome.CANCEL);
                         }
-                        return new Result<MpsatChainResult>(Outcome.FAILED,
+                        return new Result<MpsatChainResult>(Outcome.FAILURE,
                                 new MpsatChainResult(devExportResult, pcompModResult, punfModResult, null, toolchainPreparationSettings));
                     }
                 }
@@ -227,18 +227,18 @@ public class CheckCircuitTask extends MpsatChainTask {
                 Result<? extends ExternalProcessResult> mpsatDeadlockResult = manager.execute(
                         mpsatDeadlockTask, "Running deadlock check [MPSat]", mpsatMonitor);
 
-                if (mpsatDeadlockResult.getOutcome() != Outcome.FINISHED) {
-                    if (mpsatDeadlockResult.getOutcome() == Outcome.CANCELLED) {
-                        return new Result<MpsatChainResult>(Outcome.CANCELLED);
+                if (mpsatDeadlockResult.getOutcome() != Outcome.SUCCESS) {
+                    if (mpsatDeadlockResult.getOutcome() == Outcome.CANCEL) {
+                        return new Result<MpsatChainResult>(Outcome.CANCEL);
                     }
-                    return new Result<MpsatChainResult>(Outcome.FAILED,
+                    return new Result<MpsatChainResult>(Outcome.FAILURE,
                             new MpsatChainResult(devExportResult, pcompResult, punfResult, mpsatDeadlockResult, deadlockSettings));
                 }
                 monitor.progressUpdate(0.50);
 
                 MpsatResultParser mpsatDeadlockParser = new MpsatResultParser(mpsatDeadlockResult.getReturnValue());
                 if (!mpsatDeadlockParser.getSolutions().isEmpty()) {
-                    return new Result<MpsatChainResult>(Outcome.FINISHED,
+                    return new Result<MpsatChainResult>(Outcome.SUCCESS,
                             new MpsatChainResult(devExportResult, pcompResult, punfResult, mpsatDeadlockResult, deadlockSettings,
                                     "Circuit has a deadlock after the following trace(s):"));
                 }
@@ -254,18 +254,18 @@ public class CheckCircuitTask extends MpsatChainTask {
                 Result<? extends ExternalProcessResult>  mpsatPersistencyResult = manager.execute(
                         mpsatPersistencyTask, "Running output persistency check [MPSat]", mpsatMonitor);
 
-                if (mpsatPersistencyResult.getOutcome() != Outcome.FINISHED) {
-                    if (mpsatPersistencyResult.getOutcome() == Outcome.CANCELLED) {
-                        return new Result<MpsatChainResult>(Outcome.CANCELLED);
+                if (mpsatPersistencyResult.getOutcome() != Outcome.SUCCESS) {
+                    if (mpsatPersistencyResult.getOutcome() == Outcome.CANCEL) {
+                        return new Result<MpsatChainResult>(Outcome.CANCEL);
                     }
-                    return new Result<MpsatChainResult>(Outcome.FAILED,
+                    return new Result<MpsatChainResult>(Outcome.FAILURE,
                             new MpsatChainResult(devExportResult, pcompResult, punfResult, mpsatPersistencyResult, persistencySettings));
                 }
                 monitor.progressUpdate(0.70);
 
                 MpsatResultParser mpsatPersistencyParser = new MpsatResultParser(mpsatPersistencyResult.getReturnValue());
                 if (!mpsatPersistencyParser.getSolutions().isEmpty()) {
-                    return new Result<MpsatChainResult>(Outcome.FINISHED,
+                    return new Result<MpsatChainResult>(Outcome.SUCCESS,
                             new MpsatChainResult(devExportResult, pcompResult, punfResult, mpsatPersistencyResult, persistencySettings,
                                     "Circuit is not output-persistent after the following trace(s):"));
                 }
@@ -283,18 +283,18 @@ public class CheckCircuitTask extends MpsatChainTask {
                 Result<? extends ExternalProcessResult>  mpsatConformationResult = manager.execute(
                         mpsatConformationTask, "Running conformation check [MPSat]", mpsatMonitor);
 
-                if (mpsatConformationResult.getOutcome() != Outcome.FINISHED) {
-                    if (mpsatConformationResult.getOutcome() == Outcome.CANCELLED) {
-                        return new Result<MpsatChainResult>(Outcome.CANCELLED);
+                if (mpsatConformationResult.getOutcome() != Outcome.SUCCESS) {
+                    if (mpsatConformationResult.getOutcome() == Outcome.CANCEL) {
+                        return new Result<MpsatChainResult>(Outcome.CANCEL);
                     }
-                    return new Result<MpsatChainResult>(Outcome.FAILED,
+                    return new Result<MpsatChainResult>(Outcome.FAILURE,
                             new MpsatChainResult(devExportResult, pcompModResult, punfModResult, mpsatConformationResult, conformationSettings));
                 }
                 monitor.progressUpdate(0.90);
 
                 MpsatResultParser mpsatConformationParser = new MpsatResultParser(mpsatConformationResult.getReturnValue());
                 if (!mpsatConformationParser.getSolutions().isEmpty()) {
-                    return new Result<MpsatChainResult>(Outcome.FINISHED,
+                    return new Result<MpsatChainResult>(Outcome.SUCCESS,
                             new MpsatChainResult(devExportResult, pcompModResult, punfModResult, mpsatConformationResult, conformationSettings,
                                     "Circuit does not conform to the environment after the following trace(s):"));
                 }
@@ -302,9 +302,9 @@ public class CheckCircuitTask extends MpsatChainTask {
             monitor.progressUpdate(1.00);
 
             // Success
-            Result<? extends ExternalProcessResult>  mpsatResult = new Result<>(Outcome.FINISHED);
+            Result<? extends ExternalProcessResult>  mpsatResult = new Result<>(Outcome.SUCCESS);
             String message = getSuccessMessage(envFile);
-            return new Result<MpsatChainResult>(Outcome.FINISHED,
+            return new Result<MpsatChainResult>(Outcome.SUCCESS,
                     new MpsatChainResult(devExportResult, pcompResult, punfResult, mpsatResult, toolchainCompletionSettings, message));
 
         } catch (Throwable e) {

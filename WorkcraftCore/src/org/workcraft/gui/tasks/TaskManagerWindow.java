@@ -17,6 +17,7 @@ import javax.swing.border.Border;
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.layouts.SmartFlowLayout;
+import org.workcraft.tasks.BasicProgressMonitor;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskMonitor;
@@ -24,7 +25,7 @@ import org.workcraft.tasks.TaskMonitor;
 @SuppressWarnings("serial")
 public class TaskManagerWindow extends JPanel implements TaskMonitor {
 
-    class TaskControlMonitor implements ProgressMonitor<Object> {
+    class TaskControlMonitor extends BasicProgressMonitor<Object> {
         TaskManagerWindow window;
         TaskControl taskControl;
 
@@ -39,21 +40,14 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
         }
 
         @Override
-        public void finished(Result<? extends Object> result, String description) {
+        public void finished(Result<? extends Object> result) {
+            super.finished(result);
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
                     window.removeTaskControl(taskControl);
                 }
             });
-        }
-
-        @Override
-        public void stdout(byte[] data) {
-        }
-
-        @Override
-        public void stderr(byte[] data) {
         }
 
         @Override
@@ -114,12 +108,9 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
 
     }
 
-    private int counter = 0;
-
     private final JPanel content;
 
     public TaskManagerWindow() {
-
         setLayout(new BorderLayout());
         JScrollPane scroll = new JScrollPane();
         add(scroll, BorderLayout.CENTER);

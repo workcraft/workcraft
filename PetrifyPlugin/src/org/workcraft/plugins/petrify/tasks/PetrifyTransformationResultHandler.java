@@ -24,29 +24,28 @@ import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.MutexUtils;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.tasks.DummyProgressMonitor;
+import org.workcraft.tasks.AbstractExtendedResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class PetrifyTransformationResultHandler extends DummyProgressMonitor<PetrifyTransformationResult> {
+public class PetrifyTransformationResultHandler extends AbstractExtendedResultHandler<PetrifyTransformationResult, WorkspaceEntry> {
     private final WorkspaceEntry we;
     private final boolean convertToPetriNet;
     private final Collection<Mutex> mutexes;
-    private WorkspaceEntry result;
 
     public PetrifyTransformationResultHandler(WorkspaceEntry we, boolean convertToPetriNet, Collection<Mutex> mutexes) {
         this.we = we;
         this.convertToPetriNet = convertToPetriNet;
         this.mutexes = mutexes;
-        this.result = null;
     }
 
     @Override
-    public void finished(final Result<? extends PetrifyTransformationResult> result, String description) {
-        if (result.getOutcome() == Outcome.FINISHED) {
+    public WorkspaceEntry handleResult(final Result<? extends PetrifyTransformationResult> result) {
+        WorkspaceEntry weResult = null;
+        if (result.getOutcome() == Outcome.SUCCESS) {
             StgModel stgModel = result.getReturnValue().getResult();
             MutexUtils.restoreMutexPlacesByContext(stgModel, mutexes);
             PetriNetModel model = convertToPetriNet ? convertStgToPetriNet(stgModel) : stgModel;
@@ -54,17 +53,18 @@ public class PetrifyTransformationResultHandler extends DummyProgressMonitor<Pet
             final ModelEntry me = new ModelEntry(modelDescriptor, model);
             final Path<String> path = we.getWorkspacePath();
             final Framework framework = Framework.getInstance();
-            this.result = framework.createWork(me, path);
-        } else if (result.getOutcome() == Outcome.FAILED) {
-            if (result.getCause() == null) {
+            weResult = framework.createWork(me, path);
+        } else if (result.getOutcome() == Outcome.FAILURE) {
+            if (result.getCause() != null) {
+                ExceptionDialog.show(result.getCause());
+            } else {
                 PetrifyTransformationResult returnValue = result.getReturnValue();
                 Result<? extends ExternalProcessResult> petrifyResult = returnValue.getPetrifyResult();
                 ExternalProcessResult petrifyReturnValue = petrifyResult.getReturnValue();
                 DialogUtils.showWarning("Transformation failed. Petrify output: \n\n" + petrifyReturnValue.getErrorsHeadAndTail());
-            } else {
-                ExceptionDialog.show(result.getCause());
             }
         }
+        return weResult;
     }
 
     private PetriNetModel convertStgToPetriNet(StgModel srcModel) {
@@ -108,10 +108,6 @@ public class PetrifyTransformationResultHandler extends DummyProgressMonitor<Pet
         NamespaceProvider namespaceProvider = refManager.getNamespaceProvider(dstModel.getRoot());
         NameManager nameManagerer = refManager.getNameManager(namespaceProvider);
         return nameManagerer.getDerivedName(null, candidateName);
-    }
-
-    public WorkspaceEntry getResult() {
-        return result;
     }
 
 }

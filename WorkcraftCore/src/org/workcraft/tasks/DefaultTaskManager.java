@@ -9,7 +9,7 @@ public class DefaultTaskManager extends AbstractTaskManager {
             progressMon.add(observer);
         }
         Result<? extends T> result = task.run(progressMon);
-        progressMon.finished(result, description);
+        progressMon.finished(result);
         return result;
     }
 

@@ -23,7 +23,7 @@ import org.workcraft.plugins.mpsat.MpsatSynthesisMode;
 import org.workcraft.plugins.mpsat.MpsatSynthesisSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.tasks.DummyProgressMonitor;
+import org.workcraft.tasks.AbstractExtendedResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.DialogUtils;
@@ -31,56 +31,56 @@ import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynthesisChainResult> {
+public class MpsatSynthesisResultHandler extends AbstractExtendedResultHandler<MpsatSynthesisChainResult, WorkspaceEntry> {
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
     private final MpsatSynthesisChainTask task;
     private final Collection<Mutex> mutexes;
-    private WorkspaceEntry result;
 
     public MpsatSynthesisResultHandler(final MpsatSynthesisChainTask task, Collection<Mutex> mutexes) {
         this.task = task;
         this.mutexes = mutexes;
-        this.result = null;
     }
 
     @Override
-    public void finished(final Result<? extends MpsatSynthesisChainResult> result, final String description) {
-        switch (result.getOutcome()) {
-        case FINISHED:
-            handleSuccess(result);
-            break;
-        case FAILED:
+    public WorkspaceEntry handleResult(final Result<? extends MpsatSynthesisChainResult> result) {
+        WorkspaceEntry weResult = null;
+        if (result.getOutcome() == Outcome.SUCCESS) {
+            weResult = handleSuccess(result);
+        } else if (result.getOutcome() == Outcome.FAILURE) {
             handleFailure(result);
-            break;
-        default:
-            break;
         }
+        return weResult;
     }
 
-    private void handleSuccess(final Result<? extends MpsatSynthesisChainResult> result) {
-        final MpsatSynthesisChainResult returnValue = result.getReturnValue();
-        final MpsatSynthesisMode mpsatMode = returnValue.getMpsatSettings().getMode();
-        final ExternalProcessResult mpsatReturnValue = returnValue.getMpsatResult().getReturnValue();
+    private WorkspaceEntry handleSuccess(final Result<? extends MpsatSynthesisChainResult> chainResult) {
+        MpsatSynthesisChainResult returnValue = chainResult.getReturnValue();
+        MpsatSynthesisMode mpsatMode = returnValue.getMpsatSettings().getMode();
+        ExternalProcessResult mpsatReturnValue = returnValue.getMpsatResult().getReturnValue();
+        WorkspaceEntry synthResult = null;
         switch (mpsatMode) {
         case COMPLEX_GATE_IMPLEMENTATION:
-            handleSynthesisResult(mpsatReturnValue, false, RenderType.GATE);
+            synthResult = handleSynthesisResult(mpsatReturnValue, false, RenderType.GATE);
             break;
         case GENERALISED_CELEMENT_IMPLEMENTATION:
-            handleSynthesisResult(mpsatReturnValue, true, RenderType.BOX);
+            synthResult = handleSynthesisResult(mpsatReturnValue, true, RenderType.BOX);
             break;
         case STANDARD_CELEMENT_IMPLEMENTATION:
-            handleSynthesisResult(mpsatReturnValue, true, RenderType.GATE);
+            synthResult = handleSynthesisResult(mpsatReturnValue, true, RenderType.GATE);
             break;
         case TECH_MAPPING:
-            handleSynthesisResult(mpsatReturnValue, false, RenderType.GATE);
+            synthResult = handleSynthesisResult(mpsatReturnValue, false, RenderType.GATE);
             break;
         default:
             DialogUtils.showWarning("MPSat synthesis mode \'" + mpsatMode.getArgument() + "\' is not (yet) supported.");
             break;
         }
+        return synthResult;
     }
 
-    private void handleSynthesisResult(final ExternalProcessResult mpsatResult, final boolean sequentialAssign, final RenderType renderType) {
+    private WorkspaceEntry handleSynthesisResult(ExternalProcessResult mpsatResult,
+            boolean sequentialAssign, RenderType renderType) {
+
+        WorkspaceEntry synthResult = null;
         final String log = new String(mpsatResult.getOutput());
         if ((log != null) && !log.isEmpty()) {
             System.out.println(log);
@@ -108,8 +108,8 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
                 final ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
                 final WorkspaceEntry we = task.getWorkspaceEntry();
                 final Path<String> path = we.getWorkspacePath();
-                result = framework.createWork(me, path);
-                final VisualModel visualModel = result.getModelEntry().getVisualModel();
+                synthResult = framework.createWork(me, path);
+                final VisualModel visualModel = synthResult.getModelEntry().getVisualModel();
                 if (visualModel instanceof VisualCircuit) {
                     final VisualCircuit visualCircuit = (VisualCircuit) visualModel;
                     setComponentsRenderStyle(visualCircuit, renderType);
@@ -137,6 +137,7 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
                 throw new RuntimeException(e);
             }
         }
+        return synthResult;
     }
 
     private void setComponentsRenderStyle(final VisualCircuit visualCircuit, final RenderType renderType) {
@@ -169,13 +170,13 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
             final Result<? extends Object> exportResult = (returnValue == null) ? null : returnValue.getExportResult();
             final Result<? extends ExternalProcessResult> punfResult = (returnValue == null) ? null : returnValue.getPunfResult();
             final Result<? extends ExternalProcessResult> mpsatResult = (returnValue == null) ? null : returnValue.getMpsatResult();
-            if ((exportResult != null) && (exportResult.getOutcome() == Outcome.FAILED)) {
+            if ((exportResult != null) && (exportResult.getOutcome() == Outcome.FAILURE)) {
                 errorMessage += "\n\nCould not export the model as a .g file.";
                 final Throwable exportCause = exportResult.getCause();
                 if (exportCause != null) {
                     errorMessage += ERROR_CAUSE_PREFIX + exportCause.toString();
                 }
-            } else if ((punfResult != null) && (punfResult.getOutcome() == Outcome.FAILED)) {
+            } else if ((punfResult != null) && (punfResult.getOutcome() == Outcome.FAILURE)) {
                 errorMessage += "\n\nPunf could not build the unfolding prefix.";
                 final Throwable punfCause = punfResult.getCause();
                 if (punfCause != null) {
@@ -187,7 +188,7 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
                         errorMessage += ERROR_CAUSE_PREFIX + punfError;
                     }
                 }
-            } else if ((mpsatResult != null) && (mpsatResult.getOutcome() == Outcome.FAILED)) {
+            } else if ((mpsatResult != null) && (mpsatResult.getOutcome() == Outcome.FAILURE)) {
                 errorMessage += "\n\nMPSat did not execute as expected.";
                 final Throwable mpsatCause = mpsatResult.getCause();
                 if (mpsatCause != null) {
@@ -204,10 +205,6 @@ public class MpsatSynthesisResultHandler extends DummyProgressMonitor<MpsatSynth
             }
         }
         DialogUtils.showError(errorMessage);
-    }
-
-    public WorkspaceEntry getResult() {
-        return result;
     }
 
 }

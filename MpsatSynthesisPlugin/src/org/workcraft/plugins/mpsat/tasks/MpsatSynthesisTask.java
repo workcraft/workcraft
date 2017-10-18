@@ -79,7 +79,7 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
         if (MpsatSynthesisSettings.getAdvancedMode()) {
             String tmp = DialogUtils.showInput("Additional parameters for MPSat:", extraArgs);
             if (tmp == null) {
-                return Result.cancelled();
+                return Result.cancelation();
             }
             extraArgs = tmp;
         }
@@ -102,7 +102,7 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
         boolean printStderr = MpsatSynthesisSettings.getPrintStderr();
         ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
         Result<? extends ExternalProcessResult> res = task.run(monitor);
-        if (res.getOutcome() == Outcome.FINISHED) {
+        if (res.getOutcome() == Outcome.SUCCESS) {
             Map<String, byte[]> outputFiles = new HashMap<>();
             try {
                 File outFile = new File(directory, outputFileName);
@@ -118,15 +118,15 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
                     retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), outputFiles);
 
             if (retVal.getReturnCode() < 2) {
-                return Result.finished(result);
+                return Result.success(result);
             } else {
-                return Result.failed(result);
+                return Result.failure(result);
             }
         }
-        if (res.getOutcome() == Outcome.CANCELLED) {
-            return Result.cancelled();
+        if (res.getOutcome() == Outcome.CANCEL) {
+            return Result.cancelation();
         }
-        return Result.failed(null);
+        return Result.failure(null);
     }
 
 }

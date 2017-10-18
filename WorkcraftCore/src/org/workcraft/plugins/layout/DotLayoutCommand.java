@@ -192,10 +192,10 @@ public class DotLayoutCommand extends AbstractLayoutCommand {
             final TaskManager taskManager = framework.getTaskManager();
             Result<? extends ExternalProcessResult> res = taskManager.execute(task, "Laying out the graph...");
 
-            if (res.getOutcome() == Outcome.CANCELLED) {
+            if (res.getOutcome() == Outcome.CANCEL) {
                 return;
             }
-            if (res.getOutcome() == Outcome.FAILED) {
+            if (res.getOutcome() == Outcome.FAILURE) {
                 throw new LayoutException("Failed to execute external process:\n" + res.getCause());
             }
             if (res.getReturnValue().getReturnCode() == 0) {

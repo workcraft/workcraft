@@ -6,6 +6,7 @@ import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petrify.tasks.DrawSgResult;
 import org.workcraft.plugins.petrify.tasks.DrawSgTask;
+import org.workcraft.tasks.BasicProgressMonitor;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -41,29 +42,13 @@ public class ShowSgCommand implements Command {
         DrawSgTask task = new DrawSgTask(we, isBinary());
         final Framework framework = Framework.getInstance();
 
-        ProgressMonitor<DrawSgResult> monitor = new ProgressMonitor<DrawSgResult>() {
+        ProgressMonitor<DrawSgResult> monitor = new BasicProgressMonitor<DrawSgResult>() {
             @Override
-            public void progressUpdate(double completion) {
-            }
-
-            @Override
-            public void stdout(byte[] data) {
-            }
-
-            @Override
-            public void stderr(byte[] data) {
-            }
-
-            @Override
-            public boolean isCancelRequested() {
-                return false;
-            }
-
-            @Override
-            public void finished(Result<? extends DrawSgResult> result, String description) {
-                if (result.getOutcome() == Outcome.FINISHED) {
+            public void finished(Result<? extends DrawSgResult> result) {
+                super.finished(result);
+                if (result.getOutcome() == Outcome.SUCCESS) {
                     DesktopApi.open(result.getReturnValue().getFile());
-                } else  if (result.getOutcome() != Outcome.CANCELLED) {
+                } else  if (result.getOutcome() != Outcome.CANCEL) {
                     String errorMessage = "Petrify tool chain execution failed.";
                     Throwable cause = result.getCause();
                     if (cause != null) {

@@ -16,7 +16,8 @@ final class OperationCancelDialog<T> extends JDialog implements ProgressMonitor<
 
     private static final long serialVersionUID = 4633136071864781499L;
     private final TaskControl taskControl;
-    private Result<? extends T> result;
+    private boolean finished = false;
+    private Result<? extends T> result = null;
 
     OperationCancelDialog(Window parent, String description) {
         setModal(true);
@@ -58,7 +59,7 @@ final class OperationCancelDialog<T> extends JDialog implements ProgressMonitor<
     }
 
     @Override
-    public void finished(Result<? extends T> result, String description) {
+    public void finished(Result<? extends T> result) {
         this.result = result;
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -66,9 +67,18 @@ final class OperationCancelDialog<T> extends JDialog implements ProgressMonitor<
                 setVisible(false);
             }
         });
+        finished = true;
     }
 
-    public Result<? extends T> getResult() {
+    @Override
+    public Result<? extends T> waitResult() {
+        while (!finished) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                return null;
+            }
+        }
         return result;
     }
 

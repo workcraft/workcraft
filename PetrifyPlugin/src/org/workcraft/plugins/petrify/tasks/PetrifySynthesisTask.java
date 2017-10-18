@@ -72,7 +72,7 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
         if (PetrifySettings.getAdvancedMode()) {
             String tmp = DialogUtils.showInput("Additional parameters for Petrify:", extraArgs);
             if (tmp == null) {
-                return Result.cancelled();
+                return Result.cancelation();
             }
             extraArgs = tmp;
         }
@@ -117,7 +117,7 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
                     + "Problematic places are:\n" + refStr + "\n\n"
                     + "Proceed without these places?";
             if (!DialogUtils.showConfirm(msg, "Petrify synthesis")) {
-                return Result.cancelled();
+                return Result.cancelation();
             }
             we.captureMemento();
             VisualModel visualModel = we.getModelEntry().getVisualModel();
@@ -134,7 +134,7 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
         SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessResult> res = task.run(mon);
         try {
-            if (res.getOutcome() == Outcome.FINISHED) {
+            if (res.getOutcome() == Outcome.SUCCESS) {
                 String equations = equationsFile.exists() ? FileUtils.readAllText(equationsFile) : "";
                 String verilog = verilogFile.exists() ? FileUtils.readAllText(verilogFile) : "";
                 String log = logFile.exists() ? FileUtils.readAllText(logFile) : "";
@@ -142,15 +142,15 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
                 String stderr = new String(res.getReturnValue().getErrors());
                 PetrifySynthesisResult result = new PetrifySynthesisResult(equations, verilog, log, stdout, stderr);
                 if (res.getReturnValue().getReturnCode() == 0) {
-                    return Result.finished(result);
+                    return Result.success(result);
                 } else {
-                    return Result.failed(result);
+                    return Result.failure(result);
                 }
             }
-            if (res.getOutcome() == Outcome.CANCELLED) {
-                return Result.cancelled();
+            if (res.getOutcome() == Outcome.CANCEL) {
+                return Result.cancelation();
             }
-            return Result.failed(null);
+            return Result.failure(null);
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
@@ -169,7 +169,7 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
         File stgFile = new File(directory, "spec" + StgFormat.getInstance().getExtension());
         ExportTask exportTask = new ExportTask(stgExporter, stg, stgFile.getAbsolutePath());
         Result<? extends Object> exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
-        if (exportResult.getOutcome() != Outcome.FINISHED) {
+        if (exportResult.getOutcome() != Outcome.SUCCESS) {
             throw new RuntimeException("Unable to export the model.");
         }
         if (!mutexes.isEmpty()) {
@@ -184,7 +184,7 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
             stgFile = new File(directory, "spec-mutex" + StgFormat.getInstance().getExtension());
             exportTask = new ExportTask(stgExporter, stg, stgFile.getAbsolutePath());
             exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
-            if (exportResult.getOutcome() != Outcome.FINISHED) {
+            if (exportResult.getOutcome() != Outcome.SUCCESS) {
                 throw new RuntimeException("Unable to export the model after factoring out the mutexes.");
             }
         }

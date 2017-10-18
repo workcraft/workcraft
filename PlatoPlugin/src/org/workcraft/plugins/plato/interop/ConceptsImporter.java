@@ -42,7 +42,7 @@ public class ConceptsImporter implements Importer {
             PlatoTask task = new PlatoTask(inputFile);
             PlatoResultHandler monitor = new PlatoResultHandler(this);
             Result<? extends ExternalProcessResult> result = task.run(monitor);
-            if (result.getOutcome() == Outcome.FINISHED) {
+            if (result.getOutcome() == Outcome.SUCCESS) {
                 String output = new String(result.getReturnValue().getOutput());
                 if (output.startsWith(".model")) {
                     StgImporter importer = new StgImporter();

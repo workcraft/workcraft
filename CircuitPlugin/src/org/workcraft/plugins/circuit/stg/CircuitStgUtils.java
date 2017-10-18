@@ -63,12 +63,12 @@ public class CircuitStgUtils {
                     null, directory, null);
 
             switch (pcompResult.getOutcome()) {
-            case FINISHED:
+            case SUCCESS:
                 break;
-            case CANCELLED:
+            case CANCEL:
                 sysStgFile = null;
                 break;
-            case FAILED:
+            case FAILURE:
                 throw new RuntimeException("Composition failed:\n" + pcompResult.getCause());
             }
             systemStg = StgUtils.loadStg(sysStgFile);
@@ -103,12 +103,12 @@ public class CircuitStgUtils {
         Result<? extends Object> exportResult = exportStg(stg, stgFile, directory, null);
 
         switch (exportResult.getOutcome()) {
-        case FINISHED:
+        case SUCCESS:
             break;
-        case CANCELLED:
+        case CANCEL:
             stgFile = null;
             break;
-        case FAILED:
+        case FAILURE:
             throw new RuntimeException("Export failed for file '" + fileName + "':\n" + exportResult.getCause());
         }
         return stgFile;

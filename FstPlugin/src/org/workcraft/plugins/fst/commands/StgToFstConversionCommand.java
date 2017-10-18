@@ -6,8 +6,8 @@ import org.workcraft.plugins.fst.tasks.StgToFstConversionResultHandler;
 import org.workcraft.plugins.fst.tasks.WriteSgConversionTask;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.Hierarchy;
 import org.workcraft.util.DialogUtils;
+import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -49,7 +49,7 @@ public class StgToFstConversionCommand extends AbstractConversionCommand {
         final WriteSgConversionTask task = new WriteSgConversionTask(we, isBinary());
         final StgToFstConversionResultHandler monitor = new StgToFstConversionResultHandler(task);
         taskManager.execute(task, "Building state graph", monitor);
-        return monitor.getResult();
+        return monitor.waitForHandledResult();
     }
 
     @Override

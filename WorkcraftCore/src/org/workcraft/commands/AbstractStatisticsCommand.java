@@ -18,6 +18,11 @@ public abstract class AbstractStatisticsCommand implements ScriptableCommand<Str
     }
 
     @Override
+    public void run(WorkspaceEntry we) {
+        execute(we);
+    }
+
+    @Override
     public final String execute(WorkspaceEntry we) {
         String result = getStatistics(we);
         DialogUtils.showInfo(result, "Statistics");

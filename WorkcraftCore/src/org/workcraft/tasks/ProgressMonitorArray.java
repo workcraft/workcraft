@@ -5,13 +5,8 @@ import java.util.ArrayList;
 public class ProgressMonitorArray<T> extends ArrayList<ProgressMonitor<? super T>> implements ProgressMonitor<T> {
 
     private static final long serialVersionUID = 1L;
-
-    @Override
-    public void finished(Result<? extends T> result, String description) {
-        for (ProgressMonitor<? super T> o : this) {
-            o.finished(result, description);
-        }
-    }
+    private boolean finished = false;
+    private Result<? extends T> result = null;
 
     @Override
     public boolean isCancelRequested() {
@@ -41,6 +36,27 @@ public class ProgressMonitorArray<T> extends ArrayList<ProgressMonitor<? super T
         for (ProgressMonitor<? super T> o : this) {
             o.stderr(data);
         }
+    }
+
+    @Override
+    public void finished(Result<? extends T> result) {
+        for (ProgressMonitor<? super T> o : this) {
+            o.finished(result);
+        }
+        this.result = result;
+        finished = true;
+    }
+
+    @Override
+    public Result<? extends T> waitResult() {
+        while (!finished) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                return null;
+            }
+        }
+        return result;
     }
 
 }

@@ -13,7 +13,7 @@ import org.workcraft.plugins.fst.ProcessWindowsSettings;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgImporter;
-import org.workcraft.tasks.DummyProgressMonitor;
+import org.workcraft.tasks.AbstractResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.TaskManager;
@@ -21,7 +21,7 @@ import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class LtscatResultHandler extends DummyProgressMonitor<LtscatResult>  {
+public class LtscatResultHandler extends AbstractResultHandler<LtscatResult>  {
 
     private final WorkspaceEntry we;
     private final File tmpDir;
@@ -32,9 +32,8 @@ public class LtscatResultHandler extends DummyProgressMonitor<LtscatResult>  {
     }
 
     @Override
-    public void finished(Result<? extends LtscatResult> result, String description) {
-
-        if (result.getOutcome() == Outcome.FINISHED) {
+    public void handleResult(Result<? extends LtscatResult> result) {
+        if (result.getOutcome() == Outcome.SUCCESS) {
             int windows = 1;
 
             // Print stdout of Ltscat
@@ -75,7 +74,7 @@ public class LtscatResultHandler extends DummyProgressMonitor<LtscatResult>  {
             final TaskManager taskManager = framework.getTaskManager();
             taskManager.queue(shuttersTask, "Shutters - process windows", shuttersResult);
 
-        } else if (result.getOutcome() == Outcome.FAILED) {
+        } else if (result.getOutcome() == Outcome.FAILURE) {
             String errorMessage = result.getReturnValue().getError();
             Framework framework = Framework.getInstance();
             JOptionPane.showMessageDialog(framework.getMainWindow(), errorMessage, "Ltscat error", JOptionPane.ERROR_MESSAGE);

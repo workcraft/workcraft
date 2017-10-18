@@ -22,14 +22,15 @@ import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.tasks.DummyProgressMonitor;
+import org.workcraft.tasks.AbstractExtendedResultHandler;
 import org.workcraft.tasks.Result;
+import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifySynthesisResult> {
+public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler<PetrifySynthesisResult, WorkspaceEntry> {
 
     private static final Pattern patternAddingStateSignal =
             Pattern.compile("Adding state signal: (.*)\n", Pattern.UNIX_LINES);
@@ -41,7 +42,6 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
     private final boolean boxCombinationalComponents;
     private final boolean sequentialAssign;
     private final Collection<Mutex> mutexes;
-    private WorkspaceEntry result;
 
     public PetrifySynthesisResultHandler(final WorkspaceEntry we, final boolean boxSequentialComponents,
             final boolean boxCombinationalComponents, final boolean sequentialAssign, Collection<Mutex> mutexes) {
@@ -50,24 +50,22 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
         this.boxCombinationalComponents = boxCombinationalComponents;
         this.sequentialAssign = sequentialAssign;
         this.mutexes = mutexes;
-        this.result = null;
     }
 
     @Override
-    public void finished(final Result<? extends PetrifySynthesisResult> result, final String description) {
-        switch (result.getOutcome()) {
-        case FINISHED:
-            handleSuccess(result);
-            break;
-        case FAILED:
+    public WorkspaceEntry handleResult(final Result<? extends PetrifySynthesisResult> result) {
+        WorkspaceEntry weResult = null;
+        if (result.getOutcome() == Outcome.SUCCESS) {
+            weResult = handleSuccess(result);
+        } else if (result.getOutcome() == Outcome.FAILURE) {
             handleFailure(result);
-            break;
-        default:
-            break;
         }
+        return weResult;
     }
 
-    private void handleSuccess(final Result<? extends PetrifySynthesisResult> result) {
+    private WorkspaceEntry handleSuccess(final Result<? extends PetrifySynthesisResult> result) {
+        WorkspaceEntry synthResult = null;
+
         final String log = result.getReturnValue().getLog();
         if ((log != null) && !log.isEmpty()) {
             LogUtils.logInfo("Petrify synthesis log:");
@@ -107,8 +105,8 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
                 final Path<String> path = we.getWorkspacePath();
                 final ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
                 final Framework framework = Framework.getInstance();
-                this.result = framework.createWork(me, path);
-                final VisualModel visualModel = this.result.getModelEntry().getVisualModel();
+                synthResult = framework.createWork(me, path);
+                final VisualModel visualModel = synthResult.getModelEntry().getVisualModel();
                 if (visualModel instanceof VisualCircuit) {
                     final VisualCircuit visualCircuit = (VisualCircuit) visualModel;
                     setComponentsRenderStyle(visualCircuit);
@@ -136,6 +134,7 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
                 throw new RuntimeException(e);
             }
         }
+        return synthResult;
     }
 
     private void setComponentsRenderStyle(final VisualCircuit visualCircuit) {
@@ -171,10 +170,6 @@ public class PetrifySynthesisResultHandler extends DummyProgressMonitor<PetrifyS
             errorMessage += ERROR_CAUSE_PREFIX + returnValue.getStderr();
         }
         DialogUtils.showError(errorMessage);
-    }
-
-    public WorkspaceEntry getResult() {
-        return result;
     }
 
 }

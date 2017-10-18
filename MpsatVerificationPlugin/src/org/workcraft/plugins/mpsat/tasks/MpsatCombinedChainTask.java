@@ -51,11 +51,11 @@ public class MpsatCombinedChainTask implements Task<MpsatCombinedChainResult> {
             Result<? extends Object> exportResult = framework.getTaskManager().execute(
                     exportTask, "Exporting .g", subtaskMonitor);
 
-            if (exportResult.getOutcome() != Outcome.FINISHED) {
-                if (exportResult.getOutcome() == Outcome.CANCELLED) {
-                    return new Result<MpsatCombinedChainResult>(Outcome.CANCELLED);
+            if (exportResult.getOutcome() != Outcome.SUCCESS) {
+                if (exportResult.getOutcome() == Outcome.CANCEL) {
+                    return new Result<MpsatCombinedChainResult>(Outcome.CANCEL);
                 }
-                return new Result<MpsatCombinedChainResult>(Outcome.FAILED,
+                return new Result<MpsatCombinedChainResult>(Outcome.FAILURE,
                         new MpsatCombinedChainResult(exportResult, null, null, null, settingsList));
             }
             monitor.progressUpdate(0.33);
@@ -69,11 +69,11 @@ public class MpsatCombinedChainTask implements Task<MpsatCombinedChainResult> {
             PunfTask punfTask = new PunfTask(netFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
             Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", subtaskMonitor);
 
-            if (punfResult.getOutcome() != Outcome.FINISHED) {
-                if (punfResult.getOutcome() == Outcome.CANCELLED) {
-                    return new Result<MpsatCombinedChainResult>(Outcome.CANCELLED);
+            if (punfResult.getOutcome() != Outcome.SUCCESS) {
+                if (punfResult.getOutcome() == Outcome.CANCEL) {
+                    return new Result<MpsatCombinedChainResult>(Outcome.CANCEL);
                 }
-                return new Result<MpsatCombinedChainResult>(Outcome.FAILED,
+                return new Result<MpsatCombinedChainResult>(Outcome.FAILURE,
                         new MpsatCombinedChainResult(exportResult, null, punfResult, null, settingsList));
             }
             monitor.progressUpdate(0.66);
@@ -86,17 +86,17 @@ public class MpsatCombinedChainTask implements Task<MpsatCombinedChainResult> {
                 Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
                         mpsatTask, "Running verification [MPSat]", subtaskMonitor);
                 mpsatResultList.add(mpsatResult);
-                if (mpsatResult.getOutcome() != Outcome.FINISHED) {
-                    if (mpsatResult.getOutcome() == Outcome.CANCELLED) {
-                        return new Result<MpsatCombinedChainResult>(Outcome.CANCELLED);
+                if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
+                    if (mpsatResult.getOutcome() == Outcome.CANCEL) {
+                        return new Result<MpsatCombinedChainResult>(Outcome.CANCEL);
                     }
-                    return new Result<MpsatCombinedChainResult>(Outcome.FAILED,
+                    return new Result<MpsatCombinedChainResult>(Outcome.FAILURE,
                             new MpsatCombinedChainResult(exportResult, null, punfResult, mpsatResultList, settingsList));
                 }
             }
             monitor.progressUpdate(1.0);
 
-            return new Result<MpsatCombinedChainResult>(Outcome.FINISHED,
+            return new Result<MpsatCombinedChainResult>(Outcome.SUCCESS,
                     new MpsatCombinedChainResult(exportResult, null, punfResult, mpsatResultList, settingsList));
         } catch (Throwable e) {
             return new Result<MpsatCombinedChainResult>(e);

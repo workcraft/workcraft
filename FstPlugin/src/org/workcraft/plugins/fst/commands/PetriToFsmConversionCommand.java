@@ -36,7 +36,7 @@ public class PetriToFsmConversionCommand extends AbstractConversionCommand {
         final WriteSgConversionTask task = new WriteSgConversionTask(we, false);
         final PetriToFsmConversionResultHandler monitor = new PetriToFsmConversionResultHandler(task);
         taskManager.execute(task, "Building state graph", monitor);
-        return monitor.getResult();
+        return monitor.waitForHandledResult();
     }
 
     @Override

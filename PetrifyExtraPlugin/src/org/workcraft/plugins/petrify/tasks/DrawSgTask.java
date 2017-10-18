@@ -74,15 +74,15 @@ public class DrawSgTask implements Task<DrawSgResult> {
             ExportTask exportTask = Export.createExportTask(model, stgFile, StgFormat.getInstance(), framework.getPluginManager());
             final Result<? extends Object> dotGResult = framework.getTaskManager().execute(exportTask, "Exporting to .g");
 
-            if (dotGResult.getOutcome() != Outcome.FINISHED) {
-                if (dotGResult.getOutcome() != Outcome.CANCELLED) {
+            if (dotGResult.getOutcome() != Outcome.SUCCESS) {
+                if (dotGResult.getOutcome() != Outcome.CANCEL) {
                     if (dotGResult.getCause() != null) {
                         return Result.exception(dotGResult.getCause());
                     } else {
-                        return Result.failed(new DrawSgResult(null, "Export to .g failed for unknown reason"));
+                        return Result.failure(new DrawSgResult(null, "Export to .g failed for unknown reason"));
                     }
                 }
-                return Result.cancelled();
+                return Result.cancelation();
             }
 
             File sgFile = new File(directory, SG_FILE_NAME);
@@ -97,11 +97,11 @@ public class DrawSgTask implements Task<DrawSgResult> {
                 Result<? extends ExternalProcessResult> writeSgResult = framework.getTaskManager().execute(
                         writeSgTask, "Running Petrify");
 
-                if (writeSgResult.getOutcome() == Outcome.FINISHED) {
+                if (writeSgResult.getOutcome() == Outcome.SUCCESS) {
                     break;
                 }
-                if (writeSgResult.getOutcome() == Outcome.CANCELLED) {
-                    return Result.cancelled();
+                if (writeSgResult.getOutcome() == Outcome.CANCEL) {
+                    return Result.cancelation();
                 }
                 if (writeSgResult.getCause() != null) {
                     return Result.exception(writeSgResult.getCause());
@@ -115,10 +115,10 @@ public class DrawSgTask implements Task<DrawSgResult> {
                             writeSgOptions.add("-huge");
                             continue;
                         } else {
-                            return Result.cancelled();
+                            return Result.cancelation();
                         }
                     } else {
-                        return Result.failed(new DrawSgResult(null, errorMessages));
+                        return Result.failure(new DrawSgResult(null, errorMessages));
                     }
                 }
             }
@@ -132,18 +132,18 @@ public class DrawSgTask implements Task<DrawSgResult> {
             DrawAstgTask drawAstgTask = new DrawAstgTask(drawAstgOptions, sgFile, resultFile, directory);
             final Result<? extends ExternalProcessResult> drawAstgResult = framework.getTaskManager().execute(drawAstgTask, "Running Petrify");
 
-            if (drawAstgResult.getOutcome() != Outcome.FINISHED) {
-                if (drawAstgResult.getOutcome() != Outcome.CANCELLED) {
+            if (drawAstgResult.getOutcome() != Outcome.SUCCESS) {
+                if (drawAstgResult.getOutcome() != Outcome.CANCEL) {
                     if (drawAstgResult.getCause() != null) {
                         return Result.exception(drawAstgResult.getCause());
                     } else {
-                        return Result.failed(new DrawSgResult(null, "Errors running Petrify:\n"
+                        return Result.failure(new DrawSgResult(null, "Errors running Petrify:\n"
                             + new String(drawAstgResult.getReturnValue().getErrors())));
                     }
                 }
-                return Result.cancelled();
+                return Result.cancelation();
             }
-            return Result.finished(new DrawSgResult(resultFile, "No errors"));
+            return Result.success(new DrawSgResult(resultFile, "No errors"));
         } catch (Throwable e) {
             return Result.exception(e);
         }
