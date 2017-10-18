@@ -4,7 +4,7 @@ framework.addJavaScriptHelp("setConfigVar", "key, val",
     "set the config variable 'key' to value 'val'");
 
 function setConfigVar(key, val) {
-    framework.setConfigVar(key, val);
+    framework.setConfigVar(key, val, true);
 }
 
 
@@ -12,7 +12,7 @@ framework.addJavaScriptHelp("getConfigVar", "key",
     "return the value of config variable 'key'");
 
 function getConfigVar(key) {
-    return framework.getConfigVar(key);
+    return framework.getConfigVar(key, true);
 }
 
 

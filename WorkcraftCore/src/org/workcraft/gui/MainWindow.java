@@ -30,6 +30,7 @@ import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.MenuBarUI;
 
 import org.flexdock.docking.Dockable;
@@ -79,6 +80,7 @@ import org.workcraft.tasks.Task;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.Commands;
 import org.workcraft.util.DialogUtils;
+import org.workcraft.util.ExceptionUtils;
 import org.workcraft.util.Export;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.GUI;
@@ -160,7 +162,19 @@ public class MainWindow extends JFrame {
     private int dockableIDCounter = 0;
     private final HashMap<Integer, DockableWindow> idToDockableWindowMap = new HashMap<>();
 
-    protected void createWindows() {
+    public MainWindow() {
+        super();
+        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+                final Framework framework = Framework.getInstance();
+                framework.shutdown();
+            }
+        });
+    }
+
+    private void createWindows() {
         workspaceWindow = new WorkspaceWindow();
         workspaceWindow.setVisible(true);
 
@@ -175,18 +189,6 @@ public class MainWindow extends JFrame {
         propertyEditorWindow = new PropertyEditorWindow();
         toolControlsWindow = new ToolControlsWindow();
         setMinimumSize(new Dimension(MIN_WIDTH, MIN_HEIGHT));
-    }
-
-    public MainWindow() {
-        super();
-        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
-        addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent e) {
-                final Framework framework = Framework.getInstance();
-                framework.shutdown();
-            }
-        });
     }
 
     private int getNextDockableID() {
@@ -618,13 +620,13 @@ public class MainWindow extends JFrame {
         final Framework framework = Framework.getInstance();
 
         boolean visible = true;
-        String visibleVal = framework.getConfigCoreVar(keyVisibility);
+        String visibleVal = framework.getConfigVar(keyVisibility, false);
         if (visibleVal != null) {
             visible = Boolean.valueOf(visibleVal);
         }
         setToolbarVisibility(toolbar, visible);
 
-        String position = framework.getConfigCoreVar(keyPosition);
+        String position = framework.getConfigVar(keyPosition, false);
         if (position == null) {
             position = BorderLayout.NORTH;
         }
@@ -654,19 +656,19 @@ public class MainWindow extends JFrame {
         final Framework framework = Framework.getInstance();
 
         String visibleVal = String.valueOf(toolbar.isVisible());
-        framework.setConfigCoreVar(keyVisibility, visibleVal);
+        framework.setConfigVar(keyVisibility, visibleVal, false);
 
         Object positionVal = layout.getConstraints(toolbar);
         if (positionVal instanceof String) {
-            framework.setConfigCoreVar(keyPosition, (String) positionVal);
+            framework.setConfigVar(keyPosition, (String) positionVal, false);
         }
     }
 
     public void loadWindowGeometryFromConfig() {
         final Framework framework = Framework.getInstance();
-        String maximisedStr = framework.getConfigCoreVar(CONFIG_GUI_MAIN_MAXIMISED);
-        String widthStr = framework.getConfigCoreVar(CONFIG_GUI_MAIN_WIDTH);
-        String heightStr = framework.getConfigCoreVar(CONFIG_GUI_MAIN_HEIGHT);
+        String maximisedStr = framework.getConfigVar(CONFIG_GUI_MAIN_MAXIMISED, false);
+        String widthStr = framework.getConfigVar(CONFIG_GUI_MAIN_WIDTH, false);
+        String heightStr = framework.getConfigVar(CONFIG_GUI_MAIN_HEIGHT, false);
 
         boolean maximised = (maximisedStr == null) ? true : Boolean.parseBoolean(maximisedStr);
         setExtendedState(maximised ? JFrame.MAXIMIZED_BOTH : JFrame.NORMAL);
@@ -691,16 +693,16 @@ public class MainWindow extends JFrame {
     public void saveWindowGeometryToConfig() {
         final Framework framework = Framework.getInstance();
         boolean maximised = (getExtendedState() & JFrame.MAXIMIZED_BOTH) != 0;
-        framework.setConfigCoreVar(CONFIG_GUI_MAIN_MAXIMISED, Boolean.toString(maximised));
-        framework.setConfigCoreVar(CONFIG_GUI_MAIN_WIDTH, Integer.toString(getWidth()));
-        framework.setConfigCoreVar(CONFIG_GUI_MAIN_HEIGHT, Integer.toString(getHeight()));
+        framework.setConfigVar(CONFIG_GUI_MAIN_MAXIMISED, Boolean.toString(maximised), false);
+        framework.setConfigVar(CONFIG_GUI_MAIN_WIDTH, Integer.toString(getWidth()), false);
+        framework.setConfigVar(CONFIG_GUI_MAIN_HEIGHT, Integer.toString(getHeight()), false);
     }
 
     public void loadRecentFilesFromConfig() {
         final Framework framework = Framework.getInstance();
-        lastDirectory = framework.getConfigCoreVar(CONFIG_GUI_MAIN_LAST_DIRECTORY);
+        lastDirectory = framework.getConfigVar(CONFIG_GUI_MAIN_LAST_DIRECTORY, false);
         for (int i = 0; i < CommonEditorSettings.getRecentCount(); i++) {
-            String entry = framework.getConfigCoreVar(CONFIG_GUI_MAIN_RECENT_FILE + i);
+            String entry = framework.getConfigVar(CONFIG_GUI_MAIN_RECENT_FILE + i, false);
             pushRecentFile(entry, false);
         }
         updateRecentFilesMenu();
@@ -709,12 +711,12 @@ public class MainWindow extends JFrame {
     public void saveRecentFilesToConfig() {
         final Framework framework = Framework.getInstance();
         if (lastDirectory != null) {
-            framework.setConfigCoreVar(CONFIG_GUI_MAIN_LAST_DIRECTORY, lastDirectory);
+            framework.setConfigVar(CONFIG_GUI_MAIN_LAST_DIRECTORY, lastDirectory, false);
         }
         int recentCount = CommonEditorSettings.getRecentCount();
         String[] tmp = recentFiles.toArray(new String[recentCount]);
         for (int i = 0; i < recentCount; i++) {
-            framework.setConfigCoreVar(CONFIG_GUI_MAIN_RECENT_FILE + i, tmp[i]);
+            framework.setConfigVar(CONFIG_GUI_MAIN_RECENT_FILE + i, tmp[i], false);
         }
     }
 
@@ -823,14 +825,6 @@ public class MainWindow extends JFrame {
             }
 
         } catch (OperationCancelledException e) {
-        }
-    }
-
-    private void printCause(Throwable e) {
-        e.printStackTrace();
-        System.err.println("-------------" + e);
-        if (e.getCause() != null) {
-            printCause(e.getCause());
         }
     }
 
@@ -957,7 +951,7 @@ public class MainWindow extends JFrame {
                 lastDirectory = file.getParent();
             } catch (DeserialisationException e) {
                 DialogUtils.showError("A problem was encountered while trying to load '" + file.getPath() + "'.");
-                printCause(e);
+                ExceptionUtils.printCause(e);
             }
         }
         return we;
@@ -989,7 +983,7 @@ public class MainWindow extends JFrame {
                 framework.mergeWork(we, file);
             } catch (DeserialisationException e) {
                 DialogUtils.showError("A problem was encountered while trying to merge '" + file.getPath() + "'.");
-                printCause(e);
+                ExceptionUtils.printCause(e);
             }
         }
     }
@@ -1064,22 +1058,21 @@ public class MainWindow extends JFrame {
     public void importFrom(File file, Importer[] importers) {
         if (FileUtils.checkAvailability(file, null)) {
             for (Importer importer: importers) {
-                if (importer.accept(file)) {
-                    try {
-                        ModelEntry me = Import.importFromFile(importer, file);
-                        String title = me.getMathModel().getTitle();
-                        if ((title == null) || title.isEmpty()) {
-                            title = FileUtils.getFileNameWithoutExtension(file);
-                            me.getMathModel().setTitle(title);
-                        }
-                        final Framework framework = Framework.getInstance();
-                        framework.createWork(me, Path.<String>empty(), file.getName());
-                        lastDirectory = file.getParent();
-                        break;
-                    } catch (IOException | DeserialisationException e) {
-                        e.printStackTrace();
-                        DialogUtils.showError(e.getMessage());
+                if (!importer.accept(file)) continue;
+                try {
+                    ModelEntry me = Import.importFromFile(importer, file);
+                    String title = me.getMathModel().getTitle();
+                    if ((title == null) || title.isEmpty()) {
+                        title = FileUtils.getFileNameWithoutExtension(file);
+                        me.getMathModel().setTitle(title);
                     }
+                    final Framework framework = Framework.getInstance();
+                    framework.createWork(me, Path.<String>empty(), file.getName());
+                    lastDirectory = file.getParent();
+                    break;
+                } catch (IOException | DeserialisationException e) {
+                    e.printStackTrace();
+                    DialogUtils.showError(e.getMessage());
                 }
             }
         }
@@ -1130,13 +1123,6 @@ public class MainWindow extends JFrame {
         return prefix + we.getTitle() + suffix;
     }
 
-    public void openExternally(String fileName, String errorTitle) {
-        File file = new File(fileName);
-        if (FileUtils.checkAvailability(file, errorTitle)) {
-            DesktopApi.open(file);
-        }
-    }
-
     public void refreshWorkspaceEntryTitle(WorkspaceEntry we, boolean updateHeaders) {
         for (DockableWindow window: editorWindows.get(we)) {
             String title = getTitle(we);
@@ -1145,13 +1131,6 @@ public class MainWindow extends JFrame {
         if (updateHeaders) {
             DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
         }
-    }
-
-    public void refreshWorkspaceEntryTitles() {
-        for (WorkspaceEntry we: editorWindows.keySet()) {
-            refreshWorkspaceEntryTitle(we, false);
-        }
-        DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
     }
 
     public void setPropertyEditorTitle(String title) {
@@ -1302,7 +1281,10 @@ public class MainWindow extends JFrame {
     public void editSettings() {
         SettingsEditorDialog dialog = new SettingsEditorDialog(this);
         dialog.setVisible(true);
-        refreshWorkspaceEntryTitles();
+        for (WorkspaceEntry we: editorWindows.keySet()) {
+            refreshWorkspaceEntryTitle(we, false);
+        }
+        DockableWindow.updateHeaders(rootDockingPort, getDefaultActionListener());
         globalToolbar.refreshToggles();
     }
 
@@ -1342,7 +1324,7 @@ public class MainWindow extends JFrame {
         return workspaceWindow;
     }
 
-    private static class ImporterFileFilter extends javax.swing.filechooser.FileFilter {
+    private static class ImporterFileFilter extends FileFilter {
         private final Importer importer;
 
         ImporterFileFilter(Importer importer) {
@@ -1359,7 +1341,7 @@ public class MainWindow extends JFrame {
         }
     }
 
-    private static class ExporterFileFilter extends javax.swing.filechooser.FileFilter {
+    private static class ExporterFileFilter extends FileFilter {
         private final Exporter exporter;
 
         ExporterFileFilter(Exporter exporter) {
