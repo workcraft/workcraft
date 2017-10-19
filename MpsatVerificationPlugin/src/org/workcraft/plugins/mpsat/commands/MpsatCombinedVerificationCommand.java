@@ -43,28 +43,21 @@ public class MpsatCombinedVerificationCommand extends AbstractVerificationComman
     }
 
     @Override
-    public Boolean execute(WorkspaceEntry we) {
-        final ArrayList<MpsatParameters> settingsList = new ArrayList<>();
-        settingsList.add(MpsatParameters.getConsistencySettings());
-        settingsList.add(MpsatParameters.getDeadlockSettings());
-        settingsList.add(MpsatParameters.getInputPropernessSettings());
-
-        Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-        LinkedList<Pair<String, String>> exceptions = MutexUtils.getMutexGrantPairs(stg);
-        settingsList.add(MpsatParameters.getOutputPersistencySettings(exceptions));
-
-        Framework framework = Framework.getInstance();
-        TaskManager manager = framework.getTaskManager();
-        MpsatCombinedChainTask task = new MpsatCombinedChainTask(we, settingsList);
-        Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
-        MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
-        String description = MpsatUtils.getToolchainDescription(we.getTitle());
-        Result<? extends MpsatCombinedChainResult> result = manager.execute(task, description);
-        return MpsatUtils.getCombinedChainOutcome(result);
+    public void run(WorkspaceEntry we) {
+        queueCombinedVerification(we);
     }
 
     @Override
-    public final void run(WorkspaceEntry we) {
+    public Boolean execute(WorkspaceEntry we) {
+        MpsatCombinedChainResultHandler monitor = queueCombinedVerification(we);
+        Result<? extends MpsatCombinedChainResult> result = null;
+        if (monitor != null) {
+            result = monitor.waitResult();
+        }
+        return MpsatUtils.getCombinedChainOutcome(result);
+    }
+
+    private MpsatCombinedChainResultHandler queueCombinedVerification(WorkspaceEntry we) {
         final ArrayList<MpsatParameters> settingsList = new ArrayList<>();
         settingsList.add(MpsatParameters.getConsistencySettings());
         settingsList.add(MpsatParameters.getDeadlockSettings());
@@ -82,6 +75,7 @@ public class MpsatCombinedVerificationCommand extends AbstractVerificationComman
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
         MpsatCombinedChainResultHandler monitor = new MpsatCombinedChainResultHandler(task, mutexes);
         manager.queue(task, description, monitor);
+        return monitor;
     }
 
 }

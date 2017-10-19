@@ -29,27 +29,23 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.isApplicable(we, Circuit.class);
     }
-
     @Override
-    public Boolean execute(WorkspaceEntry we) {
-        boolean checkConformation = checkConformation();
-        boolean checkDeadlock = checkDeadlock();
-        boolean checkPersistency = checkPersistency();
-        if (identifyChecks(we, checkConformation, checkDeadlock, checkPersistency)) {
-            if (checkConformation || checkDeadlock || checkPersistency) {
-                Framework framework = Framework.getInstance();
-                TaskManager manager = framework.getTaskManager();
-                CheckCircuitTask task = new CheckCircuitTask(we, checkConformation, checkDeadlock, checkPersistency);
-                String description = MpsatUtils.getToolchainDescription(we.getTitle());
-                Result<? extends MpsatChainResult> result = manager.execute(task, description);
-                return MpsatUtils.getChainOutcome(result);
-            }
-        }
-        return null;
+    public void run(WorkspaceEntry we) {
+        queueVerification(we);
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public Boolean execute(WorkspaceEntry we) {
+        MpsatChainResultHandler monitor = queueVerification(we);
+        Result<? extends MpsatChainResult> result = null;
+        if (monitor != null) {
+            result = monitor.waitResult();
+        }
+        return MpsatUtils.getChainOutcome(result);
+    }
+
+    private MpsatChainResultHandler queueVerification(WorkspaceEntry we) {
+        MpsatChainResultHandler monitor = null;
         boolean checkConformation = checkConformation();
         boolean checkDeadlock = checkDeadlock();
         boolean checkPersistency = checkPersistency();
@@ -59,10 +55,11 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
                 TaskManager manager = framework.getTaskManager();
                 CheckCircuitTask task = new CheckCircuitTask(we, checkConformation, checkDeadlock, checkPersistency);
                 String description = MpsatUtils.getToolchainDescription(we.getTitle());
-                MpsatChainResultHandler monitor = new MpsatChainResultHandler(task);
+                monitor = new MpsatChainResultHandler(task);
                 manager.queue(task, description, monitor);
             }
         }
+        return monitor;
     }
 
     public boolean checkDeadlock() {

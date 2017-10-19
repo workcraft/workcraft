@@ -28,6 +28,10 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainRes
         this.mutexes = mutexes;
     }
 
+    public Collection<Mutex> getMutexes() {
+        return mutexes;
+    }
+
     @Override
     public void handleResult(final Result<? extends MpsatChainResult> result) {
         if (result.getOutcome() == Outcome.SUCCESS) {

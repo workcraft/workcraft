@@ -35,11 +35,6 @@ public class FsmReachabilityVerificationCommand extends AbstractVerificationComm
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
-        execute(we);
-    }
-
-    @Override
     public final Boolean execute(WorkspaceEntry we) {
         final Fsm fsm = WorkspaceUtils.getAs(we, Fsm.class);
         HashSet<State> unreachableStates = checkReachability(fsm);

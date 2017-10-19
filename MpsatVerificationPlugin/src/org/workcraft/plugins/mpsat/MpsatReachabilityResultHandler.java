@@ -24,9 +24,9 @@ import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.tasks.Result;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.GUI;
 import org.workcraft.util.LogUtils;
-import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 final class MpsatReachabilityResultHandler implements Runnable {
@@ -232,19 +232,20 @@ final class MpsatReachabilityResultHandler implements Runnable {
         }
         String title = "Verification results";
         String message = getMessage(!solutions.isEmpty());
-        MainWindow mainWindow = Framework.getInstance().getMainWindow();
-        if (MpsatUtils.hasTraces(solutions)) {
+        Framework framework = Framework.getInstance();
+        if (!MpsatUtils.hasTraces(solutions)) {
+            DialogUtils.showInfo(message, title);
+        } else if (framework.isInGuiMode()) {
             String traceInfo = "";
             if (!isOutputPersistency) {
                 String traceChearacteristic = settings.getInversePredicate() ? "problematic" : "sought";
                 traceInfo = "&#160;Trace(s) leading to the " + traceChearacteristic + " state(s):<br><br>";
             }
             String extendedMessage = "<html><br>&#160;" + message + "<br><br>" + traceInfo + "</html>";
-            final MpsatReachibilityDialog solutionsDialog = new MpsatReachibilityDialog(we, title, extendedMessage, solutions);
+            MpsatReachibilityDialog solutionsDialog = new MpsatReachibilityDialog(we, title, extendedMessage, solutions);
+            MainWindow mainWindow = framework.getMainWindow();
             GUI.centerToParent(solutionsDialog, mainWindow);
             solutionsDialog.setVisible(true);
-        } else {
-            DialogUtils.showInfo(message, title);
         }
     }
 

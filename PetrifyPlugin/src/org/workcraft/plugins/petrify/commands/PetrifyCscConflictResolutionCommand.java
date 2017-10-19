@@ -31,32 +31,28 @@ public class PetrifyCscConflictResolutionCommand implements ScriptableCommand<Wo
     }
 
     @Override
-    public WorkspaceEntry execute(WorkspaceEntry we) {
-        final PetrifyTransformationTask task = new PetrifyTransformationTask(we,
-                "CSC conflicts resolution", new String[] {"-csc"});
-
-        final Framework framework = Framework.getInstance();
-        final TaskManager taskManager = framework.getTaskManager();
-        Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-        Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
-        MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
-        final PetrifyTransformationResultHandler monitor = new PetrifyTransformationResultHandler(we, false, mutexes);
-        taskManager.execute(task, "Petrify CSC conflicts resolution", monitor);
-        return monitor.waitForHandledResult();
+    public void run(WorkspaceEntry we) {
+        queueCscConflictResolution(we);
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
-        final PetrifyTransformationTask task = new PetrifyTransformationTask(we,
+    public WorkspaceEntry execute(WorkspaceEntry we) {
+        PetrifyTransformationResultHandler monitor = queueCscConflictResolution(we);
+        return monitor.waitForHandledResult();
+    }
+
+    private PetrifyTransformationResultHandler queueCscConflictResolution(WorkspaceEntry we) {
+        PetrifyTransformationTask task = new PetrifyTransformationTask(we,
                 "CSC conflicts resolution", new String[] {"-csc"});
 
-        final Framework framework = Framework.getInstance();
-        final TaskManager taskManager = framework.getTaskManager();
+        Framework framework = Framework.getInstance();
+        TaskManager taskManager = framework.getTaskManager();
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
         MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
-        final PetrifyTransformationResultHandler monitor = new PetrifyTransformationResultHandler(we, false, mutexes);
+        PetrifyTransformationResultHandler monitor = new PetrifyTransformationResultHandler(we, false, mutexes);
         taskManager.queue(task, "Petrify CSC conflicts resolution", monitor);
+        return monitor;
     }
 
 }

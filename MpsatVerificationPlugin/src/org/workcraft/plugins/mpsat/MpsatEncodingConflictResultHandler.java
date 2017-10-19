@@ -17,6 +17,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.util.ColorGenerator;
 import org.workcraft.util.ColorUtils;
 import org.workcraft.util.DialogUtils;
+import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 final class MpsatEncodingConflictResultHandler implements Runnable {
@@ -37,10 +38,10 @@ final class MpsatEncodingConflictResultHandler implements Runnable {
     public void run() {
         MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue());
         List<MpsatSolution> solutions = mdp.getSolutions();
+        final Framework framework = Framework.getInstance();
         if (!MpsatUtils.hasTraces(solutions)) {
             DialogUtils.showInfo("No encoding conflicts.", "Verification results");
-        } else {
-            final Framework framework = Framework.getInstance();
+        } else if (framework.isInGuiMode()) {
             final MainWindow mainWindow = framework.getMainWindow();
             GraphEditorPanel currentEditor = mainWindow.getEditor(we);
             final Toolbox toolbox = currentEditor.getToolBox();
@@ -72,14 +73,14 @@ final class MpsatEncodingConflictResultHandler implements Runnable {
             }
             if (MpsatSettings.getDebugCores()) {
                 if (solution.getComment() == null) {
-                    System.out.println("Encoding conflict:");
+                    LogUtils.logMessage("Encoding conflict:");
                 } else {
-                    System.out.println("Encoding conflict for signal '" + solution.getComment() + "':");
+                    LogUtils.logMessage("Encoding conflict for signal '" + solution.getComment() + "':");
                 }
-                System.out.println("    Configuration 1: " + solution.getMainTrace());
-                System.out.println("    Configuration 2: " + solution.getBranchTrace());
-                System.out.println("    Conflict core" + (isDuplicateCore ? " (duplicate)" : "") + ": " + core);
-                System.out.println();
+                LogUtils.logMessage("    Configuration 1: " + solution.getMainTrace());
+                LogUtils.logMessage("    Configuration 2: " + solution.getBranchTrace());
+                LogUtils.logMessage("    Conflict core" + (isDuplicateCore ? " (duplicate)" : "") + ": " + core);
+                LogUtils.logMessage("");
             }
         }
         return cores;

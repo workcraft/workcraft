@@ -35,11 +35,6 @@ public class FsmDeadlockVerificationCommand extends AbstractVerificationCommand 
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
-        execute(we);
-    }
-
-    @Override
     public Boolean execute(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();

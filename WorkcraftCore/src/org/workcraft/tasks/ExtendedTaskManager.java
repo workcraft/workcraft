@@ -9,10 +9,11 @@ public class ExtendedTaskManager extends DefaultTaskManager {
 
     @Override
     public <T> Result<? extends T> rawExecute(Task<T> task, String description, ProgressMonitor<? super T> observer) {
-        if (!SwingUtilities.isEventDispatchThread()) {
+        Framework framework = Framework.getInstance();
+        if (!SwingUtilities.isEventDispatchThread() || !framework.isInGuiMode()) {
             return super.rawExecute(task, description, observer);
         } else {
-            MainWindow mainWindow = Framework.getInstance().getMainWindow();
+            MainWindow mainWindow = framework.getMainWindow();
             OperationCancelDialog<T> cancelDialog = new OperationCancelDialog<>(mainWindow, description);
             ProgressMonitorArray<T> observers = new ProgressMonitorArray<>();
             if (observer != null) {

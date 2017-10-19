@@ -27,11 +27,6 @@ public class WaggingGeneratorCommand implements ScriptableCommand<Void> {
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
-        execute(we);
-    }
-
-    @Override
     public final Void execute(WorkspaceEntry we) {
         final VisualDfs dfs = WorkspaceUtils.getAs(we, VisualDfs.class);
         int selectedRegisterCount = 0;

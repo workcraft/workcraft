@@ -28,11 +28,6 @@ public abstract class AbstractTransformationCommand implements ScriptableCommand
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
-        execute(we);
-    }
-
-    @Override
     public Void execute(WorkspaceEntry we) {
         VisualModel visualModel = WorkspaceUtils.getAs(we, VisualModel.class);
         Collection<Node> nodes = collect(visualModel);

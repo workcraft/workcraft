@@ -45,23 +45,22 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
     }
 
     @Override
-    public Boolean execute(WorkspaceEntry we) {
-        VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
-        File envFile = visualCircuit.getEnvironmentFile();
-        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
-        if (check(circuit, envFile)) {
-            Framework framework = Framework.getInstance();
-            TaskManager manager = framework.getTaskManager();
-            CheckStrictImplementationTask task = new CheckStrictImplementationTask(we);
-            String description = MpsatUtils.getToolchainDescription(we.getTitle());
-            Result<? extends MpsatChainResult> result = manager.execute(task, description);
-            return MpsatUtils.getChainOutcome(result);
-        }
-        return null;
+    public void run(WorkspaceEntry we) {
+        queueVerification(we);
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public Boolean execute(WorkspaceEntry we) {
+        MpsatChainResultHandler monitor = queueVerification(we);
+        Result<? extends MpsatChainResult> result = null;
+        if (monitor != null) {
+            result = monitor.waitResult();
+        }
+        return MpsatUtils.getChainOutcome(result);
+    }
+
+    private MpsatChainResultHandler queueVerification(WorkspaceEntry we) {
+        MpsatChainResultHandler monitor = null;
         VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
         File envFile = visualCircuit.getEnvironmentFile();
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
@@ -70,9 +69,10 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
             TaskManager manager = framework.getTaskManager();
             CheckStrictImplementationTask task = new CheckStrictImplementationTask(we);
             String description = MpsatUtils.getToolchainDescription(we.getTitle());
-            MpsatChainResultHandler monitor = new MpsatChainResultHandler(task);
+            monitor = new MpsatChainResultHandler(task);
             manager.queue(task, description, monitor);
         }
+        return monitor;
     }
 
     private boolean check(Circuit circuit, File envFile) {
@@ -98,9 +98,6 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
 
         // Check that the set of circuit input signals is a subset of STG input signals.
         Set<String> stgInputSignals = envStg.getSignalNames(Type.INPUT, null);
-        for (Contact port: circuit.getInputPorts()) {
-            circuitInputSignals.add(port.getName());
-        }
         if (!stgInputSignals.containsAll(circuitInputSignals)) {
             Set<String> missingInputSignals = new HashSet<>(circuitInputSignals);
             missingInputSignals.removeAll(stgInputSignals);

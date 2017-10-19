@@ -39,13 +39,7 @@ public class MpsatPropertyVerificationCommand extends AbstractVerificationComman
     }
 
     @Override
-    public Boolean execute(WorkspaceEntry we) {
-        ScriptableCommandUtils.showErrorRequiresGui(getClass().getSimpleName());
-        return null;
-    }
-
-    @Override
-    public final void run(WorkspaceEntry we) {
+    public void run(WorkspaceEntry we) {
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
         File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, MPSAT_PROPERTY_PRESETS_FILE);
@@ -62,6 +56,12 @@ public class MpsatPropertyVerificationCommand extends AbstractVerificationComman
             MpsatChainResultHandler monitor = new MpsatChainResultHandler(task);
             manager.queue(task, description, monitor);
         }
+    }
+
+    @Override
+    public Boolean execute(WorkspaceEntry we) {
+        ScriptableCommandUtils.showErrorRequiresGui(getClass().getSimpleName());
+        return null;
     }
 
 }

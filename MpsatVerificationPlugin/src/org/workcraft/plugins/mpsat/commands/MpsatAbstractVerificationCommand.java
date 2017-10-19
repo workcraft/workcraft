@@ -14,18 +14,21 @@ import org.workcraft.workspace.WorkspaceEntry;
 public abstract class MpsatAbstractVerificationCommand extends AbstractVerificationCommand {
 
     @Override
-    public Boolean execute(WorkspaceEntry we) {
-        Framework framework = Framework.getInstance();
-        TaskManager manager = framework.getTaskManager();
-        MpsatParameters settings = getSettings(we);
-        MpsatChainTask task = new MpsatChainTask(we, settings);
-        String description = MpsatUtils.getToolchainDescription(we.getTitle());
-        Result<? extends MpsatChainResult> result = manager.execute(task, description);
-        return MpsatUtils.getChainOutcome(result);
+    public void run(WorkspaceEntry we) {
+        queueVerification(we);
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public Boolean execute(WorkspaceEntry we) {
+        MpsatChainResultHandler monitor = queueVerification(we);
+        Result<? extends MpsatChainResult> result = null;
+        if (monitor != null) {
+            result = monitor.waitResult();
+        }
+        return MpsatUtils.getChainOutcome(result);
+    }
+
+    private MpsatChainResultHandler queueVerification(WorkspaceEntry we) {
         Framework framework = Framework.getInstance();
         TaskManager manager = framework.getTaskManager();
         MpsatParameters settings = getSettings(we);
@@ -33,6 +36,7 @@ public abstract class MpsatAbstractVerificationCommand extends AbstractVerificat
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
         MpsatChainResultHandler monitor = new MpsatChainResultHandler(task);
         manager.queue(task, description, monitor);
+        return monitor;
     }
 
     public abstract MpsatParameters getSettings(WorkspaceEntry we);

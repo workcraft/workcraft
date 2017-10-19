@@ -42,13 +42,13 @@ public class MpsatCscConflictResolutionCommandTests {
     }
 
     @Test
-    public void vmeCscConflictResolution() throws DeserialisationException {
+    public void testVmeCscConflictResolution() throws DeserialisationException {
         String[] cscSignals = DesktopApi.getOs().isMac() ? new String[]{"csc1", "csc"} : new String[]{"csc1", "csc2"};
         testCscConflictResolutionCommand("org/workcraft/plugins/mpsat/vme.stg.work", cscSignals);
     }
 
     @Test
-    public void arbitrationCscConflictResolution() throws DeserialisationException {
+    public void testArbitrationCscConflictResolution() throws DeserialisationException {
         testCscConflictResolutionCommand("org/workcraft/plugins/mpsat/arbitration-3.stg.work", new String[] {});
     }
 

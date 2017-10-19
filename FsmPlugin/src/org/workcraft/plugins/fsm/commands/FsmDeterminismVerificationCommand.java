@@ -34,11 +34,6 @@ public class FsmDeterminismVerificationCommand extends AbstractVerificationComma
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
-        execute(we);
-    }
-
-    @Override
     public Boolean execute(WorkspaceEntry we) {
         final Fsm fsm = WorkspaceUtils.getAs(we, Fsm.class);
         HashSet<State> nondeterministicStates = checkDeterminism(fsm);
