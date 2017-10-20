@@ -91,6 +91,10 @@ public class Circuit extends AbstractMathModel {
         return properties;
     }
 
+    public Collection<Joint> getJoints() {
+        return Hierarchy.getDescendantsOfType(getRoot(), Joint.class);
+    }
+
     public Collection<Contact> getPorts() {
         return Hierarchy.getDescendantsOfType(getRoot(), Contact.class, new Func<Contact, Boolean>() {
             @Override

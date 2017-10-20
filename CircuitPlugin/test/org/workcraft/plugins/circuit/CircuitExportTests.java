@@ -47,7 +47,7 @@ public class CircuitExportTests {
                 vHeader, svgHeader, pngHeader, pdfHeader, epsHeader, psHeader);
     }
 
-    public void testCircuitExport(String workName, String vHeader,
+    private void testCircuitExport(String workName, String vHeader,
             String svgHeader, String pngHeader, String pdfHeader, String epsHeader, String psHeader)
                     throws DeserialisationException, IOException, SerialisationException {
 

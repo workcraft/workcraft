@@ -44,12 +44,12 @@ public class MpsatCombinedVerificationCommand extends AbstractVerificationComman
 
     @Override
     public void run(WorkspaceEntry we) {
-        queueCombinedVerification(we);
+        queueVerification(we);
     }
 
     @Override
     public Boolean execute(WorkspaceEntry we) {
-        MpsatCombinedChainResultHandler monitor = queueCombinedVerification(we);
+        MpsatCombinedChainResultHandler monitor = queueVerification(we);
         Result<? extends MpsatCombinedChainResult> result = null;
         if (monitor != null) {
             result = monitor.waitResult();
@@ -57,7 +57,7 @@ public class MpsatCombinedVerificationCommand extends AbstractVerificationComman
         return MpsatUtils.getCombinedChainOutcome(result);
     }
 
-    private MpsatCombinedChainResultHandler queueCombinedVerification(WorkspaceEntry we) {
+    private MpsatCombinedChainResultHandler queueVerification(WorkspaceEntry we) {
         final ArrayList<MpsatParameters> settingsList = new ArrayList<>();
         settingsList.add(MpsatParameters.getConsistencySettings());
         settingsList.add(MpsatParameters.getDeadlockSettings());

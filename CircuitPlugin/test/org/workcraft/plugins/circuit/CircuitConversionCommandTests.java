@@ -44,7 +44,7 @@ public class CircuitConversionCommandTests {
     }
 
     @Test
-    public void testPetriConversionCommands() throws IOException, DeserialisationException {
+    public void testCircuitConversionCommands() throws IOException, DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         for (String testCircuitWork: TEST_CIRCUIT_WORKS) {
