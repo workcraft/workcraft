@@ -62,15 +62,15 @@ public class WaverTask implements Task<ExternalProcessResult>, ExternalProcessLi
         boolean printStderr = WaverSettings.getPrintStderr();
         ExternalProcessTask task = new ExternalProcessTask(command, workingDirectory, printStdout, printStderr);
         Result<? extends ExternalProcessResult> res = task.run(monitor);
-        if (res.getOutcome() != Outcome.FINISHED) {
+        if (res.getOutcome() != Outcome.SUCCESS) {
             return res;
         }
 
         ExternalProcessResult retVal = res.getReturnValue();
         if (retVal.getReturnCode() == 0) {
-            return Result.finished(retVal);
+            return Result.success(retVal);
         } else {
-            return Result.failed(retVal);
+            return Result.failure(retVal);
         }
     }
 

@@ -13,7 +13,7 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.MutexUtils;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.tasks.DummyProgressMonitor;
+import org.workcraft.tasks.AbstractResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.DialogUtils;
@@ -21,7 +21,7 @@ import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class PcompResultHandler extends DummyProgressMonitor<ExternalProcessResult> {
+public class PcompResultHandler extends AbstractResultHandler<ExternalProcessResult> {
     private final boolean showInEditor;
     private final File outputFile;
     private final Collection<Mutex> mutexes;
@@ -33,14 +33,14 @@ public class PcompResultHandler extends DummyProgressMonitor<ExternalProcessResu
     }
 
     @Override
-    public void finished(final Result<? extends ExternalProcessResult> result, String description) {
+    public void handleResult(final Result<? extends ExternalProcessResult> result) {
         try {
             SwingUtilities.invokeAndWait(new Runnable() {
                 @Override
                 public void run() {
                     final Framework framework = Framework.getInstance();
                     final Workspace workspace = framework.getWorkspace();
-                    if (result.getOutcome() == Outcome.FAILED) {
+                    if (result.getOutcome() == Outcome.FAILURE) {
                         String message;
                         if (result.getCause() != null) {
                             message = result.getCause().getMessage();
@@ -49,7 +49,7 @@ public class PcompResultHandler extends DummyProgressMonitor<ExternalProcessResu
                             message = "Pcomp errors:\n" + result.getReturnValue().getErrorsHeadAndTail();
                         }
                         DialogUtils.showError(message);
-                    } else if (result.getOutcome() == Outcome.FINISHED) {
+                    } else if (result.getOutcome() == Outcome.SUCCESS) {
                         try {
                             if (showInEditor) {
                                 WorkspaceEntry we = framework.loadWork(outputFile);

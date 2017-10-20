@@ -88,11 +88,11 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
             Result<? extends Object> petriExportResult = framework.getTaskManager().execute(
                     petriExportTask, "Exporting .g", subtaskMonitor);
 
-            if (petriExportResult.getOutcome() != Outcome.FINISHED) {
-                if (petriExportResult.getOutcome() == Outcome.CANCELLED) {
-                    return new Result<WriteSgConversionResult>(Outcome.CANCELLED);
+            if (petriExportResult.getOutcome() != Outcome.SUCCESS) {
+                if (petriExportResult.getOutcome() == Outcome.CANCEL) {
+                    return new Result<WriteSgConversionResult>(Outcome.CANCEL);
                 }
-                return new Result<WriteSgConversionResult>(Outcome.FAILED);
+                return new Result<WriteSgConversionResult>(Outcome.FAILURE);
             }
             monitor.progressUpdate(0.20);
 
@@ -107,17 +107,17 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
                 Result<? extends ExternalProcessResult> writeSgResult = framework.getTaskManager().execute(
                         writeSgTask, "Building state graph", subtaskMonitor);
 
-                if (writeSgResult.getOutcome() == Outcome.FINISHED) {
+                if (writeSgResult.getOutcome() == Outcome.SUCCESS) {
                     try {
                         ByteArrayInputStream in = new ByteArrayInputStream(writeSgResult.getReturnValue().getOutput());
                         final Fst fst = new SgImporter().importSG(in);
-                        return Result.finished(new WriteSgConversionResult(null, fst));
+                        return Result.success(new WriteSgConversionResult(null, fst));
                     } catch (DeserialisationException e) {
                         return Result.exception(e);
                     }
                 }
-                if (writeSgResult.getOutcome() == Outcome.CANCELLED) {
-                    return Result.cancelled();
+                if (writeSgResult.getOutcome() == Outcome.CANCEL) {
+                    return Result.cancelation();
                 }
                 if (writeSgResult.getCause() != null) {
                     return Result.exception(writeSgResult.getCause());
@@ -131,10 +131,10 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
                             writeSgOptions.add("-huge");
                             continue;
                         } else {
-                            return Result.cancelled();
+                            return Result.cancelation();
                         }
                     } else {
-                        return Result.failed(new WriteSgConversionResult(writeSgResult, null));
+                        return Result.failure(new WriteSgConversionResult(writeSgResult, null));
                     }
                 }
             }

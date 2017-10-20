@@ -28,12 +28,12 @@ public class ContractJointTransformationCommand extends AbstractTransformationCo
 
     @Override
     public String getDisplayName() {
-        return "Contract joints (selected or all)";
+        return "Contract redundant joints (selected or all)";
     }
 
     @Override
     public String getPopupName() {
-        return "Contract joint";
+        return "Contract redundant joint";
     }
 
     @Override

@@ -51,7 +51,7 @@ public class MpsatVerificationCommandTests {
     }
 
     @Test
-    public void vmeVerification() throws DeserialisationException {
+    public void testVmeVerification() throws DeserialisationException {
         testVerificationCommands("org/workcraft/plugins/mpsat/vme.stg.work",
                 true,  // combined
                 true,  // consistency
@@ -68,7 +68,7 @@ public class MpsatVerificationCommandTests {
     }
 
     @Test
-    public void arbitrationVerification() throws DeserialisationException {
+    public void testAarbitrationVerification() throws DeserialisationException {
         testVerificationCommands("org/workcraft/plugins/mpsat/arbitration-3.stg.work",
                 true,  // combined
                 true,  // consistency
@@ -85,7 +85,7 @@ public class MpsatVerificationCommandTests {
     }
 
     @Test
-    public void badVerification() throws DeserialisationException {
+    public void testBadVerification() throws DeserialisationException {
         testVerificationCommands("org/workcraft/plugins/mpsat/bad.stg.work",
                 false, // combined
                 true,  // consistency
@@ -102,7 +102,7 @@ public class MpsatVerificationCommandTests {
     }
 
     @Test
-    public void cycleVerification() throws DeserialisationException {
+    public void testCycleVerification() throws DeserialisationException {
         testVerificationCommands("org/workcraft/plugins/mpsat/cycle.stg.work",
                 true, // combined
                 true,  // consistency

@@ -37,7 +37,7 @@ public class PetrifyHideDummyConversionCommand extends PetrifyAbstractConversion
         Collection<Mutex> mutexes = getMutexes(we);
         final PetrifyTransformationResultHandler monitor = new PetrifyTransformationResultHandler(we, !hasSignals, mutexes);
         taskManager.execute(task, "Petrify dummy contraction", monitor);
-        return monitor.getResult();
+        return monitor.waitForHandledResult();
     }
 
 }

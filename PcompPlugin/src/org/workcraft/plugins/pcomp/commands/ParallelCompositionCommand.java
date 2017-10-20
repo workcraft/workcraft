@@ -47,7 +47,7 @@ public class ParallelCompositionCommand implements Command {
     }
 
     @Override
-    public final void run(WorkspaceEntry we) {
+    public void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         if (!framework.isInGuiMode()) {
             LogUtils.logError("Tool '" + getClass().getSimpleName() + "' only works in GUI mode.");

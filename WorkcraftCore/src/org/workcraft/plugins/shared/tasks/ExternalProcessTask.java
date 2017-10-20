@@ -72,14 +72,14 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
         }
 
         if (userCancelled) {
-            return Result.cancelled();
+            return Result.cancelation();
         }
 
         ExternalProcessResult result = new ExternalProcessResult(
                 returnCode, stdoutAccum.getData(), stderrAccum.getData(),
                 Collections.<String, byte[]>emptyMap());
 
-        return Result.finished(result);
+        return Result.success(result);
     }
 
     public static String getCommandLine(List<String> args) {

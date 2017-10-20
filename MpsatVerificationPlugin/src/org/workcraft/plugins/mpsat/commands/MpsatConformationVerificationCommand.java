@@ -52,52 +52,52 @@ public class MpsatConformationVerificationCommand extends AbstractVerificationCo
     }
 
     @Override
-    public Boolean execute(WorkspaceEntry we) {
-        Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-        if (check(stg) && FileUtils.checkAvailability(getEnvironment(), null)) {
-            Stg envStg = StgUtils.loadStg(getEnvironment());
-            if (envStg == null) {
-                DialogUtils.showError("Cannot read an STG model from the file:\n"
-                        + getEnvironment().getAbsolutePath() + "\n\n"
-                        + "Conformation cannot be checked without environment STG.");
-                return null;
-            }
-            Framework framework = Framework.getInstance();
-            TaskManager manager = framework.getTaskManager();
-            MpsatConformationTask task = new MpsatConformationTask(we, getEnvironment());
-            String description = MpsatUtils.getToolchainDescription(we.getTitle());
-            Result<? extends MpsatChainResult> result = manager.execute(task, description);
-            return MpsatUtils.getChainOutcome(result);
-        }
-        return null;
+    public void run(WorkspaceEntry we) {
+        queueVerification(we, true);
     }
 
     @Override
-    public final void run(WorkspaceEntry we) {
-        Framework framework = Framework.getInstance();
-        MainWindow mainWindow = framework.getMainWindow();
+    public Boolean execute(WorkspaceEntry we) {
+        MpsatChainResultHandler monitor = queueVerification(we, false);
+        Result<? extends MpsatChainResult> result = null;
+        if (monitor != null) {
+            result = monitor.waitResult();
+        }
+        return MpsatUtils.getChainOutcome(result);
+    }
+
+    private MpsatChainResultHandler queueVerification(WorkspaceEntry we, boolean interactive) {
+        MpsatChainResultHandler monitor = null;
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         if (check(stg)) {
-            Importer[] importers = {new StgImporter()};
-            JFileChooser fc = mainWindow.createOpenDialog("Open environment file", false, true, importers);
-            if (fc.showDialog(mainWindow, "Open") == JFileChooser.APPROVE_OPTION) {
-                setEnvironment(fc.getSelectedFile());
-                if (FileUtils.checkAvailability(getEnvironment(), null)) {
-                    Stg envStg = StgUtils.loadStg(getEnvironment());
-                    if (envStg == null) {
-                        DialogUtils.showError("Cannot read an STG model from the file:\n"
-                                + getEnvironment().getAbsolutePath() + "\n\n"
-                                + "Conformation cannot be checked without environment STG.");
-                        return;
-                    }
+            Framework framework = Framework.getInstance();
+            MainWindow mainWindow = framework.getMainWindow();
+            boolean proceed = true;
+            if (interactive) {
+                Importer[] importers = {new StgImporter()};
+                JFileChooser fc = mainWindow.createOpenDialog("Open environment file", false, true, importers);
+                if (fc.showDialog(mainWindow, "Open") == JFileChooser.APPROVE_OPTION) {
+                    setEnvironment(fc.getSelectedFile());
+                } else {
+                    proceed = false;
+                }
+            }
+            if (proceed && FileUtils.checkAvailability(getEnvironment(), null)) {
+                Stg envStg = StgUtils.loadStg(getEnvironment());
+                if (envStg == null) {
+                    DialogUtils.showError("Cannot read an STG model from the file:\n"
+                            + getEnvironment().getAbsolutePath() + "\n\n"
+                            + "Conformation cannot be checked without environment STG.");
+                } else {
                     TaskManager manager = framework.getTaskManager();
                     MpsatConformationTask task = new MpsatConformationTask(we, getEnvironment());
                     String description = MpsatUtils.getToolchainDescription(we.getTitle());
-                    MpsatChainResultHandler monitor = new MpsatChainResultHandler(task);
+                    monitor = new MpsatChainResultHandler(task);
                     manager.queue(task, description, monitor);
                 }
             }
         }
+        return monitor;
     }
 
     private boolean check(Stg stg) {

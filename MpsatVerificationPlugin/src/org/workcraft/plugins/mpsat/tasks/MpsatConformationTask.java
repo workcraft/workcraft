@@ -68,11 +68,11 @@ public class MpsatConformationTask extends MpsatChainTask {
             Result<? extends Object> devExportResult = framework.getTaskManager().execute(
                     devExportTask, "Exporting circuit .g", subtaskMonitor);
 
-            if (devExportResult.getOutcome() != Outcome.FINISHED) {
-                if (devExportResult.getOutcome() == Outcome.CANCELLED) {
-                    return new Result<MpsatChainResult>(Outcome.CANCELLED);
+            if (devExportResult.getOutcome() != Outcome.SUCCESS) {
+                if (devExportResult.getOutcome() == Outcome.CANCEL) {
+                    return new Result<MpsatChainResult>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainResult>(Outcome.FAILED,
+                return new Result<MpsatChainResult>(Outcome.FAILURE,
                         new MpsatChainResult(devExportResult, null, null, null, toolchainPreparationSettings));
             }
             monitor.progressUpdate(0.30);
@@ -80,7 +80,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             // Generating .g for the environment
             Stg envStg = StgUtils.loadStg(envFile);
             if (envStg == null) {
-                return new Result<MpsatChainResult>(Outcome.FAILED,
+                return new Result<MpsatChainResult>(Outcome.FAILURE,
                         new MpsatChainResult(null, null, null, null, toolchainPreparationSettings));
             }
 
@@ -94,11 +94,11 @@ public class MpsatConformationTask extends MpsatChainTask {
             Result<? extends Object> envExportResult = framework.getTaskManager().execute(
                     envExportTask, "Exporting environment .g", subtaskMonitor);
 
-            if (envExportResult.getOutcome() != Outcome.FINISHED) {
-                if (envExportResult.getOutcome() == Outcome.CANCELLED) {
-                    return new Result<MpsatChainResult>(Outcome.CANCELLED);
+            if (envExportResult.getOutcome() != Outcome.SUCCESS) {
+                if (envExportResult.getOutcome() == Outcome.CANCEL) {
+                    return new Result<MpsatChainResult>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainResult>(Outcome.FAILED,
+                return new Result<MpsatChainResult>(Outcome.FAILURE,
                         new MpsatChainResult(envExportResult, null, null, null, toolchainPreparationSettings));
             }
             monitor.progressUpdate(0.40);
@@ -113,11 +113,11 @@ public class MpsatConformationTask extends MpsatChainTask {
             Result<? extends ExternalProcessResult> pcompResult = framework.getTaskManager().execute(
                     pcompTask, "Running parallel composition [PComp]", subtaskMonitor);
 
-            if (pcompResult.getOutcome() != Outcome.FINISHED) {
-                if (pcompResult.getOutcome() == Outcome.CANCELLED) {
-                    return new Result<MpsatChainResult>(Outcome.CANCELLED);
+            if (pcompResult.getOutcome() != Outcome.SUCCESS) {
+                if (pcompResult.getOutcome() == Outcome.CANCEL) {
+                    return new Result<MpsatChainResult>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainResult>(Outcome.FAILED,
+                return new Result<MpsatChainResult>(Outcome.FAILURE,
                         new MpsatChainResult(devExportResult, pcompResult, null, null, toolchainPreparationSettings));
             }
             monitor.progressUpdate(0.50);
@@ -128,11 +128,11 @@ public class MpsatConformationTask extends MpsatChainTask {
             Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
                     punfTask, "Unfolding .g", subtaskMonitor);
 
-            if (punfResult.getOutcome() != Outcome.FINISHED) {
-                if (punfResult.getOutcome() == Outcome.CANCELLED) {
-                    return new Result<MpsatChainResult>(Outcome.CANCELLED);
+            if (punfResult.getOutcome() != Outcome.SUCCESS) {
+                if (punfResult.getOutcome() == Outcome.CANCEL) {
+                    return new Result<MpsatChainResult>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainResult>(Outcome.FAILED,
+                return new Result<MpsatChainResult>(Outcome.FAILURE,
                         new MpsatChainResult(devExportResult, pcompResult, punfResult, null, toolchainPreparationSettings));
             }
             monitor.progressUpdate(0.60);
@@ -146,18 +146,18 @@ public class MpsatConformationTask extends MpsatChainTask {
             Result<? extends ExternalProcessResult>  mpsatConformationResult = framework.getTaskManager().execute(
                     mpsatConformationTask, "Running conformation check [MPSat]", subtaskMonitor);
 
-            if (mpsatConformationResult.getOutcome() != Outcome.FINISHED) {
-                if (mpsatConformationResult.getOutcome() == Outcome.CANCELLED) {
-                    return new Result<MpsatChainResult>(Outcome.CANCELLED);
+            if (mpsatConformationResult.getOutcome() != Outcome.SUCCESS) {
+                if (mpsatConformationResult.getOutcome() == Outcome.CANCEL) {
+                    return new Result<MpsatChainResult>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainResult>(Outcome.FAILED,
+                return new Result<MpsatChainResult>(Outcome.FAILURE,
                         new MpsatChainResult(devExportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings));
             }
             monitor.progressUpdate(0.80);
 
             MpsatResultParser mpsatConformationParser = new MpsatResultParser(mpsatConformationResult.getReturnValue());
             if (!mpsatConformationParser.getSolutions().isEmpty()) {
-                return new Result<MpsatChainResult>(Outcome.FINISHED,
+                return new Result<MpsatChainResult>(Outcome.SUCCESS,
                         new MpsatChainResult(devExportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings,
                                 "This model does not conform to the environment."));
             }
@@ -166,7 +166,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             // Success
             unfoldingFile.delete();
             String message = "The model conforms to its environment (" + envFile.getName() + ").";
-            return new Result<MpsatChainResult>(Outcome.FINISHED,
+            return new Result<MpsatChainResult>(Outcome.SUCCESS,
                     new MpsatChainResult(devExportResult, pcompResult, punfResult, null, toolchainCompletionSettings, message));
 
         } catch (Throwable e) {

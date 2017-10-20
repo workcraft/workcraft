@@ -26,8 +26,8 @@ public class TaskControl extends JPanel {
 
     public TaskControl(String taskDescription) {
         double[][] size = {
-            {TableLayout.FILL, 80, 100},
-            {20, 20, 20},
+            {TableLayout.FILL, 80, 120},
+            {25, 25, 25},
         };
 
         Border outsideBorder = BorderFactory.createLineBorder(Color.LIGHT_GRAY);

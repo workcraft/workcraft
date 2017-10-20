@@ -23,8 +23,8 @@ import javax.swing.KeyStroke;
 
 import org.workcraft.Framework;
 import org.workcraft.MenuOrdering.Position;
-import org.workcraft.commands.Command;
 import org.workcraft.PluginManager;
+import org.workcraft.commands.Command;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.gui.actions.ActionCheckBoxMenuItem;
 import org.workcraft.gui.actions.ActionMenuItem;
@@ -32,7 +32,6 @@ import org.workcraft.gui.actions.CommandAction;
 import org.workcraft.gui.actions.ExportAction;
 import org.workcraft.gui.actions.ToggleToolbarAction;
 import org.workcraft.gui.actions.ToggleWindowAction;
-import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Format;
 import org.workcraft.plugins.PluginInfo;
@@ -68,78 +67,78 @@ public class MainMenu extends JMenuBar {
         ActionMenuItem miNewModel = new ActionMenuItem(MainWindowActions.CREATE_WORK_ACTION);
         miNewModel.setMnemonic(KeyEvent.VK_N);
         miNewModel.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnFile.add(miNewModel);
 
         ActionMenuItem miOpenModel = new ActionMenuItem(MainWindowActions.OPEN_WORK_ACTION);
         miOpenModel.setMnemonic(KeyEvent.VK_O);
         miOpenModel.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnFile.add(miOpenModel);
+        mnFile.add(mnRecent);
 
         ActionMenuItem miMergeModel = new ActionMenuItem(MainWindowActions.MERGE_WORK_ACTION);
         miMergeModel.setMnemonic(KeyEvent.VK_M);
         miMergeModel.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnFile.add(miMergeModel);
+
+        mnFile.addSeparator();
 
         ActionMenuItem miSaveWork = new ActionMenuItem(MainWindowActions.SAVE_WORK_ACTION);
         miSaveWork.setMnemonic(KeyEvent.VK_S);
         miSaveWork.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnFile.add(miSaveWork);
 
         ActionMenuItem miSaveWorkAs = new ActionMenuItem(MainWindowActions.SAVE_WORK_AS_ACTION);
         miSaveWorkAs.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-        ActionMenuItem miCloseAll = new ActionMenuItem(MainWindowActions.CLOSE_ALL_EDITORS_ACTION);
-        miCloseAll.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnFile.add(miSaveWorkAs);
 
         ActionMenuItem miCloseActive = new ActionMenuItem(MainWindowActions.CLOSE_ACTIVE_EDITOR_ACTION);
         miCloseActive.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-        ActionMenuItem miImport = new ActionMenuItem(MainWindowActions.IMPORT_ACTION);
-        miImport.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-        ActionMenuItem miNewWorkspace = new ActionMenuItem(WorkspaceWindow.Actions.NEW_WORKSPACE_AS_ACTION);
-        miNewWorkspace.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-        ActionMenuItem miOpenWorkspace = new ActionMenuItem(WorkspaceWindow.Actions.OPEN_WORKSPACE_ACTION);
-        miOpenWorkspace.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-        ActionMenuItem miAddFiles = new ActionMenuItem(WorkspaceWindow.Actions.ADD_FILES_TO_WORKSPACE_ACTION);
-        miAddFiles.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-        ActionMenuItem miSaveWorkspace = new ActionMenuItem(WorkspaceWindow.Actions.SAVE_WORKSPACE_ACTION);
-        miSaveWorkspace.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-        ActionMenuItem miSaveWorkspaceAs = new ActionMenuItem(WorkspaceWindow.Actions.SAVE_WORKSPACE_AS_ACTION);
-        miSaveWorkspaceAs.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-        ActionMenuItem miShutdownGUI = new ActionMenuItem(MainWindowActions.SHUTDOWN_GUI_ACTION);
-        miShutdownGUI.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-        ActionMenuItem miExit = new ActionMenuItem(MainWindowActions.EXIT_ACTION);
-        miExit.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-        mnFile.add(miNewModel);
-        mnFile.add(miOpenModel);
-        mnFile.add(mnRecent);
-        mnFile.add(miMergeModel);
-
-        mnFile.addSeparator();
-        mnFile.add(miSaveWork);
-        mnFile.add(miSaveWorkAs);
         mnFile.add(miCloseActive);
+
+        ActionMenuItem miCloseAll = new ActionMenuItem(MainWindowActions.CLOSE_ALL_EDITORS_ACTION);
+        miCloseAll.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnFile.add(miCloseAll);
 
         mnFile.addSeparator();
+
+        ActionMenuItem miImport = new ActionMenuItem(MainWindowActions.IMPORT_ACTION);
+        miImport.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnFile.add(miImport);
         mnFile.add(mnExport);
 
-// FIXME: Workspace functionality is not working yet.
-//        mnFile.addSeparator();
-//        mnFile.add(miNewWorkspace);
-//        mnFile.add(miOpenWorkspace);
-//        mnFile.add(miAddFiles);
-//        mnFile.add(miSaveWorkspace);
-//        mnFile.add(miSaveWorkspaceAs);
+        mnFile.addSeparator();
+
+        // FIXME: Workspace functionality is not working yet.
+/*
+        ActionMenuItem miNewWorkspace = new ActionMenuItem(WorkspaceWindowActions.NEW_WORKSPACE_AS_ACTION);
+        miNewWorkspace.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnFile.add(miNewWorkspace);
+
+        ActionMenuItem miOpenWorkspace = new ActionMenuItem(WorkspaceWindowActions.OPEN_WORKSPACE_ACTION);
+        miOpenWorkspace.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnFile.add(miOpenWorkspace);
+
+        ActionMenuItem miAddFiles = new ActionMenuItem(WorkspaceWindowActions.ADD_FILES_TO_WORKSPACE_ACTION);
+        miAddFiles.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnFile.add(miAddFiles);
+
+        ActionMenuItem miSaveWorkspace = new ActionMenuItem(WorkspaceWindowActions.SAVE_WORKSPACE_ACTION);
+        miSaveWorkspace.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnFile.add(miSaveWorkspace);
+
+        ActionMenuItem miSaveWorkspaceAs = new ActionMenuItem(WorkspaceWindowActions.SAVE_WORKSPACE_AS_ACTION);
+        miSaveWorkspaceAs.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnFile.add(miSaveWorkspaceAs);
 
         mnFile.addSeparator();
+*/
+        ActionMenuItem miShutdownGUI = new ActionMenuItem(MainWindowActions.SHUTDOWN_GUI_ACTION);
+        miShutdownGUI.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnFile.add(miShutdownGUI);
         mnFile.addSeparator();
+
+        ActionMenuItem miExit = new ActionMenuItem(MainWindowActions.EXIT_ACTION);
+        miExit.addScriptedActionListener(mainWindow.getDefaultActionListener());
         mnFile.add(miExit);
 
         add(mnFile);
@@ -166,22 +165,29 @@ public class MainMenu extends JMenuBar {
         ActionMenuItem miUndo = new ActionMenuItem(MainWindowActions.EDIT_UNDO_ACTION);
         miUndo.setMnemonic(KeyEvent.VK_U);
         miUndo.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnEdit.add(miUndo);
 
         ActionMenuItem miRedo = new ActionMenuItem(MainWindowActions.EDIT_REDO_ACTION);
         miRedo.setMnemonic(KeyEvent.VK_R);
         miRedo.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnEdit.add(miRedo);
+
+        mnEdit.addSeparator();
 
         ActionMenuItem miCut = new ActionMenuItem(MainWindowActions.EDIT_CUT_ACTION);
         miCut.setMnemonic(KeyEvent.VK_T);
         miCut.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnEdit.add(miCut);
 
         ActionMenuItem miCopy = new ActionMenuItem(MainWindowActions.EDIT_COPY_ACTION);
         miCopy.setMnemonic(KeyEvent.VK_C);
         miCopy.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnEdit.add(miCopy);
 
         ActionMenuItem miPaste = new ActionMenuItem(MainWindowActions.EDIT_PASTE_ACTION);
         miPaste.setMnemonic(KeyEvent.VK_P);
         miPaste.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnEdit.add(miPaste);
 
         ActionMenuItem miDelete = new ActionMenuItem(MainWindowActions.EDIT_DELETE_ACTION);
         miDelete.setMnemonic(KeyEvent.VK_D);
@@ -196,34 +202,29 @@ public class MainMenu extends JMenuBar {
             }
         });
         miDelete.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnEdit.add(miDelete);
+
+        mnEdit.addSeparator();
 
         ActionMenuItem miSelectAll = new ActionMenuItem(MainWindowActions.EDIT_SELECT_ALL_ACTION);
         miSelectAll.setMnemonic(KeyEvent.VK_A);
         miSelectAll.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnEdit.add(miSelectAll);
 
         ActionMenuItem miSelectInverse = new ActionMenuItem(MainWindowActions.EDIT_SELECT_INVERSE_ACTION);
         miSelectInverse.setMnemonic(KeyEvent.VK_V);
         miSelectInverse.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnEdit.add(miSelectInverse);
 
         ActionMenuItem miSelectNone = new ActionMenuItem(MainWindowActions.EDIT_SELECT_NONE_ACTION);
         miSelectNone.setMnemonic(KeyEvent.VK_E);
         miSelectNone.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnEdit.add(miSelectNone);
+
+        mnEdit.addSeparator();
 
         ActionMenuItem miProperties = new ActionMenuItem(MainWindowActions.EDIT_SETTINGS_ACTION);
         miProperties.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-        mnEdit.add(miUndo);
-        mnEdit.add(miRedo);
-        mnEdit.addSeparator();
-        mnEdit.add(miCut);
-        mnEdit.add(miCopy);
-        mnEdit.add(miPaste);
-        mnEdit.add(miDelete);
-        mnEdit.addSeparator();
-        mnEdit.add(miSelectAll);
-        mnEdit.add(miSelectInverse);
-        mnEdit.add(miSelectNone);
-        mnEdit.addSeparator();
         mnEdit.add(miProperties);
 
         add(mnEdit);
@@ -234,47 +235,49 @@ public class MainMenu extends JMenuBar {
 
         ActionMenuItem miZoomIn = new ActionMenuItem(MainWindowActions.VIEW_ZOOM_IN);
         miZoomIn.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnView.add(miZoomIn);
 
         ActionMenuItem miZoomOut = new ActionMenuItem(MainWindowActions.VIEW_ZOOM_OUT);
         miZoomOut.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnView.add(miZoomOut);
 
         ActionMenuItem miZoomDefault = new ActionMenuItem(MainWindowActions.VIEW_ZOOM_DEFAULT);
         miZoomDefault.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnView.add(miZoomDefault);
 
         ActionMenuItem miZoomFit = new ActionMenuItem(MainWindowActions.VIEW_ZOOM_FIT);
         miZoomFit.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnView.add(miZoomFit);
 
-        ActionMenuItem miPanLeft = new ActionMenuItem(MainWindowActions.VIEW_PAN_LEFT);
-        miPanLeft.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-        ActionMenuItem miPanUp = new ActionMenuItem(MainWindowActions.VIEW_PAN_UP);
-        miPanUp.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-        ActionMenuItem miPanRight = new ActionMenuItem(MainWindowActions.VIEW_PAN_RIGHT);
-        miPanRight.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-        ActionMenuItem miPanDown = new ActionMenuItem(MainWindowActions.VIEW_PAN_DOWN);
-        miPanDown.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnView.addSeparator();
 
         ActionMenuItem miPanCenter = new ActionMenuItem(MainWindowActions.VIEW_PAN_CENTER);
         miPanCenter.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnView.add(miPanCenter);
+
+        ActionMenuItem miPanLeft = new ActionMenuItem(MainWindowActions.VIEW_PAN_LEFT);
+        miPanLeft.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnView.add(miPanLeft);
+
+        ActionMenuItem miPanUp = new ActionMenuItem(MainWindowActions.VIEW_PAN_UP);
+        miPanUp.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnView.add(miPanUp);
+
+        ActionMenuItem miPanRight = new ActionMenuItem(MainWindowActions.VIEW_PAN_RIGHT);
+        miPanRight.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnView.add(miPanRight);
+
+        ActionMenuItem miPanDown = new ActionMenuItem(MainWindowActions.VIEW_PAN_DOWN);
+        miPanDown.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnView.add(miPanDown);
+
+        mnView.addSeparator();
+
+        mnView.add(mnToolbars);
+        mnView.add(mnWindows);
 
         ActionMenuItem miResetLayout = new ActionMenuItem(MainWindowActions.RESET_GUI_ACTION);
         miResetLayout.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-        mnView.add(miZoomIn);
-        mnView.add(miZoomOut);
-        mnView.add(miZoomDefault);
-        mnView.add(miZoomFit);
-        mnView.addSeparator();
-        mnView.add(miPanCenter);
-        mnView.add(miPanLeft);
-        mnView.add(miPanUp);
-        mnView.add(miPanRight);
-        mnView.add(miPanDown);
-        mnView.addSeparator();
-        mnView.add(mnToolbars);
-        mnView.add(mnWindows);
         mnView.add(miResetLayout);
 
         add(mnView);
@@ -286,32 +289,32 @@ public class MainMenu extends JMenuBar {
 
         ActionMenuItem miOverview = new ActionMenuItem(MainWindowActions.HELP_OVERVIEW_ACTION);
         miOverview.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnHelp.add(miOverview);
 
         ActionMenuItem miContents = new ActionMenuItem(MainWindowActions.HELP_CONTENTS_ACTION);
         miContents.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnHelp.add(miContents);
 
         ActionMenuItem miTutorials = new ActionMenuItem(MainWindowActions.HELP_TUTORIALS_ACTION);
         miTutorials.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnHelp.add(miTutorials);
+
+        mnHelp.addSeparator();
 
         ActionMenuItem miBugreport = new ActionMenuItem(MainWindowActions.HELP_BUGREPORT_ACTION);
         miBugreport.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnHelp.add(miBugreport);
 
         ActionMenuItem miQuestion = new ActionMenuItem(MainWindowActions.HELP_EMAIL_ACTION);
         miQuestion.addScriptedActionListener(mainWindow.getDefaultActionListener());
+        mnHelp.add(miQuestion);
+
+        mnHelp.addSeparator();
 
         ActionMenuItem miAbout = new ActionMenuItem(MainWindowActions.HELP_ABOUT_ACTION);
         miAbout.addScriptedActionListener(mainWindow.getDefaultActionListener());
-
-        mnHelp.add(miOverview);
-        mnHelp.add(miContents);
-        mnHelp.add(miTutorials);
-        mnHelp.addSeparator();
-        mnHelp.add(miBugreport);
-        mnHelp.add(miQuestion);
-        mnHelp.addSeparator();
         mnHelp.add(miAbout);
 
-        //add(Box.createHorizontalGlue());
         add(mnHelp);
 
     }

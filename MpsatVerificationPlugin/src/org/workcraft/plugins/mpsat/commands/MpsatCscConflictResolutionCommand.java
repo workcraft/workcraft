@@ -41,38 +41,37 @@ public class MpsatCscConflictResolutionCommand implements ScriptableCommand<Work
     }
 
     @Override
+    public void run(WorkspaceEntry we) {
+        queueCscConflictResolution(we);
+    }
+
+    @Override
     public WorkspaceEntry execute(WorkspaceEntry we) {
-        MpsatParameters settings = new MpsatParameters(TITLE,
-                MpsatMode.RESOLVE_ENCODING_CONFLICTS, 4, SolutionMode.MINIMUM_COST, 1);
-
-        final Framework framework = Framework.getInstance();
-        final TaskManager taskManager = framework.getTaskManager();
-        final MpsatChainTask task = new MpsatChainTask(we, settings);
-        Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-        Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
-        MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
-        Result<? extends MpsatChainResult> result = taskManager.execute(task, TITLE);
-
+        MpsatChainResultHandler monitor = queueCscConflictResolution(we);
+        Collection<Mutex> mutexes = monitor.getMutexes();
+        Result<? extends MpsatChainResult> result = monitor.waitResult();
         MpsatChainResult returnValue = result.getReturnValue();
         Result<? extends ExternalProcessResult> mpsatResult = returnValue.getMpsatResult();
-        MpsatCscConflictResolutionResultHandler resultHandler = new MpsatCscConflictResolutionResultHandler(we, mpsatResult, mutexes);
+        MpsatCscConflictResolutionResultHandler resultHandler = new MpsatCscConflictResolutionResultHandler(
+                we, mpsatResult, mutexes);
+
         resultHandler.run();
         return resultHandler.getResult();
     }
 
-    @Override
-    public void run(WorkspaceEntry we) {
+    private MpsatChainResultHandler queueCscConflictResolution(WorkspaceEntry we) {
         MpsatParameters settings = new MpsatParameters(TITLE,
                 MpsatMode.RESOLVE_ENCODING_CONFLICTS, 4, SolutionMode.MINIMUM_COST, 1);
 
-        final Framework framework = Framework.getInstance();
-        final TaskManager taskManager = framework.getTaskManager();
-        final MpsatChainTask task = new MpsatChainTask(we, settings);
+        Framework framework = Framework.getInstance();
+        TaskManager taskManager = framework.getTaskManager();
+        MpsatChainTask task = new MpsatChainTask(we, settings);
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
         MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
-        final MpsatChainResultHandler monitor = new MpsatChainResultHandler(task, mutexes);
+        MpsatChainResultHandler monitor = new MpsatChainResultHandler(task, mutexes);
         taskManager.queue(task, TITLE, monitor);
+        return monitor;
     }
 
 }

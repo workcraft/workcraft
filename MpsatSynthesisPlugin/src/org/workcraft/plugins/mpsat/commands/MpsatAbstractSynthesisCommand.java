@@ -6,6 +6,7 @@ import org.workcraft.Framework;
 import org.workcraft.commands.AbstractSynthesisCommand;
 import org.workcraft.plugins.mpsat.MpsatSynthesisMode;
 import org.workcraft.plugins.mpsat.MpsatSynthesisParameters;
+import org.workcraft.plugins.mpsat.MpsatUtils;
 import org.workcraft.plugins.mpsat.tasks.MpsatSynthesisChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatSynthesisResultHandler;
 import org.workcraft.plugins.stg.Mutex;
@@ -34,36 +35,40 @@ public abstract class MpsatAbstractSynthesisCommand extends AbstractSynthesisCom
     }
 
     @Override
+    public void run(WorkspaceEntry we) {
+        queueSynthesis(we);
+    }
+
+    @Override
     public WorkspaceEntry execute(WorkspaceEntry we) {
+        WorkspaceEntry result = null;
+        MpsatSynthesisResultHandler monitor = queueSynthesis(we);
+        if (monitor != null) {
+            result = monitor.waitForHandledResult();
+        }
+        return result;
+    }
+
+    private MpsatSynthesisResultHandler queueSynthesis(WorkspaceEntry we) {
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         LinkedList<Mutex> mutexes = MutexUtils.getImplementableMutexes(stg);
         if (mutexes == null) {
             return null;
         }
         MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
-        final Framework framework = Framework.getInstance();
-        final TaskManager taskManager = framework.getTaskManager();
-        final MpsatSynthesisParameters settings = new MpsatSynthesisParameters("Logic synthesis", getSynthesisMode(), 0);
-        final MpsatSynthesisChainTask task = new MpsatSynthesisChainTask(we, settings, mutexes);
-        final MpsatSynthesisResultHandler monitor = new MpsatSynthesisResultHandler(task, mutexes);
-        taskManager.execute(task, "MPSat logic synthesis", monitor);
-        return monitor.getResult();
+        Framework framework = Framework.getInstance();
+        TaskManager manager = framework.getTaskManager();
+        MpsatSynthesisParameters settings = getSettings();
+        MpsatSynthesisChainTask task = new MpsatSynthesisChainTask(we, settings, mutexes);
+        String description = MpsatUtils.getToolchainDescription(we.getTitle());
+        MpsatSynthesisResultHandler monitor = new MpsatSynthesisResultHandler(task, mutexes);
+        manager.queue(task, description, monitor);
+        return monitor;
     }
 
-    @Override
-    public void run(WorkspaceEntry we) {
-        Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-        LinkedList<Mutex> mutexes = MutexUtils.getImplementableMutexes(stg);
-        if (mutexes == null) {
-            return;
-        }
-        MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
-        final Framework framework = Framework.getInstance();
-        final TaskManager taskManager = framework.getTaskManager();
-        final MpsatSynthesisParameters settings = new MpsatSynthesisParameters("Logic synthesis", getSynthesisMode(), 0);
-        final MpsatSynthesisChainTask task = new MpsatSynthesisChainTask(we, settings, mutexes);
-        final MpsatSynthesisResultHandler monitor = new MpsatSynthesisResultHandler(task, mutexes);
-        taskManager.queue(task, "MPSat logic synthesis", monitor);
+    private MpsatSynthesisParameters getSettings() {
+        MpsatSynthesisMode mode = getSynthesisMode();
+        return new MpsatSynthesisParameters(mode.toString(), mode, 0);
     }
 
     public abstract MpsatSynthesisMode getSynthesisMode();

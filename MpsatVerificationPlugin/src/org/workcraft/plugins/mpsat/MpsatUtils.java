@@ -13,7 +13,7 @@ public class MpsatUtils {
 
     public static List<MpsatSolution> getCombinedChainSolutions(Result<? extends MpsatCombinedChainResult> combinedChainResult) {
         LinkedList<MpsatSolution> solutions = null;
-        if ((combinedChainResult != null) && (combinedChainResult.getOutcome() == Outcome.FINISHED)) {
+        if ((combinedChainResult != null) && (combinedChainResult.getOutcome() == Outcome.SUCCESS)) {
             solutions = new LinkedList<>();
             MpsatCombinedChainResult returnValue = combinedChainResult.getReturnValue();
             if (returnValue != null) {
@@ -29,7 +29,7 @@ public class MpsatUtils {
 
     public static List<MpsatSolution> getChainSolutions(Result<? extends MpsatChainResult> chainResult) {
         LinkedList<MpsatSolution> solutions = null;
-        if ((chainResult != null) && (chainResult.getOutcome() == Outcome.FINISHED)) {
+        if ((chainResult != null) && (chainResult.getOutcome() == Outcome.SUCCESS)) {
             solutions = new LinkedList<>();
             MpsatChainResult returnValue = chainResult.getReturnValue();
             if (returnValue != null) {
@@ -44,7 +44,7 @@ public class MpsatUtils {
 
     public static List<MpsatSolution> getSolutions(Result<? extends ExternalProcessResult> result) {
         LinkedList<MpsatSolution> solutions = null;
-        if ((result != null) && (result.getOutcome() == Outcome.FINISHED)) {
+        if ((result != null) && (result.getOutcome() == Outcome.SUCCESS)) {
             solutions = new LinkedList<>();
             ExternalProcessResult returnValue = result.getReturnValue();
             if (returnValue != null) {

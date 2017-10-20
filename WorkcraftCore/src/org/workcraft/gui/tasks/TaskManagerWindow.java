@@ -4,12 +4,9 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Rectangle;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.lang.reflect.InvocationTargetException;
 
 import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.ScrollPaneConstants;
@@ -20,17 +17,15 @@ import javax.swing.border.Border;
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.gui.layouts.SmartFlowLayout;
-import org.workcraft.tasks.DummyProgressMonitor;
+import org.workcraft.tasks.BasicProgressMonitor;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
-import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.tasks.Task;
 import org.workcraft.tasks.TaskMonitor;
-import org.workcraft.util.DialogUtils;
 
 @SuppressWarnings("serial")
 public class TaskManagerWindow extends JPanel implements TaskMonitor {
-    class TaskControlMonitor implements ProgressMonitor<Object> {
+
+    class TaskControlMonitor extends BasicProgressMonitor<Object> {
         TaskManagerWindow window;
         TaskControl taskControl;
 
@@ -45,21 +40,14 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
         }
 
         @Override
-        public void finished(Result<? extends Object> result, String description) {
+        public void finished(Result<? extends Object> result) {
+            super.finished(result);
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
                     window.removeTaskControl(taskControl);
                 }
             });
-        }
-
-        @Override
-        public void stdout(byte[] data) {
-        }
-
-        @Override
-        public void stderr(byte[] data) {
         }
 
         @Override
@@ -120,12 +108,9 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
 
     }
 
-    private int counter = 0;
-
     private final JPanel content;
 
     public TaskManagerWindow() {
-
         setLayout(new BorderLayout());
         JScrollPane scroll = new JScrollPane();
         add(scroll, BorderLayout.CENTER);
@@ -144,53 +129,6 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
 
         final Framework framework = Framework.getInstance();
         framework.getTaskManager().addObserver(this);
-
-        // Do we really need this "Queue test task" button? Probably not.
-        // addQueueTestTasksButton(framework);
-
-    }
-
-    private void addQueueTestTasksButton(final Framework framework) {
-        JButton testTaskButton = new JButton("Queue test task");
-
-        testTaskButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                framework.getTaskManager().queue(new Task<Object>() {
-                    @Override
-                    public Result<Object> run(ProgressMonitor<Object> monitor) {
-                        for (int i = 0; i < 100; i++) {
-                            try {
-                                if (monitor.isCancelRequested()) {
-                                    return new Result<Object>(Outcome.CANCELLED);
-                                }
-                                Thread.sleep((int) (Math.random() * 100 + 20));
-                            } catch (InterruptedException e) {
-                                return new Result<Object>(Outcome.FAILED);
-                            }
-                            monitor.progressUpdate(i / 99.0);
-                        }
-                        return new Result<Object>(Outcome.FINISHED);
-                    }
-                }, "Test task #" + counter++, new DummyProgressMonitor<Object>() {
-
-                        @Override
-                        public void finished(Result<? extends Object> result, final String description) {
-                            if (result.getOutcome() == Outcome.FINISHED) {
-                                SwingUtilities.invokeLater(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        DialogUtils.showInfo("Task '" + description + "' finished!");
-                                    }
-
-                                });
-                            }
-                        }
-                    });
-            }
-        });
-
-        content.add(testTaskButton);
     }
 
     public void removeTaskControl(TaskControl taskControl) {
@@ -212,4 +150,5 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
         }
         return new TaskControlMonitor(this, tcg.getTaskCotnrol());
     }
+
 }

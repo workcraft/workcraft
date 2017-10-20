@@ -31,7 +31,7 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.interop.StgImporter;
-import org.workcraft.tasks.DummyProgressMonitor;
+import org.workcraft.tasks.BasicProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.tasks.Result.Outcome;
@@ -40,7 +40,7 @@ import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class PlatoResultHandler extends DummyProgressMonitor<ExternalProcessResult> {
+public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessResult> {
 
     private final class ProcessPlatoResult implements Runnable {
         private final Result<? extends ExternalProcessResult> result;
@@ -53,7 +53,7 @@ public class PlatoResultHandler extends DummyProgressMonitor<ExternalProcessResu
         public void run() {
             try {
                 String output = new String(result.getReturnValue().getOutput());
-                if (result.getOutcome() == Outcome.FINISHED) {
+                if (result.getOutcome() == Outcome.SUCCESS) {
                     final Framework framework = Framework.getInstance();
                     final MainWindow mainWindow = framework.getMainWindow();
                     GraphEditorPanel editor = mainWindow.getEditor(we);
@@ -107,7 +107,8 @@ public class PlatoResultHandler extends DummyProgressMonitor<ExternalProcessResu
         this(sender, null, null);
     }
 
-    public void finished(final Result<? extends ExternalProcessResult> result, String description) {
+    public void finished(final Result<? extends ExternalProcessResult> result) {
+        super.finished(result);
         try {
             SwingUtilities.invokeAndWait(new ProcessPlatoResult(result));
         } catch (InvocationTargetException | InterruptedException e) {

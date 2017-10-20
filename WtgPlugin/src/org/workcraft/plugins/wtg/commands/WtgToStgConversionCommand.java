@@ -33,7 +33,7 @@ public class WtgToStgConversionCommand extends AbstractConversionCommand {
         final WaverConversionTask task = new WaverConversionTask(we);
         final WtgToStgConversionResultHandler monitor = new WtgToStgConversionResultHandler(task);
         taskManager.execute(task, "Converting to STG", monitor);
-        return monitor.getResult();
+        return monitor.waitForHandledResult();
     }
 
     @Override

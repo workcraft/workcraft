@@ -42,9 +42,9 @@ import org.workcraft.plugins.xmas.components.VisualQueueComponent;
 import org.workcraft.plugins.xmas.components.VisualSyncComponent;
 import org.workcraft.plugins.xmas.gui.SolutionsDialog1;
 import org.workcraft.plugins.xmas.gui.SolutionsDialog2;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.LogUtils;
-import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 

@@ -45,24 +45,22 @@ public class MpsatMutexImplementabilityVerificationCommand extends AbstractVerif
     }
 
     @Override
-    public Boolean execute(WorkspaceEntry we) {
-        final Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-        if (structuralCheck(stg)) {
-            Framework framework = Framework.getInstance();
-            TaskManager manager = framework.getTaskManager();
-            Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
-            MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
-            final ArrayList<MpsatParameters> settingsList = getMutexImplementabilitySettings(mutexes);
-            MpsatCombinedChainTask task = new MpsatCombinedChainTask(we, settingsList);
-            String description = MpsatUtils.getToolchainDescription(we.getTitle());
-            Result<? extends MpsatCombinedChainResult> result = manager.execute(task, description);
-            return MpsatUtils.getCombinedChainOutcome(result);
-        }
-        return null;
+    public void run(WorkspaceEntry we) {
+        queueVerification(we);
     }
 
     @Override
-    public void run(WorkspaceEntry we) {
+    public Boolean execute(WorkspaceEntry we) {
+        MpsatCombinedChainResultHandler monitor = queueVerification(we);
+        Result<? extends MpsatCombinedChainResult> result = null;
+        if (monitor != null) {
+            result = monitor.waitResult();
+        }
+        return MpsatUtils.getCombinedChainOutcome(result);
+    }
+
+    private MpsatCombinedChainResultHandler queueVerification(WorkspaceEntry we) {
+        MpsatCombinedChainResultHandler monitor = null;
         final Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         if (structuralCheck(stg)) {
             Framework framework = Framework.getInstance();
@@ -72,9 +70,10 @@ public class MpsatMutexImplementabilityVerificationCommand extends AbstractVerif
             final ArrayList<MpsatParameters> settingsList = getMutexImplementabilitySettings(mutexes);
             MpsatCombinedChainTask task = new MpsatCombinedChainTask(we, settingsList);
             String description = MpsatUtils.getToolchainDescription(we.getTitle());
-            MpsatCombinedChainResultHandler monitor = new MpsatCombinedChainResultHandler(task, mutexes);
+            monitor = new MpsatCombinedChainResultHandler(task, mutexes);
             manager.queue(task, description, monitor);
         }
+        return monitor;
     }
 
     private boolean structuralCheck(Stg stg) {

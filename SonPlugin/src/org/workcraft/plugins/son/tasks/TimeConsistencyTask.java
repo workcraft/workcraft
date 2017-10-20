@@ -239,7 +239,7 @@ public class TimeConsistencyTask implements Task<VerificationResult> {
         finalize(timeInfoMap);
         logger.info("\n\nVerification-Result : " + totalErrNum + " Error(s).");
 
-        return new Result<VerificationResult>(Outcome.FINISHED);
+        return new Result<VerificationResult>(Outcome.SUCCESS);
     }
 
     private Map<Node, Boolean[]> createTimeInfoMap(Collection<Node> nodes) {

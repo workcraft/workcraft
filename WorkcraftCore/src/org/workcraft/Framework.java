@@ -329,32 +329,24 @@ public final class Framework {
         config.save(file);
     }
 
-    public void setConfigCoreVar(String key, String value) {
-        // Set a core variable, that does not require updating plugin settings.
+    /**
+     * Set a config variable. If requested, reload plugin settings.
+     */
+    public void setConfigVar(String key, String value, boolean reloadPluginSettings) {
         config.set(key, value);
+        if (reloadPluginSettings) {
+            loadPluginsSettings();
+        }
     }
 
     /**
-     * Used in functions.js JavaScript wrapper.
+     * Get a config variable. If requested, flush plugin settings before that.
      */
-    public void setConfigVar(String key, String value) {
-        setConfigCoreVar(key, value);
-        // For consistency, update plugin settings.
-        loadPluginsSettings();
-    }
-
-    public String getConfigCoreVar(String key) {
-        // Get a core variable, that does not require flushing plugin settings.
+    public String getConfigVar(String key, boolean flushPluginSettings) {
+        if (flushPluginSettings) {
+            savePluginsSettings();
+        }
         return config.get(key);
-    }
-
-    /**
-     * Used in functions.js JavaScript wrapper.
-     */
-    public String getConfigVar(String key) {
-        // For consistency, flush plugin settings.
-        savePluginsSettings();
-        return getConfigCoreVar(key);
     }
 
     public void init() {
@@ -362,7 +354,9 @@ public final class Framework {
         // This is necessary for some plugins (e.g. PdfExporter) that use log4j.
         BasicConfigurator.configure();
         Logger.getRootLogger().setLevel(Level.INFO);
+
         initJavaScript();
+
         initPlugins();
     }
 

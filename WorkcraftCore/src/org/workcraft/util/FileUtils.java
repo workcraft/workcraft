@@ -16,6 +16,8 @@ import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
 import java.util.Scanner;
 
+import org.workcraft.gui.DesktopApi;
+
 public class FileUtils {
     public static final String TEMP_DIRECTORY_PREFIX = "workcraft-";
 
@@ -291,6 +293,13 @@ public class FileUtils {
             result = false;
         }
         return result;
+    }
+
+    public static void openExternally(String fileName, String errorTitle) {
+        File file = new File(fileName);
+        if (checkAvailability(file, errorTitle)) {
+            DesktopApi.open(file);
+        }
     }
 
 }

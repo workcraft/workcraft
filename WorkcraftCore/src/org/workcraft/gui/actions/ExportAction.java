@@ -2,7 +2,6 @@ package org.workcraft.gui.actions;
 
 import org.workcraft.Framework;
 import org.workcraft.exceptions.OperationCancelledException;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Format;
 
@@ -16,9 +15,7 @@ public class ExportAction extends Action {
     @Override
     public void run() {
         try {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
-            mainWindow.export(exporter);
+            Framework.getInstance().getMainWindow().export(exporter);
         } catch (OperationCancelledException e) {
         }
     }

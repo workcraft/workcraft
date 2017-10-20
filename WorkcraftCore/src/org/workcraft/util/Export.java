@@ -74,7 +74,7 @@ public class Export {
                 }
             }
 
-            return new Result<Boolean>(Outcome.FINISHED);
+            return new Result<Boolean>(Outcome.SUCCESS);
         }
     }
 

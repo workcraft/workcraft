@@ -14,6 +14,7 @@ import org.workcraft.gui.actions.Action;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.plugins.shared.CommonVisualSettings;
+import org.workcraft.util.FileUtils;
 import org.workcraft.util.GUI;
 import org.workcraft.util.LogUtils;
 
@@ -44,10 +45,8 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
             try {
-                mainWindow.createWork();
+                Framework.getInstance().getMainWindow().createWork();
             } catch (OperationCancelledException e) {
             }
         }
@@ -64,10 +63,8 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
             try {
-                mainWindow.openWork();
+                Framework.getInstance().getMainWindow().openWork();
             } catch (OperationCancelledException e) {
             }
         }
@@ -80,10 +77,8 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
             try {
-                mainWindow.mergeWork();
+                Framework.getInstance().getMainWindow().mergeWork();
             } catch (OperationCancelledException e) {
             }
         }
@@ -100,10 +95,8 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
             try {
-                mainWindow.saveWork();
+                Framework.getInstance().getMainWindow().saveWork();
             } catch (OperationCancelledException e) {
             }
         }
@@ -116,10 +109,8 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
             try {
-                mainWindow.saveWorkAs();
+                Framework.getInstance().getMainWindow().saveWorkAs();
             } catch (OperationCancelledException e) {
             }
         }
@@ -132,10 +123,8 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
             try {
-                mainWindow.closeActiveEditor();
+                Framework.getInstance().getMainWindow().closeActiveEditor();
             } catch (OperationCancelledException e) {
             }
         }
@@ -148,10 +137,8 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
             try {
-                mainWindow.closeEditorWindows();
+                Framework.getInstance().getMainWindow().closeEditorWindows();
             } catch (OperationCancelledException e) {
             }
         }
@@ -164,9 +151,8 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
             try {
-                framework.shutdownGUI();
+                Framework.getInstance().shutdownGUI();
             } catch (OperationCancelledException e) { }
         }
     };
@@ -182,8 +168,7 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            framework.shutdown();
+            Framework.getInstance().shutdown();
         }
     };
 
@@ -194,9 +179,7 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
-            mainWindow.importFrom();
+            Framework.getInstance().getMainWindow().importFrom();
         }
     };
 
@@ -211,9 +194,7 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
-            mainWindow.undo();
+            Framework.getInstance().getMainWindow().undo();
         }
     };
 
@@ -228,9 +209,7 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
-            mainWindow.redo();
+            Framework.getInstance().getMainWindow().redo();
         }
     };
 
@@ -245,9 +224,7 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
-            mainWindow.cut();
+            Framework.getInstance().getMainWindow().cut();
         }
     };
 
@@ -262,9 +239,7 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
-            mainWindow.copy();
+            Framework.getInstance().getMainWindow().copy();
         }
     };
 
@@ -279,9 +254,7 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
-            mainWindow.paste();
+            Framework.getInstance().getMainWindow().paste();
         }
     };
 
@@ -296,8 +269,7 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            framework.getMainWindow().delete();
+            Framework.getInstance().getMainWindow().delete();
         }
     };
 
@@ -312,9 +284,7 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
-            mainWindow.selectAll();
+            Framework.getInstance().getMainWindow().selectAll();
         }
     };
 
@@ -329,9 +299,7 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
-            mainWindow.selectInverse();
+            Framework.getInstance().getMainWindow().selectInverse();
         }
     };
 
@@ -342,9 +310,7 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
-            mainWindow.selectNone();
+            Framework.getInstance().getMainWindow().selectNone();
         }
     };
 
@@ -355,9 +321,7 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
-            mainWindow.editSettings();
+            Framework.getInstance().getMainWindow().editSettings();
         }
     };
 
@@ -582,7 +546,6 @@ public class MainWindowActions {
             final MainWindow mainWindow = framework.getMainWindow();
             mainWindow.resetLayout();
         }
-
     };
 
     public static final Action HELP_OVERVIEW_ACTION = new Action() {
@@ -592,9 +555,7 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
-            mainWindow.openExternally("overview/start.html", "Overview access error");
+            FileUtils.openExternally("overview/start.html", "Overview access error");
         }
     };
 
@@ -609,9 +570,7 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
-            mainWindow.openExternally("help/start.html", "Help access error");
+            FileUtils.openExternally("help/start.html", "Help access error");
         }
     };
 
@@ -622,9 +581,7 @@ public class MainWindowActions {
         }
         @Override
         public void run() {
-            final Framework framework = Framework.getInstance();
-            final MainWindow mainWindow = framework.getMainWindow();
-            mainWindow.openExternally("tutorial/start.html", "Tutorials access error");
+            FileUtils.openExternally("tutorial/start.html", "Tutorials access error");
         }
     };
 

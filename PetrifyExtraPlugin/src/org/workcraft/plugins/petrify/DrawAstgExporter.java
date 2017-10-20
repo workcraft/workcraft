@@ -51,8 +51,8 @@ public class DrawAstgExporter implements Exporter {
         final TaskManager taskManager = framework.getTaskManager();
         final Result<? extends Object> result = taskManager.execute(exportTask, "Exporting to .g");
 
-        if (result.getOutcome() != Outcome.FINISHED) {
-            if (result.getOutcome() == Outcome.CANCELLED) {
+        if (result.getOutcome() != Outcome.SUCCESS) {
+            if (result.getOutcome() == Outcome.CANCEL) {
                 return;
             } else {
                 if (result.getCause() != null) {
@@ -69,8 +69,8 @@ public class DrawAstgExporter implements Exporter {
 
         final Result<? extends ExternalProcessResult> drawAstgResult = taskManager.execute(task, "Executing Petrify");
 
-        if (drawAstgResult.getOutcome() != Outcome.FINISHED) {
-            if (drawAstgResult.getOutcome() == Outcome.CANCELLED) {
+        if (drawAstgResult.getOutcome() != Outcome.SUCCESS) {
+            if (drawAstgResult.getOutcome() == Outcome.CANCEL) {
                 return;
             } else {
                 if (drawAstgResult.getCause() != null) {

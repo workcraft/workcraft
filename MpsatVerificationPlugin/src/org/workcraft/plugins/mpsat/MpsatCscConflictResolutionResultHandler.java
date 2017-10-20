@@ -23,14 +23,13 @@ public class MpsatCscConflictResolutionResultHandler implements Runnable {
     private final WorkspaceEntry we;
     private final Result<? extends ExternalProcessResult> result;
     private final Collection<Mutex> mutexes;
-    private WorkspaceEntry weResult;
+    private WorkspaceEntry weResult = null;
 
     public MpsatCscConflictResolutionResultHandler(final WorkspaceEntry we,
             final Result<? extends ExternalProcessResult> result, Collection<Mutex> mutexes) {
         this.we = we;
         this.result = result;
         this.mutexes = mutexes;
-        this.weResult = null;
     }
 
     private StgModel getResolvedStg() {

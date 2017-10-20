@@ -40,18 +40,18 @@ public class LtscatTask implements Task<LtscatResult>, ExternalProcessListener {
         Result<? extends ExternalProcessResult> result = task.run(mon);
 
         // Handling the result
-        if (result.getOutcome() == Outcome.CANCELLED) {
+        if (result.getOutcome() == Outcome.CANCEL) {
             FileUtils.deleteOnExitRecursively(tmpDir);
             we.cancelMemento();
-            return new Result<LtscatResult>(Outcome.CANCELLED);
+            return new Result<LtscatResult>(Outcome.CANCEL);
         } else {
             final Outcome outcome;
             if (result.getReturnValue().getReturnCode() == 0) {
-                outcome = Outcome.FINISHED;
+                outcome = Outcome.SUCCESS;
             } else {
                 FileUtils.deleteOnExitRecursively(tmpDir);
                 we.cancelMemento();
-                outcome = Outcome.FAILED;
+                outcome = Outcome.FAILURE;
             }
             String stdout = new String(result.getReturnValue().getOutput());
             String stderr = new String(result.getReturnValue().getErrors());

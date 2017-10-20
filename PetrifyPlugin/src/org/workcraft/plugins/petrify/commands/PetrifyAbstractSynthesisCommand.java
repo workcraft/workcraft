@@ -22,38 +22,35 @@ public abstract class PetrifyAbstractSynthesisCommand extends AbstractSynthesisC
     }
 
     @Override
+    public void run(WorkspaceEntry we) {
+        queueSynthesis(we);
+    }
+
+    @Override
     public WorkspaceEntry execute(WorkspaceEntry we) {
+        WorkspaceEntry result = null;
+        PetrifySynthesisResultHandler monitor = queueSynthesis(we);
+        if (monitor != null) {
+            result = monitor.waitForHandledResult();
+        }
+        return result;
+    }
+
+    private PetrifySynthesisResultHandler queueSynthesis(WorkspaceEntry we) {
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         LinkedList<Mutex> mutexes = MutexUtils.getImplementableMutexes(stg);
         if (mutexes == null) {
             return null;
         }
         MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
-        final Framework framework = Framework.getInstance();
-        final TaskManager taskManager = framework.getTaskManager();
-        final PetrifySynthesisTask task = new PetrifySynthesisTask(we, getSynthesisParameter(), mutexes);
-        final PetrifySynthesisResultHandler monitor = new PetrifySynthesisResultHandler(we,
-                boxSequentialComponents(), boxCombinationalComponents(), sequentialAssign(), mutexes);
-
-        taskManager.execute(task, "Petrify logic synthesis", monitor);
-        return monitor.getResult();
-    }
-
-    @Override
-    public void run(WorkspaceEntry we) {
-        Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-        LinkedList<Mutex> mutexes = MutexUtils.getImplementableMutexes(stg);
-        if (mutexes == null) {
-            return;
-        }
-        MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
-        final Framework framework = Framework.getInstance();
-        final TaskManager taskManager = framework.getTaskManager();
-        final PetrifySynthesisTask task = new PetrifySynthesisTask(we, getSynthesisParameter(), mutexes);
-        final PetrifySynthesisResultHandler monitor = new PetrifySynthesisResultHandler(we,
+        Framework framework = Framework.getInstance();
+        TaskManager taskManager = framework.getTaskManager();
+        PetrifySynthesisTask task = new PetrifySynthesisTask(we, getSynthesisParameter(), mutexes);
+        PetrifySynthesisResultHandler monitor = new PetrifySynthesisResultHandler(we,
                 boxSequentialComponents(), boxCombinationalComponents(), sequentialAssign(), mutexes);
 
         taskManager.queue(task, "Petrify logic synthesis", monitor);
+        return monitor;
     }
 
     public boolean boxSequentialComponents() {

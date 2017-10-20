@@ -52,15 +52,15 @@ public class PunfTask implements Task<ExternalProcessResult> {
         ExternalProcessTask task = new ExternalProcessTask(command, null, printStdout, printStderr);
         Result<? extends ExternalProcessResult> res = task.run(monitor);
 
-        if (res.getOutcome() != Outcome.FINISHED) {
+        if (res.getOutcome() != Outcome.SUCCESS) {
             return res;
         }
 
         ExternalProcessResult retVal = res.getReturnValue();
         if (retVal.getReturnCode() < 2) {
-            return Result.finished(retVal);
+            return Result.success(retVal);
         } else {
-            return Result.failed(retVal);
+            return Result.failure(retVal);
         }
     }
 

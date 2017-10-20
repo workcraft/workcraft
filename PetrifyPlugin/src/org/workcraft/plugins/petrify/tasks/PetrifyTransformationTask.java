@@ -69,7 +69,7 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationResu
         if (PetrifySettings.getAdvancedMode()) {
             String tmp = DialogUtils.showInput("Additional parameters for Petrify:", extraArgs);
             if (tmp == null) {
-                return Result.cancelled();
+                return Result.cancelation();
             }
             extraArgs = tmp;
         }
@@ -102,7 +102,7 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationResu
                             + "Problematic places are:\n" + refStr + "\n\n"
                             + "Proceed without these places?";
                     if (!DialogUtils.showConfirm(msg, "Petrify transformation")) {
-                        return Result.cancelled();
+                        return Result.cancelation();
                     }
                     we.captureMemento();
                     VisualModel visualModel = we.getModelEntry().getVisualModel();
@@ -120,7 +120,7 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationResu
             SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
             Result<? extends ExternalProcessResult> res = task.run(mon);
 
-            if (res.getOutcome() == Outcome.FINISHED) {
+            if (res.getOutcome() == Outcome.SUCCESS) {
                 StgModel outStg = null;
                 if (outFile.exists()) {
                     String out = FileUtils.readAllText(outFile);
@@ -135,14 +135,14 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationResu
                 int returnCode = res.getReturnValue().getReturnCode();
                 String errorMessage = new String(res.getReturnValue().getErrors());
                 if ((returnCode != 0) || (errorMessage.contains(">>> ERROR: Cannot solve CSC.\n"))) {
-                    return Result.failed(result);
+                    return Result.failure(result);
                 }
-                return Result.finished(result);
+                return Result.success(result);
             }
-            if (res.getOutcome() == Outcome.CANCELLED) {
-                return Result.cancelled();
+            if (res.getOutcome() == Outcome.CANCEL) {
+                return Result.cancelation();
             }
-            return Result.failed(null);
+            return Result.failure(null);
         } catch (Throwable e) {
             throw new RuntimeException(e);
         } finally {
@@ -170,7 +170,7 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationResu
         try {
             ExportTask exportTask = Export.createExportTask(model, modelFile, format, framework.getPluginManager());
             Result<? extends Object> exportResult = framework.getTaskManager().execute(exportTask, "Exporting model");
-            if (exportResult.getOutcome() != Outcome.FINISHED) {
+            if (exportResult.getOutcome() != Outcome.SUCCESS) {
                 throw new RuntimeException(MESSAGE_EXPORT_FAILED);
             }
         } catch (SerialisationException e) {

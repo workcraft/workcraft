@@ -21,7 +21,7 @@ public class PlatoException extends Exception {
 
     public void handleConceptsError() {
         try {
-            if (result.getOutcome() == Outcome.FAILED) {
+            if (result.getOutcome() == Outcome.FAILURE) {
                 String errors = new String(result.getReturnValue().getErrors());
                 LogUtils.logStderr(errors);
                 if (errors.contains("<no location info>")) {
