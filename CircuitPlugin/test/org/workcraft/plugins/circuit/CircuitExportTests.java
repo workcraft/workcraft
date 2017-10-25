@@ -33,7 +33,7 @@ public class CircuitExportTests {
     public void testVmeCircuitExport()
             throws DeserialisationException, IOException, SerialisationException {
         String vHeader = Info.getGeneratedByText("// Verilog netlist ", "\n") +
-                "module VME (d, lds, dtack, dsr, dsw, ldtack);\n" +
+                "module vme (d, lds, dtack, dsr, dsw, ldtack);\n" +
                 "    input dsr, dsw, ldtack;\n" +
                 "    output d, lds, dtack;";
         String svgHeader = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +

@@ -23,6 +23,7 @@ import org.workcraft.plugins.circuit.commands.CircuitPropertyVerificationCommand
 import org.workcraft.plugins.circuit.commands.CircuitStatisticsCommand;
 import org.workcraft.plugins.circuit.commands.CircuitStrictImplementationVerificationCommand;
 import org.workcraft.plugins.circuit.commands.CircuitToStgConversionCommand;
+import org.workcraft.plugins.circuit.commands.CircuitToStgWithEnvironmentConversionCommand;
 import org.workcraft.plugins.circuit.commands.CircuitVerificationCommand;
 import org.workcraft.plugins.circuit.commands.ContractComponentTransformationCommand;
 import org.workcraft.plugins.circuit.commands.ContractJointTransformationCommand;
@@ -90,7 +91,9 @@ public class CircuitModule implements Module {
                 "advanced complexity estimates for the Circuit 'work'");
 
         ScriptableCommandUtils.register(CircuitToStgConversionCommand.class, "convertCircuitToStg",
-                "convert the Circuit 'work' to an STG");
+                "convert the given Circuit 'work' into a new STG work");
+        ScriptableCommandUtils.register(CircuitToStgWithEnvironmentConversionCommand.class, "convertCircuitToStgWithEnvironment",
+                "convert the given Circuit 'work' and its environment into a new STG work");
 
         ScriptableCommandUtils.register(CircuitVerificationCommand.class, "checkCircuitCombined",
                 "combined check of the Circuit 'work' for deadlock freeness, conformation to environment and output persistency");

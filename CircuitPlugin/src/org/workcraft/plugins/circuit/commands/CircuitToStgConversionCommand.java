@@ -5,7 +5,6 @@ import java.util.HashSet;
 import org.workcraft.commands.AbstractConversionCommand;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
-import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.converters.SignalStg;
@@ -45,8 +44,12 @@ public class CircuitToStgConversionCommand extends AbstractConversionCommand {
                 return null;
             }
         }
-        final CircuitToStgConverter converter = CircuitStgUtils.createCircuitToStgConverter(circuit);
+        final CircuitToStgConverter converter = getCircuitToStgConverter(circuit);
         return new ModelEntry(new StgDescriptor(), converter.getStg());
+    }
+
+    public CircuitToStgConverter getCircuitToStgConverter(VisualCircuit circuit) {
+        return new CircuitToStgConverter(circuit);
     }
 
 }
