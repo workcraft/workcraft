@@ -32,7 +32,6 @@ public class PlatoSystemTask implements Task<ExternalProcessResult> {
         ExternalProcessResult finalResult = new ExternalProcessResult(retVal.getReturnCode(), retVal.getOutput(),
                 retVal.getErrors(), null);
         deleteTranslateExecutable();
-
         if (retVal.getReturnCode() == 0) {
             return Result.success(finalResult);
         } else {
