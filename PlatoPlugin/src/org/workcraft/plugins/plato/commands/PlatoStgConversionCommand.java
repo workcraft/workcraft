@@ -45,9 +45,9 @@ public class PlatoStgConversionCommand extends AbstractConversionCommand {
             WorkspaceEntry we = framework.getWorkspaceEntry(me);
             File inputFile = dialog.getFile();
             dotLayout = dialog.getDotLayoutState();
-            PlatoTask task = new PlatoTask(inputFile, dialog.getIncludeList(), false);
+            PlatoTask task = new PlatoTask(inputFile, dialog.getIncludeList(), false, isSystem(dialog));
             String name = FileUtils.getFileNameWithoutExtension(inputFile);
-            PlatoResultHandler resultHandler = new PlatoResultHandler(this, name, we);
+            PlatoResultHandler resultHandler = new PlatoResultHandler(this, name, we, isSystem(dialog));
             taskManager.queue(task, "Plato - Translating concepts to STG", resultHandler);
             return null;
         }
@@ -55,6 +55,10 @@ public class PlatoStgConversionCommand extends AbstractConversionCommand {
 
     public boolean getDotLayout() {
         return dotLayout;
+    }
+
+    private boolean isSystem(PlatoWriterDialog dialog) {
+        return dialog.isSystem();
     }
 
 }

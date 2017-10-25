@@ -45,9 +45,9 @@ public class PlatoFstConversionCommand extends AbstractConversionCommand {
             WorkspaceEntry we = framework.getWorkspaceEntry(me);
             File inputFile = dialog.getFile();
             dotLayout = dialog.getDotLayoutState();
-            PlatoTask task = new PlatoTask(inputFile, dialog.getIncludeList(), true);
+            PlatoTask task = new PlatoTask(inputFile, dialog.getIncludeList(), true, isSystem(dialog));
             String name = FileUtils.getFileNameWithoutExtension(inputFile);
-            PlatoResultHandler resultHandler = new PlatoResultHandler(this, name, we);
+            PlatoResultHandler resultHandler = new PlatoResultHandler(this, name, we, isSystem(dialog));
             taskManager.queue(task, "Plato - Translating concepts to FST", resultHandler);
             return null;
         }
@@ -55,6 +55,10 @@ public class PlatoFstConversionCommand extends AbstractConversionCommand {
 
     public boolean getDotLayout() {
         return dotLayout;
+    }
+
+    private boolean isSystem(PlatoWriterDialog dialog) {
+        return dialog.isSystem();
     }
 
 }

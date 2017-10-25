@@ -52,6 +52,13 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessResu
         @Override
         public void run() {
             try {
+                if (system) {
+                    PlatoSystemTask task = new PlatoSystemTask();
+                    PlatoResultHandler resultHandler = new PlatoResultHandler(sender, name, we, false);
+                    final TaskManager taskManager = Framework.getInstance().getTaskManager();
+                    taskManager.queue(task, "Plato - Translating concepts", resultHandler);
+                    return;
+                }
                 String output = new String(result.getReturnValue().getOutput());
                 if (result.getOutcome() == Outcome.SUCCESS) {
                     final Framework framework = Framework.getInstance();
@@ -61,8 +68,8 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessResu
                         int endOfFile = output.indexOf(".end") + 4;
                         String info = output.substring(endOfFile).trim();
                         output = output.substring(0, endOfFile);
-
                         String[] invariants = info.split(System.getProperty("line.separator"));
+
                         if (!info.isEmpty()) {
                             for (String s : invariants) {
                                 if (!s.isEmpty()) {
@@ -96,15 +103,17 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessResu
     private final String name;
     private final Object sender;
     private WorkspaceEntry we = null;
+    private final boolean system;
 
-    public PlatoResultHandler(Object sender, String name, WorkspaceEntry we) {
+    public PlatoResultHandler(Object sender, String name, WorkspaceEntry we, boolean system) {
         this.sender = sender;
         this.name = name;
         this.we = we;
+        this.system = system;
     }
 
     public PlatoResultHandler(Object sender) {
-        this(sender, null, null);
+        this(sender, null, null, false);
     }
 
     public void finished(final Result<? extends ExternalProcessResult> result) {
