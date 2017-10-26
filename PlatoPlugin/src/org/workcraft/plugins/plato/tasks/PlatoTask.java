@@ -1,7 +1,6 @@
 package org.workcraft.plugins.plato.tasks;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 
@@ -103,14 +102,9 @@ public class PlatoTask implements Task<ExternalProcessResult> {
         if (system) {
             File hidir = new File(System.getProperty("java.io.tmpdir", null), "hidir");
             if (!hidir.exists() && !hidir.mkdir()) {
-                try {
-                    throw new IOException("Failed to create temporary directory " + hidir);
-                } catch (IOException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
-                }
-                command.add("-hidir " + hidir.getAbsolutePath());
+                System.out.println("Error creating temp file for compilation");
             }
+            command.add("-hidir " + hidir.getAbsolutePath());
         }
 
         return command;
