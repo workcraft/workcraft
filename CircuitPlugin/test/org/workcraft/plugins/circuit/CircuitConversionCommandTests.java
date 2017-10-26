@@ -12,6 +12,7 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.circuit.commands.CircuitToStgConversionCommand;
+import org.workcraft.plugins.circuit.commands.CircuitToStgWithEnvironmentConversionCommand;
 import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
@@ -19,11 +20,6 @@ import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class CircuitConversionCommandTests {
-
-    private static final String[] TEST_CIRCUIT_WORKS = {
-        "org/workcraft/plugins/circuit/buffer.circuit.work",
-        "org/workcraft/plugins/circuit/celement.circuit.work",
-    };
 
     @BeforeClass
     public static void init() {
@@ -44,49 +40,66 @@ public class CircuitConversionCommandTests {
     }
 
     @Test
-    public void testCircuitConversionCommands() throws IOException, DeserialisationException {
+    public void testBufferCircuitConversionCommands() throws IOException, DeserialisationException {
+        testCircuitConversionCommands("org/workcraft/plugins/circuit/buffer.circuit.work", false, 0);
+    }
+
+    @Test
+    public void testCelementCircuitConversionCommands() throws IOException, DeserialisationException {
+        testCircuitConversionCommands("org/workcraft/plugins/circuit/celement.circuit.work", false, 0);
+    }
+
+    @Test
+    public void testVmeCircuitConversionCommands() throws IOException, DeserialisationException {
+        String testCircuitWork = "org/workcraft/plugins/circuit/vme-tm.circuit.work";
+        testCircuitConversionCommands(testCircuitWork, false, 0);
+        testCircuitConversionCommands(testCircuitWork, true, 17);
+    }
+
+    private void testCircuitConversionCommands(String testCircuitWork, boolean composeEnvironment, int extraPlaceCount)
+            throws IOException, DeserialisationException {
+
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        for (String testCircuitWork: TEST_CIRCUIT_WORKS) {
-            URL srcUrl = classLoader.getResource(testCircuitWork);
+        URL srcUrl = classLoader.getResource(testCircuitWork);
 
-            WorkspaceEntry srcWe = framework.loadWork(srcUrl.getFile());
-            Circuit srcCircuit = WorkspaceUtils.getAs(srcWe, Circuit.class);
+        WorkspaceEntry srcWe = framework.loadWork(srcUrl.getFile());
+        Circuit srcCircuit = WorkspaceUtils.getAs(srcWe, Circuit.class);
 
-            VisualCircuit srcVisualCircuit = WorkspaceUtils.getAs(srcWe, VisualCircuit.class);
-            srcVisualCircuit.setEnvironmentFile(null);
-
-            Set<String> srcCircuitInputs = new HashSet<>();
-            Set<String> srcCircuitOutputs = new HashSet<>();
-            for (Contact port: srcCircuit.getPorts()) {
-                if (port.isInput()) {
-                    srcCircuitInputs.add(port.getName());
-                }
-                if (port.isOutput()) {
-                    srcCircuitOutputs.add(port.getName());
-                }
+        Set<String> srcCircuitInputs = new HashSet<>();
+        Set<String> srcCircuitOutputs = new HashSet<>();
+        for (Contact port: srcCircuit.getPorts()) {
+            if (port.isInput()) {
+                srcCircuitInputs.add(port.getName());
             }
-            int srcCircuitSignalCount = srcCircuitInputs.size();
-            for (FunctionComponent component: srcCircuit.getFunctionComponents()) {
-                if (!component.getIsZeroDelay()) {
-                    srcCircuitSignalCount++;
-                }
+            if (port.isOutput()) {
+                srcCircuitOutputs.add(port.getName());
             }
-
-            CircuitToStgConversionCommand command = new CircuitToStgConversionCommand();
-            WorkspaceEntry dstWe = command.execute(srcWe);
-            Stg dstStg = WorkspaceUtils.getAs(dstWe, Stg.class);
-            int dstStgPlaceCount = dstStg.getPlaces().size();
-            Set<String> dstStgInputs = dstStg.getSignalNames(Type.INPUT, null);
-            Set<String> dstStgOutputs = dstStg.getSignalNames(Type.OUTPUT, null);
-
-            Assert.assertEquals(2 * srcCircuitSignalCount, dstStgPlaceCount);
-            Assert.assertEquals(srcCircuitInputs, dstStgInputs);
-            Assert.assertEquals(srcCircuitOutputs, dstStgOutputs);
-
-            framework.closeWork(srcWe);
-            framework.closeWork(dstWe);
         }
+        int srcCircuitSignalCount = srcCircuitInputs.size();
+        for (FunctionComponent component: srcCircuit.getFunctionComponents()) {
+            if (!component.getIsZeroDelay()) {
+                srcCircuitSignalCount++;
+            }
+        }
+
+        CircuitToStgConversionCommand command = new CircuitToStgConversionCommand();
+        if (composeEnvironment) {
+            command = new CircuitToStgWithEnvironmentConversionCommand();
+        }
+        WorkspaceEntry dstWe = command.execute(srcWe);
+
+        Stg dstStg = WorkspaceUtils.getAs(dstWe, Stg.class);
+        int dstStgPlaceCount = dstStg.getPlaces().size();
+        Set<String> dstStgInputs = dstStg.getSignalNames(Type.INPUT, null);
+        Set<String> dstStgOutputs = dstStg.getSignalNames(Type.OUTPUT, null);
+
+        Assert.assertEquals(2 * srcCircuitSignalCount + extraPlaceCount, dstStgPlaceCount);
+        Assert.assertEquals(srcCircuitInputs, dstStgInputs);
+        Assert.assertEquals(srcCircuitOutputs, dstStgOutputs);
+
+        framework.closeWork(srcWe);
+        framework.closeWork(dstWe);
     }
 
 }
