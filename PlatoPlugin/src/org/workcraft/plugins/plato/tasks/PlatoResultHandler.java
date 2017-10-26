@@ -52,34 +52,44 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessResu
         @Override
         public void run() {
             try {
-                String output = new String(result.getReturnValue().getOutput());
-                if (result.getOutcome() == Outcome.SUCCESS) {
-                    final Framework framework = Framework.getInstance();
-                    final MainWindow mainWindow = framework.getMainWindow();
-                    GraphEditorPanel editor = mainWindow.getEditor(we);
-                    if (output.startsWith(".model out") || output.startsWith(".inputs")) {
-                        int endOfFile = output.indexOf(".end") + 4;
-                        String info = output.substring(endOfFile).trim();
-                        output = output.substring(0, endOfFile);
-
-                        String[] invariants = info.split(System.getProperty("line.separator"));
-                        if (!info.isEmpty()) {
-                            for (String s : invariants) {
-                                if (!s.isEmpty()) {
-                                    LogUtils.logInfo(s);
-                                }
-                            }
-                        } else {
-                            invariants = new String[0];
-                        }
-
-                        if (sender instanceof PlatoStgConversionCommand) {
-                            addStg(output, framework, editor, invariants);
-                        } else if (sender instanceof PlatoFstConversionCommand) {
-                            addFst(output, framework, editor);
-                        }
+                if (system) {
+                    if (result.getOutcome() == Outcome.SUCCESS) {
+                        PlatoSystemTask task = new PlatoSystemTask();
+                        PlatoResultHandler resultHandler = new PlatoResultHandler(sender, name, we, false);
+                        final TaskManager taskManager = Framework.getInstance().getTaskManager();
+                        taskManager.queue(task, "Plato - Translating concepts", resultHandler);
                         return;
+                    }
+                } else {
+                    String output = new String(result.getReturnValue().getOutput());
+                    if (result.getOutcome() == Outcome.SUCCESS) {
+                        final Framework framework = Framework.getInstance();
+                        final MainWindow mainWindow = framework.getMainWindow();
+                        GraphEditorPanel editor = mainWindow.getEditor(we);
+                        if (output.startsWith(".model out") || output.startsWith(".inputs")) {
+                            int endOfFile = output.indexOf(".end") + 4;
+                            String info = output.substring(endOfFile).trim();
+                            output = output.substring(0, endOfFile);
+                            String[] invariants = info.split(System.getProperty("line.separator"));
 
+                            if (!info.isEmpty()) {
+                                for (String s : invariants) {
+                                    if (!s.isEmpty()) {
+                                        LogUtils.logInfo(s);
+                                    }
+                                }
+                            } else {
+                                invariants = new String[0];
+                            }
+
+                            if (sender instanceof PlatoStgConversionCommand) {
+                                addStg(output, framework, editor, invariants);
+                            } else if (sender instanceof PlatoFstConversionCommand) {
+                                addFst(output, framework, editor);
+                            }
+                            return;
+
+                        }
                     }
                 }
                 throw new PlatoException(result);
@@ -96,15 +106,17 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessResu
     private final String name;
     private final Object sender;
     private WorkspaceEntry we = null;
+    private final boolean system;
 
-    public PlatoResultHandler(Object sender, String name, WorkspaceEntry we) {
+    public PlatoResultHandler(Object sender, String name, WorkspaceEntry we, boolean system) {
         this.sender = sender;
         this.name = name;
         this.we = we;
+        this.system = system;
     }
 
     public PlatoResultHandler(Object sender) {
-        this(sender, null, null);
+        this(sender, null, null, false);
     }
 
     public void finished(final Result<? extends ExternalProcessResult> result) {

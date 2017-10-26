@@ -2,7 +2,9 @@ package org.workcraft.plugins.plato.interop;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Scanner;
 
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.DeserialisationException;
@@ -39,7 +41,12 @@ public class ConceptsImporter implements Importer {
     @Override
     public ModelEntry importFrom(InputStream in) throws DeserialisationException {
         try {
-            PlatoTask task = new PlatoTask(inputFile);
+            String text = getFileText();
+            boolean system = false;
+            if (text.contains("system =")) {
+                system = true;
+            }
+            PlatoTask task = new PlatoTask(inputFile, new String[0], false, system);
             PlatoResultHandler monitor = new PlatoResultHandler(this);
             Result<? extends ExternalProcessResult> result = task.run(monitor);
             if (result.getOutcome() == Outcome.SUCCESS) {
@@ -56,6 +63,20 @@ public class ConceptsImporter implements Importer {
             e.handleConceptsError();
             throw new DeserialisationException();
         }
+    }
+
+    private String getFileText() {
+        String result = "";
+        try {
+            Scanner k = new Scanner(inputFile);
+            while (k.hasNextLine()) {
+                result = result + k.nextLine();
+            }
+            k.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
 }

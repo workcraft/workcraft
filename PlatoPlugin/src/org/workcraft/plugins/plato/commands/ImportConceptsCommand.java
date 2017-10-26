@@ -2,6 +2,7 @@ package org.workcraft.plugins.plato.commands;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -54,13 +55,32 @@ public class ImportConceptsCommand implements Command {
     public void run(WorkspaceEntry we) {
         File inputFile = getInputFile();
         if (inputFile != null) {
+            String text = getFileText(inputFile);
+            boolean system = false;
+            if (text.contains("system =")) {
+                system = true;
+            }
             final Framework framework = Framework.getInstance();
             final TaskManager taskManager = framework.getTaskManager();
             PlatoTask task = new PlatoTask(inputFile);
             String inputName = FileUtils.getFileNameWithoutExtension(inputFile);
-            final PlatoResultHandler result = new PlatoResultHandler(this, inputName, we);
+            final PlatoResultHandler result = new PlatoResultHandler(this, inputName, we, system);
             taskManager.queue(task, "Translating concepts", result);
         }
+    }
+
+    private String getFileText(File inputFile) {
+        String result = "";
+        try {
+            Scanner k = new Scanner(inputFile);
+            while (k.hasNextLine()) {
+                result = result + k.nextLine();
+            }
+            k.close();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return result;
     }
 
 }

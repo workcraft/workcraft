@@ -82,7 +82,7 @@ public class PlatoWriterDialog extends JDialog {
         conceptsText = new JTextArea();
         conceptsText.setMargin(SizeHelper.getTextMargin());
         conceptsText.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
-        conceptsText.setText(getDefaultText());
+        conceptsText.setText(getDefaultComponentText());
         if (lastFileUsed != null && lastFileUsed.exists()) {
             try {
                 conceptsText.setText(readFile(lastFileUsed));
@@ -118,13 +118,15 @@ public class PlatoWriterDialog extends JDialog {
     private void createFileBtnPanel() {
         JButton openFileBtn = GUI.createDialogButton("Open file");
         JButton saveFileBtn = GUI.createDialogButton("Save to file");
-        JButton resetBtn = GUI.createDialogButton("Reset to default");
+        JButton componentBtn = GUI.createDialogButton("New component");
+        JButton systemBtn = GUI.createDialogButton("New system");
         JButton includeBtn = GUI.createDialogButton("Included files");
         dotLayoutCheckBox = new JCheckBox("Use dot layout");
         JPanel fileBtnPanel = new JPanel();
         fileBtnPanel.add(openFileBtn);
         fileBtnPanel.add(saveFileBtn);
-        fileBtnPanel.add(resetBtn);
+        fileBtnPanel.add(componentBtn);
+        fileBtnPanel.add(systemBtn);
         fileBtnPanel.add(includeBtn);
         if (!fst) {
             fileBtnPanel.add(dotLayoutCheckBox);
@@ -183,11 +185,22 @@ public class PlatoWriterDialog extends JDialog {
 
         });
 
-        resetBtn.addActionListener(new ActionListener() {
+        componentBtn.addActionListener(new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                conceptsText.setText(getDefaultText());
+                conceptsText.setText(getDefaultComponentText());
+                lastFileUsed = null;
+                changed = false;
+            }
+
+        });
+
+        systemBtn.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                conceptsText.setText(getDefaultSystemText());
                 lastFileUsed = null;
                 changed = false;
             }
@@ -250,10 +263,18 @@ public class PlatoWriterDialog extends JDialog {
         }
     }
 
-    private String getDefaultText() {
+    private String getDefaultComponentText() {
         String result = "module Concept where\n" + "\n" + "import Tuura.Concept.";
         result = result + (fst ? "FSM" : "STG");
-        result = result + "\n\n" + "circuit a b c = \n" + "  where";
+        result = result + "\n\n" + "component a b c = \n" + "  where";
+        return result;
+    }
+
+    private String getDefaultSystemText() {
+        String result = "module Concept where\n" + "\n" + "import Tuura.Concept.";
+        result = result + (fst ? "FSM" : "STG") + "\n\n";
+        result = result + "data Signal = A | B | C deriving (Bounded, Enum, Eq)";
+        result = result + "\n\n" + "system = \n" + "  where";
         return result;
     }
 
@@ -304,6 +325,13 @@ public class PlatoWriterDialog extends JDialog {
             return new Object[0];
         }
         return list;
+    }
+
+    public Boolean isSystem() {
+        if (conceptsText.getText().contains("system = ")) {
+            return true;
+        }
+        return false;
     }
 
 }
