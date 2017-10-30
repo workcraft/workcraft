@@ -48,7 +48,6 @@ public class Console {
             }
         }
 
-        //LogUtils.logMessageLine("Initialising framework...");
         final Framework framework = Framework.getInstance();
         boolean startGUI = true;
         for (String arg: args) {
