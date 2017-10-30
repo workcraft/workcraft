@@ -50,23 +50,21 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
             return name;
         }
 
-        public static AffineTransform getDirectionTransform(Direction dir) {
+        public AffineTransform getTransform() {
             AffineTransform result = new AffineTransform();
-            if (dir != null) {
-                switch (dir) {
-                case WEST:
-                    result.quadrantRotate(2);
-                    break;
-                case NORTH:
-                    result.quadrantRotate(3);
-                    break;
-                case EAST:
-                    result.setToIdentity();
-                    break;
-                case SOUTH:
-                    result.quadrantRotate(1);
-                    break;
-                }
+            switch (this) {
+            case WEST:
+                result.quadrantRotate(2);
+                break;
+            case NORTH:
+                result.quadrantRotate(3);
+                break;
+            case EAST:
+                result.setToIdentity();
+                break;
+            case SOUTH:
+                result.quadrantRotate(1);
+                break;
             }
             return result;
         }
@@ -262,7 +260,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
         }
 
         AffineTransform savedTransform = g.getTransform();
-        AffineTransform rotateTransform = Direction.getDirectionTransform(getDirection());
+        AffineTransform rotateTransform = getDirection() != null ? getDirection().getTransform() : new AffineTransform();
         if (isInput()) {
             rotateTransform.quadrantRotate(2);
         }

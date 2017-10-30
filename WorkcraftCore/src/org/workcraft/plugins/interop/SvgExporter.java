@@ -20,19 +20,26 @@ import org.workcraft.util.XmlUtils;
 
 public class SvgExporter implements Exporter {
 
+    private static final double SCALE_FACTOR = 50.0;
+
     @Override
     public void export(Model model, OutputStream out) throws IOException, SerialisationException {
-        if (model == null) {
+        if (!(model instanceof VisualModel)) {
             throw new SerialisationException("Non-visual model cannot be exported as SVG file.");
         }
+        VisualModel visualModel = (VisualModel) model;
         try {
             Document doc = XmlUtils.createDocument();
             SVGGraphics2D g2d = new SVGGraphics2D(doc);
-            g2d.scale(50, 50);
-            Rectangle2D bounds = ((VisualGroup) model.getRoot()).getBoundingBoxInLocalSpace();
+            g2d.setUnsupportedAttributes(null);
+            g2d.scale(SCALE_FACTOR, SCALE_FACTOR);
+            VisualGroup visualGroup = (VisualGroup) model.getRoot();
+            Rectangle2D bounds = visualGroup.getBoundingBoxInLocalSpace();
             g2d.translate(-bounds.getMinX(), -bounds.getMinY());
-            g2d.setSVGCanvasSize(new Dimension((int) (bounds.getWidth() * 50), (int) (bounds.getHeight() * 50)));
-            ((VisualModel) model).draw(g2d, Decorator.Empty.INSTANCE);
+            int canvasWidth = (int) (bounds.getWidth() * SCALE_FACTOR);
+            int canvasHeight = (int) (bounds.getHeight() * SCALE_FACTOR);
+            g2d.setSVGCanvasSize(new Dimension(canvasWidth, canvasHeight));
+            visualModel.draw(g2d, Decorator.Empty.INSTANCE);
             g2d.stream(new OutputStreamWriter(out));
         } catch (ParserConfigurationException e) {
             throw new SerialisationException(e);

@@ -1,5 +1,7 @@
 package org.workcraft.dom.visual;
 
+import java.awt.geom.AffineTransform;
+
 public enum Positioning {
     TOP("Top", 0.0, -0.2),
     BOTTOM("Bottom", 0.0, 0.2),
@@ -28,6 +30,40 @@ public enum Positioning {
     @Override
     public String toString() {
         return name;
+    }
+
+    public AffineTransform getTransform() {
+        AffineTransform result = new AffineTransform();
+        switch (this) {
+        case TOP:
+            result.rotate(1.0, 0.0);
+            break;
+        case RIGHT:
+            result.rotate(0.0, 1.0);
+            break;
+        case BOTTOM:
+            result.rotate(-1.0, 0.0);
+            break;
+        case LEFT:
+            result.rotate(0.0, -1.0);
+            break;
+        case BOTTOM_LEFT:
+            result.rotate(-1.0, -1.0);
+            break;
+        case BOTTOM_RIGHT:
+            result.rotate(-1.0, 1.0);
+            break;
+        case CENTER:
+            result.rotate(0.0, 0.0);
+            break;
+        case TOP_LEFT:
+            result.rotate(1.0, -1.0);
+            break;
+        case TOP_RIGHT:
+            result.rotate(1.0, 1.0);
+            break;
+        }
+        return result;
     }
 
     public Positioning flipHorizontal() {

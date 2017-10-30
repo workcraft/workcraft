@@ -24,6 +24,7 @@ import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
+import org.workcraft.plugins.circuit.VisualContact.Direction;
 import org.workcraft.plugins.circuit.renderers.CElementRenderer;
 import org.workcraft.plugins.circuit.renderers.CElementRenderingResult;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult;
@@ -222,7 +223,8 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
             AffineTransform bt = new AffineTransform();
             VisualContact mainOutput = getMainVisualOutput();
             if (mainOutput != null) {
-                at = VisualContact.Direction.getDirectionTransform(mainOutput.getDirection());
+                Direction direction = mainOutput.getDirection();
+                at = direction != null ? direction.getTransform() : new AffineTransform();
             }
             double inputPositionX = TransformHelper.snapP5(res.boundingBox().getMinX() - GateRenderer.contactMargin);
             double outputPositionX = TransformHelper.snapP5(res.boundingBox().getMaxX() + GateRenderer.contactMargin);
