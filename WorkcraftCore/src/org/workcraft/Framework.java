@@ -779,6 +779,7 @@ public final class Framework {
                 mainWindow.createEditorWindow(we);
             }
         }
+        updateJavaScript(we);
         return we;
     }
 
