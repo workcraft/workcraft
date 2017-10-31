@@ -12,9 +12,11 @@ public class Register extends MathDelayNode {
         return marked;
     }
 
-    public void setMarked(boolean marked) {
-        this.marked = marked;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_MARKED));
+    public void setMarked(boolean value) {
+        if (marked != value) {
+            marked = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_MARKED));
+        }
     }
 
 }

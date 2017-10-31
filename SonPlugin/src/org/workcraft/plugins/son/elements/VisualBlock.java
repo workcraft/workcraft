@@ -145,9 +145,9 @@ public class VisualBlock extends VisualPage implements VisualTransitionNode {
     }
 
     @Override
-    public void setIsCollapsed(boolean isCollapsed) {
+    public void setIsCollapsed(boolean value) {
         sendNotification(new TransformChangingEvent(this));
-        this.getReferencedComponent().setIsCollapsed(isCollapsed);
+        getReferencedComponent().setIsCollapsed(value);
         sendNotification(new TransformChangedEvent(this));
     }
 

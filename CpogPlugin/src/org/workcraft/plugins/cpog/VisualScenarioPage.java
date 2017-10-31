@@ -25,9 +25,11 @@ public class VisualScenarioPage extends VisualPage {
 
     private Encoding encoding = new Encoding();
 
-    public void setEncoding(Encoding encoding) {
-        this.encoding = encoding;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_ENCODING));
+    public void setEncoding(Encoding value) {
+        if (encoding != value) {
+            encoding = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_ENCODING));
+        }
     }
 
     public Encoding getEncoding() {

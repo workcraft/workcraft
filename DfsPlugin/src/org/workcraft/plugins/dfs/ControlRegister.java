@@ -33,8 +33,10 @@ public class ControlRegister extends BinaryRegister {
     }
 
     public void setSynchronisationType(SynchronisationType value) {
-        this.synchronisationType = value;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_SYNCHRONISATION_TYPE));
+        if (synchronisationType != value) {
+            synchronisationType = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_SYNCHRONISATION_TYPE));
+        }
     }
 
     public double getProbability() {
@@ -42,8 +44,10 @@ public class ControlRegister extends BinaryRegister {
     }
 
     public void setProbability(double value) {
-        this.probability = value;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_PROBABILITY));
+        if (probability != value) {
+            probability = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_PROBABILITY));
+        }
     }
 
 }

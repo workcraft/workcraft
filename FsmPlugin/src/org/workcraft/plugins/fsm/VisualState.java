@@ -78,8 +78,10 @@ public class VisualState extends VisualComponent {
     }
 
     public void setInitialMarkerPositioning(Positioning value) {
-        initialMarkerPositioning = value;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_INITIAL_MARKER_POSITIONING));
+        if (initialMarkerPositioning != value) {
+            initialMarkerPositioning = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_INITIAL_MARKER_POSITIONING));
+        }
     }
 
     @Override

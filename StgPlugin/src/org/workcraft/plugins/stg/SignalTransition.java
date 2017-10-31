@@ -98,9 +98,9 @@ public class SignalTransition extends NamedTransition {
         return type;
     }
 
-    public void setSignalType(Type type) {
-        if (this.type != type) {
-            this.type = type;
+    public void setSignalType(Type value) {
+        if (type != value) {
+            type = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_SIGNAL_TYPE));
         }
     }
@@ -111,9 +111,9 @@ public class SignalTransition extends NamedTransition {
 
     // FIXME: As direction is part of the node reference use Stg.setDirection(Node) instead!
     // This method is only to be used from StgNameManager.
-    public void setDirection(Direction direction) {
-        if (this.direction != direction) {
-            this.direction = direction;
+    public void setDirection(Direction value) {
+        if (direction != value) {
+            direction = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_DIRECTION));
         }
     }
@@ -126,9 +126,12 @@ public class SignalTransition extends NamedTransition {
     @NoAutoSerialisation
     // FIXME: As signal name is part of the node reference use Stg.setName(Node, String) instead!
     // This method is only to be used from StgNameManager.
-    public void setSignalName(String signalName) {
-        this.signalName = signalName;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_SIGNAL_NAME));
+    public void setSignalName(String value) {
+        if (value == null) value = "";
+        if (!value.equals(signalName)) {
+            signalName = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_SIGNAL_NAME));
+        }
     }
 
     @NoAutoSerialisation

@@ -36,8 +36,12 @@ public class FunctionContact extends Contact {
         }
     }
 
-    public void setSetFunctionQuiet(BooleanFormula value) {
-        setFunction = value;
+    public boolean setSetFunctionQuiet(BooleanFormula value) {
+        if (setFunction != value) {
+            setFunction = value;
+            return true;
+        }
+        return false;
     }
 
     public BooleanFormula getResetFunction() {
@@ -55,8 +59,12 @@ public class FunctionContact extends Contact {
         }
     }
 
-    public void setResetFunctionQuiet(BooleanFormula value) {
-        resetFunction = value;
+    public boolean setResetFunctionQuiet(BooleanFormula value) {
+        if (resetFunction != value) {
+            resetFunction = value;
+            return true;
+        }
+        return false;
     }
 
 }

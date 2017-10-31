@@ -24,9 +24,11 @@ public class Event extends MathConnection {
         return symbol;
     }
 
-    public void setSymbol(Symbol symbol) {
-        this.symbol = symbol;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_SYMBOL));
+    public void setSymbol(Symbol value) {
+        if (symbol != value) {
+            symbol = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_SYMBOL));
+        }
     }
 
 }

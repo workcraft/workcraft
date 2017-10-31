@@ -388,9 +388,9 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
     }
 
     public void setDirection(Direction value) {
-        if (value != direction) {
+        if (direction != value) {
             sendNotification(new TransformChangingEvent(this));
-            this.direction = value;
+            direction = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_DIRECTION));
             sendNotification(new TransformChangedEvent(this));
         }

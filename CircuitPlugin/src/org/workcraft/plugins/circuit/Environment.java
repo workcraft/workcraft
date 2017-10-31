@@ -15,18 +15,22 @@ public class Environment extends MathNode {
         return file;
     }
 
-    public void setFile(File file) {
-        this.file = file;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_FILE));
+    public void setFile(File value) {
+        if (file != value) {
+            file = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_FILE));
+        }
     }
 
     public File getBase() {
         return base;
     }
 
-    public void setBase(File base) {
-        this.base = base;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_BASE));
+    public void setBase(File value) {
+        if (base != value) {
+            base = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_BASE));
+        }
     }
 
 }

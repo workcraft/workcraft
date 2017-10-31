@@ -384,10 +384,12 @@ public class WorkspaceEntry implements ObservableState {
         }
     }
 
-    public void setTemplateNode(VisualNode node) {
-        templateNode = node;
-        VisualModel visualModel = getModelEntry().getVisualModel();
-        visualModel.sendNotification(new SelectionChangedEvent(visualModel, null));
+    public void setTemplateNode(VisualNode value) {
+        if (templateNode != value) {
+            templateNode = value;
+            VisualModel visualModel = getModelEntry().getVisualModel();
+            visualModel.sendNotification(new SelectionChangedEvent(visualModel, null));
+        }
     }
 
     public VisualNode getTemplateNode() {

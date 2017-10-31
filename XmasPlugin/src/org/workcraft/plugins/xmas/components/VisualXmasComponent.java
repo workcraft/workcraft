@@ -124,14 +124,14 @@ public abstract class VisualXmasComponent extends VisualComponent implements Con
         return orientation;
     }
 
-    public void setOrientation(VisualXmasComponent.Orientation orientation) {
-        if (this.orientation != orientation) {
+    public void setOrientation(Orientation value) {
+        if (orientation != value) {
             for (VisualXmasContact contact: getContacts()) {
                 AffineTransform rotateTransform = new AffineTransform();
-                rotateTransform.quadrantRotate(orientation.getQuadrant() - getOrientation().getQuadrant());
+                rotateTransform.quadrantRotate(value.getQuadrant() - getOrientation().getQuadrant());
                 TransformHelper.applyTransform(contact, rotateTransform);
             }
-            this.orientation = orientation;
+            orientation = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_ORIENTATION));
         }
     }

@@ -12,9 +12,12 @@ public class DummyTransition extends NamedTransition {
     private String name;
 
     @NoAutoSerialisation
-    public void setName(String name) {
-        this.name = name;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_NAME));
+    public void setName(String value) {
+        if (value == null) value = "";
+        if (!value.equals(name)) {
+            name = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_NAME));
+        }
     }
 
     @NoAutoSerialisation

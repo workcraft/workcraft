@@ -175,9 +175,8 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
         return getMathVertex().getCondition();
     }
 
-    public void setCondition(BooleanFormula condition) {
-        getMathVertex().setCondition(condition);
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_CONDITION));
+    public void setCondition(BooleanFormula value) {
+        getMathVertex().setCondition(value);
     }
 
     public BooleanFormula evaluate() {
@@ -217,9 +216,9 @@ public class VisualVertex extends VisualComponent implements CpogFormulaVariable
         return renderType;
     }
 
-    public void setRenderType(RenderType renderType) {
-        if (this.renderType != renderType) {
-            this.renderType = renderType;
+    public void setRenderType(RenderType value) {
+        if (renderType != value) {
+            renderType = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_RENDER_TYPE));
         }
     }

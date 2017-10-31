@@ -16,8 +16,10 @@ public class Logic extends MathDelayNode {
     }
 
     public void setComputed(boolean value) {
-        this.computed = value;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_COMPUTED));
+        if (computed != value) {
+            computed = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_COMPUTED));
+        }
     }
 
     public boolean isEarlyEvaluation() {
@@ -25,8 +27,10 @@ public class Logic extends MathDelayNode {
     }
 
     public void setEarlyEvaluation(boolean value) {
-        this.earlyEvaluation = value;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_EARLY_EVALUATION));
+        if (earlyEvaluation != value) {
+            earlyEvaluation = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_EARLY_EVALUATION));
+        }
     }
 
 }

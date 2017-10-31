@@ -18,7 +18,7 @@ public class Place extends MathNode {
     }
 
     public void setTokens(int value) {
-        if (value != tokens) {
+        if (tokens != value) {
             if (value < 0) {
                 throw new ArgumentException("The number of tokens cannot be negative.");
             }
@@ -35,7 +35,7 @@ public class Place extends MathNode {
     }
 
     public void setCapacity(int value) {
-        if (value != capacity) {
+        if (capacity != value) {
             if (value < 1) {
                 throw new ArgumentException("Negative or zero capacity is not allowed.");
             }

@@ -108,8 +108,8 @@ public abstract class AbstractModel implements Model {
     }
 
     @Override
-    public void setTitle(String title) {
-        this.title = title;
+    public void setTitle(String value) {
+        title = value;
     }
 
     @Override

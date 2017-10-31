@@ -135,18 +135,23 @@ public class ONGroup extends PageNode {
         return Hierarchy.getDescendantsOfType(this, SONConnection.class);
     }
 
-    public void setForegroundColor(Color color) {
-        this.color = color;
-        sendNotification(new PropertyChangedEvent(this, "foregroundColor"));
+    public void setForegroundColor(Color value) {
+        if (!color.equals(value)) {
+            color = value;
+            sendNotification(new PropertyChangedEvent(this, "foregroundColor"));
+        }
     }
 
     public Color getForegroundColor() {
         return color;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
-        sendNotification(new PropertyChangedEvent(this, "label"));
+    public void setLabel(String value) {
+        if (value == null) value = "";
+        if (!label.equals(label)) {
+            label = value;
+            sendNotification(new PropertyChangedEvent(this, "label"));
+        }
     }
 
     public String getLabel() {

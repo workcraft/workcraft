@@ -153,9 +153,11 @@ public class VisualEvent extends VisualConnection {
         return labelColor;
     }
 
-    public void setLabelColor(Color symbolColor) {
-        this.labelColor = symbolColor;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_LABEL_COLOR));
+    public void setLabelColor(Color value) {
+        if (!labelColor.equals(value)) {
+            labelColor = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_LABEL_COLOR));
+        }
     }
 
     @Override

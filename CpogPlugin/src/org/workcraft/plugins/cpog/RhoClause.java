@@ -12,9 +12,11 @@ public class RhoClause extends MathNode {
 
     private BooleanFormula formula = BooleanOperations.ONE;
 
-    public void setFormula(BooleanFormula formula) {
-        this.formula = formula;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_FORMULA));
+    public void setFormula(BooleanFormula value) {
+        if (formula != value) {
+            formula = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_FORMULA));
+        }
     }
 
     public BooleanFormula getFormula() {

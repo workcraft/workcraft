@@ -14,18 +14,22 @@ public class CounterflowRegister extends MathDelayNode {
         return orMarked;
     }
 
-    public void setOrMarked(boolean orMarked) {
-        this.orMarked = orMarked;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_OR_MARKED));
+    public void setOrMarked(boolean value) {
+        if (orMarked != value) {
+            orMarked = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_OR_MARKED));
+        }
     }
 
     public boolean isAndMarked() {
         return andMarked;
     }
 
-    public void setAndMarked(boolean andMarked) {
-        this.andMarked = andMarked;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_AND_MARKED));
+    public void setAndMarked(boolean value) {
+        if (andMarked != value) {
+            andMarked = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_AND_MARKED));
+        }
     }
 
 }

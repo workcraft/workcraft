@@ -38,8 +38,8 @@ public class XmasContact extends MathNode {
     }
 
     public void setIOType(IOType value) {
-        if (this.ioType != value) {
-            this.ioType = value;
+        if (ioType != value) {
+            ioType = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_IO_TYPE));
         }
     }

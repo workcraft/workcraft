@@ -60,9 +60,9 @@ public class SignalTransition extends SignalEvent {
         return direction;
     }
 
-    public void setDirection(Direction direction) {
-        if (this.direction != direction) {
-            this.direction = direction;
+    public void setDirection(Direction value) {
+        if (direction != value) {
+            direction = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_DIRECTION));
         }
     }

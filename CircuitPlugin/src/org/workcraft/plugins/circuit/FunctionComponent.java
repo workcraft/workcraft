@@ -50,8 +50,8 @@ public class FunctionComponent extends CircuitComponent {
     }
 
     public void setIsZeroDelay(boolean value) {
-        if (this.isZeroDelay != value) {
-            this.isZeroDelay = value;
+        if (isZeroDelay != value) {
+            isZeroDelay = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_IS_ZERO_DELAY));
         }
     }

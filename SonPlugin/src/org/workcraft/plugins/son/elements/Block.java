@@ -36,9 +36,11 @@ public class Block extends PageNode implements TransitionNode, Time {
         return result;
     }
 
-    public void setIsCollapsed(boolean isCollapsed) {
-        this.isCollapsed = isCollapsed;
-        sendNotification(new PropertyChangedEvent(this, "Is collapsed"));
+    public void setIsCollapsed(boolean value) {
+        if (isCollapsed != value) {
+            isCollapsed = value;
+            sendNotification(new PropertyChangedEvent(this, "Is collapsed"));
+        }
     }
 
     public Collection<Condition> getConditions() {
@@ -72,9 +74,11 @@ public class Block extends PageNode implements TransitionNode, Time {
     }
 
     @Override
-    public void setForegroundColor(Color color) {
-        this.foregroundColor = color;
-        sendNotification(new PropertyChangedEvent(this, "foregroundColor"));
+    public void setForegroundColor(Color value) {
+        if (!foregroundColor.equals(value)) {
+            foregroundColor = value;
+            sendNotification(new PropertyChangedEvent(this, "foregroundColor"));
+        }
     }
 
     @Override
@@ -83,9 +87,11 @@ public class Block extends PageNode implements TransitionNode, Time {
     }
 
     @Override
-    public void setFillColor(Color color) {
-        this.fillColor = color;
-        sendNotification(new PropertyChangedEvent(this, "fillColor"));
+    public void setFillColor(Color value) {
+        if (!fillColor.equals(value)) {
+            fillColor = value;
+            sendNotification(new PropertyChangedEvent(this, "fillColor"));
+        }
     }
 
     @Override
@@ -98,9 +104,12 @@ public class Block extends PageNode implements TransitionNode, Time {
     }
 
     @Override
-    public void setLabel(String label) {
-        this.label = label;
-        sendNotification(new PropertyChangedEvent(this, "label"));
+    public void setLabel(String value) {
+        if (value == null) value = "";
+        if (!value.equals(label)) {
+            label = value;
+            sendNotification(new PropertyChangedEvent(this, "label"));
+        }
     }
 
     @Override
@@ -112,9 +121,11 @@ public class Block extends PageNode implements TransitionNode, Time {
     public void setFaulty(boolean fault) {
     }
 
-    public void setDuration(Interval duration) {
-        this.duration = duration;
-        sendNotification(new PropertyChangedEvent(this, DurationPropertyDescriptor.PROPERTY_DURATION));
+    public void setDuration(Interval value) {
+        if (duration != value) {
+            duration = value;
+            sendNotification(new PropertyChangedEvent(this, DurationPropertyDescriptor.PROPERTY_DURATION));
+        }
     }
 
     @Override
@@ -131,9 +142,11 @@ public class Block extends PageNode implements TransitionNode, Time {
     }
 
     @Override
-    public void setStartTime(Interval duration) {
-        this.statTime = duration;
-        sendNotification(new PropertyChangedEvent(this, StartTimePropertyDescriptor.PROPERTY_START_TIME));
+    public void setStartTime(Interval value) {
+        if (statTime != value) {
+            statTime = value;
+            sendNotification(new PropertyChangedEvent(this, StartTimePropertyDescriptor.PROPERTY_START_TIME));
+        }
     }
 
     @Override
@@ -142,9 +155,11 @@ public class Block extends PageNode implements TransitionNode, Time {
     }
 
     @Override
-    public void setEndTime(Interval endTime) {
-        this.endTime = endTime;
-        sendNotification(new PropertyChangedEvent(this, EndTimePropertyDescriptor.PROPERTY_END_TIME));
+    public void setEndTime(Interval value) {
+        if (endTime != value) {
+            endTime = value;
+            sendNotification(new PropertyChangedEvent(this, EndTimePropertyDescriptor.PROPERTY_END_TIME));
+        }
     }
 
     @Override

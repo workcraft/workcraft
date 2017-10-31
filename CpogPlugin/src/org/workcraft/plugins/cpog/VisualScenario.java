@@ -272,18 +272,23 @@ public class VisualScenario extends VisualGroup {
         return new Rectangle2D.Double(bb.getMaxX() - labelBB.getWidth(), bb.getMinY() - labelBB.getHeight(), labelBB.getWidth(), labelBB.getHeight());
     }
 
-    public void setLabel(String label) {
-        this.label = label;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_LABEL));
+    public void setLabel(String value) {
+        if (value == null) value = "";
+        if (!value.equals(label)) {
+            label = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_LABEL));
+        }
     }
 
     public String getLabel() {
         return label;
     }
 
-    public void setEncoding(Encoding encoding) {
-        this.encoding = encoding;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_ENCODING));
+    public void setEncoding(Encoding value) {
+        if (encoding != value) {
+            encoding = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_ENCODING));
+        }
     }
 
     public Encoding getEncoding() {

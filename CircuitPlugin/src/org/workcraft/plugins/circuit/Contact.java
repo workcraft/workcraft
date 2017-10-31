@@ -47,8 +47,9 @@ public class Contact extends MathNode implements BooleanVariable {
 
     // FIXME: This setName method is only to enable accessing contact name via getName. Use setName of Circuit class to set all node names!
     public void setName(String value) {
-        if (!this.name.equals(value)) {
-            this.name = value;
+        if (value == null) value = "";
+        if (!value.equals(name)) {
+            name = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_NAME));
         }
     }
@@ -58,8 +59,8 @@ public class Contact extends MathNode implements BooleanVariable {
     }
 
     public void setIOType(IOType value) {
-        if (this.type != value) {
-            this.type = value;
+        if (type != value) {
+            type = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_IO_TYPE));
         }
     }
@@ -73,8 +74,8 @@ public class Contact extends MathNode implements BooleanVariable {
     }
 
     public void setInitToOne(boolean value) {
-        if (this.initToOne != value) {
-            this.initToOne = value;
+        if (initToOne != value) {
+            initToOne = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_INIT_TO_ONE));
         }
     }
@@ -84,8 +85,8 @@ public class Contact extends MathNode implements BooleanVariable {
     }
 
     public void setForcedInit(boolean value) {
-        if (this.forcedInit != value) {
-            this.forcedInit = value;
+        if (forcedInit != value) {
+            forcedInit = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_FORCED_INIT));
         }
     }
@@ -95,8 +96,8 @@ public class Contact extends MathNode implements BooleanVariable {
     }
 
     public void setPathBreaker(boolean value) {
-        if (this.pathBreaker != value) {
-            this.pathBreaker = value;
+        if (pathBreaker != value) {
+            pathBreaker = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_PATH_BREAKER));
         }
     }

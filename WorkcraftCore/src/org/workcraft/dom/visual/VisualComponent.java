@@ -162,9 +162,12 @@ public abstract class VisualComponent extends VisualTransformableNode implements
         return label;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_LABEL));
+    public void setLabel(String value) {
+        if (value == null) value = "";
+        if (!value.equals(label)) {
+            label = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_LABEL));
+        }
     }
 
     public Positioning getLabelPositioning() {
@@ -172,8 +175,10 @@ public abstract class VisualComponent extends VisualTransformableNode implements
     }
 
     public void setLabelPositioning(Positioning value) {
-        labelPositioning = value;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_LABEL_POSITIONING));
+        if (labelPositioning != value) {
+            labelPositioning = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_LABEL_POSITIONING));
+        }
     }
 
     public Color getLabelColor() {
@@ -181,8 +186,10 @@ public abstract class VisualComponent extends VisualTransformableNode implements
     }
 
     public void setLabelColor(Color value) {
-        labelColor = value;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_LABEL_COLOR));
+        if (labelColor != value) {
+            labelColor = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_LABEL_COLOR));
+        }
     }
 
     public Font getNameFont() {
@@ -194,8 +201,10 @@ public abstract class VisualComponent extends VisualTransformableNode implements
     }
 
     public void setNamePositioning(Positioning value) {
-        namePositioning = value;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_NAME_POSITIONING));
+        if (namePositioning != value) {
+            namePositioning = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_NAME_POSITIONING));
+        }
     }
 
     public Color getNameColor() {
@@ -203,8 +212,10 @@ public abstract class VisualComponent extends VisualTransformableNode implements
     }
 
     public void setNameColor(Color value) {
-        nameColor = value;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_NAME_COLOR));
+        if (!nameColor.equals(value)) {
+            nameColor = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_NAME_COLOR));
+        }
     }
 
     public Color getForegroundColor() {
@@ -212,8 +223,10 @@ public abstract class VisualComponent extends VisualTransformableNode implements
     }
 
     public void setForegroundColor(Color value) {
-        foregroundColor = value;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_FOREGROUND_COLOR));
+        if (!foregroundColor.equals(value)) {
+            foregroundColor = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_FOREGROUND_COLOR));
+        }
     }
 
     public Color getFillColor() {
@@ -221,8 +234,10 @@ public abstract class VisualComponent extends VisualTransformableNode implements
     }
 
     public void setFillColor(Color value) {
-        fillColor = value;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_FILL_COLOR));
+        if (!fillColor.equals(value)) {
+            fillColor = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_FILL_COLOR));
+        }
     }
 
     public MathNode getReferencedComponent() {
@@ -296,17 +311,16 @@ public abstract class VisualComponent extends VisualTransformableNode implements
         }
     }
 
-    protected void cacheLabelRenderedText(DrawRequest r) {
-        cacheLabelRenderedText(getLabel(), getLabelFont(), getLabelPositioning(), getLabelOffset());
+    protected boolean cacheLabelRenderedText(DrawRequest r) {
+        return cacheLabelRenderedText(getLabel(), getLabelFont(), getLabelPositioning(), getLabelOffset());
     }
 
-    protected void cacheLabelRenderedText(String text, Font font, Positioning positioning, Point2D offset) {
+    protected boolean cacheLabelRenderedText(String text, Font font, Positioning positioning, Point2D offset) {
         if (labelRenderedText.isDifferent(text, font, positioning, offset)) {
-            // Updating rendered text may change bounding box of the node, therefore transform notifications are sent.
-            transformChanging();
             labelRenderedText = new RenderedText(text, font, positioning, offset);
-            transformChanged();
+            return true;
         }
+        return false;
     }
 
     protected void drawLabelInLocalSpace(DrawRequest r) {
@@ -353,7 +367,7 @@ public abstract class VisualComponent extends VisualTransformableNode implements
         return getOffset(getNamePositioning());
     }
 
-    protected void cacheNameRenderedText(DrawRequest r) {
+    protected boolean cacheNameRenderedText(DrawRequest r) {
         String name = null;
         MathModel mathModel = r.getModel().getMathModel();
         MathNode mathNode = getReferencedComponent();
@@ -365,16 +379,15 @@ public abstract class VisualComponent extends VisualTransformableNode implements
         if (name == null) {
             name = "";
         }
-        cacheNameRenderedText(name, getNameFont(), getNamePositioning(), getNameOffset());
+        return cacheNameRenderedText(name, getNameFont(), getNamePositioning(), getNameOffset());
     }
 
-    protected void cacheNameRenderedText(String text, Font font, Positioning positioning, Point2D offset) {
+    protected boolean cacheNameRenderedText(String text, Font font, Positioning positioning, Point2D offset) {
         if (nameRenderedText.isDifferent(text, font, positioning, offset)) {
-            // Updating rendered text may change bounding box of the node, therefore transform notifications are sent.
-            transformChanging();
             nameRenderedText = new RenderedText(text, font, positioning, offset);
-            transformChanged();
+            return true;
         }
+        return false;
     }
 
     protected void drawNameInLocalSpace(DrawRequest r) {

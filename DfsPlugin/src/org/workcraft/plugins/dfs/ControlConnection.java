@@ -22,8 +22,10 @@ public class ControlConnection extends MathConnection {
     }
 
     public void setInverting(boolean value) {
-        this.inverting = value;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_INVERTING));
+        if (inverting != value) {
+            inverting = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_INVERTING));
+        }
     }
 
 }

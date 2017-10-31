@@ -132,9 +132,11 @@ public class VisualImplicitPlaceArc extends VisualConnection {
         return tokenColor;
     }
 
-    public void setTokenColor(Color tokenColor) {
-        this.tokenColor = tokenColor;
-        sendNotification(new PropertyChangedEvent(this, VisualPlace.PROPERTY_TOKEN_COLOR));
+    public void setTokenColor(Color value) {
+        if (!tokenColor.equals(value)) {
+            tokenColor = value;
+            sendNotification(new PropertyChangedEvent(this, VisualPlace.PROPERTY_TOKEN_COLOR));
+        }
     }
 
     @Override
