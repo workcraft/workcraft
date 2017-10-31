@@ -30,7 +30,7 @@ public class MutexUtils {
         LinkedList<Mutex> result = new LinkedList<>();
         final ArrayList<StgPlace> problematicPlaces = new ArrayList<>();
         for (StgPlace place: stg.getMutexPlaces()) {
-            Mutex mutex = MutexUtils.getMutex(stg, place);
+            Mutex mutex = getMutex(stg, place);
             if (mutex != null) {
                 result.add(mutex);
             } else {
