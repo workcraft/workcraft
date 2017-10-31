@@ -128,9 +128,9 @@ public class VisualVertex extends VisualComponent {
         return renderType;
     }
 
-    public void setRenderType(RenderType renderType) {
-        if (this.renderType != renderType) {
-            this.renderType = renderType;
+    public void setRenderType(RenderType value) {
+        if (renderType != value) {
+            renderType = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_RENDER_TYPE));
         }
     }
@@ -153,13 +153,14 @@ public class VisualVertex extends VisualComponent {
     }
 
     @Override
-    protected void cacheLabelRenderedText(DrawRequest r) {
+    protected boolean cacheLabelRenderedText(DrawRequest r) {
         String label = Character.toString(EPSILON_SYMBOL);
         Symbol symbol = getReferencedVertex().getSymbol();
         if (symbol != null) {
             label = r.getModel().getMathName(symbol);
-            cacheLabelRenderedText(label, getLabelFont(), getLabelPositioning(), getLabelOffset());
+            return cacheLabelRenderedText(label, getLabelFont(), getLabelPositioning(), getLabelOffset());
         }
+        return false;
     }
 
     @Override

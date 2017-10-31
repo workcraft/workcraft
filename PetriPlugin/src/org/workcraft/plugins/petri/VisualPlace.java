@@ -132,9 +132,11 @@ public class VisualPlace extends VisualComponent {
         return tokenColor;
     }
 
-    public void setTokenColor(Color tokenColor) {
-        this.tokenColor = tokenColor;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_TOKEN_COLOR));
+    public void setTokenColor(Color value) {
+        if (!tokenColor.equals(value)) {
+            tokenColor = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_TOKEN_COLOR));
+        }
     }
 
     public static void drawTokens(DrawRequest r, int count, double size, double separation,

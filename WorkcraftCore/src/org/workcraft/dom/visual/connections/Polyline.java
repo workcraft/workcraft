@@ -32,7 +32,7 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
         HierarchyObserver, ObservableHierarchy, SelectionObserver {
 
     private final ArbitraryInsertionGroupImpl groupImpl;
-    protected VisualConnectionProperties connectionInfo;
+    protected final VisualConnectionProperties connectionInfo;
     protected PartialCurveInfo curveInfo = null;
     private Rectangle2D boundingBox = null;
     private ControlPointScaler scaler = null;
@@ -402,12 +402,14 @@ public class Polyline implements ConnectionGraphic, Container, StateObserver,
 
     @Override
     public void componentsTransformChanged() {
-        Collection<ControlPoint> controlPoints = Hierarchy.filterNodesByType(getChildren(), ControlPoint.class);
-        scaler.scale(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter(),
-                controlPoints, connectionInfo.getScaleMode());
+        if (scaler != null) {
+            Collection<ControlPoint> controlPoints = Hierarchy.filterNodesByType(getChildren(), ControlPoint.class);
+            scaler.scale(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter(),
+                    controlPoints, connectionInfo.getScaleMode());
 
-        scaler = new ControlPointScaler(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter());
-        invalidate();
+            scaler = new ControlPointScaler(connectionInfo.getFirstCenter(), connectionInfo.getSecondCenter());
+            invalidate();
+        }
     }
 
     @Override

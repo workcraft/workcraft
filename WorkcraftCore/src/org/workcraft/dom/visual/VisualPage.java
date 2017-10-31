@@ -31,10 +31,13 @@ public class VisualPage extends VisualComponent implements Collapsible, Containe
     private String referencedModel = "";
     private final DefaultGroupImpl groupImpl = new DefaultGroupImpl(this);
 
-    public void setReferencedModel(String model) {
-        sendNotification(new TransformChangingEvent(this));
-        this.referencedModel = model;
-        sendNotification(new TransformChangedEvent(this));
+    public void setReferencedModel(String value) {
+        if (value == null) value = "";
+        if (!referencedModel.equals(value)) {
+            sendNotification(new TransformChangingEvent(this));
+            referencedModel = value;
+            sendNotification(new TransformChangedEvent(this));
+        }
     }
 
     public String getReferencedModel() {

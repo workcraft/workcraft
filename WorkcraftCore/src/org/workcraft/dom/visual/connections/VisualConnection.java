@@ -291,9 +291,11 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
         return color;
     }
 
-    public void setColor(Color color) {
-        this.color = color;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_COLOR));
+    public void setColor(Color value) {
+        if (!color.equals(value)) {
+            color = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_COLOR));
+        }
     }
 
     @Override
@@ -305,17 +307,14 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
         return lineWidth;
     }
 
-    public void setLineWidth(double lineWidth) {
-        if (lineWidth < 0.01) {
-            lineWidth = 0.01;
+    public void setLineWidth(double value) {
+        if (value < 0.01) value = 0.01;
+        if (value > 0.5) value = 0.5;
+        if (lineWidth != value) {
+            lineWidth = value;
+            invalidate();
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_LINE_WIDTH));
         }
-        if (lineWidth > 0.5) {
-            lineWidth = 0.5;
-        }
-        this.lineWidth = lineWidth;
-
-        invalidate();
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_LINE_WIDTH));
     }
 
     @Override
@@ -338,11 +337,13 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
     }
 
     public void setArrowWidth(double value) {
-        if (value > 1)    value = 1;
+        if (value > 1.0) value = 1.0;
         if (value < 0.0) value = 0.0;
-        this.arrowWidth = value;
-        invalidate();
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_ARROW_WIDTH));
+        if (arrowLength != value) {
+            arrowWidth = value;
+            invalidate();
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_ARROW_WIDTH));
+        }
 
     }
 
@@ -353,11 +354,13 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
     }
 
     public void setArrowLength(double value) {
-        if (value > 1) value = 1;
+        if (value > 1.0) value = 1.0;
         if (value < 0.0) value = 0.0;
-        this.arrowLength = value;
-        invalidate();
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_ARROW_LENGTH));
+        if (arrowLength != value) {
+            arrowLength = value;
+            invalidate();
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_ARROW_LENGTH));
+        }
     }
 
     public void invalidate() {
@@ -516,9 +519,11 @@ public class VisualConnection extends VisualNode implements Node, Drawable, Shap
         return graphic.getCenter();
     }
 
-    public void setScaleMode(ScaleMode scaleMode) {
-        this.scaleMode = scaleMode;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_SCALE_MODE));
+    public void setScaleMode(ScaleMode value) {
+        if (scaleMode != value) {
+            scaleMode = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_SCALE_MODE));
+        }
     }
 
     public void inverseShape() {

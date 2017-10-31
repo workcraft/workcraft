@@ -52,9 +52,11 @@ public class SignalEvent extends Event {
         return direction;
     }
 
-    public void setDirection(Direction direction) {
-        this.direction = direction;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_DIRECTION));
+    public void setDirection(Direction value) {
+        if (direction != value) {
+            direction = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_DIRECTION));
+        }
     }
 
     public Signal getSignal() {

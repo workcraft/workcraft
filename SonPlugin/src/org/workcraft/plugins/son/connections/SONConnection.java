@@ -42,9 +42,11 @@ public class SONConnection extends MathConnection {
         return color;
     }
 
-    public void setColor(Color color) {
-        this.color = color;
-        sendNotification(new PropertyChangedEvent(this, "color"));
+    public void setColor(Color value) {
+        if (!color.equals(value)) {
+            color = value;
+            sendNotification(new PropertyChangedEvent(this, "color"));
+        }
     }
 
     public SONConnection(MathNode first, MathNode second, Semantics semantics) {
@@ -56,18 +58,22 @@ public class SONConnection extends MathConnection {
         return semantics;
     }
 
-    public void setSemantics(Semantics semantics) {
-        this.semantics = semantics;
-        sendNotification(new PropertyChangedEvent(this, "semantics"));
+    public void setSemantics(Semantics value) {
+        if (semantics != value) {
+            semantics = value;
+            sendNotification(new PropertyChangedEvent(this, "semantics"));
+        }
     }
 
     public Interval getTime() {
         return time;
     }
 
-    public void setTime(Interval time) {
-        this.time = time;
-        sendNotification(new PropertyChangedEvent(this, ConnectionTimePropertyDescriptor.PROPERTY_CONNECTION_TIME));
+    public void setTime(Interval value) {
+        if (time != value) {
+            time = value;
+            sendNotification(new PropertyChangedEvent(this, ConnectionTimePropertyDescriptor.PROPERTY_CONNECTION_TIME));
+        }
     }
 
     public Color getTimeLabelColor() {
@@ -75,6 +81,6 @@ public class SONConnection extends MathConnection {
     }
 
     public void setTimeLabelColor(Color value) {
-        this.timeColor = value;
+        timeColor = value;
     }
 }

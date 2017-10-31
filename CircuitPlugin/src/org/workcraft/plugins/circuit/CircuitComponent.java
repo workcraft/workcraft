@@ -21,18 +21,24 @@ public class CircuitComponent extends MathGroup {
     private boolean isEnvironment = false;
     private boolean pathBreaker = false;
 
-    public void setName(String name) {
-        this.name = name;
-        sendNotification(new PropertyChangedEvent(this, NamePropertyDescriptor.PROPERTY_NAME));
+    public void setName(String value) {
+        if (value == null) value = "";
+        if (!value.equals(name)) {
+            name = value;
+            sendNotification(new PropertyChangedEvent(this, NamePropertyDescriptor.PROPERTY_NAME));
+        }
     }
 
     public String getName() {
         return name;
     }
 
-    public void setModule(String module) {
-        this.module = module;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_MODULE));
+    public void setModule(String value) {
+        if (value == null) value = "";
+        if (!value.equals(module)) {
+            module = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_MODULE));
+        }
     }
 
     public String getModule() {
@@ -44,8 +50,10 @@ public class CircuitComponent extends MathGroup {
     }
 
     public void setIsEnvironment(boolean value) {
-        this.isEnvironment = value;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_IS_ENVIRONMENT));
+        if (isEnvironment != value) {
+            isEnvironment = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_IS_ENVIRONMENT));
+        }
     }
 
     public boolean getIsEnvironment() {
@@ -57,8 +65,8 @@ public class CircuitComponent extends MathGroup {
     }
 
     public void setPathBreaker(boolean value) {
-        if (this.pathBreaker != value) {
-            this.pathBreaker = value;
+        if (pathBreaker != value) {
+            pathBreaker = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_PATH_BREAKER));
         }
     }

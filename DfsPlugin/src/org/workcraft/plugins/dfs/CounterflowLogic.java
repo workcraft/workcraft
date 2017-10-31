@@ -19,8 +19,10 @@ public class CounterflowLogic extends MathDelayNode {
     }
 
     public void setForwardComputed(boolean value) {
-        this.forwardComputed = value;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_FORWARD_COMPUTED));
+        if (forwardComputed != value) {
+            forwardComputed = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_FORWARD_COMPUTED));
+        }
     }
 
     public boolean isBackwardComputed() {
@@ -28,8 +30,10 @@ public class CounterflowLogic extends MathDelayNode {
     }
 
     public void setBackwardComputed(boolean value) {
-        this.backwardComputed = value;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_BACKWARD_COMPUTED));
+        if (backwardComputed != value) {
+            backwardComputed = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_BACKWARD_COMPUTED));
+        }
     }
 
     public boolean isForwardEarlyEvaluation() {
@@ -37,8 +41,10 @@ public class CounterflowLogic extends MathDelayNode {
     }
 
     public void setForwardEarlyEvaluation(boolean value) {
-        this.forwardEarlyEvaluation = value;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_FORWARD_EARLY_EVALUATION));
+        if (forwardEarlyEvaluation != value) {
+            forwardEarlyEvaluation = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_FORWARD_EARLY_EVALUATION));
+        }
     }
 
     public boolean isBackwardEarlyEvaluation() {
@@ -46,7 +52,9 @@ public class CounterflowLogic extends MathDelayNode {
     }
 
     public void setBackwardEarlyEvaluation(boolean value) {
-        this.backwardEarlyEvaluation = value;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_BACKWARD_EARLY_EVALUATION));
+        if (backwardEarlyEvaluation != value) {
+            backwardEarlyEvaluation = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_BACKWARD_EARLY_EVALUATION));
+        }
     }
 }

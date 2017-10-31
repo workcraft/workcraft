@@ -54,7 +54,7 @@ public class VisualComment extends VisualComponent {
     }
 
     public void setTextAlignment(Alignment value) {
-        if (value != textAlignment) {
+        if (textAlignment != value) {
             textAlignment = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_TEXT_ALIGNMENT));
         }

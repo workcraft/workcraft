@@ -41,9 +41,11 @@ public class Signal extends Symbol {
         return type;
     }
 
-    public void setType(Type type) {
-        this.type = type;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_TYPE));
+    public void setType(Type value) {
+        if (type != value) {
+            type = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_TYPE));
+        }
     }
 
     public boolean hasDirection() {

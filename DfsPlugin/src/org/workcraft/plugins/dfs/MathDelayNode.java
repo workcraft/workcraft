@@ -13,8 +13,10 @@ public class MathDelayNode extends MathNode {
     }
 
     public void setDelay(double value) {
-        this.delay = value;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_DELAY));
+        if (delay != value) {
+            delay = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_DELAY));
+        }
     }
 
 }

@@ -30,9 +30,11 @@ public class NamePropertyDescriptor implements PropertyDescriptor {
     public void setValue(Object value) throws InvocationTargetException {
         String name = (String) value;
         if (Identifier.isName(name)) {
-            model.setName(node, name);
-            if (node instanceof ObservableState) {
-                ((ObservableState) node).sendNotification(new PropertyChangedEvent(node, PROPERTY_NAME));
+            if (!name.equals(model.getName(node))) {
+                model.setName(node, name);
+                if (node instanceof ObservableState) {
+                    ((ObservableState) node).sendNotification(new PropertyChangedEvent(node, PROPERTY_NAME));
+                }
             }
         } else {
             throw new ArgumentException("'" + name + "' is not a valid C-style identifier.\n\n"

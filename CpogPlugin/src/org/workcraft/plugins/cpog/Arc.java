@@ -18,9 +18,11 @@ public class Arc extends MathConnection {
         condition = One.instance();
     }
 
-    public void setCondition(BooleanFormula condition) {
-        this.condition = condition;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_CONDITION));
+    public void setCondition(BooleanFormula value) {
+        if (condition != value) {
+            condition = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_CONDITION));
+        }
     }
 
     public BooleanFormula getCondition() {

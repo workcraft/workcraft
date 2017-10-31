@@ -20,7 +20,6 @@ import org.workcraft.dom.visual.RenderedText;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.son.SONSettings;
 
 @DisplayName("Condition")
@@ -173,7 +172,6 @@ public class VisualCondition extends VisualPlaceNode {
 
     public void setInitial(boolean value) {
         ((Condition) getReferencedComponent()).setInitial(value);
-        sendNotification(new PropertyChangedEvent(this, "initial"));
     }
 
     public boolean isFinal() {
@@ -182,7 +180,6 @@ public class VisualCondition extends VisualPlaceNode {
 
     public void setFinal(boolean value) {
         ((Condition) getReferencedComponent()).setFinal(value);
-        sendNotification(new PropertyChangedEvent(this, "final"));
     }
 
     public Color getStartTimeColor() {

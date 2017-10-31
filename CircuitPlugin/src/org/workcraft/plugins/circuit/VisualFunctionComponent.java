@@ -76,9 +76,9 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         return renderType;
     }
 
-    public void setRenderType(RenderType renderType) {
-        if (this.renderType != renderType) {
-            this.renderType = renderType;
+    public void setRenderType(RenderType value) {
+        if (renderType != value) {
+            renderType = value;
             invalidateRenderingResult();
             invalidateBoundingBox();
             setContactsDefaultPosition();

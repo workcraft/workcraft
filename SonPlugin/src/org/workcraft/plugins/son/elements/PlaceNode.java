@@ -26,18 +26,22 @@ public class PlaceNode extends MathNode implements Time {
     private boolean marked = false;
     private Color tokenColor = CommonVisualSettings.getBorderColor();
 
-    public void setMarked(boolean token) {
-        this.marked = token;
-        sendNotification(new PropertyChangedEvent(this, "marked"));
+    public void setMarked(boolean value) {
+        if (marked != value) {
+            marked = value;
+            sendNotification(new PropertyChangedEvent(this, "marked"));
+        }
     }
 
     public boolean isMarked() {
         return marked;
     }
 
-    public void setErrors(int errors) {
-        this.errors = errors;
-        sendNotification(new PropertyChangedEvent(this, "errors"));
+    public void setErrors(int value) {
+        if (errors != value) {
+            errors = value;
+            sendNotification(new PropertyChangedEvent(this, "errors"));
+        }
     }
 
     public int getErrors() {
@@ -48,23 +52,29 @@ public class PlaceNode extends MathNode implements Time {
         return foregroundColor;
     }
 
-    public void setForegroundColor(Color foregroundColor) {
-        this.foregroundColor = foregroundColor;
-        sendNotification(new PropertyChangedEvent(this, "foregroundColor"));
+    public void setForegroundColor(Color value) {
+        if (!foregroundColor.equals(value)) {
+            foregroundColor = value;
+            sendNotification(new PropertyChangedEvent(this, "foregroundColor"));
+        }
     }
 
-    public void setFillColor(Color fillColor) {
-        this.fillColor = fillColor;
-        sendNotification(new PropertyChangedEvent(this, "fillColor"));
+    public void setFillColor(Color value) {
+        if (!fillColor.equals(value)) {
+            fillColor = value;
+            sendNotification(new PropertyChangedEvent(this, "fillColor"));
+        }
     }
 
     public Color getFillColor() {
         return fillColor;
     }
 
-    public void setLabel(String label) {
-        this.label = label;
-        sendNotification(new PropertyChangedEvent(this, "label"));
+    public void setLabel(String value) {
+        if (!label.equals(value)) {
+            label = value;
+            sendNotification(new PropertyChangedEvent(this, "label"));
+        }
     }
 
     public String getLabel() {
@@ -75,32 +85,40 @@ public class PlaceNode extends MathNode implements Time {
         return tokenColor;
     }
 
-    public void setTokenColor(Color tokenColor) {
-        this.tokenColor = tokenColor;
-        sendNotification(new PropertyChangedEvent(this, "tokenColor"));
+    public void setTokenColor(Color value) {
+        if (!tokenColor.equals(value)) {
+            tokenColor = value;
+            sendNotification(new PropertyChangedEvent(this, "tokenColor"));
+        }
     }
 
-    public void setStartTime(Interval startTime) {
-        this.startTime = startTime;
-        sendNotification(new PropertyChangedEvent(this, StartTimePropertyDescriptor.PROPERTY_START_TIME));
+    public void setStartTime(Interval value) {
+        if (startTime != value) {
+            startTime = value;
+            sendNotification(new PropertyChangedEvent(this, StartTimePropertyDescriptor.PROPERTY_START_TIME));
+        }
     }
 
     public Interval getStartTime() {
         return startTime;
     }
 
-    public void setEndTime(Interval endTime) {
-        this.endTime = endTime;
-        sendNotification(new PropertyChangedEvent(this, EndTimePropertyDescriptor.PROPERTY_END_TIME));
+    public void setEndTime(Interval value) {
+        if (endTime != value) {
+            endTime = value;
+            sendNotification(new PropertyChangedEvent(this, EndTimePropertyDescriptor.PROPERTY_END_TIME));
+        }
     }
 
     public Interval getEndTime() {
         return endTime;
     }
 
-    public void setDuration(Interval duration) {
-        this.duration = duration;
-        sendNotification(new PropertyChangedEvent(this, DurationPropertyDescriptor.PROPERTY_DURATION));
+    public void setDuration(Interval value) {
+        if (duration != value) {
+            duration = value;
+            sendNotification(new PropertyChangedEvent(this, DurationPropertyDescriptor.PROPERTY_DURATION));
+        }
     }
 
     public Interval getDuration() {

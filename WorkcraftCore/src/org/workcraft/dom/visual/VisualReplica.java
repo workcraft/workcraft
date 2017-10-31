@@ -97,8 +97,10 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
     }
 
     public void setNameColor(Color value) {
-        nameColor = value;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_NAME_COLOR));
+        if (!nameColor.equals(value)) {
+            nameColor = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_NAME_COLOR));
+        }
     }
 
     public Positioning getNamePositioning() {
@@ -106,8 +108,10 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
     }
 
     public void setNamePositioning(Positioning value) {
-        namePositioning = value;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_NAME_POSITIONING));
+        if (namePositioning != value) {
+            namePositioning = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_NAME_POSITIONING));
+        }
     }
 
     public Color getForegroundColor() {
@@ -115,8 +119,10 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
     }
 
     public void setForegroundColor(Color value) {
-        foregroundColor = value;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_FOREGROUND_COLOR));
+        if (!foregroundColor.equals(value)) {
+            foregroundColor = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_FOREGROUND_COLOR));
+        }
     }
 
     public Color getFillColor() {
@@ -124,8 +130,10 @@ public class VisualReplica extends VisualTransformableNode implements Replica, D
     }
 
     public void setFillColor(Color value) {
-        fillColor = value;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_FILL_COLOR));
+        if (!fillColor.equals(value)) {
+            fillColor = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_FILL_COLOR));
+        }
     }
 
     @Override

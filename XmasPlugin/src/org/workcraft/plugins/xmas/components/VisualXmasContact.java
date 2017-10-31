@@ -13,7 +13,6 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.xmas.XmasSettings;
@@ -49,9 +48,8 @@ public class VisualXmasContact extends VisualComponent implements StateObserver 
         });
     }
 
-    public void setIOType(XmasContact.IOType type) {
-        getReferencedContact().setIOType(type);
-        sendNotification(new PropertyChangedEvent(this, IO_TYPE_PROPERTY_NAME));
+    public void setIOType(XmasContact.IOType value) {
+        getReferencedContact().setIOType(value);
     }
 
     public XmasContact.IOType getIOType() {

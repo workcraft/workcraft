@@ -32,9 +32,11 @@ public abstract class VisualAbstractRegister extends VisualDelayComponent {
         return tokenColor;
     }
 
-    public void setTokenColor(Color tokenColor) {
-        this.tokenColor = tokenColor;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_TOKEN_COLOR));
+    public void setTokenColor(Color value) {
+        if (!tokenColor.equals(value)) {
+            tokenColor = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_TOKEN_COLOR));
+        }
     }
 
     @Override

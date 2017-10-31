@@ -19,8 +19,10 @@ public class Condition extends PlaceNode {
     }
 
     public void setInitial(boolean value) {
-        initialState = value;
-        sendNotification(new PropertyChangedEvent(this, "initial"));
+        if (initialState != value) {
+            initialState = value;
+            sendNotification(new PropertyChangedEvent(this, "initial"));
+        }
     }
 
     public boolean isFinal() {
@@ -28,8 +30,10 @@ public class Condition extends PlaceNode {
     }
 
     public void setFinal(boolean value) {
-        finalState = value;
-        sendNotification(new PropertyChangedEvent(this, "final"));
+        if (finalState != value) {
+            finalState = value;
+            sendNotification(new PropertyChangedEvent(this, "final"));
+        }
     }
 
     public Color getStartTimeColor() {

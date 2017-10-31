@@ -30,16 +30,18 @@ public class BinaryRegister extends MathDelayNode {
     }
 
     public void setMarking(Marking value) {
-        this.marking = value;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_MARKING));
+        if (marking != value) {
+            marking = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_MARKING));
+        }
     }
 
     public boolean isFalseMarked() {
-        return this.marking == Marking.FALSE_TOKEN;
+        return marking == Marking.FALSE_TOKEN;
     }
 
     public boolean isTrueMarked() {
-        return this.marking == Marking.TRUE_TOKEN;
+        return marking == Marking.TRUE_TOKEN;
     }
 
 }

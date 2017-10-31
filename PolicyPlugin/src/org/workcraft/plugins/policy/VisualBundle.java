@@ -122,8 +122,10 @@ public class VisualBundle extends VisualNode implements Drawable, Dependent {
     }
 
     public void setColor(Color value) {
-        this.color = value;
-        sendNotification(new PropertyChangedEvent(this, PROPERTY_COLOR));
+        if (!color.equals(value)) {
+            color = value;
+            sendNotification(new PropertyChangedEvent(this, PROPERTY_COLOR));
+        }
     }
 
     public Color getColor() {
