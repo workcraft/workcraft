@@ -249,7 +249,7 @@ public class SettingsEditorDialog extends JDialog {
             }
         });
 
-        restoreButton = GUI.createDialogButton("Restore defaults");
+        restoreButton = GUI.createDialogButton("Restore defaults (all)");
         restoreButton.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 restore();

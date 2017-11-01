@@ -58,7 +58,7 @@ public class CircuitToStgConverter {
     public static final String LABEL_SUFFIX_1 = " = 1";
 
     private static final double SCALE_X = 4.0;
-    private static final double SCALE_Y = 4.0;
+    private static final double SCALE_Y = 6.0;
     private static final Point2D OFFSET_P1 = new Point2D.Double(0.0, -2.0);
     private static final Point2D OFFSET_P0 = new Point2D.Double(0.0, +2.0);
     private static final Point2D OFFSET_INIT_PLUS = new Point2D.Double(0.0, -2.0);
