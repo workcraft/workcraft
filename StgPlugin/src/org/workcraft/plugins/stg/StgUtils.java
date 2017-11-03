@@ -17,13 +17,15 @@ import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 
 public class StgUtils {
-    public static final String DEVICE_FILE_NAME = "device";
-    public static final String ENVIRONMENT_FILE_NAME = "environment";
-    public static final String SYSTEM_FILE_NAME = "system";
-    public static final String MODIFIED_FILE_SUFFIX = "_mod";
-    public static final String ASTG_FILE_EXT = ".g";
-    public static final String PLACES_FILE_NAME = "places";
-    public static final String LIST_FILE_EXT = ".list";
+    public static final String SPEC_FILE_NAME = "net";
+    public static final String DEVICE_FILE_NAME = "dev";
+    public static final String ENVIRONMENT_FILE_NAME = "env";
+    public static final String SYSTEM_FILE_NAME = "sys";
+
+    public static final String MUTEX_FILE_SUFFIX = "-mutex";
+    public static final String MODIFIED_FILE_SUFFIX = "-mod";
+
+    public static final String PLACES_FILE_NAME = "places.list";
 
     private static void replaceNamedTransition(Stg stg, NamedTransition oldTransition, NamedTransition newTransition) {
         for (Node pred: stg.getPreset(oldTransition)) {

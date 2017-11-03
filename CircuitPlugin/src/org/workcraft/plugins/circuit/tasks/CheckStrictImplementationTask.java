@@ -24,6 +24,7 @@ import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
+import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -46,6 +47,7 @@ public class CheckStrictImplementationTask extends MpsatChainTask {
         WorkspaceEntry we = getWorkspaceEntry();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
+        String stgFileExtension = StgFormat.getInstance().getExtension();
         try {
             // Common variables
             VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
@@ -60,7 +62,7 @@ public class CheckStrictImplementationTask extends MpsatChainTask {
             StgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
 
             // Write environment STG into a .g file
-            File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.ASTG_FILE_EXT);
+            File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + stgFileExtension);
             Result<? extends Object> envExportResult = CircuitStgUtils.exportStg(envStg, envStgFile, directory, monitor);
             if (envExportResult.getOutcome() != Outcome.SUCCESS) {
                 if (envExportResult.getOutcome() == Outcome.CANCEL) {

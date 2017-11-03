@@ -20,7 +20,6 @@ import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.Export;
@@ -95,9 +94,11 @@ public class ParallelCompositionCommand implements Command {
         }
         try {
             String prefix = we.getFileName() + "-";
-            File file = FileUtils.createTempFile(prefix, StgUtils.ASTG_FILE_EXT, directory);
+            StgFormat stgFormat = StgFormat.getInstance();
+            String stgFileExtension = stgFormat.getExtension();
+            File file = FileUtils.createTempFile(prefix, stgFileExtension, directory);
             PluginManager pluginManager = Framework.getInstance().getPluginManager();
-            Export.exportToFile(model, file, StgFormat.getInstance(), pluginManager);
+            Export.exportToFile(model, file, stgFormat, pluginManager);
             return file;
         } catch (IOException e) {
             throw new RuntimeException(e);

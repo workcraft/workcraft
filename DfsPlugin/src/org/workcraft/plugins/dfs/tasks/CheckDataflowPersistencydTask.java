@@ -39,6 +39,7 @@ public class CheckDataflowPersistencydTask extends MpsatChainTask {
         MpsatParameters settings = getSettings();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
+        String stgFileExtension = StgFormat.getInstance().getExtension();
         try {
             VisualDfs dfs = WorkspaceUtils.getAs(we, VisualDfs.class);
             DfsToStgConverter converter = new DfsToStgConverter(dfs);
@@ -50,7 +51,7 @@ public class CheckDataflowPersistencydTask extends MpsatChainTask {
             }
             monitor.progressUpdate(0.10);
 
-            File netFile = new File(directory, "net" + StgFormat.getInstance().getExtension());
+            File netFile = new File(directory, "net" + stgFileExtension);
             ExportTask exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
             SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
             Result<? extends Object> exportResult = framework.getTaskManager().execute(

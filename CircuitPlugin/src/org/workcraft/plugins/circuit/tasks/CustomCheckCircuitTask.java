@@ -19,6 +19,7 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
+import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -47,6 +48,7 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
         WorkspaceEntry we = getWorkspaceEntry();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
+        String stgFileExtension = StgFormat.getInstance().getExtension();
         try {
             // Common variables
             VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
@@ -66,7 +68,7 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
             }
 
             // Write device STG into a .g file
-            String devStgName = (envStg != null ? StgUtils.DEVICE_FILE_NAME : StgUtils.SYSTEM_FILE_NAME) + StgUtils.ASTG_FILE_EXT;
+            String devStgName = (envStg != null ? StgUtils.DEVICE_FILE_NAME : StgUtils.SYSTEM_FILE_NAME) + stgFileExtension;
             File devStgFile = new File(directory, devStgName);
             Result<? extends Object> devExportResult = CircuitStgUtils.exportStg(devStg, devStgFile, directory, monitor);
             if (devExportResult.getOutcome() != Outcome.SUCCESS) {
@@ -85,7 +87,7 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
             if (envStg == null) {
                 sysStgFile = devStgFile;
             } else {
-                File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.ASTG_FILE_EXT);
+                File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + stgFileExtension);
                 Result<? extends Object> envExportResult = CircuitStgUtils.exportStg(envStg, envStgFile, directory, monitor);
                 if (envExportResult.getOutcome() != Outcome.SUCCESS) {
                     if (envExportResult.getOutcome() == Outcome.CANCEL) {
@@ -96,8 +98,8 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
                 }
 
                 // Generating .g for the whole system (circuit and environment)
-                sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + StgUtils.ASTG_FILE_EXT);
-                placesFile = new File(directory, StgUtils.PLACES_FILE_NAME + StgUtils.LIST_FILE_EXT);
+                sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + stgFileExtension);
+                placesFile = new File(directory, StgUtils.PLACES_FILE_NAME);
                 pcompResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envStgFile, sysStgFile, placesFile, directory, monitor);
                 if (pcompResult.getOutcome() != Outcome.SUCCESS) {
                     if (pcompResult.getOutcome() == Outcome.CANCEL) {

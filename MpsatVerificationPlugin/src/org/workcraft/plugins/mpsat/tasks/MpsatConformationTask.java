@@ -54,6 +54,7 @@ public class MpsatConformationTask extends MpsatChainTask {
         WorkspaceEntry we = getWorkspaceEntry();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
+        String stgFileExtension = StgFormat.getInstance().getExtension();
         try {
             Stg devStg = WorkspaceUtils.getAs(we, Stg.class);
             Exporter devStgExporter = Export.chooseBestExporter(framework.getPluginManager(), devStg, StgFormat.getInstance());
@@ -63,7 +64,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
 
             // Generating .g for the model
-            File devStgFile = new File(directory, StgUtils.DEVICE_FILE_NAME + StgUtils.ASTG_FILE_EXT);
+            File devStgFile = new File(directory, StgUtils.DEVICE_FILE_NAME + stgFileExtension);
             ExportTask devExportTask = new ExportTask(devStgExporter, devStg, devStgFile.getAbsolutePath());
             Result<? extends Object> devExportResult = framework.getTaskManager().execute(
                     devExportTask, "Exporting circuit .g", subtaskMonitor);
@@ -89,7 +90,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             Set<String> outputSignalNames = devStg.getSignalNames(Type.OUTPUT, null);
             StgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
             Exporter envStgExporter = Export.chooseBestExporter(framework.getPluginManager(), envStg, StgFormat.getInstance());
-            File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.ASTG_FILE_EXT);
+            File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + stgFileExtension);
             ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile.getAbsolutePath());
             Result<? extends Object> envExportResult = framework.getTaskManager().execute(
                     envExportTask, "Exporting environment .g", subtaskMonitor);
@@ -104,8 +105,8 @@ public class MpsatConformationTask extends MpsatChainTask {
             monitor.progressUpdate(0.40);
 
             // Generating .g for the whole system (model and environment)
-            File placesFile = new File(directory, StgUtils.PLACES_FILE_NAME + StgUtils.LIST_FILE_EXT);
-            File stgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + StgUtils.ASTG_FILE_EXT);
+            File placesFile = new File(directory, StgUtils.PLACES_FILE_NAME);
+            File stgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + stgFileExtension);
             stgFile.deleteOnExit();
             PcompTask pcompTask = new PcompTask(new File[]{devStgFile, envStgFile}, stgFile, placesFile,
                     ConversionMode.OUTPUT, true, false, directory);
