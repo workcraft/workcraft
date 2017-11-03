@@ -41,6 +41,7 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> 
         Framework framework = Framework.getInstance();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
+        String stgFileExtension = StgFormat.getInstance().getExtension();
         try {
             Stg model = WorkspaceUtils.getAs(we, Stg.class);
             Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, StgFormat.getInstance());
@@ -50,7 +51,7 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> 
             SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
 
             // Generate .g for the model
-            File netFile = new File(directory, "net" + StgFormat.getInstance().getExtension());
+            File netFile = new File(directory, StgUtils.SPEC_FILE_NAME + stgFileExtension);
             ExportTask exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
             Result<? extends Object> exportResult = framework.getTaskManager().execute(
                     exportTask, "Exporting .g", subtaskMonitor);
@@ -68,7 +69,7 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> 
                     model.setSignalType(m.g1.name, Type.INPUT);
                     model.setSignalType(m.g2.name, Type.INPUT);
                 }
-                netFile = new File(directory, "spec-mutex" + StgFormat.getInstance().getExtension());
+                netFile = new File(directory, StgUtils.SPEC_FILE_NAME + StgUtils.MUTEX_FILE_SUFFIX + stgFileExtension);
                 exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
                 exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
 

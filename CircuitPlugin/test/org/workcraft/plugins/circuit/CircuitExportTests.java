@@ -57,33 +57,34 @@ public class CircuitExportTests {
         URL url = classLoader.getResource(workName);
         WorkspaceEntry we = framework.loadWork(url.getFile());
         ModelEntry me = we.getModelEntry();
-        File dir = FileUtils.createTempDirectory("workcraft-" + workName);
+        File directory = FileUtils.createTempDirectory("workcraft-" + workName);
 
-        File vFile = new File(dir, "export.v");
+        File vFile = new File(directory, "export.v");
         framework.exportModel(me, vFile, VerilogFormat.getInstance());
         Assert.assertEquals(vHeader, FileUtils.readHeader(vFile, vHeader.length()));
 
-        File svgFile = new File(dir, "export.svg");
+        File svgFile = new File(directory, "export.svg");
         framework.exportModel(me, svgFile, SvgFormat.getInstance());
         Assert.assertEquals(svgHeader, FileUtils.readHeader(svgFile, svgHeader.length()));
 
-        File pngFile = new File(dir, "export.png");
+        File pngFile = new File(directory, "export.png");
         framework.exportModel(me, pngFile, PngFormat.getInstance());
         Assert.assertEquals(pngHeader, FileUtils.readHeader(pngFile, pngHeader.length()));
 
-        File pdfFile = new File(dir, "export.pdf");
+        File pdfFile = new File(directory, "export.pdf");
         framework.exportModel(me, pdfFile, PdfFormat.getInstance());
         Assert.assertEquals(pdfHeader, FileUtils.readHeader(pdfFile, pdfHeader.length()));
 
-        File epsFile = new File(dir, "export.eps");
+        File epsFile = new File(directory, "export.eps");
         framework.exportModel(me, epsFile, EpsFormat.getInstance());
         Assert.assertEquals(epsHeader, FileUtils.readHeader(epsFile, epsHeader.length()));
 
-        File psFile = new File(dir, "export.ps");
+        File psFile = new File(directory, "export.ps");
         framework.exportModel(me, psFile, PsFormat.getInstance());
         Assert.assertEquals(psHeader, FileUtils.readHeader(psFile, psHeader.length()));
 
         framework.closeWork(we);
+        FileUtils.deleteOnExitRecursively(directory);
     }
 
 }

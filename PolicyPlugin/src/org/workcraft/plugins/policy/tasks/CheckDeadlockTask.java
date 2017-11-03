@@ -46,13 +46,14 @@ public class CheckDeadlockTask extends MpsatChainTask {
             VisualPolicyNet policy = WorkspaceUtils.getAs(we, VisualPolicyNet.class);
             PolicyToPetriConverter converter = new PolicyToPetriConverter(policy);
             PetriNet model = (PetriNet) converter.getPetriNet().getMathModel();
-            Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, StgFormat.getInstance());
+            StgFormat stgFormat = StgFormat.getInstance();
+            Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, stgFormat);
             if (exporter == null) {
                 throw new RuntimeException("Exporter not available: model class " + model.getClass().getName() + " to format Petri Net.");
             }
             monitor.progressUpdate(0.10);
 
-            File netFile = new File(directory, "net" + StgFormat.getInstance().getExtension());
+            File netFile = new File(directory, "net" + stgFormat.getExtension());
             ExportTask exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
             SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
             Result<? extends Object> exportResult = framework.getTaskManager().execute(

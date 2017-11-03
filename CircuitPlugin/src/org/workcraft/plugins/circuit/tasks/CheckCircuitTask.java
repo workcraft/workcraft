@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -33,6 +34,7 @@ import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
+import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -65,6 +67,7 @@ public class CheckCircuitTask extends MpsatChainTask {
         WorkspaceEntry we = getWorkspaceEntry();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
+        String stgFileExtension = StgFormat.getInstance().getExtension();
         try {
             // Common variables
             VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
@@ -74,6 +77,16 @@ public class CheckCircuitTask extends MpsatChainTask {
             // Load device STG
             CircuitToStgConverter converter = new CircuitToStgConverter(visualCircuit);
             Stg devStg = (Stg) converter.getStg().getMathModel();
+            // Convert mutex grants into inputs in device STG, but store the original signal type
+            HashMap<String, Type> signalOriginalType = new HashMap<>();
+            for (Pair<String, String> grantPair: grantPairs) {
+                String g1SignalName = grantPair.getFirst();
+                signalOriginalType.put(g1SignalName, devStg.getSignalType(g1SignalName));
+                devStg.setSignalType(g1SignalName, Type.INPUT);
+                String g2SignalName = grantPair.getSecond();
+                signalOriginalType.put(g2SignalName, devStg.getSignalType(g2SignalName));
+                devStg.setSignalType(g2SignalName, Type.INPUT);
+            }
 
             // Load environment STG
             Stg envStg = StgUtils.loadStg(envFile);
@@ -82,18 +95,15 @@ public class CheckCircuitTask extends MpsatChainTask {
                 Set<String> inputSignalNames = devStg.getSignalNames(Type.INPUT, null);
                 Set<String> outputSignalNames = devStg.getSignalNames(Type.OUTPUT, null);
                 StgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
-            }
-
-            // Convert mutex grants into inputs both in device and environment STGs
-            for (Pair<String, String> grantPair: grantPairs) {
-                devStg.setSignalType(grantPair.getFirst(), Type.INPUT);
-                devStg.setSignalType(grantPair.getSecond(), Type.INPUT);
-                envStg.setSignalType(grantPair.getFirst(), Type.INPUT);
-                envStg.setSignalType(grantPair.getSecond(), Type.INPUT);
+                // Convert mutex grants into inputs in environment STG
+                for (Pair<String, String> grantPair: grantPairs) {
+                    envStg.setSignalType(grantPair.getFirst(), Type.INPUT);
+                    envStg.setSignalType(grantPair.getSecond(), Type.INPUT);
+                }
             }
 
             // Write device STG into a .g file
-            String devStgName = (envStg != null ? StgUtils.DEVICE_FILE_NAME : StgUtils.SYSTEM_FILE_NAME) + StgUtils.ASTG_FILE_EXT;
+            String devStgName = (envStg != null ? StgUtils.DEVICE_FILE_NAME : StgUtils.SYSTEM_FILE_NAME) + stgFileExtension;
             File devStgFile = new File(directory, devStgName);
             Result<? extends Object> devExportResult = CircuitStgUtils.exportStg(devStg, devStgFile, directory, monitor);
             if (devExportResult.getOutcome() != Outcome.SUCCESS) {
@@ -113,7 +123,7 @@ public class CheckCircuitTask extends MpsatChainTask {
                 if (envStg == null) {
                     sysStgFile = devStgFile;
                 } else {
-                    File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.ASTG_FILE_EXT);
+                    File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + stgFileExtension);
                     Result<? extends Object> envExportResult = CircuitStgUtils.exportStg(envStg, envStgFile, directory, monitor);
                     if (envExportResult.getOutcome() != Outcome.SUCCESS) {
                         if (envExportResult.getOutcome() == Outcome.CANCEL) {
@@ -124,8 +134,8 @@ public class CheckCircuitTask extends MpsatChainTask {
                     }
 
                     // Generating .g for the whole system (circuit and environment)
-                    sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + StgUtils.ASTG_FILE_EXT);
-                    placesFile = new File(directory, StgUtils.PLACES_FILE_NAME + StgUtils.LIST_FILE_EXT);
+                    sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + stgFileExtension);
+                    placesFile = new File(directory, StgUtils.PLACES_FILE_NAME + stgFileExtension);
                     pcompResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envStgFile, sysStgFile, placesFile, directory, monitor);
                     if (pcompResult.getOutcome() != Outcome.SUCCESS) {
                         if (pcompResult.getOutcome() == Outcome.CANCEL) {
@@ -135,6 +145,16 @@ public class CheckCircuitTask extends MpsatChainTask {
                                 new MpsatChainResult(devExportResult, pcompResult, null, null, toolchainPreparationSettings));
                     }
                 }
+                // Restore the original types of mutex grant in system STG
+                Stg sysStg = StgUtils.loadStg(sysStgFile);
+                for (Pair<String, String> grantPair: grantPairs) {
+                    String g1SignalName = grantPair.getFirst();
+                    sysStg.setSignalType(g1SignalName, signalOriginalType.get(g1SignalName));
+                    String g2SignalName = grantPair.getSecond();
+                    sysStg.setSignalType(g2SignalName, signalOriginalType.get(g2SignalName));
+                }
+                sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + StgUtils.MUTEX_FILE_SUFFIX + stgFileExtension);
+                CircuitStgUtils.exportStg(sysStg, sysStgFile, directory, monitor);
             }
             monitor.progressUpdate(0.20);
 
@@ -152,7 +172,7 @@ public class CheckCircuitTask extends MpsatChainTask {
                     String fileSuffix = (sysStgFile == null) ? "" : StgUtils.MODIFIED_FILE_SUFFIX;
                     // Convert internal signals to dummies
                     StgUtils.convertInternalSignalsToDummies(envStg);
-                    File envModStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + fileSuffix + StgUtils.ASTG_FILE_EXT);
+                    File envModStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + fileSuffix + stgFileExtension);
                     Result<? extends Object> envModExportResult = CircuitStgUtils.exportStg(envStg, envModStgFile, directory, monitor);
                     if (envModExportResult.getOutcome() != Outcome.SUCCESS) {
                         if (envModExportResult.getOutcome() == Outcome.CANCEL) {
@@ -163,8 +183,8 @@ public class CheckCircuitTask extends MpsatChainTask {
                     }
 
                     // Generating .g for the whole system (circuit and environment) without internal signals
-                    sysModStgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + fileSuffix + StgUtils.ASTG_FILE_EXT);
-                    placesModFile = new File(directory, StgUtils.PLACES_FILE_NAME + fileSuffix + StgUtils.LIST_FILE_EXT);
+                    sysModStgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + fileSuffix + stgFileExtension);
+                    placesModFile = new File(directory, StgUtils.PLACES_FILE_NAME + fileSuffix + stgFileExtension);
                     pcompModResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envModStgFile, sysModStgFile, placesModFile, directory, monitor);
                     if (pcompModResult.getOutcome() != Outcome.SUCCESS) {
                         if (pcompModResult.getOutcome() == Outcome.CANCEL) {
@@ -173,6 +193,16 @@ public class CheckCircuitTask extends MpsatChainTask {
                         return new Result<MpsatChainResult>(Outcome.FAILURE,
                                 new MpsatChainResult(devExportResult, pcompModResult, null, null, toolchainPreparationSettings));
                     }
+                    // Restore the original types of mutex grant in modified system STG
+                    Stg sysModStg = StgUtils.loadStg(sysModStgFile);
+                    for (Pair<String, String> grantPair: grantPairs) {
+                        String g1SignalName = grantPair.getFirst();
+                        sysModStg.setSignalType(g1SignalName, signalOriginalType.get(g1SignalName));
+                        String g2SignalName = grantPair.getSecond();
+                        sysModStg.setSignalType(g2SignalName, signalOriginalType.get(g2SignalName));
+                    }
+                    sysModStgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + fileSuffix + StgUtils.MUTEX_FILE_SUFFIX + stgFileExtension);
+                    CircuitStgUtils.exportStg(sysModStg, sysModStgFile, directory, monitor);
                 }
             }
             monitor.progressUpdate(0.30);

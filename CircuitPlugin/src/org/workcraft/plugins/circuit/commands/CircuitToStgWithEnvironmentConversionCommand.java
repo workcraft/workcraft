@@ -13,6 +13,7 @@ import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.Result;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.FileUtils;
@@ -58,7 +59,8 @@ public class CircuitToStgWithEnvironmentConversionCommand extends CircuitToStgCo
                 envStgFile.deleteOnExit();
             }
             // Generating .g for the whole system (circuit and environment)
-            File sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + StgUtils.ASTG_FILE_EXT);
+            String stgFileExtension = StgFormat.getInstance().getExtension();
+            File sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + stgFileExtension);
             sysStgFile.deleteOnExit();
             Result<? extends ExternalProcessResult> pcompResult = CircuitStgUtils.composeDevWithEnv(
                     devStgFile, envStgFile, sysStgFile, null, directory, null);
@@ -86,13 +88,15 @@ public class CircuitToStgWithEnvironmentConversionCommand extends CircuitToStgCo
         Stg envStg = StgUtils.loadStg(envFile);
         if (envStg != null) {
             StgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
-            result = exportStg(envStg, StgUtils.ENVIRONMENT_FILE_NAME + StgUtils.ASTG_FILE_EXT, directory);
+            String stgFileExtension = StgFormat.getInstance().getExtension();
+            result = exportStg(envStg, StgUtils.ENVIRONMENT_FILE_NAME + stgFileExtension, directory);
         }
         return result;
     }
 
     private static File exportDevStg(Stg devStg, File directory) throws IOException {
-        return exportStg(devStg, StgUtils.DEVICE_FILE_NAME + StgUtils.ASTG_FILE_EXT, directory);
+        String stgFileExtension = StgFormat.getInstance().getExtension();
+        return exportStg(devStg, StgUtils.DEVICE_FILE_NAME + stgFileExtension, directory);
     }
 
     private static File exportStg(Stg stg, String fileName, File directory) throws IOException {

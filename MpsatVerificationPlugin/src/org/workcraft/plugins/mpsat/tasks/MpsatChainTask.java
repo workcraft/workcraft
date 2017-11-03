@@ -37,14 +37,15 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
         File directory = FileUtils.createTempDirectory(prefix);
         try {
             PetriNetModel model = WorkspaceUtils.getAs(we, PetriNetModel.class);
-            Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, StgFormat.getInstance());
+            StgFormat stgFormat = StgFormat.getInstance();
+            Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, stgFormat);
             if (exporter == null) {
                 throw new RuntimeException("Exporter not available: model class " + model.getClass().getName() + " to format STG.");
             }
             SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
 
             // Generate .g for the model
-            File netFile = new File(directory, "net" + StgFormat.getInstance().getExtension());
+            File netFile = new File(directory, "net" + stgFormat.getExtension());
             ExportTask exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
             Result<? extends Object> exportResult = framework.getTaskManager().execute(
                     exportTask, "Exporting .g", subtaskMonitor);
