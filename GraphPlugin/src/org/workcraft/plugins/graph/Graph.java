@@ -78,7 +78,7 @@ public class Graph extends AbstractMathModel {
     }
 
     @Override
-    public void reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren) {
+    public boolean reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren) {
         if (srcModel == null) {
             srcModel = this;
         }
@@ -104,7 +104,7 @@ public class Graph extends AbstractMathModel {
                 srcVertex.setSymbol(dstSymbol);
             }
         }
-        super.reparent(dstContainer, srcModel, srcRoot, srcChildren);
+        return super.reparent(dstContainer, srcModel, srcRoot, srcChildren);
     }
 
     @Override

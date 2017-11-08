@@ -31,7 +31,8 @@ public class VisualModelTests {
         }
 
         @Override
-        public void reparent(Container targetContainer, Model sourceModel, Container sourceRoot, Collection<Node> sourceChildren) {
+        public boolean reparent(Container targetContainer, Model sourceModel, Container sourceRoot, Collection<Node> sourceChildren) {
+            return true;
         }
 
         @Override

@@ -8,12 +8,14 @@ import java.util.Set;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
+import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.AbstractMathModel;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
+import org.workcraft.dom.references.NameManager;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NotFoundException;
 import org.workcraft.gui.propertyeditor.ModelProperties;
@@ -28,6 +30,7 @@ import org.workcraft.plugins.stg.propertydescriptors.InstancePropertyDescriptor;
 import org.workcraft.plugins.stg.propertydescriptors.SignalPropertyDescriptor;
 import org.workcraft.plugins.stg.propertydescriptors.TypePropertyDescriptor;
 import org.workcraft.serialisation.References;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.MultiSet;
@@ -38,7 +41,7 @@ import org.workcraft.util.Triple;
 @VisualClass(org.workcraft.plugins.stg.VisualStg.class)
 public class Stg extends AbstractMathModel implements StgModel {
 
-    private StgReferenceManager referenceManager;
+    private final StgReferenceManager referenceManager;
 
     public Stg() {
         this(null, null);
@@ -447,6 +450,49 @@ public class Stg extends AbstractMathModel implements StgModel {
             }
         }
         return result;
+    }
+
+    @Override
+    public boolean reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren) {
+        if (srcModel == null) {
+            srcModel = this;
+        }
+        if (referenceManager == null) {
+            return false;
+        }
+        NamespaceProvider dstProvider = null;
+        if (dstContainer instanceof NamespaceProvider) {
+            dstProvider = (NamespaceProvider) dstContainer;
+        } else {
+            dstProvider = referenceManager.getNamespaceProvider(dstContainer);
+        }
+        NameManager dstNameManager = referenceManager.getNameManager(dstProvider);
+        for (Node srcChild: srcChildren) {
+            if (srcChild instanceof SignalTransition) {
+                SignalTransition srcTransition = (SignalTransition) srcChild;
+                String signalName = srcTransition.getSignalName();
+                if (dstNameManager.isUnusedName(signalName)) continue;
+                // Check for name clash with non-signal nodes.
+                String dstContainerRef = getNodeReference(dstContainer);
+                String dstSignalRef = NamespaceHelper.getReference(dstContainerRef, signalName);
+                String srcTransitionName = srcTransition.getName();
+                if (getSignalTransitions(dstSignalRef).isEmpty()) {
+                    DialogUtils.showError("Cannot move transition '" + srcTransitionName
+                            + "' because the name '" + signalName + "' is taken at the destination.");
+                    return false;
+                }
+                // Check for name clash with a signal of different type.
+                Type srcSignalType = srcTransition.getSignalType();
+                Type dstSignalType = getSignalType(dstSignalRef);
+                if (srcSignalType != dstSignalType) {
+                    DialogUtils.showError("Cannot move an " + srcSignalType
+                            + " transition '" + srcTransitionName + "' because there is an "
+                            + dstSignalType + " signal '" + signalName + "' at the destination.");
+                    return false;
+                }
+            }
+        }
+        return super.reparent(dstContainer, srcModel, srcRoot, srcChildren);
     }
 
     @Override

@@ -324,31 +324,32 @@ public class WorkspaceEntry implements ObservableState {
         VisualModel model = modelEntry.getVisualModel();
         if (model.getSelection().size() > 0) {
             captureMemento();
-            try {
-                // Copy selected nodes inside a group as if it was the root.
-                while (model.getCurrentLevel() != model.getRoot()) {
-                    Collection<Node> nodes = new HashSet<>(model.getSelection());
-                    Container level = model.getCurrentLevel();
-                    Container parent = Hierarchy.getNearestAncestor(level.getParent(), Container.class);
-                    if (parent != null) {
-                        model.setCurrentLevel(parent);
-                        model.addToSelection(level);
-                    }
-                    model.ungroupSelection();
-                    model.select(nodes);
-                }
+            // Remember the current level, selected nodes, and then jump to the root level.
+            Container currentLevel = model.getCurrentLevel();
+            Collection<Node> selectedNodes = new HashSet<>(model.getSelection());
+            model.setCurrentLevel(model.getRoot());
+            // Starting from the root, delete irrelevant containers and ungroup the containers of the selected nodes.
+            for (Node container: Hierarchy.getPath(currentLevel)) {
+                if (container == model.getRoot()) continue;
+                model.select(container);
                 model.selectInverse();
                 model.deleteSelection();
-                final Framework framework = Framework.getInstance();
-                framework.clipboard = framework.saveModel(modelEntry);
-                if (CommonDebugSettings.getCopyModelOnChange()) {
-                    // Copy the memento clipboard into the system-wide clipboard as a string.
-                    Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
-                    clipboard.setContents(new StringSelection(getClipboardAsString()), null);
-                }
-            } finally {
-                cancelMemento();
+                model.select(container);
+                model.ungroupSelection();
             }
+            // Now the selected nodes should be at the root level; delete everything except the selected nodes.
+            model.select(selectedNodes);
+            model.selectInverse();
+            model.deleteSelection();
+            // Save the remaining nodes to clipboard.
+            final Framework framework = Framework.getInstance();
+            framework.clipboard = framework.saveModel(modelEntry);
+            if (CommonDebugSettings.getCopyModelOnChange()) {
+                // Copy the memento clipboard into the system-wide clipboard as a string.
+                Clipboard clipboard = Toolkit.getDefaultToolkit().getSystemClipboard();
+                clipboard.setContents(new StringSelection(getClipboardAsString()), null);
+            }
+            cancelMemento();
         }
     }
 

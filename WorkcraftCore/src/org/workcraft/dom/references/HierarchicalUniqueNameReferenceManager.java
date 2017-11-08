@@ -59,11 +59,11 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
             if (srcProvider != null) {
                 String name = srcRefManager.getName(node);
 
-                // Clear cached data in the local and the source reference manager
+                // Clear cached data in the local and the source reference manager.
                 node2namespace.remove(node);
                 srcRefManager.node2namespace.remove(node);
 
-                // Do not assign name if it wasn't assigned in the first place (eg. the implicit place)
+                // Do not assign name if it was not assigned in the first place (e.g. for an implicit place).
                 if ((name != null) && ((dstProvider != srcProvider) || (node2namespace != srcRefManager.node2namespace))) {
                     NameManager srcNameManager = srcRefManager.getNameManager(srcProvider);
                     NameManager dstNameManager = this.getNameManager(dstProvider);
@@ -78,12 +78,11 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
                 }
             }
         }
-
     }
 
     @Override
     public void attach(Node root) {
-        // root must be a namespace provider
+        // Root must be a namespace provider.
         topProvider = (NamespaceProvider) root;
         if (refs != null) {
             for (Node n : Hierarchy.getDescendantsOfType(root, Node.class)) {
@@ -164,7 +163,7 @@ public class HierarchicalUniqueNameReferenceManager extends HierarchySupervisor 
                     result = NamespaceHelper.getHierarchySeparator() + result;
                 }
                 String name = getNameManager(component).getName(node);
-                // The unnamed component just returns null
+                // The unnamed component just returns null.
                 if (name == null) return null;
                 result = name + result;
                 node = node.getParent();

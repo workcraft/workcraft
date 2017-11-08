@@ -501,11 +501,12 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
             getCurrentMathLevel().add(pageNode);
             page = new VisualPage(pageNode);
             getCurrentLevel().add(page);
-            reparent(page, this, getCurrentLevel(), nodes);
-            Point2D pos = TransformHelper.getSnappedCentre(nodes);
-            VisualModelTransformer.translateNodes(nodes, -pos.getX(), -pos.getY());
-            page.setPosition(pos);
-            select(page);
+            if (reparent(page, this, getCurrentLevel(), nodes)) {
+                Point2D pos = TransformHelper.getSnappedCentre(nodes);
+                VisualModelTransformer.translateNodes(nodes, -pos.getX(), -pos.getY());
+                page.setPosition(pos);
+                select(page);
+            }
         }
         return page;
     }
@@ -518,15 +519,17 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
                 VisualGroup group = (VisualGroup) node;
                 ArrayList<Node> nodesToReparent = new ArrayList<>(group.getChildren());
                 toSelect.addAll(nodesToReparent);
-                this.reparent(getCurrentLevel(), this, group, nodesToReparent);
-                getCurrentLevel().remove(group);
+                if (reparent(getCurrentLevel(), this, group, nodesToReparent)) {
+                    getCurrentLevel().remove(group);
+                }
             } else if (node instanceof VisualPage) {
                 VisualPage page = (VisualPage) node;
                 ArrayList<Node> nodesToReparent = new ArrayList<>(page.getChildren());
                 toSelect.addAll(nodesToReparent);
-                this.reparent(getCurrentLevel(), this, page, nodesToReparent);
-                getMathModel().remove(page.getReferencedComponent());
-                getCurrentLevel().remove(page);
+                if (reparent(getCurrentLevel(), this, page, nodesToReparent)) {
+                    getMathModel().remove(page.getReferencedComponent());
+                    getCurrentLevel().remove(page);
+                }
             } else {
                 toSelect.add(node);
             }
@@ -631,7 +634,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
     }
 
     @Override
-    public void reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren) {
+    public boolean reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren) {
         if (srcModel == null) {
             srcModel = this;
         }
@@ -645,15 +648,15 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
 
         MathModel dstMathMmodel = getMathModel();
         Container dstMathContainer = NamespaceHelper.getMathContainer(this, dstContainer);
-        dstMathMmodel.reparent(dstMathContainer, srcMathModel, srcMathContainer, srcMathChildren);
-
+        if (!dstMathMmodel.reparent(dstMathContainer, srcMathModel, srcMathContainer, srcMathChildren)) {
+            return false;
+        }
         // Save root-space position of components and set connections scale mode to follow components.
         HashMap<VisualTransformableNode, Point2D> componentToPositionMap = VisualModelTransformer.getRootSpacePositions(srcChildren);
-
         Collection<Node> dstChildren = new LinkedList<>(srcChildren);
         srcRoot.reparent(dstChildren, dstContainer);
-
         VisualModelTransformer.setRootSpacePositions(componentToPositionMap);
+        return true;
     }
 
     @Override

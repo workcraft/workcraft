@@ -38,7 +38,7 @@ public interface Model extends NodeContext {
     void setName(Node node, String name);
     String getDerivedName(Node node, Container container, String candidate);
 
-    void reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren);
+    boolean reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren);
 
     Container getRoot();
     <T> Set<T> getPreset(Node node, Class<T> type);

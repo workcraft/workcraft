@@ -880,9 +880,9 @@ public final class Framework {
         Collection<Node> children = new HashSet<>(vmodel2.getRoot().getChildren());
 
         vmodel1.selectNone();
-        vmodel1.reparent(vmodel1.getCurrentLevel(), vmodel2, vmodel2.getRoot(), null);
-        vmodel1.select(children);
-
+        if (vmodel1.reparent(vmodel1.getCurrentLevel(), vmodel2, vmodel2.getRoot(), null)) {
+            vmodel1.select(children);
+        }
         // FIXME: Dirty hack to avoid any hanging observers (serialise and deserialise the model).
         Memento memo = saveModel(me1);
         return loadModel(memo);

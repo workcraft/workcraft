@@ -119,7 +119,7 @@ public class Fsm extends AbstractMathModel {
     }
 
     @Override
-    public void reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren) {
+    public boolean reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren) {
         if (srcModel == null) {
             srcModel = this;
         }
@@ -145,7 +145,7 @@ public class Fsm extends AbstractMathModel {
                 srcEvent.setSymbol(dstSymbol);
             }
         }
-        super.reparent(dstContainer, srcModel, srcRoot, srcChildren);
+        return super.reparent(dstContainer, srcModel, srcRoot, srcChildren);
     }
 
     @Override

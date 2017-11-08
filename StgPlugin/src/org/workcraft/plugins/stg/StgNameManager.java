@@ -39,38 +39,36 @@ public class StgNameManager extends UniqueNameManager {
         String signalName = st.getSignalName();
         Direction direction = st.getDirection();
         Integer instance = 0;
-        final Triple<String, Direction, Integer> r = LabelParser.parseSignalTransition(name);
-        if (r != null) {
+        if (Identifier.isName(name)) {
+            signalName = name;
+        } else {
+            final Triple<String, Direction, Integer> r = LabelParser.parseSignalTransition(name);
+            if (r == null) {
+                throw new ArgumentException("Name '" + name + "' is not a valid signal transition label.");
+            }
             signalName = r.getFirst();
             direction = r.getSecond();
             instance = r.getThird();
-        } else if (Identifier.isName(name)) {
-            signalName = name;
-        } else {
-            throw new ArgumentException("Name '" + name + "' is not a valid signal transition label.");
         }
-        if (isUnusedName(signalName) || !signalTransitions.get(signalName).isEmpty()) {
-            instancedNameManager.assign(st, Pair.of(signalName + direction, instance), forceInstance);
-            st.setDirection(direction);
-            renameSignalTransition(st, signalName);
-        } else {
+        if (signalTransitions.get(signalName).isEmpty() && !isUnusedName(signalName)) {
             throw new ArgumentException("Name '" + name + "' is unavailable.");
         }
+        instancedNameManager.assign(st, Pair.of(signalName + direction, instance), forceInstance);
+        st.setDirection(direction);
+        renameSignalTransition(st, signalName);
     }
 
     private void setDummyTransitionName(DummyTransition dt, String name, boolean forceInstance) {
         final Pair<String, Integer> r = LabelParser.parseDummyTransition(name);
-        if (r != null) {
-            String dummyName = r.getFirst();
-            if (isUnusedName(dummyName) || !dummyTransitions.get(dummyName).isEmpty()) {
-                instancedNameManager.assign(dt, r, forceInstance);
-                renameDummyTransition(dt, dummyName);
-            } else {
-                throw new ArgumentException("Name '" + name + "' is unavailable.");
-            }
-        } else {
+        if (r == null) {
             throw new ArgumentException("Name '" + name + "' is not a valid dummy label.");
         }
+        String dummyName = r.getFirst();
+        if (dummyTransitions.get(dummyName).isEmpty() && !isUnusedName(dummyName)) {
+            throw new ArgumentException("Name '" + name + "' is unavailable.");
+        }
+        instancedNameManager.assign(dt, r, forceInstance);
+        renameDummyTransition(dt, dummyName);
     }
 
     public void setName(Node node, String name, boolean forceInstance) {
@@ -94,7 +92,7 @@ public class StgNameManager extends UniqueNameManager {
     public String getName(Node node) {
         String result = null;
         if ((node instanceof StgPlace) && ((StgPlace) node).isImplicit()) {
-            // Skip implicit places
+            // Skip implicit places.
         } else if (node instanceof NamedTransition) {
             Pair<String, Integer> instance = instancedNameManager.getInstance(node);
             if (instance != null) {
@@ -157,7 +155,7 @@ public class StgNameManager extends UniqueNameManager {
     }
 
     private SignalTransition.Type getSignalType(String signalName) {
-        for (SignalTransition st : signalTransitions.get(signalName)) {
+        for (SignalTransition st: signalTransitions.get(signalName)) {
             return st.getSignalType();
         }
         return null;
@@ -237,7 +235,7 @@ public class StgNameManager extends UniqueNameManager {
     @Override
     public void setDefaultNameIfUnnamed(Node node) {
         if ((node instanceof StgPlace) && ((StgPlace) node).isImplicit()) {
-            // Skip implicit places
+            // Skip implicit places.
         } else if (node instanceof SignalTransition) {
             setDeaultSignalTransitionNameIfUnnamed((SignalTransition) node);
         } else if (node instanceof DummyTransition) {
@@ -250,7 +248,7 @@ public class StgNameManager extends UniqueNameManager {
     @Override
     public String getDerivedName(Node node, String candidate) {
         String result = candidate;
-        if (!(node instanceof NamedTransition)) {
+        if (!(node instanceof SignalTransition)) {
             result = super.getDerivedName(node, candidate);
         }
         return result;
