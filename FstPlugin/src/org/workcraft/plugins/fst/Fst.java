@@ -25,6 +25,7 @@ import org.workcraft.plugins.fst.propertydescriptors.TypePropertyDescriptor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.Identifier;
 
 @VisualClass(org.workcraft.plugins.fst.VisualFst.class)
 public class Fst extends Fsm {
@@ -53,8 +54,8 @@ public class Fst extends Fsm {
             @Override
             public String getPrefix(Node node) {
                 if (node instanceof State) return "s";
-                if (node instanceof Event) return "e";
                 if (node instanceof Signal) return "x";
+                if (node instanceof Event) return Identifier.createInternal("e");
                 return super.getPrefix(node);
             }
         });

@@ -18,6 +18,7 @@ import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.Identifier;
 
 @VisualClass(org.workcraft.plugins.policy.VisualPolicyNet.class)
 public class PolicyNet extends PetriNet implements PolicyNetModel {
@@ -30,10 +31,10 @@ public class PolicyNet extends PetriNet implements PolicyNetModel {
         super(root, new HierarchicalUniqueNameReferenceManager(refs) {
             @Override
             public String getPrefix(Node node) {
-                if (node instanceof Bundle) return "b";
-                if (node instanceof Locality) return "loc";
                 if (node instanceof Place) return "p";
                 if (node instanceof Transition) return "t";
+                if (node instanceof Bundle) return "b";
+                if (node instanceof Locality) return Identifier.createInternal("loc");
                 return super.getPrefix(node);
             }
         });

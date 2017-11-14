@@ -25,6 +25,7 @@ import org.workcraft.plugins.xmas.components.XmasConnection;
 import org.workcraft.plugins.xmas.components.XmasContact;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.Identifier;
 
 public class Xmas extends AbstractMathModel {
 
@@ -45,8 +46,8 @@ public class Xmas extends AbstractMathModel {
                 if (node instanceof MergeComponent) return "mrg";
                 if (node instanceof SinkComponent) return "snk";
                 if (node instanceof SyncComponent) return "sync";
-                if (node instanceof XmasContact) return "contact";
-                if (node instanceof XmasConnection) return "con";
+                if (node instanceof XmasContact) return Identifier.createInternal("p");
+                if (node instanceof XmasConnection) return Identifier.createInternal("c");
                 return super.getPrefix(node);
             }
         });

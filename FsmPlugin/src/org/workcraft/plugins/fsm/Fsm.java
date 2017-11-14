@@ -17,6 +17,7 @@ import org.workcraft.plugins.fsm.propertydescriptors.SymbolPropertyDescriptor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.Identifier;
 
 @VisualClass(org.workcraft.plugins.fsm.VisualFsm.class)
 public class Fsm extends AbstractMathModel {
@@ -31,7 +32,7 @@ public class Fsm extends AbstractMathModel {
             @Override
             public String getPrefix(Node node) {
                 if (node instanceof State) return "s";
-                if (node instanceof Event) return "e";
+                if (node instanceof Event) return Identifier.createInternal("e");
                 return super.getPrefix(node);
             }
         });
