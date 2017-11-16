@@ -742,7 +742,7 @@ public final class Framework {
      */
     public WorkspaceEntry loadWork(String path) throws DeserialisationException {
         File file = getFileByAbsoluteOrRelativePath(path);
-        if (checkFileMessageLog(file, null)) {
+        if (FileUtils.checkAvailability(file, null, false)) {
             return loadWork(file);
         }
         return null;
@@ -799,7 +799,7 @@ public final class Framework {
 
     public ModelEntry loadModel(File file) throws DeserialisationException {
         ModelEntry me = null;
-        if (checkFileMessageLog(file, null)) {
+        if (FileUtils.checkAvailability(file, null, false)) {
             // Load (from *.work) or import (other extensions) work.
             if (file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
                 ByteArrayInputStream bis = compatibilityManager.process(file);
@@ -1067,24 +1067,6 @@ public final class Framework {
 
     public Config getConfig() {
         return config;
-    }
-
-    public boolean checkFileMessageLog(File file, String title) {
-        boolean result = true;
-        if (title == null) {
-            title = "File access error";
-        }
-        if (!file.exists()) {
-            LogUtils.logError(title + ": The path  \"" + file.getPath() + "\" does not exisit.");
-            result = false;
-        } else if (!file.isFile()) {
-            LogUtils.logError(title + ": The path  \"" + file.getPath() + "\" is not a file.");
-            result = false;
-        } else if (!file.canRead()) {
-            LogUtils.logError(title + ": The file  \"" + file.getPath() + "\" cannot be read.");
-            result = false;
-        }
-        return result;
     }
 
     public File getFileByAbsoluteOrRelativePath(String path) {

@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 
 import org.workcraft.Config;
-import org.workcraft.Framework;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
@@ -155,10 +154,9 @@ public class XmasSettings implements Settings {
 
     public static File getTempVxmDirectory() {
         if (vxmTempDirectory == null) {
-            Framework framework = Framework.getInstance();
             vxmTempDirectory = FileUtils.createTempDirectory("vxm-");
             File vxmFile = new File(getVxmCommand());
-            if (framework.checkFileMessageLog(vxmFile, "VXM access error")) {
+            if (FileUtils.checkAvailability(vxmFile, "VXM access error", false)) {
                 File vxmDirectory = vxmFile.getParentFile();
                 File vsettingsFile = new File(vxmDirectory, VSETTINGS_FILE_NAME);
                 try {

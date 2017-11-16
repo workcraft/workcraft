@@ -274,30 +274,41 @@ public class FileUtils {
         }
     }
 
-    public static boolean checkAvailability(File file, String title) {
-        boolean result = true;
+    public static boolean checkAvailability(File file, String title, boolean showMessageDialog) {
+        String msg = getAvailabilityMessage(file);
+        if (msg == null) {
+            return true;
+        }
         if (title == null) {
             title = "File access error";
         }
-        if (file == null) {
-            DialogUtils.showError("The file name is undefined.\n", title);
-            result = false;
-        } else if (!file.exists()) {
-            DialogUtils.showError("The path  \"" + file.getPath() + "\" does not exisit.\n", title);
-            result = false;
-        } else if (!file.isFile()) {
-            DialogUtils.showError("The path  \"" + file.getPath() + "\" is not a file.\n", title);
-            result = false;
-        } else if (!file.canRead()) {
-            DialogUtils.showError("The file  \"" + file.getPath() + "\" cannot be read.\n", title);
-            result = false;
+        if (showMessageDialog) {
+            DialogUtils.showError(msg, title);
+        } else {
+            LogUtils.logError(title + ": " + msg);
         }
-        return result;
+        return false;
+    }
+
+    private static String getAvailabilityMessage(File file) {
+        if (file == null) {
+            return "The file name is undefined.";
+        }
+        if (!file.exists()) {
+            return "The path '" + file.getPath() + "' does not exist.";
+        }
+        if (!file.isFile()) {
+            return "The path '" + file.getPath() + "' is not a file.";
+        }
+        if (!file.canRead()) {
+            return "The file '" + file.getPath() + "' cannot be read.";
+        }
+        return null;
     }
 
     public static void openExternally(String fileName, String errorTitle) {
         File file = new File(fileName);
-        if (checkAvailability(file, errorTitle)) {
+        if (checkAvailability(file, errorTitle, true)) {
             DesktopApi.open(file);
         }
     }

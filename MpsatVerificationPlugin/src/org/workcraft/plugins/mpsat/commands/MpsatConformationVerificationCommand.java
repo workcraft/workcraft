@@ -82,7 +82,7 @@ public class MpsatConformationVerificationCommand extends AbstractVerificationCo
                     proceed = false;
                 }
             }
-            if (proceed && FileUtils.checkAvailability(getEnvironment(), null)) {
+            if (proceed && FileUtils.checkAvailability(getEnvironment(), null, true)) {
                 Stg envStg = StgUtils.loadStg(getEnvironment());
                 if (envStg == null) {
                     DialogUtils.showError("Cannot read an STG model from the file:\n"

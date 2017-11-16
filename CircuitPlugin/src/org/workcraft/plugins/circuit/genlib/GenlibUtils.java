@@ -5,7 +5,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
-import org.workcraft.Framework;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.plugins.circuit.Circuit;
@@ -16,6 +15,7 @@ import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.expression.ExpressionUtils;
 import org.workcraft.plugins.circuit.jj.genlib.GenlibParser;
 import org.workcraft.plugins.shared.CommonDebugSettings;
+import org.workcraft.util.FileUtils;
 import org.workcraft.util.LogUtils;
 
 public class GenlibUtils {
@@ -77,8 +77,7 @@ public class GenlibUtils {
             LogUtils.logWarning("Gate library file is not specified.");
         } else {
             File file = new File(fileName);
-            final Framework framework = Framework.getInstance();
-            if (framework.checkFileMessageLog(file, "Gate library access error")) {
+            if (FileUtils.checkAvailability(file, "Gate library access error", false)) {
                 try {
                     InputStream genlibInputStream = new FileInputStream(fileName);
                     GenlibParser genlibParser = new GenlibParser(genlibInputStream);
