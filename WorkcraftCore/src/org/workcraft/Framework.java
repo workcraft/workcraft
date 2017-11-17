@@ -513,15 +513,18 @@ public final class Framework {
      * Used in functions.js JavaScript wrapper.
      */
     public void execJavaScriptResource(String resourceName) throws IOException {
-        execJavaScript(FileUtils.readAllTextFromSystemResource(resourceName));
+        String script = FileUtils.readAllTextFromSystemResource(resourceName);
+        execJavaScript(script);
     }
 
     /**
      * Used in functions.js JavaScript wrapper.
+     * @throws IOException
      */
     public void execJavaScriptFile(String path) throws IOException {
         File file = getFileByAbsoluteOrRelativePath(path);
-        execJavaScript(FileUtils.readAllText(file), globalScope);
+        String script = FileUtils.readAllText(file);
+        execJavaScript(script, globalScope);
     }
 
     public Script compileJavaScript(String source, String sourceName) {
@@ -903,6 +906,7 @@ public final class Framework {
             try {
                 workspace.moveEntry(wsFrom, wsTo);
             } catch (IOException e) {
+                LogUtils.logError(e.getMessage());
             }
         }
         saveModel(we.getModelEntry(), path);

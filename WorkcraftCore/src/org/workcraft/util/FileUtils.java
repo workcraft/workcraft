@@ -297,7 +297,7 @@ public class FileUtils {
         if (!file.exists()) {
             return "The path '" + file.getPath() + "' does not exist.";
         }
-        if (!file.isFile()) {
+        if (file.isDirectory()) {
             return "The path '" + file.getPath() + "' is not a file.";
         }
         if (!file.canRead()) {
