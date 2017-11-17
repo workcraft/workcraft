@@ -16,7 +16,6 @@ public class LabelParserTests {
         assertEquals("a", result.getFirst());
         assertEquals(Direction.PLUS, result.getSecond());
         assertEquals(null, result.getThird());
-
     }
 
     @Test
@@ -26,7 +25,6 @@ public class LabelParserTests {
         assertEquals("a", result.getFirst());
         assertEquals(Direction.PLUS, result.getSecond());
         assertEquals(new Integer(4), result.getThird());
-
     }
 
     @Test
