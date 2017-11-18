@@ -25,8 +25,7 @@ function write(text, fileName) {
     if (arguments.length < 2) {
         System.out.print(text);
     } else {
-        dir = framework.getWorkingDirectory();
-        file = new File(dir, fileName);
+        file = framework.getFileByAbsoluteOrRelativePath(fileName);
         fileWriter = new FileWriter(file);
         bufferedWriter = new BufferedWriter(fileWriter);
         bufferedWriter.write(text);

@@ -513,15 +513,18 @@ public final class Framework {
      * Used in functions.js JavaScript wrapper.
      */
     public void execJavaScriptResource(String resourceName) throws IOException {
-        execJavaScript(FileUtils.readAllTextFromSystemResource(resourceName));
+        String script = FileUtils.readAllTextFromSystemResource(resourceName);
+        execJavaScript(script);
     }
 
     /**
      * Used in functions.js JavaScript wrapper.
+     * @throws IOException
      */
     public void execJavaScriptFile(String path) throws IOException {
         File file = getFileByAbsoluteOrRelativePath(path);
-        execJavaScript(FileUtils.readAllText(file), globalScope);
+        String script = FileUtils.readAllText(file);
+        execJavaScript(script, globalScope);
     }
 
     public Script compileJavaScript(String source, String sourceName) {
@@ -742,7 +745,7 @@ public final class Framework {
      */
     public WorkspaceEntry loadWork(String path) throws DeserialisationException {
         File file = getFileByAbsoluteOrRelativePath(path);
-        if (checkFileMessageLog(file, null)) {
+        if (FileUtils.checkAvailability(file, null, false)) {
             return loadWork(file);
         }
         return null;
@@ -799,7 +802,7 @@ public final class Framework {
 
     public ModelEntry loadModel(File file) throws DeserialisationException {
         ModelEntry me = null;
-        if (checkFileMessageLog(file, null)) {
+        if (FileUtils.checkAvailability(file, null, false)) {
             // Load (from *.work) or import (other extensions) work.
             if (file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
                 ByteArrayInputStream bis = compatibilityManager.process(file);
@@ -880,9 +883,9 @@ public final class Framework {
         Collection<Node> children = new HashSet<>(vmodel2.getRoot().getChildren());
 
         vmodel1.selectNone();
-        vmodel1.reparent(vmodel1.getCurrentLevel(), vmodel2, vmodel2.getRoot(), null);
-        vmodel1.select(children);
-
+        if (vmodel1.reparent(vmodel1.getCurrentLevel(), vmodel2, vmodel2.getRoot(), null)) {
+            vmodel1.select(children);
+        }
         // FIXME: Dirty hack to avoid any hanging observers (serialise and deserialise the model).
         Memento memo = saveModel(me1);
         return loadModel(memo);
@@ -903,6 +906,7 @@ public final class Framework {
             try {
                 workspace.moveEntry(wsFrom, wsTo);
             } catch (IOException e) {
+                LogUtils.logError(e.getMessage());
             }
         }
         saveModel(we.getModelEntry(), path);
@@ -1067,24 +1071,6 @@ public final class Framework {
 
     public Config getConfig() {
         return config;
-    }
-
-    public boolean checkFileMessageLog(File file, String title) {
-        boolean result = true;
-        if (title == null) {
-            title = "File access error";
-        }
-        if (!file.exists()) {
-            LogUtils.logError(title + ": The path  \"" + file.getPath() + "\" does not exisit.");
-            result = false;
-        } else if (!file.isFile()) {
-            LogUtils.logError(title + ": The path  \"" + file.getPath() + "\" is not a file.");
-            result = false;
-        } else if (!file.canRead()) {
-            LogUtils.logError(title + ": The file  \"" + file.getPath() + "\" cannot be read.");
-            result = false;
-        }
-        return result;
     }
 
     public File getFileByAbsoluteOrRelativePath(String path) {

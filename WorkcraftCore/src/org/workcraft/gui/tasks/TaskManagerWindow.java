@@ -116,7 +116,6 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
         add(scroll, BorderLayout.CENTER);
 
         content = new ScrollPaneWidthTrackingPanel();
-        //ytcontent.setBackground(Color.ORANGE);
         content.setLayout(new SmartFlowLayout());
 
         scroll.setViewportView(content);

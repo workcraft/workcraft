@@ -121,7 +121,7 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
     }
 
     @Override
-    public void reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren) {
+    public boolean reparent(Container dstContainer, Model srcModel, Container srcRoot, Collection<Node> srcChildren) {
         if (srcModel == null) {
             srcModel = this;
         }
@@ -129,15 +129,17 @@ public abstract class AbstractMathModel extends AbstractModel implements MathMod
         if (getReferenceManager() instanceof HierarchicalUniqueNameReferenceManager) {
             manager = (HierarchicalUniqueNameReferenceManager) getReferenceManager();
         }
-        if (manager != null) {
-            NamespaceProvider provider = null;
-            if (dstContainer instanceof NamespaceProvider) {
-                provider = (NamespaceProvider) dstContainer;
-            } else {
-                provider = manager.getNamespaceProvider(dstContainer);
-            }
-            setNamespaceRecursively(manager, provider, srcModel, srcRoot, srcChildren);
+        if (manager == null) {
+            return false;
         }
+        NamespaceProvider provider = null;
+        if (dstContainer instanceof NamespaceProvider) {
+            provider = (NamespaceProvider) dstContainer;
+        } else {
+            provider = manager.getNamespaceProvider(dstContainer);
+        }
+        setNamespaceRecursively(manager, provider, srcModel, srcRoot, srcChildren);
+        return true;
     }
 
     public MultiSet<String> getStatistics() {

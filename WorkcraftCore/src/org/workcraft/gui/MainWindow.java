@@ -943,7 +943,7 @@ public class MainWindow extends JFrame {
     public WorkspaceEntry openWork(File file) {
         final Framework framework = Framework.getInstance();
         WorkspaceEntry we = null;
-        if (FileUtils.checkAvailability(file, null)) {
+        if (FileUtils.checkAvailability(file, null, true)) {
             try {
                 we = framework.loadWork(file);
                 pushRecentFile(file.getPath(), true);
@@ -1055,7 +1055,7 @@ public class MainWindow extends JFrame {
     }
 
     public void importFrom(File file, Importer[] importers) {
-        if (FileUtils.checkAvailability(file, null)) {
+        if (FileUtils.checkAvailability(file, null, true)) {
             for (Importer importer: importers) {
                 if (!importer.accept(file)) continue;
                 try {

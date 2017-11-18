@@ -2,13 +2,13 @@ package org.workcraft;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 import java.util.LinkedList;
 
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.RhinoException;
 import org.mozilla.javascript.WrappedException;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.DesktopApi;
@@ -101,13 +101,11 @@ public class Console {
                 try {
                     String scriptName = arg.substring(Info.OPTION_EXEC.length());
                     LogUtils.logMessage("Executing " + scriptName + "...");
-                    framework.execJavaScript(new File(scriptName));
-                } catch (FileNotFoundException e) {
-                    LogUtils.logError("Script specified from command line not found: " + arg);
+                    framework.execJavaScriptFile(scriptName);
                 } catch (WrappedException e) {
                     e.getWrappedException().printStackTrace();
                     System.exit(1);
-                } catch (org.mozilla.javascript.RhinoException e) {
+                } catch (IOException | RhinoException e) {
                     LogUtils.logError(e.getMessage());
                     System.exit(1);
                 }
@@ -150,11 +148,8 @@ public class Console {
                     }
                 } catch (WrappedException e) {
                     System.err.println(e.getWrappedException().getMessage());
-                } catch (org.mozilla.javascript.RhinoException e) {
+                } catch (IOException | RhinoException e) {
                     System.err.println(e.getMessage());
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    break;
                 }
             }
         }

@@ -19,6 +19,7 @@ public class StgReferenceManagerTests {
         mgr.handleEvent(new NodesAddedEvent(null, Arrays.asList(new Node[]{transition})));
         Assert.assertEquals("sig", transition.getSignalName());
     }
+
     @Test
     public void testGenerateSignalNameFromNull() {
         MathGroup root = new MathGroup();
@@ -29,6 +30,7 @@ public class StgReferenceManagerTests {
         mgr.handleEvent(new NodesAddedEvent(null, Arrays.asList(new Node[]{transition})));
         Assert.assertEquals("sig", transition.getSignalName());
     }
+
     @Test
     public void testGenerateSignalNameFromEmpty() {
         MathGroup root = new MathGroup();
@@ -39,6 +41,7 @@ public class StgReferenceManagerTests {
         mgr.handleEvent(new NodesAddedEvent(null, Arrays.asList(new Node[]{transition})));
         Assert.assertEquals("sig", transition.getSignalName());
     }
+
     @Test
     public void testGenerateSignalNameTwice() {
         MathGroup root = new MathGroup();
@@ -52,4 +55,5 @@ public class StgReferenceManagerTests {
         Assert.assertEquals("sig", transition1.getSignalName());
         Assert.assertEquals("sig", transition2.getSignalName());
     }
+
 }

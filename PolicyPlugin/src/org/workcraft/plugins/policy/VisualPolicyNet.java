@@ -117,7 +117,6 @@ public class VisualPolicyNet extends VisualPetriNet {
                     locality.getLocality().reparent(mathNodes, ((VisualLocality) getCurrentLevel()).getLocality());
                     getMathModel().remove(locality.getLocality());
                     getCurrentLevel().remove(locality);
-
                 } else {
                     toSelect.add(node);
                 }

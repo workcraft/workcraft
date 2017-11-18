@@ -23,16 +23,6 @@ public class CircuitConnectionDeserializer implements CustomXMLDeserialiser {
             ReferenceResolver internalReferenceResolver,
             ReferenceResolver externalReferenceResolver,
             NodeFinaliser nodeFinaliser) throws DeserialisationException {
-
-    /*    VisualCircuitConnection vc = (VisualCircuitConnection) instance;
-
-        vc.setVisualConnectionDependencies(
-                (VisualComponent) externalReferenceResolver.getObject(element.getAttribute("first")),
-                (VisualComponent) externalReferenceResolver.getObject(element.getAttribute("second")),
-                new Polyline(vc),
-                (CircuitConnection) externalReferenceResolver.getObject(element.getAttribute("ref"))
-                ); */
-
     }
 
     @Override
