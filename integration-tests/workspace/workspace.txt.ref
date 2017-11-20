@@ -1,0 +1,10 @@
+vme-tm.circuit
+  * Descriptor: Digital Circuit
+  * Title: vme
+  * File: /home/danil/workcraft/workcraft/integration-tests/workspace/vme-tm.circuit.work
+
+vme.stg
+  * Descriptor: Signal Transition Graph
+  * Title: vme
+  * File: /home/danil/workcraft/workcraft/integration-tests/workspace/vme.stg.work
+
