@@ -1,0 +1,10 @@
+vme-tm.circuit
+  * Descriptor: Digital Circuit
+  * File: vme-tm.circuit.work
+  * Old title: vme
+  * New title: VME
+vme.stg
+  * Descriptor: Signal Transition Graph
+  * File: vme.stg.work
+  * Old title: vme
+  * New title: VME
