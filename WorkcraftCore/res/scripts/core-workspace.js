@@ -30,3 +30,11 @@ framework.addJavaScriptHelp("getModelTitle", "work",
 function getModelTitle(work) {
     return work.getModelEntry().getModel().getTitle();
 }
+
+
+framework.addJavaScriptHelp("setModelTitle", "work, title",
+    "set the model title of the specified work to the title string");
+
+function setModelTitle(work, title) {
+    return work.getModelEntry().getModel().setTitle(title);
+}

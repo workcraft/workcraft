@@ -14,8 +14,11 @@ s = "";
 for each (work in getWorks()) {
     s += work.getTitle() + "\n";
     s += "  * Descriptor: " + getModelDescriptor(work) + "\n";
-    s += "  * Title: " + getModelTitle(work) + "\n";
-    s += "  * File: " + getWorkFile(work) + "\n";
+    s += "  * File: " + getWorkFile(work).getName() + "\n";
+    title = getModelTitle(work);
+    s += "  * Old title: " + title + "\n";
+    setModelTitle(work, title.toUpperCase());
+    s += "  * New title: " + getModelTitle(work);
     s += "\n";
 }
 
