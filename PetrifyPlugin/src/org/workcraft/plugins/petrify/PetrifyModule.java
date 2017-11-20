@@ -5,6 +5,7 @@ import org.workcraft.Module;
 import org.workcraft.PluginManager;
 import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.gui.propertyeditor.Settings;
+import org.workcraft.plugins.petrify.commands.PetrifyPetriToFsmConversionCommand;
 import org.workcraft.plugins.petrify.commands.PetrifyComplexGateSynthesisCommand;
 import org.workcraft.plugins.petrify.commands.PetrifyCscConflictResolutionCommand;
 import org.workcraft.plugins.petrify.commands.PetrifyGeneralisedCelementSynthesisCommand;
@@ -16,6 +17,8 @@ import org.workcraft.plugins.petrify.commands.PetrifyNetErConversionCommand;
 import org.workcraft.plugins.petrify.commands.PetrifyStandardCelementSynthesisCommand;
 import org.workcraft.plugins.petrify.commands.PetrifyTechnologyMappingSynthesisCommand;
 import org.workcraft.plugins.petrify.commands.PetrifyUntoggleConversionCommand;
+import org.workcraft.plugins.petrify.commands.PetrifyStgToBinaryFstConversionCommand;
+import org.workcraft.plugins.petrify.commands.PetrifyStgToFstConversionCommand;
 
 public class PetrifyModule implements Module {
 
@@ -40,6 +43,13 @@ public class PetrifyModule implements Module {
         ScriptableCommandUtils.register(PetrifyHideErConversionCommand.class, "convertPetriHideErTransition",
                 "convert the given Petri net or STG 'work' into a new Petri net or STG work hiding selected signals and dummies"
                 + " with a different label for each excitation region");
+
+        ScriptableCommandUtils.register(PetrifyStgToFstConversionCommand.class, "convertStgToFst",
+                "convert the given STG 'work' into a new FST work");
+        ScriptableCommandUtils.register(PetrifyStgToBinaryFstConversionCommand.class, "convertStgToBinaryFst",
+                "convert the given STG 'work' into a new binary FST work");
+        ScriptableCommandUtils.register(PetrifyPetriToFsmConversionCommand.class, "convertPetriToFsm",
+                "convert the given Petri net 'work' into a new FSM work");
 
         ScriptableCommandUtils.register(PetrifyCscConflictResolutionCommand.class, "resolveCscConflictPetrify",
                 "resolve complete state coding conflicts with Petrify backend");

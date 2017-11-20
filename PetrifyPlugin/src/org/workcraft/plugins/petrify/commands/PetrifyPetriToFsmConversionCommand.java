@@ -1,10 +1,10 @@
-package org.workcraft.plugins.fst.commands;
+package org.workcraft.plugins.petrify.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractConversionCommand;
-import org.workcraft.plugins.fst.tasks.PetriToFsmConversionResultHandler;
-import org.workcraft.plugins.fst.tasks.WriteSgConversionTask;
 import org.workcraft.plugins.petri.PetriNet;
+import org.workcraft.plugins.petrify.tasks.PetriToFsmConversionResultHandler;
+import org.workcraft.plugins.petrify.tasks.WriteSgConversionTask;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.DialogUtils;
@@ -12,7 +12,7 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class PetriToFsmConversionCommand extends AbstractConversionCommand {
+public class PetrifyPetriToFsmConversionCommand extends AbstractConversionCommand {
 
     @Override
     public String getDisplayName() {

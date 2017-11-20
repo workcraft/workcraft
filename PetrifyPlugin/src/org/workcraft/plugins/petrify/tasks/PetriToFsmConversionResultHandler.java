@@ -1,4 +1,4 @@
-package org.workcraft.plugins.fst.tasks;
+package org.workcraft.plugins.petrify.tasks;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.math.MathModel;

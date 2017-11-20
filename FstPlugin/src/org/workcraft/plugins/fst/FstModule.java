@@ -15,9 +15,6 @@ import org.workcraft.plugins.fst.commands.ExtractWindowsCommand;
 import org.workcraft.plugins.fst.commands.FsmToFstConversionCommand;
 import org.workcraft.plugins.fst.commands.FstToFsmConversionCommand;
 import org.workcraft.plugins.fst.commands.FstToStgConversionCommand;
-import org.workcraft.plugins.fst.commands.PetriToFsmConversionCommand;
-import org.workcraft.plugins.fst.commands.StgToBinaryFstConversionCommand;
-import org.workcraft.plugins.fst.commands.StgToFstConversionCommand;
 import org.workcraft.plugins.fst.interop.SgExporter;
 import org.workcraft.plugins.fst.interop.SgImporter;
 import org.workcraft.plugins.fst.serialisation.SgSerialiser;
@@ -46,14 +43,8 @@ public class FstModule implements Module {
         pm.registerClass(Exporter.class, SgExporter.class);
         pm.registerClass(Importer.class, SgImporter.class);
 
-        ScriptableCommandUtils.register(StgToFstConversionCommand.class, "convertStgToFst",
-                "convert the given STG 'work' into a new FST work");
-        ScriptableCommandUtils.register(StgToBinaryFstConversionCommand.class, "convertStgToBinaryFst",
-                "convert the given STG 'work' into a new binary FST work");
         ScriptableCommandUtils.register(FstToStgConversionCommand.class, "convertFstToStg",
                 "convert the given FST 'work' into a new STG work");
-        ScriptableCommandUtils.register(PetriToFsmConversionCommand.class, "convertPetriToFsm",
-                "convert the given Petri net 'work' into a new FSM work");
         ScriptableCommandUtils.register(FsmToFstConversionCommand.class, "convertFsmToFst",
                 "convert the given FSM 'work' into a new FST work");
         ScriptableCommandUtils.register(FstToFsmConversionCommand.class, "convertFstToFsm",
