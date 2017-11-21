@@ -1,4 +1,4 @@
-package org.workcraft.plugins.petrify;
+package org.workcraft.plugins.petrify.tasks;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.workcraft.interop.ExternalProcessListener;
+import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;

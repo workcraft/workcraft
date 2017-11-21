@@ -14,7 +14,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/MpsatSynthesisPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/PcompPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/PunfPlugin"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/PetrifyExtraPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/DtdPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/CpogPlugin"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/SonPlugin"/>

@@ -1,4 +1,4 @@
-package org.workcraft.plugins.fst.tasks;
+package org.workcraft.plugins.petrify.tasks;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -15,7 +15,6 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.interop.SgImporter;
 import org.workcraft.plugins.petri.PetriNetModel;
-import org.workcraft.plugins.petrify.WriteSgTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
