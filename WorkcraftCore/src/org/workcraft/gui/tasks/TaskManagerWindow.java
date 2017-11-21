@@ -2,6 +2,8 @@ package org.workcraft.gui.tasks;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.lang.reflect.InvocationTargetException;
@@ -9,6 +11,7 @@ import java.lang.reflect.InvocationTargetException;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.Scrollable;
 import javax.swing.SwingUtilities;
@@ -102,10 +105,10 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
         @Override
         public void run() {
             taskControl = new TaskControl(description);
+
             container.add(taskControl);
             container.revalidate();
         }
-
     }
 
     private final JPanel content;
@@ -133,11 +136,17 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
     public void removeTaskControl(TaskControl taskControl) {
         content.remove(taskControl);
         content.revalidate();
+        if (content.getComponentCount() == 0) {
+            setTabActivity(false);
+        }
     }
 
     @Override
     public ProgressMonitor<Object> taskStarting(final String description) {
         TaskControlGenerator tcg = new TaskControlGenerator(content, description);
+
+        setTabActivity(true);
+
         if (SwingUtilities.isEventDispatchThread()) {
             tcg.run();
         } else {
@@ -148,6 +157,29 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
             }
         }
         return new TaskControlMonitor(this, tcg.getTaskCotnrol());
+    }
+
+    private void setTabActivity(final boolean active) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                Container component = getParent().getParent();
+                Container parent = component.getParent();
+                if (parent instanceof JTabbedPane) {
+                    JTabbedPane tab = (JTabbedPane) parent;
+                    for (int i = 0; i < tab.getTabCount(); i++) {
+                        if (tab.getComponentAt(i) != component) continue;
+
+                        Component tabComponent = tab.getTabComponentAt(i);
+                        if (active) {
+                            tabComponent.setForeground(new Color(0.22f, 0.45f, 0.9f));
+                        } else {
+                            tabComponent.setForeground(Color.BLACK);
+                        }
+                    }
+                }
+            }
+        });
     }
 
 }
