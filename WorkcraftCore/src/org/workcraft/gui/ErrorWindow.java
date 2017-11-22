@@ -61,20 +61,22 @@ public class ErrorWindow extends JPanel implements ComponentListener {
 
         public void puts(String s) {
             SwingUtilities.invokeLater(new Runnable() {
+                @Override
                 public void run() {
-                    Container parent = getParent().getParent().getParent();
+                    Container component = getParent().getParent();
+                    Container parent = component.getParent();
                     if (parent instanceof JTabbedPane) {
                         JTabbedPane tab = (JTabbedPane) parent;
                         for (int i = 0; i < tab.getTabCount(); i++) {
-                            if (tab.getComponentAt(i) == getParent().getParent()) {
-                                Component tabComponent = tab.getTabComponentAt(i);
-                                if (!tabComponent.getForeground().equals(Color.RED)) {
-                                    colorBack = tabComponent.getForeground();
-                                    tabComponent.setForeground(Color.RED);
-                                    tab.removeChangeListener(ErrorStreamView.this);
-                                    tab.addChangeListener(ErrorStreamView.this);
-                                }
-                            }
+                            if (tab.getComponentAt(i) != component) continue;
+
+                            Component tabComponent = tab.getTabComponentAt(i);
+                            if (tabComponent.getForeground().equals(Color.RED)) continue;
+
+                            colorBack = tabComponent.getForeground();
+                            tabComponent.setForeground(Color.RED);
+                            tab.removeChangeListener(ErrorStreamView.this);
+                            tab.addChangeListener(ErrorStreamView.this);
                         }
                     }
                 }
@@ -101,14 +103,16 @@ public class ErrorWindow extends JPanel implements ComponentListener {
             puts(s);
         }
 
+        @Override
         public void stateChanged(ChangeEvent e) {
             if (colorBack == null) {
                 return;
             }
-            Container parent = getParent().getParent().getParent();
+            Container component = getParent().getParent();
+            Container parent = component.getParent();
             if (parent instanceof JTabbedPane) {
                 JTabbedPane tab = (JTabbedPane) parent;
-                if (tab.getSelectedComponent() == getParent().getParent()) {
+                if (tab.getSelectedComponent() == component) {
                     tab.getTabComponentAt(tab.getSelectedIndex()).setForeground(colorBack);
                     colorBack = null;
                     tab.removeChangeListener(this);
@@ -136,29 +140,35 @@ public class ErrorWindow extends JPanel implements ComponentListener {
         }
     }
 
-    public void componentHidden(ComponentEvent e) {
-    }
-
-    public void componentMoved(ComponentEvent e) {
-    }
-
-    public void componentResized(ComponentEvent e) {
-    }
-
+    @Override
     public void componentShown(ComponentEvent e) {
         if (colorBack == null) {
             return;
         }
 
-        Container parent = getParent().getParent().getParent();
+        Container component = getParent().getParent();
+        Container parent = getParent();
         if (parent instanceof JTabbedPane) {
             JTabbedPane tab = (JTabbedPane) parent;
             for (int i = 0; i < tab.getComponentCount(); i++) {
-                if (tab.getComponentAt(i) == this.getParent().getParent()) {
-                    tab.setForegroundAt(i, colorBack);
-                    colorBack = null;
-                }
+                if (tab.getComponentAt(i) != component) continue;
+
+                tab.setForegroundAt(i, colorBack);
+                colorBack = null;
             }
         }
     }
+
+    @Override
+    public void componentHidden(ComponentEvent e) {
+    }
+
+    @Override
+    public void componentMoved(ComponentEvent e) {
+    }
+
+    @Override
+    public void componentResized(ComponentEvent e) {
+    }
+
 }

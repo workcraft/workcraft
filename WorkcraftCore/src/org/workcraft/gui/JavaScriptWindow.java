@@ -30,23 +30,28 @@ public class JavaScriptWindow extends JPanel {
         @Override
         public void actionPerformed(ActionEvent action) {
             if (txtScript.getText().length() > 0) {
-                try {
-                    final Framework framework = Framework.getInstance();
-                    Object result = framework.execJavaScript(txtScript.getText());
+                new Thread() {
+                    @Override
+                    public void run() {
+                        try {
+                            final Framework framework = Framework.getInstance();
+                            Object result = framework.execJavaScript(txtScript.getText());
 
-                    Context.enter();
-                    String out = Context.toString(result);
-                    Context.exit();
-                    if (!out.equals("undefined")) {
-                        System.out.println(out);
+                            Context.enter();
+                            String out = Context.toString(result);
+                            Context.exit();
+                            if (!out.equals("undefined")) {
+                                System.out.println(out);
+                            }
+                            resetScript();
+                        } catch (org.mozilla.javascript.WrappedException e) {
+                            Throwable we = e.getWrappedException();
+                            System.err.println(we.getClass().getName() + " " + we.getMessage());
+                        } catch (org.mozilla.javascript.RhinoException e) {
+                            System.err.println(e.getMessage());
+                        }
                     }
-                    resetScript();
-                } catch (org.mozilla.javascript.WrappedException e) {
-                    Throwable we = e.getWrappedException();
-                    System.err.println(we.getClass().getName() + " " + we.getMessage());
-                } catch (org.mozilla.javascript.RhinoException e) {
-                    System.err.println(e.getMessage());
-                }
+                }.start();
             }
         }
     }
