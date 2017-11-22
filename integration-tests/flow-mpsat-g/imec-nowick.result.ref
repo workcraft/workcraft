@@ -1,0 +1,17 @@
+Processing STG:
+  - importing: OK
+  - verification: OK
+  - CSC check: CONFLICT
+  - Conflict resolution: OK
+Complex gate:
+  - synthesis: OK
+  - verification: OK
+Generalised C-element:
+  - synthesis: OK
+  - verification: OK
+Standard C-element:
+  - synthesis: OK
+  - verification: OK
+Technology mapping:
+  - synthesis: OK
+  - verification: OK

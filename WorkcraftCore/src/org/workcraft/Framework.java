@@ -111,6 +111,8 @@ public final class Framework {
     private static final String MODEL_ENTRY_VARIABLE = "modelEntry";
     private static final String MATH_MODEL_VARIABLE = "mathModel";
     private static final String VISUAL_MODEL_VARIABLE = "visualModel";
+    private static final String ARGS_VARIABLE = "args";
+
 
     public static final String META_WORK_ENTRY = "meta";
     public static final String STATE_WORK_ENTRY = "state.xml";
@@ -221,8 +223,8 @@ public final class Framework {
         @Override
         public Object run(Context cx) {
             Object scriptable = Context.javaToJS(args, systemScope);
-            ScriptableObject.putProperty(systemScope, "args", scriptable);
-            systemScope.setAttributes("args", ScriptableObject.READONLY);
+            ScriptableObject.putProperty(systemScope, ARGS_VARIABLE, scriptable);
+            systemScope.setAttributes(ARGS_VARIABLE, ScriptableObject.READONLY);
             return null;
 
         }

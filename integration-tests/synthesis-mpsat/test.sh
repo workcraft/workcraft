@@ -4,6 +4,7 @@
 for f in ${test_dir}/mpsat-vme-*.circuit.stat; do
     [[ -f $f ]] || continue
     # OS X `sed -i` requires backup extension, e.g. `sed -i.bak`
+#    sed  -n -i.bak '/Literal count combinational \/ sequential (set + reset)/!p' $f
     sed  -n -i.bak '/Max fanin \/ fanout/!p' $f
     sed  -n -i.bak '/Fanin distribution/!p' $f
     sed  -n -i.bak '/Fanout distribution/!p' $f

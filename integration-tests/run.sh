@@ -47,10 +47,7 @@ for test_dir in ${DIR}/${TEST_DIR_PATTERN}; do
         cur_file="${ref_file%.ref}"
         [[ -f $cur_file ]] || error "Expected output file ${cur_file} not found"
 
-        ref_size=$(size $ref_file)
-        cur_size=$(size $cur_file)
-
-        if [[ $ref_size == $cur_size ]]; then
+        if diff -q $ref_file $cur_file &> /dev/null; then
             # Remove temporary files if the test succeeded
             rm -f $cur_file
         else
@@ -59,7 +56,7 @@ for test_dir in ${DIR}/${TEST_DIR_PATTERN}; do
 Files ${ref_file} (reference) and ${cur_file} (current) differ:
 `diff $ref_file $cur_file`
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-`cat $log_file`"
+`tail -n50 $log_file`"
         fi
     done
     rm -f ${log_file}

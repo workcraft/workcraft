@@ -3,7 +3,7 @@ stgWork = load('vme.stg.work');
 if (checkStgCsc(stgWork) == true) {
     cscStgWork = stgWork;
 } else {
-    cscStgWork = resolveCscConflictMpsat(stgWork);
+    cscStgWork = resolveCscConflictPetrify(stgWork);
     save(cscStgWork, 'vme-csc.stg.work');
 }
 
