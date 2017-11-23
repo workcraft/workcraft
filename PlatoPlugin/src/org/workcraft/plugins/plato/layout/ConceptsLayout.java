@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
@@ -13,7 +12,7 @@ import org.workcraft.dom.visual.Positioning;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.Bezier;
-import org.workcraft.dom.visual.connections.ControlPoint;
+import org.workcraft.dom.visual.connections.BezierControlPoint;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -132,29 +131,29 @@ public class ConceptsLayout {
 
         for (VisualConnection c :  set) {
             if (!(c instanceof VisualReadArc)) {
-                c.setConnectionType(ConnectionType.BEZIER);
                 VisualNode first = c.getFirst();
                 VisualNode second = c.getSecond();
+                c.setConnectionType(ConnectionType.BEZIER);
                 Bezier bezier = (Bezier) c.getGraphic();
-                List<ControlPoint> points = bezier.getControlPoints();
+                BezierControlPoint[] points = bezier.getBezierControlPoints();
 
                 if (first instanceof VisualSignalTransition) {
                     VisualSignalTransition f = (VisualSignalTransition) first;
                     if (f.getDirection() == SignalTransition.Direction.PLUS) {
-                        points.get(0).setPosition(new Point2D.Double(f.getCenter().getX() + 1.5, f.getCenter().getY()));
-                        points.get(1).setPosition(new Point2D.Double(second.getCenter().getX(), second.getCenter().getY() - 1.5));
+                        points[0].setPosition(new Point2D.Double(f.getCenter().getX() + 1.5, f.getCenter().getY()));
+                        points[1].setPosition(new Point2D.Double(second.getCenter().getX(), second.getCenter().getY() - 1.5));
                     } else {
-                        points.get(0).setPosition(new Point2D.Double(f.getCenter().getX() - 1.5, f.getCenter().getY()));
-                        points.get(1).setPosition(new Point2D.Double(second.getCenter().getX(), second.getCenter().getY() + 1.5));
+                        points[0].setPosition(new Point2D.Double(f.getCenter().getX() - 1.5, f.getCenter().getY()));
+                        points[1].setPosition(new Point2D.Double(second.getCenter().getX(), second.getCenter().getY() + 1.5));
                     }
                 } else {
                     VisualSignalTransition s = (VisualSignalTransition) second;
                     if (s.getDirection() == SignalTransition.Direction.PLUS) {
-                        points.get(0).setPosition(new Point2D.Double(first.getCenter().getX(), first.getCenter().getY() - 1.5));
-                        points.get(1).setPosition(new Point2D.Double(s.getCenter().getX() - 1.5, s.getCenter().getY()));
+                        points[0].setPosition(new Point2D.Double(first.getCenter().getX(), first.getCenter().getY() - 1.5));
+                        points[1].setPosition(new Point2D.Double(s.getCenter().getX() - 1.5, s.getCenter().getY()));
                     } else {
-                        points.get(0).setPosition(new Point2D.Double(first.getCenter().getX(), first.getCenter().getY() + 1.5));
-                        points.get(1).setPosition(new Point2D.Double(s.getCenter().getX() + 1.5, s.getCenter().getY()));
+                        points[0].setPosition(new Point2D.Double(first.getCenter().getX(), first.getCenter().getY() + 1.5));
+                        points[1].setPosition(new Point2D.Double(s.getCenter().getX() + 1.5, s.getCenter().getY()));
                     }
                 }
             }

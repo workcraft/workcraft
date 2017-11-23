@@ -39,6 +39,7 @@ import org.workcraft.util.Import;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessResult> {
 
@@ -156,14 +157,14 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessResu
         StgDescriptor stgModel = new StgDescriptor();
         VisualModelDescriptor v = stgModel.getVisualModelDescriptor();
         try {
-            VisualStg visualStg = (VisualStg) v.create(mathModel);
-            me = new ModelEntry(me.getDescriptor(), visualStg);
+            me = new ModelEntry(me.getDescriptor(), v.create(mathModel));
+            we = addWork(framework, we, editor, me);
+            VisualStg visualStg = WorkspaceUtils.getAs(we, VisualStg.class);
             if (!((PlatoStgConversionCommand) sender).getDotLayout()) {
-                ConceptsLayout.layout((VisualStg) me.getVisualModel());
+                ConceptsLayout.layout(visualStg);
             } else {
                 visualStg.getBestLayouter().layout(visualStg);
             }
-            we = addWork(framework, we, editor, me);
             runReachTest(invariants);
         } catch (VisualModelInstantiationException e) {
             e.printStackTrace();
