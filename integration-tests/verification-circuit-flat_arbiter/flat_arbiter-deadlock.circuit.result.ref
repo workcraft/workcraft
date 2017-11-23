@@ -1,0 +1,5 @@
+Combined check: false
+Deadlock-freeness: false
+Conformation: true
+Output persistency: true
+Strict implementation: null

@@ -1,7 +1,7 @@
 Circuit analysis:
-  Component count (mapped + unmapped) -  13 (13 + 0)
-  Area of mapped components -  176.0
-  Driver pin count (combinational + sequential + undefined) -  13 (13 + 0 + 0)
-  Literal count combinational / sequential (set + reset) -  28 / 0 (0 + 0)
+  Component count (mapped + unmapped) -  14 (14 + 0)
+  Area of mapped components -  184.0
+  Driver pin count (combinational + sequential + undefined) -  14 (14 + 0 + 0)
+  Literal count combinational / sequential (set + reset) -  30 / 0 (0 + 0)
   Port count (input + output) -  6 (3 + 3)
   Isolated components / ports / pins -  0 / 0 / 0
