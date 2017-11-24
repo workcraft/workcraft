@@ -175,7 +175,7 @@ public class WorkspaceWindow extends JPanel {
                     break;
                 } else {
                     String msg = "The file '" + file.getName() + "' already exists.\n\n" + "Do you want to overwrite it?";
-                    if (DialogUtils.showConfirm(msg, DIALOG_SAVE_WORKSPACE_AS)) {
+                    if (DialogUtils.showConfirmWarning(msg, DIALOG_SAVE_WORKSPACE_AS)) {
                         break;
                     }
                 }

@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.swing.SwingUtilities;
 
+import org.workcraft.plugins.mpsat.PunfResultParser.Cause;
 import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
@@ -13,10 +14,17 @@ import org.workcraft.tasks.AbstractResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.DialogUtils;
+import org.workcraft.util.Pair;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatCombinedChainResultHandler extends AbstractResultHandler<MpsatCombinedChainResult> {
+
+    private static final String TITLE = "Verification results";
+    private static final String CANNOT_VERIFY_PREFIX = "The properties cannot be verified";
+    private static final String AFTER_THE_TRACE_SUFFIX = " after the following trace:\n";
+    private static final String ASK_SIMULATE_SUFFIX = "\n\nSimulate the problematic trace?";
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
+
     private final MpsatCombinedChainTask task;
     private final Collection<Mutex> mutexes;
 
@@ -28,14 +36,16 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
     @Override
     public void handleResult(final Result<? extends MpsatCombinedChainResult> result) {
         if (result.getOutcome() == Outcome.SUCCESS) {
-            WorkspaceEntry we = task.getWorkspaceEntry();
-            handleSuccess(result, we);
+            handleSuccess(result);
         } else if (result.getOutcome() == Outcome.FAILURE) {
-            handleFailure(result);
+            if (!handlePartialFailure(result)) {
+                handleFailure(result);
+            }
         }
     }
 
-    private void handleSuccess(final Result<? extends MpsatCombinedChainResult> result, WorkspaceEntry we) {
+    private void handleSuccess(final Result<? extends MpsatCombinedChainResult> result) {
+        WorkspaceEntry we = task.getWorkspaceEntry();
         MpsatCombinedChainResult returnValue = result.getReturnValue();
         List<Result<? extends ExternalProcessResult>> mpsatResultList = returnValue.getMpsatResultList();
         List<MpsatParameters> mpsatSettingsList = returnValue.getMpsatSettingsList();
@@ -69,6 +79,7 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
                 break;
             case REACHABILITY:
             case STG_REACHABILITY:
+            case STG_REACHABILITY_CONSISTENCY:
             case STG_REACHABILITY_OUTPUT_PERSISTENCY:
             case STG_REACHABILITY_CONFORMATION:
             case NORMALCY:
@@ -91,6 +102,66 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
                 break;
             }
         }
+    }
+
+    private boolean handlePartialFailure(final Result<? extends MpsatCombinedChainResult> result) {
+        WorkspaceEntry we = task.getWorkspaceEntry();
+        MpsatCombinedChainResult returnValue = result.getReturnValue();
+        Result<? extends ExternalProcessResult> punfResult = (returnValue == null) ? null : returnValue.getPunfResult();
+        if ((punfResult != null) && (punfResult.getOutcome() == Outcome.FAILURE)) {
+            PunfResultParser prp = new PunfResultParser(punfResult.getReturnValue());
+            Pair<MpsatSolution, PunfResultParser.Cause> punfOutcome = prp.getOutcome();
+            if (punfOutcome != null) {
+                MpsatSolution solution = punfOutcome.getFirst();
+                Cause cause = punfOutcome.getSecond();
+                boolean isConsistencyCheck = false;
+                if (cause == Cause.INCONSISTENT) {
+                    for (MpsatParameters mpsatSettings: returnValue.getMpsatSettingsList()) {
+                        if (mpsatSettings.getMode() == MpsatMode.STG_REACHABILITY_CONSISTENCY) {
+                            isConsistencyCheck = true;
+                            break;
+                        }
+                    }
+                }
+                if (isConsistencyCheck) {
+                    int cost = solution.getMainTrace().size();
+                    String mpsatFakeOutput = "SOLUTION 0\n" + solution + "\npath cost: " + cost + "\n";
+                    Result<? extends ExternalProcessResult> mpsatFakeResult = Result.success(
+                            new ExternalProcessResult(0, mpsatFakeOutput.getBytes(), null, null));
+
+                    SwingUtilities.invokeLater(new MpsatReachabilityResultHandler(
+                            we, mpsatFakeResult, MpsatParameters.getConsistencySettings()));
+                } else {
+                    String comment = solution.getComment();
+                    String message = CANNOT_VERIFY_PREFIX;
+                    switch (cause) {
+                    case INCONSISTENT:
+                        message += " for the inconsistent STG.\n\n";
+                        message += comment + AFTER_THE_TRACE_SUFFIX;
+                        message += solution + ASK_SIMULATE_SUFFIX;
+                        if (DialogUtils.showConfirmWarning(message, TITLE)) {
+                            MpsatUtils.playTrace(we, solution);
+                        }
+                        break;
+                    case NOT_SAFE:
+                        message += "for the unsafe net.\n\n";
+                        message +=  comment + AFTER_THE_TRACE_SUFFIX;
+                        message += solution + ASK_SIMULATE_SUFFIX;
+                        if (DialogUtils.showConfirmWarning(message, TITLE)) {
+                            MpsatUtils.playTrace(we, solution);
+                        }
+                        break;
+                    case EMPTY_PRESET:
+                        message += " for the malformd net.\n\n";
+                        message += comment;
+                        DialogUtils.showWarning(message, TITLE);
+                        break;
+                    }
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     private void handleFailure(final Result<? extends MpsatCombinedChainResult> result) {

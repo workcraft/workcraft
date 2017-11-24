@@ -18,7 +18,9 @@ import org.workcraft.plugins.mpsat.gui.MpsatReachibilityDialog;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.SignalTransition;
+import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.StgPlace;
@@ -27,6 +29,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.GUI;
 import org.workcraft.util.LogUtils;
+import org.workcraft.util.Triple;
 import org.workcraft.workspace.WorkspaceEntry;
 
 final class MpsatReachabilityResultHandler implements Runnable {
@@ -146,6 +149,19 @@ final class MpsatReachabilityResultHandler implements Runnable {
         return result;
     }
 
+    private void improveConsistencySolution(MpsatSolution solution) {
+        Trace mainTrace = solution.getMainTrace();
+        int size = mainTrace.size();
+        if (size > 0) {
+            String lastTransitionRef = mainTrace.get(size - 1);
+            final Triple<String, Direction, Integer> r = LabelParser.parseSignalTransition(lastTransitionRef);
+            if (r != null) {
+                String signalRef = r.getFirst();
+                solution.setComment("Signal '" + signalRef + "' is inconsistent");
+            }
+        }
+    }
+
     private void improveOutputPersistencySolution(MpsatSolution solution) {
         StgModel stg = getInputStg();
         if ((solution != null) && (stg != null)) {
@@ -219,9 +235,14 @@ final class MpsatReachabilityResultHandler implements Runnable {
     public void run() {
         MpsatResultParser mrp = new MpsatResultParser(result.getReturnValue());
         List<MpsatSolution> solutions = mrp.getSolutions();
+        boolean isConsistency = settings.getMode() == MpsatMode.STG_REACHABILITY_CONSISTENCY;
         boolean isOutputPersistency = settings.getMode() == MpsatMode.STG_REACHABILITY_OUTPUT_PERSISTENCY;
         boolean isConformation = settings.getMode() == MpsatMode.STG_REACHABILITY_CONFORMATION;
-        if (isOutputPersistency) {
+        if (isConsistency) {
+            for (MpsatSolution solution: solutions) {
+                improveConsistencySolution(solution);
+            }
+        } else if (isOutputPersistency) {
             for (MpsatSolution solution: solutions) {
                 improveOutputPersistencySolution(solution);
             }
@@ -238,8 +259,8 @@ final class MpsatReachabilityResultHandler implements Runnable {
         } else if (framework.isInGuiMode()) {
             String traceInfo = "";
             if (!isOutputPersistency) {
-                String traceChearacteristic = settings.getInversePredicate() ? "problematic" : "sought";
-                traceInfo = "&#160;Trace(s) leading to the " + traceChearacteristic + " state(s):<br><br>";
+                String traceCharacteristic = settings.getInversePredicate() ? "problematic" : "sought";
+                traceInfo = "&#160;Trace(s) leading to the " + traceCharacteristic + " state(s):<br><br>";
             }
             String extendedMessage = "<html><br>&#160;" + message + "<br><br>" + traceInfo + "</html>";
             MpsatReachibilityDialog solutionsDialog = new MpsatReachibilityDialog(we, title, extendedMessage, solutions);

@@ -42,7 +42,7 @@ public class FsmDeterminismVerificationCommand extends AbstractVerificationComma
         } else {
             String refStr = ReferenceHelper.getNodesAsString(fsm, (Collection) nondeterministicStates, 50);
             String msg = "The model has non-deterministic states:\n" + refStr + "\n\nSelect non-deterministic states?\n";
-            if (DialogUtils.showConfirm(msg, TITLE)) {
+            if (DialogUtils.showConfirmInfo(msg, TITLE)) {
                 final Framework framework = Framework.getInstance();
                 final MainWindow mainWindow = framework.getMainWindow();
                 mainWindow.getToolbox(we).selectToolInstance(SelectionTool.class);

@@ -5,6 +5,7 @@ public enum MpsatMode {
     DEADLOCK("-D", "Deadlock checking", false, true),
     REACHABILITY("-F", "Reachability analysis", true, true),
     STG_REACHABILITY("-Fs", "STG reachability analysis", true, true),
+    STG_REACHABILITY_CONSISTENCY("-Fs", "STG reachability analysis for consistency", true, true),
     STG_REACHABILITY_OUTPUT_PERSISTENCY("-Fs", "STG reachability analysis for output persistency", true, true),
     STG_REACHABILITY_CONFORMATION("-Fs", "STG reachability analysis for conformation", true, true),
     CSC_CONFLICT_DETECTION("-C", "CSC conflict detection", false, true),

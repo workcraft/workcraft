@@ -4,6 +4,7 @@ import java.util.Collection;
 
 import javax.swing.SwingUtilities;
 
+import org.workcraft.plugins.mpsat.PunfResultParser.Cause;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
@@ -12,10 +13,17 @@ import org.workcraft.tasks.AbstractResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.DialogUtils;
+import org.workcraft.util.Pair;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainResult> {
+
+    private static final String TITLE = "Verification results";
+    private static final String CANNOT_VERIFY_PREFIX = "The property cannot be verified";
+    private static final String AFTER_THE_TRACE_SUFFIX = " after the following trace:\n";
+    private static final String ASK_SIMULATE_SUFFIX = "\n\nSimulate the problematic trace?";
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
+
     private final MpsatChainTask task;
     private final Collection<Mutex> mutexes;
 
@@ -35,16 +43,18 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainRes
     @Override
     public void handleResult(final Result<? extends MpsatChainResult> result) {
         if (result.getOutcome() == Outcome.SUCCESS) {
-            WorkspaceEntry we = task.getWorkspaceEntry();
-            handleSuccess(result, we);
+            handleSuccess(result);
         } else if (result.getOutcome() == Outcome.FAILURE) {
-            handleFailure(result);
+            if (!handlePartialFailure(result)) {
+                handleFailure(result);
+            }
         }
     }
 
-    private void handleSuccess(final Result<? extends MpsatChainResult> result, WorkspaceEntry we) {
+    private void handleSuccess(final Result<? extends MpsatChainResult> result) {
         MpsatChainResult returnValue = result.getReturnValue();
         Result<? extends ExternalProcessResult> mpsatResult = (returnValue == null) ? null : returnValue.getMpsatResult();
+        WorkspaceEntry we = task.getWorkspaceEntry();
         MpsatParameters mpsatSettings = returnValue.getMpsatSettings();
         switch (mpsatSettings.getMode()) {
         case UNDEFINED:
@@ -56,6 +66,7 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainRes
             break;
         case REACHABILITY:
         case STG_REACHABILITY:
+        case STG_REACHABILITY_CONSISTENCY:
         case STG_REACHABILITY_OUTPUT_PERSISTENCY:
         case STG_REACHABILITY_CONFORMATION:
         case NORMALCY:
@@ -77,6 +88,61 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainRes
             DialogUtils.showError("MPSat verification mode '" + modeString + "' is not (yet) supported.");
             break;
         }
+    }
+
+    private boolean handlePartialFailure(final Result<? extends MpsatChainResult> result) {
+        WorkspaceEntry we = task.getWorkspaceEntry();
+        MpsatChainResult returnValue = result.getReturnValue();
+        Result<? extends ExternalProcessResult> punfResult = (returnValue == null) ? null : returnValue.getPunfResult();
+        if ((punfResult != null) && (punfResult.getOutcome() == Outcome.FAILURE)) {
+            PunfResultParser prp = new PunfResultParser(punfResult.getReturnValue());
+            Pair<MpsatSolution, PunfResultParser.Cause> punfOutcome = prp.getOutcome();
+            if (punfOutcome != null) {
+                MpsatSolution solution = punfOutcome.getFirst();
+                Cause cause = punfOutcome.getSecond();
+                MpsatParameters mpsatSettings = returnValue.getMpsatSettings();
+                boolean isConsistencyCheck = (cause == Cause.INCONSISTENT)
+                        && (mpsatSettings.getMode() == MpsatMode.STG_REACHABILITY_CONSISTENCY);
+
+                if (isConsistencyCheck) {
+                    int cost = solution.getMainTrace().size();
+                    String mpsatFakeOutput = "SOLUTION 0\n" + solution + "\npath cost: " + cost + "\n";
+                    Result<? extends ExternalProcessResult> mpsatFakeResult = Result.success(
+                            new ExternalProcessResult(0, mpsatFakeOutput.getBytes(), null, null));
+
+                    SwingUtilities.invokeLater(new MpsatReachabilityResultHandler(
+                            we, mpsatFakeResult, MpsatParameters.getConsistencySettings()));
+                } else {
+                    String comment = solution.getComment();
+                    String message = CANNOT_VERIFY_PREFIX;
+                    switch (cause) {
+                    case INCONSISTENT:
+                        message += " for the inconsistent STG.\n\n";
+                        message += comment + AFTER_THE_TRACE_SUFFIX;
+                        message += solution + ASK_SIMULATE_SUFFIX;
+                        if (DialogUtils.showConfirmWarning(message, TITLE)) {
+                            MpsatUtils.playTrace(we, solution);
+                        }
+                        break;
+                    case NOT_SAFE:
+                        message += "for the unsafe net.\n\n";
+                        message +=  comment + AFTER_THE_TRACE_SUFFIX;
+                        message += solution + ASK_SIMULATE_SUFFIX;
+                        if (DialogUtils.showConfirmWarning(message, TITLE)) {
+                            MpsatUtils.playTrace(we, solution);
+                        }
+                        break;
+                    case EMPTY_PRESET:
+                        message += " for the malformd net.\n\n";
+                        message += comment;
+                        DialogUtils.showWarning(message, TITLE);
+                        break;
+                    }
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     private void handleFailure(final Result<? extends MpsatChainResult> result) {

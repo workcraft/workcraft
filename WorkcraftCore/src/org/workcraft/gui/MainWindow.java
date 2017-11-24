@@ -890,7 +890,7 @@ public class MainWindow extends JFrame {
                     break;
                 }
                 String msg = "The file '" + f.getName() + "' already exists.\n" + "Overwrite it?";
-                if (DialogUtils.showConfirm(msg, DIALOG_SAVE_WORK)) {
+                if (DialogUtils.showConfirmWarning(msg, DIALOG_SAVE_WORK)) {
                     break;
                 }
             } else {
@@ -1290,9 +1290,9 @@ public class MainWindow extends JFrame {
 
     public void resetLayout() {
         String msg = "This will reset the GUI to the default layout.\n" + "Are you sure you want to do this?";
-        if (DialogUtils.showConfirm(msg, DIALOG_RESET_LAYOUT)) {
+        if (DialogUtils.showConfirmWarning(msg, DIALOG_RESET_LAYOUT)) {
             String msg2 = "This action requires GUI restart.\n\n" + "Close all editor windows?";
-            if (DialogUtils.showConfirm(msg2, DIALOG_RESET_LAYOUT)) {
+            if (DialogUtils.showConfirmWarning(msg2, DIALOG_RESET_LAYOUT)) {
                 try {
                     final Framework framework = Framework.getInstance();
                     framework.shutdownGUI();

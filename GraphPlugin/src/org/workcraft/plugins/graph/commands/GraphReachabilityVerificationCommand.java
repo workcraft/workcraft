@@ -42,7 +42,7 @@ public class GraphReachabilityVerificationCommand extends AbstractVerificationCo
         } else {
             String refStr = ReferenceHelper.getNodesAsString(graph, (Collection) unreachable, 50);
             String msg = "The graph has unreachable vertices:\n" + refStr + "\n\nSelect unreachable vertices?";
-            if (DialogUtils.showConfirm(msg, TITLE)) {
+            if (DialogUtils.showConfirmInfo(msg, TITLE)) {
                 final Framework framework = Framework.getInstance();
                 final MainWindow mainWindow = framework.getMainWindow();
                 mainWindow.getToolbox(we).selectToolInstance(SelectionTool.class);

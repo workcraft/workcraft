@@ -60,7 +60,7 @@ public class FsmDeadlockVerificationCommand extends AbstractVerificationCommand 
                 message += "\n\nFinal deadlock states: \n" + stateStr;
             }
             message += "\n\nSelect deadlock states?\n";
-            if (DialogUtils.showConfirm(message, TITLE)) {
+            if (DialogUtils.showConfirmInfo(message, TITLE)) {
                 VisualFsm visualFsm = WorkspaceUtils.getAs(we, VisualFsm.class);
                 mainWindow.getToolbox(we).selectToolInstance(SelectionTool.class);
                 SelectionHelper.selectByReferencedComponents(visualFsm, (HashSet) deadlockStates);
