@@ -11,19 +11,38 @@ import org.workcraft.Trace;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 
 public class MpsatResultParser {
+
     private final LinkedList<MpsatSolution> solutions;
 
-    private static final Pattern patternReachability0 =
-            Pattern.compile("SOLUTION .+\ntotal cost of all paths: .+\n", Pattern.UNIX_LINES);
+    /*
+     * \R -- any Unicode linebreak sequence introduced in Java 8.
+     * It is equivalent to \u000D\u000A\u000A\u000B\u000C\u000D\u0085\u2028\u2029].
+     */
 
-    private static final Pattern patternReachability1 =
-            Pattern.compile("SOLUTION .+\n(.*)\npath cost: .+\n", Pattern.UNIX_LINES);
+    private static final Pattern patternReachability0 = Pattern.compile(
+            "SOLUTION .+\\R" +
+            "total cost of all paths: .+\\R",
+            Pattern.UNIX_LINES);
 
-    private static final Pattern patternReachability2 =
-            Pattern.compile("SOLUTION .+\n(.*)\n(.*)\ntotal cost of all paths: .+\n(\nConflict for signal (.+)\n)?", Pattern.UNIX_LINES);
+    private static final Pattern patternReachability1 = Pattern.compile(
+            "SOLUTION .+\\R" +
+            "(.*)\\R" +
+            "path cost: .+\\R",
+            Pattern.UNIX_LINES);
 
-    private static final Pattern patternNormalcy1 =
-            Pattern.compile("SOLUTION .+\n(.*)\ntriggers: .+\n", Pattern.UNIX_LINES);
+    private static final Pattern patternReachability2 = Pattern.compile(
+            "SOLUTION .+\\R" +
+            "(.*)\\R" +
+            "(.*)\\R" +
+            "total cost of all paths: .+\\R" +
+            "(\\RConflict for signal (.+)\\R)?",
+            Pattern.UNIX_LINES);
+
+    private static final Pattern patternNormalcy1 = Pattern.compile(
+            "SOLUTION .+\\R" +
+            "(.*)\\R" +
+            "triggers: .+\\R",
+            Pattern.UNIX_LINES);
 
     public MpsatResultParser(ExternalProcessResult result) {
         String mpsatOutput;

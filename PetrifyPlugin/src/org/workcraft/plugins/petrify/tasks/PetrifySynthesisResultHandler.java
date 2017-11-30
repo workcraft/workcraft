@@ -32,8 +32,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler<PetrifySynthesisResult, WorkspaceEntry> {
 
-    private static final Pattern patternAddingStateSignal =
-            Pattern.compile("Adding state signal: (.*)\n", Pattern.UNIX_LINES);
+    private static final Pattern patternAddingStateSignal = Pattern.compile(
+            "Adding state signal: (.*)\\R", Pattern.UNIX_LINES);
 
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
 
