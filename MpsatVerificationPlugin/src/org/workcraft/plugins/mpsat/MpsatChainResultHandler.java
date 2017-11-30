@@ -19,7 +19,7 @@ import org.workcraft.workspace.WorkspaceEntry;
 public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainResult> {
 
     private static final String TITLE = "Verification results";
-    private static final String CANNOT_VERIFY_PREFIX = "The property cannot be verified";
+    private static final String CANNOT_VERIFY_PREFIX = "Cannot build unfolding prefix";
     private static final String AFTER_THE_TRACE_SUFFIX = " after the following trace:\n";
     private static final String ASK_SIMULATE_SUFFIX = "\n\nSimulate the problematic trace?";
     private static final String ERROR_CAUSE_PREFIX = "\n\n";

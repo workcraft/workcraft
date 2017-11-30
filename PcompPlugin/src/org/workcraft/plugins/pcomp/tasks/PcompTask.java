@@ -88,19 +88,17 @@ public class PcompTask implements Task<ExternalProcessResult> {
         }
 
         ExternalProcessTask task = new ExternalProcessTask(command, directory, false, true);
-        Result<? extends ExternalProcessResult> res = task.run(monitor);
-        if (res.getOutcome() != Outcome.SUCCESS) {
-            return res;
+        Result<? extends ExternalProcessResult> result = task.run(monitor);
+        if (result.getOutcome() != Outcome.SUCCESS) {
+            return result;
         }
 
-        ExternalProcessResult retVal = res.getReturnValue();
-        ExternalProcessResult result = new ExternalProcessResult(
-                retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors());
-
-        if (retVal.getReturnCode() < 2) {
-            return Result.success(result);
+        ExternalProcessResult returnValue = result.getReturnValue();
+        int returnCode = returnValue.getReturnCode();
+        if ((returnCode == 0) || (returnCode == 1)) {
+            return Result.success(returnValue);
         } else {
-            return Result.failure(result);
+            return Result.failure(returnValue);
         }
 
     }
