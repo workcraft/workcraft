@@ -45,7 +45,7 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
                     + "It may take a very long time to be processed.\n\n"
                     + "Are you sure you want to display it?";
 
-            hugeSgConfirmed = DialogUtils.showConfirmWarning(msg, "Building state graph");
+            hugeSgConfirmed = DialogUtils.showConfirmWarning(msg, "Building state graph", false);
         }
 
         public boolean isHugeSgConfirmed() {

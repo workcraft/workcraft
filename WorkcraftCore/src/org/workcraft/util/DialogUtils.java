@@ -1,6 +1,7 @@
 package org.workcraft.util;
 
 import javax.swing.JOptionPane;
+import javax.swing.UIManager;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
@@ -66,31 +67,35 @@ public class DialogUtils {
         showMessage(msg, title, JOptionPane.ERROR_MESSAGE);
     }
 
-    private static boolean showConfirm(String msg, String title, int messageType) {
+    private static boolean showConfirm(String msg, String title, int messageType, boolean defaultChoice) {
         boolean result = false;
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
         if ((mainWindow != null) && framework.isInGuiMode()) {
-            int answer = JOptionPane.showConfirmDialog(mainWindow, msg, title, JOptionPane.YES_NO_OPTION, messageType);
+            String yesText = UIManager.getString("OptionPane.yesButtonText");
+            String noText = UIManager.getString("OptionPane.noButtonText");
+            String[] options = {yesText, noText};
+            int answer = JOptionPane.showOptionDialog(mainWindow, msg, title, JOptionPane.YES_NO_OPTION,
+                    messageType, null, options, defaultChoice ? yesText : noText);
             result = answer == JOptionPane.YES_OPTION;
         }
         return result;
     }
 
-    public static boolean showConfirm(String msg, String title) {
-        return showConfirm(msg, title, JOptionPane.QUESTION_MESSAGE);
+    public static boolean showConfirm(String msg, String title, boolean defaultChoice) {
+        return showConfirm(msg, title, JOptionPane.QUESTION_MESSAGE, defaultChoice);
     }
 
-    public static boolean showConfirmInfo(String msg, String title) {
-        return showConfirm(msg, title, JOptionPane.INFORMATION_MESSAGE);
+    public static boolean showConfirmInfo(String msg, String title, boolean defaultChoice) {
+        return showConfirm(msg, title, JOptionPane.INFORMATION_MESSAGE, defaultChoice);
     }
 
-    public static boolean showConfirmWarning(String msg, String title) {
-        return showConfirm(msg, title, JOptionPane.WARNING_MESSAGE);
+    public static boolean showConfirmWarning(String msg, String title, boolean defaultChoice) {
+        return showConfirm(msg, title, JOptionPane.WARNING_MESSAGE, defaultChoice);
     }
 
-    public static boolean showConfirmError(String msg, String title) {
-        return showConfirm(msg, title, JOptionPane.ERROR_MESSAGE);
+    public static boolean showConfirmError(String msg, String title, boolean defaultChoice) {
+        return showConfirm(msg, title, JOptionPane.ERROR_MESSAGE, defaultChoice);
     }
 
     private static String showInput(String msg, String initial, int messageType) {

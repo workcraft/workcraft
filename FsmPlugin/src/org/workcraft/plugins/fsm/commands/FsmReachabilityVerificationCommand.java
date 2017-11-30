@@ -43,7 +43,7 @@ public class FsmReachabilityVerificationCommand extends AbstractVerificationComm
         } else {
             String refStr = ReferenceHelper.getNodesAsString(fsm, (Collection) unreachableStates, 50);
             String msg = "The model has unreachable state:\n" + refStr + "\n\nSelect unreachable states?\n";
-            if (DialogUtils.showConfirmInfo(msg, TITLE)) {
+            if (DialogUtils.showConfirmInfo(msg, TITLE, true)) {
                 final Framework framework = Framework.getInstance();
                 final MainWindow mainWindow = framework.getMainWindow();
                 mainWindow.getToolbox(we).selectToolInstance(SelectionTool.class);

@@ -94,7 +94,7 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
                     boolean proceed = DialogUtils.showConfirmWarning(messagePrefix
                             + "The circuit conformation cannot be checked without environment STG.\n"
                             + "Proceed with verification of the other properties?\n",
-                            "Circuit verification");
+                            "Circuit verification", true);
                     checkDeadlock &= proceed;
                     checkPersistency &= proceed;
                 } else {

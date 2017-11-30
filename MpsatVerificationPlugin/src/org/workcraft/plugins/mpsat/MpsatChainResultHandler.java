@@ -120,7 +120,7 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainRes
                         message += " for the inconsistent STG.\n\n";
                         message += comment + AFTER_THE_TRACE_SUFFIX;
                         message += solution + ASK_SIMULATE_SUFFIX;
-                        if (DialogUtils.showConfirmWarning(message, TITLE)) {
+                        if (DialogUtils.showConfirmError(message, TITLE, true)) {
                             MpsatUtils.playTrace(we, solution);
                         }
                         break;
@@ -128,14 +128,14 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainRes
                         message += "for the unsafe net.\n\n";
                         message +=  comment + AFTER_THE_TRACE_SUFFIX;
                         message += solution + ASK_SIMULATE_SUFFIX;
-                        if (DialogUtils.showConfirmWarning(message, TITLE)) {
+                        if (DialogUtils.showConfirmError(message, TITLE, true)) {
                             MpsatUtils.playTrace(we, solution);
                         }
                         break;
                     case EMPTY_PRESET:
                         message += " for the malformd net.\n\n";
                         message += comment;
-                        DialogUtils.showWarning(message, TITLE);
+                        DialogUtils.showError(message, TITLE);
                         break;
                     }
                 }

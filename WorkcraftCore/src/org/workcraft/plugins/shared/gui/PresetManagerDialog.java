@@ -61,7 +61,7 @@ public class PresetManagerDialog<T> extends JDialog {
                     @SuppressWarnings("unchecked")
                     Preset<T> p = (Preset<T>) o;
                     String msg = "Are you sure you want to delete the preset \'" + p.getDescription() + "\'?";
-                    if (DialogUtils.showConfirm(msg, DIALOG_DELETE_PRESET)) {
+                    if (DialogUtils.showConfirm(msg, DIALOG_DELETE_PRESET, false)) {
                         presetManager.delete(p);
                         listDataModel.removeElement(o);
                         if (listDataModel.getSize() == 0) {
