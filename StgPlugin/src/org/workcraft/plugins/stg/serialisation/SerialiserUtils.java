@@ -17,7 +17,9 @@ import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.FormatException;
+import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.petri.PetriNetModel;
+import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.SignalTransition.Type;
@@ -41,32 +43,42 @@ public class SerialiserUtils {
 
     public enum Style { STG, LPN };
 
-    public static void writeModel(Model model, OutputStream out, Style style) {
+    public static void writeModel(Model model, OutputStream out, Style style) throws SerialisationException {
+        if (!(model instanceof PetriNetModel)) {
+            throw new ArgumentException("Model class not supported: " + model.getClass().getName());
+        }
+
+        PetriNetModel petriModel = (PetriNetModel) model;
+        HashSet<Transition> isolatedTransitions = PetriNetUtils.getIsolatedTransitions(petriModel);
+        if (!isolatedTransitions.isEmpty()) {
+            String refStr = ReferenceHelper.getNodesAsString(petriModel, (Collection) isolatedTransitions);
+            throw new SerialisationException(
+                    "Isolated transitions cannot be exported: " + refStr);
+        }
+
         String prefix = "# STG file ";
         String keyword = KEYWORD_MODEL;
         boolean needInstanceNumbers = false;
         if (style == Style.LPN) {
             prefix = "# LPN file ";
             keyword = KEYWORD_NAME;
-            needInstanceNumbers = hasInstanceNumbers(model);
+            needInstanceNumbers = hasInstanceNumbers(petriModel);
         }
         PrintWriter writer = new PrintWriter(out);
         writer.write(Info.getGeneratedByText(prefix, "\n"));
-        writer.write(keyword + " " + getClearTitle(model) + "\n");
-        if (model instanceof StgModel) {
-            writeSTG((StgModel) model, writer, needInstanceNumbers);
-        } else if (model instanceof PetriNetModel) {
-            writePN((PetriNetModel) model, writer);
+        writer.write(keyword + " " + getClearTitle(petriModel) + "\n");
+        if (petriModel instanceof StgModel) {
+            writeSTG((StgModel) petriModel, writer, needInstanceNumbers);
         } else {
-            throw new ArgumentException("Model class not supported: " + model.getClass().getName());
+            writePN(petriModel, writer);
         }
         writer.write(KEYWORD_END + "\n");
         writer.close();
     }
 
-    private static boolean hasInstanceNumbers(Model model) {
-        if (model instanceof StgModel) {
-            StgModel stg = (StgModel) model;
+    private static boolean hasInstanceNumbers(PetriNetModel petriModel) {
+        if (petriModel instanceof StgModel) {
+            StgModel stg = (StgModel) petriModel;
             for (Node n: stg.getSignalTransitions()) {
                 if (stg.getInstanceNumber(n) != 0) {
                     return true;
@@ -249,21 +261,21 @@ public class SerialiserUtils {
         }
     }
 
-    private static void writePN(PetriNetModel net, PrintWriter out) {
+    private static void writePN(PetriNetModel petriModel, PrintWriter out) {
         LinkedList<String> transitions = new LinkedList<>();
-        for (Transition t : net.getTransitions()) {
-            String transitionRef = net.getNodeReference(t);
+        for (Transition t : petriModel.getTransitions()) {
+            String transitionRef = petriModel.getNodeReference(t);
             transitions.add(transitionRef);
         }
         writeSignalsHeader(out, transitions, KEYWORD_DUMMY);
         out.write(KEYWORD_GRAPH + "\n");
-        for (Transition t : net.getTransitions()) {
-            writeGraphEntry(out, net, t, false);
+        for (Transition t : petriModel.getTransitions()) {
+            writeGraphEntry(out, petriModel, t, false);
         }
-        for (Place p : net.getPlaces()) {
-            writeGraphEntry(out, net, p, false);
+        for (Place p : petriModel.getPlaces()) {
+            writeGraphEntry(out, petriModel, p, false);
         }
-        writeMarking(net, net.getPlaces(), out, false);
+        writeMarking(petriModel, petriModel.getPlaces(), out, false);
     }
 
 }
