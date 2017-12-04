@@ -19,18 +19,6 @@ public final class LogAreaMouseListener implements MouseListener {
 
     @Override
     public void mousePressed(MouseEvent e) {
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-    }
-
-    @Override
-    public void mouseClicked(MouseEvent e) {
         Object src = e.getSource();
         if (src instanceof JTextArea) {
             final JTextArea textArea = (JTextArea) src;
@@ -73,4 +61,17 @@ public final class LogAreaMouseListener implements MouseListener {
             }
         }
     }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseClicked(MouseEvent e) {
+    }
+
 }

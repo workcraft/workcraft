@@ -344,20 +344,6 @@ public class SelectionTool extends AbstractGraphEditorTool {
             }
             anchorGenerator.mouseClicked(e);
         }
-
-        if (e.getButton() == MouseEvent.BUTTON3) {
-            VisualNode node = hitTestPopup(model, position);
-            JPopupMenu popup = createPopupMenu(node, editor);
-            if (popup != null) {
-                if (node == null) {
-                    model.selectNone();
-                } else {
-                    model.select(node);
-                }
-                MouseEvent systemEvent = e.getSystemEvent();
-                popup.show(systemEvent.getComponent(), systemEvent.getX(), systemEvent.getY());
-            }
-        }
     }
 
     public VisualNode hitTestPopup(VisualModel model, Point2D position) {
@@ -427,10 +413,26 @@ public class SelectionTool extends AbstractGraphEditorTool {
     public void mousePressed(GraphEditorMouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
             ignoreMouseButton1 = false;
-        } else if (e.getButton() == MouseEvent.BUTTON3) {
+        }
+        if (e.getButton() == MouseEvent.BUTTON3) {
             ignoreMouseButton3 = false;
             if (isDragging()) {
                 cancelDrag(e.getEditor());
+            } else {
+                VisualModel model = e.getModel();
+                GraphEditor editor = e.getEditor();
+                Point2D position = e.getPosition();
+                VisualNode node = hitTestPopup(model, position);
+                JPopupMenu popup = createPopupMenu(node, editor);
+                if (popup != null) {
+                    if (node == null) {
+                        model.selectNone();
+                    } else {
+                        model.select(node);
+                    }
+                    MouseEvent systemEvent = e.getSystemEvent();
+                    popup.show(systemEvent.getComponent(), systemEvent.getX(), systemEvent.getY());
+                }
             }
         }
     }
