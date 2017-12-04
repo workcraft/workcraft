@@ -55,6 +55,17 @@ public class CircuitVerificationCommandTests {
     }
 
     @Test
+    public void withoutEnvironmentVerification() throws DeserialisationException {
+        testCircuitVerificationCommands("org/workcraft/plugins/circuit/buffer-without_environment.circuit.work",
+                false, // combined
+                null,  // conformation
+                true,  // deadlock freeness
+                false, // output persistency
+                null   // strict implementation
+        );
+    }
+
+    @Test
     public void celementVerification() throws DeserialisationException {
         testCircuitVerificationCommands("org/workcraft/plugins/circuit/celement.circuit.work",
                 true,  // combined
