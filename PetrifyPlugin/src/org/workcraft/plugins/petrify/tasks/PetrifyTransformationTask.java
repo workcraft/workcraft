@@ -101,7 +101,7 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationResu
                     String msg = "Petrify does not support isolated marked places.\n\n"
                             + "Problematic places are:\n" + refStr + "\n\n"
                             + "Proceed without these places?";
-                    if (!DialogUtils.showConfirm(msg, "Petrify transformation")) {
+                    if (!DialogUtils.showConfirmWarning(msg, "Petrify transformation", true)) {
                         return Result.cancelation();
                     }
                     we.captureMemento();

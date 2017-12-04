@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.punf.PunfSettings;
@@ -19,6 +21,43 @@ import org.workcraft.util.FileUtils;
 import org.workcraft.util.ToolUtils;
 
 public class MpsatTask implements Task<ExternalProcessResult> {
+
+    private static final Pattern patternSuccess = Pattern.compile(
+            "(" +
+             /* Deadlock */
+            "the system is deadlock-free" +
+            "|" +
+            "the system has a deadlock" +
+            "|" +
+            /* CSC conflicts detection */
+            "there are no CSC conflicts" +
+            "|" +
+            "CSC conflict has been detected" +
+            "|" +
+            /* USC conflicts detection */
+            "there are no USC conflicts" +
+            "|" +
+            "USC conflict has been detected" +
+            "|" +
+            /* Normalcy */
+            "there are no normalcy violations" +
+            "|" +
+            "normalcy is violated" +
+            "|" +
+            /* Reach expression */
+            "no reachable state satisfies the predicate" +
+            "|" +
+            "there is a reachable state satisfying the predicate" +
+            "|" +
+            /* CSC resolution and decomposition */
+            "all conflicts resolved \\(\\d+ signal insertion\\(s\\) and \\d+ concurrency reduction\\(s\\) applied\\)" +
+            "|" +
+            "no transformation computed" +
+            "|" +
+            "suggested a transformation" +
+            ")",
+            Pattern.UNIX_LINES);
+
     public static final String FILE_NET_G = "net.g";
     // IMPORTANT: The name of output file must be mpsat.g -- this is not configurable on MPSat side.
     public static final String FILE_MPSAT_G = "mpsat.g";
@@ -94,37 +133,48 @@ public class MpsatTask implements Task<ExternalProcessResult> {
         boolean printStdout = MpsatSettings.getPrintStdout();
         boolean printStderr = MpsatSettings.getPrintStderr();
         ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
-        Result<? extends ExternalProcessResult> res = task.run(monitor);
-        if (res.getOutcome() == Outcome.SUCCESS) {
-            Map<String, byte[]> fileContentMap = new HashMap<>();
-            try {
-                if ((netFile != null) && netFile.exists()) {
-                    fileContentMap.put(FILE_NET_G, FileUtils.readAllBytes(netFile));
-                }
-                if ((placesFile != null) && placesFile.exists()) {
-                    fileContentMap.put(FILE_PLACES, FileUtils.readAllBytes(placesFile));
-                }
-                File outFile = new File(directory, FILE_MPSAT_G);
-                if (outFile.exists()) {
-                    fileContentMap.put(FILE_MPSAT_G, FileUtils.readAllBytes(outFile));
-                }
-            } catch (IOException e) {
-                return new Result<ExternalProcessResult>(e);
+        Result<? extends ExternalProcessResult> result = task.run(monitor);
+
+        if (result.getOutcome() == Outcome.SUCCESS) {
+            ExternalProcessResult returnValue = result.getReturnValue();
+            int returnCode = returnValue.getReturnCode();
+            // Even if the return code is 0 or 1, still test MPSat output to make sure it has completed successfully.
+            boolean success = false;
+            if ((returnCode == 0) || (returnCode == 1)) {
+                String output = new String(returnValue.getOutput());
+                Matcher matcherSuccess = patternSuccess.matcher(output);
+                success = matcherSuccess.find();
             }
-
-            ExternalProcessResult retVal = res.getReturnValue();
-            ExternalProcessResult result = new ExternalProcessResult(
-                    retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), fileContentMap);
-
-            if (retVal.getReturnCode() < 2) {
-                return Result.success(result);
+            if (!success) {
+                return Result.failure(returnValue);
             } else {
-                return Result.failure(result);
+                Map<String, byte[]> fileContentMap = new HashMap<>();
+                try {
+                    if ((netFile != null) && netFile.exists()) {
+                        fileContentMap.put(FILE_NET_G, FileUtils.readAllBytes(netFile));
+                    }
+                    if ((placesFile != null) && placesFile.exists()) {
+                        fileContentMap.put(FILE_PLACES, FileUtils.readAllBytes(placesFile));
+                    }
+                    File outFile = new File(directory, FILE_MPSAT_G);
+                    if (outFile.exists()) {
+                        fileContentMap.put(FILE_MPSAT_G, FileUtils.readAllBytes(outFile));
+                    }
+                } catch (IOException e) {
+                    return new Result<ExternalProcessResult>(e);
+                }
+
+                ExternalProcessResult extResult = new ExternalProcessResult(
+                        returnCode, returnValue.getOutput(), returnValue.getErrors(), fileContentMap);
+
+                return Result.success(extResult);
             }
         }
-        if (res.getOutcome() == Outcome.CANCEL) {
+
+        if (result.getOutcome() == Outcome.CANCEL) {
             return Result.cancelation();
         }
+
         return Result.failure(null);
     }
 

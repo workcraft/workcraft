@@ -205,7 +205,7 @@ public class MpsatParameters {
             "}\n";
 
     public static MpsatParameters getConsistencySettings() {
-        return new MpsatParameters("Consistency", MpsatMode.STG_REACHABILITY, 0,
+        return new MpsatParameters("Consistency", MpsatMode.STG_REACHABILITY_CONSISTENCY, 0,
                 MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(), REACH_CONSISTENCY, true);
     }
 

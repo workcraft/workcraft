@@ -68,7 +68,7 @@ public class MpsatVerificationCommandTests {
     }
 
     @Test
-    public void testAarbitrationVerification() throws DeserialisationException {
+    public void testArbitrationVerification() throws DeserialisationException {
         testVerificationCommands("org/workcraft/plugins/mpsat/arbitration-3.stg.work",
                 true,  // combined
                 true,  // consistency

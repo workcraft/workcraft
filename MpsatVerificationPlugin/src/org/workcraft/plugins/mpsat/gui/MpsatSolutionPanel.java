@@ -10,14 +10,9 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import org.workcraft.Framework;
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.gui.MainWindow;
-import org.workcraft.gui.Toolbox;
-import org.workcraft.gui.graph.GraphEditorPanel;
-import org.workcraft.gui.graph.tools.SimulationTool;
 import org.workcraft.plugins.mpsat.MpsatSolution;
-import org.workcraft.util.LogUtils;
+import org.workcraft.plugins.mpsat.MpsatUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import info.clearthought.layout.TableLayout;
@@ -70,18 +65,7 @@ public class MpsatSolutionPanel extends JPanel {
         playButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                final Framework framework = Framework.getInstance();
-                final MainWindow mainWindow = framework.getMainWindow();
-                GraphEditorPanel editor = mainWindow.getEditor(we);
-                final Toolbox toolbox = editor.getToolBox();
-                final SimulationTool tool = toolbox.getToolInstance(SimulationTool.class);
-                toolbox.selectTool(tool);
-                tool.setTrace(solution.getMainTrace(), solution.getBranchTrace(), editor);
-                String comment = solution.getComment();
-                if ((comment != null) && !comment.isEmpty()) {
-                    comment = comment.replaceAll("\\<.*?>", "");
-                    LogUtils.logWarning(comment);
-                }
+                MpsatUtils.playTrace(we, solution);
                 closeAction.actionPerformed(null);
             }
         });

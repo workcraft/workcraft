@@ -303,7 +303,7 @@ public class SettingsEditorDialog extends JDialog {
         } else {
             final Framework framework = Framework.getInstance();
             String msg = "This will reset all the settings to defaults.\n" + "Continue?";
-            if (DialogUtils.showConfirm(msg, DIALOG_RESTORE_SETTINGS)) {
+            if (DialogUtils.showConfirmWarning(msg, DIALOG_RESTORE_SETTINGS, false)) {
                 framework.resetConfig();
             }
         }

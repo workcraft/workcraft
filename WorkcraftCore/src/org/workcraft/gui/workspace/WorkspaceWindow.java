@@ -175,7 +175,7 @@ public class WorkspaceWindow extends JPanel {
                     break;
                 } else {
                     String msg = "The file '" + file.getName() + "' already exists.\n\n" + "Do you want to overwrite it?";
-                    if (DialogUtils.showConfirm(msg, DIALOG_SAVE_WORKSPACE_AS)) {
+                    if (DialogUtils.showConfirmWarning(msg, DIALOG_SAVE_WORKSPACE_AS, false)) {
                         break;
                     }
                 }
@@ -192,8 +192,8 @@ public class WorkspaceWindow extends JPanel {
         final MainWindow mainWindow = framework.getMainWindow();
         if (framework.getWorkspace().isChanged()) {
             int result = JOptionPane.showConfirmDialog(mainWindow,
-                            "Current workspace is not saved.\n" + "Save before opening?",
-                            DIALOG_OPEN_WORKSPACE, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+                            "Current workspace is not saved.\n" + "Save before opening another workspace?",
+                            DIALOG_OPEN_WORKSPACE, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
 
             switch (result) {
             case JOptionPane.YES_OPTION:

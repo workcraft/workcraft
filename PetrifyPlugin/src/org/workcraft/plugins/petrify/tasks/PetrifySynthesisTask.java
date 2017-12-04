@@ -116,7 +116,7 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
             String msg = "Petrify does not support isolated marked places.\n\n"
                     + "Problematic places are:\n" + refStr + "\n\n"
                     + "Proceed without these places?";
-            if (!DialogUtils.showConfirm(msg, "Petrify synthesis")) {
+            if (!DialogUtils.showConfirmWarning(msg, "Petrify synthesis", true)) {
                 return Result.cancelation();
             }
             we.captureMemento();

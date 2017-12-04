@@ -19,6 +19,7 @@ stdcCircuitWork = synthGeneralisedCelementMpsat(cscStgWork);
 stdcStat = statCircuit(cgCircuitWork);
 write(stdcStat, 'mpsat-vme-stdc.circuit.stat');
 
+setConfigVar("CircuitSettings.gateLibrary", "libraries/workcraft.lib");
 tmCircuitWork = synthTechnologyMappingMpsat(cscStgWork);
 tmStat = statCircuit(tmCircuitWork);
 write(tmStat, 'mpsat-vme-tm.circuit.stat');
