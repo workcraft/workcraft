@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.UUID;
 
 import org.workcraft.dom.Model;
+import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.LpnFormat;
@@ -24,7 +25,9 @@ public class LpnSerialiser implements ModelSerialiser {
     }
 
     @Override
-    public ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer refs) {
+    public ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer refs)
+            throws SerialisationException {
+
         SerialiserUtils.writeModel(model, out, Style.LPN);
         return new ReferenceResolver();
     }
