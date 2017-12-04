@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.mpsat.MpsatSynthesisSettings;
@@ -21,6 +23,12 @@ import org.workcraft.util.LogUtils;
 import org.workcraft.util.ToolUtils;
 
 public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
+
+    private static final Pattern patternSuccess = Pattern.compile(
+            "Original Num Var/Cl/Lit\\s+\\d+/\\d+/\\d+\\R" +
+            "\\s*SAT/Total time:\\s+(\\d+\\.)?\\d+/(\\d+\\.)?\\d+",
+            Pattern.UNIX_LINES);
+
     public static final String EQN_FILE_NAME = "mpsat.eqn";
     public static final String VERILOG_FILE_NAME = "mpsat.v";
 
@@ -101,31 +109,42 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
         boolean printStdout = MpsatSynthesisSettings.getPrintStdout();
         boolean printStderr = MpsatSynthesisSettings.getPrintStderr();
         ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
-        Result<? extends ExternalProcessResult> res = task.run(monitor);
-        if (res.getOutcome() == Outcome.SUCCESS) {
-            Map<String, byte[]> outputFiles = new HashMap<>();
-            try {
-                File outFile = new File(directory, outputFileName);
-                if (outFile.exists()) {
-                    outputFiles.put(outputFileName, FileUtils.readAllBytes(outFile));
-                }
-            } catch (IOException e) {
-                return new Result<ExternalProcessResult>(e);
+        Result<? extends ExternalProcessResult> result = task.run(monitor);
+
+        if (result.getOutcome() == Outcome.SUCCESS) {
+            ExternalProcessResult returnValue = result.getReturnValue();
+            int returnCode = returnValue.getReturnCode();
+            // Even if the return code is 0 or 1, still test MPSat output to make sure it has completed successfully.
+            boolean success = false;
+            if ((returnCode == 0) || (returnCode == 1)) {
+                String output = new String(returnValue.getOutput());
+                Matcher matcherSuccess = patternSuccess.matcher(output);
+                success = matcherSuccess.find();
             }
-
-            ExternalProcessResult retVal = res.getReturnValue();
-            ExternalProcessResult result = new ExternalProcessResult(
-                    retVal.getReturnCode(), retVal.getOutput(), retVal.getErrors(), outputFiles);
-
-            if (retVal.getReturnCode() < 2) {
-                return Result.success(result);
+            if (!success) {
+                return Result.failure(returnValue);
             } else {
-                return Result.failure(result);
+                Map<String, byte[]> fileContentMap = new HashMap<>();
+                try {
+                    File outFile = new File(directory, outputFileName);
+                    if (outFile.exists()) {
+                        fileContentMap.put(outputFileName, FileUtils.readAllBytes(outFile));
+                    }
+                } catch (IOException e) {
+                    return new Result<ExternalProcessResult>(e);
+                }
+
+                ExternalProcessResult extResult = new ExternalProcessResult(
+                        returnCode, returnValue.getOutput(), returnValue.getErrors(), fileContentMap);
+
+                return Result.success(extResult);
             }
         }
-        if (res.getOutcome() == Outcome.CANCEL) {
+
+        if (result.getOutcome() == Outcome.CANCEL) {
             return Result.cancelation();
         }
+
         return Result.failure(null);
     }
 
