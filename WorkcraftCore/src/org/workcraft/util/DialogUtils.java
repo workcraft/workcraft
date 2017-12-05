@@ -98,17 +98,13 @@ public class DialogUtils {
         return showConfirm(msg, title, JOptionPane.ERROR_MESSAGE, defaultChoice);
     }
 
-    private static String showInput(String msg, String initial, int messageType) {
+    public static String showInput(String msg, String initial) {
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
         if ((mainWindow != null) && framework.isInGuiMode()) {
-            return JOptionPane.showInputDialog(mainWindow, msg, initial, messageType);
+            return JOptionPane.showInputDialog(mainWindow, msg, initial);
         }
         return initial;
-    }
-
-    public static String showInput(String msg, String initial) {
-        return showInput(msg, initial, JOptionPane.QUESTION_MESSAGE);
     }
 
 }
