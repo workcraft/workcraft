@@ -29,3 +29,7 @@
 /tools
 /tutorial
 .DS_Store
+
+
+# Private plugins
+/_*Plugin
