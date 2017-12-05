@@ -5,7 +5,6 @@ import java.io.File;
 import org.workcraft.Framework;
 import org.workcraft.PluginManager;
 import org.workcraft.interop.Exporter;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
@@ -21,7 +20,7 @@ import org.workcraft.util.Export.ExportTask;
 public class CircuitStgUtils {
 
     public static Result<? extends Object> exportStg(Stg stg, File stgFile, File directory,
-            ProgressMonitor<? super MpsatChainResult> monitor) {
+            ProgressMonitor<?> monitor) {
 
         Framework framework = Framework.getInstance();
         PluginManager pluginManager = framework.getPluginManager();
@@ -34,21 +33,21 @@ public class CircuitStgUtils {
         String description = "Exporting " + stgFile.getAbsolutePath();
         SubtaskMonitor<Object> subtaskMonitor = null;
         if (monitor != null) {
-            subtaskMonitor = new SubtaskMonitor<Object>(monitor);
+            subtaskMonitor = new SubtaskMonitor<>(monitor);
         }
         TaskManager taskManager = framework.getTaskManager();
         return taskManager.execute(exportTask, description, subtaskMonitor);
     }
 
     public static Result<? extends ExternalProcessResult> composeDevWithEnv(File devStgFile, File envStgFile, File sysStgFile,
-            File placesFile, File directory, ProgressMonitor<? super MpsatChainResult> monitor) {
+            File placesFile, File directory, ProgressMonitor<?> monitor) {
         Framework framework = Framework.getInstance();
         File[] inputFiles = new File[]{devStgFile, envStgFile};
         PcompTask pcompTask = new PcompTask(inputFiles, sysStgFile, placesFile, ConversionMode.OUTPUT, true, false, directory);
         String description = "Running parallel composition [PComp]";
         SubtaskMonitor<Object> subtaskMonitor = null;
         if (monitor != null) {
-            subtaskMonitor = new SubtaskMonitor<Object>(monitor);
+            subtaskMonitor = new SubtaskMonitor<>(monitor);
         }
         TaskManager taskManager = framework.getTaskManager();
         return taskManager.execute(pcompTask, description, subtaskMonitor);
