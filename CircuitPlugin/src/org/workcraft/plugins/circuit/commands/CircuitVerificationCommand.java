@@ -55,7 +55,7 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
                 TaskManager manager = framework.getTaskManager();
                 CheckCircuitTask task = new CheckCircuitTask(we, checkConformation, checkDeadlock, checkPersistency);
                 String description = MpsatUtils.getToolchainDescription(we.getTitle());
-                monitor = new MpsatChainResultHandler(task);
+                monitor = new MpsatChainResultHandler(we);
                 manager.queue(task, description, monitor);
             }
         }

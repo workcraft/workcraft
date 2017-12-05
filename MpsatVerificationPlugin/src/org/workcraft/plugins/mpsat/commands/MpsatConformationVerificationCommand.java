@@ -92,7 +92,7 @@ public class MpsatConformationVerificationCommand extends AbstractVerificationCo
                     TaskManager manager = framework.getTaskManager();
                     MpsatConformationTask task = new MpsatConformationTask(we, getEnvironment());
                     String description = MpsatUtils.getToolchainDescription(we.getTitle());
-                    monitor = new MpsatChainResultHandler(task);
+                    monitor = new MpsatChainResultHandler(we);
                     manager.queue(task, description, monitor);
                 }
             }

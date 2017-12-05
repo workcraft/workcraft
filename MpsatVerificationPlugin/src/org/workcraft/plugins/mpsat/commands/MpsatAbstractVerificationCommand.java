@@ -34,7 +34,7 @@ public abstract class MpsatAbstractVerificationCommand extends AbstractVerificat
         MpsatParameters settings = getSettings(we);
         MpsatChainTask task = new MpsatChainTask(we, settings);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
-        MpsatChainResultHandler monitor = new MpsatChainResultHandler(task);
+        MpsatChainResultHandler monitor = new MpsatChainResultHandler(we);
         manager.queue(task, description, monitor);
         return monitor;
     }

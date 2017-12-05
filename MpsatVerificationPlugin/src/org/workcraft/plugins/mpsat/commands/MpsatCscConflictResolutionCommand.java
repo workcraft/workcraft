@@ -69,7 +69,7 @@ public class MpsatCscConflictResolutionCommand implements ScriptableCommand<Work
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
         Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
         MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
-        MpsatChainResultHandler monitor = new MpsatChainResultHandler(task, mutexes);
+        MpsatChainResultHandler monitor = new MpsatChainResultHandler(we, mutexes);
         taskManager.queue(task, TITLE, monitor);
         return monitor;
     }

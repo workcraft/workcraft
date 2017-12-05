@@ -75,7 +75,7 @@ public class CircuitPropertyVerificationCommand extends AbstractVerificationComm
                 TaskManager manager = framework.getTaskManager();
                 CustomCheckCircuitTask task = new CustomCheckCircuitTask(we, dialog.getSettings());
                 String description = MpsatUtils.getToolchainDescription(we.getTitle());
-                MpsatChainResultHandler monitor = new MpsatChainResultHandler(task);
+                MpsatChainResultHandler monitor = new MpsatChainResultHandler(we);
                 manager.queue(task, description, monitor);
             }
         }
