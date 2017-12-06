@@ -48,7 +48,7 @@ public class DfsPersisitencyVerificationCommand extends AbstractVerificationComm
         TaskManager manager = framework.getTaskManager();
         CheckDataflowPersistencydTask task = new CheckDataflowPersistencydTask(we);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
-        MpsatChainResultHandler monitor = new MpsatChainResultHandler(task);
+        MpsatChainResultHandler monitor = new MpsatChainResultHandler(we);
         manager.queue(task, description, monitor);
         return monitor;
     }

@@ -6,7 +6,6 @@ import javax.swing.SwingUtilities;
 
 import org.workcraft.plugins.mpsat.PunfResultParser.Cause;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.tasks.AbstractResultHandler;
@@ -24,15 +23,15 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainRes
     private static final String ASK_SIMULATE_SUFFIX = "\n\nSimulate the problematic trace?";
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
 
-    private final MpsatChainTask task;
+    private final WorkspaceEntry we;
     private final Collection<Mutex> mutexes;
 
-    public MpsatChainResultHandler(MpsatChainTask task) {
-        this(task, null);
+    public MpsatChainResultHandler(WorkspaceEntry we) {
+        this(we, null);
     }
 
-    public MpsatChainResultHandler(MpsatChainTask task, Collection<Mutex> mutexes) {
-        this.task = task;
+    public MpsatChainResultHandler(WorkspaceEntry we, Collection<Mutex> mutexes) {
+        this.we = we;
         this.mutexes = mutexes;
     }
 
@@ -54,7 +53,6 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainRes
     private void handleSuccess(final Result<? extends MpsatChainResult> result) {
         MpsatChainResult returnValue = result.getReturnValue();
         Result<? extends ExternalProcessResult> mpsatResult = (returnValue == null) ? null : returnValue.getMpsatResult();
-        WorkspaceEntry we = task.getWorkspaceEntry();
         MpsatParameters mpsatSettings = returnValue.getMpsatSettings();
         switch (mpsatSettings.getMode()) {
         case UNDEFINED:
@@ -91,7 +89,6 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainRes
     }
 
     private boolean handlePartialFailure(final Result<? extends MpsatChainResult> result) {
-        WorkspaceEntry we = task.getWorkspaceEntry();
         MpsatChainResult returnValue = result.getReturnValue();
         Result<? extends ExternalProcessResult> punfResult = (returnValue == null) ? null : returnValue.getPunfResult();
         if ((punfResult != null) && (punfResult.getOutcome() == Outcome.FAILURE)) {

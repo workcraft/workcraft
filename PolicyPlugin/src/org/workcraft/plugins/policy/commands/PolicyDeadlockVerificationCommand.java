@@ -43,7 +43,7 @@ public class PolicyDeadlockVerificationCommand extends AbstractVerificationComma
         TaskManager manager = framework.getTaskManager();
         CheckDeadlockTask task = new CheckDeadlockTask(we);
         String description = MpsatUtils.getToolchainDescription(we.getTitle());
-        MpsatChainResultHandler monitor = new MpsatChainResultHandler(task);
+        MpsatChainResultHandler monitor = new MpsatChainResultHandler(we);
         manager.queue(task, description, monitor);
         return monitor;
     }

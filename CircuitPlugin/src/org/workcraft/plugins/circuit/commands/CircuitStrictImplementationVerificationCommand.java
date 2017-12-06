@@ -69,7 +69,7 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
             TaskManager manager = framework.getTaskManager();
             CheckStrictImplementationTask task = new CheckStrictImplementationTask(we);
             String description = MpsatUtils.getToolchainDescription(we.getTitle());
-            monitor = new MpsatChainResultHandler(task);
+            monitor = new MpsatChainResultHandler(we);
             manager.queue(task, description, monitor);
         }
         return monitor;

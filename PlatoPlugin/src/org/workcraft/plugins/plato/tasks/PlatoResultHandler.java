@@ -247,7 +247,7 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessResu
             MpsatParameters param = new MpsatParameters(null, MpsatMode.STG_REACHABILITY, 0, SolutionMode.MINIMUM_COST, 10, fullExpression, true);
             final MpsatChainTask mpsatTask = new MpsatChainTask(we, param);
             final TaskManager taskManager = Framework.getInstance().getTaskManager();
-            final MpsatChainResultHandler monitor = new MpsatChainResultHandler(mpsatTask);
+            final MpsatChainResultHandler monitor = new MpsatChainResultHandler(we);
             taskManager.queue(mpsatTask, "Verify invariant of translated concepts", monitor);
         }
     }
