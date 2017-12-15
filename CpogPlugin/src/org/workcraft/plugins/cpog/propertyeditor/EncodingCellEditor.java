@@ -8,6 +8,7 @@ import org.workcraft.gui.propertyeditor.GenericCellEditor;
 import org.workcraft.plugins.cpog.Encoding;
 
 class EncodingCellEditor extends GenericCellEditor {
+
     private static final long serialVersionUID = 8L;
     private Encoding encoding;
 
@@ -18,9 +19,9 @@ class EncodingCellEditor extends GenericCellEditor {
     }
 
     @Override
-    public Component getTableCellEditorComponent(JTable table,
-            Object value, boolean isSelected, int row, int column) {
+    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
         encoding = (Encoding) value;
         return super.getTableCellEditorComponent(table, value, isSelected, row, column);
     }
+
 }

@@ -6,81 +6,69 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.AbstractCellEditor;
-import javax.swing.JButton;
-import javax.swing.JColorChooser;
-import javax.swing.JDialog;
+import javax.swing.DefaultListCellRenderer;
+import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JTable;
+import javax.swing.ListCellRenderer;
 import javax.swing.table.TableCellEditor;
-
-import org.workcraft.Framework;
-import org.workcraft.gui.MainWindow;
 
 @SuppressWarnings("serial")
 public class ColorCellEditor extends AbstractCellEditor implements TableCellEditor, ActionListener {
 
-    static class Approximator implements ActionListener {
-        public ActionListener target = null;
+    private final FlatComboBox comboBox;
+    private final Color[] colors = {
+            Color.BLACK, Color.DARK_GRAY, Color.GRAY, Color.LIGHT_GRAY, Color.WHITE,
+            Color.RED, Color.GREEN, Color.BLUE, Color.CYAN, Color.YELLOW, Color.MAGENTA,
+            Color.ORANGE, Color.PINK,
+            };
 
-        public void actionPerformed(ActionEvent e) {
-            target.actionPerformed(e);
+    class ColorCellRenderer implements ListCellRenderer {
+
+        private final DefaultListCellRenderer defaultRenderer = new DefaultListCellRenderer();
+
+        @Override
+        public Component getListCellRendererComponent(JList list, Object value, int index,
+                boolean isSelected, boolean cellHasFocus) {
+
+            JLabel renderer = (JLabel) defaultRenderer.getListCellRendererComponent(
+                    list, " ", index, isSelected, cellHasFocus);
+
+            if (value instanceof Color) {
+                renderer.setBackground((Color) value);
+            }
+            return renderer;
         }
     }
 
-    Color color;
-    JButton button;
-
-    static Approximator approx = new Approximator();
-    static JColorChooser chooser = null;
-    static JDialog dialog = null;
-
-    protected static final String TAG_EDIT = "edit";
-
-    public  ColorCellEditor() {
-
-        button = new JButton();
-        button.setActionCommand(TAG_EDIT);
-        button.addActionListener(this);
-        button.setBorderPainted(false);
-        button.setFocusable(false);
-
-        // Set up the dialog that the button brings up.
-        if (chooser == null) {
-            chooser = new JColorChooser();
+    public ColorCellEditor() {
+        comboBox = new FlatComboBox();
+        for (Color color: colors) {
+            comboBox.addItem(color);
         }
-        if (dialog == null) {
-            MainWindow mainWindow = Framework.getInstance().getMainWindow();
-            dialog = JColorChooser.createDialog(mainWindow,
-                    "Pick a Color", true, // modal
-                    chooser, approx, //OK button handler
-                    null); //no CANCEL button handler
-        }
+        comboBox.setEditable(true);
+        comboBox.setFocusable(false);
+        comboBox.setRenderer(new ColorCellRenderer());
+
+        Color color = (Color) comboBox.getSelectedItem();
+        comboBox.setEditor(new ColorComboBoxEditor(color));
+        comboBox.addActionListener(this);
     }
 
     @Override
-    public void actionPerformed(ActionEvent e) {
-        if (TAG_EDIT.equals(e.getActionCommand())) {
-            // The user has clicked the cell, so bring up the dialog.
-            approx.target = this;
-            button.setBackground(color);
-            chooser.setColor(color);
-            dialog.setVisible(true);
-            fireEditingStopped(); //Make the renderer reappear.
-        } else {
-            // User pressed dialog's "OK" button.
-            color = chooser.getColor();
-        }
+    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
+        comboBox.setSelectedItem(value);
+        return comboBox;
     }
 
     @Override
     public Object getCellEditorValue() {
-        return color;
+        return comboBox.getSelectedItem();
     }
 
     @Override
-    public Component getTableCellEditorComponent(JTable table,
-            Object value, boolean isSelected, int row, int column) {
-        color = (Color) value;
-        return button;
+    public void actionPerformed(ActionEvent actionEvent) {
+        fireEditingStopped();
     }
-}
 
+}

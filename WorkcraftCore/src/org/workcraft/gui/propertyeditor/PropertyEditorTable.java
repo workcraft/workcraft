@@ -122,7 +122,7 @@ public class PropertyEditorTable extends JTable implements PropertyEditor {
             // If object declares a predefined set of values, use a ComboBox to edit the property regardless of class
             if (decl.getChoice() != null) {
                 model.setRowClass(i, null);
-                cellRenderers[i] = new DefaultCellRenderer();
+                cellRenderers[i] = new ChoiceCellRenderer();
                 cellEditors[i] = new ChoiceCellEditor(decl);
             } else {
                 // otherwise, try to get a corresponding PropertyClass object, that knows how to edit a property of this class

@@ -29,7 +29,7 @@ public class FileCellRenderer extends JPanel implements TableCellRenderer {
         chooseButton.setMargin(new Insets(1, 1, 1, 1));
         chooseButton.setHorizontalAlignment(SwingConstants.LEFT);
 
-        JButton clearButton = new JButton("x");
+        JButton clearButton = new JButton("\u00d7");
         clearButton.setFocusable(false);
         clearButton.setMargin(new Insets(1, 1, 1, 1));
 

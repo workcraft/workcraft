@@ -11,6 +11,7 @@ import javax.swing.table.TableCellEditor;
 
 @SuppressWarnings("serial")
 public class GenericCellEditor extends AbstractCellEditor implements TableCellEditor {
+
     private final JTextField textField;
 
     public GenericCellEditor() {
@@ -27,15 +28,17 @@ public class GenericCellEditor extends AbstractCellEditor implements TableCellEd
         });
     }
 
+    @Override
     public Object getCellEditorValue() {
         return textField.getText();
     }
 
-    public Component getTableCellEditorComponent(JTable table, Object value,
-            boolean isSelected, int row, int column) {
+    @Override
+    public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
         textField.setText(value.toString());
         textField.setFont(table.getFont());
         return textField;
     }
+
 }
 

@@ -35,6 +35,10 @@ public class SizeHelper {
         return (int) Math.round(getBaseSize());
     }
 
+    public static int getPreviewFontSize() {
+        return (int) Math.round(1.5 * getBaseSize());
+    }
+
     public static int getIconSize() {
         return 32;
     }
@@ -69,6 +73,14 @@ public class SizeHelper {
 
     public static int getScrollbarWidth() {
         return (int) Math.round(1.3 * getBaseSize());
+    }
+
+    public static int getColorChooserSwatchSize() {
+        return (int) Math.round(1.05 * getBaseSize());
+    }
+
+    public static int getColorChooserSwatchRecentSize() {
+        return (int) Math.round(9.0 * getColorChooserSwatchSize() / 7.0);
     }
 
     public static float getMinimalStrockWidth() {
