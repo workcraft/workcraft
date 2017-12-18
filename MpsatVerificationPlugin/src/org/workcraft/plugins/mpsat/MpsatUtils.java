@@ -141,7 +141,7 @@ public class MpsatUtils {
 
     public static  String getToolchainDescription(String title) {
         String result = "MPSat tool chain";
-        if (title != null) {
+        if ((title != null) && !title.isEmpty()) {
             result += " (" + title + ")";
         }
         return result;

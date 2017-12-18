@@ -52,7 +52,7 @@ public class ParallelCompositionCommand implements Command {
     public void run(WorkspaceEntry we) {
         final Framework framework = Framework.getInstance();
         if (!framework.isInGuiMode()) {
-            LogUtils.logError("Tool '" + getClass().getSimpleName() + "' only works in GUI mode.");
+            LogUtils.logError("Command '" + getClass().getSimpleName() + "' only works in GUI mode.");
         } else {
             MainWindow mainWindow = framework.getMainWindow();
             PcompDialog dialog = new PcompDialog(mainWindow);

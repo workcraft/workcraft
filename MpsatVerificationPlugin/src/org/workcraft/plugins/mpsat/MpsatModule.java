@@ -56,6 +56,7 @@ public class MpsatModule implements Module {
 
         // TODO: Need a way to pass the environment file from the JavaScript wrapper
         pm.registerClass(Command.class, MpsatConformationVerificationCommand.class);
+        //pm.registerClass(Command.class, MpsatNwayConformationVerificationCommand.class);
         pm.registerClass(Command.class, MpsatPropertyVerificationCommand.class);
         pm.registerClass(Command.class, MpsatAssertionVerificationCommand.class);
     }
