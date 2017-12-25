@@ -21,11 +21,16 @@ public class WorkspaceTreeDecorator implements TreeDecorator<Path<String>> {
 
     @Override
     public String getName(Path<String> node) {
-        final WorkspaceEntry openFile = workspace.getWork(node);
-        String name = node.isEmpty() ? "!Workspace" : node.getNode();
-        if (openFile != null && openFile.isChanged()) {
-            name += " *";
+        String result = "";
+        if (node.isEmpty()) {
+            result = "!Workspace";
+        } else {
+            WorkspaceEntry we = workspace.getWork(node);
+            if ((we != null) && we.isChanged()) {
+                result = "*";
+            }
+            result += node.getNode();
         }
-        return name;
+        return result;
     }
 }

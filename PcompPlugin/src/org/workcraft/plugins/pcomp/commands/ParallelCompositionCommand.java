@@ -32,6 +32,9 @@ import org.workcraft.workspace.WorkspaceUtils;
 
 public class ParallelCompositionCommand implements Command {
 
+    public static final String RESULT_FILE_NAME = "result.g";
+    public static final String PLACES_FILE_NAME = "places.list";
+
     public String getSection() {
         return "Composition";
     }
@@ -71,10 +74,14 @@ public class ParallelCompositionCommand implements Command {
                     inputFiles.add(stgFile);
                 }
 
-                File outputFile = new File(tmpDirectory, "result.g");
+                File outputFile = new File(tmpDirectory, RESULT_FILE_NAME);
                 outputFile.deleteOnExit();
+                File placesFile = null;
+                if (dialog.isSavePlacesChecked()) {
+                    placesFile = new File(tmpDirectory, PLACES_FILE_NAME);
+                }
 
-                PcompTask pcompTask = new PcompTask(inputFiles.toArray(new File[0]), outputFile, null,
+                PcompTask pcompTask = new PcompTask(inputFiles.toArray(new File[0]), outputFile, placesFile,
                         dialog.getMode(), dialog.isSharedOutputsChecked(), dialog.isImprovedPcompChecked(),
                         tmpDirectory);
 

@@ -32,6 +32,7 @@ import org.workcraft.observation.SelectionChangedEvent;
 import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.shared.CommonDebugSettings;
+import org.workcraft.plugins.shared.CommonEditorSettings;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Hierarchy;
 
@@ -131,6 +132,26 @@ public class WorkspaceEntry implements ObservableState {
             }
         }
         return result;
+    }
+
+    public String getTitleAndModel() {
+        String prefix = isChanged() ? "*" : "";
+        String suffix = "";
+        VisualModel model = getModelEntry().getVisualModel();
+        if (model != null) {
+            switch (CommonEditorSettings.getTitleStyle()) {
+            case LONG:
+                suffix = " - " + model.getDisplayName();
+                break;
+            case SHORT:
+                suffix = " [" + model.getShortName() + "]";
+                break;
+            default:
+                suffix = "";
+                break;
+            }
+        }
+        return prefix + getTitle() + suffix;
     }
 
     public String getFileName() {

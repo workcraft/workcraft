@@ -233,7 +233,7 @@ public class MainWindow extends JFrame {
 
     public GraphEditorPanel createEditorWindow(final WorkspaceEntry we) {
         final GraphEditorPanel editor = new GraphEditorPanel(we);
-        String title = getTitle(we);
+        String title = we.getTitleAndModel();
         final DockableWindow editorWindow;
         int options = DockableWindowContentPanel.CLOSE_BUTTON | DockableWindowContentPanel.MAXIMIZE_BUTTON;
         if (editorWindows.isEmpty()) {
@@ -1093,7 +1093,7 @@ public class MainWindow extends JFrame {
     }
 
     private String getFileNameForCurrentWork() {
-        String fileName = TITLE_PLACEHOLDER;
+        String fileName = "";
         if (editorInFocus != null) {
             WorkspaceEntry we = editorInFocus.getWorkspaceEntry();
             if (we != null) {
@@ -1103,29 +1103,9 @@ public class MainWindow extends JFrame {
         return fileName;
     }
 
-    private String getTitle(WorkspaceEntry we) {
-        String prefix = we.isChanged() ? "*" : TITLE_PLACEHOLDER;
-        String suffix = TITLE_PLACEHOLDER;
-        VisualModel model = we.getModelEntry().getVisualModel();
-        if (model != null) {
-            switch (CommonEditorSettings.getTitleStyle()) {
-            case LONG:
-                suffix = " - " + model.getDisplayName();
-                break;
-            case SHORT:
-                suffix = " [" + model.getShortName() + "]";
-                break;
-            default:
-                suffix = TITLE_PLACEHOLDER;
-                break;
-            }
-        }
-        return prefix + we.getTitle() + suffix;
-    }
-
     public void refreshWorkspaceEntryTitle(WorkspaceEntry we, boolean updateHeaders) {
         for (DockableWindow window: editorWindows.get(we)) {
-            String title = getTitle(we);
+            String title = we.getTitleAndModel();
             window.setTitle(title);
         }
         if (updateHeaders) {
