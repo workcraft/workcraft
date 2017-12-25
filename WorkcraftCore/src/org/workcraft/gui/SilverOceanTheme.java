@@ -3,6 +3,7 @@ package org.workcraft.gui;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -206,6 +207,8 @@ public class SilverOceanTheme extends OceanTheme {
     }
 
     private Object[] getCustomButtonTable(UIDefaults table) {
+        int swatchSize = SizeHelper.getColorChooserSwatchSize();
+        int swatchRecentSize = SizeHelper.getColorChooserSwatchRecentSize();
         Object[] result = {
                 "TabbedPane.selected", getPrimary2(),
                 "TabbedPane.contentAreaColor", getPrimary2(),
@@ -214,7 +217,12 @@ public class SilverOceanTheme extends OceanTheme {
                 "CheckBoxMenuItem.checkIcon", new CheckBoxIcon(),
                 "RadioButton.icon", new RadioButtonIcon(),
 
+                "ComboBox.background", getWhite(),
+
                 "ScrollBar.width", SizeHelper.getScrollbarWidth(),
+
+                "ColorChooser.swatchesSwatchSize", new Dimension(swatchSize, swatchSize),
+                "ColorChooser.swatchesRecentSwatchSize", new Dimension(swatchRecentSize, swatchRecentSize),
         };
         return result;
     }

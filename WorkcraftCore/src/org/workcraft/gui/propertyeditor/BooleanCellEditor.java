@@ -21,6 +21,7 @@ public class BooleanCellEditor extends AbstractCellEditor implements TableCellEd
         checkBox.setBorderPainted(false);
     }
 
+    @Override
     public Component getTableCellEditorComponent(JTable table, Object value, boolean isSelected, int row, int column) {
         if (value != null) {
             checkBox.setSelected((Boolean) value);
@@ -30,10 +31,12 @@ public class BooleanCellEditor extends AbstractCellEditor implements TableCellEd
         return checkBox;
     }
 
+    @Override
     public Object getCellEditorValue() {
         return checkBox.isSelected();
     }
 
+    @Override
     public void itemStateChanged(ItemEvent e) {
         fireEditingStopped();
     }
