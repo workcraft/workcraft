@@ -4,7 +4,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map.Entry;
+import java.util.Queue;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -18,6 +21,7 @@ import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.xmas.components.VisualSyncComponent;
+import org.workcraft.plugins.xmas.components.VisualXmasComponent;
 import org.workcraft.util.Hierarchy;
 
 public class SyncSelectionTool extends SelectionTool {
@@ -51,6 +55,24 @@ public class SyncSelectionTool extends SelectionTool {
         return null;
     }
 
+    @Override
+    public Collection<Node> getNodeWithAdjacentConnections(VisualModel model, Node node) {
+        HashSet<Node> result = new HashSet<>();
+        Queue<Node> queue = new LinkedList<>();
+        queue.add(node);
+        while (!queue.isEmpty()) {
+            node = queue.remove();
+            if (result.contains(node)) {
+                continue;
+            }
+            result.add(node);
+            if (node instanceof VisualXmasComponent) {
+                VisualXmasComponent component = (VisualXmasComponent) node;
+                queue.addAll(component.getContacts());
+            }
+        }
+        return result;
+    }
     @Override
     public void beforeSelectionModification(final GraphEditor editor) {
         super.beforeSelectionModification(editor);

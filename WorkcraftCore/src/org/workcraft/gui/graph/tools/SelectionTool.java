@@ -11,6 +11,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -72,7 +73,8 @@ public class SelectionTool extends AbstractGraphEditorTool {
     private SelectionMode selectionMode = SelectionMode.NONE;
     private Rectangle2D selectionBox = null;
 
-    private VisualNode currentNode = null;
+    private Node currentNode = null;
+    private Collection<Node> currentNodes = null;
 
     private boolean enableGroupping = true;
     private boolean enablePaging = true;
@@ -243,6 +245,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
     public void activated(final GraphEditor editor) {
         super.activated(editor);
         currentNode = null;
+        currentNodes = null;
     }
 
     @Override
@@ -250,6 +253,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
         super.deactivated(editor);
         editor.getModel().selectNone();
         currentNode = null;
+        currentNodes = null;
     }
 
     @Override
@@ -322,28 +326,27 @@ public class SelectionTool extends AbstractGraphEditorTool {
                         return;
                     }
                 } else {
-                    switch (e.getKeyModifiers()) {
-                    case 0:
-                        model.select(node);
-                        break;
-                    case MouseEvent.SHIFT_DOWN_MASK:
-                        model.addToSelection(node);
-                        break;
-                    case MouseEvent.CTRL_DOWN_MASK:
-                        if (DesktopApi.getMenuKeyMouseMask() == MouseEvent.CTRL_DOWN_MASK) {
-                            model.removeFromSelection(node);
-                        }
-                        break;
-                    case MouseEvent.META_DOWN_MASK:
-                        if (DesktopApi.getMenuKeyMouseMask() == MouseEvent.META_DOWN_MASK) {
-                            model.removeFromSelection(node);
-                        }
-                        break;
+                    Collection<Node> nodes = e.isExtendKeyDown()
+                            ? getNodeWithAdjacentConnections(model, node)
+                            : Arrays.asList(new Node[] {node});
+                    if (e.isShiftKeyDown()) {
+                        model.addToSelection(nodes);
+                    } else if (e.isMenuKeyDown()) {
+                        model.removeFromSelection(nodes);
+                    } else {
+                        model.select(nodes);
                     }
                 }
             }
             anchorGenerator.mouseClicked(e);
         }
+    }
+
+    public Collection<Node> getNodeWithAdjacentConnections(VisualModel model, Node node) {
+        ArrayList<Node> result = new ArrayList<>();
+        result.add(node);
+        result.addAll(model.getConnections(node));
+        return result;
     }
 
     public VisualNode hitTestPopup(VisualModel model, Point2D position) {
@@ -403,7 +406,10 @@ public class SelectionTool extends AbstractGraphEditorTool {
         } else {
             Node node = HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
             if (currentNode != node) {
-                currentNode = (VisualNode) node;
+                currentNode = node;
+                currentNodes = e.isExtendKeyDown()
+                        ? getNodeWithAdjacentConnections(model, node)
+                        : Arrays.asList(new Node[] {node});
                 editor.repaint();
             }
         }
@@ -447,36 +453,20 @@ public class SelectionTool extends AbstractGraphEditorTool {
 
             if (hitNode == null) {
                 // If hit nothing then start select-drag
-                switch (e.getKeyModifiers()) {
-                case 0:
-                    selectionMode = SelectionMode.REPLACE;
-                    break;
-                case MouseEvent.CTRL_DOWN_MASK:
-                    if (DesktopApi.getMenuKeyMouseMask() == MouseEvent.CTRL_DOWN_MASK) {
-                        selectionMode = SelectionMode.REMOVE;
-                    }
-                    break;
-                case MouseEvent.META_DOWN_MASK:
-                    if (DesktopApi.getMenuKeyMouseMask() == MouseEvent.META_DOWN_MASK) {
-                        selectionMode = SelectionMode.REMOVE;
-                    }
-                    break;
-                case MouseEvent.SHIFT_DOWN_MASK:
+                if (e.isShiftKeyDown()) {
                     selectionMode = SelectionMode.ADD;
-                    break;
-                default:
-                    selectionMode = SelectionMode.NONE;
+                } else if (e.isMenuKeyDown()) {
+                    selectionMode = SelectionMode.REMOVE;
+                } else {
+                    selectionMode = SelectionMode.REPLACE;
                 }
-
-                if (selectionMode != SelectionMode.NONE) {
-                    // selection will not actually be changed until drag completes
-                    dragState = DrugState.SELECT;
-                    selected.clear();
-                    if (selectionMode == SelectionMode.REPLACE) {
-                        model.selectNone();
-                    } else {
-                        selected.addAll(model.getSelection());
-                    }
+                // Selection will not actually be changed until drag completes
+                dragState = DrugState.SELECT;
+                selected.clear();
+                if (selectionMode == SelectionMode.REPLACE) {
+                    model.selectNone();
+                } else {
+                    selected.addAll(model.getSelection());
                 }
             } else if ((e.getKeyModifiers() == 0) && (hitNode instanceof VisualNode)) {
                 // If mouse down without modifiers and hit something then begin move-drag
@@ -594,7 +584,27 @@ public class SelectionTool extends AbstractGraphEditorTool {
             }
         }
 
+        if (e.isExtendKeyDown()) {
+            currentNodes = getNodeWithAdjacentConnections(e.getModel(), currentNode);
+            editor.repaint();
+        }
+
         return super.keyPressed(e);
+    }
+
+    @Override
+    public boolean keyReleased(GraphEditorKeyEvent e) {
+        if (!e.isExtendKeyDown()) {
+            currentNodes = Arrays.asList(new Node[] {currentNode});
+            e.getEditor().repaint();
+        }
+        return super.keyReleased(e);
+    }
+
+    @Override
+    public String getHintText(final GraphEditor editor) {
+        return "Modifiers: Shift - add to selection; " + DesktopApi.getMenuKeyMaskName()
+            + " - remove from selection; Alt/AltGr - extend selection to adjacent nodes.";
     }
 
     @Override
@@ -618,7 +628,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
             @Override
             public Decoration getDecoration(Node node) {
                 VisualModel model = editor.getModel();
-                if (node == currentNode) {
+                if ((currentNodes != null) && currentNodes.contains(node)) {
                     return Decoration.Highlighted.INSTANCE;
                 }
 
@@ -657,6 +667,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
                 editor.getWorkspaceEntry().saveMemento();
                 model.setCurrentLevel((Container) node);
                 currentNode = null;
+                currentNodes = null;
                 editor.repaint();
             }
         }
@@ -671,6 +682,7 @@ public class SelectionTool extends AbstractGraphEditorTool {
             model.setCurrentLevel(parent);
             model.addToSelection(level);
             currentNode = null;
+            currentNodes = null;
             editor.repaint();
         }
     }
