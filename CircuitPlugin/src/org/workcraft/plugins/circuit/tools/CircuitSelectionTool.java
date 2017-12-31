@@ -5,7 +5,10 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Map.Entry;
+import java.util.Queue;
 
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
@@ -15,6 +18,7 @@ import org.workcraft.dom.visual.Alignment;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.SelectionHelper;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
@@ -24,8 +28,10 @@ import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.circuit.VisualCircuitComponent;
 import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
+import org.workcraft.plugins.circuit.VisualJoint;
 import org.workcraft.util.Hierarchy;
 
 public class CircuitSelectionTool extends SelectionTool {
@@ -105,6 +111,39 @@ public class CircuitSelectionTool extends SelectionTool {
         if (!processed) {
             super.mouseClicked(e);
         }
+    }
+
+    @Override
+    public Collection<Node> getNodeWithAdjacentConnections(VisualModel model, Node node) {
+        HashSet<Node> result = new HashSet<>();
+        Queue<Node> queue = new LinkedList<>();
+        queue.add(node);
+        while (!queue.isEmpty()) {
+            node = queue.remove();
+            if (result.contains(node)) {
+                continue;
+            }
+            result.add(node);
+            if (node instanceof VisualConnection) {
+                VisualConnection connection = (VisualConnection) node;
+                VisualNode first = connection.getFirst();
+                if (first instanceof VisualJoint) {
+                    queue.add(first);
+                } else {
+                    queue.addAll(model.getConnections(first));
+                }
+                VisualNode second = connection.getSecond();
+                if (second instanceof VisualJoint) {
+                    queue.add(second);
+                }
+            } else if (node instanceof VisualCircuitComponent) {
+                VisualCircuitComponent component = (VisualCircuitComponent) node;
+                queue.addAll(component.getContacts());
+            } else {
+                queue.addAll(model.getConnections(node));
+            }
+        }
+        return result;
     }
 
     @Override

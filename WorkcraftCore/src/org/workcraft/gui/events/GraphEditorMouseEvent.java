@@ -1,7 +1,6 @@
 package org.workcraft.gui.events;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 
@@ -10,9 +9,7 @@ import org.workcraft.gui.DesktopApi;
 import org.workcraft.gui.graph.tools.GraphEditor;
 
 public class GraphEditorMouseEvent {
-
     GraphEditor editor;
-
     MouseEvent event;
     Point2D position;
     Point2D prevPosition;
@@ -20,7 +17,6 @@ public class GraphEditorMouseEvent {
 
     public GraphEditorMouseEvent(GraphEditor editor, MouseEvent e) {
         this.editor = editor;
-
         event = e;
         if (editor != null) {
             position = editor.getViewport().screenToUser(e.getPoint());
@@ -104,8 +100,16 @@ public class GraphEditorMouseEvent {
         return isMaskHit(MouseEvent.SHIFT_DOWN_MASK);
     }
 
+    public boolean isAltKeyDown() {
+        return isMaskHit(MouseEvent.ALT_DOWN_MASK);
+    }
+
+    public boolean isAltGraphKeyDown() {
+        return isMaskHit(MouseEvent.ALT_GRAPH_DOWN_MASK);
+    }
+
     public boolean isMetaKeyDown() {
-        return isMaskHit(InputEvent.META_DOWN_MASK);
+        return isMaskHit(MouseEvent.META_DOWN_MASK);
     }
 
     public boolean isMenuKeyDown() {
@@ -113,6 +117,10 @@ public class GraphEditorMouseEvent {
             return isMetaKeyDown();
         }
         return isCtrlKeyDown();
+    }
+
+    public boolean isExtendKeyDown() {
+        return isAltKeyDown() || isAltGraphKeyDown();
     }
 
 }

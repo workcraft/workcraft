@@ -140,7 +140,11 @@ public class MpsatUtils {
     }
 
     public static  String getToolchainDescription(String title) {
-        return "MPSat tool chain" + (title.isEmpty() ? "" : " (" + title + ")");
+        String result = "MPSat tool chain";
+        if (title != null) {
+            result += " (" + title + ")";
+        }
+        return result;
     }
 
     public static void playTrace(WorkspaceEntry we, MpsatSolution solution) {

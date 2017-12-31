@@ -16,10 +16,17 @@ public class GraphEditorKeyEvent {
 
     public GraphEditorKeyEvent(GraphEditor editor, KeyEvent event) {
         this.editor = editor;
-
         keyChar = event.getKeyChar();
         keyCode = event.getKeyCode();
         modifiers = event.getModifiersEx();
+    }
+
+    public GraphEditor getEditor() {
+        return editor;
+    }
+
+    public VisualModel getModel() {
+        return editor.getModel();
     }
 
     public char getKeyChar() {
@@ -30,8 +37,12 @@ public class GraphEditorKeyEvent {
         return keyCode;
     }
 
+    public int getModifiers() {
+        return modifiers;
+    }
+
     private boolean isMaskHit(int mask) {
-        return (modifiers & mask) == mask;
+        return (getModifiers() & mask) == mask;
     }
 
     public boolean isCtrlKeyDown() {
@@ -46,6 +57,10 @@ public class GraphEditorKeyEvent {
         return isMaskHit(InputEvent.ALT_DOWN_MASK);
     }
 
+    public boolean isAltGraphKeyDown() {
+        return isMaskHit(InputEvent.ALT_GRAPH_DOWN_MASK);
+    }
+
     public boolean isMetaKeyDown() {
         return isMaskHit(InputEvent.META_DOWN_MASK);
     }
@@ -57,15 +72,8 @@ public class GraphEditorKeyEvent {
         return isCtrlKeyDown();
     }
 
-    public int getModifiers() {
-        return modifiers;
+    public boolean isExtendKeyDown() {
+        return isAltKeyDown() || isAltGraphKeyDown();
     }
 
-    public GraphEditor getEditor() {
-        return editor;
-    }
-
-    public VisualModel getModel() {
-        return editor.getModel();
-    }
 }

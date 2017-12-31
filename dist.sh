@@ -98,7 +98,15 @@ for platform in $platforms; do
     cp $core_dir/build/libs/*.jar $dist_path/bin/
 
     for d in $plugin_dirs; do
-        cp $d/build/libs/*.jar $dist_path/bin/
+        # Skip private plugins (their name strart with underscore)
+        case "$d" in
+            _*)
+                echo "  - skipping private plugin $d"
+                ;;
+            *)
+                cp $d/build/libs/*.jar $dist_path/bin/
+                ;;
+        esac
     done
 
     for d in doc/*; do
