@@ -52,7 +52,7 @@ public class MpsatPropertyDialog extends JDialog {
     private JTextField solutionLimitText;
     private JTextArea propertyText;
     private JRadioButton allSolutionsRadioButton, firstSolutionRadioButton, cheapestSolutionRadioButton;
-    private JRadioButton unsatisfiebleRadioButton;
+    private JRadioButton satisfiebleRadioButton, unsatisfiebleRadioButton;
     private final MpsatPresetManager presetManager;
 
     private int modalResult = 0;
@@ -219,7 +219,7 @@ public class MpsatPropertyDialog extends JDialog {
         });
         JScrollPane propertyScrollPane = new JScrollPane(propertyText);
 
-        JRadioButton satisfiebleRadioButton = new JRadioButton("satisfiable");
+        satisfiebleRadioButton = new JRadioButton("satisfiable");
         unsatisfiebleRadioButton = new JRadioButton("unsatisfiable");
         ButtonGroup buttonGroup = new ButtonGroup();
         buttonGroup.add(satisfiebleRadioButton);
@@ -302,7 +302,11 @@ public class MpsatPropertyDialog extends JDialog {
         }
 
         propertyText.setText(settings.getExpression());
-        unsatisfiebleRadioButton.setSelected(settings.getInversePredicate());
+        if (settings.getInversePredicate()) {
+            unsatisfiebleRadioButton.setSelected(true);
+        } else {
+            satisfiebleRadioButton.setSelected(true);
+        }
     }
 
     private MpsatParameters getSettingsFromControls() {

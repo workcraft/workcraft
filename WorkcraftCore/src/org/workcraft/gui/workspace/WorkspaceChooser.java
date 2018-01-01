@@ -35,12 +35,12 @@ public class WorkspaceChooser extends JPanel {
             {TableLayout.PREFERRED, TableLayout.FILL},
         };
 
-        final TableLayout mgr = new TableLayout(sizes);
-        mgr.setHGap(SizeHelper.getLayoutHGap());
-        mgr.setVGap(SizeHelper.getLayoutVGap());
-        this.setBorder(SizeHelper.getEmptyBorder());
+        final TableLayout layout = new TableLayout(sizes);
+        layout.setHGap(SizeHelper.getLayoutHGap());
+        layout.setVGap(SizeHelper.getLayoutVGap());
 
-        this.setLayout(mgr);
+        this.setBorder(SizeHelper.getEmptyBorder());
+        this.setLayout(layout);
 
         nameFilter = new JTextField();
 

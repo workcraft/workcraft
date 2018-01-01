@@ -49,7 +49,7 @@ public class PcompDialog extends JDialog {
         super(owner, "Parallel composition", ModalityType.DOCUMENT_MODAL);
         final JPanel content = createContents();
         setContentPane(content);
-        setMinimumSize(new Dimension(450, 450));
+        setMinimumSize(new Dimension(500, 300));
     }
 
     public Set<Path<String>> getSourcePaths() {

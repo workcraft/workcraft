@@ -60,7 +60,10 @@ public class GUI {
             {TableLayout.PREFERRED},
         };
 
-        JPanel result = new JPanel(new TableLayout(sizes));
+        TableLayout layout = new TableLayout(sizes);
+        layout.setHGap(SizeHelper.getLayoutHGap());
+        layout.setVGap(SizeHelper.getLayoutVGap());
+        JPanel result = new JPanel(layout);
         result.add(new JLabel(labelText), "0 0");
         result.add(component, "1 0");
         return result;
