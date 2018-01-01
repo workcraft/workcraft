@@ -109,11 +109,14 @@ public class TreeWindow<Node> extends JPanel {
             {TableLayout.PREFERRED},
         };
 
-        private final JPanel cellRenderer = new JPanel(new TableLayout(size));
+        private final TableLayout layout = new TableLayout(size);
+        private final JPanel cellRenderer = new JPanel(layout);
 
         private TreeCellRenderer(TreeSource<Node> source, TreeDecorator<Node> decorator) {
             this.source = source;
             this.decorator = decorator;
+            layout.setHGap(SizeHelper.getLayoutHGap());
+            layout.setVGap(SizeHelper.getLayoutVGap());
         }
 
         @SuppressWarnings("unchecked")
@@ -261,7 +264,6 @@ public class TreeWindow<Node> extends JPanel {
         checkBox = new JCheckBox();
         checkBox.setBackground(tree.getBackground());
         checkBox.setMargin(SizeHelper.getTreeCheckboxMargin());
-//        checkBox.setMargin(new Insets(0, 0, 0, 0));
 
         sourceWithRestructuredTrapped = new TreeSourceAdapterImplementation(source, decorator);
 

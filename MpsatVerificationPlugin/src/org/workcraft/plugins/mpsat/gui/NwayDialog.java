@@ -1,4 +1,4 @@
-package org.workcraft.plugins.pcomp.gui;
+package org.workcraft.plugins.mpsat.gui;
 
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -24,7 +24,6 @@ import org.workcraft.exceptions.NotSupportedException;
 import org.workcraft.gui.trees.TreeWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.gui.workspace.WorkspaceChooser;
-import org.workcraft.plugins.pcomp.commands.ParallelCompositionCommand;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.stg.StgWorkspaceFilter;
 import org.workcraft.util.GUI;
@@ -32,8 +31,7 @@ import org.workcraft.util.GUI;
 import info.clearthought.layout.TableLayout;
 
 @SuppressWarnings("serial")
-public class PcompDialog extends JDialog {
-
+public class NwayDialog extends JDialog {
     protected boolean result;
     private WorkspaceChooser chooser;
     private Set<Path<String>> sourcePaths;
@@ -42,11 +40,10 @@ public class PcompDialog extends JDialog {
     private JRadioButton internalize;
     private JRadioButton dummify;
     private JCheckBox sharedOutputs;
-    private JCheckBox savePlaces;
     private JCheckBox improvedPcomp;
 
-    public PcompDialog(Window owner) {
-        super(owner, "Parallel composition", ModalityType.DOCUMENT_MODAL);
+    public NwayDialog(Window owner) {
+        super(owner, "N-way conformation", ModalityType.DOCUMENT_MODAL);
         final JPanel content = createContents();
         setContentPane(content);
         setMinimumSize(new Dimension(500, 300));
@@ -62,10 +59,6 @@ public class PcompDialog extends JDialog {
 
     public boolean isSharedOutputsChecked() {
         return sharedOutputs.isSelected();
-    }
-
-    public boolean isSavePlacesChecked() {
-        return savePlaces.isSelected();
     }
 
     public boolean isImprovedPcompChecked() {
@@ -128,7 +121,6 @@ public class PcompDialog extends JDialog {
         outputOptions.add(dummify);
 
         sharedOutputs = new JCheckBox("Allow the STGs to share outputs");
-        savePlaces = new JCheckBox("Save the lists of places in " + ParallelCompositionCommand.PLACES_FILE_NAME);
         improvedPcomp = new JCheckBox("No computational interference");
 
         JPanel options = new JPanel();
@@ -137,8 +129,7 @@ public class PcompDialog extends JDialog {
         options.add(showInEditor, 0);
         options.add(outputOptions, 1);
         options.add(sharedOutputs, 2);
-        options.add(savePlaces, 3);
-        options.add(improvedPcomp, 4);
+        options.add(improvedPcomp, 3);
 
         content.add(options, "1 0");
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
