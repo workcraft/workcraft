@@ -7,18 +7,12 @@ public class PetrifyTechnologyMappingSynthesisCommand extends PetrifyAbstractSyn
 
     @Override
     public String[] getSynthesisParameter() {
-        String[] result;
         String gateLibrary = ToolUtils.getAbsoluteCommandPath(CircuitSettings.getGateLibrary());
         if ((gateLibrary == null) || gateLibrary.isEmpty()) {
-            result = new String[1];
-            result[0] = "-tm";
+            return new String[] {"-tm"};
         } else {
-            result = new String[3];
-            result[0] = "-tm";
-            result[1] = "-lib";
-            result[2] = gateLibrary;
+            return new String[] {"-tm", "-lib", gateLibrary};
         }
-        return result;
     }
 
     @Override

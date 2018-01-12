@@ -4,9 +4,7 @@ public class PetrifyGeneralisedCelementSynthesisCommand extends PetrifyAbstractS
 
     @Override
     public String[] getSynthesisParameter() {
-        String[] result = new String[1];
-        result[0] = "-gc";
-        return result;
+        return new String[] {"-gc"};
     }
 
     @Override

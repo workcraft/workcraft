@@ -7,12 +7,16 @@ public class PetrifySynthesisResult {
     private final String stdout;
     private final String stderr;
 
-    public PetrifySynthesisResult(String equations, String verilog, String log, String stdout, String stderr) {
+    public PetrifySynthesisResult(String log, String equations, String verilog, String stdout, String stderr) {
+        this.log = log;
         this.equations = equations;
         this.verilog = verilog;
-        this.log = log;
         this.stdout = stdout;
         this.stderr = stderr;
+    }
+
+    public String getLog() {
+        return this.log;
     }
 
     public String getEquation() {
@@ -21,10 +25,6 @@ public class PetrifySynthesisResult {
 
     public String getVerilog() {
         return this.verilog;
-    }
-
-    public String getLog() {
-        return this.log;
     }
 
     public String getStdout() {

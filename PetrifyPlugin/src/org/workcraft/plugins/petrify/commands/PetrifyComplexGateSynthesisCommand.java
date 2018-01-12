@@ -4,9 +4,7 @@ public class PetrifyComplexGateSynthesisCommand extends PetrifyAbstractSynthesis
 
     @Override
     public String[] getSynthesisParameter() {
-        String[] result = new String[1];
-        result[0] = "-cg";
-        return result;
+        return new String[] {"-cg"};
     }
 
     @Override
