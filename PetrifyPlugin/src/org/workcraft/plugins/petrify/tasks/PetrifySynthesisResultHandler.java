@@ -22,6 +22,11 @@ import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.plugins.stg.Mutex;
+import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.StgDescriptor;
+import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.StgUtils;
+import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.tasks.AbstractExtendedResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -29,6 +34,7 @@ import org.workcraft.util.DialogUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler<PetrifySynthesisResult, WorkspaceEntry> {
 
@@ -55,36 +61,33 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
     @Override
     public WorkspaceEntry handleResult(final Result<? extends PetrifySynthesisResult> result) {
         WorkspaceEntry weResult = null;
+        PetrifySynthesisResult petrifyResult = result.getReturnValue();
         if (result.getOutcome() == Outcome.SUCCESS) {
-            weResult = handleSuccess(result);
+            weResult = handleSuccess(petrifyResult);
         } else if (result.getOutcome() == Outcome.FAILURE) {
-            handleFailure(result);
+            handleFailure(petrifyResult);
         }
         return weResult;
     }
 
-    private WorkspaceEntry handleSuccess(final Result<? extends PetrifySynthesisResult> result) {
-        WorkspaceEntry synthResult = null;
-
-        final String log = result.getReturnValue().getLog();
+    private WorkspaceEntry handleSuccess(PetrifySynthesisResult petrifyResult) {
+        String log = petrifyResult.getLog();
         if ((log != null) && !log.isEmpty()) {
             LogUtils.logInfo("Petrify synthesis log:");
             System.out.println(log);
         }
 
-        final String equations = result.getReturnValue().getEquation();
+        handleStgSynthesisResult(petrifyResult);
+
+        String equations = petrifyResult.getEquation();
         if ((equations != null) && !equations.isEmpty()) {
             LogUtils.logInfo("Petrify synthesis result in EQN format:");
             System.out.println(equations);
         }
 
-        final String verilog = result.getReturnValue().getVerilog();
-        if ((verilog != null) && !verilog.isEmpty()) {
-            LogUtils.logInfo("Petrify synthesis result in Verilog format:");
-            System.out.println(verilog);
-        }
+        WorkspaceEntry result = handleVerilogSynthesisResult(petrifyResult);
 
-        String errorMessage = new String(result.getReturnValue().getStderr());
+        String errorMessage = new String(petrifyResult.getStderr());
         String signalNames = "";
         Matcher matcher = patternAddingStateSignal.matcher(errorMessage);
         while (matcher.find()) {
@@ -97,20 +100,54 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
             LogUtils.logWarning("Petrify automatically resolved CSC conflicts by inserting new signals: " + signalNames);
         }
 
-        if (PetrifySettings.getOpenSynthesisResult() && (verilog != null) && !verilog.isEmpty()) {
+        return result;
+    }
+
+    private WorkspaceEntry handleStgSynthesisResult(PetrifySynthesisResult petrifyResult) {
+        WorkspaceEntry dstWe = null;
+        String dstOutput = petrifyResult.getStg();
+        if (PetrifySettings.getOpenSynthesisStg() && (dstOutput != null) && !dstOutput.isEmpty()) {
+            Stg srcStg = WorkspaceUtils.getAs(we, Stg.class);
             try {
-                final ByteArrayInputStream in = new ByteArrayInputStream(verilog.getBytes());
-                final VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
-                final Circuit circuit = verilogImporter.importCircuit(in, mutexes);
-                final Path<String> path = we.getWorkspacePath();
-                final ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
-                final Framework framework = Framework.getInstance();
-                synthResult = framework.createWork(me, path);
-                final VisualModel visualModel = synthResult.getModelEntry().getVisualModel();
+                ByteArrayInputStream dstStream = new ByteArrayInputStream(dstOutput.getBytes());
+                StgModel dstStg = new StgImporter().importStg(dstStream);
+                if (StgUtils.isSameSignals(srcStg, dstStg)) {
+                    LogUtils.logInfo("No new signals are inserted in the STG");
+                } else {
+                    LogUtils.logInfo("New signals are inserted in the STG");
+                    ModelEntry dstMe = new ModelEntry(new StgDescriptor(), dstStg);
+                    Path<String> path = we.getWorkspacePath();
+                    dstWe = Framework.getInstance().createWork(dstMe, path);
+                }
+            } catch (final DeserialisationException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return dstWe;
+    }
+
+    private WorkspaceEntry handleVerilogSynthesisResult(PetrifySynthesisResult petrifyResult) {
+        WorkspaceEntry dstWe = null;
+        String verilogOutput = petrifyResult.getVerilog();
+        if ((verilogOutput != null) && !verilogOutput.isEmpty()) {
+            LogUtils.logInfo("Petrify synthesis result in Verilog format:");
+            System.out.println(verilogOutput);
+        }
+
+        if (PetrifySettings.getOpenSynthesisResult() && (verilogOutput != null) && !verilogOutput.isEmpty()) {
+            try {
+                ByteArrayInputStream verilogStream = new ByteArrayInputStream(verilogOutput.getBytes());
+                VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
+                Circuit circuit = verilogImporter.importCircuit(verilogStream, mutexes);
+                Path<String> path = we.getWorkspacePath();
+                ModelEntry dstMe = new ModelEntry(new CircuitDescriptor(), circuit);
+                dstWe = Framework.getInstance().createWork(dstMe, path);
+
+                VisualModel visualModel = dstWe.getModelEntry().getVisualModel();
                 if (visualModel instanceof VisualCircuit) {
                     final VisualCircuit visualCircuit = (VisualCircuit) visualModel;
                     setComponentsRenderStyle(visualCircuit);
-                    final String title = we.getModelEntry().getModel().getTitle();
+                    String title = we.getModelEntry().getModel().getTitle();
                     visualCircuit.setTitle(title);
                     if (!we.getFile().exists()) {
                         DialogUtils.showError("Unsaved STG cannot be set as the circuit environment.");
@@ -123,7 +160,7 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            final MainWindow mainWindow = framework.getMainWindow();
+                            MainWindow mainWindow = Framework.getInstance().getMainWindow();
                             if (mainWindow != null) {
                                 mainWindow.getCurrentEditor().updatePropertyView();
                             }
@@ -134,7 +171,7 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
                 throw new RuntimeException(e);
             }
         }
-        return synthResult;
+        return dstWe;
     }
 
     private void setComponentsRenderStyle(final VisualCircuit visualCircuit) {
@@ -163,11 +200,10 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
         }
     }
 
-    private void handleFailure(final Result<? extends PetrifySynthesisResult> result) {
+    private void handleFailure(PetrifySynthesisResult petrifyResult) {
         String errorMessage = "Error: Petrify synthesis failed.";
-        final PetrifySynthesisResult returnValue = result.getReturnValue();
-        if (returnValue != null) {
-            errorMessage += ERROR_CAUSE_PREFIX + returnValue.getStderr();
+        if (petrifyResult != null) {
+            errorMessage += ERROR_CAUSE_PREFIX + petrifyResult.getStderr();
         }
         DialogUtils.showError(errorMessage);
     }

@@ -99,6 +99,10 @@ public class SizeHelper {
         return (int) Math.round(0.5 * getBaseSize());
     }
 
+    public static int getBorderThickness() {
+        return (int) Math.round(0.15 * getBaseSize());
+    }
+
     public static int getMonospacedFontSize() {
         return (int) Math.round(0.9 * getBaseSize());
     }

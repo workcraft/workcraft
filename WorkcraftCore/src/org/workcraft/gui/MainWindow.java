@@ -126,6 +126,7 @@ public class MainWindow extends JFrame {
     private static final String DIALOG_RESET_LAYOUT = "Reset layout";
 
     private final ScriptedActionListener defaultActionListener = new ScriptedActionListener() {
+        @Override
         public void actionPerformed(Action action) {
             action.run();
         }

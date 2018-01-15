@@ -31,6 +31,7 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
 
     public static final String EQN_FILE_NAME = "mpsat.eqn";
     public static final String VERILOG_FILE_NAME = "mpsat.v";
+    public static final String STG_FILE_NAME = "mpsat.g";
 
     private final String[] args;
     private final String inputFileName;
@@ -129,6 +130,10 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
                     File outFile = new File(directory, outputFileName);
                     if (outFile.exists()) {
                         fileContentMap.put(outputFileName, FileUtils.readAllBytes(outFile));
+                    }
+                    File stgFile = new File(directory, STG_FILE_NAME);
+                    if (stgFile.exists()) {
+                        fileContentMap.put(STG_FILE_NAME, FileUtils.readAllBytes(stgFile));
                     }
                 } catch (IOException e) {
                     return new Result<ExternalProcessResult>(e);

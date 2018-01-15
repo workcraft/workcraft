@@ -20,11 +20,12 @@ import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petrify.PetrifySettings;
+import org.workcraft.plugins.petrify.PetrifyUtils;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.plugins.stg.interop.StgFormat;
+import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -82,11 +83,16 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationResu
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         try {
-            File logFile = new File(directory, "petrify.log");
-            command.add("-log");
-            command.add(logFile.getAbsolutePath());
+            File logFile = null;
+            if (!PetrifySettings.getWriteLog()) {
+                command.add("-nolog");
+            } else {
+                logFile = new File(directory, PetrifyUtils.LOG_FILE_NAME);
+                command.add("-log");
+                command.add(logFile.getAbsolutePath());
+            }
 
-            File outFile = new File(directory, "result.g");
+            File outFile = new File(directory, PetrifyUtils.STG_FILE_NAME);
             command.add("-o");
             command.add(outFile.getAbsolutePath());
 
@@ -126,7 +132,7 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationResu
                     String out = FileUtils.readAllText(outFile);
                     ByteArrayInputStream outStream = new ByteArrayInputStream(out.getBytes());
                     try {
-                        outStg = new StgImporter().importSTG(outStream);
+                        outStg = new StgImporter().importStg(outStream);
                     } catch (DeserialisationException e) {
                         return Result.exception(e);
                     }

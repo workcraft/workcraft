@@ -58,7 +58,7 @@ public class StgImporterTests {
     public void test2() throws Throwable {
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
         final InputStream test = classLoader.getResourceAsStream("org/workcraft/plugins/stg/interop/test2.g");
-        StgModel imported = new StgImporter().importSTG(test);
+        StgModel imported = new StgImporter().importStg(test);
         Assert.assertEquals(17, imported.getTransitions().size());
         Assert.assertEquals(0, imported.getDummyTransitions().size());
 

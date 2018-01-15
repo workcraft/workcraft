@@ -18,6 +18,7 @@ public class MpsatSynthesisSettings implements Settings {
     private static final String keyPrintStdout = prefix + ".printStdout";
     private static final String keyPrintStderr = prefix + ".printStderr";
     private static final String keyOpenSynthesisResult = prefix + ".openSynthesisResult";
+    private static final String keyOpenSynthesisStg = prefix + ".openSynthesisStg";
 
     private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\UnfoldingTools\\mpsat.exe" : "tools/UnfoldingTools/mpsat";
     private static final String defaultArgs = "";
@@ -25,6 +26,7 @@ public class MpsatSynthesisSettings implements Settings {
     private static final Boolean defaultPrintStdout = true;
     private static final Boolean defaultPrintStderr = true;
     private static final boolean defaultOpenSynthesisResult = true;
+    private static final boolean defaultOpenSynthesisStg = false;
 
     private static String command = defaultCommand;
     private static String args = defaultArgs;
@@ -32,6 +34,7 @@ public class MpsatSynthesisSettings implements Settings {
     private static Boolean printStdout = defaultPrintStdout;
     private static Boolean printStderr = defaultPrintStderr;
     private static boolean openSynthesisResult = defaultOpenSynthesisResult;
+    private static boolean openSynthesisStg = defaultOpenSynthesisStg;
 
     public MpsatSynthesisSettings() {
         properties.add(new PropertyDeclaration<MpsatSynthesisSettings, String>(
@@ -94,6 +97,16 @@ public class MpsatSynthesisSettings implements Settings {
                 return getOpenSynthesisResult();
             }
         });
+
+        properties.add(new PropertyDeclaration<MpsatSynthesisSettings, Boolean>(
+                this, "Open pre-synthesis STG if new signals are inserted", Boolean.class, true, false, false) {
+            protected void setter(MpsatSynthesisSettings object, Boolean value) {
+                setOpenSynthesisStg(value);
+            }
+            protected Boolean getter(MpsatSynthesisSettings object) {
+                return getOpenSynthesisStg();
+            }
+        });
     }
 
     @Override
@@ -109,6 +122,7 @@ public class MpsatSynthesisSettings implements Settings {
         setPrintStdout(config.getBoolean(keyPrintStdout, defaultPrintStdout));
         setPrintStderr(config.getBoolean(keyPrintStderr, defaultPrintStderr));
         setOpenSynthesisResult(config.getBoolean(keyOpenSynthesisResult, defaultOpenSynthesisResult));
+        setOpenSynthesisStg(config.getBoolean(keyOpenSynthesisStg, defaultOpenSynthesisStg));
     }
 
     @Override
@@ -119,6 +133,7 @@ public class MpsatSynthesisSettings implements Settings {
         config.setBoolean(keyPrintStdout, getPrintStdout());
         config.setBoolean(keyPrintStderr, getPrintStderr());
         config.setBoolean(keyOpenSynthesisResult, getOpenSynthesisResult());
+        config.setBoolean(keyOpenSynthesisStg, getOpenSynthesisStg());
     }
 
     @Override
@@ -177,6 +192,14 @@ public class MpsatSynthesisSettings implements Settings {
 
     public static void setOpenSynthesisResult(boolean value) {
         openSynthesisResult = value;
+    }
+
+    public static boolean getOpenSynthesisStg() {
+        return openSynthesisStg;
+    }
+
+    public static void setOpenSynthesisStg(boolean value) {
+        openSynthesisStg = value;
     }
 
 }

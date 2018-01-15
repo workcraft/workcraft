@@ -82,16 +82,19 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
 
-        if (!PetrifySettings.getWriteStg()) {
+        File outFile = null;
+        if (!PetrifySettings.getWriteStg() && !PetrifySettings.getOpenSynthesisStg()) {
             command.add("-no");
         } else {
-            File outFile = new File(directory, PetrifyUtils.STG_FILE_NAME);
+            outFile = new File(directory, PetrifyUtils.STG_FILE_NAME);
             command.add("-o");
             command.add(outFile.getAbsolutePath());
         }
 
         File logFile = null;
-        if (PetrifySettings.getWriteLog()) {
+        if (!PetrifySettings.getWriteLog()) {
+            command.add("-nolog");
+        } else {
             logFile = new File(directory, PetrifyUtils.LOG_FILE_NAME);
             command.add("-log");
             command.add(logFile.getAbsolutePath());
@@ -139,9 +142,10 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
                 String log = getFileContent(logFile);
                 String equations = getFileContent(eqnFile);
                 String verilog = getFileContent(verilogFile);
+                String out = getFileContent(outFile);
                 String stdout = new String(res.getReturnValue().getOutput());
                 String stderr = new String(res.getReturnValue().getErrors());
-                PetrifySynthesisResult result = new PetrifySynthesisResult(log, equations, verilog, stdout, stderr);
+                PetrifySynthesisResult result = new PetrifySynthesisResult(log, equations, verilog, out, stdout, stderr);
                 if (res.getReturnValue().getReturnCode() == 0) {
                     return Result.success(result);
                 } else {

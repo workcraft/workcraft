@@ -61,7 +61,7 @@ final class MpsatReachabilityResultHandler implements Runnable {
         }
         try {
             StgImporter importer = new StgImporter();
-            return importer.importSTG(new ByteArrayInputStream(content));
+            return importer.importStg(new ByteArrayInputStream(content));
         } catch (DeserialisationException e) {
             throw new RuntimeException(e);
         }

@@ -38,7 +38,7 @@ public class MpsatCscConflictResolutionResultHandler implements Runnable {
             return null;
         }
         try {
-            return new StgImporter().importSTG(new ByteArrayInputStream(content));
+            return new StgImporter().importStg(new ByteArrayInputStream(content));
         } catch (final DeserialisationException e) {
             throw new RuntimeException(e);
         }

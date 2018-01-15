@@ -2,6 +2,7 @@ package org.workcraft.plugins.stg;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Set;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.Container;
@@ -165,6 +166,18 @@ public class StgUtils {
         for (SignalTransition transition: stg.getSignalTransitions(Type.INTERNAL)) {
             StgUtils.convertSignalToDummyTransition(stg, transition);
         }
+    }
+
+    public static boolean isSameSignals(StgModel srcStg, StgModel dstStg) {
+        Set<String> srcInputs = srcStg.getSignalReferences(Type.INPUT);
+        Set<String> srcOutputs = srcStg.getSignalReferences(Type.OUTPUT);
+        Set<String> srcInternal = srcStg.getSignalReferences(Type.INTERNAL);
+
+        Set<String> dstInputs = dstStg.getSignalReferences(Type.INPUT);
+        Set<String> dstOutputs = dstStg.getSignalReferences(Type.OUTPUT);
+        Set<String> dstInternal = dstStg.getSignalReferences(Type.INTERNAL);
+
+        return srcInputs.equals(dstInputs) && srcOutputs.equals(dstOutputs) && srcInternal.equals(dstInternal);
     }
 
 }
