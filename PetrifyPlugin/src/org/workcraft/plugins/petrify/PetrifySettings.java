@@ -16,6 +16,9 @@ public class PetrifySettings implements Settings {
     private static final String keyCommand = prefix + ".command";
     private static final String keyArgs = prefix + ".args";
     private static final String keyAdvancedMode = prefix + ".advancedMode";
+    private static final String keyWriteLog = prefix + ".writeLog";
+    private static final String keyWriteStg = prefix + ".writeStg";
+    private static final String keyWriteEqn = prefix + ".writeEqn";
     private static final String keyPrintStdout = prefix + ".printStdout";
     private static final String keyPrintStderr = prefix + ".printStderr";
     private static final String keyOpenSynthesisResult = prefix + ".openSynthesisResult";
@@ -23,6 +26,9 @@ public class PetrifySettings implements Settings {
     private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\PetrifyTools\\petrify.exe" : "tools/PetrifyTools/petrify";
     private static final String defaultArgs = "";
     private static final Boolean defaultAdvancedMode = false;
+    private static final Boolean defaultWriteLog = true;
+    private static final Boolean defaultWriteStg = false;
+    private static final Boolean defaultWriteEqn = false;
     private static final Boolean defaultPrintStdout = true;
     private static final Boolean defaultPrintStderr = true;
     private static final boolean defaultOpenSynthesisResult = true;
@@ -30,6 +36,9 @@ public class PetrifySettings implements Settings {
     private static String command = defaultCommand;
     private static String args = defaultArgs;
     private static Boolean advancedMode = defaultAdvancedMode;
+    private static Boolean writeLog = defaultWriteLog;
+    private static Boolean writeStg = defaultWriteStg;
+    private static Boolean writeEqn = defaultWriteEqn;
     private static Boolean printStdout = defaultPrintStdout;
     private static Boolean printStderr = defaultPrintStderr;
     private static boolean openSynthesisResult = defaultOpenSynthesisResult;
@@ -62,6 +71,36 @@ public class PetrifySettings implements Settings {
             }
             protected Boolean getter(PetrifySettings object) {
                 return getAdvancedMode();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<PetrifySettings, Boolean>(
+                this, "Write log file (" + PetrifyUtils.LOG_FILE_NAME + ")", Boolean.class, true, false, false) {
+            protected void setter(PetrifySettings object, Boolean value) {
+                setWriteLog(value);
+            }
+            protected Boolean getter(PetrifySettings object) {
+                return getWriteLog();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<PetrifySettings, Boolean>(
+                this, "Write STG file (" + PetrifyUtils.STG_FILE_NAME + ")", Boolean.class, true, false, false) {
+            protected void setter(PetrifySettings object, Boolean value) {
+                setWriteStg(value);
+            }
+            protected Boolean getter(PetrifySettings object) {
+                return getWriteStg();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<PetrifySettings, Boolean>(
+                this, "Write EQN file (" + PetrifyUtils.EQN_FILE_NAME + ")", Boolean.class, true, false, false) {
+            protected void setter(PetrifySettings object, Boolean value) {
+                setWriteEqn(value);
+            }
+            protected Boolean getter(PetrifySettings object) {
+                return getWriteEqn();
             }
         });
 
@@ -106,6 +145,9 @@ public class PetrifySettings implements Settings {
         setCommand(config.getString(keyCommand, defaultCommand));
         setArgs(config.getString(keyArgs, defaultArgs));
         setAdvancedMode(config.getBoolean(keyAdvancedMode, defaultAdvancedMode));
+        setWriteLog(config.getBoolean(keyWriteLog, defaultWriteLog));
+        setWriteStg(config.getBoolean(keyWriteStg, defaultWriteStg));
+        setWriteEqn(config.getBoolean(keyWriteEqn, defaultWriteEqn));
         setPrintStdout(config.getBoolean(keyPrintStdout, defaultPrintStdout));
         setPrintStderr(config.getBoolean(keyPrintStderr, defaultPrintStderr));
         setOpenSynthesisResult(config.getBoolean(keyOpenSynthesisResult, defaultOpenSynthesisResult));
@@ -116,6 +158,9 @@ public class PetrifySettings implements Settings {
         config.set(keyCommand, getCommand());
         config.set(keyArgs, getArgs());
         config.setBoolean(keyAdvancedMode, getAdvancedMode());
+        config.setBoolean(keyWriteLog, getWriteLog());
+        config.setBoolean(keyWriteStg, getWriteStg());
+        config.setBoolean(keyWriteEqn, getWriteEqn());
         config.setBoolean(keyPrintStdout, getPrintStdout());
         config.setBoolean(keyPrintStderr, getPrintStderr());
         config.setBoolean(keyOpenSynthesisResult, getOpenSynthesisResult());
@@ -153,6 +198,30 @@ public class PetrifySettings implements Settings {
 
     public static void setAdvancedMode(Boolean value) {
         advancedMode = value;
+    }
+
+    public static Boolean getWriteLog() {
+        return writeLog;
+    }
+
+    public static void setWriteLog(Boolean value) {
+        writeLog = value;
+    }
+
+    public static Boolean getWriteStg() {
+        return writeStg;
+    }
+
+    public static void setWriteStg(Boolean value) {
+        writeStg = value;
+    }
+
+    public static Boolean getWriteEqn() {
+        return writeEqn;
+    }
+
+    public static void setWriteEqn(Boolean value) {
+        writeEqn = value;
     }
 
     public static Boolean getPrintStdout() {

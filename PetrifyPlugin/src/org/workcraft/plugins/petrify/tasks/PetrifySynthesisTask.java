@@ -14,6 +14,7 @@ import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petrify.PetrifySettings;
+import org.workcraft.plugins.petrify.PetrifyUtils;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.plugins.stg.Mutex;
@@ -41,13 +42,6 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
     private final String[] args;
     private final Collection<Mutex> mutexes;
 
-    /**
-     * @param args - arguments corresponding to type of logic synthesis
-     * @param inputFile - specification (STG)
-     * @param equationsFile - equation Output in EQN format (not BLIF format)
-     * @param libraryFile - could be null
-     * @param logFile - could be null
-     */
     public PetrifySynthesisTask(WorkspaceEntry we, String[] args, Collection<Mutex> mutexes) {
         this.we = we;
         this.args = args;
@@ -83,29 +77,36 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
         }
 
         // Petrify uses the full name of the file as the name of the Verilog module (with _net suffix).
-        // As there may be non-alpha-numerical symbols in the model title, it is better not to include it to the directory name.
+        // As there may be non-alpha-numerical symbols in the model title, it needs to be preprocessed
+        // before using it in the directory name.
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
 
-        File outFile = new File(directory, "result.g");
-        command.add("-o");
-        command.add(outFile.getAbsolutePath());
+        if (!PetrifySettings.getWriteStg()) {
+            command.add("-no");
+        } else {
+            File outFile = new File(directory, PetrifyUtils.STG_FILE_NAME);
+            command.add("-o");
+            command.add(outFile.getAbsolutePath());
+        }
 
-        File equationsFile = new File(directory, "petrify.eqn");
-        command.add("-eqn");
-        command.add(equationsFile.getAbsolutePath());
+        File logFile = null;
+        if (PetrifySettings.getWriteLog()) {
+            logFile = new File(directory, PetrifyUtils.LOG_FILE_NAME);
+            command.add("-log");
+            command.add(logFile.getAbsolutePath());
+        }
 
-        File verilogFile = new File(directory, "petrify.v");
+        File eqnFile = null;
+        if (PetrifySettings.getWriteEqn()) {
+            eqnFile = new File(directory, PetrifyUtils.EQN_FILE_NAME);
+            command.add("-eqn");
+            command.add(eqnFile.getAbsolutePath());
+        }
+
+        File verilogFile = new File(directory, PetrifyUtils.VERILOG_FILE_NAME);
         command.add("-vl");
         command.add(verilogFile.getAbsolutePath());
-
-        File blifFile = new File(directory, "petrify.blif");
-        command.add("-blif");
-        command.add(blifFile.getAbsolutePath());
-
-        File logFile = new File(directory, "petrify.log");
-        command.add("-log");
-        command.add(logFile.getAbsolutePath());
 
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
 
@@ -135,12 +136,12 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
         Result<? extends ExternalProcessResult> res = task.run(mon);
         try {
             if (res.getOutcome() == Outcome.SUCCESS) {
-                String equations = equationsFile.exists() ? FileUtils.readAllText(equationsFile) : "";
-                String verilog = verilogFile.exists() ? FileUtils.readAllText(verilogFile) : "";
-                String log = logFile.exists() ? FileUtils.readAllText(logFile) : "";
+                String log = getFileContent(logFile);
+                String equations = getFileContent(eqnFile);
+                String verilog = getFileContent(verilogFile);
                 String stdout = new String(res.getReturnValue().getOutput());
                 String stderr = new String(res.getReturnValue().getErrors());
-                PetrifySynthesisResult result = new PetrifySynthesisResult(equations, verilog, log, stdout, stderr);
+                PetrifySynthesisResult result = new PetrifySynthesisResult(log, equations, verilog, stdout, stderr);
                 if (res.getReturnValue().getReturnCode() == 0) {
                     return Result.success(result);
                 } else {
@@ -157,6 +158,10 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
             FileUtils.deleteOnExitRecursively(directory);
             we.cancelMemento();
         }
+    }
+
+    private String getFileContent(File file) throws IOException {
+        return (file != null) && file.exists() ? FileUtils.readAllText(file) : "";
     }
 
     private File getInputFile(Stg stg, File directory) {
