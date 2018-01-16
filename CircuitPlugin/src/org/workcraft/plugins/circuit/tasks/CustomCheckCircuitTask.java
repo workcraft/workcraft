@@ -13,7 +13,6 @@ import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
-import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.SignalTransition.Type;
@@ -68,7 +67,7 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
             }
 
             // Write device STG into a .g file
-            String devStgName = (envStg != null ? StgUtils.DEVICE_FILE_NAME : StgUtils.SYSTEM_FILE_NAME) + stgFileExtension;
+            String devStgName = (envStg != null ? StgUtils.DEVICE_FILE_PREFIX : StgUtils.SYSTEM_FILE_PREFIX) + stgFileExtension;
             File devStgFile = new File(directory, devStgName);
             Result<? extends Object> devExportResult = CircuitStgUtils.exportStg(devStg, devStgFile, directory, monitor);
             if (devExportResult.getOutcome() != Outcome.SUCCESS) {
@@ -87,7 +86,7 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
             if (envStg == null) {
                 sysStgFile = devStgFile;
             } else {
-                File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + stgFileExtension);
+                File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + stgFileExtension);
                 Result<? extends Object> envExportResult = CircuitStgUtils.exportStg(envStg, envStgFile, directory, monitor);
                 if (envExportResult.getOutcome() != Outcome.SUCCESS) {
                     if (envExportResult.getOutcome() == Outcome.CANCEL) {
@@ -98,7 +97,7 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
                 }
 
                 // Generating .g for the whole system (circuit and environment)
-                sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + stgFileExtension);
+                sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
                 placesFile = new File(directory, StgUtils.PLACES_FILE_NAME);
                 pcompResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envStgFile, sysStgFile, placesFile, directory, monitor);
                 if (pcompResult.getOutcome() != Outcome.SUCCESS) {
@@ -112,7 +111,7 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
             monitor.progressUpdate(0.20);
 
             // Generate unfolding (only if needed)
-            File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + PunfSettings.getUnfoldingExtension(true));
+            File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + PunfTask.PNML_FILE_EXTENSION);
             PunfTask punfTask = new PunfTask(sysStgFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
             SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<>(monitor);
             Result<? extends ExternalProcessResult> punfResult = manager.execute(punfTask, "Unfolding .g", punfMonitor);

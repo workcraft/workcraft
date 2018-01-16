@@ -18,7 +18,6 @@ import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
-import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.SignalTransition.Type;
@@ -92,7 +91,7 @@ public class MpsatNwayConformationTask implements Task<MpsatChainResult> {
 
             // Generating .g for the whole system (model and environment)
             File placesFile = new File(directory, StgUtils.PLACES_FILE_NAME);
-            File stgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + stgFileExtension);
+            File stgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
             stgFile.deleteOnExit();
             PcompTask pcompTask = new PcompTask(stgFiles.toArray(new File[0]), stgFile, placesFile,
                     ConversionMode.OUTPUT, false, false, directory);
@@ -110,7 +109,7 @@ public class MpsatNwayConformationTask implements Task<MpsatChainResult> {
             monitor.progressUpdate(0.50);
 
             // Generate unfolding
-            File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + PunfSettings.getUnfoldingExtension(true));
+            File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + PunfTask.PNML_FILE_EXTENSION);
             PunfTask punfTask = new PunfTask(stgFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
             Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
                     punfTask, "Unfolding .g", subtaskMonitor);
@@ -130,7 +129,7 @@ public class MpsatNwayConformationTask implements Task<MpsatChainResult> {
 
             MpsatParameters conformationSettings = MpsatParameters.getNwayConformationSettings(allPlaceSets, allOutputSets);
             MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
-                    unfoldingFile, directory, true, stgFile, placesFile);
+                    unfoldingFile, directory, stgFile, placesFile);
             Result<? extends ExternalProcessResult>  mpsatConformationResult = framework.getTaskManager().execute(
                     mpsatConformationTask, "Running conformation check [MPSat]", subtaskMonitor);
 

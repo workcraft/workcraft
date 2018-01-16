@@ -19,7 +19,6 @@ import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
-import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.Stg;
@@ -62,7 +61,7 @@ public class CheckStrictImplementationTask extends MpsatChainTask {
             StgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
 
             // Write environment STG into a .g file
-            File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + stgFileExtension);
+            File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + stgFileExtension);
             Result<? extends Object> envExportResult = CircuitStgUtils.exportStg(envStg, envStgFile, directory, monitor);
             if (envExportResult.getOutcome() != Outcome.SUCCESS) {
                 if (envExportResult.getOutcome() == Outcome.CANCEL) {
@@ -76,7 +75,7 @@ public class CheckStrictImplementationTask extends MpsatChainTask {
             // Generate unfolding
             Result<? extends ExternalProcessResult> punfResult = null;
             final TaskManager taskManager = framework.getTaskManager();
-            File unfoldingFile = new File(directory, StgUtils.ENVIRONMENT_FILE_NAME + PunfSettings.getUnfoldingExtension(true));
+            File unfoldingFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + PunfTask.PNML_FILE_EXTENSION);
             PunfTask punfTask = new PunfTask(envStgFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
             SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<>(monitor);
             punfResult = taskManager.execute(punfTask, "Unfolding .g", punfMonitor);
@@ -105,7 +104,7 @@ public class CheckStrictImplementationTask extends MpsatChainTask {
             }
             MpsatParameters mpsatSettings = MpsatParameters.getStrictImplementationReachSettings(signalInfos);
             MpsatTask mpsatTask = new MpsatTask(mpsatSettings.getMpsatArguments(directory),
-                    unfoldingFile, directory, true, envStgFile);
+                    unfoldingFile, directory, envStgFile);
             SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
             Result<? extends ExternalProcessResult>  mpsatResult = taskManager.execute(
                     mpsatTask, "Running strict implementation check [MPSat]", mpsatMonitor);

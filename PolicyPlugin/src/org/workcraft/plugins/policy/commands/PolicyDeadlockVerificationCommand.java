@@ -2,9 +2,9 @@ package org.workcraft.plugins.policy.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
-import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.MpsatUtils;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
+import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
 import org.workcraft.plugins.policy.PolicyNet;
 import org.workcraft.plugins.policy.tasks.CheckDeadlockTask;
 import org.workcraft.tasks.Result;

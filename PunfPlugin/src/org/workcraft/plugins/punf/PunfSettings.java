@@ -17,19 +17,19 @@ public class PunfSettings implements Settings {
     private static final String keyArgs = prefix + ".args";
     private static final String keyPrintStdout = prefix + ".printStdout";
     private static final String keyPrintStderr = prefix + ".printStderr";
-    private static final String keyUsePnmlUnfolding = prefix + ".usePnmlUnfolding";
+    private static final String keyUseMciCsc = prefix + ".useMciCsc";
 
     private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\UnfoldingTools\\punf.exe" : "tools/UnfoldingTools/punf";
     private static final String defaultArgs = "-r";
     private static final Boolean defaultPrintStdout = true;
     private static final Boolean defaultPrintStderr = true;
-    private static final Boolean defaultUsePnmlUnfolding = true;
+    private static final Boolean defaultUseMciCsc = true;
 
     private static String command = defaultCommand;
     private static String args = defaultArgs;
     private static Boolean printStdout = defaultPrintStdout;
     private static Boolean printStderr = defaultPrintStderr;
-    private static Boolean usePnmlUnfolding = defaultUsePnmlUnfolding;
+    private static Boolean useMciCsc = defaultUseMciCsc;
 
     public PunfSettings() {
         properties.add(new PropertyDeclaration<PunfSettings, String>(
@@ -73,12 +73,12 @@ public class PunfSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<PunfSettings, Boolean>(
-                this, "Use PNML-based unfolding (where possible)", Boolean.class, true, false, false) {
+                this, "Use legacy MCI unfolding for CSC conflict resolution", Boolean.class, true, false, false) {
             protected void setter(PunfSettings object, Boolean value) {
-                setUsePnmlUnfolding(value);
+                setUseMciCsc(value);
             }
             protected Boolean getter(PunfSettings object) {
-                return getUsePnmlUnfolding();
+                return getUseMciCsc();
             }
         });
     }
@@ -92,7 +92,7 @@ public class PunfSettings implements Settings {
     public void load(Config config) {
         setCommand(config.getString(keyCommand, defaultCommand));
         setArgs(config.getString(keyArgs, defaultArgs));
-        setUsePnmlUnfolding(config.getBoolean(keyUsePnmlUnfolding, defaultUsePnmlUnfolding));
+        setUseMciCsc(config.getBoolean(keyUseMciCsc, defaultUseMciCsc));
         setPrintStdout(config.getBoolean(keyPrintStdout, defaultPrintStdout));
         setPrintStderr(config.getBoolean(keyPrintStderr, defaultPrintStderr));
     }
@@ -103,7 +103,7 @@ public class PunfSettings implements Settings {
         config.set(keyArgs, getArgs());
         config.setBoolean(keyPrintStdout, getPrintStdout());
         config.setBoolean(keyPrintStderr, getPrintStderr());
-        config.setBoolean(keyUsePnmlUnfolding, getUsePnmlUnfolding());
+        config.setBoolean(keyUseMciCsc, getUseMciCsc());
     }
 
     @Override
@@ -148,20 +148,12 @@ public class PunfSettings implements Settings {
         printStderr = value;
     }
 
-    public static Boolean getUsePnmlUnfolding() {
-        return usePnmlUnfolding;
+    public static Boolean getUseMciCsc() {
+        return useMciCsc;
     }
 
-    public static void setUsePnmlUnfolding(Boolean value) {
-        usePnmlUnfolding = value;
-    }
-
-    public static String getUnfoldingExtension(boolean tryPnml) {
-        return tryPnml && getUsePnmlUnfolding() ? ".pnml" : ".mci";
-    }
-
-    public static String getToolSuffix(boolean tryPnml) {
-        return tryPnml && getUsePnmlUnfolding() ? "" : "-mci";
+    public static void setUseMciCsc(Boolean value) {
+        useMciCsc = value;
     }
 
 }

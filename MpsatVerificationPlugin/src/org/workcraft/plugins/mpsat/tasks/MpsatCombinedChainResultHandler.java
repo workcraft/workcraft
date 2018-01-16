@@ -1,13 +1,17 @@
-package org.workcraft.plugins.mpsat;
+package org.workcraft.plugins.mpsat.tasks;
 
 import java.util.Collection;
 import java.util.List;
 
 import javax.swing.SwingUtilities;
 
+import org.workcraft.plugins.mpsat.MpsatMode;
+import org.workcraft.plugins.mpsat.MpsatParameters;
+import org.workcraft.plugins.mpsat.MpsatResultParser;
+import org.workcraft.plugins.mpsat.MpsatSolution;
+import org.workcraft.plugins.mpsat.MpsatUtils;
+import org.workcraft.plugins.mpsat.PunfResultParser;
 import org.workcraft.plugins.mpsat.PunfResultParser.Cause;
-import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainResult;
-import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.tasks.AbstractResultHandler;

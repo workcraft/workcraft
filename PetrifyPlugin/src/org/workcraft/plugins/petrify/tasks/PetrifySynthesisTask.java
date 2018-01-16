@@ -176,7 +176,7 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
         }
 
         String gExtension = StgFormat.getInstance().getExtension();
-        File stgFile = new File(directory, StgUtils.SPEC_FILE_NAME + gExtension);
+        File stgFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + gExtension);
         ExportTask exportTask = new ExportTask(stgExporter, stg, stgFile.getAbsolutePath());
         Result<? extends Object> exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
         if (exportResult.getOutcome() != Outcome.SUCCESS) {
@@ -191,7 +191,7 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
                 setMutexRequest(stg, mutex.r2);
                 stg.setSignalType(mutex.g2.name, Type.INPUT);
             }
-            stgFile = new File(directory, StgUtils.SPEC_FILE_NAME + StgUtils.MUTEX_FILE_SUFFIX + gExtension);
+            stgFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + gExtension);
             exportTask = new ExportTask(stgExporter, stg, stgFile.getAbsolutePath());
             exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
             if (exportResult.getOutcome() != Outcome.SUCCESS) {

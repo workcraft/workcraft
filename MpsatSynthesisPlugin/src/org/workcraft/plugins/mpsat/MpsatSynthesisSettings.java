@@ -99,7 +99,7 @@ public class MpsatSynthesisSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<MpsatSynthesisSettings, Boolean>(
-                this, "Open pre-synthesis STG if new signals are inserted", Boolean.class, true, false, false) {
+                this, "Open resulting STG if new signals are inserted", Boolean.class, true, false, false) {
             protected void setter(MpsatSynthesisSettings object, Boolean value) {
                 setOpenSynthesisStg(value);
             }

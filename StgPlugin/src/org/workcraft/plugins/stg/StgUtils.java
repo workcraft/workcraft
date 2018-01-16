@@ -18,10 +18,10 @@ import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 
 public class StgUtils {
-    public static final String SPEC_FILE_NAME = "net";
-    public static final String DEVICE_FILE_NAME = "dev";
-    public static final String ENVIRONMENT_FILE_NAME = "env";
-    public static final String SYSTEM_FILE_NAME = "sys";
+    public static final String SPEC_FILE_PREFIX = "net";
+    public static final String DEVICE_FILE_PREFIX = "dev";
+    public static final String ENVIRONMENT_FILE_PREFIX = "env";
+    public static final String SYSTEM_FILE_PREFIX = "sys";
 
     public static final String MUTEX_FILE_SUFFIX = "-mutex";
     public static final String MODIFIED_FILE_SUFFIX = "-mod";

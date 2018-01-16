@@ -10,7 +10,6 @@ import java.util.regex.Pattern;
 
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.mpsat.MpsatSynthesisSettings;
-import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
@@ -29,17 +28,15 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
             "\\s*SAT/Total time:\\s+(\\d+\\.)?\\d+/(\\d+\\.)?\\d+",
             Pattern.UNIX_LINES);
 
-    public static final String EQN_FILE_NAME = "mpsat.eqn";
     public static final String VERILOG_FILE_NAME = "mpsat.v";
     public static final String STG_FILE_NAME = "mpsat.g";
 
     private final String[] args;
     private final String inputFileName;
     private final File directory;
-    private final boolean tryPnml;
     private final boolean needsGateLibrary;
 
-    public MpsatSynthesisTask(String[] args, String inputFileName, File directory, boolean tryPnml, boolean needsGateLibrary) {
+    public MpsatSynthesisTask(String[] args, String inputFileName, File directory, boolean needsGateLibrary) {
         this.args = args;
         this.inputFileName = inputFileName;
         if (directory == null) {
@@ -47,7 +44,6 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
             directory = FileUtils.createTempDirectory("mpsat-");
         }
         this.directory = directory;
-        this.tryPnml = tryPnml;
         this.needsGateLibrary = needsGateLibrary;
     }
 
@@ -56,9 +52,7 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
-        String toolPrefix = MpsatSynthesisSettings.getCommand();
-        String toolSuffix = PunfSettings.getToolSuffix(tryPnml);
-        String toolName = ToolUtils.getAbsoluteCommandWithSuffixPath(toolPrefix, toolSuffix);
+        String toolName = ToolUtils.getAbsoluteCommandPath(MpsatSynthesisSettings.getCommand());
         command.add(toolName);
 
         // Built-in arguments
@@ -66,20 +60,15 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
             command.add(arg);
         }
 
-        // Can this MPSat output Verilog?
-        boolean canOutputVerilog = tryPnml && PunfSettings.getUsePnmlUnfolding();
-
         // Technology mapping library (if needed and accepted)
-        if (canOutputVerilog && needsGateLibrary) {
-            String gateLibrary = CircuitSettings.getGateLibrary();
-            if ((gateLibrary != null) && !gateLibrary.isEmpty()) {
-                File gateLibraryFile = new File(gateLibrary);
-                if (gateLibraryFile.exists()) {
-                    command.add("-d");
-                    command.add(gateLibraryFile.getAbsolutePath());
-                } else {
-                    LogUtils.logWarning("Cannot find gate library file '" + gateLibrary + "'. Using built-in gate library of MPSat.");
-                }
+        String gateLibrary = CircuitSettings.getGateLibrary();
+        if (needsGateLibrary && (gateLibrary != null) && !gateLibrary.isEmpty()) {
+            File gateLibraryFile = new File(gateLibrary);
+            if (gateLibraryFile.exists()) {
+                command.add("-d");
+                command.add(gateLibraryFile.getAbsolutePath());
+            } else {
+                LogUtils.logWarning("Cannot find gate library file '" + gateLibrary + "'. Using built-in gate library of MPSat.");
             }
         }
 
@@ -102,10 +91,8 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
         command.add(inputFileName);
 
         // Output file
-        boolean needVerilog = canOutputVerilog && MpsatSynthesisSettings.getOpenSynthesisResult();
-        String outputFileName = needVerilog ? VERILOG_FILE_NAME : EQN_FILE_NAME;
-        File outputFile = new File(directory, outputFileName);
-        command.add(outputFile.getAbsolutePath());
+        File verilogFile = new File(directory, VERILOG_FILE_NAME);
+        command.add(verilogFile.getAbsolutePath());
 
         boolean printStdout = MpsatSynthesisSettings.getPrintStdout();
         boolean printStderr = MpsatSynthesisSettings.getPrintStderr();
@@ -127,9 +114,8 @@ public class MpsatSynthesisTask implements Task<ExternalProcessResult> {
             } else {
                 Map<String, byte[]> fileContentMap = new HashMap<>();
                 try {
-                    File outFile = new File(directory, outputFileName);
-                    if (outFile.exists()) {
-                        fileContentMap.put(outputFileName, FileUtils.readAllBytes(outFile));
+                    if (verilogFile.exists()) {
+                        fileContentMap.put(VERILOG_FILE_NAME, FileUtils.readAllBytes(verilogFile));
                     }
                     File stgFile = new File(directory, STG_FILE_NAME);
                     if (stgFile.exists()) {

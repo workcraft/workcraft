@@ -1,4 +1,4 @@
-package org.workcraft.plugins.mpsat;
+package org.workcraft.plugins.mpsat.tasks;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -10,6 +10,10 @@ import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.graph.GraphEditorPanel;
+import org.workcraft.plugins.mpsat.MpsatResultParser;
+import org.workcraft.plugins.mpsat.MpsatSettings;
+import org.workcraft.plugins.mpsat.MpsatSolution;
+import org.workcraft.plugins.mpsat.MpsatUtils;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.tools.Core;
 import org.workcraft.plugins.stg.tools.EncodingConflictAnalyserTool;
