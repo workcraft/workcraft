@@ -527,24 +527,4 @@ public class PetriNetUtils {
         }
     }
 
-    public static HashSet<Transition> getIsolatedTransitions(PetriNetModel model) {
-        HashSet<Transition> result = new HashSet<>();
-        for (Transition transition: model.getTransitions()) {
-            if (model.getConnections(transition).isEmpty()) {
-                result.add(transition);
-            }
-        }
-        return result;
-    }
-
-    public static void removeIsolatedTransitions(VisualModel visualModel) {
-        MathModel model = visualModel.getMathModel();
-        for (VisualTransition visualTransition: getVisualTransitions(visualModel)) {
-            Transition transition = visualTransition.getReferencedTransition();
-            if (model.getConnections(transition).isEmpty()) {
-                visualModel.remove(visualTransition);
-            }
-        }
-    }
-
 }
