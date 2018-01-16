@@ -314,11 +314,11 @@ public class MpsatParameters {
         return getOutputPersistencySettings(new LinkedList<Pair<String, String>>());
     }
 
-    public static MpsatParameters getOutputPersistencySettings(Collection<Pair<String, String>> exceptions) {
+    public static MpsatParameters getOutputPersistencySettings(Collection<Pair<String, String>> exceptionPairs) {
         String str = "";
-        if (exceptions != null) {
-            for (Pair<String, String> exception: exceptions) {
-                str += "{\"" + exception.getFirst() + "\", \"" + exception.getSecond() + "\"}, ";
+        if (exceptionPairs != null) {
+            for (Pair<String, String> exceptionPair: exceptionPairs) {
+                str += "{\"" + exceptionPair.getFirst() + "\", \"" + exceptionPair.getSecond() + "\"}, ";
             }
         }
         String reachOutputPersistence = REACH_OUTPUT_PERSISTENCY.replace(REACH_OUTPUT_PERSISTENCY_EXCEPTIONS, str);
@@ -627,6 +627,35 @@ public class MpsatParameters {
         return new MpsatParameters("Normalcy", MpsatMode.NORMALCY, 0,
                 MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(),
                 null, true);
+    }
+
+    private static final String REACH_PLACE_REDUNDANCY_NAMES =
+            "/* insert place names for redundancy check */"; // For example: "p1", "<a+;b->
+
+    private static final String REACH_PLACE_REDUNDANCY =
+            "// Checks whether the given set of places can be removed from the net without affecting its behaviour, in the\n" +
+            "// sense that no transition can be disabled solely because of the absence of tokens on any of these places.\n" +
+            "let\n" +
+            "    PNAMES = {" + REACH_PLACE_REDUNDANCY_NAMES + "\"\"} \\ {\"\"},\n" +
+            "    PL = gather pn in PNAMES { P pn }\n" +
+            "{\n" +
+            "    exists t in TRANSITIONS {\n" +
+            "        ~@t\n" +
+            "        &\n" +
+            "        forall p in pre t \\ PL { $p }\n" +
+            "    }\n" +
+            "}\n";
+
+    public static MpsatParameters getPlaceRedundancySettings(Collection<String> placeNames) {
+        String str = "";
+        if (placeNames != null) {
+            for (String placeName: placeNames) {
+                str += "\"" + placeName + "\", ";
+            }
+        }
+        String reachPlaceRedundancy = REACH_PLACE_REDUNDANCY.replace(REACH_PLACE_REDUNDANCY_NAMES, str);
+        return new MpsatParameters("Place redundancy", MpsatMode.REACHABILITY, 0,
+                MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(), reachPlaceRedundancy, true);
     }
 
     public static MpsatParameters getEmptyAssertionSettings() {
