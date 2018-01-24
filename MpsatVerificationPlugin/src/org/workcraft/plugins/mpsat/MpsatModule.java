@@ -18,6 +18,7 @@ import org.workcraft.plugins.mpsat.commands.MpsatInputPropernessVerificationComm
 import org.workcraft.plugins.mpsat.commands.MpsatMutexImplementabilityVerificationCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatNormalcyVerificationCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatOutputPersistencyVerificationCommand;
+import org.workcraft.plugins.mpsat.commands.MpsatPlaceRedundancyVerificationCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatPropertyVerificationCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatUscVerificationCommand;
 
@@ -54,6 +55,8 @@ public class MpsatModule implements Module {
         ScriptableCommandUtils.register(MpsatMutexImplementabilityVerificationCommand.class, "checkStgMutexImplementability",
                 "check the STG 'work' for implementability of its mutex places");
 
+        // TODO: Need a way to pass the list of places from the JavaScript wrapper
+        pm.registerClass(Command.class, MpsatPlaceRedundancyVerificationCommand.class);
         // TODO: Need a way to pass the environment file from the JavaScript wrapper
         pm.registerClass(Command.class, MpsatConformationVerificationCommand.class);
         //pm.registerClass(Command.class, MpsatNwayConformationVerificationCommand.class);

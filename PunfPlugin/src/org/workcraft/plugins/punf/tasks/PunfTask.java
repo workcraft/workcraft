@@ -12,18 +12,22 @@ import org.workcraft.tasks.Task;
 import org.workcraft.util.ToolUtils;
 
 public class PunfTask implements Task<ExternalProcessResult> {
+    public static final String PNML_FILE_EXTENSION = ".pnml";
+    public static final String MCI_FILE_EXTENSION = ".mci";
+    public static final String LEGACY_TOOL_SUFFIX = "-mci";
+
     private final String inputPath;
     private final String outputPath;
-    private final boolean tryPnml;
+    private final boolean useLegacyMci;
 
     public PunfTask(String inputPath, String outputPath) {
-        this(inputPath, outputPath, true);
+        this(inputPath, outputPath, false);
     }
 
-    public PunfTask(String inputPath, String outputPath, boolean tryPnml) {
+    public PunfTask(String inputPath, String outputPath, boolean useLegacyMci) {
         this.inputPath = inputPath;
         this.outputPath = outputPath;
-        this.tryPnml = tryPnml;
+        this.useLegacyMci = useLegacyMci;
     }
 
     @Override
@@ -32,7 +36,7 @@ public class PunfTask implements Task<ExternalProcessResult> {
 
         // Name of the executable
         String toolPrefix = PunfSettings.getCommand();
-        String toolSuffix = PunfSettings.getToolSuffix(tryPnml);
+        String toolSuffix = useLegacyMci ? LEGACY_TOOL_SUFFIX : "";
         String toolName = ToolUtils.getAbsoluteCommandWithSuffixPath(toolPrefix, toolSuffix);
         command.add(toolName);
 

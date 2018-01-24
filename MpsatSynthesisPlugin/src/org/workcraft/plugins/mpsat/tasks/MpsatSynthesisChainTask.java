@@ -6,7 +6,6 @@ import java.util.Collection;
 import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat.MpsatSynthesisParameters;
-import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.Mutex;
@@ -51,7 +50,8 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> 
             SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
 
             // Generate .g for the model
-            File netFile = new File(directory, StgUtils.SPEC_FILE_NAME + stgFileExtension);
+            String filePrefix = StgUtils.SPEC_FILE_PREFIX;
+            File netFile = new File(directory, filePrefix + stgFileExtension);
             ExportTask exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
             Result<? extends Object> exportResult = framework.getTaskManager().execute(
                     exportTask, "Exporting .g", subtaskMonitor);
@@ -69,7 +69,8 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> 
                     model.setSignalType(m.g1.name, Type.INPUT);
                     model.setSignalType(m.g2.name, Type.INPUT);
                 }
-                netFile = new File(directory, StgUtils.SPEC_FILE_NAME + StgUtils.MUTEX_FILE_SUFFIX + stgFileExtension);
+                filePrefix += StgUtils.MUTEX_FILE_SUFFIX;
+                netFile = new File(directory, filePrefix + stgFileExtension);
                 exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
                 exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
 
@@ -84,8 +85,7 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> 
             monitor.progressUpdate(0.33);
 
             // Generate unfolding
-            boolean tryPnml = settings.getMode().canPnml();
-            File unfoldingFile = new File(directory, "unfolding" + PunfSettings.getUnfoldingExtension(tryPnml));
+            File unfoldingFile = new File(directory, filePrefix + PunfTask.PNML_FILE_EXTENSION);
             PunfTask punfTask = new PunfTask(netFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
             Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", subtaskMonitor);
 
@@ -101,7 +101,7 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> 
             // Run MPSat on the generated unfolding
             boolean needLib = settings.getMode().needLib();
             MpsatSynthesisTask mpsatTask = new MpsatSynthesisTask(settings.getMpsatArguments(directory),
-                    unfoldingFile.getAbsolutePath(), directory, tryPnml, needLib);
+                    unfoldingFile.getAbsolutePath(), directory, needLib);
             Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
                     mpsatTask, "Running synthesis [MPSat]", subtaskMonitor);
 

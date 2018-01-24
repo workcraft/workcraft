@@ -4,13 +4,13 @@ import java.util.Collection;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.ScriptableCommand;
-import org.workcraft.plugins.mpsat.MpsatChainResultHandler;
-import org.workcraft.plugins.mpsat.MpsatCscConflictResolutionResultHandler;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.MpsatParameters.SolutionMode;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
+import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
+import org.workcraft.plugins.mpsat.tasks.MpsatCscConflictResolutionResultHandler;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.MutexUtils;

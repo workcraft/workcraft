@@ -72,7 +72,7 @@ public class WaverConversionTask implements Task<WaverConversionResult> {
             if (waverResult.getOutcome() == Outcome.SUCCESS) {
                 try {
                     ByteArrayInputStream in = new ByteArrayInputStream(waverResult.getReturnValue().getOutput());
-                    final StgModel stg = new StgImporter().importSTG(in);
+                    final StgModel stg = new StgImporter().importStg(in);
                     return Result.success(new WaverConversionResult(null, (Stg) stg));
                 } catch (DeserialisationException e) {
                     return Result.exception(e);

@@ -198,7 +198,7 @@ public class DockableWindowContentPanel extends JPanel {
         contentPane = new JPanel();
         contentPane.setLayout(new BorderLayout(0, 0));
         contentPane.add(content, BorderLayout.CENTER);
-        contentPane.setBorder(BorderFactory.createLineBorder(contentPane.getBackground(), 2));
+        contentPane.setBorder(BorderFactory.createLineBorder(contentPane.getBackground(), SizeHelper.getBorderThickness()));
 
         if ((options & HEADER) > 0) {
             contentPane.add(header, BorderLayout.NORTH);

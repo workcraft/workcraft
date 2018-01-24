@@ -82,16 +82,19 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
 
-        if (!PetrifySettings.getWriteStg()) {
+        File outFile = null;
+        if (!PetrifySettings.getWriteStg() && !PetrifySettings.getOpenSynthesisStg()) {
             command.add("-no");
         } else {
-            File outFile = new File(directory, PetrifyUtils.STG_FILE_NAME);
+            outFile = new File(directory, PetrifyUtils.STG_FILE_NAME);
             command.add("-o");
             command.add(outFile.getAbsolutePath());
         }
 
         File logFile = null;
-        if (PetrifySettings.getWriteLog()) {
+        if (!PetrifySettings.getWriteLog()) {
+            command.add("-nolog");
+        } else {
             logFile = new File(directory, PetrifyUtils.LOG_FILE_NAME);
             command.add("-log");
             command.add(logFile.getAbsolutePath());
@@ -139,9 +142,10 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
                 String log = getFileContent(logFile);
                 String equations = getFileContent(eqnFile);
                 String verilog = getFileContent(verilogFile);
+                String out = getFileContent(outFile);
                 String stdout = new String(res.getReturnValue().getOutput());
                 String stderr = new String(res.getReturnValue().getErrors());
-                PetrifySynthesisResult result = new PetrifySynthesisResult(log, equations, verilog, stdout, stderr);
+                PetrifySynthesisResult result = new PetrifySynthesisResult(log, equations, verilog, out, stdout, stderr);
                 if (res.getReturnValue().getReturnCode() == 0) {
                     return Result.success(result);
                 } else {
@@ -172,7 +176,7 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
         }
 
         String gExtension = StgFormat.getInstance().getExtension();
-        File stgFile = new File(directory, StgUtils.SPEC_FILE_NAME + gExtension);
+        File stgFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + gExtension);
         ExportTask exportTask = new ExportTask(stgExporter, stg, stgFile.getAbsolutePath());
         Result<? extends Object> exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
         if (exportResult.getOutcome() != Outcome.SUCCESS) {
@@ -187,7 +191,7 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
                 setMutexRequest(stg, mutex.r2);
                 stg.setSignalType(mutex.g2.name, Type.INPUT);
             }
-            stgFile = new File(directory, StgUtils.SPEC_FILE_NAME + StgUtils.MUTEX_FILE_SUFFIX + gExtension);
+            stgFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + gExtension);
             exportTask = new ExportTask(stgExporter, stg, stgFile.getAbsolutePath());
             exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
             if (exportResult.getOutcome() != Outcome.SUCCESS) {

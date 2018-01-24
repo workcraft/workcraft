@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.workcraft.plugins.mpsat.MpsatSettings;
-import org.workcraft.plugins.punf.PunfSettings;
+import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
@@ -66,23 +66,18 @@ public class MpsatTask implements Task<ExternalProcessResult> {
     private final String[] args;
     private final File unfoldingFile;
     private final File directory;
-    private final boolean tryPnml;
     private final File netFile;
     private final File placesFile;
 
     public MpsatTask(String[] args, File unfoldingFile, File directory) {
-        this(args, unfoldingFile, directory, true, null, null);
+        this(args, unfoldingFile, directory, null, null);
     }
 
-    public MpsatTask(String[] args, File unfoldingFile, File directory, boolean tryPnml) {
-        this(args, unfoldingFile, directory, tryPnml, null, null);
+    public MpsatTask(String[] args, File unfoldingFile, File directory, File netFile) {
+        this(args, unfoldingFile, directory, netFile, null);
     }
 
-    public MpsatTask(String[] args, File unfoldingFile, File directory, boolean tryPnml, File netFile) {
-        this(args, unfoldingFile, directory, tryPnml, netFile, null);
-    }
-
-    public MpsatTask(String[] args, File unfoldingFile, File directory, boolean tryPnml, File netFile, File placesFile) {
+    public MpsatTask(String[] args, File unfoldingFile, File directory, File netFile, File placesFile) {
         this.args = args;
         this.unfoldingFile = unfoldingFile;
         if (directory == null) {
@@ -90,7 +85,6 @@ public class MpsatTask implements Task<ExternalProcessResult> {
             directory = FileUtils.createTempDirectory("mpsat-");
         }
         this.directory = directory;
-        this.tryPnml = tryPnml;
         this.netFile = netFile;
         this.placesFile = placesFile;
     }
@@ -101,7 +95,8 @@ public class MpsatTask implements Task<ExternalProcessResult> {
 
         // Name of the executable
         String toolPrefix = MpsatSettings.getCommand();
-        String toolSuffix = PunfSettings.getToolSuffix(tryPnml);
+        String unfoldingFileName = unfoldingFile.getName();
+        String toolSuffix = unfoldingFileName.endsWith(PunfTask.MCI_FILE_EXTENSION) ? PunfTask.LEGACY_TOOL_SUFFIX : "";
         String toolName = ToolUtils.getAbsoluteCommandWithSuffixPath(toolPrefix, toolSuffix);
         command.add(toolName);
 

@@ -437,4 +437,13 @@ public class VisualStg extends AbstractVisualModel {
         return NamespaceHelper.getReference(signalPath, signalName);
     }
 
+    @Override
+    public String getNodeMathReference(Node node) {
+        if (node instanceof VisualImplicitPlaceArc) {
+            VisualImplicitPlaceArc connection = (VisualImplicitPlaceArc) node;
+            node = connection.getImplicitPlace();
+        }
+        return super.getNodeMathReference(node);
+    }
+
 }

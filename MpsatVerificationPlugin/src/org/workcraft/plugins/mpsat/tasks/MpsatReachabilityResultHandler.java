@@ -1,4 +1,4 @@
-package org.workcraft.plugins.mpsat;
+package org.workcraft.plugins.mpsat.tasks;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
@@ -14,8 +14,12 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.plugins.mpsat.MpsatMode;
+import org.workcraft.plugins.mpsat.MpsatParameters;
+import org.workcraft.plugins.mpsat.MpsatResultParser;
+import org.workcraft.plugins.mpsat.MpsatSolution;
+import org.workcraft.plugins.mpsat.MpsatUtils;
 import org.workcraft.plugins.mpsat.gui.MpsatReachibilityDialog;
-import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.LabelParser;
@@ -61,7 +65,7 @@ final class MpsatReachabilityResultHandler implements Runnable {
         }
         try {
             StgImporter importer = new StgImporter();
-            return importer.importSTG(new ByteArrayInputStream(content));
+            return importer.importStg(new ByteArrayInputStream(content));
         } catch (DeserialisationException e) {
             throw new RuntimeException(e);
         }

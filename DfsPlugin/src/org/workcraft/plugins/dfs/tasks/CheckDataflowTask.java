@@ -11,7 +11,6 @@ import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
-import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.StgModel;
@@ -68,7 +67,7 @@ public class CheckDataflowTask extends MpsatChainTask {
             }
             monitor.progressUpdate(0.20);
 
-            File unfoldingFile = new File(directory, "unfolding" + PunfSettings.getUnfoldingExtension(true));
+            File unfoldingFile = new File(directory, "unfolding" + PunfTask.PNML_FILE_EXTENSION);
             PunfTask punfTask = new PunfTask(netFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
             Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
                     punfTask, "Unfolding .g", mon);
@@ -104,7 +103,7 @@ public class CheckDataflowTask extends MpsatChainTask {
             monitor.progressUpdate(0.70);
 
             MpsatTask persistencyMpsatTask = new MpsatTask(persistencySettings.getMpsatArguments(directory),
-                    unfoldingFile, directory, true, netFile);
+                    unfoldingFile, directory, netFile);
             Result<? extends ExternalProcessResult> persistencyMpsatResult = framework.getTaskManager().execute(persistencyMpsatTask, "Running semimodularity checking [MPSat]", mon);
             if (persistencyMpsatResult.getOutcome() != Outcome.SUCCESS) {
                 if (persistencyMpsatResult.getOutcome() == Outcome.CANCEL) {

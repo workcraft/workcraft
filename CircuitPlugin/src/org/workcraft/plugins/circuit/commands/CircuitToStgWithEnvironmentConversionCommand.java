@@ -60,7 +60,7 @@ public class CircuitToStgWithEnvironmentConversionCommand extends CircuitToStgCo
             }
             // Generating .g for the whole system (circuit and environment)
             String stgFileExtension = StgFormat.getInstance().getExtension();
-            File sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_NAME + stgFileExtension);
+            File sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
             sysStgFile.deleteOnExit();
             Result<? extends ExternalProcessResult> pcompResult = CircuitStgUtils.composeDevWithEnv(
                     devStgFile, envStgFile, sysStgFile, null, directory, null);
@@ -89,14 +89,14 @@ public class CircuitToStgWithEnvironmentConversionCommand extends CircuitToStgCo
         if (envStg != null) {
             StgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
             String stgFileExtension = StgFormat.getInstance().getExtension();
-            result = exportStg(envStg, StgUtils.ENVIRONMENT_FILE_NAME + stgFileExtension, directory);
+            result = exportStg(envStg, StgUtils.ENVIRONMENT_FILE_PREFIX + stgFileExtension, directory);
         }
         return result;
     }
 
     private static File exportDevStg(Stg devStg, File directory) throws IOException {
         String stgFileExtension = StgFormat.getInstance().getExtension();
-        return exportStg(devStg, StgUtils.DEVICE_FILE_NAME + stgFileExtension, directory);
+        return exportStg(devStg, StgUtils.DEVICE_FILE_PREFIX + stgFileExtension, directory);
     }
 
     private static File exportStg(Stg stg, String fileName, File directory) throws IOException {

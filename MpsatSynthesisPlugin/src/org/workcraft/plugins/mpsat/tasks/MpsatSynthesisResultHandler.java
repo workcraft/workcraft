@@ -23,6 +23,11 @@ import org.workcraft.plugins.mpsat.MpsatSynthesisMode;
 import org.workcraft.plugins.mpsat.MpsatSynthesisSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.Mutex;
+import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.StgDescriptor;
+import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.StgUtils;
+import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.tasks.AbstractExtendedResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -30,6 +35,7 @@ import org.workcraft.util.DialogUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 public class MpsatSynthesisResultHandler extends AbstractExtendedResultHandler<MpsatSynthesisChainResult, WorkspaceEntry> {
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
@@ -80,54 +86,83 @@ public class MpsatSynthesisResultHandler extends AbstractExtendedResultHandler<M
     private WorkspaceEntry handleSynthesisResult(ExternalProcessResult mpsatResult,
             boolean sequentialAssign, RenderType renderType) {
 
-        WorkspaceEntry synthResult = null;
         final String log = new String(mpsatResult.getOutput());
         if ((log != null) && !log.isEmpty()) {
             System.out.println(log);
             System.out.println();
         }
-        final byte[] eqnOutput = mpsatResult.getFileData(MpsatSynthesisTask.EQN_FILE_NAME);
-        if (eqnOutput != null) {
-            LogUtils.logInfo("MPSat synthesis result in EQN format:");
-            System.out.println(new String(eqnOutput));
-            System.out.println();
+        handleStgSynthesisResult(mpsatResult);
+        return handleVerilogSynthesisResult(mpsatResult, sequentialAssign, renderType);
+    }
+
+    private WorkspaceEntry handleStgSynthesisResult(ExternalProcessResult mpsatResult) {
+        WorkspaceEntry dstWe = null;
+        if (MpsatSynthesisSettings.getOpenSynthesisStg()) {
+            byte[] dstOutput = mpsatResult.getFileData(MpsatSynthesisTask.STG_FILE_NAME);
+            if (dstOutput != null) {
+                WorkspaceEntry srcWe = task.getWorkspaceEntry();
+                Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
+                try {
+                    ByteArrayInputStream dstStream = new ByteArrayInputStream(dstOutput);
+                    StgModel dstStg = new StgImporter().importStg(dstStream);
+                    if (StgUtils.isSameSignals(srcStg, dstStg)) {
+                        LogUtils.logInfo("No new signals are inserted in the STG");
+                    } else {
+                        LogUtils.logInfo("New signals are inserted in the STG");
+                        ModelEntry dstMe = new ModelEntry(new StgDescriptor(), dstStg);
+                        Path<String> path = srcWe.getWorkspacePath();
+                        dstWe = Framework.getInstance().createWork(dstMe, path);
+                    }
+                } catch (final DeserialisationException e) {
+                    throw new RuntimeException(e);
+                }
+            }
         }
+        return dstWe;
+    }
+
+    private WorkspaceEntry handleVerilogSynthesisResult(ExternalProcessResult mpsatResult,
+            boolean sequentialAssign, RenderType renderType) {
+
+        WorkspaceEntry dstWe = null;
         final byte[] verilogOutput = mpsatResult.getFileData(MpsatSynthesisTask.VERILOG_FILE_NAME);
-        if (verilogOutput != null) {
+        if ((verilogOutput != null) && (verilogOutput.length > 0)) {
             LogUtils.logInfo("MPSat synthesis result in Verilog format:");
             System.out.println(new String(verilogOutput));
             System.out.println();
         }
-        if (MpsatSynthesisSettings.getOpenSynthesisResult() && (verilogOutput != null)) {
+
+        if (MpsatSynthesisSettings.getOpenSynthesisResult() && (verilogOutput != null) && (verilogOutput.length > 0)) {
             try {
-                final Framework framework = Framework.getInstance();
-                final MainWindow mainWindow = framework.getMainWindow();
-                final ByteArrayInputStream in = new ByteArrayInputStream(verilogOutput);
-                final VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
-                final Circuit circuit = verilogImporter.importCircuit(in, mutexes);
-                final ModelEntry me = new ModelEntry(new CircuitDescriptor(), circuit);
-                final WorkspaceEntry we = task.getWorkspaceEntry();
-                final Path<String> path = we.getWorkspacePath();
-                synthResult = framework.createWork(me, path);
-                final VisualModel visualModel = synthResult.getModelEntry().getVisualModel();
+                ByteArrayInputStream verilogStream = new ByteArrayInputStream(verilogOutput);
+                VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
+                Circuit circuit = verilogImporter.importCircuit(verilogStream, mutexes);
+                ModelEntry dstMe = new ModelEntry(new CircuitDescriptor(), circuit);
+
+                WorkspaceEntry srcWe = task.getWorkspaceEntry();
+                Path<String> path = srcWe.getWorkspacePath();
+                dstWe = Framework.getInstance().createWork(dstMe, path);
+
+                final VisualModel visualModel = dstWe.getModelEntry().getVisualModel();
                 if (visualModel instanceof VisualCircuit) {
-                    final VisualCircuit visualCircuit = (VisualCircuit) visualModel;
+                    VisualCircuit visualCircuit = (VisualCircuit) visualModel;
                     setComponentsRenderStyle(visualCircuit, renderType);
-                    final String title = we.getModelEntry().getModel().getTitle();
+                    String title = srcWe.getModelEntry().getModel().getTitle();
                     visualCircuit.setTitle(title);
-                    if (!we.getFile().exists()) {
+                    if (!srcWe.getFile().exists()) {
                         DialogUtils.showError("Unsaved STG cannot be set as the circuit environment.");
                     } else {
-                        visualCircuit.setEnvironmentFile(we.getFile());
-                        if (we.isChanged()) {
+                        visualCircuit.setEnvironmentFile(srcWe.getFile());
+                        if (srcWe.isChanged()) {
                             DialogUtils.showWarning("The STG with unsaved changes is set as the circuit environment.");
                         }
                     }
                     SwingUtilities.invokeLater(new Runnable() {
                         @Override
                         public void run() {
-                            if (framework.isInGuiMode()) {
-                                final GraphEditorPanel editor = mainWindow.getCurrentEditor();
+                            if (Framework.getInstance().isInGuiMode()) {
+                                MainWindow mainWindow = Framework.getInstance().getMainWindow();
+                                GraphEditorPanel editor = mainWindow.getCurrentEditor();
                                 editor.updatePropertyView();
                             }
                         }
@@ -137,7 +172,7 @@ public class MpsatSynthesisResultHandler extends AbstractExtendedResultHandler<M
                 throw new RuntimeException(e);
             }
         }
-        return synthResult;
+        return dstWe;
     }
 
     private void setComponentsRenderStyle(final VisualCircuit visualCircuit, final RenderType renderType) {

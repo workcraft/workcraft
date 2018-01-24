@@ -19,7 +19,6 @@ import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.petri.PetriNetModel;
-import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.SignalTransition.Type;
@@ -47,14 +46,7 @@ public class SerialiserUtils {
         if (!(model instanceof PetriNetModel)) {
             throw new ArgumentException("Model class not supported: " + model.getClass().getName());
         }
-
         PetriNetModel petriModel = (PetriNetModel) model;
-        HashSet<Transition> isolatedTransitions = PetriNetUtils.getIsolatedTransitions(petriModel);
-        if (!isolatedTransitions.isEmpty()) {
-            String refStr = ReferenceHelper.getNodesAsString(petriModel, (Collection) isolatedTransitions);
-            throw new SerialisationException(
-                    "Isolated transitions cannot be exported: " + refStr);
-        }
 
         String prefix = "# STG file ";
         String keyword = KEYWORD_MODEL;
@@ -131,31 +123,29 @@ public class SerialiserUtils {
                 return;
             }
         }
+        String nodeRef = getReference(model, node, needInstanceNumbers);
+        out.write(nodeRef);
         Set<Node> postset = model.getPostset(node);
-        if (!postset.isEmpty()) {
-            String nodeRef = getReference(model, node, needInstanceNumbers);
-            out.write(nodeRef);
-            for (Node succNode : sortNodes(postset, model)) {
-                String succNodeRef = getReference(model, succNode, needInstanceNumbers);
-                if (succNode instanceof StgPlace) {
-                    StgPlace succPlace = (StgPlace) succNode;
-                    if (succPlace.isImplicit()) {
-                        Collection<Node> succPostset = model.getPostset(succNode);
-                        if (succPostset.size() > 1) {
-                            throw new FormatException("Implicit place cannot have more than one node in postset");
-                        }
-                        Node succTransition = succPostset.iterator().next();
-                        String succTransitionRef = getReference(model, succTransition, needInstanceNumbers);
-                        out.write(" " + succTransitionRef);
-                    } else {
-                        out.write(" " + succNodeRef);
+        for (Node succNode : sortNodes(postset, model)) {
+            String succNodeRef = getReference(model, succNode, needInstanceNumbers);
+            if (succNode instanceof StgPlace) {
+                StgPlace succPlace = (StgPlace) succNode;
+                if (succPlace.isImplicit()) {
+                    Collection<Node> succPostset = model.getPostset(succNode);
+                    if (succPostset.size() > 1) {
+                        throw new FormatException("Implicit place cannot have more than one node in postset");
                     }
+                    Node succTransition = succPostset.iterator().next();
+                    String succTransitionRef = getReference(model, succTransition, needInstanceNumbers);
+                    out.write(" " + succTransitionRef);
                 } else {
                     out.write(" " + succNodeRef);
                 }
+            } else {
+                out.write(" " + succNodeRef);
             }
-            out.write("\n");
         }
+        out.write("\n");
     }
 
     public static String getClearTitle(Model model) {

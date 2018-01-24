@@ -1,9 +1,12 @@
-package org.workcraft.plugins.mpsat;
+package org.workcraft.plugins.mpsat.tasks;
 
 import java.util.List;
 
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.plugins.mpsat.MpsatResultParser;
+import org.workcraft.plugins.mpsat.MpsatSolution;
+import org.workcraft.plugins.mpsat.MpsatUtils;
 import org.workcraft.plugins.mpsat.gui.MpsatReachibilityDialog;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.Result;

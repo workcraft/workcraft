@@ -2,6 +2,7 @@ package org.workcraft.plugins.stg;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Set;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.Container;
@@ -17,10 +18,10 @@ import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 
 public class StgUtils {
-    public static final String SPEC_FILE_NAME = "net";
-    public static final String DEVICE_FILE_NAME = "dev";
-    public static final String ENVIRONMENT_FILE_NAME = "env";
-    public static final String SYSTEM_FILE_NAME = "sys";
+    public static final String SPEC_FILE_PREFIX = "net";
+    public static final String DEVICE_FILE_PREFIX = "dev";
+    public static final String ENVIRONMENT_FILE_PREFIX = "env";
+    public static final String SYSTEM_FILE_PREFIX = "sys";
 
     public static final String MUTEX_FILE_SUFFIX = "-mutex";
     public static final String MODIFIED_FILE_SUFFIX = "-mod";
@@ -165,6 +166,18 @@ public class StgUtils {
         for (SignalTransition transition: stg.getSignalTransitions(Type.INTERNAL)) {
             StgUtils.convertSignalToDummyTransition(stg, transition);
         }
+    }
+
+    public static boolean isSameSignals(StgModel srcStg, StgModel dstStg) {
+        Set<String> srcInputs = srcStg.getSignalReferences(Type.INPUT);
+        Set<String> srcOutputs = srcStg.getSignalReferences(Type.OUTPUT);
+        Set<String> srcInternal = srcStg.getSignalReferences(Type.INTERNAL);
+
+        Set<String> dstInputs = dstStg.getSignalReferences(Type.INPUT);
+        Set<String> dstOutputs = dstStg.getSignalReferences(Type.OUTPUT);
+        Set<String> dstInternal = dstStg.getSignalReferences(Type.INTERNAL);
+
+        return srcInputs.equals(dstInputs) && srcOutputs.equals(dstOutputs) && srcInternal.equals(dstInternal);
     }
 
 }

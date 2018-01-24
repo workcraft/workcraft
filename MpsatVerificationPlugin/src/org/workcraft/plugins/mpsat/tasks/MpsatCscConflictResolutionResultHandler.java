@@ -1,4 +1,4 @@
-package org.workcraft.plugins.mpsat;
+package org.workcraft.plugins.mpsat.tasks;
 
 import java.io.ByteArrayInputStream;
 import java.util.Collection;
@@ -6,7 +6,6 @@ import java.util.Collection;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.workspace.Path;
-import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.MutexUtils;
@@ -38,7 +37,7 @@ public class MpsatCscConflictResolutionResultHandler implements Runnable {
             return null;
         }
         try {
-            return new StgImporter().importSTG(new ByteArrayInputStream(content));
+            return new StgImporter().importStg(new ByteArrayInputStream(content));
         } catch (final DeserialisationException e) {
             throw new RuntimeException(e);
         }

@@ -83,10 +83,12 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
             VisualStg stg = (VisualStg) model;
             expandedNodes = new HashSet<Node>();
             suffixPair = getSufixes();
-            for (Node node: nodes) {
-                transform(model, node);
+            if (suffixPair != null) {
+                for (Node node: nodes) {
+                    transform(model, node);
+                }
+                stg.select(expandedNodes);
             }
-            stg.select(expandedNodes);
             expandedNodes = null;
             suffixPair = null;
         }

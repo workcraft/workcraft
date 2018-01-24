@@ -6,6 +6,7 @@ import java.util.List;
 
 import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
+import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.punf.PunfSettings;
@@ -62,11 +63,16 @@ public class MpsatCombinedChainTask implements Task<MpsatCombinedChainResult> {
             monitor.progressUpdate(0.33);
 
             // Generate unfolding
-            boolean tryPnml = true;
-            for (MpsatParameters settings: settingsList) {
-                tryPnml &= settings.getMode().canPnml();
+            boolean useMci = false;
+            if (PunfSettings.getUseMciCsc()) {
+                useMci = true;
+                for (MpsatParameters settings: settingsList) {
+                    useMci &= settings.getMode() == MpsatMode.RESOLVE_ENCODING_CONFLICTS;
+                }
             }
-            File unfoldingFile = new File(directory, "unfolding" + PunfSettings.getUnfoldingExtension(tryPnml));
+            String unfoldingExtension = useMci ? PunfTask.MCI_FILE_EXTENSION : PunfTask.PNML_FILE_EXTENSION;
+
+            File unfoldingFile = new File(directory, "unfolding" + unfoldingExtension);
             PunfTask punfTask = new PunfTask(netFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
             Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", subtaskMonitor);
 
@@ -82,8 +88,7 @@ public class MpsatCombinedChainTask implements Task<MpsatCombinedChainResult> {
             // Run MPSat on the generated unfolding
             ArrayList<Result<? extends ExternalProcessResult>> mpsatResultList = new ArrayList<>(settingsList.size());
             for (MpsatParameters settings: settingsList) {
-                MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory),
-                        unfoldingFile, directory, tryPnml, netFile);
+                MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory), unfoldingFile, directory, netFile);
                 Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
                         mpsatTask, "Running verification [MPSat]", subtaskMonitor);
                 mpsatResultList.add(mpsatResult);

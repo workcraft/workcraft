@@ -31,10 +31,10 @@ public class StgImporter implements Importer {
 
     @Override
     public ModelEntry importFrom(InputStream in) throws DeserialisationException {
-        return new ModelEntry(new StgDescriptor(), importSTG(in));
+        return new ModelEntry(new StgDescriptor(), importStg(in));
     }
 
-    public StgModel importSTG(InputStream in) throws DeserialisationException {
+    public StgModel importStg(InputStream in) throws DeserialisationException {
         try {
             StgParser parser = new StgParser(in);
             if (CommonDebugSettings.getParserTracing()) {

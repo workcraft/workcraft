@@ -22,6 +22,7 @@ public class PetrifySettings implements Settings {
     private static final String keyPrintStdout = prefix + ".printStdout";
     private static final String keyPrintStderr = prefix + ".printStderr";
     private static final String keyOpenSynthesisResult = prefix + ".openSynthesisResult";
+    private static final String keyOpenSynthesisStg = prefix + ".openSynthesisStg";
 
     private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\PetrifyTools\\petrify.exe" : "tools/PetrifyTools/petrify";
     private static final String defaultArgs = "";
@@ -32,6 +33,7 @@ public class PetrifySettings implements Settings {
     private static final Boolean defaultPrintStdout = true;
     private static final Boolean defaultPrintStderr = true;
     private static final boolean defaultOpenSynthesisResult = true;
+    private static final boolean defaultOpenSynthesisStg = false;
 
     private static String command = defaultCommand;
     private static String args = defaultArgs;
@@ -42,6 +44,7 @@ public class PetrifySettings implements Settings {
     private static Boolean printStdout = defaultPrintStdout;
     private static Boolean printStderr = defaultPrintStderr;
     private static boolean openSynthesisResult = defaultOpenSynthesisResult;
+    private static boolean openSynthesisStg = defaultOpenSynthesisStg;
 
     public PetrifySettings() {
         properties.add(new PropertyDeclaration<PetrifySettings, String>(
@@ -133,6 +136,16 @@ public class PetrifySettings implements Settings {
                 return getOpenSynthesisResult();
             }
         });
+
+        properties.add(new PropertyDeclaration<PetrifySettings, Boolean>(
+                this, "Open resulting STG if new signals are inserted", Boolean.class, true, false, false) {
+            protected void setter(PetrifySettings object, Boolean value) {
+                setOpenSynthesisStg(value);
+            }
+            protected Boolean getter(PetrifySettings object) {
+                return getOpenSynthesisStg();
+            }
+        });
     }
 
     @Override
@@ -151,6 +164,7 @@ public class PetrifySettings implements Settings {
         setPrintStdout(config.getBoolean(keyPrintStdout, defaultPrintStdout));
         setPrintStderr(config.getBoolean(keyPrintStderr, defaultPrintStderr));
         setOpenSynthesisResult(config.getBoolean(keyOpenSynthesisResult, defaultOpenSynthesisResult));
+        setOpenSynthesisStg(config.getBoolean(keyOpenSynthesisStg, defaultOpenSynthesisStg));
     }
 
     @Override
@@ -164,6 +178,7 @@ public class PetrifySettings implements Settings {
         config.setBoolean(keyPrintStdout, getPrintStdout());
         config.setBoolean(keyPrintStderr, getPrintStderr());
         config.setBoolean(keyOpenSynthesisResult, getOpenSynthesisResult());
+        config.setBoolean(keyOpenSynthesisStg, getOpenSynthesisStg());
     }
 
     @Override
@@ -246,6 +261,14 @@ public class PetrifySettings implements Settings {
 
     public static void setOpenSynthesisResult(boolean value) {
         openSynthesisResult = value;
+    }
+
+    public static boolean getOpenSynthesisStg() {
+        return openSynthesisStg;
+    }
+
+    public static void setOpenSynthesisStg(boolean value) {
+        openSynthesisStg = value;
     }
 
 }

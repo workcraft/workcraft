@@ -54,7 +54,7 @@ public class ConceptsImporter implements Importer {
                 if (output.startsWith(".model")) {
                     StgImporter importer = new StgImporter();
                     ByteArrayInputStream is = new ByteArrayInputStream(result.getReturnValue().getOutput());
-                    StgModel stg = importer.importSTG(is);
+                    StgModel stg = importer.importStg(is);
                     return new ModelEntry(new StgDescriptor(), (Model) stg);
                 }
             }
