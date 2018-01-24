@@ -39,12 +39,14 @@ import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.VisualScenario;
 import org.workcraft.plugins.cpog.VisualScenarioPage;
 import org.workcraft.plugins.cpog.VisualVertex;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Func;
 import org.workcraft.util.Geometry;
-import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class ScencoExecutionSupport {
+
+    private static final String SPECIAL_SYMBOLS = "()+*! ";
 
     // UTILITY FUNCTIONS
     // FUNCTION TO CONVERT BINARY TO INT
@@ -312,12 +314,11 @@ public class ScencoExecutionSupport {
                             String result = "";
                             String tmp = "";
                             for (int i = 0; i < cond.length(); i++) {
-                                if (cond.charAt(i) != '(' && cond.charAt(i) != ')' && cond.charAt(i) != '+' &&
-                                        cond.charAt(i) != '*' && cond.charAt(i) != '!' && cond.charAt(i) != ' ') {
+                                char ch = cond.charAt(i);
+                                if (SPECIAL_SYMBOLS.indexOf(ch) < 0) {
                                     tmp = "";
-                                    while (i < cond.length() && cond.charAt(i) != '(' && cond.charAt(i) != ')' && cond.charAt(i) != '+' &&
-                                            cond.charAt(i) != '*' && cond.charAt(i) != '!' && cond.charAt(i) != ' ') {
-                                        tmp += cond.charAt(i);
+                                    while ((i < cond.length()) && (SPECIAL_SYMBOLS.indexOf(ch) < 0)) {
+                                        tmp += ch;
                                         i++;
                                     }
                                     //System.out.println("TMP: " + tmp);
@@ -326,10 +327,10 @@ public class ScencoExecutionSupport {
                                         result += tmp.charAt(j);
                                     }
                                     if (i < cond.length()) {
-                                        result += cond.charAt(i);
+                                        result += ch;
                                     }
                                 } else {
-                                    result += cond.charAt(i);
+                                    result += ch;
                                 }
                             }
 

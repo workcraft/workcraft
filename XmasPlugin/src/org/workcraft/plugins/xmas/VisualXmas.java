@@ -1,6 +1,5 @@
 package org.workcraft.plugins.xmas;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 import org.workcraft.annotations.CustomTools;
@@ -16,16 +15,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
-import org.workcraft.plugins.xmas.components.VisualCreditComponent;
-import org.workcraft.plugins.xmas.components.VisualForkComponent;
-import org.workcraft.plugins.xmas.components.VisualFunctionComponent;
-import org.workcraft.plugins.xmas.components.VisualJoinComponent;
-import org.workcraft.plugins.xmas.components.VisualMergeComponent;
-import org.workcraft.plugins.xmas.components.VisualQueueComponent;
-import org.workcraft.plugins.xmas.components.VisualSinkComponent;
-import org.workcraft.plugins.xmas.components.VisualSourceComponent;
-import org.workcraft.plugins.xmas.components.VisualSwitchComponent;
-import org.workcraft.plugins.xmas.components.VisualSyncComponent;
+import org.workcraft.plugins.xmas.components.VisualXmasComponent;
 import org.workcraft.plugins.xmas.components.VisualXmasConnection;
 import org.workcraft.plugins.xmas.components.VisualXmasContact;
 import org.workcraft.plugins.xmas.components.XmasContact.IOType;
@@ -99,22 +89,7 @@ public class VisualXmas extends AbstractVisualModel {
         return Hierarchy.getNearestAncestor(vsc, VisualGroup.class);
     }
 
-    public Collection<Node> getNodes() {
-        ArrayList<Node> result = new ArrayList<>();
-        for (Node node : Hierarchy.getDescendantsOfType(getRoot(), Node.class)) {
-            if ((node instanceof VisualSourceComponent)
-                    || (node instanceof VisualFunctionComponent)
-                    || (node instanceof VisualQueueComponent)
-                    || (node instanceof VisualForkComponent)
-                    || (node instanceof VisualJoinComponent)
-                    || (node instanceof VisualSwitchComponent)
-                    || (node instanceof VisualMergeComponent)
-                    || (node instanceof VisualSinkComponent)
-                    || (node instanceof VisualCreditComponent)
-                    || (node instanceof VisualSyncComponent)) {
-                result.add(node);
-            }
-        }
-        return result;
+    public Collection<VisualXmasComponent> getNodes() {
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualXmasComponent.class);
     }
 }
