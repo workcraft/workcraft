@@ -151,7 +151,9 @@ public class MutexUtils {
                 boolean g1g2 = mutex.g1.equals(newMutex.g2);
                 boolean r2r1 = mutex.r2.equals(newMutex.r1);
                 boolean g2g1 = mutex.g2.equals(newMutex.g1);
-                if ((r1r1 && g1g1 && r2r2 && g2g2) || (r1r2 && g1g2 && r2r1 && g2g1)) {
+                boolean match11 = r1r1 && g1g1 && r2r2 && g2g2;
+                boolean match21 = r1r2 && g1g2 && r2r1 && g2g1;
+                if (match11 || match21) {
                     stgPlace.setMutex(true);
                 }
             }
