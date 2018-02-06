@@ -104,16 +104,16 @@ public class MpsatVerificationCommandTests {
     @Test
     public void testCycleVerification() throws DeserialisationException {
         testVerificationCommands("org/workcraft/plugins/mpsat/cycle.stg.work",
-                true, // combined
+                false, // combined
                 true,  // consistency
-                true, // deadlock freeness
+                true,  // deadlock freeness
                 true,  // input properness
-                true, // output persistency
+                true,  // output persistency
                 true,  // CSC
-                true, // USC
-                true, // DI interface
-                true, // normalcy
-                false,  // mutex implementability
+                true,  // USC
+                true,  // DI interface
+                true,  // normalcy
+                false, // mutex implementability
                 "org/workcraft/plugins/mpsat/charge.stg.work", true // conformation
         );
     }

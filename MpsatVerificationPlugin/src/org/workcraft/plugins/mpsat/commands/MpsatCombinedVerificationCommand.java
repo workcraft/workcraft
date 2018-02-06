@@ -24,7 +24,7 @@ public class MpsatCombinedVerificationCommand extends AbstractVerificationComman
 
     @Override
     public String getDisplayName() {
-        return "Consistency, deadlock freeness, input properness and output persistency (reuse unfolding) [MPSat]";
+        return "Consistency, deadlock freeness, input properness, output persistency and mutex implementability (reuse unfolding) [MPSat]";
     }
 
     @Override
@@ -58,23 +58,27 @@ public class MpsatCombinedVerificationCommand extends AbstractVerificationComman
     }
 
     private MpsatCombinedChainResultHandler queueVerification(WorkspaceEntry we) {
-        final ArrayList<MpsatParameters> settingsList = new ArrayList<>();
-        settingsList.add(MpsatParameters.getConsistencySettings());
-        settingsList.add(MpsatParameters.getDeadlockSettings());
-        settingsList.add(MpsatParameters.getInputPropernessSettings());
-
+        MpsatCombinedChainResultHandler monitor = null;
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-        LinkedList<Pair<String, String>> exceptions = MutexUtils.getMutexGrantPairs(stg);
-        settingsList.add(MpsatParameters.getOutputPersistencySettings(exceptions));
+        if (MpsatUtils.mutexStructuralCheck(stg, true)) {
+            Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
+            ArrayList<MpsatParameters> settingsList = new ArrayList<>();
+            settingsList.add(MpsatParameters.getConsistencySettings());
+            settingsList.add(MpsatParameters.getDeadlockSettings());
+            settingsList.add(MpsatParameters.getInputPropernessSettings());
+            settingsList.addAll(MpsatUtils.getMutexImplementabilitySettings(mutexes));
 
-        Framework framework = Framework.getInstance();
-        TaskManager manager = framework.getTaskManager();
-        MpsatCombinedChainTask task = new MpsatCombinedChainTask(we, settingsList);
-        Collection<Mutex> mutexes = MutexUtils.getMutexes(stg);
-        MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
-        String description = MpsatUtils.getToolchainDescription(we.getTitle());
-        MpsatCombinedChainResultHandler monitor = new MpsatCombinedChainResultHandler(task, mutexes);
-        manager.queue(task, description, monitor);
+            LinkedList<Pair<String, String>> exceptions = MutexUtils.getMutexGrantPairs(stg);
+            settingsList.add(MpsatParameters.getOutputPersistencySettings(exceptions));
+
+            Framework framework = Framework.getInstance();
+            TaskManager manager = framework.getTaskManager();
+            MpsatCombinedChainTask task = new MpsatCombinedChainTask(we, settingsList);
+            MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
+            String description = MpsatUtils.getToolchainDescription(we.getTitle());
+            monitor = new MpsatCombinedChainResultHandler(task, mutexes);
+            manager.queue(task, description, monitor);
+        }
         return monitor;
     }
 

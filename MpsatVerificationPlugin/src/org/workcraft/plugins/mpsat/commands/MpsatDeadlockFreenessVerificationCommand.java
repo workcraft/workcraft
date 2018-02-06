@@ -19,7 +19,7 @@ public class MpsatDeadlockFreenessVerificationCommand extends MpsatAbstractVerif
 
     @Override
     public int getPriority() {
-        return 4;
+        return 5;
     }
 
     @Override

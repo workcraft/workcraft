@@ -19,7 +19,7 @@ public class MpsatInputPropernessVerificationCommand extends MpsatAbstractVerifi
 
     @Override
     public int getPriority() {
-        return 3;
+        return 4;
     }
 
     @Override

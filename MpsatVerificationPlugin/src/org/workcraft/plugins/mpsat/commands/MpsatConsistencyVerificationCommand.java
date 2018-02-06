@@ -19,7 +19,7 @@ public class MpsatConsistencyVerificationCommand extends MpsatAbstractVerificati
 
     @Override
     public int getPriority() {
-        return 5;
+        return 6;
     }
 
     @Override
