@@ -375,20 +375,19 @@ public class ScencoExecutionSupport {
 
                     String[] enc = settings.getCustomEnc();
                     for (int k = 0; k < m; k++) {
-                        if (enc[k].contains("2") || enc[k].contains("3") || enc[k].contains("4") ||
-                                enc[k].contains("5") || enc[k].contains("6") || enc[k].contains("7") ||
-                                enc[k].contains("8") || enc[k].contains("9")) {
-                            DialogUtils.showError("Op-code " + enc[k] + " not allowed");
+                        String opcode = enc[k];
+                        if (opcode.matches(".*[23456789].*")) {
+                            DialogUtils.showError("Op-code " + opcode + " not allowed");
                             output1.close();
                             return -1;
 
                         }
                         String empty = "";
                         for (int i = 0; i < settings.getBits(); i++) empty += 'X';
-                        if (enc[k].isEmpty() || enc[k].equals(empty)) {
+                        if (opcode.isEmpty() || opcode.equals(empty)) {
                             output1.println("/");
                         } else {
-                            output1.println(enc[k]);
+                            output1.println(opcode);
                         }
                     }
                     output1.println(settings.getBits());

@@ -48,8 +48,8 @@ public class MpsatCscConflictResolutionCommandTests {
     }
 
     @Test
-    public void testArbitrationCscConflictResolution() throws DeserialisationException {
-        testCscConflictResolutionCommand("org/workcraft/plugins/mpsat/arbitration-3.stg.work", new String[] {});
+    public void testCycleCscConflictResolution() throws DeserialisationException {
+        testCscConflictResolutionCommand("org/workcraft/plugins/mpsat/cycle.stg.work", new String[] {});
     }
 
     private void testCscConflictResolutionCommand(String work, String[] cscSignals)
