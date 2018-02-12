@@ -1,14 +1,8 @@
 package org.workcraft.plugins.circuit.tasks;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Set;
@@ -27,6 +21,8 @@ import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
+import org.workcraft.plugins.pcomp.ComponentData;
+import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.Mutex;
@@ -134,7 +130,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 
                     // Generating .g for the whole system (circuit and environment)
                     sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
-                    placesFile = new File(directory, StgUtils.PLACES_FILE_NAME);
+                    placesFile = new File(directory, StgUtils.COMP_FILE_PREFIX + StgUtils.COMP_FILE_EXTENSION);
                     pcompResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envStgFile, sysStgFile, placesFile, directory, monitor);
                     if (pcompResult.getOutcome() != Outcome.SUCCESS) {
                         if (pcompResult.getOutcome() == Outcome.CANCEL) {
@@ -183,7 +179,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 
                     // Generating .g for the whole system (circuit and environment) without internal signals
                     sysModStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + fileSuffix + stgFileExtension);
-                    placesModFile = new File(directory, StgUtils.PLACES_FILE_NAME + fileSuffix + stgFileExtension);
+                    placesModFile = new File(directory, StgUtils.COMP_FILE_PREFIX + fileSuffix + StgUtils.COMP_FILE_EXTENSION);
                     pcompModResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envModStgFile, sysModStgFile, placesModFile, directory, monitor);
                     if (pcompModResult.getOutcome() != Outcome.SUCCESS) {
                         if (pcompModResult.getOutcome() == Outcome.CANCEL) {
@@ -303,8 +299,9 @@ public class CheckCircuitTask extends MpsatChainTask {
 
             // Check for interface conformation (only if requested and if the environment is specified)
             if ((envStg != null) && checkConformation) {
-                byte[] placesList = FileUtils.readAllBytes(placesModFile);
-                Set<String> devPlaceNames = parsePlaceNames(placesList, 0);
+                CompositionData compositionData = new CompositionData(placesModFile);
+                ComponentData devComponentData = compositionData.getComponentData(devStgFile);
+                Set<String> devPlaceNames = devComponentData.getDstPlaces();
                 MpsatParameters conformationSettings = MpsatParameters.getConformationSettings(devPlaceNames);
                 MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
                         unfoldingModFile, directory, sysModStgFile, placesModFile);
@@ -366,26 +363,6 @@ public class CheckCircuitTask extends MpsatChainTask {
             }
         }
         return grantPairs;
-    }
-
-    private HashSet<String> parsePlaceNames(byte[] bufferedInput, int lineIndex) {
-        HashSet<String> result = new HashSet<>();
-        InputStream is = new ByteArrayInputStream(bufferedInput);
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-        try {
-            String line = null;
-            while ((lineIndex >= 0) && ((line = br.readLine()) != null)) {
-                lineIndex--;
-            }
-            if (line != null) {
-                for (String name: line.trim().split("\\s")) {
-                    result.add(name);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return result;
     }
 
     private String getSuccessMessage(File environmentFile) {

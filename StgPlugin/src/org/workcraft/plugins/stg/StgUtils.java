@@ -26,6 +26,9 @@ public class StgUtils {
     public static final String MUTEX_FILE_SUFFIX = "-mutex";
     public static final String MODIFIED_FILE_SUFFIX = "-mod";
 
+    public static final String COMP_FILE_PREFIX = "comp";
+    public static final String COMP_FILE_EXTENSION = ".xml";
+
     public static final String PLACES_FILE_NAME = "places.list";
 
     private static void replaceNamedTransition(Stg stg, NamedTransition oldTransition, NamedTransition newTransition) {

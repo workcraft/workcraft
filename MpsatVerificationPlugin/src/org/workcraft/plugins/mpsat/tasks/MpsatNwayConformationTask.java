@@ -1,14 +1,8 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.workcraft.Framework;
@@ -16,6 +10,8 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.MpsatResultParser;
+import org.workcraft.plugins.pcomp.ComponentData;
+import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.punf.tasks.PunfTask;
@@ -90,7 +86,7 @@ public class MpsatNwayConformationTask implements Task<MpsatChainResult> {
             monitor.progressUpdate(0.30);
 
             // Generating .g for the whole system (model and environment)
-            File placesFile = new File(directory, StgUtils.PLACES_FILE_NAME);
+            File placesFile = new File(directory, StgUtils.COMP_FILE_PREFIX + StgUtils.COMP_FILE_EXTENSION);
             File stgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
             stgFile.deleteOnExit();
             PcompTask pcompTask = new PcompTask(stgFiles.toArray(new File[0]), stgFile, placesFile,
@@ -124,8 +120,13 @@ public class MpsatNwayConformationTask implements Task<MpsatChainResult> {
             monitor.progressUpdate(0.60);
 
             // Check for interface conformation
-            byte[] palcesList = FileUtils.readAllBytes(placesFile);
-            ArrayList<Set<String>> allPlaceSets = parsePlaceNames(palcesList);
+            CompositionData compositionData = new CompositionData(placesFile);
+            ArrayList<Set<String>> allPlaceSets = new ArrayList<>();
+            for (File file: stgFiles) {
+                ComponentData componentData = compositionData.getComponentData(file);
+                Set<String> placeNames = componentData.getDstPlaces();
+                allPlaceSets.add(placeNames);
+            }
 
             MpsatParameters conformationSettings = MpsatParameters.getNwayConformationSettings(allPlaceSets, allOutputSets);
             MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
@@ -161,25 +162,6 @@ public class MpsatNwayConformationTask implements Task<MpsatChainResult> {
         } finally {
             FileUtils.deleteOnExitRecursively(directory);
         }
-    }
-
-    private ArrayList<Set<String>> parsePlaceNames(byte[] bufferedInput) {
-        ArrayList<Set<String>> result = new ArrayList<>();
-        InputStream is = new ByteArrayInputStream(bufferedInput);
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-        try {
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                Set<String> names = new HashSet<>();
-                for (String name: line.trim().split("\\s")) {
-                    names.add(name);
-                }
-                result.add(names);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return result;
     }
 
 }

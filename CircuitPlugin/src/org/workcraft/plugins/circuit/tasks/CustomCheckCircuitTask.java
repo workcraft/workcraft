@@ -98,7 +98,7 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
 
                 // Generating .g for the whole system (circuit and environment)
                 sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
-                placesFile = new File(directory, StgUtils.PLACES_FILE_NAME);
+                placesFile = new File(directory, StgUtils.COMP_FILE_PREFIX + StgUtils.COMP_FILE_EXTENSION);
                 pcompResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envStgFile, sysStgFile, placesFile, directory, monitor);
                 if (pcompResult.getOutcome() != Outcome.SUCCESS) {
                     if (pcompResult.getOutcome() == Outcome.CANCEL) {

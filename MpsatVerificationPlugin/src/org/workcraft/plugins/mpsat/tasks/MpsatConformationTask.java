@@ -1,12 +1,6 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.workcraft.Framework;
@@ -14,6 +8,8 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.MpsatResultParser;
+import org.workcraft.plugins.pcomp.ComponentData;
+import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.punf.tasks.PunfTask;
@@ -104,7 +100,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             monitor.progressUpdate(0.40);
 
             // Generating .g for the whole system (model and environment)
-            File placesFile = new File(directory, StgUtils.PLACES_FILE_NAME);
+            File placesFile = new File(directory, StgUtils.COMP_FILE_PREFIX + StgUtils.COMP_FILE_EXTENSION);
             File stgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
             stgFile.deleteOnExit();
             PcompTask pcompTask = new PcompTask(new File[]{devStgFile, envStgFile}, stgFile, placesFile,
@@ -138,8 +134,9 @@ public class MpsatConformationTask extends MpsatChainTask {
             monitor.progressUpdate(0.60);
 
             // Check for interface conformation
-            byte[] palcesList = FileUtils.readAllBytes(placesFile);
-            Set<String> devPlaceNames = parsePlaceNames(palcesList, 0);
+            CompositionData compositionData = new CompositionData(placesFile);
+            ComponentData devComponentData = compositionData.getComponentData(devStgFile);
+            Set<String> devPlaceNames = devComponentData.getDstPlaces();
             MpsatParameters conformationSettings = MpsatParameters.getConformationSettings(devPlaceNames);
             MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
                     unfoldingFile, directory, stgFile, placesFile);
@@ -174,26 +171,6 @@ public class MpsatConformationTask extends MpsatChainTask {
         } finally {
             FileUtils.deleteOnExitRecursively(directory);
         }
-    }
-
-    private HashSet<String> parsePlaceNames(byte[] bufferedInput, int lineIndex) {
-        HashSet<String> result = new HashSet<>();
-        InputStream is = new ByteArrayInputStream(bufferedInput);
-        BufferedReader br = new BufferedReader(new InputStreamReader(is));
-        try {
-            String line = null;
-            while ((lineIndex >= 0) && ((line = br.readLine()) != null)) {
-                lineIndex--;
-            }
-            if (line != null) {
-                for (String name: line.trim().split("\\s")) {
-                    result.add(name);
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return result;
     }
 
 }
