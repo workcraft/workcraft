@@ -14,15 +14,15 @@ public class ComponentData {
 
     public ComponentData(Element placesElement, Element transitionsElelemnt) {
         for (Element element: XmlUtils.getChildElements("map", placesElement)) {
-            for (Element src: XmlUtils.getChildElements("source", element)) {
-                for (Element dst: XmlUtils.getChildElements("target", element)) {
+            for (Element src: XmlUtils.getChildElements("src", element)) {
+                for (Element dst: XmlUtils.getChildElements("dst", element)) {
                     placesSrc2Dst.put(src.getTextContent(), dst.getTextContent());
                 }
             }
         }
         for (Element element: XmlUtils.getChildElements("map", transitionsElelemnt)) {
-            for (Element src: XmlUtils.getChildElements("source", element)) {
-                for (Element dst: XmlUtils.getChildElements("target", element)) {
+            for (Element src: XmlUtils.getChildElements("src", element)) {
+                for (Element dst: XmlUtils.getChildElements("dst", element)) {
                     transitionsDst2Src.put(src.getTextContent(), dst.getTextContent());
                 }
             }
