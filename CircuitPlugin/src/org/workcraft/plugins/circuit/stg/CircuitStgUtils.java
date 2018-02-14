@@ -39,11 +39,12 @@ public class CircuitStgUtils {
         return taskManager.execute(exportTask, description, subtaskMonitor);
     }
 
-    public static Result<? extends ExternalProcessResult> composeDevWithEnv(File devStgFile, File envStgFile, File sysStgFile,
-            File placesFile, File directory, ProgressMonitor<?> monitor) {
+    public static Result<? extends ExternalProcessResult> composeDevWithEnv(File devStgFile, File envStgFile,
+            File sysStgFile, File detailsFile, File directory, ProgressMonitor<?> monitor) {
+
         Framework framework = Framework.getInstance();
         File[] inputFiles = new File[]{devStgFile, envStgFile};
-        PcompTask pcompTask = new PcompTask(inputFiles, sysStgFile, placesFile, ConversionMode.OUTPUT, true, false, directory);
+        PcompTask pcompTask = new PcompTask(inputFiles, sysStgFile, detailsFile, ConversionMode.OUTPUT, true, false, directory);
         String description = "Running parallel composition [PComp]";
         SubtaskMonitor<Object> subtaskMonitor = null;
         if (monitor != null) {

@@ -100,10 +100,10 @@ public class MpsatConformationTask extends MpsatChainTask {
             monitor.progressUpdate(0.40);
 
             // Generating .g for the whole system (model and environment)
-            File placesFile = new File(directory, StgUtils.COMP_FILE_PREFIX + StgUtils.COMP_FILE_EXTENSION);
+            File compFile = new File(directory, StgUtils.COMP_FILE_PREFIX + StgUtils.COMP_FILE_EXTENSION);
             File stgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
             stgFile.deleteOnExit();
-            PcompTask pcompTask = new PcompTask(new File[]{devStgFile, envStgFile}, stgFile, placesFile,
+            PcompTask pcompTask = new PcompTask(new File[]{devStgFile, envStgFile}, stgFile, compFile,
                     ConversionMode.OUTPUT, true, false, directory);
 
             Result<? extends ExternalProcessResult> pcompResult = framework.getTaskManager().execute(
@@ -134,12 +134,12 @@ public class MpsatConformationTask extends MpsatChainTask {
             monitor.progressUpdate(0.60);
 
             // Check for interface conformation
-            CompositionData compositionData = new CompositionData(placesFile);
+            CompositionData compositionData = new CompositionData(compFile);
             ComponentData devComponentData = compositionData.getComponentData(devStgFile);
             Set<String> devPlaceNames = devComponentData.getDstPlaces();
             MpsatParameters conformationSettings = MpsatParameters.getConformationSettings(devPlaceNames);
             MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
-                    unfoldingFile, directory, stgFile, placesFile);
+                    unfoldingFile, directory, stgFile, compFile);
             Result<? extends ExternalProcessResult>  mpsatConformationResult = framework.getTaskManager().execute(
                     mpsatConformationTask, "Running conformation check [MPSat]", subtaskMonitor);
 

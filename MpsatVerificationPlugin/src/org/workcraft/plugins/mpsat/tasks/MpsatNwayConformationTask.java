@@ -25,6 +25,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
@@ -48,6 +49,7 @@ public class MpsatNwayConformationTask implements Task<MpsatChainResult> {
     @Override
     public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
         Framework framework = Framework.getInstance();
+        TaskManager taskManager = framework.getTaskManager();
 
         String prefix = FileUtils.getTempPrefix("-pcomp");
         File directory = FileUtils.createTempDirectory(prefix);
@@ -72,7 +74,7 @@ public class MpsatNwayConformationTask implements Task<MpsatChainResult> {
                 File stgFile = new File(directory, we.getTitle() + stgFileExtension);
                 stgFiles.add(stgFile);
                 ExportTask exportTask = new ExportTask(stgExporter, stg, stgFile.getAbsolutePath());
-                exportResult = framework.getTaskManager().execute(
+                exportResult = taskManager.execute(
                         exportTask, "Exporting circuit .g", subtaskMonitor);
 
                 if (exportResult.getOutcome() != Outcome.SUCCESS) {
@@ -86,13 +88,13 @@ public class MpsatNwayConformationTask implements Task<MpsatChainResult> {
             monitor.progressUpdate(0.30);
 
             // Generating .g for the whole system (model and environment)
-            File placesFile = new File(directory, StgUtils.COMP_FILE_PREFIX + StgUtils.COMP_FILE_EXTENSION);
             File stgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
+            File compFile = new File(directory, StgUtils.COMP_FILE_PREFIX + StgUtils.COMP_FILE_EXTENSION);
             stgFile.deleteOnExit();
-            PcompTask pcompTask = new PcompTask(stgFiles.toArray(new File[0]), stgFile, placesFile,
+            PcompTask pcompTask = new PcompTask(stgFiles.toArray(new File[0]), stgFile, compFile,
                     ConversionMode.OUTPUT, false, false, directory);
 
-            Result<? extends ExternalProcessResult> pcompResult = framework.getTaskManager().execute(
+            Result<? extends ExternalProcessResult> pcompResult = taskManager.execute(
                     pcompTask, "Running parallel composition [PComp]", subtaskMonitor);
 
             if (pcompResult.getOutcome() != Outcome.SUCCESS) {
@@ -107,7 +109,7 @@ public class MpsatNwayConformationTask implements Task<MpsatChainResult> {
             // Generate unfolding
             File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + PunfTask.PNML_FILE_EXTENSION);
             PunfTask punfTask = new PunfTask(stgFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
-            Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
+            Result<? extends ExternalProcessResult> punfResult = taskManager.execute(
                     punfTask, "Unfolding .g", subtaskMonitor);
 
             if (punfResult.getOutcome() != Outcome.SUCCESS) {
@@ -120,7 +122,7 @@ public class MpsatNwayConformationTask implements Task<MpsatChainResult> {
             monitor.progressUpdate(0.60);
 
             // Check for interface conformation
-            CompositionData compositionData = new CompositionData(placesFile);
+            CompositionData compositionData = new CompositionData(compFile);
             ArrayList<Set<String>> allPlaceSets = new ArrayList<>();
             for (File file: stgFiles) {
                 ComponentData componentData = compositionData.getComponentData(file);
@@ -130,8 +132,8 @@ public class MpsatNwayConformationTask implements Task<MpsatChainResult> {
 
             MpsatParameters conformationSettings = MpsatParameters.getNwayConformationSettings(allPlaceSets, allOutputSets);
             MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
-                    unfoldingFile, directory, stgFile, placesFile);
-            Result<? extends ExternalProcessResult>  mpsatConformationResult = framework.getTaskManager().execute(
+                    unfoldingFile, directory, stgFile, compFile);
+            Result<? extends ExternalProcessResult>  mpsatConformationResult = taskManager.execute(
                     mpsatConformationTask, "Running conformation check [MPSat]", subtaskMonitor);
 
             if (mpsatConformationResult.getOutcome() != Outcome.SUCCESS) {

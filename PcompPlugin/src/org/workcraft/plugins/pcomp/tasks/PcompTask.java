@@ -22,17 +22,17 @@ public class PcompTask implements Task<ExternalProcessResult> {
 
     private final File[] inputFiles;
     private final File outputFile;
-    private final File placesFile;
+    private final File detailsFile;
     private final ConversionMode conversionMode;
     private final boolean useSharedOutputs;
     private final boolean useImprovedComposition;
     private final File directory;
 
-    public PcompTask(File[] inputFiles, File outputFile, File placesFile,
+    public PcompTask(File[] inputFiles, File outputFile, File detailsFile,
             ConversionMode conversionMode, boolean useSharedOutputs, boolean useImprovedComposition, File directory) {
         this.inputFiles = inputFiles;
         this.outputFile = outputFile;
-        this.placesFile = placesFile;
+        this.detailsFile = detailsFile;
         this.conversionMode = conversionMode;
         this.useSharedOutputs = useSharedOutputs;
         this.useImprovedComposition = useImprovedComposition;
@@ -75,9 +75,9 @@ public class PcompTask implements Task<ExternalProcessResult> {
             command.add("-f" + outputFile.getAbsolutePath());
         }
 
-        // List of places output file
-        if (placesFile != null) {
-            command.add("-l" + placesFile.getAbsolutePath());
+        // Composition details output file
+        if (detailsFile != null) {
+            command.add("-l" + detailsFile.getAbsolutePath());
         }
 
         // STG input files
@@ -100,6 +100,6 @@ public class PcompTask implements Task<ExternalProcessResult> {
         } else {
             return Result.failure(returnValue);
         }
-
     }
+
 }

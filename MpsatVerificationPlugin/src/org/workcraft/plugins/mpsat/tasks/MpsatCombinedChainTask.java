@@ -18,6 +18,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.Export;
 import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
@@ -36,6 +37,7 @@ public class MpsatCombinedChainTask implements Task<MpsatCombinedChainResult> {
     @Override
     public Result<? extends MpsatCombinedChainResult> run(ProgressMonitor<? super MpsatCombinedChainResult> monitor) {
         Framework framework = Framework.getInstance();
+        TaskManager taskManager = framework.getTaskManager();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         try {
@@ -50,7 +52,7 @@ public class MpsatCombinedChainTask implements Task<MpsatCombinedChainResult> {
             // Generate .g for the model
             File netFile = new File(directory, "net" + stgFormat.getExtension());
             ExportTask exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
-            Result<? extends Object> exportResult = framework.getTaskManager().execute(
+            Result<? extends Object> exportResult = taskManager.execute(
                     exportTask, "Exporting .g", subtaskMonitor);
 
             if (exportResult.getOutcome() != Outcome.SUCCESS) {
@@ -74,7 +76,7 @@ public class MpsatCombinedChainTask implements Task<MpsatCombinedChainResult> {
 
             File unfoldingFile = new File(directory, "unfolding" + unfoldingExtension);
             PunfTask punfTask = new PunfTask(netFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
-            Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", subtaskMonitor);
+            Result<? extends ExternalProcessResult> punfResult = taskManager.execute(punfTask, "Unfolding .g", subtaskMonitor);
 
             if (punfResult.getOutcome() != Outcome.SUCCESS) {
                 if (punfResult.getOutcome() == Outcome.CANCEL) {
@@ -89,7 +91,7 @@ public class MpsatCombinedChainTask implements Task<MpsatCombinedChainResult> {
             ArrayList<Result<? extends ExternalProcessResult>> mpsatResultList = new ArrayList<>(settingsList.size());
             for (MpsatParameters settings: settingsList) {
                 MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory), unfoldingFile, directory, netFile);
-                Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
+                Result<? extends ExternalProcessResult> mpsatResult = taskManager.execute(
                         mpsatTask, "Running verification [MPSat]", subtaskMonitor);
                 mpsatResultList.add(mpsatResult);
                 if (mpsatResult.getOutcome() != Outcome.SUCCESS) {

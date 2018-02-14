@@ -23,12 +23,17 @@ public class MpsatNwayConformationVerificationCommand extends AbstractVerificati
 
     @Override
     public String getDisplayName() {
-        return "N-way conformation (without dummies) [MPSat]";
+        return "N-way conformation (without dummies) [MPSat]...";
     }
 
     @Override
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.isApplicable(we, StgModel.class);
+    }
+
+    @Override
+    public int getPriority() {
+        return 3;
     }
 
     @Override
@@ -57,7 +62,6 @@ public class MpsatNwayConformationVerificationCommand extends AbstractVerificati
                 String description = MpsatUtils.getToolchainDescription(we.getTitle());
                 MpsatChainResultHandler monitor = new MpsatChainResultHandler(we);
                 manager.queue(task, description, monitor);
-
             }
         }
     }

@@ -112,7 +112,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 
             // Generating system .g for deadlock and persistency checks (only if needed)
             File sysStgFile = null;
-            File placesFile = null;
+            File compFile = null;
             Result<? extends ExternalProcessResult>  pcompResult = null;
             if (checkDeadlock || checkPersistency) {
                 if (envStg == null) {
@@ -130,8 +130,8 @@ public class CheckCircuitTask extends MpsatChainTask {
 
                     // Generating .g for the whole system (circuit and environment)
                     sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
-                    placesFile = new File(directory, StgUtils.COMP_FILE_PREFIX + StgUtils.COMP_FILE_EXTENSION);
-                    pcompResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envStgFile, sysStgFile, placesFile, directory, monitor);
+                    compFile = new File(directory, StgUtils.COMP_FILE_PREFIX + StgUtils.COMP_FILE_EXTENSION);
+                    pcompResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envStgFile, sysStgFile, compFile, directory, monitor);
                     if (pcompResult.getOutcome() != Outcome.SUCCESS) {
                         if (pcompResult.getOutcome() == Outcome.CANCEL) {
                             return new Result<MpsatChainResult>(Outcome.CANCEL);
@@ -155,13 +155,13 @@ public class CheckCircuitTask extends MpsatChainTask {
 
             // Generating system .g for conformation check (only if needed) -- should be without environment internal signals
             File sysModStgFile = null;
-            File placesModFile = null;
+            File compModFile = null;
             Result<? extends ExternalProcessResult>  pcompModResult = null;
             if ((envStg != null) && checkConformation) {
                 Set<String> envSignalNames = envStg.getSignalNames(Type.INTERNAL, null);
                 if (envSignalNames.isEmpty() && (sysStgFile != null)) {
                     sysModStgFile = sysStgFile;
-                    placesModFile = placesFile;
+                    compModFile = compFile;
                     pcompModResult = pcompResult;
                 } else {
                     String fileSuffix = (sysStgFile == null) ? "" : StgUtils.MODIFIED_FILE_SUFFIX;
@@ -179,8 +179,8 @@ public class CheckCircuitTask extends MpsatChainTask {
 
                     // Generating .g for the whole system (circuit and environment) without internal signals
                     sysModStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + fileSuffix + stgFileExtension);
-                    placesModFile = new File(directory, StgUtils.COMP_FILE_PREFIX + fileSuffix + StgUtils.COMP_FILE_EXTENSION);
-                    pcompModResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envModStgFile, sysModStgFile, placesModFile, directory, monitor);
+                    compModFile = new File(directory, StgUtils.COMP_FILE_PREFIX + fileSuffix + StgUtils.COMP_FILE_EXTENSION);
+                    pcompModResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envModStgFile, sysModStgFile, compModFile, directory, monitor);
                     if (pcompModResult.getOutcome() != Outcome.SUCCESS) {
                         if (pcompModResult.getOutcome() == Outcome.CANCEL) {
                             return new Result<MpsatChainResult>(Outcome.CANCEL);
@@ -299,12 +299,12 @@ public class CheckCircuitTask extends MpsatChainTask {
 
             // Check for interface conformation (only if requested and if the environment is specified)
             if ((envStg != null) && checkConformation) {
-                CompositionData compositionData = new CompositionData(placesModFile);
+                CompositionData compositionData = new CompositionData(compModFile);
                 ComponentData devComponentData = compositionData.getComponentData(devStgFile);
                 Set<String> devPlaceNames = devComponentData.getDstPlaces();
                 MpsatParameters conformationSettings = MpsatParameters.getConformationSettings(devPlaceNames);
                 MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
-                        unfoldingModFile, directory, sysModStgFile, placesModFile);
+                        unfoldingModFile, directory, sysModStgFile, compModFile);
                 SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
                 Result<? extends ExternalProcessResult>  mpsatConformationResult = manager.execute(
                         mpsatConformationTask, "Running conformation check [MPSat]", mpsatMonitor);

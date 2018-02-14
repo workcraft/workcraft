@@ -39,6 +39,11 @@ public class MpsatConformationVerificationCommand extends AbstractVerificationCo
     }
 
     @Override
+    public int getPriority() {
+        return 4;
+    }
+
+    @Override
     public Position getPosition() {
         return Position.BOTTOM;
     }

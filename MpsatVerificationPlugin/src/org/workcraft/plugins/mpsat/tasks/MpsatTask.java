@@ -61,13 +61,13 @@ public class MpsatTask implements Task<ExternalProcessResult> {
     public static final String FILE_NET_G = "net.g";
     // IMPORTANT: The name of output file must be mpsat.g -- this is not configurable on MPSat side.
     public static final String FILE_MPSAT_G = "mpsat.g";
-    public static final String FILE_PLACES = "places.list";
+    public static final String FILE_COMP_XML = "comp.xml";
 
     private final String[] args;
     private final File unfoldingFile;
     private final File directory;
     private final File netFile;
-    private final File placesFile;
+    private final File compFile;
 
     public MpsatTask(String[] args, File unfoldingFile, File directory) {
         this(args, unfoldingFile, directory, null, null);
@@ -77,7 +77,7 @@ public class MpsatTask implements Task<ExternalProcessResult> {
         this(args, unfoldingFile, directory, netFile, null);
     }
 
-    public MpsatTask(String[] args, File unfoldingFile, File directory, File netFile, File placesFile) {
+    public MpsatTask(String[] args, File unfoldingFile, File directory, File netFile, File compFile) {
         this.args = args;
         this.unfoldingFile = unfoldingFile;
         if (directory == null) {
@@ -86,7 +86,7 @@ public class MpsatTask implements Task<ExternalProcessResult> {
         }
         this.directory = directory;
         this.netFile = netFile;
-        this.placesFile = placesFile;
+        this.compFile = compFile;
     }
 
     @Override
@@ -148,8 +148,8 @@ public class MpsatTask implements Task<ExternalProcessResult> {
                     if ((netFile != null) && netFile.exists()) {
                         fileContentMap.put(FILE_NET_G, FileUtils.readAllBytes(netFile));
                     }
-                    if ((placesFile != null) && placesFile.exists()) {
-                        fileContentMap.put(FILE_PLACES, FileUtils.readAllBytes(placesFile));
+                    if ((compFile != null) && compFile.exists()) {
+                        fileContentMap.put(FILE_COMP_XML, FileUtils.readAllBytes(compFile));
                     }
                     File outFile = new File(directory, FILE_MPSAT_G);
                     if (outFile.exists()) {

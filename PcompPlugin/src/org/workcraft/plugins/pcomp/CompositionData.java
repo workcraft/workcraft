@@ -1,8 +1,12 @@
 package org.workcraft.plugins.pcomp;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.HashMap;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -17,18 +21,20 @@ import org.xml.sax.SAXException;
 
 public class CompositionData {
 
-    HashMap<String, ComponentData> fileToComponent = new HashMap<>();
+    LinkedHashMap<String, ComponentData> fileToComponent = new LinkedHashMap<>();
 
-    public CompositionData(File file) {
+    public CompositionData(File file) throws FileNotFoundException {
+        this(new FileInputStream(file));
+    }
+
+    public CompositionData(InputStream is) {
         Document doc;
         try {
             DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
             DocumentBuilder db = dbf.newDocumentBuilder();
-            doc = db.parse(file);
-        } catch (ParserConfigurationException | SAXException e) {
+            doc = db.parse(is);
+        } catch (ParserConfigurationException | SAXException | IOException e) {
             e.printStackTrace();
-            return;
-        } catch (IOException e) {
             return;
         }
 
@@ -55,6 +61,11 @@ public class CompositionData {
 
     public ComponentData getComponentData(String fileName) {
         return fileToComponent.get(fileName);
+    }
+
+    public ComponentData getComponentData(int index) {
+        ArrayList<ComponentData> components = new ArrayList<>(fileToComponent.values());
+        return components.get(index);
     }
 
 }

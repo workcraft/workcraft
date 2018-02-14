@@ -1,10 +1,7 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.List;
 
@@ -20,6 +17,8 @@ import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.MpsatSolution;
 import org.workcraft.plugins.mpsat.MpsatUtils;
 import org.workcraft.plugins.mpsat.gui.MpsatReachibilityDialog;
+import org.workcraft.plugins.pcomp.ComponentData;
+import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.LabelParser;
@@ -73,22 +72,16 @@ final class MpsatReachabilityResultHandler implements Runnable {
 
     private HashSet<StgPlace> getDevPlaces(StgModel stg) {
         HashSet<StgPlace> devPlaces = new HashSet<>();
-        final byte[] content = result.getReturnValue().getFileData(MpsatTask.FILE_PLACES);
+        final byte[] content = result.getReturnValue().getFileData(MpsatTask.FILE_COMP_XML);
         if (content != null) {
             InputStream is = new ByteArrayInputStream(content);
-            BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            String line = null;
-            try {
-                // First line is for device places, second - for environment places.
-                line = br.readLine();
-                for (String ref: line.trim().split("\\s")) {
-                    Node node = stg.getNodeByReference(ref);
-                    if (node instanceof StgPlace) {
-                        devPlaces.add((StgPlace) node);
-                    }
+            CompositionData compositionData = new CompositionData(is);
+            ComponentData componentData = compositionData.getComponentData(0);
+            for (String ref: componentData.getSrcPlaces()) {
+                Node node = stg.getNodeByReference(ref);
+                if (node instanceof StgPlace) {
+                    devPlaces.add((StgPlace) node);
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
         return devPlaces;
@@ -168,71 +161,73 @@ final class MpsatReachabilityResultHandler implements Runnable {
 
     private void improveOutputPersistencySolution(MpsatSolution solution) {
         StgModel stg = getInputStg();
-        if ((solution != null) && (stg != null)) {
-            Trace mainTrace = solution.getMainTrace();
-            if (!fireTrace(stg, mainTrace)) {
-                LogUtils.logWarning("Cannot execute output persistency trace: " + mainTrace);
-            } else {
-                LogUtils.logMessage("Extending output persistency violation trace: ");
-                LogUtils.logMessage("  original:" + mainTrace);
-                HashSet<String> enabledLocalSignals = getEnabledLocalSignals(stg);
-                for (SignalTransition transition: getEnabledSignalTransitions(stg)) {
-                    stg.fire(transition);
-                    HashSet<String> nonpersistentLocalSignals = new HashSet<>(enabledLocalSignals);
-                    nonpersistentLocalSignals.remove(transition.getSignalName());
-                    nonpersistentLocalSignals.removeAll(getEnabledLocalSignals(stg));
-                    if (!nonpersistentLocalSignals.isEmpty()) {
-                        String signalList = ReferenceHelper.getReferencesAsString(nonpersistentLocalSignals);
-                        if (nonpersistentLocalSignals.size() > 1) {
-                            solution.setComment("Non-persistent signals " + signalList);
-                        } else {
-                            solution.setComment("Non-persistent signal '" + signalList + "'");
-                        }
-                        mainTrace.add(stg.getNodeReference(transition));
-                        break;
-                    }
-                    stg.unFire(transition);
-                }
-                LogUtils.logMessage("  extended:" + mainTrace);
-            }
+        if ((solution == null) || (stg == null)) {
+            return;
         }
+        Trace mainTrace = solution.getMainTrace();
+        if (!fireTrace(stg, mainTrace)) {
+            LogUtils.logWarning("Cannot execute output persistency trace: " + mainTrace);
+            return;
+        }
+        LogUtils.logMessage("Extending output persistency violation trace: ");
+        LogUtils.logMessage("  original:" + mainTrace);
+        HashSet<String> enabledLocalSignals = getEnabledLocalSignals(stg);
+        for (SignalTransition transition: getEnabledSignalTransitions(stg)) {
+            stg.fire(transition);
+            HashSet<String> nonpersistentLocalSignals = new HashSet<>(enabledLocalSignals);
+            nonpersistentLocalSignals.remove(transition.getSignalName());
+            nonpersistentLocalSignals.removeAll(getEnabledLocalSignals(stg));
+            if (!nonpersistentLocalSignals.isEmpty()) {
+                String signalList = ReferenceHelper.getReferencesAsString(nonpersistentLocalSignals);
+                if (nonpersistentLocalSignals.size() > 1) {
+                    solution.setComment("Non-persistent signals " + signalList);
+                } else {
+                    solution.setComment("Non-persistent signal '" + signalList + "'");
+                }
+                mainTrace.add(stg.getNodeReference(transition));
+                break;
+            }
+            stg.unFire(transition);
+        }
+        LogUtils.logMessage("  extended:" + mainTrace);
     }
 
     private void improveConformationSolution(MpsatSolution solution) {
         StgModel stg = getInputStg();
+        if ((solution == null) || (stg == null)) {
+            return;
+        }
+        Trace mainTrace = solution.getMainTrace();
+        if (!fireTrace(stg, mainTrace)) {
+            LogUtils.logWarning("Cannot execute conformation violation trace: " + mainTrace);
+            return;
+        }
+        LogUtils.logMessage("Extending conformation violation trace: ");
+        LogUtils.logMessage("  original: " + mainTrace);
+        HashSet<String> enabledOutputSignals = getEnabledOutputSignals(stg);
         HashSet<StgPlace> devPlaces = getDevPlaces(stg);
-        if ((solution != null) && (stg != null)) {
-            Trace mainTrace = solution.getMainTrace();
-            if (!fireTrace(stg, mainTrace)) {
-                LogUtils.logWarning("Cannot execute conformation violation trace: " + mainTrace);
-            } else {
-                LogUtils.logMessage("Extending conformation violation trace: ");
-                LogUtils.logMessage("  original:" + mainTrace);
-                HashSet<String> enabledOutputSignals = getEnabledOutputSignals(stg);
-                for (SignalTransition transition: getDisabledOutputTransitions(stg)) {
-                    String signalName = transition.getSignalName();
-                    if (!enabledOutputSignals.contains(signalName)) {
-                        boolean isDevEnabled = true;
-                        for (Node predNode: stg.getPreset(transition)) {
-                            if (predNode instanceof StgPlace) {
-                                StgPlace predPlace = (StgPlace) predNode;
-                                if ((predPlace.getTokens() == 0) && devPlaces.contains(predPlace)) {
-                                    isDevEnabled = false;
-                                    break;
-                                }
-                            }
-                        }
-                        if (isDevEnabled) {
-                            String signal = transition.getSignalName();
-                            solution.setComment("Unexpected change of output '" + signal + "'");
-                            mainTrace.add(stg.getNodeReference(transition));
+        for (SignalTransition transition: getDisabledOutputTransitions(stg)) {
+            String signalName = transition.getSignalName();
+            if (!enabledOutputSignals.contains(signalName)) {
+                boolean isDevEnabled = true;
+                for (Node predNode: stg.getPreset(transition)) {
+                    if (predNode instanceof StgPlace) {
+                        StgPlace predPlace = (StgPlace) predNode;
+                        if ((predPlace.getTokens() == 0) && devPlaces.contains(predPlace)) {
+                            isDevEnabled = false;
                             break;
                         }
                     }
                 }
-                LogUtils.logMessage("  extended:" + mainTrace);
+                if (isDevEnabled) {
+                    String signal = transition.getSignalName();
+                    solution.setComment("Unexpected change of output '" + signal + "'");
+                    mainTrace.add(stg.getNodeReference(transition));
+                    break;
+                }
             }
         }
+        LogUtils.logMessage("  extended: " + mainTrace);
     }
 
     @Override
