@@ -15,7 +15,7 @@ import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.punf.tasks.PunfTask;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
@@ -94,7 +94,7 @@ public class MpsatNwayConformationTask implements Task<MpsatChainResult> {
             PcompTask pcompTask = new PcompTask(stgFiles.toArray(new File[0]), stgFile, compFile,
                     ConversionMode.OUTPUT, false, false, directory);
 
-            Result<? extends ExternalProcessResult> pcompResult = taskManager.execute(
+            Result<? extends ExternalProcessOutput> pcompResult = taskManager.execute(
                     pcompTask, "Running parallel composition [PComp]", subtaskMonitor);
 
             if (pcompResult.getOutcome() != Outcome.SUCCESS) {
@@ -109,7 +109,7 @@ public class MpsatNwayConformationTask implements Task<MpsatChainResult> {
             // Generate unfolding
             File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + PunfTask.PNML_FILE_EXTENSION);
             PunfTask punfTask = new PunfTask(stgFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
-            Result<? extends ExternalProcessResult> punfResult = taskManager.execute(
+            Result<? extends ExternalProcessOutput> punfResult = taskManager.execute(
                     punfTask, "Unfolding .g", subtaskMonitor);
 
             if (punfResult.getOutcome() != Outcome.SUCCESS) {
@@ -133,7 +133,7 @@ public class MpsatNwayConformationTask implements Task<MpsatChainResult> {
             MpsatParameters conformationSettings = MpsatParameters.getNwayConformationSettings(allPlaceSets, allOutputSets);
             MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
                     unfoldingFile, directory, stgFile, compFile);
-            Result<? extends ExternalProcessResult>  mpsatConformationResult = taskManager.execute(
+            Result<? extends ExternalProcessOutput>  mpsatConformationResult = taskManager.execute(
                     mpsatConformationTask, "Running conformation check [MPSat]", subtaskMonitor);
 
             if (mpsatConformationResult.getOutcome() != Outcome.SUCCESS) {
@@ -145,7 +145,7 @@ public class MpsatNwayConformationTask implements Task<MpsatChainResult> {
             }
             monitor.progressUpdate(0.80);
 
-            MpsatResultParser mpsatConformationParser = new MpsatResultParser(mpsatConformationResult.getReturnValue());
+            MpsatResultParser mpsatConformationParser = new MpsatResultParser(mpsatConformationResult.getPayload());
             if (!mpsatConformationParser.getSolutions().isEmpty()) {
                 return new Result<MpsatChainResult>(Outcome.SUCCESS,
                         new MpsatChainResult(exportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings,

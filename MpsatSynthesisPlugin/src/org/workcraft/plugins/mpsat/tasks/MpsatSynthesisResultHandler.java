@@ -21,7 +21,7 @@ import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.mpsat.MpsatSynthesisMode;
 import org.workcraft.plugins.mpsat.MpsatSynthesisSettings;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgDescriptor;
@@ -59,9 +59,9 @@ public class MpsatSynthesisResultHandler extends AbstractExtendedResultHandler<M
     }
 
     private WorkspaceEntry handleSuccess(final Result<? extends MpsatSynthesisChainResult> chainResult) {
-        MpsatSynthesisChainResult returnValue = chainResult.getReturnValue();
+        MpsatSynthesisChainResult returnValue = chainResult.getPayload();
         MpsatSynthesisMode mpsatMode = returnValue.getMpsatSettings().getMode();
-        ExternalProcessResult mpsatReturnValue = returnValue.getMpsatResult().getReturnValue();
+        ExternalProcessOutput mpsatReturnValue = returnValue.getMpsatResult().getPayload();
         WorkspaceEntry synthResult = null;
         switch (mpsatMode) {
         case COMPLEX_GATE_IMPLEMENTATION:
@@ -83,10 +83,10 @@ public class MpsatSynthesisResultHandler extends AbstractExtendedResultHandler<M
         return synthResult;
     }
 
-    private WorkspaceEntry handleSynthesisResult(ExternalProcessResult mpsatResult,
+    private WorkspaceEntry handleSynthesisResult(ExternalProcessOutput mpsatResult,
             boolean sequentialAssign, RenderType renderType) {
 
-        final String log = new String(mpsatResult.getOutput());
+        final String log = new String(mpsatResult.getStdout());
         if ((log != null) && !log.isEmpty()) {
             System.out.println(log);
             System.out.println();
@@ -95,7 +95,7 @@ public class MpsatSynthesisResultHandler extends AbstractExtendedResultHandler<M
         return handleVerilogSynthesisResult(mpsatResult, sequentialAssign, renderType);
     }
 
-    private WorkspaceEntry handleStgSynthesisResult(ExternalProcessResult mpsatResult) {
+    private WorkspaceEntry handleStgSynthesisResult(ExternalProcessOutput mpsatResult) {
         WorkspaceEntry dstWe = null;
         if (MpsatSynthesisSettings.getOpenSynthesisStg()) {
             byte[] dstOutput = mpsatResult.getFileData(MpsatSynthesisTask.STG_FILE_NAME);
@@ -121,7 +121,7 @@ public class MpsatSynthesisResultHandler extends AbstractExtendedResultHandler<M
         return dstWe;
     }
 
-    private WorkspaceEntry handleVerilogSynthesisResult(ExternalProcessResult mpsatResult,
+    private WorkspaceEntry handleVerilogSynthesisResult(ExternalProcessOutput mpsatResult,
             boolean sequentialAssign, RenderType renderType) {
 
         WorkspaceEntry dstWe = null;
@@ -201,10 +201,10 @@ public class MpsatSynthesisResultHandler extends AbstractExtendedResultHandler<M
             // Exception was thrown somewhere in the chain task run() method (not in any of the subtasks)
             errorMessage += ERROR_CAUSE_PREFIX + genericCause.toString();
         } else {
-            final MpsatSynthesisChainResult returnValue = result.getReturnValue();
+            final MpsatSynthesisChainResult returnValue = result.getPayload();
             final Result<? extends Object> exportResult = (returnValue == null) ? null : returnValue.getExportResult();
-            final Result<? extends ExternalProcessResult> punfResult = (returnValue == null) ? null : returnValue.getPunfResult();
-            final Result<? extends ExternalProcessResult> mpsatResult = (returnValue == null) ? null : returnValue.getMpsatResult();
+            final Result<? extends ExternalProcessOutput> punfResult = (returnValue == null) ? null : returnValue.getPunfResult();
+            final Result<? extends ExternalProcessOutput> mpsatResult = (returnValue == null) ? null : returnValue.getMpsatResult();
             if ((exportResult != null) && (exportResult.getOutcome() == Outcome.FAILURE)) {
                 errorMessage += "\n\nCould not export the model as a .g file.";
                 final Throwable exportCause = exportResult.getCause();
@@ -217,7 +217,7 @@ public class MpsatSynthesisResultHandler extends AbstractExtendedResultHandler<M
                 if (punfCause != null) {
                     errorMessage += ERROR_CAUSE_PREFIX + punfCause.toString();
                 } else {
-                    final ExternalProcessResult punfReturnValue = punfResult.getReturnValue();
+                    final ExternalProcessOutput punfReturnValue = punfResult.getPayload();
                     if (punfReturnValue != null) {
                         final String punfError = punfReturnValue.getErrorsHeadAndTail();
                         errorMessage += ERROR_CAUSE_PREFIX + punfError;
@@ -229,7 +229,7 @@ public class MpsatSynthesisResultHandler extends AbstractExtendedResultHandler<M
                 if (mpsatCause != null) {
                     errorMessage += ERROR_CAUSE_PREFIX + mpsatCause.toString();
                 } else {
-                    final ExternalProcessResult mpsatReturnValue = mpsatResult.getReturnValue();
+                    final ExternalProcessOutput mpsatReturnValue = mpsatResult.getPayload();
                     if (mpsatReturnValue != null) {
                         final String mpsatError = mpsatReturnValue.getErrorsHeadAndTail();
                         errorMessage += ERROR_CAUSE_PREFIX + mpsatError;

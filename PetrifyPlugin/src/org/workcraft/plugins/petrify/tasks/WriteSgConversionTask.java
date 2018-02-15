@@ -15,7 +15,7 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.interop.SgImporter;
 import org.workcraft.plugins.petri.PetriNetModel;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -103,12 +103,12 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
 
             while (true) {
                 WriteSgTask writeSgTask = new WriteSgTask(writeSgOptions, petriFile, null, null);
-                Result<? extends ExternalProcessResult> writeSgResult = framework.getTaskManager().execute(
+                Result<? extends ExternalProcessOutput> writeSgResult = framework.getTaskManager().execute(
                         writeSgTask, "Building state graph", subtaskMonitor);
 
                 if (writeSgResult.getOutcome() == Outcome.SUCCESS) {
                     try {
-                        ByteArrayInputStream in = new ByteArrayInputStream(writeSgResult.getReturnValue().getOutput());
+                        ByteArrayInputStream in = new ByteArrayInputStream(writeSgResult.getPayload().getStdout());
                         final Fst fst = new SgImporter().importSG(in);
                         return Result.success(new WriteSgConversionResult(null, fst));
                     } catch (DeserialisationException e) {
@@ -121,7 +121,7 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
                 if (writeSgResult.getCause() != null) {
                     return Result.exception(writeSgResult.getCause());
                 } else {
-                    final String errorMessages = new String(writeSgResult.getReturnValue().getErrors());
+                    final String errorMessages = new String(writeSgResult.getPayload().getStderr());
                     final Matcher matcher = hugeSgPattern.matcher(errorMessages);
                     if (matcher.find()) {
                         final HugeSgRunnable hugeSgRunnable = new HugeSgRunnable(matcher.group(1));

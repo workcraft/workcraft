@@ -14,7 +14,7 @@ import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.punf.tasks.PunfTask;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
@@ -82,7 +82,7 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
             // Generating system .g for custom property check (only if needed)
             File sysStgFile = null;
             File detailsFile = null;
-            Result<? extends ExternalProcessResult>  pcompResult = null;
+            Result<? extends ExternalProcessOutput>  pcompResult = null;
             if (envStg == null) {
                 sysStgFile = devStgFile;
             } else {
@@ -114,7 +114,7 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
             File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + PunfTask.PNML_FILE_EXTENSION);
             PunfTask punfTask = new PunfTask(sysStgFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
             SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<>(monitor);
-            Result<? extends ExternalProcessResult> punfResult = manager.execute(punfTask, "Unfolding .g", punfMonitor);
+            Result<? extends ExternalProcessOutput> punfResult = manager.execute(punfTask, "Unfolding .g", punfMonitor);
 
             if (punfResult.getOutcome() != Outcome.SUCCESS) {
                 if (punfResult.getOutcome() == Outcome.CANCEL) {
@@ -129,7 +129,7 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
             MpsatParameters settings = getSettings();
             MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory), unfoldingFile, directory);
             SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
-            Result<? extends ExternalProcessResult> mpsatResult = manager.execute(
+            Result<? extends ExternalProcessOutput> mpsatResult = manager.execute(
                     mpsatTask, "Running custom property check [MPSat]", mpsatMonitor);
 
             if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
@@ -141,7 +141,7 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
             }
             monitor.progressUpdate(0.50);
 
-            MpsatResultParser mpsatParser = new MpsatResultParser(mpsatResult.getReturnValue());
+            MpsatResultParser mpsatParser = new MpsatResultParser(mpsatResult.getPayload());
             if (!mpsatParser.getSolutions().isEmpty()) {
                 return new Result<MpsatChainResult>(Outcome.SUCCESS,
                         new MpsatChainResult(devExportResult, pcompResult, punfResult, mpsatResult, settings,

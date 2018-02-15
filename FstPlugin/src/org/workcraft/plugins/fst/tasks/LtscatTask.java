@@ -5,7 +5,7 @@ import java.util.ArrayList;
 
 import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.fst.ProcessWindowsSettings;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -37,7 +37,7 @@ public class LtscatTask implements Task<LtscatResult>, ExternalProcessListener {
         // Running the tool through external process interface
         ExternalProcessTask task = new ExternalProcessTask(args, null);
         SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
-        Result<? extends ExternalProcessResult> result = task.run(mon);
+        Result<? extends ExternalProcessOutput> result = task.run(mon);
 
         // Handling the result
         if (result.getOutcome() == Outcome.CANCEL) {
@@ -46,15 +46,15 @@ public class LtscatTask implements Task<LtscatResult>, ExternalProcessListener {
             return new Result<LtscatResult>(Outcome.CANCEL);
         } else {
             final Outcome outcome;
-            if (result.getReturnValue().getReturnCode() == 0) {
+            if (result.getPayload().getReturnCode() == 0) {
                 outcome = Outcome.SUCCESS;
             } else {
                 FileUtils.deleteOnExitRecursively(tmpDir);
                 we.cancelMemento();
                 outcome = Outcome.FAILURE;
             }
-            String stdout = new String(result.getReturnValue().getOutput());
-            String stderr = new String(result.getReturnValue().getErrors());
+            String stdout = new String(result.getPayload().getStdout());
+            String stderr = new String(result.getPayload().getStderr());
             LtscatResult finalResult = new LtscatResult(stderr, stdout);
             return new Result<LtscatResult>(outcome, finalResult);
         }

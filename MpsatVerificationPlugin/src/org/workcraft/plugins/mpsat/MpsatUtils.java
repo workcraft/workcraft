@@ -14,7 +14,7 @@ import org.workcraft.gui.graph.tools.SimulationTool;
 import org.workcraft.plugins.mpsat.PunfResultParser.Cause;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainResult;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
@@ -31,21 +31,21 @@ public class MpsatUtils {
     public static List<MpsatSolution> getCombinedChainSolutions(Result<? extends MpsatCombinedChainResult> combinedChainResult) {
         LinkedList<MpsatSolution> solutions = null;
         if (combinedChainResult != null) {
-            MpsatCombinedChainResult returnValue = combinedChainResult.getReturnValue();
+            MpsatCombinedChainResult returnValue = combinedChainResult.getPayload();
             if (returnValue != null) {
                 if (combinedChainResult.getOutcome() == Outcome.SUCCESS) {
                     solutions = new LinkedList<>();
-                    List<Result<? extends ExternalProcessResult>> mpsatResultList = returnValue.getMpsatResultList();
+                    List<Result<? extends ExternalProcessOutput>> mpsatResultList = returnValue.getMpsatResultList();
                     for (int index = 0; index < mpsatResultList.size(); ++index) {
-                        Result<? extends ExternalProcessResult> mpsatResult = mpsatResultList.get(index);
+                        Result<? extends ExternalProcessOutput> mpsatResult = mpsatResultList.get(index);
                         if (mpsatResult != null) {
                             solutions.addAll(getSolutions(mpsatResult));
                         }
                     }
                 } else  if (combinedChainResult.getOutcome() == Outcome.FAILURE) {
-                    Result<? extends ExternalProcessResult> punfResult = returnValue.getPunfResult();
+                    Result<? extends ExternalProcessOutput> punfResult = returnValue.getPunfResult();
                     if (punfResult != null) {
-                        PunfResultParser prp = new PunfResultParser(punfResult.getReturnValue());
+                        PunfResultParser prp = new PunfResultParser(punfResult.getPayload());
                         Pair<MpsatSolution, PunfResultParser.Cause> punfOutcome = prp.getOutcome();
                         if (punfOutcome != null) {
                             Cause cause = punfOutcome.getSecond();
@@ -73,18 +73,18 @@ public class MpsatUtils {
     public static List<MpsatSolution> getChainSolutions(Result<? extends MpsatChainResult> chainResult) {
         LinkedList<MpsatSolution> solutions = null;
         if (chainResult != null) {
-            MpsatChainResult returnValue = chainResult.getReturnValue();
+            MpsatChainResult returnValue = chainResult.getPayload();
             if (returnValue != null) {
                 if (chainResult.getOutcome() == Outcome.SUCCESS) {
                     solutions = new LinkedList<>();
-                    Result<? extends ExternalProcessResult> mpsatResult = returnValue.getMpsatResult();
+                    Result<? extends ExternalProcessOutput> mpsatResult = returnValue.getMpsatResult();
                     if (mpsatResult != null) {
                         solutions.addAll(getSolutions(mpsatResult));
                     }
                 } else if (chainResult.getOutcome() == Outcome.FAILURE) {
-                    Result<? extends ExternalProcessResult> punfResult = returnValue.getPunfResult();
+                    Result<? extends ExternalProcessOutput> punfResult = returnValue.getPunfResult();
                     if (punfResult != null) {
-                        PunfResultParser prp = new PunfResultParser(punfResult.getReturnValue());
+                        PunfResultParser prp = new PunfResultParser(punfResult.getPayload());
                         Pair<MpsatSolution, PunfResultParser.Cause> punfOutcome = prp.getOutcome();
                         if (punfOutcome != null) {
                             Cause cause = punfOutcome.getSecond();
@@ -103,11 +103,11 @@ public class MpsatUtils {
         return solutions;
     }
 
-    public static List<MpsatSolution> getSolutions(Result<? extends ExternalProcessResult> result) {
+    public static List<MpsatSolution> getSolutions(Result<? extends ExternalProcessOutput> result) {
         LinkedList<MpsatSolution> solutions = null;
         if ((result != null) && (result.getOutcome() == Outcome.SUCCESS)) {
             solutions = new LinkedList<>();
-            ExternalProcessResult returnValue = result.getReturnValue();
+            ExternalProcessOutput returnValue = result.getPayload();
             if (returnValue != null) {
                 solutions.addAll(getSolutions(returnValue));
             }
@@ -115,7 +115,7 @@ public class MpsatUtils {
         return solutions;
     }
 
-    public static List<MpsatSolution> getSolutions(ExternalProcessResult value) {
+    public static List<MpsatSolution> getSolutions(ExternalProcessOutput value) {
         MpsatResultParser mdp = new MpsatResultParser(value);
         return mdp.getSolutions();
     }

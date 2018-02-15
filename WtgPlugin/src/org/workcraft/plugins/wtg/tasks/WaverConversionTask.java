@@ -6,7 +6,7 @@ import java.io.File;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.interop.Exporter;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgImporter;
@@ -66,12 +66,12 @@ public class WaverConversionTask implements Task<WaverConversionResult> {
 
             // Generate STG
             WaverTask waverTask = new WaverTask(wtgFile, null, null);
-            Result<? extends ExternalProcessResult> waverResult = framework.getTaskManager().execute(
+            Result<? extends ExternalProcessOutput> waverResult = framework.getTaskManager().execute(
                     waverTask, "Building state graph", subtaskMonitor);
 
             if (waverResult.getOutcome() == Outcome.SUCCESS) {
                 try {
-                    ByteArrayInputStream in = new ByteArrayInputStream(waverResult.getReturnValue().getOutput());
+                    ByteArrayInputStream in = new ByteArrayInputStream(waverResult.getPayload().getStdout());
                     final StgModel stg = new StgImporter().importStg(in);
                     return Result.success(new WaverConversionResult(null, (Stg) stg));
                 } catch (DeserialisationException e) {

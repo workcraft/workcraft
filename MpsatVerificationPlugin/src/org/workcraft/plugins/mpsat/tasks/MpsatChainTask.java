@@ -9,7 +9,7 @@ import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -67,7 +67,7 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
             String unfoldingExtension = useLegacyMci ? PunfTask.MCI_FILE_EXTENSION : PunfTask.PNML_FILE_EXTENSION;
             File unfoldingFile = new File(directory, "unfolding" + unfoldingExtension);
             PunfTask punfTask = new PunfTask(netFile.getAbsolutePath(), unfoldingFile.getAbsolutePath(), useLegacyMci);
-            Result<? extends ExternalProcessResult> punfResult = manager.execute(punfTask, "Unfolding .g", subtaskMonitor);
+            Result<? extends ExternalProcessOutput> punfResult = manager.execute(punfTask, "Unfolding .g", subtaskMonitor);
 
             if (punfResult.getOutcome() != Outcome.SUCCESS) {
                 if (punfResult.getOutcome() == Outcome.CANCEL) {
@@ -81,7 +81,7 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
             // Run MPSat on the generated unfolding
             MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory),
                     unfoldingFile, directory, netFile);
-            Result<? extends ExternalProcessResult> mpsatResult = manager.execute(
+            Result<? extends ExternalProcessOutput> mpsatResult = manager.execute(
                     mpsatTask, "Running verification [MPSat]", subtaskMonitor);
 
             if (mpsatResult.getOutcome() != Outcome.SUCCESS) {

@@ -22,10 +22,10 @@ public class ShuttersResultHandler extends BasicProgressMonitor<ShuttersResult> 
     public void finished(Result<? extends ShuttersResult> result) {
         super.finished(result);
         if (result.getOutcome() == Outcome.SUCCESS) {
-            System.out.println(result.getReturnValue().getStdout());
+            System.out.println(result.getPayload().getStdout());
         } else if (result.getOutcome() == Outcome.FAILURE) {
             FileUtils.deleteOnExitRecursively(tmpDir);
-            String errorMessage = result.getReturnValue().getError();
+            String errorMessage = result.getPayload().getError();
             Framework framework = Framework.getInstance();
             JOptionPane.showMessageDialog(framework.getMainWindow(), errorMessage, "Shutters error", JOptionPane.ERROR_MESSAGE);
         }

@@ -14,7 +14,7 @@ import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.mpsat.MpsatSolution;
 import org.workcraft.plugins.mpsat.MpsatUtils;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.tools.Core;
 import org.workcraft.plugins.stg.tools.EncodingConflictAnalyserTool;
 import org.workcraft.tasks.Result;
@@ -31,16 +31,16 @@ final class MpsatEncodingConflictResultHandler implements Runnable {
             new float[]{0.30f}, new float[]{0.9f, 0.7f, 0.5f}));
 
     private final WorkspaceEntry we;
-    private final Result<? extends ExternalProcessResult> result;
+    private final Result<? extends ExternalProcessOutput> result;
 
-    MpsatEncodingConflictResultHandler(WorkspaceEntry we, Result<? extends ExternalProcessResult> result) {
+    MpsatEncodingConflictResultHandler(WorkspaceEntry we, Result<? extends ExternalProcessOutput> result) {
         this.we = we;
         this.result = result;
     }
 
     @Override
     public void run() {
-        MpsatResultParser mdp = new MpsatResultParser(result.getReturnValue());
+        MpsatResultParser mdp = new MpsatResultParser(result.getPayload());
         List<MpsatSolution> solutions = mdp.getSolutions();
         final Framework framework = Framework.getInstance();
         if (!MpsatUtils.hasTraces(solutions)) {

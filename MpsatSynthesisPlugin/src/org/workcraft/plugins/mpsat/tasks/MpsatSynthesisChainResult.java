@@ -1,20 +1,20 @@
 package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.plugins.mpsat.MpsatSynthesisParameters;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.Result;
 
 public class MpsatSynthesisChainResult {
     private Result<? extends Object> exportResult;
-    private Result<? extends ExternalProcessResult> punfResult;
-    private Result<? extends ExternalProcessResult> mpsatResult;
+    private Result<? extends ExternalProcessOutput> punfResult;
+    private Result<? extends ExternalProcessOutput> mpsatResult;
     private MpsatSynthesisParameters mpsatSettings;
     private String message;
 
     public MpsatSynthesisChainResult(Result<? extends Object> exportResult,
-            Result<? extends ExternalProcessResult> pcompResult,
-            Result<? extends ExternalProcessResult> punfResult,
-            Result<? extends ExternalProcessResult> mpsatResult,
+            Result<? extends ExternalProcessOutput> pcompResult,
+            Result<? extends ExternalProcessOutput> punfResult,
+            Result<? extends ExternalProcessOutput> mpsatResult,
             MpsatSynthesisParameters mpsatSettings, String message) {
 
         this.exportResult = exportResult;
@@ -25,9 +25,9 @@ public class MpsatSynthesisChainResult {
     }
 
     public MpsatSynthesisChainResult(Result<? extends Object> exportResult,
-            Result<? extends ExternalProcessResult> pcompResult,
-            Result<? extends ExternalProcessResult> punfResult,
-            Result<? extends ExternalProcessResult> mpsatResult,
+            Result<? extends ExternalProcessOutput> pcompResult,
+            Result<? extends ExternalProcessOutput> punfResult,
+            Result<? extends ExternalProcessOutput> mpsatResult,
             MpsatSynthesisParameters mpsatSettings) {
 
         this(exportResult, pcompResult, punfResult, mpsatResult, mpsatSettings, null);
@@ -40,11 +40,11 @@ public class MpsatSynthesisChainResult {
     public Result<? extends Object> getExportResult() {
         return exportResult;
     }
-    public Result<? extends ExternalProcessResult> getPunfResult() {
+    public Result<? extends ExternalProcessOutput> getPunfResult() {
         return punfResult;
     }
 
-    public Result<? extends ExternalProcessResult> getMpsatResult() {
+    public Result<? extends ExternalProcessOutput> getMpsatResult() {
         return mpsatResult;
     }
 

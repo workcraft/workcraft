@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -20,7 +20,7 @@ import org.workcraft.util.DialogUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.ToolUtils;
 
-public class MpsatTask implements Task<ExternalProcessResult> {
+public class MpsatTask implements Task<ExternalProcessOutput> {
 
     private static final Pattern patternSuccess = Pattern.compile(
             "(" +
@@ -90,7 +90,7 @@ public class MpsatTask implements Task<ExternalProcessResult> {
     }
 
     @Override
-    public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
+    public Result<? extends ExternalProcessOutput> run(ProgressMonitor<? super ExternalProcessOutput> monitor) {
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
@@ -128,20 +128,20 @@ public class MpsatTask implements Task<ExternalProcessResult> {
         boolean printStdout = MpsatSettings.getPrintStdout();
         boolean printStderr = MpsatSettings.getPrintStderr();
         ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
-        Result<? extends ExternalProcessResult> result = task.run(monitor);
+        Result<? extends ExternalProcessOutput> result = task.run(monitor);
 
         if (result.getOutcome() == Outcome.SUCCESS) {
-            ExternalProcessResult returnValue = result.getReturnValue();
-            int returnCode = returnValue.getReturnCode();
+            ExternalProcessOutput output = result.getPayload();
+            int returnCode = output.getReturnCode();
             // Even if the return code is 0 or 1, still test MPSat output to make sure it has completed successfully.
             boolean success = false;
             if ((returnCode == 0) || (returnCode == 1)) {
-                String output = new String(returnValue.getOutput());
-                Matcher matcherSuccess = patternSuccess.matcher(output);
+                String stdout = new String(output.getStdout());
+                Matcher matcherSuccess = patternSuccess.matcher(stdout);
                 success = matcherSuccess.find();
             }
             if (!success) {
-                return Result.failure(returnValue);
+                return Result.failure(output);
             } else {
                 Map<String, byte[]> fileContentMap = new HashMap<>();
                 try {
@@ -156,13 +156,13 @@ public class MpsatTask implements Task<ExternalProcessResult> {
                         fileContentMap.put(FILE_MPSAT_G, FileUtils.readAllBytes(outFile));
                     }
                 } catch (IOException e) {
-                    return new Result<ExternalProcessResult>(e);
+                    return new Result<ExternalProcessOutput>(e);
                 }
 
-                ExternalProcessResult extResult = new ExternalProcessResult(
-                        returnCode, returnValue.getOutput(), returnValue.getErrors(), fileContentMap);
+                ExternalProcessOutput extendedOutput = new ExternalProcessOutput(
+                        returnCode, output.getStdout(), output.getStderr(), fileContentMap);
 
-                return Result.success(extResult);
+                return Result.success(extendedOutput);
             }
         }
 

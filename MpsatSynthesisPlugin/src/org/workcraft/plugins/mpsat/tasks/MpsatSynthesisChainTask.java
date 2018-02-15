@@ -7,7 +7,7 @@ import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat.MpsatSynthesisParameters;
 import org.workcraft.plugins.punf.tasks.PunfTask;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
@@ -87,7 +87,7 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> 
             // Generate unfolding
             File unfoldingFile = new File(directory, filePrefix + PunfTask.PNML_FILE_EXTENSION);
             PunfTask punfTask = new PunfTask(netFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
-            Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", subtaskMonitor);
+            Result<? extends ExternalProcessOutput> punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", subtaskMonitor);
 
             if (punfResult.getOutcome() != Outcome.SUCCESS) {
                 if (punfResult.getOutcome() == Outcome.CANCEL) {
@@ -102,7 +102,7 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> 
             boolean needLib = settings.getMode().needLib();
             MpsatSynthesisTask mpsatTask = new MpsatSynthesisTask(settings.getMpsatArguments(directory),
                     unfoldingFile.getAbsolutePath(), directory, needLib);
-            Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
+            Result<? extends ExternalProcessOutput> mpsatResult = framework.getTaskManager().execute(
                     mpsatTask, "Running synthesis [MPSat]", subtaskMonitor);
 
             if (mpsatResult.getOutcome() != Outcome.SUCCESS) {

@@ -7,7 +7,7 @@ import java.util.List;
 
 import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.petrify.PetrifySettings;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -16,13 +16,13 @@ import org.workcraft.tasks.Task;
 import org.workcraft.util.DataAccumulator;
 import org.workcraft.util.ToolUtils;
 
-public class WriteSgTask implements Task<ExternalProcessResult>, ExternalProcessListener {
+public class WriteSgTask implements Task<ExternalProcessOutput>, ExternalProcessListener {
     private final List<String> options;
     private final File inputFile;
     private final File outputFile;
     private final File workingDirectory;
 
-    private ProgressMonitor<? super ExternalProcessResult> monitor;
+    private ProgressMonitor<? super ExternalProcessOutput> monitor;
 
     private final DataAccumulator stdoutAccum = new DataAccumulator();
     private final DataAccumulator stderrAccum = new DataAccumulator();
@@ -35,7 +35,7 @@ public class WriteSgTask implements Task<ExternalProcessResult>, ExternalProcess
     }
 
     @Override
-    public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
+    public Result<? extends ExternalProcessOutput> run(ProgressMonitor<? super ExternalProcessOutput> monitor) {
         this.monitor = monitor;
         ArrayList<String> command = new ArrayList<>();
 
@@ -63,12 +63,12 @@ public class WriteSgTask implements Task<ExternalProcessResult>, ExternalProcess
         }
 
         ExternalProcessTask task = new ExternalProcessTask(command, workingDirectory);
-        Result<? extends ExternalProcessResult> res = task.run(monitor);
+        Result<? extends ExternalProcessOutput> res = task.run(monitor);
         if (res.getOutcome() != Outcome.SUCCESS) {
             return res;
         }
 
-        ExternalProcessResult retVal = res.getReturnValue();
+        ExternalProcessOutput retVal = res.getPayload();
         if (retVal.getReturnCode() == 0) {
             return Result.success(retVal);
         } else {

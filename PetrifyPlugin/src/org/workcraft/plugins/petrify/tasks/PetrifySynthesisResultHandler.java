@@ -61,7 +61,7 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
     @Override
     public WorkspaceEntry handleResult(final Result<? extends PetrifySynthesisResult> result) {
         WorkspaceEntry weResult = null;
-        PetrifySynthesisResult petrifyResult = result.getReturnValue();
+        PetrifySynthesisResult petrifyResult = result.getPayload();
         if (result.getOutcome() == Outcome.SUCCESS) {
             weResult = handleSuccess(petrifyResult);
         } else if (result.getOutcome() == Outcome.FAILURE) {

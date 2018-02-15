@@ -18,7 +18,7 @@ import org.workcraft.plugins.petri.PetriNetDescriptor;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.MutexUtils;
@@ -46,7 +46,7 @@ public class PetrifyTransformationResultHandler extends AbstractExtendedResultHa
     public WorkspaceEntry handleResult(final Result<? extends PetrifyTransformationResult> result) {
         WorkspaceEntry weResult = null;
         if (result.getOutcome() == Outcome.SUCCESS) {
-            StgModel stgModel = result.getReturnValue().getResult();
+            StgModel stgModel = result.getPayload().getResult();
             MutexUtils.restoreMutexPlacesByContext(stgModel, mutexes);
             PetriNetModel model = convertToPetriNet ? convertStgToPetriNet(stgModel) : stgModel;
             final ModelDescriptor modelDescriptor = convertToPetriNet ? new PetriNetDescriptor() : new StgDescriptor();
@@ -58,9 +58,9 @@ public class PetrifyTransformationResultHandler extends AbstractExtendedResultHa
             if (result.getCause() != null) {
                 ExceptionDialog.show(result.getCause());
             } else {
-                PetrifyTransformationResult returnValue = result.getReturnValue();
-                Result<? extends ExternalProcessResult> petrifyResult = returnValue.getPetrifyResult();
-                ExternalProcessResult petrifyReturnValue = petrifyResult.getReturnValue();
+                PetrifyTransformationResult returnValue = result.getPayload();
+                Result<? extends ExternalProcessOutput> petrifyResult = returnValue.getPetrifyResult();
+                ExternalProcessOutput petrifyReturnValue = petrifyResult.getPayload();
                 DialogUtils.showWarning("Transformation failed. Petrify output: \n\n" + petrifyReturnValue.getErrorsHeadAndTail());
             }
         }

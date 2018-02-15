@@ -29,7 +29,7 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.interop.DotFormat;
 import org.workcraft.plugins.layout.jj.DotParser;
 import org.workcraft.plugins.layout.jj.ParseException;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -187,10 +187,10 @@ public class DotLayoutCommand extends AbstractLayoutCommand {
             args.add(layout.getAbsolutePath());
             args.add(original.getAbsolutePath());
 
-            Task<ExternalProcessResult> task = new ExternalProcessTask(args, directory);
+            Task<ExternalProcessOutput> task = new ExternalProcessTask(args, directory);
             final Framework framework = Framework.getInstance();
             final TaskManager taskManager = framework.getTaskManager();
-            Result<? extends ExternalProcessResult> res = taskManager.execute(task, "Laying out the graph...");
+            Result<? extends ExternalProcessOutput> res = taskManager.execute(task, "Laying out the graph...");
 
             if (res.getOutcome() == Outcome.CANCEL) {
                 return;
@@ -198,14 +198,14 @@ public class DotLayoutCommand extends AbstractLayoutCommand {
             if (res.getOutcome() == Outcome.FAILURE) {
                 throw new LayoutException("Failed to execute external process:\n" + res.getCause());
             }
-            if (res.getReturnValue().getReturnCode() == 0) {
+            if (res.getPayload().getReturnCode() == 0) {
                 String in = FileUtils.readAllText(layout);
                 applyLayout(in, model);
             } else {
                 throw new LayoutException("External process (dot) failed (code " +
-                    res.getReturnValue().getReturnCode() + ")\n\n" +
-                    new String(res.getReturnValue().getOutput()) + "\n\n" +
-                    new String(res.getReturnValue().getErrors()));
+                    res.getPayload().getReturnCode() + ")\n\n" +
+                    new String(res.getPayload().getStdout()) + "\n\n" +
+                    new String(res.getPayload().getStderr()));
             }
         } catch (IOException | ModelValidationException | SerialisationException e) {
             DialogUtils.showError(e.getMessage());

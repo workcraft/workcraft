@@ -9,7 +9,7 @@ import org.workcraft.plugins.fsm.FsmDescriptor;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.fst.converters.FstToFsmConverter;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.AbstractExtendedResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -28,7 +28,7 @@ public class PetriToFsmConversionResultHandler extends AbstractExtendedResultHan
     public WorkspaceEntry handleResult(final Result<? extends WriteSgConversionResult> result) {
         WorkspaceEntry weResult = null;
         if (result.getOutcome() == Outcome.SUCCESS) {
-            final VisualFst fst = new VisualFst(result.getReturnValue().getConversionResult());
+            final VisualFst fst = new VisualFst(result.getPayload().getConversionResult());
             final VisualFsm fsm = new VisualFsm(new Fsm());
             final FstToFsmConverter converter = new FstToFsmConverter(fst, fsm);
             final MathModel model = converter.getDstModel().getMathModel();
@@ -38,8 +38,8 @@ public class PetriToFsmConversionResultHandler extends AbstractExtendedResultHan
             weResult = framework.createWork(me, path);
         } else if (result.getOutcome() == Outcome.FAILURE) {
             if (result.getCause() == null) {
-                final Result<? extends ExternalProcessResult> writeSgResult = result.getReturnValue().getResult();
-                DialogUtils.showWarning("Petrify output:\n" + writeSgResult.getReturnValue().getErrorsHeadAndTail());
+                final Result<? extends ExternalProcessOutput> writeSgResult = result.getPayload().getResult();
+                DialogUtils.showWarning("Petrify output:\n" + writeSgResult.getPayload().getErrorsHeadAndTail());
             } else {
                 ExceptionDialog.show(result.getCause());
             }

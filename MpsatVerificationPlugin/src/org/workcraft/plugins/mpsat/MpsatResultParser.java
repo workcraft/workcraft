@@ -8,7 +8,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.workcraft.Trace;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 
 public class MpsatResultParser {
 
@@ -44,10 +44,10 @@ public class MpsatResultParser {
             "triggers: .+\\R",
             Pattern.UNIX_LINES);
 
-    public MpsatResultParser(ExternalProcessResult result) {
+    public MpsatResultParser(ExternalProcessOutput result) {
         String mpsatOutput;
         try {
-            mpsatOutput = new String(result.getOutput(), "ISO-8859-1"); // iso-latin-1
+            mpsatOutput = new String(result.getStdout(), "ISO-8859-1"); // iso-latin-1
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }

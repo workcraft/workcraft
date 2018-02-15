@@ -4,7 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 
 import org.workcraft.plugins.pcomp.PcompSettings;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -12,7 +12,7 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.ToolUtils;
 
-public class PcompTask implements Task<ExternalProcessResult> {
+public class PcompTask implements Task<ExternalProcessOutput> {
 
     public enum ConversionMode {
         DUMMY,
@@ -40,7 +40,7 @@ public class PcompTask implements Task<ExternalProcessResult> {
     }
 
     @Override
-    public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
+    public Result<? extends ExternalProcessOutput> run(ProgressMonitor<? super ExternalProcessOutput> monitor) {
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
@@ -88,12 +88,12 @@ public class PcompTask implements Task<ExternalProcessResult> {
         }
 
         ExternalProcessTask task = new ExternalProcessTask(command, directory, false, true);
-        Result<? extends ExternalProcessResult> result = task.run(monitor);
+        Result<? extends ExternalProcessOutput> result = task.run(monitor);
         if (result.getOutcome() != Outcome.SUCCESS) {
             return result;
         }
 
-        ExternalProcessResult returnValue = result.getReturnValue();
+        ExternalProcessOutput returnValue = result.getPayload();
         int returnCode = returnValue.getReturnCode();
         if ((returnCode == 0) || (returnCode == 1)) {
             return Result.success(returnValue);

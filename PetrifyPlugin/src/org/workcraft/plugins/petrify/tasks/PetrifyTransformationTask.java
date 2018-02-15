@@ -20,7 +20,7 @@ import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.plugins.petrify.PetrifyUtils;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
@@ -123,7 +123,7 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationResu
             boolean printStderr = PetrifySettings.getPrintStderr();
             ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
             SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
-            Result<? extends ExternalProcessResult> res = task.run(mon);
+            Result<? extends ExternalProcessOutput> res = task.run(mon);
 
             if (res.getOutcome() == Outcome.SUCCESS) {
                 StgModel outStg = null;
@@ -137,8 +137,8 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationResu
                     }
                 }
                 PetrifyTransformationResult result = new PetrifyTransformationResult(res, outStg);
-                int returnCode = res.getReturnValue().getReturnCode();
-                String errorMessage = new String(res.getReturnValue().getErrors());
+                int returnCode = res.getPayload().getReturnCode();
+                String errorMessage = new String(res.getPayload().getStderr());
                 if ((returnCode != 0) || (errorMessage.contains(">>> ERROR: Cannot solve CSC.\n"))) {
                     return Result.failure(result);
                 }

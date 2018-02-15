@@ -15,7 +15,7 @@ import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.policy.VisualPolicyNet;
 import org.workcraft.plugins.policy.tools.PolicyToPetriConverter;
 import org.workcraft.plugins.punf.tasks.PunfTask;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -69,7 +69,7 @@ public class CheckDeadlockTask extends MpsatChainTask {
 
             File unfoldingFile = new File(directory, "unfolding" + PunfTask.PNML_FILE_EXTENSION);
             PunfTask punfTask = new PunfTask(netFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
-            Result<? extends ExternalProcessResult> punfResult = framework.getTaskManager().execute(
+            Result<? extends ExternalProcessOutput> punfResult = framework.getTaskManager().execute(
                     punfTask, "Unfolding .g", mon);
 
             if (punfResult.getOutcome() != Outcome.SUCCESS) {
@@ -83,20 +83,20 @@ public class CheckDeadlockTask extends MpsatChainTask {
 
             MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory),
                     unfoldingFile, directory);
-            Result<? extends ExternalProcessResult> mpsatResult = framework.getTaskManager().execute(
+            Result<? extends ExternalProcessOutput> mpsatResult = framework.getTaskManager().execute(
                     mpsatTask, "Running deadlock checking [MPSat]", mon);
 
             if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
                 if (mpsatResult.getOutcome() == Outcome.CANCEL) {
                     return new Result<MpsatChainResult>(Outcome.CANCEL);
                 }
-                String errorMessage = mpsatResult.getReturnValue().getErrorsHeadAndTail();
+                String errorMessage = mpsatResult.getPayload().getErrorsHeadAndTail();
                 return new Result<MpsatChainResult>(Outcome.FAILURE,
                         new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings, errorMessage));
             }
             monitor.progressUpdate(0.90);
 
-            MpsatResultParser mdp = new MpsatResultParser(mpsatResult.getReturnValue());
+            MpsatResultParser mdp = new MpsatResultParser(mpsatResult.getPayload());
             if (!mdp.getSolutions().isEmpty()) {
                 return new Result<MpsatChainResult>(Outcome.SUCCESS,
                         new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings, "Policy net has a deadlock"));

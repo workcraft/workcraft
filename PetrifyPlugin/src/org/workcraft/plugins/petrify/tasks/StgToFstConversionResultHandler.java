@@ -11,7 +11,7 @@ import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.FstDescriptor;
 import org.workcraft.plugins.fst.VisualFst;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.AbstractExtendedResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -37,7 +37,7 @@ public class StgToFstConversionResultHandler extends AbstractExtendedResultHandl
     public WorkspaceEntry handleResult(final Result<? extends WriteSgConversionResult> result) {
         WorkspaceEntry weResult = null;
         if (result.getOutcome() == Outcome.SUCCESS) {
-            Fst model = result.getReturnValue().getConversionResult();
+            Fst model = result.getPayload().getConversionResult();
             ModelEntry me = new ModelEntry(new FstDescriptor(), model);
             Path<String> path = task.getWorkspaceEntry().getWorkspacePath();
             Framework framework = Framework.getInstance();
@@ -51,8 +51,8 @@ public class StgToFstConversionResultHandler extends AbstractExtendedResultHandl
             if (result.getCause() != null) {
                 ExceptionDialog.show(result.getCause());
             } else {
-                final Result<? extends ExternalProcessResult> petrifyResult = result.getReturnValue().getResult();
-                DialogUtils.showWarning("Petrify output:\n" + petrifyResult.getReturnValue().getErrorsHeadAndTail());
+                final Result<? extends ExternalProcessOutput> petrifyResult = result.getPayload().getResult();
+                DialogUtils.showWarning("Petrify output:\n" + petrifyResult.getPayload().getErrorsHeadAndTail());
             }
         }
         return weResult;

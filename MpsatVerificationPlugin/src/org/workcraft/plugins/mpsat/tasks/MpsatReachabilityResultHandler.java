@@ -20,7 +20,7 @@ import org.workcraft.plugins.mpsat.gui.MpsatReachibilityDialog;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
@@ -38,10 +38,10 @@ import org.workcraft.workspace.WorkspaceEntry;
 final class MpsatReachabilityResultHandler implements Runnable {
 
     private final WorkspaceEntry we;
-    private final Result<? extends ExternalProcessResult> result;
+    private final Result<? extends ExternalProcessOutput> result;
     private final MpsatParameters settings;
 
-    MpsatReachabilityResultHandler(WorkspaceEntry we, Result<? extends ExternalProcessResult> result, MpsatParameters settings) {
+    MpsatReachabilityResultHandler(WorkspaceEntry we, Result<? extends ExternalProcessOutput> result, MpsatParameters settings) {
         this.we = we;
         this.result = result;
         this.settings = settings;
@@ -58,7 +58,7 @@ final class MpsatReachabilityResultHandler implements Runnable {
     }
 
     private StgModel getInputStg() {
-        final byte[] content = result.getReturnValue().getFileData(MpsatTask.FILE_NET_G);
+        final byte[] content = result.getPayload().getFileData(MpsatTask.FILE_NET_G);
         if (content == null) {
             return null;
         }
@@ -72,7 +72,7 @@ final class MpsatReachabilityResultHandler implements Runnable {
 
     private HashSet<StgPlace> getDevPlaces(StgModel stg) {
         HashSet<StgPlace> devPlaces = new HashSet<>();
-        final byte[] content = result.getReturnValue().getFileData(MpsatTask.FILE_COMP_XML);
+        final byte[] content = result.getPayload().getFileData(MpsatTask.FILE_COMP_XML);
         if (content != null) {
             InputStream is = new ByteArrayInputStream(content);
             CompositionData compositionData = new CompositionData(is);
@@ -232,7 +232,7 @@ final class MpsatReachabilityResultHandler implements Runnable {
 
     @Override
     public void run() {
-        MpsatResultParser mrp = new MpsatResultParser(result.getReturnValue());
+        MpsatResultParser mrp = new MpsatResultParser(result.getPayload());
         List<MpsatSolution> solutions = mrp.getSolutions();
         boolean isConsistency = settings.getMode() == MpsatMode.STG_REACHABILITY_CONSISTENCY;
         boolean isOutputPersistency = settings.getMode() == MpsatMode.STG_REACHABILITY_OUTPUT_PERSISTENCY;

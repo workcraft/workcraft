@@ -40,8 +40,8 @@ public class ScencoResultHandler extends BasicProgressMonitor<ScencoResult> {
     public void finished(Result<? extends ScencoResult> result) {
         super.finished(result);
         if (result.getOutcome() == Outcome.SUCCESS) {
-            String[] stdoutLines = result.getReturnValue().getStdout().split("\n");
-            String resultDirectory = result.getReturnValue().getResultDirectory();
+            String[] stdoutLines = result.getPayload().getStdout().split("\n");
+            String resultDirectory = result.getPayload().getResultDirectory();
             solver.handleResult(stdoutLines, resultDirectory);
 
             // Import Verilog file into circuit
@@ -73,11 +73,11 @@ public class ScencoResultHandler extends BasicProgressMonitor<ScencoResult> {
                 }
             }
         } else if (result.getOutcome() == Outcome.FAILURE) {
-            final String errorMessage = getErrorMessage(result.getReturnValue());
+            final String errorMessage = getErrorMessage(result.getPayload());
 
             // In case of an internal error, activate automatically verbose mode
             if (errorMessage.equals(INTERNAL_ERROR_MSG)) {
-                final String[] sentence = result.getReturnValue().getStdout().split("\n");
+                final String[] sentence = result.getPayload().getStdout().split("\n");
                 for (int i = 0; i < sentence.length; i++) {
                     System.out.println(sentence[i]);
                 }

@@ -11,7 +11,7 @@ import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -76,7 +76,7 @@ public class MpsatCombinedChainTask implements Task<MpsatCombinedChainResult> {
 
             File unfoldingFile = new File(directory, "unfolding" + unfoldingExtension);
             PunfTask punfTask = new PunfTask(netFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
-            Result<? extends ExternalProcessResult> punfResult = taskManager.execute(punfTask, "Unfolding .g", subtaskMonitor);
+            Result<? extends ExternalProcessOutput> punfResult = taskManager.execute(punfTask, "Unfolding .g", subtaskMonitor);
 
             if (punfResult.getOutcome() != Outcome.SUCCESS) {
                 if (punfResult.getOutcome() == Outcome.CANCEL) {
@@ -88,10 +88,10 @@ public class MpsatCombinedChainTask implements Task<MpsatCombinedChainResult> {
             monitor.progressUpdate(0.66);
 
             // Run MPSat on the generated unfolding
-            ArrayList<Result<? extends ExternalProcessResult>> mpsatResultList = new ArrayList<>(settingsList.size());
+            ArrayList<Result<? extends ExternalProcessOutput>> mpsatResultList = new ArrayList<>(settingsList.size());
             for (MpsatParameters settings: settingsList) {
                 MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory), unfoldingFile, directory, netFile);
-                Result<? extends ExternalProcessResult> mpsatResult = taskManager.execute(
+                Result<? extends ExternalProcessOutput> mpsatResult = taskManager.execute(
                         mpsatTask, "Running verification [MPSat]", subtaskMonitor);
                 mpsatResultList.add(mpsatResult);
                 if (mpsatResult.getOutcome() != Outcome.SUCCESS) {

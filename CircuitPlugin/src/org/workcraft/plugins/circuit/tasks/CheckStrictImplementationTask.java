@@ -20,7 +20,7 @@ import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.punf.tasks.PunfTask;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.plugins.stg.interop.StgFormat;
@@ -73,7 +73,7 @@ public class CheckStrictImplementationTask extends MpsatChainTask {
             monitor.progressUpdate(0.20);
 
             // Generate unfolding
-            Result<? extends ExternalProcessResult> punfResult = null;
+            Result<? extends ExternalProcessOutput> punfResult = null;
             final TaskManager taskManager = framework.getTaskManager();
             File unfoldingFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + PunfTask.PNML_FILE_EXTENSION);
             PunfTask punfTask = new PunfTask(envStgFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
@@ -106,7 +106,7 @@ public class CheckStrictImplementationTask extends MpsatChainTask {
             MpsatTask mpsatTask = new MpsatTask(mpsatSettings.getMpsatArguments(directory),
                     unfoldingFile, directory, envStgFile);
             SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
-            Result<? extends ExternalProcessResult>  mpsatResult = taskManager.execute(
+            Result<? extends ExternalProcessOutput>  mpsatResult = taskManager.execute(
                     mpsatTask, "Running strict implementation check [MPSat]", mpsatMonitor);
 
             if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
@@ -118,7 +118,7 @@ public class CheckStrictImplementationTask extends MpsatChainTask {
             }
             monitor.progressUpdate(0.80);
 
-            MpsatResultParser mpsatParser = new MpsatResultParser(mpsatResult.getReturnValue());
+            MpsatResultParser mpsatParser = new MpsatResultParser(mpsatResult.getPayload());
             if (!mpsatParser.getSolutions().isEmpty()) {
                 return new Result<MpsatChainResult>(Outcome.SUCCESS,
                         new MpsatChainResult(envExportResult, null, punfResult, mpsatResult, mpsatSettings,
