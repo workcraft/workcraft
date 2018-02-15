@@ -38,7 +38,7 @@ public class MutexUtils {
             }
         }
         if (!problematicPlaces.isEmpty()) {
-            String problematicPlacesString = ReferenceHelper.getNodesAsString(stg, (Collection) problematicPlaces, 50);
+            String problematicPlacesString = ReferenceHelper.getNodesAsString(stg, problematicPlaces, 50);
             String msg = "The following mutex places may not be implementable by mutex:\n\n" +
                     problematicPlacesString + "\n\nProceed synthesis without these places anyways?";
             if (!DialogUtils.showConfirmError(msg, "Synthesis", false)) {

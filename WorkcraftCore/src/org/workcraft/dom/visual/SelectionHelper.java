@@ -65,7 +65,7 @@ public class SelectionHelper {
         return result;
     }
 
-    public static void selectByReferencedComponents(VisualModel model, HashSet<MathNode> nodes) {
+    public static void selectByReferencedComponents(VisualModel model, HashSet<? extends MathNode> nodes) {
         model.selectNone();
         for (VisualComponent component: Hierarchy.getDescendantsOfType(model.getRoot(), VisualComponent.class)) {
             MathNode node = component.getReferencedComponent();

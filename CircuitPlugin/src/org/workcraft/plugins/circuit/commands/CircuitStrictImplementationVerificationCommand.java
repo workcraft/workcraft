@@ -92,8 +92,8 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
             return false;
         }
         // Make sure that input signals of the circuit are also inputs in the environment STG
-        ArrayList<String> circuitInputSignals = ReferenceHelper.getReferenceList(circuit, (Collection) circuit.getInputPorts());
-        ArrayList<String> circuitOutputSignals = ReferenceHelper.getReferenceList(circuit, (Collection) circuit.getOutputPorts());
+        ArrayList<String> circuitInputSignals = ReferenceHelper.getReferenceList(circuit, circuit.getInputPorts());
+        ArrayList<String> circuitOutputSignals = ReferenceHelper.getReferenceList(circuit, circuit.getOutputPorts());
         StgUtils.restoreInterfaceSignals(envStg, circuitInputSignals, circuitOutputSignals);
 
         // Check that the set of circuit input signals is a subset of STG input signals.

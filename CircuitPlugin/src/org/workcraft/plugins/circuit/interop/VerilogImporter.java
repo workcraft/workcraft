@@ -727,7 +727,7 @@ public class VerilogImporter implements Importer {
                     contact.setIOType(IOType.INPUT);
                 }
             }
-            String contactRefs = ReferenceHelper.getNodesAsString(circuit, (Collection) wire.undefined);
+            String contactRefs = ReferenceHelper.getNodesAsString(circuit, wire.undefined);
             LogUtils.logInfo("Sink contacts detected: " + contactRefs);
             wire.undefined.clear();
             result = false;
@@ -742,13 +742,13 @@ public class VerilogImporter implements Importer {
             contacts.addAll(wire.sinks);
             contacts.addAll(wire.undefined);
             if (!contacts.isEmpty()) {
-                String contactRefs = ReferenceHelper.getNodesAsString(circuit, (Collection) wire.undefined);
+                String contactRefs = ReferenceHelper.getNodesAsString(circuit, wire.undefined);
                 LogUtils.logError("Wire without a source is connected to the following contacts: " + contactRefs);
             }
         } else {
             String sourceRef = circuit.getNodeReference(sourceContact);
             if (!wire.undefined.isEmpty()) {
-                String contactRefs = ReferenceHelper.getNodesAsString(circuit, (Collection) wire.undefined);
+                String contactRefs = ReferenceHelper.getNodesAsString(circuit, wire.undefined);
                 LogUtils.logError("Wire from contact '" + sourceRef + "' has undefined sinks: " + contactRefs);
             }
             if (sourceContact.isPort() && sourceContact.isOutput()) {

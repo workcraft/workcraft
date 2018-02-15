@@ -26,7 +26,7 @@ public class BoundingBoxHelper {
         return result;
     }
 
-    public static Rectangle2D mergeBoundingBoxes(Collection<Touchable> nodes) {
+    public static Rectangle2D mergeBoundingBoxes(Collection<? extends Touchable> nodes) {
         Rectangle2D bb = null;
         for (Touchable node : nodes) {
             bb = union(bb, node.getBoundingBox());

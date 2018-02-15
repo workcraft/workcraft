@@ -1,6 +1,5 @@
 package org.workcraft.plugins.graph.commands;
 
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Queue;
@@ -40,14 +39,14 @@ public class GraphReachabilityVerificationCommand extends AbstractVerificationCo
         if (unreachable.isEmpty()) {
             DialogUtils.showInfo("The graph does not have unreachable vertices.", TITLE);
         } else {
-            String refStr = ReferenceHelper.getNodesAsString(graph, (Collection) unreachable, 50);
+            String refStr = ReferenceHelper.getNodesAsString(graph, unreachable, 50);
             String msg = "The graph has unreachable vertices:\n" + refStr + "\n\nSelect unreachable vertices?";
             if (DialogUtils.showConfirmInfo(msg, TITLE, true)) {
                 final Framework framework = Framework.getInstance();
                 final MainWindow mainWindow = framework.getMainWindow();
                 mainWindow.getToolbox(we).selectToolInstance(SelectionTool.class);
                 VisualModel visualGraph = we.getModelEntry().getVisualModel();
-                SelectionHelper.selectByReferencedComponents(visualGraph, (HashSet) unreachable);
+                SelectionHelper.selectByReferencedComponents(visualGraph, unreachable);
             }
         }
         return unreachable.isEmpty();

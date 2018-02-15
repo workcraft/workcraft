@@ -116,7 +116,7 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
         // Check for isolated marked places and temporary remove them if requested
         HashSet<Place> isolatedPlaces = PetriNetUtils.getIsolatedMarkedPlaces(stg);
         if (!isolatedPlaces.isEmpty()) {
-            String refStr = ReferenceHelper.getNodesAsString(stg, (Collection) isolatedPlaces, 50);
+            String refStr = ReferenceHelper.getNodesAsString(stg, isolatedPlaces, 50);
             String msg = "Petrify does not support isolated marked places.\n\n"
                     + "Problematic places are:\n" + refStr + "\n\n"
                     + "Proceed without these places?";

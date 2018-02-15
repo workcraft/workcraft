@@ -3,7 +3,6 @@ package org.workcraft.plugins.petrify.tasks;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 
 import org.workcraft.Framework;
@@ -103,7 +102,7 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationResu
                 PetriNetModel petri = (PetriNetModel) model;
                 HashSet<Place> isolatedPlaces = PetriNetUtils.getIsolatedMarkedPlaces(petri);
                 if (!isolatedPlaces.isEmpty()) {
-                    String refStr = ReferenceHelper.getNodesAsString(petri, (Collection) isolatedPlaces, 50);
+                    String refStr = ReferenceHelper.getNodesAsString(petri, isolatedPlaces, 50);
                     String msg = "Petrify does not support isolated marked places.\n\n"
                             + "Problematic places are:\n" + refStr + "\n\n"
                             + "Proceed without these places?";

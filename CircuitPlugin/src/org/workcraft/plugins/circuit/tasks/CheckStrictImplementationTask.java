@@ -56,8 +56,8 @@ public class CheckStrictImplementationTask extends MpsatChainTask {
             // Load environment STG
             Stg envStg = StgUtils.loadStg(envFile);
             // Make sure that input signals of the circuit are also inputs in the environment STG
-            ArrayList<String> inputSignalNames = ReferenceHelper.getReferenceList(circuit, (Collection) circuit.getInputPorts());
-            ArrayList<String> outputSignalNames = ReferenceHelper.getReferenceList(circuit, (Collection) circuit.getOutputPorts());
+            ArrayList<String> inputSignalNames = ReferenceHelper.getReferenceList(circuit, circuit.getInputPorts());
+            ArrayList<String> outputSignalNames = ReferenceHelper.getReferenceList(circuit, circuit.getOutputPorts());
             StgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
 
             // Write environment STG into a .g file
