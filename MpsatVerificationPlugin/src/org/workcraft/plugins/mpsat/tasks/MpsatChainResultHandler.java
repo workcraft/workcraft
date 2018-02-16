@@ -10,6 +10,7 @@ import org.workcraft.plugins.mpsat.MpsatSolution;
 import org.workcraft.plugins.mpsat.MpsatUtils;
 import org.workcraft.plugins.mpsat.PunfResultParser;
 import org.workcraft.plugins.mpsat.PunfResultParser.Cause;
+import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.tasks.AbstractResultHandler;
@@ -154,7 +155,7 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainRes
             errorMessage += ERROR_CAUSE_PREFIX + genericCause.toString();
         } else {
             MpsatChainResult returnValue = result.getPayload();
-            Result<? extends Object> exportResult = (returnValue == null) ? null : returnValue.getExportResult();
+            Result<? extends ExportOutput> exportResult = (returnValue == null) ? null : returnValue.getExportResult();
             Result<? extends ExternalProcessOutput> punfResult = (returnValue == null) ? null : returnValue.getPunfResult();
             Result<? extends ExternalProcessOutput> mpsatResult = (returnValue == null) ? null : returnValue.getMpsatResult();
             if ((exportResult != null) && (exportResult.getOutcome() == Outcome.FAILURE)) {

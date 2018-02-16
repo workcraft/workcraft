@@ -15,6 +15,8 @@ import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.plugins.petrify.PetrifyUtils;
+import org.workcraft.plugins.shared.tasks.ExportOutput;
+import org.workcraft.plugins.shared.tasks.ExportTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.plugins.stg.Mutex;
@@ -30,7 +32,6 @@ import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Export;
-import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.ToolUtils;
@@ -178,7 +179,7 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
         String gExtension = StgFormat.getInstance().getExtension();
         File stgFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + gExtension);
         ExportTask exportTask = new ExportTask(stgExporter, stg, stgFile.getAbsolutePath());
-        Result<? extends Object> exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
+        Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
         if (exportResult.getOutcome() != Outcome.SUCCESS) {
             throw new RuntimeException("Unable to export the model.");
         }

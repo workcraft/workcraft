@@ -15,6 +15,8 @@ import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.policy.VisualPolicyNet;
 import org.workcraft.plugins.policy.tools.PolicyToPetriConverter;
 import org.workcraft.plugins.punf.tasks.PunfTask;
+import org.workcraft.plugins.shared.tasks.ExportOutput;
+import org.workcraft.plugins.shared.tasks.ExportTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
@@ -22,7 +24,6 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.util.Export;
-import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -55,7 +56,7 @@ public class CheckDeadlockTask extends MpsatChainTask {
             File netFile = new File(directory, "net" + stgFormat.getExtension());
             ExportTask exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
             SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
-            Result<? extends Object> exportResult = framework.getTaskManager().execute(
+            Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(
                     exportTask, "Exporting .g", mon);
 
             if (exportResult.getOutcome() != Outcome.SUCCESS) {

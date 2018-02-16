@@ -1,17 +1,18 @@
 package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.plugins.mpsat.MpsatSynthesisParameters;
+import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.Result;
 
 public class MpsatSynthesisChainResult {
-    private Result<? extends Object> exportResult;
+    private Result<? extends ExportOutput> exportResult;
     private Result<? extends ExternalProcessOutput> punfResult;
     private Result<? extends ExternalProcessOutput> mpsatResult;
     private MpsatSynthesisParameters mpsatSettings;
     private String message;
 
-    public MpsatSynthesisChainResult(Result<? extends Object> exportResult,
+    public MpsatSynthesisChainResult(Result<? extends ExportOutput> exportResult,
             Result<? extends ExternalProcessOutput> pcompResult,
             Result<? extends ExternalProcessOutput> punfResult,
             Result<? extends ExternalProcessOutput> mpsatResult,
@@ -24,7 +25,7 @@ public class MpsatSynthesisChainResult {
         this.message = message;
     }
 
-    public MpsatSynthesisChainResult(Result<? extends Object> exportResult,
+    public MpsatSynthesisChainResult(Result<? extends ExportOutput> exportResult,
             Result<? extends ExternalProcessOutput> pcompResult,
             Result<? extends ExternalProcessOutput> punfResult,
             Result<? extends ExternalProcessOutput> mpsatResult,
@@ -37,7 +38,7 @@ public class MpsatSynthesisChainResult {
         return mpsatSettings;
     }
 
-    public Result<? extends Object> getExportResult() {
+    public Result<? extends ExportOutput> getExportResult() {
         return exportResult;
     }
     public Result<? extends ExternalProcessOutput> getPunfResult() {

@@ -20,6 +20,8 @@ import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.plugins.petrify.PetrifyUtils;
+import org.workcraft.plugins.shared.tasks.ExportOutput;
+import org.workcraft.plugins.shared.tasks.ExportTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.plugins.stg.StgModel;
@@ -32,7 +34,6 @@ import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Export;
-import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.ToolUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -174,7 +175,7 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationResu
         File modelFile = new File(directory, "original" + extension);
         try {
             ExportTask exportTask = Export.createExportTask(model, modelFile, format, framework.getPluginManager());
-            Result<? extends Object> exportResult = framework.getTaskManager().execute(exportTask, "Exporting model");
+            Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(exportTask, "Exporting model");
             if (exportResult.getOutcome() != Outcome.SUCCESS) {
                 throw new RuntimeException(MESSAGE_EXPORT_FAILED);
             }

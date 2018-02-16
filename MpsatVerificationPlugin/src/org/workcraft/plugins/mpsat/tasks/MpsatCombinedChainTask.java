@@ -11,6 +11,8 @@ import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
+import org.workcraft.plugins.shared.tasks.ExportOutput;
+import org.workcraft.plugins.shared.tasks.ExportTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
@@ -20,7 +22,6 @@ import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.Export;
-import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -52,7 +53,7 @@ public class MpsatCombinedChainTask implements Task<MpsatCombinedChainResult> {
             // Generate .g for the model
             File netFile = new File(directory, "net" + stgFormat.getExtension());
             ExportTask exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
-            Result<? extends Object> exportResult = taskManager.execute(
+            Result<? extends ExportOutput> exportResult = taskManager.execute(
                     exportTask, "Exporting .g", subtaskMonitor);
 
             if (exportResult.getOutcome() != Outcome.SUCCESS) {

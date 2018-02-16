@@ -14,6 +14,7 @@ import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.punf.tasks.PunfTask;
+import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
@@ -69,7 +70,7 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
             // Write device STG into a .g file
             String devStgName = (envStg != null ? StgUtils.DEVICE_FILE_PREFIX : StgUtils.SYSTEM_FILE_PREFIX) + stgFileExtension;
             File devStgFile = new File(directory, devStgName);
-            Result<? extends Object> devExportResult = CircuitStgUtils.exportStg(devStg, devStgFile, directory, monitor);
+            Result<? extends ExportOutput> devExportResult = CircuitStgUtils.exportStg(devStg, devStgFile, directory, monitor);
             if (devExportResult.getOutcome() != Outcome.SUCCESS) {
                 if (devExportResult.getOutcome() == Outcome.CANCEL) {
                     return new Result<MpsatChainResult>(Outcome.CANCEL);
@@ -87,7 +88,7 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
                 sysStgFile = devStgFile;
             } else {
                 File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + stgFileExtension);
-                Result<? extends Object> envExportResult = CircuitStgUtils.exportStg(envStg, envStgFile, directory, monitor);
+                Result<? extends ExportOutput> envExportResult = CircuitStgUtils.exportStg(envStg, envStgFile, directory, monitor);
                 if (envExportResult.getOutcome() != Outcome.SUCCESS) {
                     if (envExportResult.getOutcome() == Outcome.CANCEL) {
                         return new Result<MpsatChainResult>(Outcome.CANCEL);

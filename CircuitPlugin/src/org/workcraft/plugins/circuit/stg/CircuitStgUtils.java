@@ -7,6 +7,8 @@ import org.workcraft.PluginManager;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
+import org.workcraft.plugins.shared.tasks.ExportOutput;
+import org.workcraft.plugins.shared.tasks.ExportTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.interop.StgFormat;
@@ -15,11 +17,10 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.Export;
-import org.workcraft.util.Export.ExportTask;
 
 public class CircuitStgUtils {
 
-    public static Result<? extends Object> exportStg(Stg stg, File stgFile, File directory,
+    public static Result<? extends ExportOutput> exportStg(Stg stg, File stgFile, File directory,
             ProgressMonitor<?> monitor) {
 
         Framework framework = Framework.getInstance();

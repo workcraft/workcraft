@@ -3,18 +3,19 @@ package org.workcraft.plugins.mpsat.tasks;
 import java.util.List;
 
 import org.workcraft.plugins.mpsat.MpsatParameters;
+import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.Result;
 
 public class MpsatCombinedChainResult {
-    private Result<? extends Object> exportResult;
+    private Result<? extends ExportOutput> exportResult;
     private Result<? extends ExternalProcessOutput> pcompResult;
     private Result<? extends ExternalProcessOutput> punfResult;
     private List<Result<? extends ExternalProcessOutput>> mpsatResultList;
     private List<MpsatParameters> mpsatSettingsList;
     private String message;
 
-    public MpsatCombinedChainResult(Result<? extends Object> exportResult,
+    public MpsatCombinedChainResult(Result<? extends ExportOutput> exportResult,
             Result<? extends ExternalProcessOutput> pcompResult,
             Result<? extends ExternalProcessOutput> punfResult,
             List<Result<? extends ExternalProcessOutput>> mpsatResultList,
@@ -28,7 +29,7 @@ public class MpsatCombinedChainResult {
         this.message = message;
     }
 
-    public MpsatCombinedChainResult(Result<? extends Object> exportResult,
+    public MpsatCombinedChainResult(Result<? extends ExportOutput> exportResult,
             Result<? extends ExternalProcessOutput> pcompResult,
             Result<? extends ExternalProcessOutput> punfResult,
             List<Result<? extends ExternalProcessOutput>> mpsatResultList,
@@ -41,7 +42,7 @@ public class MpsatCombinedChainResult {
         return mpsatSettingsList;
     }
 
-    public Result<? extends Object> getExportResult() {
+    public Result<? extends ExportOutput> getExportResult() {
         return exportResult;
     }
 

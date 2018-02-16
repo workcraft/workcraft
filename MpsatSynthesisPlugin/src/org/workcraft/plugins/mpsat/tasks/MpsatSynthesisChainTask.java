@@ -7,6 +7,8 @@ import org.workcraft.Framework;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat.MpsatSynthesisParameters;
 import org.workcraft.plugins.punf.tasks.PunfTask;
+import org.workcraft.plugins.shared.tasks.ExportOutput;
+import org.workcraft.plugins.shared.tasks.ExportTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.SignalTransition.Type;
@@ -19,7 +21,6 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
-import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -53,7 +54,7 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> 
             String filePrefix = StgUtils.SPEC_FILE_PREFIX;
             File netFile = new File(directory, filePrefix + stgFileExtension);
             ExportTask exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
-            Result<? extends Object> exportResult = framework.getTaskManager().execute(
+            Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(
                     exportTask, "Exporting .g", subtaskMonitor);
 
             if (exportResult.getOutcome() != Outcome.SUCCESS) {

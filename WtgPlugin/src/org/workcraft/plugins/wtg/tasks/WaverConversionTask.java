@@ -6,6 +6,8 @@ import java.io.File;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.interop.Exporter;
+import org.workcraft.plugins.shared.tasks.ExportOutput;
+import org.workcraft.plugins.shared.tasks.ExportTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
@@ -18,7 +20,6 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.Export;
-import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -53,7 +54,7 @@ public class WaverConversionTask implements Task<WaverConversionResult> {
             File wtgFile = FileUtils.createTempFile("wtg-", ".g");
             wtgFile.deleteOnExit();
             ExportTask wtgExportTask = new ExportTask(wtgExporter, wtg, wtgFile.getAbsolutePath());
-            Result<? extends Object> wtgExportResult = framework.getTaskManager().execute(
+            Result<? extends ExportOutput> wtgExportResult = framework.getTaskManager().execute(
                     wtgExportTask, "Exporting .wtg", subtaskMonitor);
 
             if (wtgExportResult.getOutcome() != Outcome.SUCCESS) {

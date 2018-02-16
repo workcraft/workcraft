@@ -21,6 +21,7 @@ import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.mpsat.MpsatSynthesisMode;
 import org.workcraft.plugins.mpsat.MpsatSynthesisSettings;
+import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Stg;
@@ -202,7 +203,7 @@ public class MpsatSynthesisResultHandler extends AbstractExtendedResultHandler<M
             errorMessage += ERROR_CAUSE_PREFIX + genericCause.toString();
         } else {
             final MpsatSynthesisChainResult returnValue = result.getPayload();
-            final Result<? extends Object> exportResult = (returnValue == null) ? null : returnValue.getExportResult();
+            final Result<? extends ExportOutput> exportResult = (returnValue == null) ? null : returnValue.getExportResult();
             final Result<? extends ExternalProcessOutput> punfResult = (returnValue == null) ? null : returnValue.getPunfResult();
             final Result<? extends ExternalProcessOutput> mpsatResult = (returnValue == null) ? null : returnValue.getMpsatResult();
             if ((exportResult != null) && (exportResult.getOutcome() == Outcome.FAILURE)) {

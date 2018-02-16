@@ -15,9 +15,9 @@ public class ExternalProcessOutput {
     }
 
     public ExternalProcessOutput(int returnCode, byte[] stdout, byte[] stderr, Map<String, byte[]> fileDataMap) {
+        this.returnCode = returnCode;
         this.stdout = stdout;
         this.stderr = stderr;
-        this.returnCode = returnCode;
         this.fileDataMap = fileDataMap;
     }
 

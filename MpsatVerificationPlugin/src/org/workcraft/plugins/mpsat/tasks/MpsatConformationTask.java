@@ -13,6 +13,8 @@ import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.punf.tasks.PunfTask;
+import org.workcraft.plugins.shared.tasks.ExportOutput;
+import org.workcraft.plugins.shared.tasks.ExportTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
@@ -23,7 +25,6 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.util.Export;
-import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -61,7 +62,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             // Generating .g for the model
             File devStgFile = new File(directory, StgUtils.DEVICE_FILE_PREFIX + stgFileExtension);
             ExportTask devExportTask = new ExportTask(devStgExporter, devStg, devStgFile.getAbsolutePath());
-            Result<? extends Object> devExportResult = framework.getTaskManager().execute(
+            Result<? extends ExportOutput> devExportResult = framework.getTaskManager().execute(
                     devExportTask, "Exporting circuit .g", subtaskMonitor);
 
             if (devExportResult.getOutcome() != Outcome.SUCCESS) {
@@ -87,7 +88,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             Exporter envStgExporter = Export.chooseBestExporter(framework.getPluginManager(), envStg, StgFormat.getInstance());
             File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + stgFileExtension);
             ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile.getAbsolutePath());
-            Result<? extends Object> envExportResult = framework.getTaskManager().execute(
+            Result<? extends ExportOutput> envExportResult = framework.getTaskManager().execute(
                     envExportTask, "Exporting environment .g", subtaskMonitor);
 
             if (envExportResult.getOutcome() != Outcome.SUCCESS) {

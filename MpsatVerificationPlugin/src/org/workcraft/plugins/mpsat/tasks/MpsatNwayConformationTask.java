@@ -15,6 +15,8 @@ import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.punf.tasks.PunfTask;
+import org.workcraft.plugins.shared.tasks.ExportOutput;
+import org.workcraft.plugins.shared.tasks.ExportTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
@@ -27,7 +29,6 @@ import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.Export;
-import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -56,7 +57,7 @@ public class MpsatNwayConformationTask implements Task<MpsatChainResult> {
         String stgFileExtension = StgFormat.getInstance().getExtension();
         try {
             SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
-            Result<? extends Object> exportResult = null;
+            Result<? extends ExportOutput> exportResult = null;
             Collection<Stg> stgs = new ArrayList<>();
             Collection<File> stgFiles = new ArrayList<>();
             ArrayList<Set<String>> allOutputSets = new ArrayList<>();

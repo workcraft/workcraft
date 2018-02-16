@@ -15,6 +15,8 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.interop.SgImporter;
 import org.workcraft.plugins.petri.PetriNetModel;
+import org.workcraft.plugins.shared.tasks.ExportOutput;
+import org.workcraft.plugins.shared.tasks.ExportTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
@@ -24,7 +26,6 @@ import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Export;
-import org.workcraft.util.Export.ExportTask;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -84,7 +85,7 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
             File petriFile = FileUtils.createTempFile("stg-", ".g");
             petriFile.deleteOnExit();
             ExportTask petriExportTask = new ExportTask(petriExporter, petri, petriFile.getAbsolutePath());
-            Result<? extends Object> petriExportResult = framework.getTaskManager().execute(
+            Result<? extends ExportOutput> petriExportResult = framework.getTaskManager().execute(
                     petriExportTask, "Exporting .g", subtaskMonitor);
 
             if (petriExportResult.getOutcome() != Outcome.SUCCESS) {
