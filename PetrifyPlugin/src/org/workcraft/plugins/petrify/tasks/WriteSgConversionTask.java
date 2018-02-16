@@ -11,6 +11,7 @@ import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.interop.SgImporter;
@@ -25,7 +26,7 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.DialogUtils;
-import org.workcraft.util.Export;
+import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -74,9 +75,10 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
             // Common variables
             monitor.progressUpdate(0.05);
             PetriNetModel petri = WorkspaceUtils.getAs(we, PetriNetModel.class);
-            Exporter petriExporter = Export.chooseBestExporter(framework.getPluginManager(), petri, StgFormat.getInstance());
+            StgFormat format = StgFormat.getInstance();
+            Exporter petriExporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), petri, format);
             if (petriExporter == null) {
-                throw new RuntimeException("Exporter not available: model class " + petri.getClass().getName() + " to format STG.");
+                throw new NoExporterException(petri, format);
             }
             SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
             monitor.progressUpdate(0.10);

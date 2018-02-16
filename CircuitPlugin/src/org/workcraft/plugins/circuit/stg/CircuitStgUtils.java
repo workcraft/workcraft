@@ -16,7 +16,7 @@ import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.Export;
+import org.workcraft.util.ExportUtils;
 
 public class CircuitStgUtils {
 
@@ -25,7 +25,7 @@ public class CircuitStgUtils {
 
         Framework framework = Framework.getInstance();
         PluginManager pluginManager = framework.getPluginManager();
-        Exporter stgExporter = Export.chooseBestExporter(pluginManager, stg, StgFormat.getInstance());
+        Exporter stgExporter = ExportUtils.chooseBestExporter(pluginManager, stg, StgFormat.getInstance());
         if (stgExporter == null) {
             throw new RuntimeException("Exporter not available: model class " + stg.getClass().getName() + " to .g format.");
         }

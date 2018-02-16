@@ -2,6 +2,7 @@ package org.workcraft.exceptions;
 
 @SuppressWarnings("serial")
 public class SerialisationException extends Exception {
+
     public SerialisationException() {
         super();
     }
@@ -17,4 +18,5 @@ public class SerialisationException extends Exception {
     public SerialisationException(Throwable cause) {
         super(cause);
     }
+
 }

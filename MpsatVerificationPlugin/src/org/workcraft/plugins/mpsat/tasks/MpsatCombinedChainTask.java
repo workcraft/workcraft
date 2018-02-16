@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.workcraft.Framework;
+import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
@@ -21,7 +22,7 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.Export;
+import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -43,15 +44,15 @@ public class MpsatCombinedChainTask implements Task<MpsatCombinedChainResult> {
         File directory = FileUtils.createTempDirectory(prefix);
         try {
             PetriNetModel model = WorkspaceUtils.getAs(we, PetriNetModel.class);
-            StgFormat stgFormat = StgFormat.getInstance();
-            Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, stgFormat);
+            StgFormat format = StgFormat.getInstance();
+            Exporter exporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), model, format);
             if (exporter == null) {
-                throw new RuntimeException("Exporter not available: model class " + model.getClass().getName() + " to format STG.");
+                throw new NoExporterException(model, format);
             }
             SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
 
             // Generate .g for the model
-            File netFile = new File(directory, "net" + stgFormat.getExtension());
+            File netFile = new File(directory, "net" + format.getExtension());
             ExportTask exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
             Result<? extends ExportOutput> exportResult = taskManager.execute(
                     exportTask, "Exporting .g", subtaskMonitor);

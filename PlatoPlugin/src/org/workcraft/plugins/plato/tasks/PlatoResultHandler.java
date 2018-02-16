@@ -35,7 +35,7 @@ import org.workcraft.tasks.BasicProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.Import;
+import org.workcraft.util.ImportUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -152,7 +152,7 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
     }
 
     private void addStg(String output, Framework framework, GraphEditorPanel editor, String[] invariants) throws PlatoException, IOException, DeserialisationException {
-        ModelEntry me = Import.importFromByteArray(new StgImporter(), output.getBytes());
+        ModelEntry me = ImportUtils.importFromByteArray(new StgImporter(), output.getBytes());
         MathModel mathModel = me.getMathModel();
         StgDescriptor stgModel = new StgDescriptor();
         VisualModelDescriptor v = stgModel.getVisualModelDescriptor();
@@ -172,7 +172,7 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutp
     }
 
     private void addFst(String output, Framework framework, GraphEditorPanel editor) throws PlatoException, IOException, DeserialisationException {
-        ModelEntry me = Import.importFromByteArray(new org.workcraft.plugins.fst.interop.SgImporter(), output.getBytes());
+        ModelEntry me = ImportUtils.importFromByteArray(new org.workcraft.plugins.fst.interop.SgImporter(), output.getBytes());
         MathModel mathModel = me.getMathModel();
         FstDescriptor fstModel = new FstDescriptor();
         VisualModelDescriptor v = fstModel.getVisualModelDescriptor();

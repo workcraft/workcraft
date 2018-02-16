@@ -1,7 +1,7 @@
 package org.workcraft.exceptions;
 
+@SuppressWarnings("serial")
 public class ArgumentException extends RuntimeException {
-    private static final long serialVersionUID = 813881853034782201L;
 
     public ArgumentException() {
         super();
@@ -18,4 +18,5 @@ public class ArgumentException extends RuntimeException {
     public ArgumentException(Throwable cause) {
         super(cause);
     }
+
 }

@@ -2,6 +2,7 @@ package org.workcraft.exceptions;
 
 @SuppressWarnings("serial")
 public class PasteException extends Exception {
+
     public PasteException() {
         super();
     }
@@ -14,4 +15,5 @@ public class PasteException extends Exception {
     public PasteException(Throwable cause) {
         super(cause);
     }
+
 }

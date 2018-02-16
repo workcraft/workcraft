@@ -3,6 +3,7 @@ package org.workcraft.plugins.dfs.tasks;
 import java.io.File;
 
 import org.workcraft.Framework;
+import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.plugins.dfs.stg.DfsToStgConverter;
@@ -21,7 +22,7 @@ import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
-import org.workcraft.util.Export;
+import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -39,15 +40,15 @@ public class CheckDataflowPersistencydTask extends MpsatChainTask {
         MpsatParameters settings = getSettings();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
-        String stgFileExtension = StgFormat.getInstance().getExtension();
+        StgFormat format = StgFormat.getInstance();
+        String stgFileExtension = format.getExtension();
         try {
             VisualDfs dfs = WorkspaceUtils.getAs(we, VisualDfs.class);
             DfsToStgConverter converter = new DfsToStgConverter(dfs);
             StgModel model = (StgModel) converter.getStgModel().getMathModel();
-            Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, StgFormat.getInstance());
+            Exporter exporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), model, format);
             if (exporter == null) {
-                String modelClassName = model.getClass().getName();
-                throw new RuntimeException("Exporter not available: model class " + modelClassName + " to format STG.");
+                throw new NoExporterException(model, format);
             }
             monitor.progressUpdate(0.10);
 

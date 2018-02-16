@@ -1,12 +1,14 @@
 package org.workcraft.exceptions;
 
+@SuppressWarnings("serial")
 public class UnsupportedComponentException extends Exception {
-    private static final long serialVersionUID = 1L;
 
     public UnsupportedComponentException() {
         super("The component that is being added is not compatible with the current model");
     }
-    public UnsupportedComponentException(String why) {
-        super(why);
+
+    public UnsupportedComponentException(String message) {
+        super(message);
     }
+
 }

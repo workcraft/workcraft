@@ -22,7 +22,7 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.Export;
+import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.GUI;
 import org.workcraft.util.LogUtils;
@@ -105,7 +105,7 @@ public class ParallelCompositionCommand implements Command {
             String stgFileExtension = stgFormat.getExtension();
             File file = FileUtils.createTempFile(prefix, stgFileExtension, directory);
             PluginManager pluginManager = Framework.getInstance().getPluginManager();
-            Export.exportToFile(model, file, stgFormat, pluginManager);
+            ExportUtils.exportToFile(model, file, stgFormat, pluginManager);
             return file;
         } catch (IOException e) {
             throw new RuntimeException(e);

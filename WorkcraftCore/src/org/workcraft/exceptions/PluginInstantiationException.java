@@ -1,22 +1,22 @@
 package org.workcraft.exceptions;
 
+@SuppressWarnings("serial")
 public class PluginInstantiationException extends Exception {
-    private static final long serialVersionUID = 1L;
 
     public PluginInstantiationException() {
         super();
     }
 
-    public PluginInstantiationException(String arg0, Throwable arg1) {
-        super(arg0, arg1);
+    public PluginInstantiationException(String message, Throwable cause) {
+        super(message, cause);
     }
 
-    public PluginInstantiationException(Throwable arg0) {
-        super(arg0);
+    public PluginInstantiationException(String message) {
+        super(message);
     }
 
-
-    public PluginInstantiationException(String reason) {
-        super(reason);
+    public PluginInstantiationException(Throwable cause) {
+        super(cause);
     }
+
 }

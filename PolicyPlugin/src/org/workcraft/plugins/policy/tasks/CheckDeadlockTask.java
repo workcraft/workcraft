@@ -3,6 +3,7 @@ package org.workcraft.plugins.policy.tasks;
 import java.io.File;
 
 import org.workcraft.Framework;
+import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
@@ -23,7 +24,7 @@ import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
-import org.workcraft.util.Export;
+import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -46,14 +47,14 @@ public class CheckDeadlockTask extends MpsatChainTask {
             VisualPolicyNet policy = WorkspaceUtils.getAs(we, VisualPolicyNet.class);
             PolicyToPetriConverter converter = new PolicyToPetriConverter(policy);
             PetriNet model = (PetriNet) converter.getPetriNet().getMathModel();
-            StgFormat stgFormat = StgFormat.getInstance();
-            Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, stgFormat);
+            StgFormat format = StgFormat.getInstance();
+            Exporter exporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), model, format);
             if (exporter == null) {
-                throw new RuntimeException("Exporter not available: model class " + model.getClass().getName() + " to format Petri Net.");
+                throw new NoExporterException(model, format);
             }
             monitor.progressUpdate(0.10);
 
-            File netFile = new File(directory, "net" + stgFormat.getExtension());
+            File netFile = new File(directory, "net" + format.getExtension());
             ExportTask exportTask = new ExportTask(exporter, model, netFile.getAbsolutePath());
             SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
             Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(

@@ -10,7 +10,8 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.exceptions.NoExporterException;
+import org.workcraft.interop.Exporter;
 import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.interop.Format;
 import org.workcraft.plugins.fsm.Fsm;
@@ -33,13 +34,13 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.DialogUtils;
-import org.workcraft.util.Export;
+import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.ToolUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class PetrifyTransformationTask implements Task<PetrifyTransformationResult>, ExternalProcessListener {
-    private static final String MESSAGE_EXPORT_FAILED = "Unable to export the model.";
+
     private final WorkspaceEntry we;
     String[] args;
 
@@ -172,17 +173,17 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationResu
             throw new RuntimeException("This tool is not applicable to " + model.getDisplayName() + " model.");
         }
 
-        File modelFile = new File(directory, "original" + extension);
-        try {
-            ExportTask exportTask = Export.createExportTask(model, modelFile, format, framework.getPluginManager());
-            Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(exportTask, "Exporting model");
-            if (exportResult.getOutcome() != Outcome.SUCCESS) {
-                throw new RuntimeException(MESSAGE_EXPORT_FAILED);
-            }
-        } catch (SerialisationException e) {
-            throw new RuntimeException(MESSAGE_EXPORT_FAILED);
+        File file = new File(directory, "original" + extension);
+        Exporter exporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), model, format);
+        if (exporter == null) {
+            throw new NoExporterException(model, format);
         }
-        return modelFile;
+        ExportTask exportTask = new ExportTask(exporter, model, file);
+        Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(exportTask, "Exporting model");
+        if (exportResult.getOutcome() != Outcome.SUCCESS) {
+            throw new RuntimeException("Unable to export the model.");
+        }
+        return file;
     }
 
     @Override

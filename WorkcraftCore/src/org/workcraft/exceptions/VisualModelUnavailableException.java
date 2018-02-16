@@ -1,9 +1,10 @@
 package org.workcraft.exceptions;
 
+@SuppressWarnings("serial")
 public class VisualModelUnavailableException extends Exception {
-    private static final long serialVersionUID = 1L;
 
     public VisualModelUnavailableException(String message) {
         super(message);
     }
+
 }

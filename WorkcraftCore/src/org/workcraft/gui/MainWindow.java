@@ -83,7 +83,7 @@ import org.workcraft.util.DialogUtils;
 import org.workcraft.util.ExceptionUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.GUI;
-import org.workcraft.util.Import;
+import org.workcraft.util.ImportUtils;
 import org.workcraft.util.ListMap;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
@@ -1059,7 +1059,7 @@ public class MainWindow extends JFrame {
             for (Importer importer: importers) {
                 if (!importer.accept(file)) continue;
                 try {
-                    ModelEntry me = Import.importFromFile(importer, file);
+                    ModelEntry me = ImportUtils.importFromFile(importer, file);
                     String title = me.getMathModel().getTitle();
                     if ((title == null) || title.isEmpty()) {
                         title = FileUtils.getFileNameWithoutExtension(file);

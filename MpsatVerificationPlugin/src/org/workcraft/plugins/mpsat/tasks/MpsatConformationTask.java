@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Set;
 
 import org.workcraft.Framework;
+import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
@@ -24,7 +25,7 @@ import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
-import org.workcraft.util.Export;
+import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -50,12 +51,13 @@ public class MpsatConformationTask extends MpsatChainTask {
         WorkspaceEntry we = getWorkspaceEntry();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
-        String stgFileExtension = StgFormat.getInstance().getExtension();
+        StgFormat format = StgFormat.getInstance();
+        String stgFileExtension = format.getExtension();
         try {
             Stg devStg = WorkspaceUtils.getAs(we, Stg.class);
-            Exporter devStgExporter = Export.chooseBestExporter(framework.getPluginManager(), devStg, StgFormat.getInstance());
+            Exporter devStgExporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), devStg, format);
             if (devStgExporter == null) {
-                throw new RuntimeException("Exporter not available: model class " + devStg.getClass().getName() + " to format STG.");
+                throw new NoExporterException(devStg, format);
             }
             SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
 
@@ -85,7 +87,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             Set<String> inputSignalNames = devStg.getSignalNames(Type.INPUT, null);
             Set<String> outputSignalNames = devStg.getSignalNames(Type.OUTPUT, null);
             StgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
-            Exporter envStgExporter = Export.chooseBestExporter(framework.getPluginManager(), envStg, StgFormat.getInstance());
+            Exporter envStgExporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), envStg, format);
             File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + stgFileExtension);
             ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile.getAbsolutePath());
             Result<? extends ExportOutput> envExportResult = framework.getTaskManager().execute(

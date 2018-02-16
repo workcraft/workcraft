@@ -1,7 +1,7 @@
 package org.workcraft.exceptions;
 
+@SuppressWarnings("serial")
 public class NotFoundException extends RuntimeException {
-    private static final long serialVersionUID = 1L;
 
     public NotFoundException() {
         super("Object not found");
@@ -18,4 +18,5 @@ public class NotFoundException extends RuntimeException {
     public NotFoundException(Throwable cause) {
         super(cause);
     }
+
 }

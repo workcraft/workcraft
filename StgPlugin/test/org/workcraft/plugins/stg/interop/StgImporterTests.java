@@ -16,7 +16,7 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.util.Import;
+import org.workcraft.util.ImportUtils;
 import org.workcraft.workspace.ModelEntry;
 
 public class StgImporterTests {
@@ -46,7 +46,7 @@ public class StgImporterTests {
         writer.close();
         fileStream.close();
 
-        ModelEntry importedEntry = Import.importFromFile(new StgImporter(), tempFile);
+        ModelEntry importedEntry = ImportUtils.importFromFile(new StgImporter(), tempFile);
         Stg imported = (Stg) importedEntry.getModel();
 
         Assert.assertEquals(6, Hierarchy.getChildrenOfType(imported.getRoot(), Transition.class).size());

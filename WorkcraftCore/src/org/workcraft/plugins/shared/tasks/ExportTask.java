@@ -15,14 +15,19 @@ import org.workcraft.tasks.Task;
 import org.workcraft.util.LogUtils;
 
 public class ExportTask implements Task<ExportOutput> {
+
     Exporter exporter;
     Model model;
     File file;
 
     public ExportTask(Exporter exporter, Model model, String path) {
+        this(exporter, model, new File(path));
+    }
+
+    public ExportTask(Exporter exporter, Model model, File file) {
         this.exporter = exporter;
         this.model = model;
-        this.file = new File(path);
+        this.file = file;
     }
 
     @Override
@@ -51,9 +56,9 @@ public class ExportTask implements Task<ExportOutput> {
                 if (exporter.isCompatible(mathModel)) {
                     model = mathModel;
                 } else {
-                    String exporterName = exporter.getFormat().getDescription();
+                    String exporterName = exporter.getFormat().getName();
                     String modelName = model.getDisplayName();
-                    String text = "Exporter to " + exporterName + " is not compatible with " + modelName + " model.";
+                    String text = "Exporter to " + exporterName + " format is not compatible with " + modelName + " model.";
                     // FIXME: Is it really necessary to nest the exceptions?
                     Exception nestedException = new Exception(new RuntimeException(text));
                     return new Result<ExportOutput>(nestedException);

@@ -10,21 +10,20 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.ModelValidationException;
+import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Format;
 import org.workcraft.plugins.PluginInfo;
-import org.workcraft.plugins.shared.tasks.ExportTask;
 
-public class Export {
+public class ExportUtils {
 
     public static Exporter chooseBestExporter(PluginProvider provider, Model model, Format format) {
         return chooseBestExporter(provider, model, format.getName(), format.getUuid());
     }
 
     public static Exporter chooseBestExporter(PluginProvider provider, Model model, String formatName, UUID formatUuid) {
-        Iterable<PluginInfo<? extends Exporter>> plugins = provider.getPlugins(Exporter.class);
-        for (PluginInfo<? extends Exporter> info : plugins) {
+        for (PluginInfo<? extends Exporter> info : provider.getPlugins(Exporter.class)) {
             Exporter exporter = info.getSingleton();
             if (exporter.isCompatible(model)) {
                 Format exporterFormat = exporter.getFormat();
@@ -42,20 +41,9 @@ public class Export {
             throws IOException, ModelValidationException, SerialisationException {
         Exporter exporter = chooseBestExporter(provider, model, format);
         if (exporter == null) {
-            throw new SerialisationException("No exporter available for model type " + model.getDisplayName()
-                    + " to produce format " + format.getDescription());
+            throw new NoExporterException(model.getDisplayName(), format.getName());
         }
         exportToFile(exporter, model, file);
-    }
-
-    public static ExportTask createExportTask(Model model, File file, Format format, PluginProvider provider)
-            throws SerialisationException {
-        Exporter exporter = chooseBestExporter(provider, model, format);
-        if (exporter == null) {
-            throw new SerialisationException("No exporter available for model type " + model.getDisplayName()
-                    + " to produce format " + format.getDescription());
-        }
-        return new ExportTask(exporter, model, file.getAbsolutePath());
     }
 
     public static void exportToFile(Exporter exporter, Model model, File file)
@@ -85,11 +73,6 @@ public class Export {
                 file.delete();
             }
         }
-    }
-
-    public static void exportToFile(Exporter exporter, Model model, String fileName)
-            throws IOException, ModelValidationException, SerialisationException {
-        exportToFile(exporter, model, new File(fileName));
     }
 
 }

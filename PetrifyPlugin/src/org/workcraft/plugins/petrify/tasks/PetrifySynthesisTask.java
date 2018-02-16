@@ -9,6 +9,7 @@ import java.util.HashSet;
 import org.workcraft.Framework;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.petri.PetriNetUtils;
@@ -31,7 +32,7 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.DialogUtils;
-import org.workcraft.util.Export;
+import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.ToolUtils;
@@ -171,12 +172,13 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
 
     private File getInputFile(Stg stg, File directory) {
         final Framework framework = Framework.getInstance();
-        Exporter stgExporter = Export.chooseBestExporter(framework.getPluginManager(), stg, StgFormat.getInstance());
+        StgFormat format = StgFormat.getInstance();
+        Exporter stgExporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), stg, format);
         if (stgExporter == null) {
-            throw new RuntimeException("Exporter not available: model class " + stg.getClass().getName() + " to format STG.");
+            throw new NoExporterException(stg, format);
         }
 
-        String gExtension = StgFormat.getInstance().getExtension();
+        String gExtension = format.getExtension();
         File stgFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + gExtension);
         ExportTask exportTask = new ExportTask(stgExporter, stg, stgFile.getAbsolutePath());
         Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");

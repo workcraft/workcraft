@@ -5,6 +5,7 @@ import java.io.File;
 
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.shared.tasks.ExportTask;
@@ -19,7 +20,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
-import org.workcraft.util.Export;
+import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -43,9 +44,10 @@ public class WaverConversionTask implements Task<WaverConversionResult> {
             // Common variables
             monitor.progressUpdate(0.05);
             Wtg wtg = WorkspaceUtils.getAs(we, Wtg.class);
-            Exporter wtgExporter = Export.chooseBestExporter(framework.getPluginManager(), wtg, WtgFormat.getInstance());
+            WtgFormat format = WtgFormat.getInstance();
+            Exporter wtgExporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), wtg, format);
             if (wtgExporter == null) {
-                throw new RuntimeException("Exporter not available: model class " + wtg.getClass().getName() + " to format STG.");
+                throw new NoExporterException(wtg, format);
             }
             SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
             monitor.progressUpdate(0.10);

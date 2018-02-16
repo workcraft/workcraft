@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.workcraft.Framework;
+import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
@@ -28,7 +29,7 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.Export;
+import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -54,7 +55,8 @@ public class MpsatNwayConformationTask implements Task<MpsatChainResult> {
 
         String prefix = FileUtils.getTempPrefix("-pcomp");
         File directory = FileUtils.createTempDirectory(prefix);
-        String stgFileExtension = StgFormat.getInstance().getExtension();
+        StgFormat format = StgFormat.getInstance();
+        String stgFileExtension = format.getExtension();
         try {
             SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
             Result<? extends ExportOutput> exportResult = null;
@@ -64,9 +66,9 @@ public class MpsatNwayConformationTask implements Task<MpsatChainResult> {
             for (WorkspaceEntry we: wes) {
                 Stg stg = WorkspaceUtils.getAs(we, Stg.class);
                 stgs.add(stg);
-                Exporter stgExporter = Export.chooseBestExporter(framework.getPluginManager(), stg, StgFormat.getInstance());
+                Exporter stgExporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), stg, format);
                 if (stgExporter == null) {
-                    throw new RuntimeException("Exporter not available: model class " + stg.getClass().getName() + " to format STG.");
+                    throw new NoExporterException(stg, format);
                 }
                 Set<String> outputSignalNames = stg.getSignalNames(Type.OUTPUT, null);
                 allOutputSets.add(outputSignalNames);

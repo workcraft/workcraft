@@ -1,6 +1,8 @@
 package org.workcraft.exceptions;
 
+@SuppressWarnings("serial")
 public class LayoutFailedException extends Exception {
+
     public LayoutFailedException() {
         super();
     }
@@ -9,13 +11,12 @@ public class LayoutFailedException extends Exception {
         super(message, cause);
     }
 
+    public LayoutFailedException(String message) {
+        super(message);
+    }
+
     public LayoutFailedException(Throwable cause) {
         super(cause);
     }
 
-    private static final long serialVersionUID = 1L;
-
-    public LayoutFailedException(String message) {
-        super(message);
-    }
 }

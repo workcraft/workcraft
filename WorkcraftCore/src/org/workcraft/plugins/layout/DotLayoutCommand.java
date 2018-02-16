@@ -24,6 +24,7 @@ import org.workcraft.dom.visual.connections.VisualConnection.ConnectionType;
 import org.workcraft.dom.visual.connections.VisualConnection.ScaleMode;
 import org.workcraft.exceptions.LayoutException;
 import org.workcraft.exceptions.ModelValidationException;
+import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.interop.DotFormat;
@@ -36,7 +37,7 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.Task;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.DialogUtils;
-import org.workcraft.util.Export;
+import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.ToolUtils;
 
@@ -44,9 +45,10 @@ public class DotLayoutCommand extends AbstractLayoutCommand {
 
     private void saveGraph(VisualModel model, File file) throws IOException, ModelValidationException, SerialisationException {
         final Framework framework = Framework.getInstance();
-        Exporter exporter = Export.chooseBestExporter(framework.getPluginManager(), model, DotFormat.getInstance());
+        DotFormat format = DotFormat.getInstance();
+        Exporter exporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), model, format);
         if (exporter == null) {
-            throw new RuntimeException("Cannot find a .dot exporter for the model " + model);
+            throw new NoExporterException(model, format);
         }
         FileOutputStream out = new FileOutputStream(file);
         exporter.export(model, out);
