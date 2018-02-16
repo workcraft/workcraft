@@ -13,6 +13,7 @@ import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
+import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
@@ -83,7 +84,7 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
             // Generating system .g for custom property check (only if needed)
             File sysStgFile = null;
             File detailsFile = null;
-            Result<? extends ExternalProcessOutput>  pcompResult = null;
+            Result<? extends PcompOutput>  pcompResult = null;
             if (envStg == null) {
                 sysStgFile = devStgFile;
             } else {

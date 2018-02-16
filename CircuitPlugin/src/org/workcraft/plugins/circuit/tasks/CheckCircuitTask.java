@@ -23,6 +23,7 @@ import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
+import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
@@ -114,7 +115,7 @@ public class CheckCircuitTask extends MpsatChainTask {
             // Generating system .g for deadlock and persistency checks (only if needed)
             File sysStgFile = null;
             File compFile = null;
-            Result<? extends ExternalProcessOutput>  pcompResult = null;
+            Result<? extends PcompOutput>  pcompResult = null;
             if (checkDeadlock || checkPersistency) {
                 if (envStg == null) {
                     sysStgFile = devStgFile;
@@ -157,7 +158,7 @@ public class CheckCircuitTask extends MpsatChainTask {
             // Generating system .g for conformation check (only if needed) -- should be without environment internal signals
             File sysModStgFile = null;
             File compModFile = null;
-            Result<? extends ExternalProcessOutput>  pcompModResult = null;
+            Result<? extends PcompOutput>  pcompModResult = null;
             if ((envStg != null) && checkConformation) {
                 Set<String> envSignalNames = envStg.getSignalNames(Type.INTERNAL, null);
                 if (envSignalNames.isEmpty() && (sysStgFile != null)) {

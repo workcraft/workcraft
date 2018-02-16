@@ -13,6 +13,7 @@ import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
+import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.pcomp.tasks.PcompTask;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.punf.tasks.PunfTask;
@@ -97,7 +98,7 @@ public class MpsatNwayConformationTask implements Task<MpsatChainResult> {
             PcompTask pcompTask = new PcompTask(stgFiles.toArray(new File[0]), stgFile, compFile,
                     ConversionMode.OUTPUT, false, false, directory);
 
-            Result<? extends ExternalProcessOutput> pcompResult = taskManager.execute(
+            Result<? extends PcompOutput> pcompResult = taskManager.execute(
                     pcompTask, "Running parallel composition [PComp]", subtaskMonitor);
 
             if (pcompResult.getOutcome() != Outcome.SUCCESS) {

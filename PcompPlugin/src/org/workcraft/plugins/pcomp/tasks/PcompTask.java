@@ -9,10 +9,11 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.ToolUtils;
 
-public class PcompTask implements Task<ExternalProcessOutput> {
+public class PcompTask implements Task<PcompOutput> {
 
     public enum ConversionMode {
         DUMMY,
@@ -40,7 +41,7 @@ public class PcompTask implements Task<ExternalProcessOutput> {
     }
 
     @Override
-    public Result<? extends ExternalProcessOutput> run(ProgressMonitor<? super ExternalProcessOutput> monitor) {
+    public Result<? extends PcompOutput> run(ProgressMonitor<? super PcompOutput> monitor) {
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
@@ -88,17 +89,18 @@ public class PcompTask implements Task<ExternalProcessOutput> {
         }
 
         ExternalProcessTask task = new ExternalProcessTask(command, directory, false, true);
-        Result<? extends ExternalProcessOutput> result = task.run(monitor);
-        if (result.getOutcome() != Outcome.SUCCESS) {
-            return result;
-        }
-
-        ExternalProcessOutput returnValue = result.getPayload();
-        int returnCode = returnValue.getReturnCode();
-        if ((returnCode == 0) || (returnCode == 1)) {
-            return Result.success(returnValue);
+        SubtaskMonitor<? super ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
+        Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
+        if (result.getOutcome() == Outcome.CANCEL) {
+            return Result.cancelation();
         } else {
-            return Result.failure(returnValue);
+            ExternalProcessOutput output = result.getPayload();
+            int returnCode = output.getReturnCode();
+            if ((result.getOutcome() == Outcome.SUCCESS) && ((returnCode == 0) || (returnCode == 1))) {
+                return Result.success(new PcompOutput(output));
+            } else {
+                return Result.failure(new PcompOutput(output));
+            }
         }
     }
 
