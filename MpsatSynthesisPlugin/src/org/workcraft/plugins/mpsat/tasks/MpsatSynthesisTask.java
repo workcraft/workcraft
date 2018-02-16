@@ -3,8 +3,6 @@ package org.workcraft.plugins.mpsat.tasks;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,21 +13,19 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.ToolUtils;
 
-public class MpsatSynthesisTask implements Task<ExternalProcessOutput> {
+public class MpsatSynthesisTask implements Task<MpsatSynthesisOutput> {
 
     private static final Pattern patternSuccess = Pattern.compile(
             "Original Num Var/Cl/Lit\\s+\\d+/\\d+/\\d+\\R" +
             "\\s*SAT/Total time:\\s+(\\d+\\.)?\\d+/(\\d+\\.)?\\d+",
             Pattern.UNIX_LINES);
-
-    public static final String VERILOG_FILE_NAME = "mpsat.v";
-    public static final String STG_FILE_NAME = "mpsat.g";
 
     private final String[] args;
     private final String inputFileName;
@@ -48,7 +44,7 @@ public class MpsatSynthesisTask implements Task<ExternalProcessOutput> {
     }
 
     @Override
-    public Result<? extends ExternalProcessOutput> run(ProgressMonitor<? super ExternalProcessOutput> monitor) {
+    public Result<? extends MpsatSynthesisOutput> run(ProgressMonitor<? super MpsatSynthesisOutput> monitor) {
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
@@ -91,13 +87,14 @@ public class MpsatSynthesisTask implements Task<ExternalProcessOutput> {
         command.add(inputFileName);
 
         // Output file
-        File verilogFile = new File(directory, VERILOG_FILE_NAME);
+        File verilogFile = new File(directory, MpsatSynthesisOutput.VERILOG_FILE_NAME);
         command.add(verilogFile.getAbsolutePath());
 
         boolean printStdout = MpsatSynthesisSettings.getPrintStdout();
         boolean printStderr = MpsatSynthesisSettings.getPrintStderr();
         ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
-        Result<? extends ExternalProcessOutput> result = task.run(monitor);
+        SubtaskMonitor<? super ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
+        Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
 
         if (result.getOutcome() == Outcome.SUCCESS) {
             ExternalProcessOutput output = result.getPayload();
@@ -110,25 +107,23 @@ public class MpsatSynthesisTask implements Task<ExternalProcessOutput> {
                 success = matcherSuccess.find();
             }
             if (!success) {
-                return Result.failure(output);
+                return Result.failure(new MpsatSynthesisOutput(output));
             } else {
-                Map<String, byte[]> fileContentMap = new HashMap<>();
+                byte[] verilogOutput = null;
+                byte[] stgOutput = null;
                 try {
-                    if (verilogFile.exists()) {
-                        fileContentMap.put(VERILOG_FILE_NAME, FileUtils.readAllBytes(verilogFile));
-                    }
-                    File stgFile = new File(directory, STG_FILE_NAME);
+                    File stgFile = new File(directory, MpsatSynthesisOutput.STG_FILE_NAME);
                     if (stgFile.exists()) {
-                        fileContentMap.put(STG_FILE_NAME, FileUtils.readAllBytes(stgFile));
+                        stgOutput = FileUtils.readAllBytes(stgFile);
+                    }
+                    if (verilogFile.exists()) {
+                        verilogOutput = FileUtils.readAllBytes(verilogFile);
                     }
                 } catch (IOException e) {
-                    return new Result<ExternalProcessOutput>(e);
+                    e.printStackTrace();
                 }
 
-                ExternalProcessOutput extendedOutput = new ExternalProcessOutput(
-                        returnCode, output.getStdout(), output.getStderr(), fileContentMap);
-
-                return Result.success(extendedOutput);
+                return Result.success(new MpsatSynthesisOutput(output, stgOutput, verilogOutput));
             }
         }
 

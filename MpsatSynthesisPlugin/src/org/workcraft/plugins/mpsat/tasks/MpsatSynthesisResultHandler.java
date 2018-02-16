@@ -100,7 +100,7 @@ public class MpsatSynthesisResultHandler extends AbstractExtendedResultHandler<M
     private WorkspaceEntry handleStgSynthesisResult(ExternalProcessOutput mpsatResult) {
         WorkspaceEntry dstWe = null;
         if (MpsatSynthesisSettings.getOpenSynthesisStg()) {
-            byte[] dstOutput = mpsatResult.getFileData(MpsatSynthesisTask.STG_FILE_NAME);
+            byte[] dstOutput = mpsatResult.getFileData(MpsatSynthesisOutput.STG_FILE_NAME);
             if (dstOutput != null) {
                 WorkspaceEntry srcWe = task.getWorkspaceEntry();
                 Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
@@ -127,7 +127,7 @@ public class MpsatSynthesisResultHandler extends AbstractExtendedResultHandler<M
             boolean sequentialAssign, RenderType renderType) {
 
         WorkspaceEntry dstWe = null;
-        final byte[] verilogOutput = mpsatResult.getFileData(MpsatSynthesisTask.VERILOG_FILE_NAME);
+        final byte[] verilogOutput = mpsatResult.getFileData(MpsatSynthesisOutput.VERILOG_FILE_NAME);
         if ((verilogOutput != null) && (verilogOutput.length > 0)) {
             LogUtils.logInfo("MPSat synthesis result in Verilog format:");
             System.out.println(new String(verilogOutput));
@@ -206,7 +206,7 @@ public class MpsatSynthesisResultHandler extends AbstractExtendedResultHandler<M
             final MpsatSynthesisChainResult returnValue = result.getPayload();
             final Result<? extends ExportOutput> exportResult = (returnValue == null) ? null : returnValue.getExportResult();
             final Result<? extends PunfOutput> punfResult = (returnValue == null) ? null : returnValue.getPunfResult();
-            final Result<? extends ExternalProcessOutput> mpsatResult = (returnValue == null) ? null : returnValue.getMpsatResult();
+            final Result<? extends MpsatSynthesisOutput> mpsatResult = (returnValue == null) ? null : returnValue.getMpsatResult();
             if ((exportResult != null) && (exportResult.getOutcome() == Outcome.FAILURE)) {
                 errorMessage += "\n\nCould not export the model as a .g file.";
                 final Throwable exportCause = exportResult.getCause();

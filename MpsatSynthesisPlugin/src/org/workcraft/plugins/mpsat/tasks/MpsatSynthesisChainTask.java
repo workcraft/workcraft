@@ -11,7 +11,6 @@ import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.shared.tasks.ExportTask;
-import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
@@ -106,7 +105,7 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainResult> 
             boolean needLib = settings.getMode().needLib();
             MpsatSynthesisTask mpsatTask = new MpsatSynthesisTask(settings.getMpsatArguments(directory),
                     unfoldingFile.getAbsolutePath(), directory, needLib);
-            Result<? extends ExternalProcessOutput> mpsatResult = framework.getTaskManager().execute(
+            Result<? extends MpsatSynthesisOutput> mpsatResult = framework.getTaskManager().execute(
                     mpsatTask, "Running synthesis [MPSat]", subtaskMonitor);
 
             if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
