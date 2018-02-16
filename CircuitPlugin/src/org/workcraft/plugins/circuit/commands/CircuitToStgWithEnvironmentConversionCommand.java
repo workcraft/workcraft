@@ -8,8 +8,8 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
+import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
-import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
@@ -63,7 +63,7 @@ public class CircuitToStgWithEnvironmentConversionCommand extends CircuitToStgCo
             String stgFileExtension = StgFormat.getInstance().getExtension();
             File sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
             sysStgFile.deleteOnExit();
-            Result<? extends ExternalProcessOutput> pcompResult = CircuitStgUtils.composeDevWithEnv(
+            Result<? extends PcompOutput> pcompResult = CircuitStgUtils.composeDevWithEnv(
                     devStgFile, envStgFile, sysStgFile, null, directory, null);
 
             switch (pcompResult.getOutcome()) {

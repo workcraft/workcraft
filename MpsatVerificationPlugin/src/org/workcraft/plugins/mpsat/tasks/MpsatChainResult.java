@@ -2,6 +2,7 @@ package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
+import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.Result;
@@ -9,14 +10,14 @@ import org.workcraft.tasks.Result;
 public class MpsatChainResult {
     private Result<? extends ExportOutput> exportResult;
     private Result<? extends PcompOutput> pcompResult;
-    private Result<? extends ExternalProcessOutput> punfResult;
+    private Result<? extends PunfOutput> punfResult;
     private Result<? extends ExternalProcessOutput> mpsatResult;
     private MpsatParameters mpsatSettings;
     private String message;
 
     public MpsatChainResult(Result<? extends ExportOutput> exportResult,
             Result<? extends PcompOutput> pcompResult,
-            Result<? extends ExternalProcessOutput> punfResult,
+            Result<? extends PunfOutput> punfResult,
             Result<? extends ExternalProcessOutput> mpsatResult,
             MpsatParameters mpsatSettings, String message) {
 
@@ -30,7 +31,7 @@ public class MpsatChainResult {
 
     public MpsatChainResult(Result<? extends ExportOutput> exportResult,
             Result<? extends PcompOutput> pcompResult,
-            Result<? extends ExternalProcessOutput> punfResult,
+            Result<? extends PunfOutput> punfResult,
             Result<? extends ExternalProcessOutput> mpsatResult,
             MpsatParameters mpsatSettings) {
 
@@ -45,11 +46,11 @@ public class MpsatChainResult {
         return exportResult;
     }
 
-    public Result<? extends ExternalProcessOutput> getPcompResult() {
+    public Result<? extends PcompOutput> getPcompResult() {
         return pcompResult;
     }
 
-    public Result<? extends ExternalProcessOutput> getPunfResult() {
+    public Result<? extends PunfOutput> getPunfResult() {
         return punfResult;
     }
 

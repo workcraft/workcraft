@@ -24,6 +24,7 @@ import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
+import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
@@ -207,7 +208,7 @@ public class CheckCircuitTask extends MpsatChainTask {
             // Generate unfolding for deadlock and output persistency checks (only if needed)
             File unfoldingFile = null;
             PunfTask punfTask = null;
-            Result<? extends ExternalProcessOutput> punfResult = null;
+            Result<? extends PunfOutput> punfResult = null;
             if (checkDeadlock || checkPersistency) {
                 unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + PunfTask.PNML_FILE_EXTENSION);
                 punfTask = new PunfTask(sysStgFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
@@ -225,7 +226,7 @@ public class CheckCircuitTask extends MpsatChainTask {
             // Generate unfolding for conformation checks (if needed)
             File unfoldingModFile = unfoldingFile;
             PunfTask punfModTask = punfTask;
-            Result<? extends ExternalProcessOutput> punfModResult = punfResult;
+            Result<? extends PunfOutput> punfModResult = punfResult;
             if ((envStg != null) && checkConformation) {
                 if ((sysStgFile != sysModStgFile) || (unfoldingModFile == null)) {
                     String fileSuffix = (sysStgFile == null) ? "" : StgUtils.MODIFIED_FILE_SUFFIX;

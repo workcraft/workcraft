@@ -12,6 +12,7 @@ import org.workcraft.plugins.mpsat.MpsatSolution;
 import org.workcraft.plugins.mpsat.MpsatUtils;
 import org.workcraft.plugins.mpsat.PunfResultParser;
 import org.workcraft.plugins.mpsat.PunfResultParser.Cause;
+import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.Mutex;
@@ -112,7 +113,7 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
     private boolean handlePartialFailure(final Result<? extends MpsatCombinedChainResult> result) {
         WorkspaceEntry we = task.getWorkspaceEntry();
         MpsatCombinedChainResult returnValue = result.getPayload();
-        Result<? extends ExternalProcessOutput> punfResult = (returnValue == null) ? null : returnValue.getPunfResult();
+        Result<? extends PunfOutput> punfResult = (returnValue == null) ? null : returnValue.getPunfResult();
         if ((punfResult != null) && (punfResult.getOutcome() == Outcome.FAILURE)) {
             PunfResultParser prp = new PunfResultParser(punfResult.getPayload());
             Pair<MpsatSolution, PunfResultParser.Cause> punfOutcome = prp.getOutcome();
@@ -178,7 +179,7 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
         } else {
             MpsatCombinedChainResult returnValue = result.getPayload();
             Result<? extends ExportOutput> exportResult = (returnValue == null) ? null : returnValue.getExportResult();
-            Result<? extends ExternalProcessOutput> punfResult = (returnValue == null) ? null : returnValue.getPunfResult();
+            Result<? extends PunfOutput> punfResult = (returnValue == null) ? null : returnValue.getPunfResult();
             List<Result<? extends ExternalProcessOutput>> mpsatResultList = (returnValue == null) ? null : returnValue.getMpsatResultList();
             if ((exportResult != null) && (exportResult.getOutcome() == Outcome.FAILURE)) {
                 errorMessage += "\n\nCould not export the model as a .g file.";

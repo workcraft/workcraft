@@ -14,6 +14,7 @@ import org.workcraft.gui.graph.tools.SimulationTool;
 import org.workcraft.plugins.mpsat.PunfResultParser.Cause;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainResult;
+import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.MutexUtils;
@@ -43,7 +44,7 @@ public class MpsatUtils {
                         }
                     }
                 } else  if (combinedChainResult.getOutcome() == Outcome.FAILURE) {
-                    Result<? extends ExternalProcessOutput> punfResult = returnValue.getPunfResult();
+                    Result<? extends PunfOutput> punfResult = returnValue.getPunfResult();
                     if (punfResult != null) {
                         PunfResultParser prp = new PunfResultParser(punfResult.getPayload());
                         Pair<MpsatSolution, PunfResultParser.Cause> punfOutcome = prp.getOutcome();
@@ -82,7 +83,7 @@ public class MpsatUtils {
                         solutions.addAll(getSolutions(mpsatResult));
                     }
                 } else if (chainResult.getOutcome() == Outcome.FAILURE) {
-                    Result<? extends ExternalProcessOutput> punfResult = returnValue.getPunfResult();
+                    Result<? extends PunfOutput> punfResult = returnValue.getPunfResult();
                     if (punfResult != null) {
                         PunfResultParser prp = new PunfResultParser(punfResult.getPayload());
                         Pair<MpsatSolution, PunfResultParser.Cause> punfOutcome = prp.getOutcome();

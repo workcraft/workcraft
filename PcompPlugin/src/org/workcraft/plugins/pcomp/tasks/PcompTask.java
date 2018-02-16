@@ -91,6 +91,7 @@ public class PcompTask implements Task<PcompOutput> {
         ExternalProcessTask task = new ExternalProcessTask(command, directory, false, true);
         SubtaskMonitor<? super ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
+
         if (result.getOutcome() == Outcome.CANCEL) {
             return Result.cancelation();
         } else {

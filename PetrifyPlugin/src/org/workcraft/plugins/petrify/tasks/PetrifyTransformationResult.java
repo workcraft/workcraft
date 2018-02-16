@@ -5,6 +5,7 @@ import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.Result;
 
 public class PetrifyTransformationResult {
+
     private final Result<? extends ExternalProcessOutput> petrifyResult;
     private final StgModel result;
 
@@ -20,4 +21,5 @@ public class PetrifyTransformationResult {
     public StgModel getResult() {
         return result;
     }
+
 }

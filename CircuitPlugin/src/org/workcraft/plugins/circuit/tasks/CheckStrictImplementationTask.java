@@ -19,6 +19,7 @@ import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
+import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
@@ -74,7 +75,7 @@ public class CheckStrictImplementationTask extends MpsatChainTask {
             monitor.progressUpdate(0.20);
 
             // Generate unfolding
-            Result<? extends ExternalProcessOutput> punfResult = null;
+            Result<? extends PunfOutput> punfResult = null;
             final TaskManager taskManager = framework.getTaskManager();
             File unfoldingFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + PunfTask.PNML_FILE_EXTENSION);
             PunfTask punfTask = new PunfTask(envStgFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
