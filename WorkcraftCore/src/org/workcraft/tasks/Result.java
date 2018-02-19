@@ -57,7 +57,11 @@ public class Result<T> {
     }
 
     public static <T> Result<T> success(T payload) {
-        return new Result<T>(payload);
+        return new Result<T>(Outcome.SUCCESS, payload);
+    }
+
+    public static <T> Result<T> failure() {
+        return new Result<T>(Outcome.FAILURE);
     }
 
     public static <T> Result<T> failure(T payload) {

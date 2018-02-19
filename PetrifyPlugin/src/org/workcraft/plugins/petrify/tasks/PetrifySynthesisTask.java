@@ -39,7 +39,7 @@ import org.workcraft.util.ToolUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, ExternalProcessListener {
+public class PetrifySynthesisTask implements Task<PetrifySynthesisOutput>, ExternalProcessListener {
     private final WorkspaceEntry we;
     private final String[] args;
     private final Collection<Mutex> mutexes;
@@ -51,7 +51,7 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
     }
 
     @Override
-    public Result<? extends PetrifySynthesisResult> run(ProgressMonitor<? super PetrifySynthesisResult> monitor) {
+    public Result<? extends PetrifySynthesisOutput> run(ProgressMonitor<? super PetrifySynthesisOutput> monitor) {
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
@@ -137,27 +137,25 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
         boolean printStdout = PetrifySettings.getPrintStdout();
         boolean printStderr = PetrifySettings.getPrintStderr();
         ExternalProcessTask task = new ExternalProcessTask(command, null, printStdout, printStderr);
-        SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
-        Result<? extends ExternalProcessOutput> res = task.run(mon);
+        SubtaskMonitor<ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
+        Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
+
         try {
-            if (res.getOutcome() == Outcome.SUCCESS) {
+            if (result.getOutcome() == Outcome.SUCCESS) {
+                ExternalProcessOutput output = result.getPayload();
                 String log = getFileContent(logFile);
                 String equations = getFileContent(eqnFile);
                 String verilog = getFileContent(verilogFile);
-                String out = getFileContent(outFile);
-                String stdout = new String(res.getPayload().getStdout());
-                String stderr = new String(res.getPayload().getStderr());
-                PetrifySynthesisResult result = new PetrifySynthesisResult(log, equations, verilog, out, stdout, stderr);
-                if (res.getPayload().getReturnCode() == 0) {
-                    return Result.success(result);
-                } else {
-                    return Result.failure(result);
+                String stgOutput = getFileContent(outFile);
+                if (output.getReturnCode() != 0) {
+                    return Result.failure(new PetrifySynthesisOutput(output, log, equations, verilog, stgOutput));
                 }
+                return Result.success(new PetrifySynthesisOutput(output, log, equations, verilog, stgOutput));
             }
-            if (res.getOutcome() == Outcome.CANCEL) {
+            if (result.getOutcome() == Outcome.CANCEL) {
                 return Result.cancelation();
             }
-            return Result.failure(null);
+            return Result.failure();
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {

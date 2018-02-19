@@ -31,7 +31,7 @@ import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
+public class WriteSgConversionTask implements Task<WriteSgConversionOutput> {
 
     private final class HugeSgRunnable implements Runnable {
         private final String stateCountMsg;
@@ -69,7 +69,7 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
     }
 
     @Override
-    public Result<? extends WriteSgConversionResult> run(ProgressMonitor<? super WriteSgConversionResult> monitor) {
+    public Result<? extends WriteSgConversionOutput> run(ProgressMonitor<? super WriteSgConversionOutput> monitor) {
         final Framework framework = Framework.getInstance();
         try {
             // Common variables
@@ -92,9 +92,9 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
 
             if (petriExportResult.getOutcome() != Outcome.SUCCESS) {
                 if (petriExportResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<WriteSgConversionResult>(Outcome.CANCEL);
+                    return Result.cancelation();
                 }
-                return new Result<WriteSgConversionResult>(Outcome.FAILURE);
+                return Result.failure();
             }
             monitor.progressUpdate(0.20);
 
@@ -106,25 +106,26 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
 
             while (true) {
                 WriteSgTask writeSgTask = new WriteSgTask(writeSgOptions, petriFile, null, null);
-                Result<? extends ExternalProcessOutput> writeSgResult = framework.getTaskManager().execute(
+                Result<? extends ExternalProcessOutput> result = framework.getTaskManager().execute(
                         writeSgTask, "Building state graph", subtaskMonitor);
 
-                if (writeSgResult.getOutcome() == Outcome.SUCCESS) {
+                ExternalProcessOutput output = result.getPayload();
+                if (result.getOutcome() == Outcome.SUCCESS) {
                     try {
-                        ByteArrayInputStream in = new ByteArrayInputStream(writeSgResult.getPayload().getStdout());
+                        ByteArrayInputStream in = new ByteArrayInputStream(output.getStdout());
                         final Fst fst = new SgImporter().importSG(in);
-                        return Result.success(new WriteSgConversionResult(null, fst));
+                        return Result.success(new WriteSgConversionOutput(output, fst));
                     } catch (DeserialisationException e) {
                         return Result.exception(e);
                     }
                 }
-                if (writeSgResult.getOutcome() == Outcome.CANCEL) {
+                if (result.getOutcome() == Outcome.CANCEL) {
                     return Result.cancelation();
                 }
-                if (writeSgResult.getCause() != null) {
-                    return Result.exception(writeSgResult.getCause());
+                if (result.getCause() != null) {
+                    return Result.exception(result.getCause());
                 } else {
-                    final String errorMessages = new String(writeSgResult.getPayload().getStderr());
+                    final String errorMessages = new String(output.getStderr());
                     final Matcher matcher = hugeSgPattern.matcher(errorMessages);
                     if (matcher.find()) {
                         final HugeSgRunnable hugeSgRunnable = new HugeSgRunnable(matcher.group(1));
@@ -136,12 +137,12 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
                             return Result.cancelation();
                         }
                     } else {
-                        return Result.failure(new WriteSgConversionResult(writeSgResult, null));
+                        return Result.failure(new WriteSgConversionOutput(output, null));
                     }
                 }
             }
         } catch (Throwable e) {
-            return new Result<WriteSgConversionResult>(e);
+            throw new RuntimeException(e);
         }
     }
 

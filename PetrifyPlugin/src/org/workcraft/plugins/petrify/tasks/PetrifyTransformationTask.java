@@ -39,7 +39,7 @@ import org.workcraft.util.FileUtils;
 import org.workcraft.util.ToolUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class PetrifyTransformationTask implements Task<PetrifyTransformationResult>, ExternalProcessListener {
+public class PetrifyTransformationTask implements Task<PetrifyTransformationOutput>, ExternalProcessListener {
 
     private final WorkspaceEntry we;
     String[] args;
@@ -54,7 +54,7 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationResu
     }
 
     @Override
-    public Result<? extends PetrifyTransformationResult> run(ProgressMonitor<? super PetrifyTransformationResult> monitor) {
+    public Result<? extends PetrifyTransformationOutput> run(ProgressMonitor<? super PetrifyTransformationOutput> monitor) {
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
@@ -124,10 +124,10 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationResu
             boolean printStdout = PetrifySettings.getPrintStdout();
             boolean printStderr = PetrifySettings.getPrintStderr();
             ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
-            SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
-            Result<? extends ExternalProcessOutput> res = task.run(mon);
+            SubtaskMonitor<ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
+            Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
 
-            if (res.getOutcome() == Outcome.SUCCESS) {
+            if (result.getOutcome() == Outcome.SUCCESS) {
                 StgModel outStg = null;
                 if (outFile.exists()) {
                     String out = FileUtils.readAllText(outFile);
@@ -138,18 +138,18 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationResu
                         return Result.exception(e);
                     }
                 }
-                PetrifyTransformationResult result = new PetrifyTransformationResult(res, outStg);
-                int returnCode = res.getPayload().getReturnCode();
-                String errorMessage = new String(res.getPayload().getStderr());
+                ExternalProcessOutput output = result.getPayload();
+                int returnCode = output.getReturnCode();
+                String errorMessage = new String(output.getStderr());
                 if ((returnCode != 0) || (errorMessage.contains(">>> ERROR: Cannot solve CSC.\n"))) {
-                    return Result.failure(result);
+                    return Result.failure(new PetrifyTransformationOutput(output, outStg));
                 }
-                return Result.success(result);
+                return Result.success(new PetrifyTransformationOutput(output, outStg));
             }
-            if (res.getOutcome() == Outcome.CANCEL) {
+            if (result.getOutcome() == Outcome.CANCEL) {
                 return Result.cancelation();
             }
-            return Result.failure(null);
+            return Result.failure();
         } catch (Throwable e) {
             throw new RuntimeException(e);
         } finally {

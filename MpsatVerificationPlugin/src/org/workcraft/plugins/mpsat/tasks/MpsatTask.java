@@ -167,7 +167,7 @@ public class MpsatTask implements Task<MpsatOutput> {
             return Result.cancelation();
         }
 
-        return Result.failure(null);
+        return Result.failure();
     }
 
 }

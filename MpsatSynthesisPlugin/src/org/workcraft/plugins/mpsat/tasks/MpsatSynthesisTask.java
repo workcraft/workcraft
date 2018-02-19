@@ -21,6 +21,7 @@ import org.workcraft.util.LogUtils;
 import org.workcraft.util.ToolUtils;
 
 public class MpsatSynthesisTask implements Task<MpsatSynthesisOutput> {
+
     // IMPORTANT: The name of output file must be mpsat.g -- this is not configurable on MPSat side.
     private static final String STG_FILE_NAME = "mpsat.g";
     private static final String VERILOG_FILE_NAME = "mpsat.v";
@@ -115,7 +116,6 @@ public class MpsatSynthesisTask implements Task<MpsatSynthesisOutput> {
                 byte[] verilogOutput = null;
                 byte[] stgOutput = null;
                 try {
-                    // IMPORTANT: The name of output file must be mpsat.g -- this is not configurable on MPSat side.
                     File stgFile = new File(directory, STG_FILE_NAME);
                     if (stgFile.exists()) {
                         stgOutput = FileUtils.readAllBytes(stgFile);
@@ -135,7 +135,7 @@ public class MpsatSynthesisTask implements Task<MpsatSynthesisOutput> {
             return Result.cancelation();
         }
 
-        return Result.failure(null);
+        return Result.failure();
     }
 
 }

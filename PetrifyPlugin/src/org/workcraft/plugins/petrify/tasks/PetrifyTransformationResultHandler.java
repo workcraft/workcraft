@@ -18,7 +18,6 @@ import org.workcraft.plugins.petri.PetriNetDescriptor;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.MutexUtils;
@@ -31,7 +30,7 @@ import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class PetrifyTransformationResultHandler extends AbstractExtendedResultHandler<PetrifyTransformationResult, WorkspaceEntry> {
+public class PetrifyTransformationResultHandler extends AbstractExtendedResultHandler<PetrifyTransformationOutput, WorkspaceEntry> {
     private final WorkspaceEntry we;
     private final boolean convertToPetriNet;
     private final Collection<Mutex> mutexes;
@@ -43,10 +42,11 @@ public class PetrifyTransformationResultHandler extends AbstractExtendedResultHa
     }
 
     @Override
-    public WorkspaceEntry handleResult(final Result<? extends PetrifyTransformationResult> result) {
+    public WorkspaceEntry handleResult(final Result<? extends PetrifyTransformationOutput> result) {
         WorkspaceEntry weResult = null;
+        PetrifyTransformationOutput output = result.getPayload();
         if (result.getOutcome() == Outcome.SUCCESS) {
-            StgModel stgModel = result.getPayload().getResult();
+            StgModel stgModel = output.getStg();
             MutexUtils.restoreMutexPlacesByContext(stgModel, mutexes);
             PetriNetModel model = convertToPetriNet ? convertStgToPetriNet(stgModel) : stgModel;
             final ModelDescriptor modelDescriptor = convertToPetriNet ? new PetriNetDescriptor() : new StgDescriptor();
@@ -58,10 +58,7 @@ public class PetrifyTransformationResultHandler extends AbstractExtendedResultHa
             if (result.getCause() != null) {
                 ExceptionDialog.show(result.getCause());
             } else {
-                PetrifyTransformationResult output = result.getPayload();
-                Result<? extends ExternalProcessOutput> petrifyResult = output.getPetrifyResult();
-                ExternalProcessOutput petrifyOutput = petrifyResult.getPayload();
-                DialogUtils.showWarning("Transformation failed. Petrify output: \n\n" + petrifyOutput.getErrorsHeadAndTail());
+                DialogUtils.showWarning("Transformation failed. Petrify output: \n\n" + output.getErrorsHeadAndTail());
             }
         }
         return weResult;

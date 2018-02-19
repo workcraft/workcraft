@@ -11,7 +11,6 @@ import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.FstDescriptor;
 import org.workcraft.plugins.fst.VisualFst;
-import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.AbstractExtendedResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -21,7 +20,7 @@ import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class StgToFstConversionResultHandler extends AbstractExtendedResultHandler<WriteSgConversionResult, WorkspaceEntry> {
+public class StgToFstConversionResultHandler extends AbstractExtendedResultHandler<WriteSgConversionOutput, WorkspaceEntry> {
 
     private final ColorGenerator colorGenerator = new ColorGenerator(ColorUtils.getHsbPalette(
             new float[]{0.45f, 0.15f, 0.70f, 0.25f, 0.05f, 0.80f, 0.55f, 0.20f, 075f, 0.50f},
@@ -34,10 +33,11 @@ public class StgToFstConversionResultHandler extends AbstractExtendedResultHandl
     }
 
     @Override
-    public WorkspaceEntry handleResult(final Result<? extends WriteSgConversionResult> result) {
+    public WorkspaceEntry handleResult(final Result<? extends WriteSgConversionOutput> result) {
         WorkspaceEntry weResult = null;
+        WriteSgConversionOutput output = result.getPayload();
         if (result.getOutcome() == Outcome.SUCCESS) {
-            Fst model = result.getPayload().getConversionResult();
+            Fst model = output.getFst();
             ModelEntry me = new ModelEntry(new FstDescriptor(), model);
             Path<String> path = task.getWorkspaceEntry().getWorkspacePath();
             Framework framework = Framework.getInstance();
@@ -51,8 +51,7 @@ public class StgToFstConversionResultHandler extends AbstractExtendedResultHandl
             if (result.getCause() != null) {
                 ExceptionDialog.show(result.getCause());
             } else {
-                final Result<? extends ExternalProcessOutput> petrifyResult = result.getPayload().getResult();
-                DialogUtils.showWarning("Petrify output:\n" + petrifyResult.getPayload().getErrorsHeadAndTail());
+                DialogUtils.showWarning("Petrify output:\n" + output.getErrorsHeadAndTail());
             }
         }
         return weResult;

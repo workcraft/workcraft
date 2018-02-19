@@ -63,16 +63,16 @@ public class WriteSgTask implements Task<ExternalProcessOutput>, ExternalProcess
         }
 
         ExternalProcessTask task = new ExternalProcessTask(command, workingDirectory);
-        Result<? extends ExternalProcessOutput> res = task.run(monitor);
-        if (res.getOutcome() != Outcome.SUCCESS) {
-            return res;
+        Result<? extends ExternalProcessOutput> result = task.run(monitor);
+        if (result.getOutcome() != Outcome.SUCCESS) {
+            return result;
         }
 
-        ExternalProcessOutput retVal = res.getPayload();
-        if (retVal.getReturnCode() == 0) {
-            return Result.success(retVal);
+        ExternalProcessOutput output = result.getPayload();
+        if (output.getReturnCode() == 0) {
+            return Result.success(output);
         } else {
-            return Result.failure(retVal);
+            return Result.failure(output);
         }
     }
 
