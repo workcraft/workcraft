@@ -6,22 +6,21 @@ import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
-import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.Result;
 
-public class MpsatCombinedChainResult {
+public class MpsatCombinedChainOutput {
     private Result<? extends ExportOutput> exportResult;
     private Result<? extends PcompOutput> pcompResult;
     private Result<? extends PunfOutput> punfResult;
-    private List<Result<? extends ExternalProcessOutput>> mpsatResultList;
+    private List<Result<? extends MpsatOutput>> mpsatResultList;
     private List<MpsatParameters> mpsatSettingsList;
     private String message;
 
-    public MpsatCombinedChainResult(
+    public MpsatCombinedChainOutput(
             Result<? extends ExportOutput> exportResult,
             Result<? extends PcompOutput> pcompResult,
             Result<? extends PunfOutput> punfResult,
-            List<Result<? extends ExternalProcessOutput>> mpsatResultList,
+            List<Result<? extends MpsatOutput>> mpsatResultList,
             List<MpsatParameters> mpsatSettingsList, String message) {
 
         this.exportResult = exportResult;
@@ -32,11 +31,11 @@ public class MpsatCombinedChainResult {
         this.message = message;
     }
 
-    public MpsatCombinedChainResult(
+    public MpsatCombinedChainOutput(
             Result<? extends ExportOutput> exportResult,
             Result<? extends PcompOutput> pcompResult,
             Result<? extends PunfOutput> punfResult,
-            List<Result<? extends ExternalProcessOutput>> mpsatResultList,
+            List<Result<? extends MpsatOutput>> mpsatResultList,
             List<MpsatParameters> mpsatSettingsList) {
 
         this(exportResult, pcompResult, punfResult, mpsatResultList, mpsatSettingsList, null);
@@ -58,7 +57,7 @@ public class MpsatCombinedChainResult {
         return punfResult;
     }
 
-    public List<Result<? extends ExternalProcessOutput>> getMpsatResultList() {
+    public List<Result<? extends MpsatOutput>> getMpsatResultList() {
         return mpsatResultList;
     }
 

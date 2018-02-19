@@ -15,9 +15,9 @@ import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.tasks.CheckStrictImplementationTask;
-import org.workcraft.plugins.mpsat.MpsatUtils;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
+import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
+import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
@@ -52,7 +52,7 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
     @Override
     public Boolean execute(WorkspaceEntry we) {
         MpsatChainResultHandler monitor = queueVerification(we);
-        Result<? extends MpsatChainResult> result = null;
+        Result<? extends MpsatChainOutput> result = null;
         if (monitor != null) {
             result = monitor.waitResult();
         }

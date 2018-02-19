@@ -8,15 +8,15 @@ import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.dfs.VisualDfs;
 import org.workcraft.plugins.dfs.stg.DfsToStgConverter;
 import org.workcraft.plugins.mpsat.MpsatParameters;
-import org.workcraft.plugins.mpsat.MpsatResultParser;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
+import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
+import org.workcraft.plugins.mpsat.tasks.MpsatOutoutParser;
+import org.workcraft.plugins.mpsat.tasks.MpsatOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.shared.tasks.ExportTask;
-import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
@@ -35,7 +35,7 @@ public class CheckDataflowPersistencydTask extends MpsatChainTask {
     }
 
     @Override
-    public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
+    public Result<? extends MpsatChainOutput> run(ProgressMonitor<? super MpsatChainOutput> monitor) {
         final Framework framework = Framework.getInstance();
         WorkspaceEntry we = getWorkspaceEntry();
         MpsatParameters settings = getSettings();
@@ -61,10 +61,10 @@ public class CheckDataflowPersistencydTask extends MpsatChainTask {
 
             if (exportResult.getOutcome() != Outcome.SUCCESS) {
                 if (exportResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainResult>(Outcome.CANCEL);
+                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainResult>(Outcome.FAILURE,
-                        new MpsatChainResult(exportResult, null, null, null, settings));
+                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                        new MpsatChainOutput(exportResult, null, null, null, settings));
             }
             monitor.progressUpdate(0.20);
 
@@ -75,39 +75,39 @@ public class CheckDataflowPersistencydTask extends MpsatChainTask {
 
             if (punfResult.getOutcome() != Outcome.SUCCESS) {
                 if (punfResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainResult>(Outcome.CANCEL);
+                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainResult>(Outcome.FAILURE,
-                        new MpsatChainResult(exportResult, null, punfResult, null, settings));
+                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                        new MpsatChainOutput(exportResult, null, punfResult, null, settings));
             }
             monitor.progressUpdate(0.40);
 
             MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory),
                     unfoldingFile, directory, netFile);
-            Result<? extends ExternalProcessOutput> mpsatResult = framework.getTaskManager().execute(
+            Result<? extends MpsatOutput> mpsatResult = framework.getTaskManager().execute(
                     mpsatTask, "Running semimodularity checking [MPSat]", mon);
 
             if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
                 if (mpsatResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainResult>(Outcome.CANCEL);
+                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainResult>(Outcome.FAILURE,
-                        new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings));
+                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                        new MpsatChainOutput(exportResult, null, punfResult, mpsatResult, settings));
             }
             monitor.progressUpdate(0.90);
 
-            MpsatResultParser mdp = new MpsatResultParser(mpsatResult.getPayload());
+            MpsatOutoutParser mdp = new MpsatOutoutParser(mpsatResult.getPayload());
             if (!mdp.getSolutions().isEmpty()) {
-                return new Result<MpsatChainResult>(Outcome.SUCCESS,
-                        new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings, "Dataflow is not output-persistent"));
+                return new Result<MpsatChainOutput>(Outcome.SUCCESS,
+                        new MpsatChainOutput(exportResult, null, punfResult, mpsatResult, settings, "Dataflow is not output-persistent"));
             }
             monitor.progressUpdate(1.0);
 
-            return new Result<MpsatChainResult>(Outcome.SUCCESS,
-                    new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings, "Dataflow is output-persistent"));
+            return new Result<MpsatChainOutput>(Outcome.SUCCESS,
+                    new MpsatChainOutput(exportResult, null, punfResult, mpsatResult, settings, "Dataflow is output-persistent"));
 
         } catch (Throwable e) {
-            return new Result<MpsatChainResult>(e);
+            return new Result<MpsatChainOutput>(e);
         } finally {
             FileUtils.deleteOnExitRecursively(directory);
         }

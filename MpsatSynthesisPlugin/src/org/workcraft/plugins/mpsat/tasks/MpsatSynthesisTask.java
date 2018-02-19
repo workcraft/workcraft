@@ -120,7 +120,7 @@ public class MpsatSynthesisTask implements Task<MpsatSynthesisOutput> {
                         verilogOutput = FileUtils.readAllBytes(verilogFile);
                     }
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    return Result.exception(e);
                 }
 
                 return Result.success(new MpsatSynthesisOutput(output, stgOutput, verilogOutput));

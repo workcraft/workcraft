@@ -8,10 +8,10 @@ import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.interop.Importer;
-import org.workcraft.plugins.mpsat.MpsatUtils;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
+import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.tasks.MpsatConformationTask;
+import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
@@ -64,7 +64,7 @@ public class MpsatConformationVerificationCommand extends AbstractVerificationCo
     @Override
     public Boolean execute(WorkspaceEntry we) {
         MpsatChainResultHandler monitor = queueVerification(we, false);
-        Result<? extends MpsatChainResult> result = null;
+        Result<? extends MpsatChainOutput> result = null;
         if (monitor != null) {
             result = monitor.waitResult();
         }

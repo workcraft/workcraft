@@ -1,4 +1,4 @@
-package org.workcraft.plugins.mpsat;
+package org.workcraft.plugins.mpsat.tasks;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -11,11 +11,10 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.Toolbox;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.graph.tools.SimulationTool;
-import org.workcraft.plugins.mpsat.PunfResultParser.Cause;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
-import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainResult;
+import org.workcraft.plugins.mpsat.MpsatMode;
+import org.workcraft.plugins.mpsat.MpsatParameters;
+import org.workcraft.plugins.mpsat.tasks.PunfOutputParser.Cause;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
-import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
@@ -29,30 +28,30 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatUtils {
 
-    public static List<MpsatSolution> getCombinedChainSolutions(Result<? extends MpsatCombinedChainResult> combinedChainResult) {
+    public static List<MpsatSolution> getCombinedChainSolutions(Result<? extends MpsatCombinedChainOutput> combinedChainResult) {
         LinkedList<MpsatSolution> solutions = null;
         if (combinedChainResult != null) {
-            MpsatCombinedChainResult returnValue = combinedChainResult.getPayload();
-            if (returnValue != null) {
+            MpsatCombinedChainOutput combinedChainOutput = combinedChainResult.getPayload();
+            if (combinedChainOutput != null) {
                 if (combinedChainResult.getOutcome() == Outcome.SUCCESS) {
                     solutions = new LinkedList<>();
-                    List<Result<? extends ExternalProcessOutput>> mpsatResultList = returnValue.getMpsatResultList();
+                    List<Result<? extends MpsatOutput>> mpsatResultList = combinedChainOutput.getMpsatResultList();
                     for (int index = 0; index < mpsatResultList.size(); ++index) {
-                        Result<? extends ExternalProcessOutput> mpsatResult = mpsatResultList.get(index);
+                        Result<? extends MpsatOutput> mpsatResult = mpsatResultList.get(index);
                         if (mpsatResult != null) {
                             solutions.addAll(getSolutions(mpsatResult));
                         }
                     }
                 } else  if (combinedChainResult.getOutcome() == Outcome.FAILURE) {
-                    Result<? extends PunfOutput> punfResult = returnValue.getPunfResult();
+                    Result<? extends PunfOutput> punfResult = combinedChainOutput.getPunfResult();
                     if (punfResult != null) {
-                        PunfResultParser prp = new PunfResultParser(punfResult.getPayload());
-                        Pair<MpsatSolution, PunfResultParser.Cause> punfOutcome = prp.getOutcome();
+                        PunfOutputParser prp = new PunfOutputParser(punfResult.getPayload());
+                        Pair<MpsatSolution, PunfOutputParser.Cause> punfOutcome = prp.getOutcome();
                         if (punfOutcome != null) {
                             Cause cause = punfOutcome.getSecond();
                             boolean isConsistencyCheck = false;
                             if (cause == Cause.INCONSISTENT) {
-                                for (MpsatParameters mpsatSettings: returnValue.getMpsatSettingsList()) {
+                                for (MpsatParameters mpsatSettings: combinedChainOutput.getMpsatSettingsList()) {
                                     if (mpsatSettings.getMode() == MpsatMode.STG_REACHABILITY_CONSISTENCY) {
                                         isConsistencyCheck = true;
                                         break;
@@ -71,25 +70,25 @@ public class MpsatUtils {
         return solutions;
     }
 
-    public static List<MpsatSolution> getChainSolutions(Result<? extends MpsatChainResult> chainResult) {
+    public static List<MpsatSolution> getChainSolutions(Result<? extends MpsatChainOutput> chainResult) {
         LinkedList<MpsatSolution> solutions = null;
         if (chainResult != null) {
-            MpsatChainResult returnValue = chainResult.getPayload();
-            if (returnValue != null) {
+            MpsatChainOutput chainOutput = chainResult.getPayload();
+            if (chainOutput != null) {
                 if (chainResult.getOutcome() == Outcome.SUCCESS) {
                     solutions = new LinkedList<>();
-                    Result<? extends ExternalProcessOutput> mpsatResult = returnValue.getMpsatResult();
+                    Result<? extends MpsatOutput> mpsatResult = chainOutput.getMpsatResult();
                     if (mpsatResult != null) {
                         solutions.addAll(getSolutions(mpsatResult));
                     }
                 } else if (chainResult.getOutcome() == Outcome.FAILURE) {
-                    Result<? extends PunfOutput> punfResult = returnValue.getPunfResult();
+                    Result<? extends PunfOutput> punfResult = chainOutput.getPunfResult();
                     if (punfResult != null) {
-                        PunfResultParser prp = new PunfResultParser(punfResult.getPayload());
-                        Pair<MpsatSolution, PunfResultParser.Cause> punfOutcome = prp.getOutcome();
+                        PunfOutputParser prp = new PunfOutputParser(punfResult.getPayload());
+                        Pair<MpsatSolution, PunfOutputParser.Cause> punfOutcome = prp.getOutcome();
                         if (punfOutcome != null) {
                             Cause cause = punfOutcome.getSecond();
-                            MpsatParameters mpsatSettings = returnValue.getMpsatSettings();
+                            MpsatParameters mpsatSettings = chainOutput.getMpsatSettings();
                             boolean isConsistencyCheck = (cause == Cause.INCONSISTENT)
                                     && (mpsatSettings.getMode() == MpsatMode.STG_REACHABILITY_CONSISTENCY);
                             if (isConsistencyCheck) {
@@ -104,24 +103,24 @@ public class MpsatUtils {
         return solutions;
     }
 
-    public static List<MpsatSolution> getSolutions(Result<? extends ExternalProcessOutput> result) {
+    public static List<MpsatSolution> getSolutions(Result<? extends MpsatOutput> result) {
         LinkedList<MpsatSolution> solutions = null;
         if ((result != null) && (result.getOutcome() == Outcome.SUCCESS)) {
             solutions = new LinkedList<>();
-            ExternalProcessOutput returnValue = result.getPayload();
-            if (returnValue != null) {
-                solutions.addAll(getSolutions(returnValue));
+            MpsatOutput output = result.getPayload();
+            if (output != null) {
+                solutions.addAll(getSolutions(output));
             }
         }
         return solutions;
     }
 
-    public static List<MpsatSolution> getSolutions(ExternalProcessOutput value) {
-        MpsatResultParser mdp = new MpsatResultParser(value);
+    public static List<MpsatSolution> getSolutions(MpsatOutput output) {
+        MpsatOutoutParser mdp = new MpsatOutoutParser(output);
         return mdp.getSolutions();
     }
 
-    public static Boolean getCombinedChainOutcome(Result<? extends MpsatCombinedChainResult> combinedChainResult) {
+    public static Boolean getCombinedChainOutcome(Result<? extends MpsatCombinedChainOutput> combinedChainResult) {
         List<MpsatSolution> solutions = getCombinedChainSolutions(combinedChainResult);
         if (solutions != null) {
             return !hasTraces(solutions);
@@ -129,7 +128,7 @@ public class MpsatUtils {
         return null;
     }
 
-    public static Boolean getChainOutcome(Result<? extends MpsatChainResult> chainResult) {
+    public static Boolean getChainOutcome(Result<? extends MpsatChainOutput> chainResult) {
         List<MpsatSolution> solutions = getChainSolutions(chainResult);
         if (solutions != null) {
             return !hasTraces(solutions);

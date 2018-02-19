@@ -1,4 +1,4 @@
-package org.workcraft.plugins.mpsat;
+package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.Trace;
 

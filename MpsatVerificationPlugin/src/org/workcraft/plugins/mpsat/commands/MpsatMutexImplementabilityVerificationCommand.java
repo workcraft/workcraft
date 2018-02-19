@@ -6,10 +6,10 @@ import java.util.Collection;
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.mpsat.MpsatParameters;
-import org.workcraft.plugins.mpsat.MpsatUtils;
-import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainResult;
+import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainResultHandler;
 import org.workcraft.plugins.mpsat.tasks.MpsatCombinedChainTask;
+import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.MutexUtils;
 import org.workcraft.plugins.stg.Stg;
@@ -49,7 +49,7 @@ public class MpsatMutexImplementabilityVerificationCommand extends AbstractVerif
     @Override
     public Boolean execute(WorkspaceEntry we) {
         MpsatCombinedChainResultHandler monitor = queueVerification(we);
-        Result<? extends MpsatCombinedChainResult> result = null;
+        Result<? extends MpsatCombinedChainOutput> result = null;
         if (monitor != null) {
             result = monitor.waitResult();
         }

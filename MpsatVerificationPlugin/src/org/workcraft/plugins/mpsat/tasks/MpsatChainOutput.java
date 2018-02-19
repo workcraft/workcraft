@@ -4,21 +4,20 @@ import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
-import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.Result;
 
-public class MpsatChainResult {
+public class MpsatChainOutput {
     private Result<? extends ExportOutput> exportResult;
     private Result<? extends PcompOutput> pcompResult;
     private Result<? extends PunfOutput> punfResult;
-    private Result<? extends ExternalProcessOutput> mpsatResult;
+    private Result<? extends MpsatOutput> mpsatResult;
     private MpsatParameters mpsatSettings;
     private String message;
 
-    public MpsatChainResult(Result<? extends ExportOutput> exportResult,
+    public MpsatChainOutput(Result<? extends ExportOutput> exportResult,
             Result<? extends PcompOutput> pcompResult,
             Result<? extends PunfOutput> punfResult,
-            Result<? extends ExternalProcessOutput> mpsatResult,
+            Result<? extends MpsatOutput> mpsatResult,
             MpsatParameters mpsatSettings, String message) {
 
         this.exportResult = exportResult;
@@ -29,10 +28,10 @@ public class MpsatChainResult {
         this.message = message;
     }
 
-    public MpsatChainResult(Result<? extends ExportOutput> exportResult,
+    public MpsatChainOutput(Result<? extends ExportOutput> exportResult,
             Result<? extends PcompOutput> pcompResult,
             Result<? extends PunfOutput> punfResult,
-            Result<? extends ExternalProcessOutput> mpsatResult,
+            Result<? extends MpsatOutput> mpsatResult,
             MpsatParameters mpsatSettings) {
 
         this(exportResult, pcompResult, punfResult, mpsatResult, mpsatSettings, null);
@@ -54,7 +53,7 @@ public class MpsatChainResult {
         return punfResult;
     }
 
-    public Result<? extends ExternalProcessOutput> getMpsatResult() {
+    public Result<? extends MpsatOutput> getMpsatResult() {
         return mpsatResult;
     }
 

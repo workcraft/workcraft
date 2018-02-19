@@ -58,10 +58,10 @@ public class PetrifyTransformationResultHandler extends AbstractExtendedResultHa
             if (result.getCause() != null) {
                 ExceptionDialog.show(result.getCause());
             } else {
-                PetrifyTransformationResult returnValue = result.getPayload();
-                Result<? extends ExternalProcessOutput> petrifyResult = returnValue.getPetrifyResult();
-                ExternalProcessOutput petrifyReturnValue = petrifyResult.getPayload();
-                DialogUtils.showWarning("Transformation failed. Petrify output: \n\n" + petrifyReturnValue.getErrorsHeadAndTail());
+                PetrifyTransformationResult output = result.getPayload();
+                Result<? extends ExternalProcessOutput> petrifyResult = output.getPetrifyResult();
+                ExternalProcessOutput petrifyOutput = petrifyResult.getPayload();
+                DialogUtils.showWarning("Transformation failed. Petrify output: \n\n" + petrifyOutput.getErrorsHeadAndTail());
             }
         }
         return weResult;

@@ -13,7 +13,6 @@ import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.shared.tasks.ExportTask;
-import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -26,7 +25,7 @@ import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class MpsatChainTask implements Task<MpsatChainResult> {
+public class MpsatChainTask implements Task<MpsatChainOutput> {
     private final WorkspaceEntry we;
     private final MpsatParameters settings;
 
@@ -36,7 +35,7 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
     }
 
     @Override
-    public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
+    public Result<? extends MpsatChainOutput> run(ProgressMonitor<? super MpsatChainOutput> monitor) {
         Framework framework = Framework.getInstance();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
@@ -58,10 +57,10 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 
             if (exportResult.getOutcome() != Outcome.SUCCESS) {
                 if (exportResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainResult>(Outcome.CANCEL);
+                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainResult>(Outcome.FAILURE,
-                        new MpsatChainResult(exportResult, null, null, null, settings));
+                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                        new MpsatChainOutput(exportResult, null, null, null, settings));
             }
             monitor.progressUpdate(0.33);
 
@@ -74,32 +73,32 @@ public class MpsatChainTask implements Task<MpsatChainResult> {
 
             if (punfResult.getOutcome() != Outcome.SUCCESS) {
                 if (punfResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainResult>(Outcome.CANCEL);
+                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainResult>(Outcome.FAILURE,
-                        new MpsatChainResult(exportResult, null, punfResult, null, settings));
+                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                        new MpsatChainOutput(exportResult, null, punfResult, null, settings));
             }
             monitor.progressUpdate(0.66);
 
             // Run MPSat on the generated unfolding
             MpsatTask mpsatTask = new MpsatTask(settings.getMpsatArguments(directory),
                     unfoldingFile, directory, netFile);
-            Result<? extends ExternalProcessOutput> mpsatResult = manager.execute(
+            Result<? extends MpsatOutput> mpsatResult = manager.execute(
                     mpsatTask, "Running verification [MPSat]", subtaskMonitor);
 
             if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
                 if (mpsatResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainResult>(Outcome.CANCEL);
+                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainResult>(Outcome.FAILURE,
-                        new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings));
+                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                        new MpsatChainOutput(exportResult, null, punfResult, mpsatResult, settings));
             }
             monitor.progressUpdate(1.0);
 
-            return new Result<MpsatChainResult>(Outcome.SUCCESS,
-                    new MpsatChainResult(exportResult, null, punfResult, mpsatResult, settings));
+            return new Result<MpsatChainOutput>(Outcome.SUCCESS,
+                    new MpsatChainOutput(exportResult, null, punfResult, mpsatResult, settings));
         } catch (Throwable e) {
-            return new Result<MpsatChainResult>(e);
+            return new Result<MpsatChainOutput>(e);
         } finally {
             FileUtils.deleteOnExitRecursively(directory);
         }

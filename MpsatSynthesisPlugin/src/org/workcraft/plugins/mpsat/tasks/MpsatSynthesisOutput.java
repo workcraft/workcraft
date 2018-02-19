@@ -6,8 +6,9 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 
 public class MpsatSynthesisOutput extends ExternalProcessOutput {
 
-    public static final String VERILOG_FILE_NAME = "mpsat.v";
+    // IMPORTANT: The name of output file must be mpsat.g -- this is not configurable on MPSat side.
     public static final String STG_FILE_NAME = "mpsat.g";
+    public static final String VERILOG_FILE_NAME = "mpsat.v";
 
     private final byte[] stgOutput;
     private final byte[] verilogOutput;

@@ -8,7 +8,6 @@ import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
-import org.workcraft.plugins.mpsat.MpsatResultParser;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
@@ -18,7 +17,6 @@ import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.shared.tasks.ExportTask;
-import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
@@ -48,7 +46,7 @@ public class MpsatConformationTask extends MpsatChainTask {
     }
 
     @Override
-    public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
+    public Result<? extends MpsatChainOutput> run(ProgressMonitor<? super MpsatChainOutput> monitor) {
         Framework framework = Framework.getInstance();
         WorkspaceEntry we = getWorkspaceEntry();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
@@ -71,18 +69,18 @@ public class MpsatConformationTask extends MpsatChainTask {
 
             if (devExportResult.getOutcome() != Outcome.SUCCESS) {
                 if (devExportResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainResult>(Outcome.CANCEL);
+                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainResult>(Outcome.FAILURE,
-                        new MpsatChainResult(devExportResult, null, null, null, toolchainPreparationSettings));
+                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                        new MpsatChainOutput(devExportResult, null, null, null, toolchainPreparationSettings));
             }
             monitor.progressUpdate(0.30);
 
             // Generating .g for the environment
             Stg envStg = StgUtils.loadStg(envFile);
             if (envStg == null) {
-                return new Result<MpsatChainResult>(Outcome.FAILURE,
-                        new MpsatChainResult(null, null, null, null, toolchainPreparationSettings));
+                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                        new MpsatChainOutput(null, null, null, null, toolchainPreparationSettings));
             }
 
             // Make sure that input signals of the device STG are also inputs in the environment STG
@@ -97,10 +95,10 @@ public class MpsatConformationTask extends MpsatChainTask {
 
             if (envExportResult.getOutcome() != Outcome.SUCCESS) {
                 if (envExportResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainResult>(Outcome.CANCEL);
+                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainResult>(Outcome.FAILURE,
-                        new MpsatChainResult(envExportResult, null, null, null, toolchainPreparationSettings));
+                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                        new MpsatChainOutput(envExportResult, null, null, null, toolchainPreparationSettings));
             }
             monitor.progressUpdate(0.40);
 
@@ -116,10 +114,10 @@ public class MpsatConformationTask extends MpsatChainTask {
 
             if (pcompResult.getOutcome() != Outcome.SUCCESS) {
                 if (pcompResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainResult>(Outcome.CANCEL);
+                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainResult>(Outcome.FAILURE,
-                        new MpsatChainResult(devExportResult, pcompResult, null, null, toolchainPreparationSettings));
+                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                        new MpsatChainOutput(devExportResult, pcompResult, null, null, toolchainPreparationSettings));
             }
             monitor.progressUpdate(0.50);
 
@@ -131,10 +129,10 @@ public class MpsatConformationTask extends MpsatChainTask {
 
             if (punfResult.getOutcome() != Outcome.SUCCESS) {
                 if (punfResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainResult>(Outcome.CANCEL);
+                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainResult>(Outcome.FAILURE,
-                        new MpsatChainResult(devExportResult, pcompResult, punfResult, null, toolchainPreparationSettings));
+                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                        new MpsatChainOutput(devExportResult, pcompResult, punfResult, null, toolchainPreparationSettings));
             }
             monitor.progressUpdate(0.60);
 
@@ -145,22 +143,22 @@ public class MpsatConformationTask extends MpsatChainTask {
             MpsatParameters conformationSettings = MpsatParameters.getConformationSettings(devPlaceNames);
             MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
                     unfoldingFile, directory, stgFile, compFile);
-            Result<? extends ExternalProcessOutput>  mpsatConformationResult = framework.getTaskManager().execute(
+            Result<? extends MpsatOutput>  mpsatConformationResult = framework.getTaskManager().execute(
                     mpsatConformationTask, "Running conformation check [MPSat]", subtaskMonitor);
 
             if (mpsatConformationResult.getOutcome() != Outcome.SUCCESS) {
                 if (mpsatConformationResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainResult>(Outcome.CANCEL);
+                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainResult>(Outcome.FAILURE,
-                        new MpsatChainResult(devExportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings));
+                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                        new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings));
             }
             monitor.progressUpdate(0.80);
 
-            MpsatResultParser mpsatConformationParser = new MpsatResultParser(mpsatConformationResult.getPayload());
+            MpsatOutoutParser mpsatConformationParser = new MpsatOutoutParser(mpsatConformationResult.getPayload());
             if (!mpsatConformationParser.getSolutions().isEmpty()) {
-                return new Result<MpsatChainResult>(Outcome.SUCCESS,
-                        new MpsatChainResult(devExportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings,
+                return new Result<MpsatChainOutput>(Outcome.SUCCESS,
+                        new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings,
                                 "This model does not conform to the environment."));
             }
             monitor.progressUpdate(1.0);
@@ -168,11 +166,11 @@ public class MpsatConformationTask extends MpsatChainTask {
             // Success
             unfoldingFile.delete();
             String message = "The model conforms to its environment (" + envFile.getName() + ").";
-            return new Result<MpsatChainResult>(Outcome.SUCCESS,
-                    new MpsatChainResult(devExportResult, pcompResult, punfResult, null, toolchainCompletionSettings, message));
+            return new Result<MpsatChainOutput>(Outcome.SUCCESS,
+                    new MpsatChainOutput(devExportResult, pcompResult, punfResult, null, toolchainCompletionSettings, message));
 
         } catch (Throwable e) {
-            return new Result<MpsatChainResult>(e);
+            return new Result<MpsatChainOutput>(e);
         } finally {
             FileUtils.deleteOnExitRecursively(directory);
         }

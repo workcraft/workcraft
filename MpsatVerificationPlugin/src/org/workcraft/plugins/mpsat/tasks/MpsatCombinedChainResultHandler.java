@@ -7,11 +7,7 @@ import javax.swing.SwingUtilities;
 
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
-import org.workcraft.plugins.mpsat.MpsatResultParser;
-import org.workcraft.plugins.mpsat.MpsatSolution;
-import org.workcraft.plugins.mpsat.MpsatUtils;
-import org.workcraft.plugins.mpsat.PunfResultParser;
-import org.workcraft.plugins.mpsat.PunfResultParser.Cause;
+import org.workcraft.plugins.mpsat.tasks.PunfOutputParser.Cause;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
@@ -23,7 +19,7 @@ import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Pair;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class MpsatCombinedChainResultHandler extends AbstractResultHandler<MpsatCombinedChainResult> {
+public class MpsatCombinedChainResultHandler extends AbstractResultHandler<MpsatCombinedChainOutput> {
 
     private static final String TITLE = "Verification results";
     private static final String CANNOT_VERIFY_PREFIX = "The properties cannot be verified";
@@ -40,28 +36,28 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
     }
 
     @Override
-    public void handleResult(final Result<? extends MpsatCombinedChainResult> result) {
-        if (result.getOutcome() == Outcome.SUCCESS) {
-            handleSuccess(result);
-        } else if (result.getOutcome() == Outcome.FAILURE) {
-            if (!handlePartialFailure(result)) {
-                handleFailure(result);
+    public void handleResult(final Result<? extends MpsatCombinedChainOutput> chainResult) {
+        if (chainResult.getOutcome() == Outcome.SUCCESS) {
+            handleSuccess(chainResult);
+        } else if (chainResult.getOutcome() == Outcome.FAILURE) {
+            if (!handlePartialFailure(chainResult)) {
+                handleFailure(chainResult);
             }
         }
     }
 
-    private void handleSuccess(final Result<? extends MpsatCombinedChainResult> result) {
+    private void handleSuccess(final Result<? extends MpsatCombinedChainOutput> chainResult) {
         WorkspaceEntry we = task.getWorkspaceEntry();
-        MpsatCombinedChainResult returnValue = result.getPayload();
-        List<Result<? extends ExternalProcessOutput>> mpsatResultList = returnValue.getMpsatResultList();
-        List<MpsatParameters> mpsatSettingsList = returnValue.getMpsatSettingsList();
-        Result<? extends ExternalProcessOutput> violationMpsatResult = null;
+        MpsatCombinedChainOutput chainOutput = chainResult.getPayload();
+        List<Result<? extends MpsatOutput>> mpsatResultList = chainOutput.getMpsatResultList();
+        List<MpsatParameters> mpsatSettingsList = chainOutput.getMpsatSettingsList();
+        Result<? extends MpsatOutput> violationMpsatResult = null;
         MpsatParameters violationMpsatSettings = null;
         String verifiedMessageDetailes = "";
         for (int index = 0; index < mpsatResultList.size(); ++index) {
-            Result<? extends ExternalProcessOutput> mpsatResult = mpsatResultList.get(index);
+            Result<? extends MpsatOutput> mpsatResult = mpsatResultList.get(index);
             MpsatParameters mpsatSettings = mpsatSettingsList.get(index);
-            MpsatResultParser mdp = new MpsatResultParser(mpsatResult.getPayload());
+            MpsatOutoutParser mdp = new MpsatOutoutParser(mpsatResult.getPayload());
             List<MpsatSolution> solutions = mdp.getSolutions();
             if (!MpsatUtils.hasTraces(solutions)) {
                 verifiedMessageDetailes += "\n * " + mpsatSettings.getName();
@@ -77,7 +73,7 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
             // One of the Mpsat tasks returned a solution trace
             switch (violationMpsatSettings.getMode()) {
             case UNDEFINED:
-                String undefinedMessage = returnValue.getMessage();
+                String undefinedMessage = chainOutput.getMessage();
                 if ((undefinedMessage != null) && (violationMpsatSettings != null) && (violationMpsatSettings.getName() != null)) {
                     undefinedMessage = violationMpsatSettings.getName();
                 }
@@ -110,19 +106,19 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
         }
     }
 
-    private boolean handlePartialFailure(final Result<? extends MpsatCombinedChainResult> result) {
+    private boolean handlePartialFailure(final Result<? extends MpsatCombinedChainOutput> chainResult) {
         WorkspaceEntry we = task.getWorkspaceEntry();
-        MpsatCombinedChainResult returnValue = result.getPayload();
-        Result<? extends PunfOutput> punfResult = (returnValue == null) ? null : returnValue.getPunfResult();
+        MpsatCombinedChainOutput chainOutptu = chainResult.getPayload();
+        Result<? extends PunfOutput> punfResult = (chainOutptu == null) ? null : chainOutptu.getPunfResult();
         if ((punfResult != null) && (punfResult.getOutcome() == Outcome.FAILURE)) {
-            PunfResultParser prp = new PunfResultParser(punfResult.getPayload());
-            Pair<MpsatSolution, PunfResultParser.Cause> punfOutcome = prp.getOutcome();
+            PunfOutputParser prp = new PunfOutputParser(punfResult.getPayload());
+            Pair<MpsatSolution, PunfOutputParser.Cause> punfOutcome = prp.getOutcome();
             if (punfOutcome != null) {
                 MpsatSolution solution = punfOutcome.getFirst();
                 Cause cause = punfOutcome.getSecond();
                 boolean isConsistencyCheck = false;
                 if (cause == Cause.INCONSISTENT) {
-                    for (MpsatParameters mpsatSettings: returnValue.getMpsatSettingsList()) {
+                    for (MpsatParameters mpsatSettings: chainOutptu.getMpsatSettingsList()) {
                         if (mpsatSettings.getMode() == MpsatMode.STG_REACHABILITY_CONSISTENCY) {
                             isConsistencyCheck = true;
                             break;
@@ -132,8 +128,8 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
                 if (isConsistencyCheck) {
                     int cost = solution.getMainTrace().size();
                     String mpsatFakeOutput = "SOLUTION 0\n" + solution + "\npath cost: " + cost + "\n";
-                    Result<? extends ExternalProcessOutput> mpsatFakeResult = Result.success(
-                            new ExternalProcessOutput(0, mpsatFakeOutput.getBytes(), new byte[0]));
+                    Result<? extends MpsatOutput> mpsatFakeResult = Result.success(
+                            new MpsatOutput(new ExternalProcessOutput(0, mpsatFakeOutput.getBytes(), new byte[0])));
 
                     SwingUtilities.invokeLater(new MpsatReachabilityResultHandler(
                             we, mpsatFakeResult, MpsatParameters.getConsistencySettings()));
@@ -170,17 +166,17 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
         return false;
     }
 
-    private void handleFailure(final Result<? extends MpsatCombinedChainResult> result) {
+    private void handleFailure(final Result<? extends MpsatCombinedChainOutput> chainResult) {
         String errorMessage = "MPSat verification failed.";
-        Throwable genericCause = result.getCause();
+        Throwable genericCause = chainResult.getCause();
         if (genericCause != null) {
             // Exception was thrown somewhere in the chain task run() method (not in any of the subtasks)
             errorMessage += ERROR_CAUSE_PREFIX + genericCause.toString();
         } else {
-            MpsatCombinedChainResult returnValue = result.getPayload();
-            Result<? extends ExportOutput> exportResult = (returnValue == null) ? null : returnValue.getExportResult();
-            Result<? extends PunfOutput> punfResult = (returnValue == null) ? null : returnValue.getPunfResult();
-            List<Result<? extends ExternalProcessOutput>> mpsatResultList = (returnValue == null) ? null : returnValue.getMpsatResultList();
+            MpsatCombinedChainOutput chainOutput = chainResult.getPayload();
+            Result<? extends ExportOutput> exportResult = (chainOutput == null) ? null : chainOutput.getExportResult();
+            Result<? extends PunfOutput> punfResult = (chainOutput == null) ? null : chainOutput.getPunfResult();
+            List<Result<? extends MpsatOutput>> mpsatResultList = (chainOutput == null) ? null : chainOutput.getMpsatResultList();
             if ((exportResult != null) && (exportResult.getOutcome() == Outcome.FAILURE)) {
                 errorMessage += "\n\nCould not export the model as a .g file.";
                 Throwable exportCause = exportResult.getCause();
@@ -193,24 +189,24 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
                 if (punfCause != null) {
                     errorMessage += ERROR_CAUSE_PREFIX + punfCause.toString();
                 } else {
-                    ExternalProcessOutput punfReturnValue = punfResult.getPayload();
-                    if (punfReturnValue != null) {
-                        String punfError = punfReturnValue.getErrorsHeadAndTail();
-                        errorMessage += ERROR_CAUSE_PREFIX + punfError;
+                    PunfOutput punfOutput = punfResult.getPayload();
+                    if (punfOutput != null) {
+                        String punfErrorMessage = punfOutput.getErrorsHeadAndTail();
+                        errorMessage += ERROR_CAUSE_PREFIX + punfErrorMessage;
                     }
                 }
             } else if (mpsatResultList != null) {
                 errorMessage += "\n\nMPSat did not execute as expected.";
-                for (Result<? extends ExternalProcessOutput> mpsatResult: mpsatResultList) {
+                for (Result<? extends MpsatOutput> mpsatResult: mpsatResultList) {
                     if ((mpsatResult != null) && (mpsatResult.getOutcome() == Outcome.FAILURE)) {
                         Throwable mpsatCause = mpsatResult.getCause();
                         if (mpsatCause != null) {
                             errorMessage += ERROR_CAUSE_PREFIX + mpsatCause.toString();
                         } else {
-                            ExternalProcessOutput mpsatReturnValue = mpsatResult.getPayload();
-                            if (mpsatReturnValue != null) {
-                                String mpsatError = mpsatReturnValue.getErrorsHeadAndTail();
-                                errorMessage += ERROR_CAUSE_PREFIX + mpsatError;
+                            MpsatOutput mpsatOutput = mpsatResult.getPayload();
+                            if (mpsatOutput != null) {
+                                String mpsatErrorMessage = mpsatOutput.getErrorsHeadAndTail();
+                                errorMessage += ERROR_CAUSE_PREFIX + mpsatErrorMessage;
                             }
                         }
                     }

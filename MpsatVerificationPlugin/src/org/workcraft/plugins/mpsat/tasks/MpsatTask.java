@@ -3,8 +3,6 @@ package org.workcraft.plugins.mpsat.tasks;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -15,12 +13,13 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.ToolUtils;
 
-public class MpsatTask implements Task<ExternalProcessOutput> {
+public class MpsatTask implements Task<MpsatOutput> {
 
     private static final Pattern patternSuccess = Pattern.compile(
             "(" +
@@ -58,11 +57,6 @@ public class MpsatTask implements Task<ExternalProcessOutput> {
             ")",
             Pattern.UNIX_LINES);
 
-    public static final String FILE_NET_G = "net.g";
-    // IMPORTANT: The name of output file must be mpsat.g -- this is not configurable on MPSat side.
-    public static final String FILE_MPSAT_G = "mpsat.g";
-    public static final String FILE_COMP_XML = "comp.xml";
-
     private final String[] args;
     private final File unfoldingFile;
     private final File directory;
@@ -90,7 +84,7 @@ public class MpsatTask implements Task<ExternalProcessOutput> {
     }
 
     @Override
-    public Result<? extends ExternalProcessOutput> run(ProgressMonitor<? super ExternalProcessOutput> monitor) {
+    public Result<? extends MpsatOutput> run(ProgressMonitor<? super MpsatOutput> monitor) {
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
@@ -128,7 +122,8 @@ public class MpsatTask implements Task<ExternalProcessOutput> {
         boolean printStdout = MpsatSettings.getPrintStdout();
         boolean printStderr = MpsatSettings.getPrintStderr();
         ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
-        Result<? extends ExternalProcessOutput> result = task.run(monitor);
+        SubtaskMonitor<? super ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
+        Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
 
         if (result.getOutcome() == Outcome.SUCCESS) {
             ExternalProcessOutput output = result.getPayload();
@@ -141,28 +136,27 @@ public class MpsatTask implements Task<ExternalProcessOutput> {
                 success = matcherSuccess.find();
             }
             if (!success) {
-                return Result.failure(output);
+                return Result.failure(new MpsatOutput(output));
             } else {
-                Map<String, byte[]> fileContentMap = new HashMap<>();
+                byte[] netInput = null;
+                byte[] compInput = null;
+                byte[] stgOutput = null;
                 try {
                     if ((netFile != null) && netFile.exists()) {
-                        fileContentMap.put(FILE_NET_G, FileUtils.readAllBytes(netFile));
+                        netInput = FileUtils.readAllBytes(netFile);
                     }
                     if ((compFile != null) && compFile.exists()) {
-                        fileContentMap.put(FILE_COMP_XML, FileUtils.readAllBytes(compFile));
+                        compInput = FileUtils.readAllBytes(compFile);
                     }
-                    File outFile = new File(directory, FILE_MPSAT_G);
-                    if (outFile.exists()) {
-                        fileContentMap.put(FILE_MPSAT_G, FileUtils.readAllBytes(outFile));
+                    File stgFile = new File(directory, MpsatOutput.STG_FILE_NAME);
+                    if (stgFile.exists()) {
+                        stgOutput = FileUtils.readAllBytes(stgFile);
                     }
                 } catch (IOException e) {
-                    return new Result<ExternalProcessOutput>(e);
+                    return Result.exception(e);
                 }
 
-                ExternalProcessOutput extendedOutput = new ExternalProcessOutput(
-                        returnCode, output.getStdout(), output.getStderr(), fileContentMap);
-
-                return Result.success(extendedOutput);
+                return Result.success(new MpsatOutput(output, netInput, compInput, stgOutput));
             }
         }
 

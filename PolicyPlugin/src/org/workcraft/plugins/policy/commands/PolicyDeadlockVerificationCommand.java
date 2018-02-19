@@ -2,9 +2,9 @@ package org.workcraft.plugins.policy.commands;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
-import org.workcraft.plugins.mpsat.MpsatUtils;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
+import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
+import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
 import org.workcraft.plugins.policy.PolicyNet;
 import org.workcraft.plugins.policy.tasks.CheckDeadlockTask;
 import org.workcraft.tasks.Result;
@@ -31,7 +31,7 @@ public class PolicyDeadlockVerificationCommand extends AbstractVerificationComma
     @Override
     public Boolean execute(WorkspaceEntry we) {
         MpsatChainResultHandler monitor = queueVerification(we);
-        Result<? extends MpsatChainResult> result = null;
+        Result<? extends MpsatChainOutput> result = null;
         if (monitor != null) {
             result = monitor.waitResult();
         }

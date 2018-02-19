@@ -3,10 +3,10 @@ package org.workcraft.plugins.mpsat.commands;
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.mpsat.MpsatParameters;
-import org.workcraft.plugins.mpsat.MpsatUtils;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
+import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
+import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -21,7 +21,7 @@ public abstract class MpsatAbstractVerificationCommand extends AbstractVerificat
     @Override
     public Boolean execute(WorkspaceEntry we) {
         MpsatChainResultHandler monitor = queueVerification(we);
-        Result<? extends MpsatChainResult> result = null;
+        Result<? extends MpsatChainOutput> result = null;
         if (monitor != null) {
             result = monitor.waitResult();
         }

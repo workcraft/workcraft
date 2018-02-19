@@ -5,13 +5,13 @@ import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.tasks.Result;
 
-public class MpsatSynthesisChainResult {
+public class MpsatSynthesisChainOutput {
     private final Result<? extends ExportOutput> exportResult;
     private final Result<? extends PunfOutput> punfResult;
     private final Result<? extends MpsatSynthesisOutput> mpsatResult;
     private final MpsatSynthesisParameters mpsatSettings;
 
-    public MpsatSynthesisChainResult(
+    public MpsatSynthesisChainOutput(
             Result<? extends ExportOutput> exportResult,
             Result<? extends PunfOutput> punfResult,
             Result<? extends MpsatSynthesisOutput> mpsatResult,
