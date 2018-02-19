@@ -115,7 +115,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 
             // Generating system .g for deadlock and persistency checks (only if needed)
             File sysStgFile = null;
-            File compFile = null;
+            File detailsFile = null;
             Result<? extends PcompOutput>  pcompResult = null;
             if (checkDeadlock || checkPersistency) {
                 if (envStg == null) {
@@ -133,8 +133,8 @@ public class CheckCircuitTask extends MpsatChainTask {
 
                     // Generating .g for the whole system (circuit and environment)
                     sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
-                    compFile = new File(directory, StgUtils.COMP_FILE_PREFIX + StgUtils.COMP_FILE_EXTENSION);
-                    pcompResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envStgFile, sysStgFile, compFile, directory, monitor);
+                    detailsFile = new File(directory, StgUtils.DETAILS_FILE_PREFIX + StgUtils.XML_FILE_EXTENSION);
+                    pcompResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envStgFile, sysStgFile, detailsFile, directory, monitor);
                     if (pcompResult.getOutcome() != Outcome.SUCCESS) {
                         if (pcompResult.getOutcome() == Outcome.CANCEL) {
                             return new Result<MpsatChainOutput>(Outcome.CANCEL);
@@ -164,7 +164,7 @@ public class CheckCircuitTask extends MpsatChainTask {
                 Set<String> envSignalNames = envStg.getSignalNames(Type.INTERNAL, null);
                 if (envSignalNames.isEmpty() && (sysStgFile != null)) {
                     sysModStgFile = sysStgFile;
-                    compModFile = compFile;
+                    compModFile = detailsFile;
                     pcompModResult = pcompResult;
                 } else {
                     String fileSuffix = (sysStgFile == null) ? "" : StgUtils.MODIFIED_FILE_SUFFIX;
@@ -182,7 +182,7 @@ public class CheckCircuitTask extends MpsatChainTask {
 
                     // Generating .g for the whole system (circuit and environment) without internal signals
                     sysModStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + fileSuffix + stgFileExtension);
-                    compModFile = new File(directory, StgUtils.COMP_FILE_PREFIX + fileSuffix + StgUtils.COMP_FILE_EXTENSION);
+                    compModFile = new File(directory, StgUtils.DETAILS_FILE_PREFIX + fileSuffix + StgUtils.XML_FILE_EXTENSION);
                     pcompModResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envModStgFile, sysModStgFile, compModFile, directory, monitor);
                     if (pcompModResult.getOutcome() != Outcome.SUCCESS) {
                         if (pcompModResult.getOutcome() == Outcome.CANCEL) {

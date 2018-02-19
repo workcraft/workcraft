@@ -26,8 +26,8 @@ public class StgUtils {
     public static final String MUTEX_FILE_SUFFIX = "-mutex";
     public static final String MODIFIED_FILE_SUFFIX = "-mod";
 
-    public static final String COMP_FILE_PREFIX = "comp";
-    public static final String COMP_FILE_EXTENSION = ".xml";
+    public static final String DETAILS_FILE_PREFIX = "details";
+    public static final String XML_FILE_EXTENSION = ".xml";
 
     private static void replaceNamedTransition(Stg stg, NamedTransition oldTransition, NamedTransition newTransition) {
         for (Node pred: stg.getPreset(oldTransition)) {

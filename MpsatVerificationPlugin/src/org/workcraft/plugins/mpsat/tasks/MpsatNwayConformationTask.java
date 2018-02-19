@@ -92,9 +92,9 @@ public class MpsatNwayConformationTask implements Task<MpsatChainOutput> {
 
             // Generating .g for the whole system (model and environment)
             File stgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
-            File compFile = new File(directory, StgUtils.COMP_FILE_PREFIX + StgUtils.COMP_FILE_EXTENSION);
+            File detailsFile = new File(directory, StgUtils.DETAILS_FILE_PREFIX + StgUtils.XML_FILE_EXTENSION);
             stgFile.deleteOnExit();
-            PcompTask pcompTask = new PcompTask(stgFiles.toArray(new File[0]), stgFile, compFile,
+            PcompTask pcompTask = new PcompTask(stgFiles.toArray(new File[0]), stgFile, detailsFile,
                     ConversionMode.OUTPUT, false, false, directory);
 
             Result<? extends PcompOutput> pcompResult = taskManager.execute(
@@ -125,7 +125,7 @@ public class MpsatNwayConformationTask implements Task<MpsatChainOutput> {
             monitor.progressUpdate(0.60);
 
             // Check for interface conformation
-            CompositionData compositionData = new CompositionData(compFile);
+            CompositionData compositionData = new CompositionData(detailsFile);
             ArrayList<Set<String>> allPlaceSets = new ArrayList<>();
             for (File file: stgFiles) {
                 ComponentData componentData = compositionData.getComponentData(file);
@@ -135,7 +135,7 @@ public class MpsatNwayConformationTask implements Task<MpsatChainOutput> {
 
             MpsatParameters conformationSettings = MpsatParameters.getNwayConformationSettings(allPlaceSets, allOutputSets);
             MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
-                    unfoldingFile, directory, stgFile, compFile);
+                    unfoldingFile, directory, stgFile, detailsFile);
             Result<? extends MpsatOutput>  mpsatConformationResult = taskManager.execute(
                     mpsatConformationTask, "Running conformation check [MPSat]", subtaskMonitor);
 
