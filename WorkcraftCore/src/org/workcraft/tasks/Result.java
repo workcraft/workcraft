@@ -61,7 +61,7 @@ public class Result<T> {
     }
 
     public static <T> Result<T> failure(T payload) {
-        return new Result<T>(payload);
+        return new Result<T>(Outcome.FAILURE, payload);
     }
 
 }

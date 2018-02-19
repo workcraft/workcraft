@@ -21,6 +21,9 @@ import org.workcraft.util.ToolUtils;
 
 public class MpsatTask implements Task<MpsatOutput> {
 
+    // IMPORTANT: The name of output file must be mpsat.g -- this is not configurable on MPSat side.
+    private static final String STG_FILE_NAME = "mpsat.g";
+
     private static final Pattern patternSuccess = Pattern.compile(
             "(" +
              /* Deadlock */
@@ -148,7 +151,7 @@ public class MpsatTask implements Task<MpsatOutput> {
                     if ((compFile != null) && compFile.exists()) {
                         compInput = FileUtils.readAllBytes(compFile);
                     }
-                    File stgFile = new File(directory, MpsatOutput.STG_FILE_NAME);
+                    File stgFile = new File(directory, STG_FILE_NAME);
                     if (stgFile.exists()) {
                         stgOutput = FileUtils.readAllBytes(stgFile);
                     }

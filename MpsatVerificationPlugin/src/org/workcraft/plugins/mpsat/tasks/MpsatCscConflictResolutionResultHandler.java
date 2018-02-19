@@ -31,7 +31,8 @@ public class MpsatCscConflictResolutionResultHandler implements Runnable {
     }
 
     private StgModel getResolvedStg() {
-        final byte[] content = result.getPayload().getFileData(MpsatOutput.STG_FILE_NAME);
+        MpsatOutput output = result.getPayload();
+        final byte[] content = output.getStgOutput();
         if (content == null) {
             return null;
         }

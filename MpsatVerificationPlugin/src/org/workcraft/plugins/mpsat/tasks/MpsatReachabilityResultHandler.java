@@ -54,7 +54,8 @@ final class MpsatReachabilityResultHandler implements Runnable {
     }
 
     private StgModel getInputStg() {
-        final byte[] content = result.getPayload().getFileData(MpsatOutput.NET_FILE_NAME);
+        MpsatOutput output = result.getPayload();
+        final byte[] content = output.getNetInput();
         if (content == null) {
             return null;
         }
@@ -68,7 +69,8 @@ final class MpsatReachabilityResultHandler implements Runnable {
 
     private HashSet<StgPlace> getDevPlaces(StgModel stg) {
         HashSet<StgPlace> devPlaces = new HashSet<>();
-        final byte[] content = result.getPayload().getFileData(MpsatOutput.COMP_FILE_NAME);
+        MpsatOutput output = result.getPayload();
+        final byte[] content = output.getCompInput();
         if (content != null) {
             InputStream is = new ByteArrayInputStream(content);
             CompositionData compositionData = new CompositionData(is);

@@ -99,7 +99,7 @@ public class MpsatSynthesisResultHandler extends AbstractExtendedResultHandler<M
     private WorkspaceEntry handleStgSynthesisOutput(MpsatSynthesisOutput mpsatOutput) {
         WorkspaceEntry dstWe = null;
         if (MpsatSynthesisSettings.getOpenSynthesisStg()) {
-            byte[] dstOutput = mpsatOutput.getFileData(MpsatSynthesisOutput.STG_FILE_NAME);
+            byte[] dstOutput = mpsatOutput.getStgOutptu();
             if (dstOutput != null) {
                 WorkspaceEntry srcWe = task.getWorkspaceEntry();
                 Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
@@ -126,7 +126,7 @@ public class MpsatSynthesisResultHandler extends AbstractExtendedResultHandler<M
             boolean sequentialAssign, RenderType renderType) {
 
         WorkspaceEntry dstWe = null;
-        final byte[] verilogOutput = mpsatOutput.getFileData(MpsatSynthesisOutput.VERILOG_FILE_NAME);
+        final byte[] verilogOutput = mpsatOutput.getVerilogOutput();
         if ((verilogOutput != null) && (verilogOutput.length > 0)) {
             LogUtils.logInfo("MPSat synthesis result in Verilog format:");
             System.out.println(new String(verilogOutput));
