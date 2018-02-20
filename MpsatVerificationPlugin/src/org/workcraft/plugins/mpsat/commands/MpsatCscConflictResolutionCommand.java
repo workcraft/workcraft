@@ -10,7 +10,7 @@ import org.workcraft.plugins.mpsat.MpsatParameters.SolutionMode;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
-import org.workcraft.plugins.mpsat.tasks.MpsatCscConflictResolutionResultHandler;
+import org.workcraft.plugins.mpsat.tasks.MpsatCscConflictResolutionOutputHandler;
 import org.workcraft.plugins.mpsat.tasks.MpsatOutput;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.MutexUtils;
@@ -52,8 +52,9 @@ public class MpsatCscConflictResolutionCommand implements ScriptableCommand<Work
         Result<? extends MpsatChainOutput> chainResult = monitor.waitResult();
         MpsatChainOutput chainOutput = chainResult.getPayload();
         Result<? extends MpsatOutput> mpsatResult = chainOutput.getMpsatResult();
-        MpsatCscConflictResolutionResultHandler resultHandler = new MpsatCscConflictResolutionResultHandler(
-                we, mpsatResult, mutexes);
+        MpsatOutput mpsatOutput = mpsatResult.getPayload();
+        MpsatCscConflictResolutionOutputHandler resultHandler = new MpsatCscConflictResolutionOutputHandler(
+                we, mpsatOutput, mutexes);
 
         resultHandler.run();
         return resultHandler.getResult();

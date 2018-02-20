@@ -7,6 +7,7 @@ import javax.swing.SwingUtilities;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.tasks.PunfOutputParser.Cause;
+import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
@@ -56,6 +57,7 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainOut
     private void handleSuccess(final Result<? extends MpsatChainOutput> chainResult) {
         MpsatChainOutput chainOutput = chainResult.getPayload();
         Result<? extends MpsatOutput> mpsatResult = (chainOutput == null) ? null : chainOutput.getMpsatResult();
+        MpsatOutput mpsatOutput = (mpsatResult == null) ? null : mpsatResult.getPayload();
         MpsatParameters mpsatSettings = chainOutput.getMpsatSettings();
         switch (mpsatSettings.getMode()) {
         case UNDEFINED:
@@ -72,17 +74,19 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainOut
         case STG_REACHABILITY_CONFORMATION:
         case NORMALCY:
         case ASSERTION:
-            SwingUtilities.invokeLater(new MpsatReachabilityResultHandler(we, mpsatResult, mpsatSettings));
+            Result<? extends PcompOutput> pcompResult = (chainOutput == null) ? null : chainOutput.getPcompResult();
+            PcompOutput pcompOutput = (pcompResult == null) ? null : pcompResult.getPayload();
+            SwingUtilities.invokeLater(new MpsatReachabilityOutputHandler(we, pcompOutput, mpsatOutput, mpsatSettings));
             break;
         case CSC_CONFLICT_DETECTION:
         case USC_CONFLICT_DETECTION:
-            SwingUtilities.invokeLater(new MpsatEncodingConflictResultHandler(we, mpsatResult));
+            SwingUtilities.invokeLater(new MpsatEncodingConflictOutputHandler(we, mpsatOutput));
             break;
         case DEADLOCK:
-            SwingUtilities.invokeLater(new MpsatDeadlockResultHandler(we, mpsatResult));
+            SwingUtilities.invokeLater(new MpsatDeadlockOutputHandler(we, mpsatOutput));
             break;
         case RESOLVE_ENCODING_CONFLICTS:
-            SwingUtilities.invokeLater(new MpsatCscConflictResolutionResultHandler(we, mpsatResult, mutexes));
+            SwingUtilities.invokeLater(new MpsatCscConflictResolutionOutputHandler(we, mpsatOutput, mutexes));
             break;
         default:
             String modeString = mpsatSettings.getMode().getArgument();
@@ -106,12 +110,10 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainOut
 
                 if (isConsistencyCheck) {
                     int cost = solution.getMainTrace().size();
-                    String mpsatFakeOutput = "SOLUTION 0\n" + solution + "\npath cost: " + cost + "\n";
-                    Result<? extends MpsatOutput> mpsatFakeResult = Result.success(
-                            new MpsatOutput(new ExternalProcessOutput(0, mpsatFakeOutput.getBytes(), new byte[0])));
-
-                    SwingUtilities.invokeLater(new MpsatReachabilityResultHandler(
-                            we, mpsatFakeResult, MpsatParameters.getConsistencySettings()));
+                    String mpsatFakeStdout = "SOLUTION 0\n" + solution + "\npath cost: " + cost + "\n";
+                    MpsatOutput mpsatFakeOutput = new MpsatOutput(new ExternalProcessOutput(0, mpsatFakeStdout.getBytes(), new byte[0]));
+                    SwingUtilities.invokeLater(new MpsatReachabilityOutputHandler(
+                            we, null, mpsatFakeOutput, MpsatParameters.getConsistencySettings()));
                 } else {
                     String comment = solution.getComment();
                     String message = CANNOT_VERIFY_PREFIX;

@@ -11,27 +11,25 @@ import org.workcraft.plugins.stg.MutexUtils;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgImporter;
-import org.workcraft.tasks.Result;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class MpsatCscConflictResolutionResultHandler implements Runnable {
+public class MpsatCscConflictResolutionOutputHandler implements Runnable {
 
     private final WorkspaceEntry we;
-    private final Result<? extends MpsatOutput> result;
+    private final MpsatOutput output;
     private final Collection<Mutex> mutexes;
     private WorkspaceEntry weResult = null;
 
-    public MpsatCscConflictResolutionResultHandler(final WorkspaceEntry we,
-            final Result<? extends MpsatOutput> result, Collection<Mutex> mutexes) {
+    public MpsatCscConflictResolutionOutputHandler(final WorkspaceEntry we,
+            MpsatOutput output, Collection<Mutex> mutexes) {
         this.we = we;
-        this.result = result;
+        this.output = output;
         this.mutexes = mutexes;
     }
 
     private StgModel getResolvedStg() {
-        MpsatOutput output = result.getPayload();
         final byte[] content = output.getStgOutput();
         if (content == null) {
             return null;
@@ -48,7 +46,7 @@ public class MpsatCscConflictResolutionResultHandler implements Runnable {
         final Framework framework = Framework.getInstance();
         final StgModel model = getResolvedStg();
         if (model == null) {
-            final String errorMessage = result.getPayload().getErrorsHeadAndTail();
+            final String errorMessage = output.getErrorsHeadAndTail();
             DialogUtils.showWarning("Conflict resolution failed. MPSat output: \n" + errorMessage);
         } else {
             MutexUtils.restoreMutexPlacesByName(model, mutexes);

@@ -64,17 +64,12 @@ public class MpsatTask implements Task<MpsatOutput> {
     private final File unfoldingFile;
     private final File directory;
     private final File netFile;
-    private final File compFile;
 
     public MpsatTask(String[] args, File unfoldingFile, File directory) {
-        this(args, unfoldingFile, directory, null, null);
+        this(args, unfoldingFile, directory, null);
     }
 
     public MpsatTask(String[] args, File unfoldingFile, File directory, File netFile) {
-        this(args, unfoldingFile, directory, netFile, null);
-    }
-
-    public MpsatTask(String[] args, File unfoldingFile, File directory, File netFile, File compFile) {
         this.args = args;
         this.unfoldingFile = unfoldingFile;
         if (directory == null) {
@@ -83,7 +78,6 @@ public class MpsatTask implements Task<MpsatOutput> {
         }
         this.directory = directory;
         this.netFile = netFile;
-        this.compFile = compFile;
     }
 
     @Override
@@ -142,14 +136,10 @@ public class MpsatTask implements Task<MpsatOutput> {
                 return Result.failure(new MpsatOutput(output));
             } else {
                 byte[] netInput = null;
-                byte[] compInput = null;
                 byte[] stgOutput = null;
                 try {
                     if ((netFile != null) && netFile.exists()) {
                         netInput = FileUtils.readAllBytes(netFile);
-                    }
-                    if ((compFile != null) && compFile.exists()) {
-                        compInput = FileUtils.readAllBytes(compFile);
                     }
                     File stgFile = new File(directory, STG_FILE_NAME);
                     if (stgFile.exists()) {
@@ -159,7 +149,7 @@ public class MpsatTask implements Task<MpsatOutput> {
                     return Result.exception(e);
                 }
 
-                return Result.success(new MpsatOutput(output, netInput, compInput, stgOutput));
+                return Result.success(new MpsatOutput(output, netInput, stgOutput));
             }
         }
 

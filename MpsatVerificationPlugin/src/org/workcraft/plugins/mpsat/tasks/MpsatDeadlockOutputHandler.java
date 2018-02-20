@@ -5,25 +5,24 @@ import java.util.List;
 import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat.gui.MpsatReachibilityDialog;
-import org.workcraft.tasks.Result;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
-final class MpsatDeadlockResultHandler implements Runnable {
+final class MpsatDeadlockOutputHandler implements Runnable {
     private static final String TITLE = "Verification results";
     private final WorkspaceEntry we;
-    private final Result<? extends MpsatOutput> result;
+    private final MpsatOutput output;
 
-    MpsatDeadlockResultHandler(WorkspaceEntry we, Result<? extends MpsatOutput> result) {
+    MpsatDeadlockOutputHandler(WorkspaceEntry we, MpsatOutput output) {
         this.we = we;
-        this.result = result;
+        this.output = output;
     }
 
     @Override
     public void run() {
         Framework framework = Framework.getInstance();
-        MpsatOutoutParser mdp = new MpsatOutoutParser(result.getPayload());
+        MpsatOutoutParser mdp = new MpsatOutoutParser(output);
         List<MpsatSolution> solutions = mdp.getSolutions();
         if (solutions.isEmpty()) {
             DialogUtils.showInfo("The system is deadlock-free.", TITLE);

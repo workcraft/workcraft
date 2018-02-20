@@ -8,6 +8,7 @@ import javax.swing.SwingUtilities;
 import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.tasks.PunfOutputParser.Cause;
+import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
@@ -51,18 +52,19 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
         MpsatCombinedChainOutput chainOutput = chainResult.getPayload();
         List<Result<? extends MpsatOutput>> mpsatResultList = chainOutput.getMpsatResultList();
         List<MpsatParameters> mpsatSettingsList = chainOutput.getMpsatSettingsList();
-        Result<? extends MpsatOutput> violationMpsatResult = null;
+        MpsatOutput violationMpsatOutput = null;
         MpsatParameters violationMpsatSettings = null;
         String verifiedMessageDetailes = "";
         for (int index = 0; index < mpsatResultList.size(); ++index) {
             Result<? extends MpsatOutput> mpsatResult = mpsatResultList.get(index);
+            MpsatOutput mpsatOutput = mpsatResult.getPayload();
             MpsatParameters mpsatSettings = mpsatSettingsList.get(index);
-            MpsatOutoutParser mdp = new MpsatOutoutParser(mpsatResult.getPayload());
+            MpsatOutoutParser mdp = new MpsatOutoutParser(mpsatOutput);
             List<MpsatSolution> solutions = mdp.getSolutions();
             if (!MpsatUtils.hasTraces(solutions)) {
                 verifiedMessageDetailes += "\n * " + mpsatSettings.getName();
             } else {
-                violationMpsatResult = mpsatResult;
+                violationMpsatOutput = mpsatOutput;
                 violationMpsatSettings = mpsatSettings;
             }
         }
@@ -86,17 +88,20 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
             case STG_REACHABILITY_CONFORMATION:
             case NORMALCY:
             case ASSERTION:
-                SwingUtilities.invokeLater(new MpsatReachabilityResultHandler(we, violationMpsatResult, violationMpsatSettings));
+                Result<? extends PcompOutput> pcompResult = (chainOutput == null) ? null : chainOutput.getPcompResult();
+                PcompOutput pcompOutput = (pcompResult == null) ? null : pcompResult.getPayload();
+                SwingUtilities.invokeLater(new MpsatReachabilityOutputHandler(we, pcompOutput, violationMpsatOutput,
+                        violationMpsatSettings));
                 break;
             case CSC_CONFLICT_DETECTION:
             case USC_CONFLICT_DETECTION:
-                SwingUtilities.invokeLater(new MpsatEncodingConflictResultHandler(we, violationMpsatResult));
+                SwingUtilities.invokeLater(new MpsatEncodingConflictOutputHandler(we, violationMpsatOutput));
                 break;
             case DEADLOCK:
-                SwingUtilities.invokeLater(new MpsatDeadlockResultHandler(we, violationMpsatResult));
+                SwingUtilities.invokeLater(new MpsatDeadlockOutputHandler(we, violationMpsatOutput));
                 break;
             case RESOLVE_ENCODING_CONFLICTS:
-                SwingUtilities.invokeLater(new MpsatCscConflictResolutionResultHandler(we, violationMpsatResult, mutexes));
+                SwingUtilities.invokeLater(new MpsatCscConflictResolutionOutputHandler(we, violationMpsatOutput, mutexes));
                 break;
             default:
                 String modeString = violationMpsatSettings.getMode().getArgument();
@@ -127,12 +132,12 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
                 }
                 if (isConsistencyCheck) {
                     int cost = solution.getMainTrace().size();
-                    String mpsatFakeOutput = "SOLUTION 0\n" + solution + "\npath cost: " + cost + "\n";
-                    Result<? extends MpsatOutput> mpsatFakeResult = Result.success(
-                            new MpsatOutput(new ExternalProcessOutput(0, mpsatFakeOutput.getBytes(), new byte[0])));
+                    String mpsatFakeStdout = "SOLUTION 0\n" + solution + "\npath cost: " + cost + "\n";
+                    MpsatOutput mpsatFakeOutput = new MpsatOutput(new ExternalProcessOutput(0,
+                            mpsatFakeStdout.getBytes(), new byte[0]));
 
-                    SwingUtilities.invokeLater(new MpsatReachabilityResultHandler(
-                            we, mpsatFakeResult, MpsatParameters.getConsistencySettings()));
+                    SwingUtilities.invokeLater(new MpsatReachabilityOutputHandler(
+                            we, null, mpsatFakeOutput, MpsatParameters.getConsistencySettings()));
                 } else {
                     String comment = solution.getComment();
                     String message = CANNOT_VERIFY_PREFIX;

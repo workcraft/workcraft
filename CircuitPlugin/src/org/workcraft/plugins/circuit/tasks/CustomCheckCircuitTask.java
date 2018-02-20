@@ -84,7 +84,7 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
 
             // Generating system .g for custom property check (only if needed)
             File sysStgFile = null;
-            File detailsFile = null;
+            File detailFile = null;
             Result<? extends PcompOutput>  pcompResult = null;
             if (envStg == null) {
                 sysStgFile = devStgFile;
@@ -101,8 +101,8 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
 
                 // Generating .g for the whole system (circuit and environment)
                 sysStgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
-                detailsFile = new File(directory, StgUtils.DETAILS_FILE_PREFIX + StgUtils.XML_FILE_EXTENSION);
-                pcompResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envStgFile, sysStgFile, detailsFile, directory, monitor);
+                detailFile = new File(directory, StgUtils.DETAIL_FILE_PREFIX + StgUtils.XML_FILE_EXTENSION);
+                pcompResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envStgFile, sysStgFile, detailFile, directory, monitor);
                 if (pcompResult.getOutcome() != Outcome.SUCCESS) {
                     if (pcompResult.getOutcome() == Outcome.CANCEL) {
                         return new Result<MpsatChainOutput>(Outcome.CANCEL);

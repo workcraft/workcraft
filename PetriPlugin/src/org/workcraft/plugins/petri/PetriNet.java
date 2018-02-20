@@ -114,15 +114,17 @@ public class PetriNet extends AbstractMathModel implements PetriNetModel {
         Map<Place, Integer> map = new HashMap<>();
         for (Connection c: net.getConnections(t)) {
             if (c.getSecond() == t) {
-                if (map.containsKey(c.getFirst())) {
-                    map.put((Place) c.getFirst(), map.get(c.getFirst()) + 1);
+                Place p = (Place) c.getFirst();
+                if (map.containsKey(p)) {
+                    map.put(p, map.get(p) + 1);
                 } else {
-                    map.put((Place) c.getFirst(), 1);
+                    map.put(p, 1);
                 }
             }
         }
-        for (Node n : net.getPreset(t)) {
-            if (((Place) n).getTokens() < map.get((Place) n)) {
+        for (Node n: net.getPreset(t)) {
+            Place p = (Place) n;
+            if (p.getTokens() < map.get(p)) {
                 return false;
             }
         }

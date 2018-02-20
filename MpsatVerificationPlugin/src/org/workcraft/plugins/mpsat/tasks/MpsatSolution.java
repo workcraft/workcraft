@@ -7,6 +7,10 @@ public class MpsatSolution {
     private final Trace branchTrace;
     private String comment;
 
+    public MpsatSolution(MpsatSolution solution) {
+        this(solution.getMainTrace(), solution.getBranchTrace(), solution.getComment());
+    }
+
     public MpsatSolution(Trace mainTrace, Trace branchTrace) {
         this(mainTrace, branchTrace, null);
     }

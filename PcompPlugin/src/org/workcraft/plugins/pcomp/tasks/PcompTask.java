@@ -23,17 +23,17 @@ public class PcompTask implements Task<PcompOutput> {
 
     private final File[] inputFiles;
     private final File outputFile;
-    private final File detailsFile;
+    private final File detailFile;
     private final ConversionMode conversionMode;
     private final boolean useSharedOutputs;
     private final boolean useImprovedComposition;
     private final File directory;
 
-    public PcompTask(File[] inputFiles, File outputFile, File detailsFile,
+    public PcompTask(File[] inputFiles, File outputFile, File detailFile,
             ConversionMode conversionMode, boolean useSharedOutputs, boolean useImprovedComposition, File directory) {
         this.inputFiles = inputFiles;
         this.outputFile = outputFile;
-        this.detailsFile = detailsFile;
+        this.detailFile = detailFile;
         this.conversionMode = conversionMode;
         this.useSharedOutputs = useSharedOutputs;
         this.useImprovedComposition = useImprovedComposition;
@@ -77,8 +77,8 @@ public class PcompTask implements Task<PcompOutput> {
         }
 
         // Composition details output file
-        if (detailsFile != null) {
-            command.add("-l" + detailsFile.getAbsolutePath());
+        if (detailFile != null) {
+            command.add("-l" + detailFile.getAbsolutePath());
         }
 
         // STG input files
@@ -95,12 +95,12 @@ public class PcompTask implements Task<PcompOutput> {
         if (result.getOutcome() == Outcome.CANCEL) {
             return Result.cancelation();
         } else {
-            ExternalProcessOutput output = result.getPayload();
-            int returnCode = output.getReturnCode();
+            int returnCode = result.getPayload().getReturnCode();
+            PcompOutput output = new PcompOutput(result.getPayload(), inputFiles, outputFile, detailFile);
             if ((result.getOutcome() == Outcome.SUCCESS) && ((returnCode == 0) || (returnCode == 1))) {
-                return Result.success(new PcompOutput(output));
+                return Result.success(output);
             } else {
-                return Result.failure(new PcompOutput(output));
+                return Result.failure(output);
             }
         }
     }

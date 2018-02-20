@@ -33,7 +33,7 @@ import org.workcraft.workspace.WorkspaceUtils;
 public class ParallelCompositionCommand implements Command {
 
     public static final String RESULT_FILE_NAME = "result.g";
-    public static final String DETAILS_FILE_NAME = "details.xml";
+    public static final String DETAIL_FILE_NAME = "detail.xml";
 
     public String getSection() {
         return "Composition";
@@ -78,7 +78,7 @@ public class ParallelCompositionCommand implements Command {
                 outputFile.deleteOnExit();
                 File detailsFile = null;
                 if (dialog.isSaveDetailsChecked()) {
-                    detailsFile = new File(tmpDirectory, DETAILS_FILE_NAME);
+                    detailsFile = new File(tmpDirectory, DETAIL_FILE_NAME);
                 }
 
                 PcompTask pcompTask = new PcompTask(inputFiles.toArray(new File[0]), outputFile, detailsFile,

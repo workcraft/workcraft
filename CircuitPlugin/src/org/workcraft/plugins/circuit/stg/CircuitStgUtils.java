@@ -41,11 +41,11 @@ public class CircuitStgUtils {
     }
 
     public static Result<? extends PcompOutput> composeDevWithEnv(File devStgFile, File envStgFile,
-            File sysStgFile, File detailsFile, File directory, ProgressMonitor<?> monitor) {
+            File sysStgFile, File detailFile, File directory, ProgressMonitor<?> monitor) {
 
         Framework framework = Framework.getInstance();
         File[] inputFiles = new File[]{devStgFile, envStgFile};
-        PcompTask pcompTask = new PcompTask(inputFiles, sysStgFile, detailsFile, ConversionMode.OUTPUT, true, false, directory);
+        PcompTask pcompTask = new PcompTask(inputFiles, sysStgFile, detailFile, ConversionMode.OUTPUT, true, false, directory);
         String description = "Running parallel composition [PComp]";
         SubtaskMonitor<Object> subtaskMonitor = null;
         if (monitor != null) {

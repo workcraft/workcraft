@@ -92,7 +92,7 @@ public class MpsatNwayConformationTask implements Task<MpsatChainOutput> {
 
             // Generating .g for the whole system (model and environment)
             File stgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
-            File detailsFile = new File(directory, StgUtils.DETAILS_FILE_PREFIX + StgUtils.XML_FILE_EXTENSION);
+            File detailsFile = new File(directory, StgUtils.DETAIL_FILE_PREFIX + StgUtils.XML_FILE_EXTENSION);
             stgFile.deleteOnExit();
             PcompTask pcompTask = new PcompTask(stgFiles.toArray(new File[0]), stgFile, detailsFile,
                     ConversionMode.OUTPUT, false, false, directory);
@@ -135,7 +135,7 @@ public class MpsatNwayConformationTask implements Task<MpsatChainOutput> {
 
             MpsatParameters conformationSettings = MpsatParameters.getNwayConformationSettings(allPlaceSets, allOutputSets);
             MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
-                    unfoldingFile, directory, stgFile, detailsFile);
+                    unfoldingFile, directory, stgFile);
             Result<? extends MpsatOutput>  mpsatConformationResult = taskManager.execute(
                     mpsatConformationTask, "Running conformation check [MPSat]", subtaskMonitor);
 
