@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Set;
 
 import org.workcraft.Framework;
+import org.workcraft.PluginManager;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat.MpsatMode;
@@ -25,6 +26,7 @@ import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
+import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -48,6 +50,8 @@ public class MpsatConformationTask extends MpsatChainTask {
     @Override
     public Result<? extends MpsatChainOutput> run(ProgressMonitor<? super MpsatChainOutput> monitor) {
         Framework framework = Framework.getInstance();
+        PluginManager pluginManager = framework.getPluginManager();
+        TaskManager taskManager = framework.getTaskManager();
         WorkspaceEntry we = getWorkspaceEntry();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
@@ -55,7 +59,7 @@ public class MpsatConformationTask extends MpsatChainTask {
         String stgFileExtension = format.getExtension();
         try {
             Stg devStg = WorkspaceUtils.getAs(we, Stg.class);
-            Exporter devStgExporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), devStg, format);
+            Exporter devStgExporter = ExportUtils.chooseBestExporter(pluginManager, devStg, format);
             if (devStgExporter == null) {
                 throw new NoExporterException(devStg, format);
             }
@@ -64,7 +68,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             // Generating .g for the model
             File devStgFile = new File(directory, StgUtils.DEVICE_FILE_PREFIX + stgFileExtension);
             ExportTask devExportTask = new ExportTask(devStgExporter, devStg, devStgFile.getAbsolutePath());
-            Result<? extends ExportOutput> devExportResult = framework.getTaskManager().execute(
+            Result<? extends ExportOutput> devExportResult = taskManager.execute(
                     devExportTask, "Exporting circuit .g", subtaskMonitor);
 
             if (devExportResult.getOutcome() != Outcome.SUCCESS) {
@@ -87,10 +91,10 @@ public class MpsatConformationTask extends MpsatChainTask {
             Set<String> inputSignalNames = devStg.getSignalNames(Type.INPUT, null);
             Set<String> outputSignalNames = devStg.getSignalNames(Type.OUTPUT, null);
             StgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
-            Exporter envStgExporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), envStg, format);
+            Exporter envStgExporter = ExportUtils.chooseBestExporter(pluginManager, envStg, format);
             File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + stgFileExtension);
             ExportTask envExportTask = new ExportTask(envStgExporter, envStg, envStgFile.getAbsolutePath());
-            Result<? extends ExportOutput> envExportResult = framework.getTaskManager().execute(
+            Result<? extends ExportOutput> envExportResult = taskManager.execute(
                     envExportTask, "Exporting environment .g", subtaskMonitor);
 
             if (envExportResult.getOutcome() != Outcome.SUCCESS) {
@@ -109,7 +113,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             PcompTask pcompTask = new PcompTask(new File[]{devStgFile, envStgFile}, stgFile, detailFile,
                     ConversionMode.OUTPUT, true, false, directory);
 
-            Result<? extends PcompOutput> pcompResult = framework.getTaskManager().execute(
+            Result<? extends PcompOutput> pcompResult = taskManager.execute(
                     pcompTask, "Running parallel composition [PComp]", subtaskMonitor);
 
             if (pcompResult.getOutcome() != Outcome.SUCCESS) {
@@ -124,7 +128,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             // Generate unfolding
             File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + PunfTask.PNML_FILE_EXTENSION);
             PunfTask punfTask = new PunfTask(stgFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
-            Result<? extends PunfOutput> punfResult = framework.getTaskManager().execute(
+            Result<? extends PunfOutput> punfResult = taskManager.execute(
                     punfTask, "Unfolding .g", subtaskMonitor);
 
             if (punfResult.getOutcome() != Outcome.SUCCESS) {
@@ -143,7 +147,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             MpsatParameters conformationSettings = MpsatParameters.getConformationSettings(devPlaceNames);
             MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
                     unfoldingFile, directory, stgFile);
-            Result<? extends MpsatOutput>  mpsatConformationResult = framework.getTaskManager().execute(
+            Result<? extends MpsatOutput>  mpsatConformationResult = taskManager.execute(
                     mpsatConformationTask, "Running conformation check [MPSat]", subtaskMonitor);
 
             if (mpsatConformationResult.getOutcome() != Outcome.SUCCESS) {

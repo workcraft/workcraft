@@ -156,7 +156,6 @@ final class MpsatReachabilityOutputHandler implements Runnable {
     }
 
     private StgModel getSrcStg() {
-        StgModel result = null;
         File file = null;
         if (pcompOutput != null) {
             File[] inputFiles = pcompOutput.getInputFiles();
@@ -164,6 +163,11 @@ final class MpsatReachabilityOutputHandler implements Runnable {
                 file = inputFiles[0];
             }
         }
+        return getSrcStg(file);
+    }
+
+    private StgModel getSrcStg(File file) {
+        StgModel result = null;
         if (file != null) {
             try {
                 FileInputStream is = new FileInputStream(file);

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.workcraft.Framework;
+import org.workcraft.PluginManager;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat.MpsatMode;
@@ -39,13 +40,14 @@ public class MpsatCombinedChainTask implements Task<MpsatCombinedChainOutput> {
     @Override
     public Result<? extends MpsatCombinedChainOutput> run(ProgressMonitor<? super MpsatCombinedChainOutput> monitor) {
         Framework framework = Framework.getInstance();
+        PluginManager pluginManager = framework.getPluginManager();
         TaskManager taskManager = framework.getTaskManager();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
         File directory = FileUtils.createTempDirectory(prefix);
         try {
             PetriNetModel model = WorkspaceUtils.getAs(we, PetriNetModel.class);
             StgFormat format = StgFormat.getInstance();
-            Exporter exporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), model, format);
+            Exporter exporter = ExportUtils.chooseBestExporter(pluginManager, model, format);
             if (exporter == null) {
                 throw new NoExporterException(model, format);
             }

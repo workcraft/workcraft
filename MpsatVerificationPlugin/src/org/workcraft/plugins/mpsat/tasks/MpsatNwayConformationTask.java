@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.workcraft.Framework;
+import org.workcraft.PluginManager;
 import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.mpsat.MpsatMode;
@@ -52,6 +53,7 @@ public class MpsatNwayConformationTask implements Task<MpsatChainOutput> {
     public Result<? extends MpsatChainOutput> run(ProgressMonitor<? super MpsatChainOutput> monitor) {
         Framework framework = Framework.getInstance();
         TaskManager taskManager = framework.getTaskManager();
+        PluginManager pluginManager = framework.getPluginManager();
 
         String prefix = FileUtils.getTempPrefix("-pcomp");
         File directory = FileUtils.createTempDirectory(prefix);
@@ -66,7 +68,7 @@ public class MpsatNwayConformationTask implements Task<MpsatChainOutput> {
             for (WorkspaceEntry we: wes) {
                 Stg stg = WorkspaceUtils.getAs(we, Stg.class);
                 stgs.add(stg);
-                Exporter stgExporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), stg, format);
+                Exporter stgExporter = ExportUtils.chooseBestExporter(pluginManager, stg, format);
                 if (stgExporter == null) {
                     throw new NoExporterException(stg, format);
                 }

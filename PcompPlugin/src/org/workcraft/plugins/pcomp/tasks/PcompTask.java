@@ -88,7 +88,9 @@ public class PcompTask implements Task<PcompOutput> {
             }
         }
 
-        ExternalProcessTask task = new ExternalProcessTask(command, directory, false, true);
+        boolean printStdout = PcompSettings.getPrintStdout();
+        boolean printStderr = PcompSettings.getPrintStderr();
+        ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
         SubtaskMonitor<? super ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
 
