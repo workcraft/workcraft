@@ -10,7 +10,7 @@ import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-final class MpsatConformationOutputHandler extends MpsatReachabilityOutputHandler {
+class MpsatConformationOutputHandler extends MpsatReachabilityOutputHandler {
 
     MpsatConformationOutputHandler(WorkspaceEntry we, PcompOutput pcompOutput, MpsatOutput mpsatOutput, MpsatParameters settings) {
         super(we, pcompOutput, mpsatOutput, settings);

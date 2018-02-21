@@ -27,6 +27,9 @@ class MpsatReachabilityOutputHandler implements Runnable {
     private final MpsatOutput mpsatOutput;
     private final MpsatParameters settings;
 
+    private StgModel srcStg = null;
+    private ComponentData srcData = null;
+
     MpsatReachabilityOutputHandler(WorkspaceEntry we, MpsatOutput mpsatOutput, MpsatParameters settings) {
         this(we, null, mpsatOutput, settings);
     }
@@ -71,35 +74,45 @@ class MpsatReachabilityOutputHandler implements Runnable {
     }
 
     public Trace getProjectedTrace(Trace trace) {
-        if ((trace == null) || (getPcompOutput() == null)) {
+        ComponentData data = getSrcData();
+        if ((trace == null) || trace.isEmpty() || (data == null)) {
             return trace;
         }
         Trace result = new Trace();
-        File detailFile = getPcompOutput().getDetailFile();
-        try {
-            CompositionData compositionData = new CompositionData(detailFile);
-            ComponentData componentData = compositionData.getComponentData(0);
-            for (String ref: trace) {
-                String srcRef = componentData.getSrcTransition(ref);
-                if (srcRef != null) {
-                    result.add(srcRef);
-                }
+        for (String ref: trace) {
+            String srcRef = data.getSrcTransition(ref);
+            if (srcRef != null) {
+                result.add(srcRef);
             }
-        } catch (FileNotFoundException e) {
-            return trace;
         }
         return result;
     }
-
-    public StgModel getSrcStg() {
-        File file = null;
-        if (getPcompOutput() != null) {
-            File[] inputFiles = getPcompOutput().getInputFiles();
-            if ((inputFiles != null) && (inputFiles.length > 0)) {
-                file = inputFiles[0];
+    public ComponentData getSrcData() {
+        if (srcData == null) {
+            if (getPcompOutput() != null) {
+                File detailFile = getPcompOutput().getDetailFile();
+                try {
+                    CompositionData compositionData = new CompositionData(detailFile);
+                    srcData = compositionData.getComponentData(0);
+                } catch (FileNotFoundException e) {
+                }
             }
         }
-        return StgUtils.importStg(file);
+        return srcData;
+    }
+
+    public StgModel getSrcStg() {
+        if (srcStg == null) {
+            File file = null;
+            if (getPcompOutput() != null) {
+                File[] inputFiles = getPcompOutput().getInputFiles();
+                if ((inputFiles != null) && (inputFiles.length > 0)) {
+                    file = inputFiles[0];
+                }
+            }
+            srcStg = StgUtils.importStg(file);
+        }
+        return srcStg;
     }
 
     public String getMessage(boolean isSatisfiable) {

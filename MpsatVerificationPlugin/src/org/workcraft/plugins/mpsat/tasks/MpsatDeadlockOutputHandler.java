@@ -4,7 +4,7 @@ import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.workspace.WorkspaceEntry;
 
-final class MpsatDeadlockOutputHandler extends MpsatReachabilityOutputHandler {
+class MpsatDeadlockOutputHandler extends MpsatReachabilityOutputHandler {
 
     MpsatDeadlockOutputHandler(WorkspaceEntry we, PcompOutput pcompOutput, MpsatOutput mpsatOutput, MpsatParameters settings) {
         super(we, pcompOutput, mpsatOutput, settings);

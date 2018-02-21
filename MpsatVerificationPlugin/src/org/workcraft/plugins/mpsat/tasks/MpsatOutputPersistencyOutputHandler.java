@@ -13,7 +13,7 @@ import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-final class MpsatOutputPersistencyOutputHandler extends MpsatReachabilityOutputHandler {
+class MpsatOutputPersistencyOutputHandler extends MpsatReachabilityOutputHandler {
 
     MpsatOutputPersistencyOutputHandler(WorkspaceEntry we, PcompOutput pcompOutput, MpsatOutput mpsatOutput, MpsatParameters settings) {
         super(we, pcompOutput, mpsatOutput, settings);
