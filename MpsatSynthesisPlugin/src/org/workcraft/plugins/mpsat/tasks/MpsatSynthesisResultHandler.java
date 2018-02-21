@@ -99,7 +99,7 @@ public class MpsatSynthesisResultHandler extends AbstractExtendedResultHandler<M
     private WorkspaceEntry handleStgSynthesisOutput(MpsatSynthesisOutput mpsatOutput) {
         WorkspaceEntry dstWe = null;
         if (MpsatSynthesisSettings.getOpenSynthesisStg()) {
-            byte[] dstOutput = mpsatOutput.getStgOutptu();
+            byte[] dstOutput = mpsatOutput.getStgOutput();
             if (dstOutput != null) {
                 WorkspaceEntry srcWe = task.getWorkspaceEntry();
                 Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);

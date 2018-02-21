@@ -50,6 +50,8 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
     private void handleSuccess(final Result<? extends MpsatCombinedChainOutput> chainResult) {
         WorkspaceEntry we = task.getWorkspaceEntry();
         MpsatCombinedChainOutput chainOutput = chainResult.getPayload();
+        Result<? extends PcompOutput> pcompResult = (chainOutput == null) ? null : chainOutput.getPcompResult();
+        PcompOutput pcompOutput = (pcompResult == null) ? null : pcompResult.getPayload();
         List<Result<? extends MpsatOutput>> mpsatResultList = chainOutput.getMpsatResultList();
         List<MpsatParameters> mpsatSettingsList = chainOutput.getMpsatSettingsList();
         MpsatOutput violationMpsatOutput = null;
@@ -83,22 +85,30 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
                 break;
             case REACHABILITY:
             case STG_REACHABILITY:
-            case STG_REACHABILITY_CONSISTENCY:
-            case STG_REACHABILITY_OUTPUT_PERSISTENCY:
-            case STG_REACHABILITY_CONFORMATION:
             case NORMALCY:
             case ASSERTION:
-                Result<? extends PcompOutput> pcompResult = (chainOutput == null) ? null : chainOutput.getPcompResult();
-                PcompOutput pcompOutput = (pcompResult == null) ? null : pcompResult.getPayload();
-                SwingUtilities.invokeLater(new MpsatReachabilityOutputHandler(we, pcompOutput, violationMpsatOutput,
-                        violationMpsatSettings));
+                SwingUtilities.invokeLater(new MpsatReachabilityOutputHandler(
+                        we, violationMpsatOutput, violationMpsatSettings));
+                break;
+            case DEADLOCK:
+                SwingUtilities.invokeLater(new MpsatDeadlockOutputHandler(
+                        we, pcompOutput, violationMpsatOutput, violationMpsatSettings));
+                break;
+            case STG_REACHABILITY_CONSISTENCY:
+                SwingUtilities.invokeLater(new MpsatConsistencyOutputHandler(
+                        we, pcompOutput, violationMpsatOutput, violationMpsatSettings));
+                break;
+            case STG_REACHABILITY_OUTPUT_PERSISTENCY:
+                SwingUtilities.invokeLater(new MpsatOutputPersistencyOutputHandler(
+                        we, pcompOutput, violationMpsatOutput, violationMpsatSettings));
+                break;
+            case STG_REACHABILITY_CONFORMATION:
+                SwingUtilities.invokeLater(new MpsatConformationOutputHandler(
+                        we, pcompOutput, violationMpsatOutput, violationMpsatSettings));
                 break;
             case CSC_CONFLICT_DETECTION:
             case USC_CONFLICT_DETECTION:
                 SwingUtilities.invokeLater(new MpsatEncodingConflictOutputHandler(we, violationMpsatOutput));
-                break;
-            case DEADLOCK:
-                SwingUtilities.invokeLater(new MpsatDeadlockOutputHandler(we, violationMpsatOutput));
                 break;
             case RESOLVE_ENCODING_CONFLICTS:
                 SwingUtilities.invokeLater(new MpsatCscConflictResolutionOutputHandler(we, violationMpsatOutput, mutexes));
@@ -113,8 +123,8 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
 
     private boolean handlePartialFailure(final Result<? extends MpsatCombinedChainOutput> chainResult) {
         WorkspaceEntry we = task.getWorkspaceEntry();
-        MpsatCombinedChainOutput chainOutptu = chainResult.getPayload();
-        Result<? extends PunfOutput> punfResult = (chainOutptu == null) ? null : chainOutptu.getPunfResult();
+        MpsatCombinedChainOutput chainOutput = chainResult.getPayload();
+        Result<? extends PunfOutput> punfResult = (chainOutput == null) ? null : chainOutput.getPunfResult();
         if ((punfResult != null) && (punfResult.getOutcome() == Outcome.FAILURE)) {
             PunfOutputParser prp = new PunfOutputParser(punfResult.getPayload());
             Pair<MpsatSolution, PunfOutputParser.Cause> punfOutcome = prp.getOutcome();
@@ -123,7 +133,7 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
                 Cause cause = punfOutcome.getSecond();
                 boolean isConsistencyCheck = false;
                 if (cause == Cause.INCONSISTENT) {
-                    for (MpsatParameters mpsatSettings: chainOutptu.getMpsatSettingsList()) {
+                    for (MpsatParameters mpsatSettings: chainOutput.getMpsatSettingsList()) {
                         if (mpsatSettings.getMode() == MpsatMode.STG_REACHABILITY_CONSISTENCY) {
                             isConsistencyCheck = true;
                             break;
@@ -131,13 +141,15 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
                     }
                 }
                 if (isConsistencyCheck) {
+                    Result<? extends PcompOutput> pcompResult = (chainOutput == null) ? null : chainOutput.getPcompResult();
+                    PcompOutput pcompOutput = (pcompResult == null) ? null : pcompResult.getPayload();
                     int cost = solution.getMainTrace().size();
                     String mpsatFakeStdout = "SOLUTION 0\n" + solution + "\npath cost: " + cost + "\n";
                     MpsatOutput mpsatFakeOutput = new MpsatOutput(new ExternalProcessOutput(0,
                             mpsatFakeStdout.getBytes(), new byte[0]));
 
-                    SwingUtilities.invokeLater(new MpsatReachabilityOutputHandler(
-                            we, null, mpsatFakeOutput, MpsatParameters.getConsistencySettings()));
+                    SwingUtilities.invokeLater(new MpsatConsistencyOutputHandler(
+                            we, pcompOutput, mpsatFakeOutput, MpsatParameters.getConsistencySettings()));
                 } else {
                     String comment = solution.getComment();
                     String message = CANNOT_VERIFY_PREFIX;

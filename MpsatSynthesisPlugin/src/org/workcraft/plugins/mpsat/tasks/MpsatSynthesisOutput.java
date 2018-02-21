@@ -17,7 +17,7 @@ public class MpsatSynthesisOutput extends ExternalProcessOutput {
         this.verilogOutput = verilogOutput;
     }
 
-    public byte[] getStgOutptu() {
+    public byte[] getStgOutput() {
         return stgOutput;
     }
 
