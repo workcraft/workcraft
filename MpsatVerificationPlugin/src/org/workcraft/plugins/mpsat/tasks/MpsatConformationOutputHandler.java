@@ -2,6 +2,7 @@ package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.Trace;
 import org.workcraft.plugins.mpsat.MpsatParameters;
+import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Type;
@@ -17,12 +18,12 @@ class MpsatConformationOutputHandler extends MpsatReachabilityOutputHandler {
     }
 
     @Override
-    public MpsatSolution processSolution(MpsatSolution solution) {
-        StgModel stg = getSrcStg();
+    public MpsatSolution processSolution(MpsatSolution solution, ComponentData data) {
+        StgModel stg = getSrcStg(data);
         if ((solution == null) || (stg == null)) {
             return solution;
         }
-        Trace trace = getProjectedTrace(solution.getMainTrace());
+        Trace trace = getProjectedTrace(solution.getMainTrace(), data);
         LogUtils.logMessage("Processing conformation violation trace: ");
         LogUtils.logMessage("  reported: " + solution.getMainTrace());
         LogUtils.logMessage("  projected: " + trace);

@@ -17,7 +17,7 @@ import org.workcraft.plugins.mpsat.commands.MpsatDiInterfaceVerificationCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatInputPropernessVerificationCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatMutexImplementabilityVerificationCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatNormalcyVerificationCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatNwayConformationVerificationCommand;
+import org.workcraft.plugins.mpsat.commands.MpsatConformationNwayVerificationCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatOutputPersistencyVerificationCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatPlaceRedundancyVerificationCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatPropertyVerificationCommand;
@@ -60,7 +60,7 @@ public class MpsatModule implements Module {
         pm.registerClass(Command.class, MpsatPlaceRedundancyVerificationCommand.class);
         // TODO: Need a way to pass the environment file from the JavaScript wrapper
         pm.registerClass(Command.class, MpsatConformationVerificationCommand.class);
-        pm.registerClass(Command.class, MpsatNwayConformationVerificationCommand.class);
+        pm.registerClass(Command.class, MpsatConformationNwayVerificationCommand.class);
         pm.registerClass(Command.class, MpsatPropertyVerificationCommand.class);
         pm.registerClass(Command.class, MpsatAssertionVerificationCommand.class);
     }

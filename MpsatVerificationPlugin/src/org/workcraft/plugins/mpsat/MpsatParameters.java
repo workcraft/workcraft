@@ -545,7 +545,7 @@ public class MpsatParameters {
         String reachConformation = REACH_NWAY_CONFORMATION
                 .replace(REACH_NWAY_CONFORMATION_PLACES, placeStr)
                 .replace(REACH_NWAY_CONFORMATION_OUTPUTS, outputStr);
-        return new MpsatParameters("Interface conformation", MpsatMode.STG_REACHABILITY_CONFORMATION, 0,
+        return new MpsatParameters("Interface conformation", MpsatMode.STG_REACHABILITY_CONFORMATION_NWAY, 0,
                 MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(), reachConformation, true);
     }
 

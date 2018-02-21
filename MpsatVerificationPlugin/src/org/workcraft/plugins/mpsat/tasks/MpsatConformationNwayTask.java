@@ -35,7 +35,7 @@ import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class MpsatNwayConformationTask implements Task<MpsatChainOutput> {
+public class MpsatConformationNwayTask implements Task<MpsatChainOutput> {
 
     private final MpsatParameters toolchainPreparationSettings = new MpsatParameters("Toolchain preparation of data",
             MpsatMode.UNDEFINED, 0, null, 0);
@@ -45,7 +45,7 @@ public class MpsatNwayConformationTask implements Task<MpsatChainOutput> {
 
     private final ArrayList<WorkspaceEntry> wes;
 
-    public MpsatNwayConformationTask(ArrayList<WorkspaceEntry> wes) {
+    public MpsatConformationNwayTask(ArrayList<WorkspaceEntry> wes) {
         this.wes = wes;
     }
 

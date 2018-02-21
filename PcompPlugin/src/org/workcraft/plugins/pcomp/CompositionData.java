@@ -21,7 +21,7 @@ import org.xml.sax.SAXException;
 
 public class CompositionData {
 
-    LinkedHashMap<String, ComponentData> fileToComponent = new LinkedHashMap<>();
+    private final LinkedHashMap<String, ComponentData> fileToComponent = new LinkedHashMap<>();
 
     public CompositionData(File file) throws FileNotFoundException {
         this(new FileInputStream(file));
@@ -45,12 +45,11 @@ public class CompositionData {
             if (!(item instanceof Element)) continue;
             Element element = (Element) item;
             if ("STG".equals(element.getTagName())) {
+                Element fileElement = XmlUtils.getChildElement("file", element);
                 Element placesElement = XmlUtils.getChildElement("places", element);
                 Element transitionsElement = XmlUtils.getChildElement("transitions", element);
-                ComponentData componentData = new ComponentData(placesElement, transitionsElement);
-                Element fileElement = XmlUtils.getChildElement("file", element);
-                String fileName = fileElement.getTextContent();
-                fileToComponent.put(fileName, componentData);
+                ComponentData componentData = new ComponentData(fileElement, placesElement, transitionsElement);
+                fileToComponent.put(componentData.getFileName(), componentData);
             }
         }
     }

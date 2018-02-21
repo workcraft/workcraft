@@ -2,6 +2,7 @@ package org.workcraft.plugins.mpsat.tasks;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -27,8 +28,8 @@ class MpsatReachabilityOutputHandler implements Runnable {
     private final MpsatOutput mpsatOutput;
     private final MpsatParameters settings;
 
-    private StgModel srcStg = null;
-    private ComponentData srcData = null;
+    private final HashMap<String, StgModel> srcStgs = new HashMap<>();
+    private CompositionData compositionData = null;
 
     MpsatReachabilityOutputHandler(WorkspaceEntry we, MpsatOutput mpsatOutput, MpsatParameters settings) {
         this(we, null, mpsatOutput, settings);
@@ -58,23 +59,28 @@ class MpsatReachabilityOutputHandler implements Runnable {
     }
 
     public List<MpsatSolution> getSolutions() {
+        return getSolutions(0);
+    }
+
+    public List<MpsatSolution> getSolutions(int index) {
         List<MpsatSolution> solutions = new LinkedList<>();
         MpsatOutoutParser mrp = new MpsatOutoutParser(getMpsatOutput());
+        ComponentData data = getCompositionData(index);
         for (MpsatSolution solution: mrp.getSolutions()) {
-            solutions.add(processSolution(solution));
+            MpsatSolution processedSolution = processSolution(solution, data);
+            solutions.add(processedSolution);
         }
         return solutions;
     }
 
-    public MpsatSolution processSolution(MpsatSolution solution) {
-        Trace mainTrace = getProjectedTrace(solution.getMainTrace());
-        Trace branchTrace = getProjectedTrace(solution.getBranchTrace());
+    public MpsatSolution processSolution(MpsatSolution solution, ComponentData data) {
+        Trace mainTrace = getProjectedTrace(solution.getMainTrace(), data);
+        Trace branchTrace = getProjectedTrace(solution.getBranchTrace(), data);
         String comment = solution.getComment();
         return new MpsatSolution(mainTrace, branchTrace, comment);
     }
 
-    public Trace getProjectedTrace(Trace trace) {
-        ComponentData data = getSrcData();
+    public Trace getProjectedTrace(Trace trace, ComponentData data) {
         if ((trace == null) || trace.isEmpty() || (data == null)) {
             return trace;
         }
@@ -87,32 +93,32 @@ class MpsatReachabilityOutputHandler implements Runnable {
         }
         return result;
     }
-    public ComponentData getSrcData() {
-        if (srcData == null) {
+
+    public ComponentData getCompositionData(int index) {
+        if (compositionData == null) {
             if (getPcompOutput() != null) {
                 File detailFile = getPcompOutput().getDetailFile();
                 try {
-                    CompositionData compositionData = new CompositionData(detailFile);
-                    srcData = compositionData.getComponentData(0);
+                    compositionData = new CompositionData(detailFile);
                 } catch (FileNotFoundException e) {
                 }
             }
         }
-        return srcData;
+        return compositionData == null ? null : compositionData.getComponentData(index);
     }
 
-    public StgModel getSrcStg() {
-        if (srcStg == null) {
-            File file = null;
-            if (getPcompOutput() != null) {
-                File[] inputFiles = getPcompOutput().getInputFiles();
-                if ((inputFiles != null) && (inputFiles.length > 0)) {
-                    file = inputFiles[0];
-                }
-            }
-            srcStg = StgUtils.importStg(file);
+    public StgModel getSrcStg(ComponentData data) {
+        if (data == null) {
+            return null;
         }
-        return srcStg;
+        if (!srcStgs.containsKey(data.getFileName())) {
+            File file = new File(data.getFileName());
+            if ((file != null) && file.exists()) {
+                StgModel srcStg = StgUtils.importStg(file);
+                srcStgs.put(data.getFileName(), srcStg);
+            }
+        }
+        return srcStgs.get(data.getFileName());
     }
 
     public String getMessage(boolean isSatisfiable) {
@@ -140,7 +146,7 @@ class MpsatReachabilityOutputHandler implements Runnable {
             DialogUtils.showInfo(message, TITLE);
         } else if (framework.isInGuiMode()) {
             message = extendMessage(message);
-            MpsatReachibilityDialog solutionsDialog = new MpsatReachibilityDialog(we, TITLE, message, solutions);
+            MpsatReachibilityDialog solutionsDialog = new MpsatReachibilityDialog(getWorkspaceEntry(), TITLE, message, solutions);
             MainWindow mainWindow = framework.getMainWindow();
             GUI.centerToParent(solutionsDialog, mainWindow);
             solutionsDialog.setVisible(true);

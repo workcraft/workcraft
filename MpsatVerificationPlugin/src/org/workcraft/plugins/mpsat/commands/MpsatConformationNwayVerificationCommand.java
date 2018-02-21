@@ -9,7 +9,7 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.mpsat.gui.NwayDialog;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
-import org.workcraft.plugins.mpsat.tasks.MpsatNwayConformationTask;
+import org.workcraft.plugins.mpsat.tasks.MpsatConformationNwayTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.TaskManager;
@@ -19,7 +19,7 @@ import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class MpsatNwayConformationVerificationCommand extends AbstractVerificationCommand {
+public class MpsatConformationNwayVerificationCommand extends AbstractVerificationCommand {
 
     @Override
     public String getDisplayName() {
@@ -57,10 +57,10 @@ public class MpsatNwayConformationVerificationCommand extends AbstractVerificati
                     wes.add(workspace.getWork(path));
                 }
 
-                MpsatNwayConformationTask task = new MpsatNwayConformationTask(wes);
+                MpsatConformationNwayTask task = new MpsatConformationNwayTask(wes);
                 TaskManager manager = framework.getTaskManager();
                 String description = MpsatUtils.getToolchainDescription(we.getTitle());
-                MpsatChainResultHandler monitor = new MpsatChainResultHandler(we);
+                MpsatChainResultHandler monitor = new MpsatChainResultHandler(wes);
                 manager.queue(task, description, monitor);
             }
         }

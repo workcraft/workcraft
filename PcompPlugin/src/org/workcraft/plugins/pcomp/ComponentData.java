@@ -9,24 +9,33 @@ import org.workcraft.util.XmlUtils;
 
 public class ComponentData {
 
+    private static final String TAG_DST = "dst";
+    private static final String TAG_SRC = "src";
+    private static final String TAG_MAP = "map";
+    private final String fileName;
     private final HashMap<String, String> placesSrc2Dst = new HashMap<>();
     private final HashMap<String, String> transitionsDst2Src = new HashMap<>();
 
-    public ComponentData(Element placesElement, Element transitionsElelemnt) {
-        for (Element element: XmlUtils.getChildElements("map", placesElement)) {
-            for (Element src: XmlUtils.getChildElements("src", element)) {
-                for (Element dst: XmlUtils.getChildElements("dst", element)) {
+    public ComponentData(Element fileElement, Element placesElement, Element transitionsElelemnt) {
+        fileName = fileElement.getTextContent();
+        for (Element element: XmlUtils.getChildElements(TAG_MAP, placesElement)) {
+            for (Element src: XmlUtils.getChildElements(TAG_SRC, element)) {
+                for (Element dst: XmlUtils.getChildElements(TAG_DST, element)) {
                     placesSrc2Dst.put(src.getTextContent(), dst.getTextContent());
                 }
             }
         }
-        for (Element element: XmlUtils.getChildElements("map", transitionsElelemnt)) {
-            for (Element src: XmlUtils.getChildElements("src", element)) {
-                for (Element dst: XmlUtils.getChildElements("dst", element)) {
+        for (Element element: XmlUtils.getChildElements(TAG_MAP, transitionsElelemnt)) {
+            for (Element src: XmlUtils.getChildElements(TAG_SRC, element)) {
+                for (Element dst: XmlUtils.getChildElements(TAG_DST, element)) {
                     transitionsDst2Src.put(src.getTextContent(), dst.getTextContent());
                 }
             }
         }
+    }
+
+    public String getFileName() {
+        return fileName;
     }
 
     public HashSet<String> getSrcPlaces(String dst) {

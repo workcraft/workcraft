@@ -2,6 +2,7 @@ package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.Trace;
 import org.workcraft.plugins.mpsat.MpsatParameters;
+import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
@@ -16,8 +17,8 @@ class MpsatConsistencyOutputHandler extends MpsatReachabilityOutputHandler {
     }
 
     @Override
-    public MpsatSolution processSolution(MpsatSolution solution) {
-        Trace trace = getProjectedTrace(solution.getMainTrace());
+    public MpsatSolution processSolution(MpsatSolution solution, ComponentData data) {
+        Trace trace = getProjectedTrace(solution.getMainTrace(), data);
         LogUtils.logMessage("Processing consistency violation trace: ");
         LogUtils.logMessage("  reported: " + solution.getMainTrace());
         LogUtils.logMessage("  projected: " + trace);

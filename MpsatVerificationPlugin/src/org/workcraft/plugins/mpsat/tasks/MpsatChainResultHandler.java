@@ -1,5 +1,6 @@
 package org.workcraft.plugins.mpsat.tasks;
 
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.swing.SwingUtilities;
@@ -27,8 +28,14 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainOut
     private static final String ASK_SIMULATE_SUFFIX = "\n\nSimulate the problematic trace?";
     private static final String ERROR_CAUSE_PREFIX = "\n\n";
 
+    private final ArrayList<WorkspaceEntry> wes = new ArrayList<>();
     private final WorkspaceEntry we;
     private final Collection<Mutex> mutexes;
+
+    public MpsatChainResultHandler(ArrayList<WorkspaceEntry> wes) {
+        this(wes.get(0), null);
+        this.wes.addAll(wes);
+    }
 
     public MpsatChainResultHandler(WorkspaceEntry we) {
         this(we, null);
@@ -87,6 +94,9 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainOut
         case STG_REACHABILITY_CONFORMATION:
             SwingUtilities.invokeLater(new MpsatConformationOutputHandler(we, pcompOutput, mpsatOutput, mpsatSettings));
             break;
+        case STG_REACHABILITY_CONFORMATION_NWAY:
+            SwingUtilities.invokeLater(new MpsatConformationNwayOutputHandler(wes, pcompOutput, mpsatOutput, mpsatSettings));
+            break;
         case CSC_CONFLICT_DETECTION:
         case USC_CONFLICT_DETECTION:
             SwingUtilities.invokeLater(new MpsatEncodingConflictOutputHandler(we, mpsatOutput));
@@ -95,8 +105,7 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainOut
             SwingUtilities.invokeLater(new MpsatCscConflictResolutionOutputHandler(we, mpsatOutput, mutexes));
             break;
         default:
-            String modeString = mpsatSettings.getMode().getArgument();
-            DialogUtils.showError("MPSat verification mode '" + modeString + "' is not (yet) supported.");
+            DialogUtils.showError(mpsatSettings.getMode() + " is not (yet) supported.");
             break;
         }
     }

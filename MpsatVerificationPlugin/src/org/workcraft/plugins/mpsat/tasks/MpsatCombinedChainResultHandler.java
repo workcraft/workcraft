@@ -114,8 +114,7 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
                 SwingUtilities.invokeLater(new MpsatCscConflictResolutionOutputHandler(we, violationMpsatOutput, mutexes));
                 break;
             default:
-                String modeString = violationMpsatSettings.getMode().getArgument();
-                DialogUtils.showError("MPSat verification mode '" + modeString + "' is not (yet) supported.");
+                DialogUtils.showError(violationMpsatSettings.getMode() + " is not (yet) supported in combined verification mode.");
                 break;
             }
         }
