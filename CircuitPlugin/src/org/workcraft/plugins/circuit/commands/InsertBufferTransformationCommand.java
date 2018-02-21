@@ -18,6 +18,7 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.circuit.VisualCircuitComponent;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
@@ -78,6 +79,10 @@ public class InsertBufferTransformationCommand extends AbstractTransformationCom
             Node fromNode = connection.getFirst();
             Node toNode = connection.getSecond();
             Container container = Hierarchy.getNearestContainer(fromNode, toNode);
+            // Step up in the hierarchy for a self-loop
+            if (container instanceof VisualCircuitComponent) {
+                container = (Container) container.getParent();
+            }
 
             FunctionComponent mathComponent = new FunctionComponent();
             Container mathContainer = NamespaceHelper.getMathContainer(circuit, container);
