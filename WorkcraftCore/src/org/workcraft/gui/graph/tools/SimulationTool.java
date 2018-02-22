@@ -82,8 +82,8 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
     static final double DEFAULT_SIMULATION_DELAY = 0.3;
     static final double EDGE_SPEED_MULTIPLIER = 10;
 
-    protected Map<Node, Integer> initialState;
-    public HashMap<Node, Integer> savedState;
+    protected Map<? extends Node, Integer> initialState;
+    public HashMap<? extends Node, Integer> savedState;
     protected final Trace mainTrace = new Trace();
     protected final Trace branchTrace = new Trace();
 
@@ -517,7 +517,7 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
     }
 
     private boolean randomStep(final GraphEditor editor) {
-        ArrayList<Node> enabledTransitions = getEnabledNodes();
+        ArrayList<? extends Node> enabledTransitions = getEnabledNodes();
         if (enabledTransitions.size() == 0) {
             return false;
         }
@@ -919,13 +919,13 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         return ref;
     }
 
-    public abstract HashMap<Node, Integer> readModelState();
+    public abstract HashMap<? extends Node, Integer> readModelState();
 
-    public abstract void writeModelState(Map<Node, Integer> state);
+    public abstract void writeModelState(Map<? extends Node, Integer> state);
 
     public abstract void applySavedState(GraphEditor editor);
 
-    public abstract ArrayList<Node> getEnabledNodes();
+    public abstract ArrayList<? extends Node> getEnabledNodes();
 
     public abstract boolean isEnabledNode(Node node);
 

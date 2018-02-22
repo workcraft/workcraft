@@ -7,14 +7,12 @@ import java.util.Collection;
 import java.util.Set;
 
 import org.workcraft.Framework;
-import org.workcraft.Trace;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.SignalTransition.Type;
@@ -184,25 +182,6 @@ public class StgUtils {
         Set<String> dstInternal = dstStg.getSignalReferences(Type.INTERNAL);
 
         return srcInputs.equals(dstInputs) && srcOutputs.equals(dstOutputs) && srcInternal.equals(dstInternal);
-    }
-
-    public static boolean fireTrace(StgModel stg, Trace trace) {
-        for (String ref: trace) {
-            Node node = stg.getNodeByReference(ref);
-            if (node instanceof Transition) {
-                Transition transition = (Transition) node;
-                if (stg.isEnabled(transition)) {
-                    stg.fire(transition);
-                } else {
-                    LogUtils.logError("Trace transition '" + ref + "' is not enabled.");
-                    return false;
-                }
-            } else {
-                LogUtils.logError("Trace transition '" + ref + "' cannot be found.");
-                return false;
-            }
-        }
-        return true;
     }
 
     public static StgModel importStg(File file) {

@@ -1,5 +1,6 @@
 package org.workcraft.plugins.mpsat.tasks;
 
+import java.util.HashMap;
 import java.util.HashSet;
 
 import org.workcraft.Trace;
@@ -7,10 +8,11 @@ import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
+import org.workcraft.plugins.petri.PetriUtils;
+import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -30,8 +32,9 @@ class MpsatOutputPersistencyOutputHandler extends MpsatReachabilityOutputHandler
         LogUtils.logMessage("Processing output percistency violation trace: ");
         LogUtils.logMessage("  reported: " + solution.getMainTrace());
         LogUtils.logMessage("  projected: " + trace);
-        String comment = null;
-        if (!StgUtils.fireTrace(stg, trace)) {
+        MpsatSolution result = null;
+        HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
+        if (!PetriUtils.fireTrace(stg, trace)) {
             LogUtils.logWarning("Cannot execute projected output persistency violation trace: " + trace);
         } else {
             HashSet<String> enabledLocalSignals = getEnabledLocalSignals(stg);
@@ -41,20 +44,23 @@ class MpsatOutputPersistencyOutputHandler extends MpsatReachabilityOutputHandler
                 nonpersistentLocalSignals.remove(transition.getSignalName());
                 nonpersistentLocalSignals.removeAll(getEnabledLocalSignals(stg));
                 if (!nonpersistentLocalSignals.isEmpty()) {
+                    String comment = null;
                     String signalList = ReferenceHelper.getReferencesAsString(nonpersistentLocalSignals);
                     if (nonpersistentLocalSignals.size() > 1) {
-                        solution.setComment("Non-persistent signals " + signalList);
+                        comment = "Non-persistent signals " + signalList;
                     } else {
-                        solution.setComment("Non-persistent signal '" + signalList + "'");
+                        comment = "Non-persistent signal '" + signalList + "'";
                     }
                     trace.add(stg.getNodeReference(transition));
                     LogUtils.logMessage("  extended: " + trace);
+                    result = new MpsatSolution(trace, null, comment);
                     break;
                 }
                 stg.unFire(transition);
             }
         }
-        return new MpsatSolution(trace, null, comment);
+        PetriUtils.setMarking(stg, marking);
+        return result;
     }
 
     private HashSet<SignalTransition> getEnabledSignalTransitions(StgModel stg) {

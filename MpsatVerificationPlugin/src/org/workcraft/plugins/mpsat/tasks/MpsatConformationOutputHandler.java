@@ -1,13 +1,16 @@
 package org.workcraft.plugins.mpsat.tasks;
 
+import java.util.HashMap;
+
 import org.workcraft.Trace;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
+import org.workcraft.plugins.petri.PetriUtils;
+import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -27,8 +30,9 @@ class MpsatConformationOutputHandler extends MpsatReachabilityOutputHandler {
         LogUtils.logMessage("Processing conformation violation trace: ");
         LogUtils.logMessage("  reported: " + solution.getMainTrace());
         LogUtils.logMessage("  projected: " + trace);
-        String comment = null;
-        if (!StgUtils.fireTrace(stg, trace)) {
+        MpsatSolution result = null;
+        HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
+        if (!PetriUtils.fireTrace(stg, trace)) {
             LogUtils.logWarning("Cannot execute projected conformation violation trace: " + trace);
         } else {
             for (SignalTransition transition: stg.getSignalTransitions()) {
@@ -36,12 +40,14 @@ class MpsatConformationOutputHandler extends MpsatReachabilityOutputHandler {
                     String signal = transition.getSignalName();
                     trace.add(stg.getNodeReference(transition));
                     LogUtils.logMessage("  extended: " + trace);
-                    comment = "Unexpected change of output '" + signal + "'";
+                    String comment = "Unexpected change of output '" + signal + "'";
+                    result = new MpsatSolution(trace, null, comment);
                     break;
                 }
             }
         }
-        return new MpsatSolution(trace, null, comment);
+        PetriUtils.setMarking(stg, marking);
+        return result;
     }
 
 }

@@ -68,7 +68,9 @@ class MpsatReachabilityOutputHandler implements Runnable {
         ComponentData data = getCompositionData(index);
         for (MpsatSolution solution: mrp.getSolutions()) {
             MpsatSolution processedSolution = processSolution(solution, data);
-            solutions.add(processedSolution);
+            if (processedSolution != null) {
+                solutions.add(processedSolution);
+            }
         }
         return solutions;
     }
