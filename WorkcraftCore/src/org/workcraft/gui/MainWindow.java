@@ -1,6 +1,7 @@
 package org.workcraft.gui;
 
 import java.awt.BorderLayout;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.DisplayMode;
 import java.awt.Font;
@@ -26,6 +27,7 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
@@ -534,7 +536,7 @@ public class MainWindow extends JFrame {
         outputDockable = createDockableWindow(outputWindow, TITLE_OUTPUT, DockableWindowContentPanel.CLOSE_BUTTON,
                 DockingManager.SOUTH_REGION, ySplit);
 
-        DockableWindow erroDockable = createDockableWindow(errorWindow, TITLE_PROBLEMS, outputDockable,
+        DockableWindow errorDockable = createDockableWindow(errorWindow, TITLE_PROBLEMS, outputDockable,
                 DockableWindowContentPanel.CLOSE_BUTTON);
 
         DockableWindow javaScriptDockable = createDockableWindow(javaScriptWindow, TITLE_JAVASCRIPT, outputDockable,
@@ -559,7 +561,7 @@ public class MainWindow extends JFrame {
                 0, DockingManager.NORTH_REGION, ySplit, "DocumentPlaceholder");
 
         registerUtilityWindow(outputDockable);
-        registerUtilityWindow(erroDockable);
+        registerUtilityWindow(errorDockable);
         registerUtilityWindow(javaScriptDockable);
         registerUtilityWindow(tasksDockable);
         registerUtilityWindow(propertyEditorDockable);
@@ -786,6 +788,17 @@ public class MainWindow extends JFrame {
             } catch (VisualModelInstantiationException e) {
                 e.printStackTrace();
                 DialogUtils.showError("Visual model could not be created: " + e.getMessage());
+            }
+        }
+    }
+
+    public void requestFocus(final WorkspaceEntry we) {
+        for (DockableWindow window: editorWindows.get(we)) {
+            Container parent = window.getComponent().getParent();
+            if (parent instanceof JTabbedPane) {
+                JTabbedPane tabbedPane = (JTabbedPane) parent;
+                tabbedPane.setSelectedComponent(window.getComponent());
+                break;
             }
         }
     }

@@ -46,6 +46,9 @@ class MpsatConformationOutputHandler extends MpsatReachabilityOutputHandler {
                 }
             }
         }
+        if (result == null) {
+            LogUtils.logMessage("  cannot be extended as no unexpected outputs detected " + trace);
+        }
         PetriUtils.setMarking(stg, marking);
         return result;
     }

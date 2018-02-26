@@ -25,21 +25,28 @@ class MpsatConformationNwayOutputHandler extends MpsatConformationOutputHandler 
 
     @Override
     public void run() {
+        Framework framework = Framework.getInstance();
+        MainWindow mainWindow = framework.getMainWindow();
+        boolean violated = false;
         int index = 0;
         for (WorkspaceEntry we: wes) {
-            LogUtils.logInfo(we.getWorkspacePath().toString());
+            LogUtils.logInfo("Applying solutions to '" + we.getTitle() + "'");
             List<MpsatSolution> solutions = getSolutions(index++);
-            String message = getMessage(!solutions.isEmpty());
-            Framework framework = Framework.getInstance();
-            if (!MpsatUtils.hasTraces(solutions)) {
-                DialogUtils.showInfo(message, TITLE);
-            } else if (framework.isInGuiMode()) {
-                message = extendMessage(message);
-                MpsatReachibilityDialog solutionsDialog = new MpsatReachibilityDialog(getWorkspaceEntry(), TITLE, message, solutions);
-                MainWindow mainWindow = framework.getMainWindow();
-                GUI.centerToParent(solutionsDialog, mainWindow);
-                solutionsDialog.setVisible(true);
+            if (!solutions.isEmpty()) {
+                violated = true;
+                if (framework.isInGuiMode()) {
+                    mainWindow.requestFocus(we);
+                    String message = getMessage(true);
+                    message = extendMessage(message);
+                    MpsatReachibilityDialog solutionsDialog = new MpsatReachibilityDialog(we, TITLE, message, solutions);
+                    GUI.centerToParent(solutionsDialog, mainWindow);
+                    solutionsDialog.setVisible(true);
+                }
             }
+        }
+        if (!violated) {
+            String message = getMessage(false);
+            DialogUtils.showInfo(message, TITLE);
         }
     }
 
