@@ -22,7 +22,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 class MpsatReachabilityOutputHandler implements Runnable {
 
-    public static final String TITLE = "Verification results";
+    private static final String TITLE = "Verification results";
+
     private final WorkspaceEntry we;
     private final PcompOutput pcompOutput;
     private final MpsatOutput mpsatOutput;

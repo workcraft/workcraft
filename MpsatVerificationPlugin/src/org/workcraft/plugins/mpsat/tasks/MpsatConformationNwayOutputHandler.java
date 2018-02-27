@@ -15,6 +15,8 @@ import org.workcraft.workspace.WorkspaceEntry;
 
 class MpsatConformationNwayOutputHandler extends MpsatConformationOutputHandler {
 
+    private static final String TITLE = "Verification results";
+
     private final ArrayList<WorkspaceEntry> wes;
 
     MpsatConformationNwayOutputHandler(ArrayList<WorkspaceEntry> wes,
@@ -27,24 +29,24 @@ class MpsatConformationNwayOutputHandler extends MpsatConformationOutputHandler 
     public void run() {
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
-        boolean violated = false;
+        boolean isViolated = false;
         int index = 0;
         for (WorkspaceEntry we: wes) {
-            LogUtils.logInfo("Applying solutions to '" + we.getTitle() + "'");
+            LogUtils.logInfo("Checking conformation for model '" + we.getTitle() + "'");
             List<MpsatSolution> solutions = getSolutions(index++);
             if (!solutions.isEmpty()) {
-                violated = true;
+                isViolated = true;
                 if (framework.isInGuiMode()) {
                     mainWindow.requestFocus(we);
-                    String message = getMessage(true);
-                    message = extendMessage(message);
-                    MpsatReachibilityDialog solutionsDialog = new MpsatReachibilityDialog(we, TITLE, message, solutions);
+                    String message = extendMessage(getMessage(true));
+                    String title = TITLE + " for model '" + we.getTitle() + "'";
+                    MpsatReachibilityDialog solutionsDialog = new MpsatReachibilityDialog(we, title, message, solutions);
                     GUI.centerToParent(solutionsDialog, mainWindow);
                     solutionsDialog.setVisible(true);
                 }
             }
         }
-        if (!violated) {
+        if (!isViolated) {
             String message = getMessage(false);
             DialogUtils.showInfo(message, TITLE);
         }

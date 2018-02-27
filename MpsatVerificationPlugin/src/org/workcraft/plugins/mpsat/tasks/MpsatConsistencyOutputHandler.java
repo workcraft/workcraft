@@ -18,20 +18,23 @@ class MpsatConsistencyOutputHandler extends MpsatReachabilityOutputHandler {
 
     @Override
     public MpsatSolution processSolution(MpsatSolution solution, ComponentData data) {
+        LogUtils.logMessage("Processing reported trace: " + solution.getMainTrace());
         Trace trace = getProjectedTrace(solution.getMainTrace(), data);
-        LogUtils.logMessage("Processing consistency violation trace: ");
-        LogUtils.logMessage("  reported: " + solution.getMainTrace());
-        LogUtils.logMessage("  projected: " + trace);
+        MpsatSolution result = null;
         int size = trace.size();
-        if (size > 0) {
+        if (size <= 0) {
+            LogUtils.logMessage("No consistency violation detected");
+        } else {
             String lastTransitionRef = trace.get(size - 1);
             final Triple<String, Direction, Integer> r = LabelParser.parseSignalTransition(lastTransitionRef);
             if (r != null) {
                 String signalRef = r.getFirst();
-                solution.setComment("Signal '" + signalRef + "' is inconsistent");
+                String comment = "Signal '" + signalRef + "' is inconsistent";
+                LogUtils.logMessage(comment + " after projected trace: " + trace);
+                result = new MpsatSolution(trace, null, comment);
             }
         }
-        return solution;
+        return result;
     }
 
 }

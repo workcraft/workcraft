@@ -112,6 +112,10 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainOut
 
     private boolean handlePartialFailure(final Result<? extends MpsatChainOutput> chainResult) {
         MpsatChainOutput chainOutput = chainResult.getPayload();
+        Result<? extends PcompOutput> pcompResult = (chainOutput == null) ? null : chainOutput.getPcompResult();
+        if ((pcompResult != null) && (pcompResult.getOutcome() == Outcome.FAILURE)) {
+            return false;
+        }
         Result<? extends PunfOutput> punfResult = (chainOutput == null) ? null : chainOutput.getPunfResult();
         if ((punfResult != null) && (punfResult.getOutcome() == Outcome.FAILURE)) {
             PunfOutputParser prp = new PunfOutputParser(punfResult.getPayload());
@@ -124,7 +128,6 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainOut
                         && (mpsatSettings.getMode() == MpsatMode.STG_REACHABILITY_CONSISTENCY);
 
                 if (isConsistencyCheck) {
-                    Result<? extends PcompOutput> pcompResult = (chainOutput == null) ? null : chainOutput.getPcompResult();
                     PcompOutput pcompOutput = (pcompResult == null) ? null : pcompResult.getPayload();
                     int cost = solution.getMainTrace().size();
                     String mpsatFakeStdout = "SOLUTION 0\n" + solution + "\npath cost: " + cost + "\n";
@@ -173,6 +176,7 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainOut
         } else {
             MpsatChainOutput chainOutput = chainResult.getPayload();
             Result<? extends ExportOutput> exportResult = (chainOutput == null) ? null : chainOutput.getExportResult();
+            Result<? extends PcompOutput> pcompResult = (chainOutput == null) ? null : chainOutput.getPcompResult();
             Result<? extends PunfOutput> punfResult = (chainOutput == null) ? null : chainOutput.getPunfResult();
             Result<? extends MpsatOutput> mpsatResult = (chainOutput == null) ? null : chainOutput.getMpsatResult();
             if ((exportResult != null) && (exportResult.getOutcome() == Outcome.FAILURE)) {
@@ -180,6 +184,18 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainOut
                 Throwable exportCause = exportResult.getCause();
                 if (exportCause != null) {
                     errorMessage += ERROR_CAUSE_PREFIX + exportCause.toString();
+                }
+            } else if ((pcompResult != null) && (pcompResult.getOutcome() == Outcome.FAILURE)) {
+                errorMessage += "\n\nPcomp could not compose models.";
+                Throwable pcompCause = pcompResult.getCause();
+                if (pcompCause != null) {
+                    errorMessage += ERROR_CAUSE_PREFIX + pcompCause.toString();
+                } else {
+                    PcompOutput pcompOutput = pcompResult.getPayload();
+                    if (pcompOutput != null) {
+                        String pcompError = pcompOutput.getErrorsHeadAndTail();
+                        errorMessage += ERROR_CAUSE_PREFIX + pcompError;
+                    }
                 }
             } else if ((punfResult != null) && (punfResult.getOutcome() == Outcome.FAILURE)) {
                 errorMessage += "\n\nPunf could not build the unfolding prefix.";

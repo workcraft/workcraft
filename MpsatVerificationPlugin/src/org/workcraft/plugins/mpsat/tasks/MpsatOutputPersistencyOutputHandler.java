@@ -28,14 +28,12 @@ class MpsatOutputPersistencyOutputHandler extends MpsatReachabilityOutputHandler
         if ((solution == null) || (stg == null)) {
             return solution;
         }
+        LogUtils.logMessage("Processing reported trace: " + solution.getMainTrace());
         Trace trace = getProjectedTrace(solution.getMainTrace(), data);
-        LogUtils.logMessage("Processing output percistency violation trace: ");
-        LogUtils.logMessage("  reported: " + solution.getMainTrace());
-        LogUtils.logMessage("  projected: " + trace);
         MpsatSolution result = null;
         HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
         if (!PetriUtils.fireTrace(stg, trace)) {
-            LogUtils.logWarning("Cannot execute projected output persistency violation trace: " + trace);
+            LogUtils.logWarning("Cannot execute projected trace: " + trace);
         } else {
             HashSet<String> enabledLocalSignals = getEnabledLocalSignals(stg);
             for (SignalTransition transition: getEnabledSignalTransitions(stg)) {
@@ -51,8 +49,8 @@ class MpsatOutputPersistencyOutputHandler extends MpsatReachabilityOutputHandler
                     } else {
                         comment = "Non-persistent signal '" + signalList + "'";
                     }
+                    LogUtils.logMessage(comment + " after projected trace: " + trace);
                     trace.add(stg.getNodeReference(transition));
-                    LogUtils.logMessage("  extended: " + trace);
                     result = new MpsatSolution(trace, null, comment);
                     break;
                 }
@@ -60,6 +58,9 @@ class MpsatOutputPersistencyOutputHandler extends MpsatReachabilityOutputHandler
             }
         }
         PetriUtils.setMarking(stg, marking);
+        if (result == null) {
+            LogUtils.logMessage("No non-persistent signals detected after projected trace: " + trace);
+        }
         return result;
     }
 

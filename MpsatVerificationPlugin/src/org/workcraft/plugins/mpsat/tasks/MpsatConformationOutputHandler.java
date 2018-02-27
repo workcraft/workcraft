@@ -26,30 +26,28 @@ class MpsatConformationOutputHandler extends MpsatReachabilityOutputHandler {
         if ((solution == null) || (stg == null)) {
             return solution;
         }
+        LogUtils.logMessage("Processing reported trace: " + solution.getMainTrace());
         Trace trace = getProjectedTrace(solution.getMainTrace(), data);
-        LogUtils.logMessage("Processing conformation violation trace: ");
-        LogUtils.logMessage("  reported: " + solution.getMainTrace());
-        LogUtils.logMessage("  projected: " + trace);
         MpsatSolution result = null;
         HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
         if (!PetriUtils.fireTrace(stg, trace)) {
-            LogUtils.logWarning("Cannot execute projected conformation violation trace: " + trace);
+            LogUtils.logWarning("Cannot execute projected trace: " + trace);
         } else {
             for (SignalTransition transition: stg.getSignalTransitions()) {
                 if (stg.isEnabled(transition) && (transition.getSignalType() == Type.OUTPUT)) {
-                    String signal = transition.getSignalName();
+                    String signalRef = transition.getSignalName();
+                    LogUtils.logMessage("Output '" + signalRef + "' is unexpectedly enabled after projected trace: " + trace);
                     trace.add(stg.getNodeReference(transition));
-                    LogUtils.logMessage("  extended: " + trace);
-                    String comment = "Unexpected change of output '" + signal + "'";
+                    String comment = "Unexpected change of output '" + signalRef + "'";
                     result = new MpsatSolution(trace, null, comment);
                     break;
                 }
             }
         }
-        if (result == null) {
-            LogUtils.logMessage("  cannot be extended as no unexpected outputs detected " + trace);
-        }
         PetriUtils.setMarking(stg, marking);
+        if (result == null) {
+            LogUtils.logMessage("No outputs are enabled after projected trace: " + trace);
+        }
         return result;
     }
 
