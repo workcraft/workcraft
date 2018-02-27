@@ -11,11 +11,14 @@ import javax.swing.SwingUtilities;
 
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.interop.SgImporter;
 import org.workcraft.plugins.petri.PetriNetModel;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExportOutput;
+import org.workcraft.plugins.shared.tasks.ExportTask;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
@@ -23,13 +26,12 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.DialogUtils;
-import org.workcraft.util.Export;
-import org.workcraft.util.Export.ExportTask;
+import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
+public class WriteSgConversionTask implements Task<WriteSgConversionOutput> {
 
     private final class HugeSgRunnable implements Runnable {
         private final String stateCountMsg;
@@ -67,15 +69,16 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
     }
 
     @Override
-    public Result<? extends WriteSgConversionResult> run(ProgressMonitor<? super WriteSgConversionResult> monitor) {
+    public Result<? extends WriteSgConversionOutput> run(ProgressMonitor<? super WriteSgConversionOutput> monitor) {
         final Framework framework = Framework.getInstance();
         try {
             // Common variables
             monitor.progressUpdate(0.05);
             PetriNetModel petri = WorkspaceUtils.getAs(we, PetriNetModel.class);
-            Exporter petriExporter = Export.chooseBestExporter(framework.getPluginManager(), petri, StgFormat.getInstance());
+            StgFormat format = StgFormat.getInstance();
+            Exporter petriExporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), petri, format);
             if (petriExporter == null) {
-                throw new RuntimeException("Exporter not available: model class " + petri.getClass().getName() + " to format STG.");
+                throw new NoExporterException(petri, format);
             }
             SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
             monitor.progressUpdate(0.10);
@@ -84,14 +87,14 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
             File petriFile = FileUtils.createTempFile("stg-", ".g");
             petriFile.deleteOnExit();
             ExportTask petriExportTask = new ExportTask(petriExporter, petri, petriFile.getAbsolutePath());
-            Result<? extends Object> petriExportResult = framework.getTaskManager().execute(
+            Result<? extends ExportOutput> petriExportResult = framework.getTaskManager().execute(
                     petriExportTask, "Exporting .g", subtaskMonitor);
 
             if (petriExportResult.getOutcome() != Outcome.SUCCESS) {
                 if (petriExportResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<WriteSgConversionResult>(Outcome.CANCEL);
+                    return Result.cancelation();
                 }
-                return new Result<WriteSgConversionResult>(Outcome.FAILURE);
+                return Result.failure();
             }
             monitor.progressUpdate(0.20);
 
@@ -103,25 +106,26 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
 
             while (true) {
                 WriteSgTask writeSgTask = new WriteSgTask(writeSgOptions, petriFile, null, null);
-                Result<? extends ExternalProcessResult> writeSgResult = framework.getTaskManager().execute(
+                Result<? extends ExternalProcessOutput> result = framework.getTaskManager().execute(
                         writeSgTask, "Building state graph", subtaskMonitor);
 
-                if (writeSgResult.getOutcome() == Outcome.SUCCESS) {
+                ExternalProcessOutput output = result.getPayload();
+                if (result.getOutcome() == Outcome.SUCCESS) {
                     try {
-                        ByteArrayInputStream in = new ByteArrayInputStream(writeSgResult.getReturnValue().getOutput());
+                        ByteArrayInputStream in = new ByteArrayInputStream(output.getStdout());
                         final Fst fst = new SgImporter().importSG(in);
-                        return Result.success(new WriteSgConversionResult(null, fst));
+                        return Result.success(new WriteSgConversionOutput(output, fst));
                     } catch (DeserialisationException e) {
                         return Result.exception(e);
                     }
                 }
-                if (writeSgResult.getOutcome() == Outcome.CANCEL) {
+                if (result.getOutcome() == Outcome.CANCEL) {
                     return Result.cancelation();
                 }
-                if (writeSgResult.getCause() != null) {
-                    return Result.exception(writeSgResult.getCause());
+                if (result.getCause() != null) {
+                    return Result.exception(result.getCause());
                 } else {
-                    final String errorMessages = new String(writeSgResult.getReturnValue().getErrors());
+                    final String errorMessages = new String(output.getStderr());
                     final Matcher matcher = hugeSgPattern.matcher(errorMessages);
                     if (matcher.find()) {
                         final HugeSgRunnable hugeSgRunnable = new HugeSgRunnable(matcher.group(1));
@@ -133,12 +137,12 @@ public class WriteSgConversionTask implements Task<WriteSgConversionResult> {
                             return Result.cancelation();
                         }
                     } else {
-                        return Result.failure(new WriteSgConversionResult(writeSgResult, null));
+                        return Result.failure(new WriteSgConversionOutput(output, null));
                     }
                 }
             }
         } catch (Throwable e) {
-            return new Result<WriteSgConversionResult>(e);
+            throw new RuntimeException(e);
         }
     }
 

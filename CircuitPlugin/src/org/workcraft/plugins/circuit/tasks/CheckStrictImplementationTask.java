@@ -15,12 +15,14 @@ import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.mpsat.MpsatParameters;
-import org.workcraft.plugins.mpsat.MpsatResultParser;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
+import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
+import org.workcraft.plugins.mpsat.tasks.MpsatOutoutParser;
+import org.workcraft.plugins.mpsat.tasks.MpsatOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
+import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.plugins.stg.interop.StgFormat;
@@ -41,7 +43,7 @@ public class CheckStrictImplementationTask extends MpsatChainTask {
     }
 
     @Override
-    public Result<? extends MpsatChainResult> run(ProgressMonitor<? super MpsatChainResult> monitor) {
+    public Result<? extends MpsatChainOutput> run(ProgressMonitor<? super MpsatChainOutput> monitor) {
         Framework framework = Framework.getInstance();
         WorkspaceEntry we = getWorkspaceEntry();
         String prefix = FileUtils.getTempPrefix(we.getTitle());
@@ -56,24 +58,24 @@ public class CheckStrictImplementationTask extends MpsatChainTask {
             // Load environment STG
             Stg envStg = StgUtils.loadStg(envFile);
             // Make sure that input signals of the circuit are also inputs in the environment STG
-            ArrayList<String> inputSignalNames = ReferenceHelper.getReferenceList(circuit, (Collection) circuit.getInputPorts());
-            ArrayList<String> outputSignalNames = ReferenceHelper.getReferenceList(circuit, (Collection) circuit.getOutputPorts());
+            ArrayList<String> inputSignalNames = ReferenceHelper.getReferenceList(circuit, circuit.getInputPorts());
+            ArrayList<String> outputSignalNames = ReferenceHelper.getReferenceList(circuit, circuit.getOutputPorts());
             StgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
 
             // Write environment STG into a .g file
             File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + stgFileExtension);
-            Result<? extends Object> envExportResult = CircuitStgUtils.exportStg(envStg, envStgFile, directory, monitor);
+            Result<? extends ExportOutput> envExportResult = CircuitStgUtils.exportStg(envStg, envStgFile, directory, monitor);
             if (envExportResult.getOutcome() != Outcome.SUCCESS) {
                 if (envExportResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainResult>(Outcome.CANCEL);
+                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainResult>(Outcome.FAILURE,
-                        new MpsatChainResult(envExportResult, null, null, null, toolchainPreparationSettings));
+                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                        new MpsatChainOutput(envExportResult, null, null, null, toolchainPreparationSettings));
             }
             monitor.progressUpdate(0.20);
 
             // Generate unfolding
-            Result<? extends ExternalProcessResult> punfResult = null;
+            Result<? extends PunfOutput> punfResult = null;
             final TaskManager taskManager = framework.getTaskManager();
             File unfoldingFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + PunfTask.PNML_FILE_EXTENSION);
             PunfTask punfTask = new PunfTask(envStgFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
@@ -82,10 +84,10 @@ public class CheckStrictImplementationTask extends MpsatChainTask {
 
             if (punfResult.getOutcome() != Outcome.SUCCESS) {
                 if (punfResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainResult>(Outcome.CANCEL);
+                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainResult>(Outcome.FAILURE,
-                        new MpsatChainResult(envExportResult, null, punfResult, null, toolchainPreparationSettings));
+                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                        new MpsatChainOutput(envExportResult, null, punfResult, null, toolchainPreparationSettings));
             }
             monitor.progressUpdate(0.50);
 
@@ -106,33 +108,33 @@ public class CheckStrictImplementationTask extends MpsatChainTask {
             MpsatTask mpsatTask = new MpsatTask(mpsatSettings.getMpsatArguments(directory),
                     unfoldingFile, directory, envStgFile);
             SubtaskMonitor<Object> mpsatMonitor = new SubtaskMonitor<>(monitor);
-            Result<? extends ExternalProcessResult>  mpsatResult = taskManager.execute(
+            Result<? extends MpsatOutput>  mpsatResult = taskManager.execute(
                     mpsatTask, "Running strict implementation check [MPSat]", mpsatMonitor);
 
             if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
                 if (mpsatResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainResult>(Outcome.CANCEL);
+                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainResult>(Outcome.FAILURE,
-                        new MpsatChainResult(envExportResult, null, punfResult, mpsatResult, mpsatSettings));
+                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                        new MpsatChainOutput(envExportResult, null, punfResult, mpsatResult, mpsatSettings));
             }
             monitor.progressUpdate(0.80);
 
-            MpsatResultParser mpsatParser = new MpsatResultParser(mpsatResult.getReturnValue());
+            MpsatOutoutParser mpsatParser = new MpsatOutoutParser(mpsatResult.getPayload());
             if (!mpsatParser.getSolutions().isEmpty()) {
-                return new Result<MpsatChainResult>(Outcome.SUCCESS,
-                        new MpsatChainResult(envExportResult, null, punfResult, mpsatResult, mpsatSettings,
+                return new Result<MpsatChainOutput>(Outcome.SUCCESS,
+                        new MpsatChainOutput(envExportResult, null, punfResult, mpsatResult, mpsatSettings,
                                 "Circuit does not strictly implement the environment after the following trace(s):"));
             }
             monitor.progressUpdate(1.00);
 
             // Success
-            return new Result<MpsatChainResult>(Outcome.SUCCESS,
-                    new MpsatChainResult(envExportResult, null, punfResult, mpsatResult, mpsatSettings,
+            return new Result<MpsatChainOutput>(Outcome.SUCCESS,
+                    new MpsatChainOutput(envExportResult, null, punfResult, mpsatResult, mpsatSettings,
                             "The circuit strictly implements its environment."));
 
         } catch (Throwable e) {
-            return new Result<MpsatChainResult>(e);
+            return new Result<MpsatChainOutput>(e);
         } finally {
             FileUtils.deleteOnExitRecursively(directory);
         }

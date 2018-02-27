@@ -1,6 +1,5 @@
 package org.workcraft.plugins.fsm.commands;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -52,18 +51,18 @@ public class FsmDeadlockVerificationCommand extends AbstractVerificationCommand 
             deadlockStates.removeAll(finalDeadlockStates);
             String message = "The model has a deadlock.";
             if (!deadlockStates.isEmpty()) {
-                String stateStr = ReferenceHelper.getNodesAsString(fsm, (Collection) deadlockStates, 50);
+                String stateStr = ReferenceHelper.getNodesAsString(fsm, deadlockStates, 50);
                 message += "\n\nNon-final deadlock states: \n" + stateStr;
             }
             if (!finalDeadlockStates.isEmpty()) {
-                String stateStr = ReferenceHelper.getNodesAsString(fsm, (Collection) finalDeadlockStates, 50);
+                String stateStr = ReferenceHelper.getNodesAsString(fsm, finalDeadlockStates, 50);
                 message += "\n\nFinal deadlock states: \n" + stateStr;
             }
             message += "\n\nSelect deadlock states?\n";
             if (DialogUtils.showConfirmInfo(message, TITLE, true)) {
                 VisualFsm visualFsm = WorkspaceUtils.getAs(we, VisualFsm.class);
                 mainWindow.getToolbox(we).selectToolInstance(SelectionTool.class);
-                SelectionHelper.selectByReferencedComponents(visualFsm, (HashSet) deadlockStates);
+                SelectionHelper.selectByReferencedComponents(visualFsm, deadlockStates);
             }
         }
         return deadlockStates.isEmpty();

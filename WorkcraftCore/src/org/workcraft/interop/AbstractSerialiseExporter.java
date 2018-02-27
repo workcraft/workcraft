@@ -10,12 +10,8 @@ import org.workcraft.serialisation.ModelSerialiser;
 public abstract class AbstractSerialiseExporter implements Exporter {
 
     @Override
-    public int getCompatibility(Model model) {
-        if (getSerialiser().isApplicableTo(model)) {
-            return Exporter.BEST_COMPATIBILITY;
-        } else {
-            return Exporter.NOT_COMPATIBLE;
-        }
+    public boolean isCompatible(Model model) {
+        return getSerialiser().isApplicableTo(model);
     }
 
     @Override

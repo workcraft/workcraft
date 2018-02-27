@@ -1,14 +1,14 @@
-package org.workcraft.plugins.mpsat;
+package org.workcraft.plugins.mpsat.tasks;
 
 import java.io.UnsupportedEncodingException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.workcraft.Trace;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.util.Pair;
 
-public class PunfResultParser {
+public class PunfOutputParser {
 
     public enum Cause {
         INCONSISTENT("inconsistent"),
@@ -48,10 +48,10 @@ public class PunfResultParser {
             "Error: the net contains (.*) transition\\(s\\) with empty preset: (.*)",
             Pattern.UNIX_LINES);
 
-    public PunfResultParser(ExternalProcessResult result) {
+    public PunfOutputParser(PunfOutput result) {
         String punfOutput;
         try {
-            punfOutput = new String(result.getErrors(), "ISO-8859-1"); // iso-latin-1
+            punfOutput = new String(result.getStderr(), "ISO-8859-1"); // iso-latin-1
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }

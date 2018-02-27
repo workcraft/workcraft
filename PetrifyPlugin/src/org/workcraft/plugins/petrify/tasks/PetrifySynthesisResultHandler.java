@@ -36,7 +36,7 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler<PetrifySynthesisResult, WorkspaceEntry> {
+public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler<PetrifySynthesisOutput, WorkspaceEntry> {
 
     private static final Pattern patternAddingStateSignal = Pattern.compile(
             "Adding state signal: (.*)\\R", Pattern.UNIX_LINES);
@@ -59,9 +59,9 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
     }
 
     @Override
-    public WorkspaceEntry handleResult(final Result<? extends PetrifySynthesisResult> result) {
+    public WorkspaceEntry handleResult(final Result<? extends PetrifySynthesisOutput> result) {
         WorkspaceEntry weResult = null;
-        PetrifySynthesisResult petrifyResult = result.getReturnValue();
+        PetrifySynthesisOutput petrifyResult = result.getPayload();
         if (result.getOutcome() == Outcome.SUCCESS) {
             weResult = handleSuccess(petrifyResult);
         } else if (result.getOutcome() == Outcome.FAILURE) {
@@ -70,24 +70,24 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
         return weResult;
     }
 
-    private WorkspaceEntry handleSuccess(PetrifySynthesisResult petrifyResult) {
-        String log = petrifyResult.getLog();
+    private WorkspaceEntry handleSuccess(PetrifySynthesisOutput petrifyOutput) {
+        String log = petrifyOutput.getLog();
         if ((log != null) && !log.isEmpty()) {
             LogUtils.logInfo("Petrify synthesis log:");
             System.out.println(log);
         }
 
-        handleStgSynthesisResult(petrifyResult);
+        handleStgSynthesisResult(petrifyOutput);
 
-        String equations = petrifyResult.getEquation();
+        String equations = petrifyOutput.getEquation();
         if ((equations != null) && !equations.isEmpty()) {
             LogUtils.logInfo("Petrify synthesis result in EQN format:");
             System.out.println(equations);
         }
 
-        WorkspaceEntry result = handleVerilogSynthesisResult(petrifyResult);
+        WorkspaceEntry result = handleVerilogSynthesisResult(petrifyOutput);
 
-        String errorMessage = new String(petrifyResult.getStderr());
+        String errorMessage = new String(petrifyOutput.getStderr());
         String signalNames = "";
         Matcher matcher = patternAddingStateSignal.matcher(errorMessage);
         while (matcher.find()) {
@@ -103,7 +103,7 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
         return result;
     }
 
-    private WorkspaceEntry handleStgSynthesisResult(PetrifySynthesisResult petrifyResult) {
+    private WorkspaceEntry handleStgSynthesisResult(PetrifySynthesisOutput petrifyResult) {
         WorkspaceEntry dstWe = null;
         String dstOutput = petrifyResult.getStg();
         if (PetrifySettings.getOpenSynthesisStg() && (dstOutput != null) && !dstOutput.isEmpty()) {
@@ -126,7 +126,7 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
         return dstWe;
     }
 
-    private WorkspaceEntry handleVerilogSynthesisResult(PetrifySynthesisResult petrifyResult) {
+    private WorkspaceEntry handleVerilogSynthesisResult(PetrifySynthesisOutput petrifyResult) {
         WorkspaceEntry dstWe = null;
         String verilogOutput = petrifyResult.getVerilog();
         if ((verilogOutput != null) && !verilogOutput.isEmpty()) {
@@ -200,10 +200,10 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
         }
     }
 
-    private void handleFailure(PetrifySynthesisResult petrifyResult) {
+    private void handleFailure(PetrifySynthesisOutput petrifyOutput) {
         String errorMessage = "Error: Petrify synthesis failed.";
-        if (petrifyResult != null) {
-            errorMessage += ERROR_CAUSE_PREFIX + petrifyResult.getStderr();
+        if (petrifyOutput != null) {
+            errorMessage += ERROR_CAUSE_PREFIX + petrifyOutput.getStderr();
         }
         DialogUtils.showError(errorMessage);
     }

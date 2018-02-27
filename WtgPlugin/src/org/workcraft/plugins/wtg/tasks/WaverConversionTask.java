@@ -5,8 +5,11 @@ import java.io.File;
 
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExportOutput;
+import org.workcraft.plugins.shared.tasks.ExportTask;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgImporter;
@@ -17,8 +20,7 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
-import org.workcraft.util.Export;
-import org.workcraft.util.Export.ExportTask;
+import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -42,9 +44,10 @@ public class WaverConversionTask implements Task<WaverConversionResult> {
             // Common variables
             monitor.progressUpdate(0.05);
             Wtg wtg = WorkspaceUtils.getAs(we, Wtg.class);
-            Exporter wtgExporter = Export.chooseBestExporter(framework.getPluginManager(), wtg, WtgFormat.getInstance());
+            WtgFormat format = WtgFormat.getInstance();
+            Exporter wtgExporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), wtg, format);
             if (wtgExporter == null) {
-                throw new RuntimeException("Exporter not available: model class " + wtg.getClass().getName() + " to format STG.");
+                throw new NoExporterException(wtg, format);
             }
             SubtaskMonitor<Object> subtaskMonitor = new SubtaskMonitor<>(monitor);
             monitor.progressUpdate(0.10);
@@ -53,7 +56,7 @@ public class WaverConversionTask implements Task<WaverConversionResult> {
             File wtgFile = FileUtils.createTempFile("wtg-", ".g");
             wtgFile.deleteOnExit();
             ExportTask wtgExportTask = new ExportTask(wtgExporter, wtg, wtgFile.getAbsolutePath());
-            Result<? extends Object> wtgExportResult = framework.getTaskManager().execute(
+            Result<? extends ExportOutput> wtgExportResult = framework.getTaskManager().execute(
                     wtgExportTask, "Exporting .wtg", subtaskMonitor);
 
             if (wtgExportResult.getOutcome() != Outcome.SUCCESS) {
@@ -66,12 +69,12 @@ public class WaverConversionTask implements Task<WaverConversionResult> {
 
             // Generate STG
             WaverTask waverTask = new WaverTask(wtgFile, null, null);
-            Result<? extends ExternalProcessResult> waverResult = framework.getTaskManager().execute(
+            Result<? extends ExternalProcessOutput> waverResult = framework.getTaskManager().execute(
                     waverTask, "Building state graph", subtaskMonitor);
 
             if (waverResult.getOutcome() == Outcome.SUCCESS) {
                 try {
-                    ByteArrayInputStream in = new ByteArrayInputStream(waverResult.getReturnValue().getOutput());
+                    ByteArrayInputStream in = new ByteArrayInputStream(waverResult.getPayload().getStdout());
                     final StgModel stg = new StgImporter().importStg(in);
                     return Result.success(new WaverConversionResult(null, (Stg) stg));
                 } catch (DeserialisationException e) {

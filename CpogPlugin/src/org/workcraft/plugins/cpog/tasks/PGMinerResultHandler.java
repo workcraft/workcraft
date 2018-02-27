@@ -14,7 +14,7 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.cpog.CpogDescriptor;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.tools.CpogSelectionTool;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.BasicProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -22,7 +22,7 @@ import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class PGMinerResultHandler extends BasicProgressMonitor<ExternalProcessResult> {
+public class PGMinerResultHandler extends BasicProgressMonitor<ExternalProcessOutput> {
 
     private VisualCpog visualCpog;
     private final WorkspaceEntry we;
@@ -36,7 +36,7 @@ public class PGMinerResultHandler extends BasicProgressMonitor<ExternalProcessRe
         this.weResult = null;
     }
 
-    public void finished(final Result<? extends ExternalProcessResult> result) {
+    public void finished(final Result<? extends ExternalProcessOutput> result) {
         super.finished(result);
         try {
             SwingUtilities.invokeAndWait(new Runnable() {
@@ -67,7 +67,7 @@ public class PGMinerResultHandler extends BasicProgressMonitor<ExternalProcessRe
                                 e.printStackTrace();
                             }
                         }
-                        final String[] output = new String(result.getReturnValue().getOutput()).split("\n");
+                        final String[] output = new String(result.getPayload().getStdout()).split("\n");
 
                         we.captureMemento();
                         try {

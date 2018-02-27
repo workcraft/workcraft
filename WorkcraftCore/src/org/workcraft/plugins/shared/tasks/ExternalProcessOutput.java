@@ -1,35 +1,36 @@
 package org.workcraft.plugins.shared.tasks;
 
-import java.util.HashMap;
+import java.util.Collections;
 import java.util.Map;
 
-public class ExternalProcessResult {
-    private final byte[] output;
-    private final byte[] errors;
+public class ExternalProcessOutput {
+
     private final int returnCode;
+    private final byte[] stdout;
+    private final byte[] stderr;
     private final Map<String, byte[]> fileDataMap;
 
-    public ExternalProcessResult(int returnCode, byte[] output, byte[] errors) {
-        this(returnCode, output, errors, new HashMap<String, byte[]>());
+    public ExternalProcessOutput(int returnCode, byte[] stdout, byte[] stderr) {
+        this(returnCode, stdout, stderr, Collections.emptyMap());
     }
 
-    public ExternalProcessResult(int returnCode, byte[] output, byte[] errors, Map<String, byte[]> fileDataMap) {
-        this.output = output;
-        this.errors = errors;
+    public ExternalProcessOutput(int returnCode, byte[] stdout, byte[] stderr, Map<String, byte[]> fileDataMap) {
         this.returnCode = returnCode;
+        this.stdout = stdout;
+        this.stderr = stderr;
         this.fileDataMap = fileDataMap;
-    }
-
-    public byte[] getOutput() {
-        return output;
-    }
-
-    public byte[] getErrors() {
-        return errors;
     }
 
     public int getReturnCode() {
         return returnCode;
+    }
+
+    public byte[] getStdout() {
+        return stdout;
+    }
+
+    public byte[] getStderr() {
+        return stderr;
     }
 
     public byte[] getFileData(String name) {
@@ -41,7 +42,7 @@ public class ExternalProcessResult {
     }
 
     public String getErrorsHeadAndTail(int firstCount, int lastCount) {
-        return getHeadAndTail(new String(getErrors()), firstCount, lastCount);
+        return getHeadAndTail(new String(getStderr()), firstCount, lastCount);
     }
 
     private String getHeadAndTail(String text, int firstCount, int lastCount) {

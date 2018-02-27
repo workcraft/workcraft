@@ -331,7 +331,7 @@ public class MainMenu extends JMenuBar {
         boolean hasVisualModelExporter = false;
         for (PluginInfo<? extends Exporter> info : plugins) {
             Exporter exporter = info.getSingleton();
-            if (exporter.getCompatibility(model) > Exporter.NOT_COMPATIBLE) {
+            if (exporter.isCompatible(model)) {
                 if (!hasVisualModelExporter) {
                     addExportSeparator("Visual model");
                 }
@@ -343,7 +343,7 @@ public class MainMenu extends JMenuBar {
         boolean hasMathModelExporter = false;
         for (PluginInfo<? extends Exporter> info : plugins) {
             Exporter exporter = info.getSingleton();
-            if (exporter.getCompatibility(model.getMathModel()) > Exporter.NOT_COMPATIBLE) {
+            if (exporter.isCompatible(model.getMathModel())) {
                 if (!hasMathModelExporter) {
                     addExportSeparator("Math model");
                 }

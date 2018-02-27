@@ -60,29 +60,28 @@ public class ErrorWindow extends JPanel implements ComponentListener {
         }
 
         public void puts(String s) {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    Container component = getParent().getParent();
-                    Container parent = component.getParent();
-                    if (parent instanceof JTabbedPane) {
-                        JTabbedPane tab = (JTabbedPane) parent;
-                        for (int i = 0; i < tab.getTabCount(); i++) {
-                            if (tab.getComponentAt(i) != component) continue;
-
-                            Component tabComponent = tab.getTabComponentAt(i);
-                            if (tabComponent.getForeground().equals(Color.RED)) continue;
-
-                            colorBack = tabComponent.getForeground();
-                            tabComponent.setForeground(Color.RED);
-                            tab.removeChangeListener(ErrorStreamView.this);
-                            tab.addChangeListener(ErrorStreamView.this);
-                        }
-                    }
-                }
-            });
+            SwingUtilities.invokeLater(() -> highlightTab());
             target.append(s);
             target.setFont(new Font(Font.MONOSPACED, Font.PLAIN, SizeHelper.getMonospacedFontSize()));
+        }
+
+        private void highlightTab() {
+            Container component = getParent().getParent();
+            Container parent = component.getParent();
+            if (parent instanceof JTabbedPane) {
+                JTabbedPane tabbedPane = (JTabbedPane) parent;
+                for (int i = 0; i < tabbedPane.getTabCount(); i++) {
+                    if (tabbedPane.getComponentAt(i) != component) continue;
+
+                    Component tabComponent = tabbedPane.getTabComponentAt(i);
+                    if (Color.RED.equals(tabComponent.getForeground())) continue;
+
+                    colorBack = tabComponent.getForeground();
+                    tabComponent.setForeground(Color.RED);
+                    tabbedPane.removeChangeListener(this);
+                    tabbedPane.addChangeListener(this);
+                }
+            }
         }
 
         @Override
@@ -113,7 +112,9 @@ public class ErrorWindow extends JPanel implements ComponentListener {
             if (parent instanceof JTabbedPane) {
                 JTabbedPane tab = (JTabbedPane) parent;
                 if (tab.getSelectedComponent() == component) {
-                    tab.getTabComponentAt(tab.getSelectedIndex()).setForeground(colorBack);
+                    int selectedIndex = tab.getSelectedIndex();
+                    Component tabComponent = tab.getTabComponentAt(selectedIndex);
+                    tabComponent.setForeground(colorBack);
                     colorBack = null;
                     tab.removeChangeListener(this);
                 }
@@ -123,9 +124,8 @@ public class ErrorWindow extends JPanel implements ComponentListener {
 
     public void captureStream() {
         if (!streamCaptured) {
-            PrintStream errPrintStream = new PrintStream(new ErrorStreamView(
-                    new ByteArrayOutputStream(), txtStdErr));
-
+            ErrorStreamView streamView = new ErrorStreamView(new ByteArrayOutputStream(), txtStdErr);
+            PrintStream errPrintStream = new PrintStream(streamView);
             systemErr = System.err;
             System.setErr(errPrintStream);
             streamCaptured = true;
@@ -151,10 +151,10 @@ public class ErrorWindow extends JPanel implements ComponentListener {
         if (parent instanceof JTabbedPane) {
             JTabbedPane tab = (JTabbedPane) parent;
             for (int i = 0; i < tab.getComponentCount(); i++) {
-                if (tab.getComponentAt(i) != component) continue;
-
-                tab.setForegroundAt(i, colorBack);
-                colorBack = null;
+                if (tab.getComponentAt(i) == component) {
+                    tab.setForegroundAt(i, colorBack);
+                    colorBack = null;
+                }
             }
         }
     }

@@ -516,7 +516,7 @@ public class CircuitToStgConverter {
         movedComponents.removeAll(unmovedPlaces);
         movedComponents.removeAll(unmovedTransition);
         if (!movedComponents.isEmpty()) {
-            Rectangle2D bb = BoundingBoxHelper.mergeBoundingBoxes((Collection) movedComponents);
+            Rectangle2D bb = BoundingBoxHelper.mergeBoundingBoxes(movedComponents);
             double xPlace = bb.getCenterX() - SCALE_X * 0.5 * unmovedPlaces.size();
             double yPlace = bb.getMinY() - 2.0 * SCALE_Y;
             for (VisualComponent component: unmovedPlaces) {

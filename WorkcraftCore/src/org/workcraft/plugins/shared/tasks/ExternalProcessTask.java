@@ -13,7 +13,7 @@ import org.workcraft.tasks.Task;
 import org.workcraft.util.DataAccumulator;
 import org.workcraft.util.LogUtils;
 
-public class ExternalProcessTask implements Task<ExternalProcessResult>, ExternalProcessListener {
+public class ExternalProcessTask implements Task<ExternalProcessOutput>, ExternalProcessListener {
     private List<String> args;
     private final File workingDir;
     private boolean printStdout;
@@ -22,7 +22,7 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
     private volatile boolean finished;
     private volatile int returnCode;
     private boolean userCancelled = false;
-    private ProgressMonitor<? super ExternalProcessResult> monitor;
+    private ProgressMonitor<? super ExternalProcessOutput> monitor;
 
     private final DataAccumulator stdoutAccum = new DataAccumulator();
     private final DataAccumulator stderrAccum = new DataAccumulator();
@@ -39,7 +39,7 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
     }
 
     @Override
-    public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
+    public Result<? extends ExternalProcessOutput> run(ProgressMonitor<? super ExternalProcessOutput> monitor) {
         this.monitor = monitor;
 
         ExternalProcess process = new ExternalProcess(args.toArray(new String[args.size()]), workingDir);
@@ -75,11 +75,11 @@ public class ExternalProcessTask implements Task<ExternalProcessResult>, Externa
             return Result.cancelation();
         }
 
-        ExternalProcessResult result = new ExternalProcessResult(
+        ExternalProcessOutput output = new ExternalProcessOutput(
                 returnCode, stdoutAccum.getData(), stderrAccum.getData(),
-                Collections.<String, byte[]>emptyMap());
+                Collections.emptyMap());
 
-        return Result.success(result);
+        return Result.success(output);
     }
 
     public static String getCommandLine(List<String> args) {

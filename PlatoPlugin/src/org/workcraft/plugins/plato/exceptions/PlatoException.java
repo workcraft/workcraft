@@ -1,7 +1,7 @@
 package org.workcraft.plugins.plato.exceptions;
 
 import org.workcraft.plugins.plato.PlatoSettings;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.util.DialogUtils;
@@ -10,16 +10,16 @@ import org.workcraft.util.LogUtils;
 @SuppressWarnings("serial")
 public class PlatoException extends Exception {
 
-    private final Result<? extends ExternalProcessResult> result;
+    private final Result<? extends ExternalProcessOutput> result;
 
-    public PlatoException(Result<? extends ExternalProcessResult> result) {
+    public PlatoException(Result<? extends ExternalProcessOutput> result) {
         this.result = result;
     }
 
     public void handleConceptsError() {
         try {
             if (result.getOutcome() == Outcome.FAILURE) {
-                String errors = new String(result.getReturnValue().getErrors());
+                String errors = new String(result.getPayload().getStderr());
                 LogUtils.logStderr(errors);
                 if (errors.contains("<no location info>")) {
                     conceptsCodeNotFound();
@@ -29,7 +29,7 @@ public class PlatoException extends Exception {
                     cannotTranslateConceptsError(errors);
                 }
             } else {
-                String output = new String(result.getReturnValue().getOutput());
+                String output = new String(result.getPayload().getStdout());
                 if (!output.startsWith(".model out")) {
                     if (output.contains("Error.")) {
                         LogUtils.logStderr(output);

@@ -81,10 +81,10 @@ import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.Commands;
 import org.workcraft.util.DataAccumulator;
 import org.workcraft.util.DialogUtils;
-import org.workcraft.util.Export;
+import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.util.Import;
+import org.workcraft.util.ImportUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.XmlUtils;
 import org.workcraft.workspace.Memento;
@@ -812,8 +812,8 @@ public final class Framework {
             } else {
                 try {
                     final PluginManager pm = getPluginManager();
-                    final Importer importer = Import.chooseBestImporter(pm, file);
-                    me = Import.importFromFile(importer, file);
+                    final Importer importer = ImportUtils.chooseBestImporter(pm, file);
+                    me = ImportUtils.importFromFile(importer, file);
                 } catch (IOException e) {
                     throw new DeserialisationException(e);
                 }
@@ -1019,8 +1019,8 @@ public final class Framework {
 
     public ModelEntry importModel(File file) throws DeserialisationException {
         try {
-            final Importer importer = Import.chooseBestImporter(getPluginManager(), file);
-            return Import.importFromFile(importer, file);
+            final Importer importer = ImportUtils.chooseBestImporter(getPluginManager(), file);
+            return ImportUtils.importFromFile(importer, file);
         } catch (IOException e) {
             throw new DeserialisationException(e);
         }
@@ -1040,18 +1040,18 @@ public final class Framework {
 
     private void exportModel(ModelEntry me, File file, String formatName, UUID formatUuid) throws SerialisationException {
         if (me == null) return;
-        // Try to find exporter for visual model first
-        Exporter exporter = Export.chooseBestExporter(getPluginManager(), me.getVisualModel(), formatName, formatUuid);
+        // Try to find exporter for visual model first.
+        Exporter exporter = ExportUtils.chooseBestExporter(getPluginManager(), me.getVisualModel(), formatName, formatUuid);
         if (exporter == null) {
-            // If no exporter found for visual model, then try to find exporter for math model
-            exporter = Export.chooseBestExporter(getPluginManager(), me.getMathModel(), formatName, formatUuid);
+            // If no exporter found for visual model, then try to find exporter for math model.
+            exporter = ExportUtils.chooseBestExporter(getPluginManager(), me.getMathModel(), formatName, formatUuid);
         }
         if (exporter == null) {
             String modelName = me.getMathModel().getDisplayName();
             LogUtils.logError("Cannot find exporter to " + formatName + " for " + modelName + ".");
         } else {
             try {
-                Export.exportToFile(exporter, me.getModel(), file);
+                ExportUtils.exportToFile(exporter, me.getModel(), file);
             } catch (IOException | ModelValidationException e) {
                 throw new SerialisationException(e);
             }

@@ -6,15 +6,15 @@ import java.util.Collections;
 
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.plato.PlatoSettings;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
+import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
-import org.workcraft.tasks.Result.Outcome;
 
-public class PlatoTask implements Task<ExternalProcessResult> {
+public class PlatoTask implements Task<ExternalProcessOutput> {
 
     private final File inputFile;
     private final Object[] includeList;
@@ -36,24 +36,21 @@ public class PlatoTask implements Task<ExternalProcessResult> {
     }
 
     @Override
-    public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
+    public Result<? extends ExternalProcessOutput> run(ProgressMonitor<? super ExternalProcessOutput> monitor) {
         try {
             ArrayList<String> command = buildCommand();
 
             ExternalProcessTask task = new ExternalProcessTask(command, new File("."));
             SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
-            Result<? extends ExternalProcessResult> result = task.run(mon);
+            Result<? extends ExternalProcessOutput> result = task.run(mon);
             if (result.getOutcome() != Outcome.SUCCESS) {
                 return result;
             }
-            ExternalProcessResult retVal = result.getReturnValue();
-            ExternalProcessResult finalResult = new ExternalProcessResult(retVal.getReturnCode(), retVal.getOutput(),
-                    retVal.getErrors(), null);
-
-            if (retVal.getReturnCode() == 0) {
-                return Result.success(finalResult);
+            ExternalProcessOutput output = result.getPayload();
+            if (output.getReturnCode() == 0) {
+                return Result.success(output);
             } else {
-                return Result.failure(finalResult);
+                return Result.failure(output);
             }
         } catch (NullPointerException e) {
             // Open window dialog was cancelled, do nothing

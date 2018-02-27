@@ -92,9 +92,9 @@ public class PunfSettings implements Settings {
     public void load(Config config) {
         setCommand(config.getString(keyCommand, defaultCommand));
         setArgs(config.getString(keyArgs, defaultArgs));
-        setUseMciCsc(config.getBoolean(keyUseMciCsc, defaultUseMciCsc));
         setPrintStdout(config.getBoolean(keyPrintStdout, defaultPrintStdout));
         setPrintStderr(config.getBoolean(keyPrintStderr, defaultPrintStderr));
+        setUseMciCsc(config.getBoolean(keyUseMciCsc, defaultUseMciCsc));
     }
 
     @Override

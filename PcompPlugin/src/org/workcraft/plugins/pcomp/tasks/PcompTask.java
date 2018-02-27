@@ -4,15 +4,16 @@ import java.io.File;
 import java.util.ArrayList;
 
 import org.workcraft.plugins.pcomp.PcompSettings;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
+import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.ToolUtils;
 
-public class PcompTask implements Task<ExternalProcessResult> {
+public class PcompTask implements Task<PcompOutput> {
 
     public enum ConversionMode {
         DUMMY,
@@ -22,17 +23,17 @@ public class PcompTask implements Task<ExternalProcessResult> {
 
     private final File[] inputFiles;
     private final File outputFile;
-    private final File placesFile;
+    private final File detailFile;
     private final ConversionMode conversionMode;
     private final boolean useSharedOutputs;
     private final boolean useImprovedComposition;
     private final File directory;
 
-    public PcompTask(File[] inputFiles, File outputFile, File placesFile,
+    public PcompTask(File[] inputFiles, File outputFile, File detailFile,
             ConversionMode conversionMode, boolean useSharedOutputs, boolean useImprovedComposition, File directory) {
         this.inputFiles = inputFiles;
         this.outputFile = outputFile;
-        this.placesFile = placesFile;
+        this.detailFile = detailFile;
         this.conversionMode = conversionMode;
         this.useSharedOutputs = useSharedOutputs;
         this.useImprovedComposition = useImprovedComposition;
@@ -40,7 +41,7 @@ public class PcompTask implements Task<ExternalProcessResult> {
     }
 
     @Override
-    public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
+    public Result<? extends PcompOutput> run(ProgressMonitor<? super PcompOutput> monitor) {
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
@@ -75,9 +76,9 @@ public class PcompTask implements Task<ExternalProcessResult> {
             command.add("-f" + outputFile.getAbsolutePath());
         }
 
-        // List of places output file
-        if (placesFile != null) {
-            command.add("-l" + placesFile.getAbsolutePath());
+        // Composition details output file
+        if (detailFile != null) {
+            command.add("-l" + detailFile.getAbsolutePath());
         }
 
         // STG input files
@@ -87,19 +88,23 @@ public class PcompTask implements Task<ExternalProcessResult> {
             }
         }
 
-        ExternalProcessTask task = new ExternalProcessTask(command, directory, false, true);
-        Result<? extends ExternalProcessResult> result = task.run(monitor);
-        if (result.getOutcome() != Outcome.SUCCESS) {
-            return result;
-        }
+        boolean printStdout = PcompSettings.getPrintStdout();
+        boolean printStderr = PcompSettings.getPrintStderr();
+        ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
+        SubtaskMonitor<? super ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
+        Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
 
-        ExternalProcessResult returnValue = result.getReturnValue();
-        int returnCode = returnValue.getReturnCode();
-        if ((returnCode == 0) || (returnCode == 1)) {
-            return Result.success(returnValue);
+        if (result.getOutcome() == Outcome.CANCEL) {
+            return Result.cancelation();
         } else {
-            return Result.failure(returnValue);
+            int returnCode = result.getPayload().getReturnCode();
+            PcompOutput output = new PcompOutput(result.getPayload(), inputFiles, outputFile, detailFile);
+            if ((result.getOutcome() == Outcome.SUCCESS) && ((returnCode == 0) || (returnCode == 1))) {
+                return Result.success(output);
+            } else {
+                return Result.failure(output);
+            }
         }
-
     }
+
 }

@@ -27,7 +27,7 @@ import org.workcraft.plugins.plato.commands.PlatoFstConversionCommand;
 import org.workcraft.plugins.plato.commands.PlatoStgConversionCommand;
 import org.workcraft.plugins.plato.exceptions.PlatoException;
 import org.workcraft.plugins.plato.layout.ConceptsLayout;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.plugins.stg.interop.StgImporter;
@@ -35,18 +35,18 @@ import org.workcraft.tasks.BasicProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.TaskManager;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.Import;
+import org.workcraft.util.ImportUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessResult> {
+public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessOutput> {
 
     private final class ProcessPlatoResult implements Runnable {
-        private final Result<? extends ExternalProcessResult> result;
+        private final Result<? extends ExternalProcessOutput> result;
 
-        private ProcessPlatoResult(Result<? extends ExternalProcessResult> result) {
+        private ProcessPlatoResult(Result<? extends ExternalProcessOutput> result) {
             this.result = result;
         }
 
@@ -62,7 +62,7 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessResu
                         return;
                     }
                 } else {
-                    String output = new String(result.getReturnValue().getOutput());
+                    String output = new String(result.getPayload().getStdout());
                     if (result.getOutcome() == Outcome.SUCCESS) {
                         final Framework framework = Framework.getInstance();
                         final MainWindow mainWindow = framework.getMainWindow();
@@ -120,7 +120,7 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessResu
         this(sender, null, null, false);
     }
 
-    public void finished(final Result<? extends ExternalProcessResult> result) {
+    public void finished(final Result<? extends ExternalProcessOutput> result) {
         super.finished(result);
         try {
             SwingUtilities.invokeAndWait(new ProcessPlatoResult(result));
@@ -152,7 +152,7 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessResu
     }
 
     private void addStg(String output, Framework framework, GraphEditorPanel editor, String[] invariants) throws PlatoException, IOException, DeserialisationException {
-        ModelEntry me = Import.importFromByteArray(new StgImporter(), output.getBytes());
+        ModelEntry me = ImportUtils.importFromByteArray(new StgImporter(), output.getBytes());
         MathModel mathModel = me.getMathModel();
         StgDescriptor stgModel = new StgDescriptor();
         VisualModelDescriptor v = stgModel.getVisualModelDescriptor();
@@ -172,7 +172,7 @@ public class PlatoResultHandler extends BasicProgressMonitor<ExternalProcessResu
     }
 
     private void addFst(String output, Framework framework, GraphEditorPanel editor) throws PlatoException, IOException, DeserialisationException {
-        ModelEntry me = Import.importFromByteArray(new org.workcraft.plugins.fst.interop.SgImporter(), output.getBytes());
+        ModelEntry me = ImportUtils.importFromByteArray(new org.workcraft.plugins.fst.interop.SgImporter(), output.getBytes());
         MathModel mathModel = me.getMathModel();
         FstDescriptor fstModel = new FstDescriptor();
         VisualModelDescriptor v = fstModel.getVisualModelDescriptor();

@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import org.workcraft.interop.ExternalProcessListener;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.plugins.wtg.WaverSettings;
 import org.workcraft.tasks.ProgressMonitor;
@@ -15,12 +15,12 @@ import org.workcraft.tasks.Task;
 import org.workcraft.util.DataAccumulator;
 import org.workcraft.util.ToolUtils;
 
-public class WaverTask implements Task<ExternalProcessResult>, ExternalProcessListener {
+public class WaverTask implements Task<ExternalProcessOutput>, ExternalProcessListener {
     private final File inputFile;
     private final File outputFile;
     private final File workingDirectory;
 
-    private ProgressMonitor<? super ExternalProcessResult> monitor;
+    private ProgressMonitor<? super ExternalProcessOutput> monitor;
 
     private final DataAccumulator stdoutAccum = new DataAccumulator();
     private final DataAccumulator stderrAccum = new DataAccumulator();
@@ -32,7 +32,7 @@ public class WaverTask implements Task<ExternalProcessResult>, ExternalProcessLi
     }
 
     @Override
-    public Result<? extends ExternalProcessResult> run(ProgressMonitor<? super ExternalProcessResult> monitor) {
+    public Result<? extends ExternalProcessOutput> run(ProgressMonitor<? super ExternalProcessOutput> monitor) {
         this.monitor = monitor;
         ArrayList<String> command = new ArrayList<>();
 
@@ -61,12 +61,12 @@ public class WaverTask implements Task<ExternalProcessResult>, ExternalProcessLi
         boolean printStdout = WaverSettings.getPrintStdout();
         boolean printStderr = WaverSettings.getPrintStderr();
         ExternalProcessTask task = new ExternalProcessTask(command, workingDirectory, printStdout, printStderr);
-        Result<? extends ExternalProcessResult> res = task.run(monitor);
+        Result<? extends ExternalProcessOutput> res = task.run(monitor);
         if (res.getOutcome() != Outcome.SUCCESS) {
             return res;
         }
 
-        ExternalProcessResult retVal = res.getReturnValue();
+        ExternalProcessOutput retVal = res.getPayload();
         if (retVal.getReturnCode() == 0) {
             return Result.success(retVal);
         } else {

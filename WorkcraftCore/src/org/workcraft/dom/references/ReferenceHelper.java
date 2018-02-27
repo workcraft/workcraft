@@ -22,17 +22,17 @@ public class ReferenceHelper {
         return "node";
     }
 
-    public static String getNodesAsString(final Model model, Collection<Node> nodes, int len) {
+    public static String getNodesAsString(final Model model, Collection<? extends Node> nodes, int len) {
         return wrapString(getNodesAsString(model, nodes), len);
     }
 
-    public static String getNodesAsString(final Model model, Collection<Node> nodes) {
+    public static String getNodesAsString(final Model model, Collection<? extends Node> nodes) {
         ArrayList<String> refs = getReferenceList(model, nodes);
         Collections.sort(refs);
         return getReferencesAsString(refs);
     }
 
-    public static ArrayList<String> getReferenceList(final Model model, Collection<Node> nodes) {
+    public static ArrayList<String> getReferenceList(final Model model, Collection<? extends Node> nodes) {
         ArrayList<String> refs = new ArrayList<>();
         for (Node node: nodes) {
             String ref = model.getNodeReference(node);

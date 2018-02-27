@@ -7,9 +7,9 @@ import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.tasks.CheckCircuitTask;
-import org.workcraft.plugins.mpsat.MpsatUtils;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainResult;
+import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
+import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.tasks.Result;
@@ -37,7 +37,7 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
     @Override
     public Boolean execute(WorkspaceEntry we) {
         MpsatChainResultHandler monitor = queueVerification(we);
-        Result<? extends MpsatChainResult> result = null;
+        Result<? extends MpsatChainOutput> result = null;
         if (monitor != null) {
             result = monitor.waitResult();
         }

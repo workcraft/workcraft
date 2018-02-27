@@ -1,6 +1,5 @@
 package org.workcraft.plugins.fsm.commands;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -41,14 +40,14 @@ public class FsmReachabilityVerificationCommand extends AbstractVerificationComm
         if (unreachableStates.isEmpty()) {
             DialogUtils.showInfo("The model does not have unreachable states.", TITLE);
         } else {
-            String refStr = ReferenceHelper.getNodesAsString(fsm, (Collection) unreachableStates, 50);
+            String refStr = ReferenceHelper.getNodesAsString(fsm, unreachableStates, 50);
             String msg = "The model has unreachable state:\n" + refStr + "\n\nSelect unreachable states?\n";
             if (DialogUtils.showConfirmInfo(msg, TITLE, true)) {
                 final Framework framework = Framework.getInstance();
                 final MainWindow mainWindow = framework.getMainWindow();
                 mainWindow.getToolbox(we).selectToolInstance(SelectionTool.class);
                 VisualFsm visualFsm = WorkspaceUtils.getAs(we, VisualFsm.class);
-                SelectionHelper.selectByReferencedComponents(visualFsm, (HashSet) unreachableStates);
+                SelectionHelper.selectByReferencedComponents(visualFsm, unreachableStates);
             }
         }
         return unreachableStates.isEmpty();

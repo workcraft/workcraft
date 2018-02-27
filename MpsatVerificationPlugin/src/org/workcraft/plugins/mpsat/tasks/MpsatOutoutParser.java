@@ -1,4 +1,4 @@
-package org.workcraft.plugins.mpsat;
+package org.workcraft.plugins.mpsat.tasks;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Collections;
@@ -8,9 +8,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.workcraft.Trace;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 
-public class MpsatResultParser {
+public class MpsatOutoutParser {
 
     private final LinkedList<MpsatSolution> solutions;
 
@@ -44,10 +43,10 @@ public class MpsatResultParser {
             "triggers: .+\\R",
             Pattern.UNIX_LINES);
 
-    public MpsatResultParser(ExternalProcessResult result) {
+    public MpsatOutoutParser(MpsatOutput mpsatResult) {
         String mpsatOutput;
         try {
-            mpsatOutput = new String(result.getOutput(), "ISO-8859-1"); // iso-latin-1
+            mpsatOutput = new String(mpsatResult.getStdout(), "ISO-8859-1"); // iso-latin-1
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }

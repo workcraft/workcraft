@@ -30,12 +30,8 @@ public class PdfExporter implements Exporter {
     }
 
     @Override
-    public int getCompatibility(Model model) {
-        if (model instanceof VisualModel) {
-            return Exporter.GENERAL_COMPATIBILITY;
-        } else {
-            return Exporter.NOT_COMPATIBLE;
-        }
+    public boolean isCompatible(Model model) {
+        return  model instanceof VisualModel;
     }
 
     @Override

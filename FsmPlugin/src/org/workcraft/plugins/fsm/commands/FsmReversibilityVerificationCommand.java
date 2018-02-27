@@ -1,6 +1,5 @@
 package org.workcraft.plugins.fsm.commands;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -41,14 +40,14 @@ public class FsmReversibilityVerificationCommand extends AbstractVerificationCom
         if (irreversibleStates.isEmpty()) {
             DialogUtils.showInfo("The model is reversible.", TITLE);
         } else {
-            String refStr = ReferenceHelper.getNodesAsString(fsm, (Collection) irreversibleStates, 50);
+            String refStr = ReferenceHelper.getNodesAsString(fsm, irreversibleStates, 50);
             String msg = "The model has irreversible states:\n" + refStr + "\n\nSelect irreversible states?\n";
             if (DialogUtils.showConfirmInfo(msg, TITLE, true)) {
                 final Framework framework = Framework.getInstance();
                 final MainWindow mainWindow = framework.getMainWindow();
                 mainWindow.getToolbox(we).selectToolInstance(SelectionTool.class);
                 VisualFsm visualFsm = WorkspaceUtils.getAs(we, VisualFsm.class);
-                SelectionHelper.selectByReferencedComponents(visualFsm, (HashSet) irreversibleStates);
+                SelectionHelper.selectByReferencedComponents(visualFsm, irreversibleStates);
             }
         }
         return irreversibleStates.isEmpty();

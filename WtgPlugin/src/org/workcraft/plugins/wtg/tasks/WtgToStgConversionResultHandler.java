@@ -3,7 +3,7 @@ package org.workcraft.plugins.wtg.tasks;
 import org.workcraft.Framework;
 import org.workcraft.gui.ExceptionDialog;
 import org.workcraft.gui.workspace.Path;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgDescriptor;
 import org.workcraft.tasks.AbstractExtendedResultHandler;
@@ -25,7 +25,7 @@ public class WtgToStgConversionResultHandler extends AbstractExtendedResultHandl
     public WorkspaceEntry handleResult(final Result<? extends WaverConversionResult> result) {
         WorkspaceEntry weResult = null;
         if (result.getOutcome() == Outcome.SUCCESS) {
-            final Stg model = result.getReturnValue().getConversionResult();
+            final Stg model = result.getPayload().getConversionResult();
             final ModelEntry me = new ModelEntry(new StgDescriptor(), model);
             final Path<String> path = task.getWorkspaceEntry().getWorkspacePath();
             final Framework framework = Framework.getInstance();
@@ -35,9 +35,9 @@ public class WtgToStgConversionResultHandler extends AbstractExtendedResultHandl
                 ExceptionDialog.show(result.getCause());
             } else {
                 String message = "Unexpected Waver error";
-                if (result.getReturnValue() != null) {
-                    final Result<? extends ExternalProcessResult> waverResult = result.getReturnValue().getResult();
-                    message = "Waver output:\n" + waverResult.getReturnValue().getErrorsHeadAndTail();
+                if (result.getPayload() != null) {
+                    final Result<? extends ExternalProcessOutput> waverResult = result.getPayload().getResult();
+                    message = "Waver output:\n" + waverResult.getPayload().getErrorsHeadAndTail();
                 }
                 DialogUtils.showWarning(message);
             }

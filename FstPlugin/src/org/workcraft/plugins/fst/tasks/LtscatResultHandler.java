@@ -37,7 +37,7 @@ public class LtscatResultHandler extends AbstractResultHandler<LtscatResult>  {
             int windows = 1;
 
             // Print stdout of Ltscat
-            System.out.println(result.getReturnValue().getStdout());
+            System.out.println(result.getPayload().getStdout());
 
             // Import windows extracted
             String windowFileName = getWindowName(windows++);
@@ -75,7 +75,7 @@ public class LtscatResultHandler extends AbstractResultHandler<LtscatResult>  {
             taskManager.queue(shuttersTask, "Shutters - process windows", shuttersResult);
 
         } else if (result.getOutcome() == Outcome.FAILURE) {
-            String errorMessage = result.getReturnValue().getError();
+            String errorMessage = result.getPayload().getError();
             Framework framework = Framework.getInstance();
             JOptionPane.showMessageDialog(framework.getMainWindow(), errorMessage, "Ltscat error", JOptionPane.ERROR_MESSAGE);
         }

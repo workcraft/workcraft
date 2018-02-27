@@ -10,30 +10,30 @@ public class Result<T> {
 
     private final Outcome outcome;
     private final Throwable cause;
-    private final T result;
+    private final T payload;
 
     public Result(Outcome outcome) {
         this.outcome = outcome;
         this.cause = null;
-        this.result = null;
+        this.payload = null;
     }
 
-    public Result(Outcome outcome, T result) {
+    public Result(Outcome outcome, T payload) {
         this.outcome = outcome;
         this.cause = null;
-        this.result = result;
+        this.payload = payload;
     }
 
     public Result(Throwable exception) {
         this.outcome = Outcome.FAILURE;
         this.cause = exception;
-        this.result = null;
+        this.payload = null;
     }
 
-    public Result(T result) {
+    public Result(T payload) {
         this.outcome = Outcome.SUCCESS;
         this.cause = null;
-        this.result = result;
+        this.payload = payload;
     }
 
     public Outcome getOutcome() {
@@ -44,24 +44,28 @@ public class Result<T> {
         return cause;
     }
 
-    public T getReturnValue() {
-        return result;
+    public T getPayload() {
+        return payload;
     }
 
-    public static <R> Result<R> exception(Throwable e) {
-        return new Result<R>(e);
+    public static <T> Result<T> exception(Throwable e) {
+        return new Result<T>(e);
     }
 
-    public static <R> Result<R> cancelation() {
-        return new Result<R>(Outcome.CANCEL);
+    public static <T> Result<T> cancelation() {
+        return new Result<T>(Outcome.CANCEL);
     }
 
-    public static <R> Result<R> success(R res) {
-        return new Result<R>(res);
+    public static <T> Result<T> success(T payload) {
+        return new Result<T>(Outcome.SUCCESS, payload);
     }
 
-    public static <R> Result<R> failure(R res) {
-        return new Result<R>(Outcome.FAILURE, res);
+    public static <T> Result<T> failure() {
+        return new Result<T>(Outcome.FAILURE);
+    }
+
+    public static <T> Result<T> failure(T payload) {
+        return new Result<T>(Outcome.FAILURE, payload);
     }
 
 }

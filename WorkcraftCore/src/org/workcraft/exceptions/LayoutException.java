@@ -2,6 +2,7 @@ package org.workcraft.exceptions;
 
 @SuppressWarnings("serial")
 public class LayoutException extends RuntimeException {
+
     public LayoutException() {
         super();
     }
@@ -17,4 +18,5 @@ public class LayoutException extends RuntimeException {
     public LayoutException(Throwable cause) {
         super(cause);
     }
+
 }

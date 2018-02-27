@@ -173,7 +173,7 @@ public class SerialiserUtils {
         writeSignalsHeader(out, stg.getSignalReferences(Type.OUTPUT), KEYWORD_OUTPUTS);
         Set<String> pageRefs = getPageReferences(stg);
         if (!pageRefs.isEmpty()) {
-            out.write("# Pages added as dummies: " + ReferenceHelper.getReferencesAsString((Collection) pageRefs) + "\n");
+            out.write("# Pages added as dummies: " + ReferenceHelper.getReferencesAsString(pageRefs) + "\n");
         }
         Set<String> dummyRefs = stg.getDummyReferences();
         dummyRefs.addAll(pageRefs);

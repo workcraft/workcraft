@@ -18,4 +18,5 @@ public class VisualConnectionCreationException extends Exception {
     public VisualConnectionCreationException(Throwable cause) {
         super(cause);
     }
+
 }

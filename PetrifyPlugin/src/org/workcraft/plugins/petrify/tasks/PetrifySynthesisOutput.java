@@ -1,20 +1,20 @@
 package org.workcraft.plugins.petrify.tasks;
 
-public class PetrifySynthesisResult {
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
+
+public class PetrifySynthesisOutput extends ExternalProcessOutput {
+
     private final String equations;
     private final String verilog;
     private final String log;
     private final String stg;
-    private final String stdout;
-    private final String stderr;
 
-    public PetrifySynthesisResult(String log, String equations, String verilog, String stg, String stdout, String stderr) {
+    public PetrifySynthesisOutput(ExternalProcessOutput output, String log, String equations, String verilog, String stg) {
+        super(output.getReturnCode(), output.getStdout(), output.getStderr());
         this.log = log;
         this.equations = equations;
         this.verilog = verilog;
         this.stg = stg;
-        this.stdout = stdout;
-        this.stderr = stderr;
     }
 
     public String getLog() {
@@ -33,11 +33,4 @@ public class PetrifySynthesisResult {
         return this.stg;
     }
 
-    public String getStdout() {
-        return this.stdout;
-    }
-
-    public String getStderr() {
-        return this.stderr;
-    }
 }

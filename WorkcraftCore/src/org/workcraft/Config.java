@@ -172,13 +172,11 @@ public class Config {
     }
 
     public void load(File file) {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        Document xmldoc;
-        DocumentBuilder db;
-
+        Document doc;
         try {
-            db = dbf.newDocumentBuilder();
-            xmldoc = db.parse(file);
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            doc = db.parse(file);
         } catch (ParserConfigurationException | SAXException e) {
             e.printStackTrace();
             return;
@@ -186,25 +184,25 @@ public class Config {
             return;
         }
 
-        Element xmlroot = xmldoc.getDocumentElement();
-        NodeList nl = xmlroot.getChildNodes(), nl2;
-        for (int i = 0; i < nl.getLength(); i++) {
-            if (!(nl.item(i) instanceof Element)) {
+        Element root = doc.getDocumentElement();
+        NodeList nodes = root.getChildNodes();
+        for (int i = 0; i < nodes.getLength(); i++) {
+            if (!(nodes.item(i) instanceof Element)) {
                 continue;
             }
-            Element e = (Element) nl.item(i);
+            Element element = (Element) nodes.item(i);
 
-            if (e.getTagName().equals("var")) {
-                set(e.getAttribute("name"), e.getAttribute("value"));
+            if (element.getTagName().equals("var")) {
+                set(element.getAttribute("name"), element.getAttribute("value"));
             } else {
-                if (e.getTagName().equals("group")) {
-                    String name = e.getAttribute("name");
-                    nl2 = e.getChildNodes();
-                    for (int j = 0; j < nl2.getLength(); j++) {
-                        if (!(nl2.item(j) instanceof Element)) {
+                if (element.getTagName().equals("group")) {
+                    String name = element.getAttribute("name");
+                    NodeList groupNodes = element.getChildNodes();
+                    for (int j = 0; j < groupNodes.getLength(); j++) {
+                        if (!(groupNodes.item(j) instanceof Element)) {
                             continue;
                         }
-                        Element e2 = (Element) nl2.item(j);
+                        Element e2 = (Element) groupNodes.item(j);
                         if (e2.getTagName().equals("var")) {
                             set(name + "." + e2.getAttribute("name"), e2.getAttribute("value"));
                         }
@@ -215,45 +213,43 @@ public class Config {
     }
 
     public void save(File file) {
-        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        Document xmldoc;
-        DocumentBuilder db;
-
+        Document doc;
         try {
-            db = dbf.newDocumentBuilder();
-            xmldoc = db.newDocument();
+            DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            doc = db.newDocument();
         } catch (ParserConfigurationException e) {
             e.printStackTrace();
             return;
         }
 
-        Element xmlroot = xmldoc.createElement("workcraft-config"), var, group;
-        xmldoc.appendChild(xmlroot);
+        Element root = doc.createElement("workcraft-config");
+        doc.appendChild(root);
 
-        for (String k : rootGroup.keySet()) {
-            var = xmldoc.createElement("var");
+        for (String k: rootGroup.keySet()) {
+            Element var = doc.createElement("var");
             var.setAttribute("name", k);
             var.setAttribute("value", rootGroup.get(k));
-            xmlroot.appendChild(var);
+            root.appendChild(var);
         }
 
-        for (String k : groups.keySet()) {
-            group = xmldoc.createElement("group");
+        for (String k: groups.keySet()) {
+            Element group = doc.createElement("group");
             group.setAttribute("name", k);
 
             HashMap<String, String> g = groups.get(k);
-            for (String l : g.keySet()) {
-                var = xmldoc.createElement("var");
+            for (String l: g.keySet()) {
+                Element var = doc.createElement("var");
                 var.setAttribute("name", l);
                 var.setAttribute("value", g.get(l));
                 group.appendChild(var);
             }
-            xmlroot.appendChild(group);
+            root.appendChild(group);
         }
 
         try {
-            TransformerFactory tFactory = TransformerFactory.newInstance();
-            Transformer transformer = tFactory.newTransformer();
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
             transformer.setOutputProperty(OutputKeys.INDENT, "yes");
             transformer.setOutputProperty("{http://xml.apache.org/xalan}indent-amount", "2");
 
@@ -263,7 +259,7 @@ public class Config {
             }
             file.createNewFile();
             FileOutputStream fos = new FileOutputStream(file);
-            DOMSource source = new DOMSource(xmldoc);
+            DOMSource source = new DOMSource(doc);
             CharsetEncoder utf8Encoder = Charset.forName("UTF-8").newEncoder();
             StreamResult result = new StreamResult(new OutputStreamWriter(fos, utf8Encoder));
 
@@ -273,4 +269,5 @@ public class Config {
             e.printStackTrace();
         }
     }
+
 }

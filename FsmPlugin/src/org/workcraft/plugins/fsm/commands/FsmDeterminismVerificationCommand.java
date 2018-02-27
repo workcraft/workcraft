@@ -1,6 +1,5 @@
 package org.workcraft.plugins.fsm.commands;
 
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 
@@ -40,14 +39,14 @@ public class FsmDeterminismVerificationCommand extends AbstractVerificationComma
         if (nondeterministicStates.isEmpty()) {
             DialogUtils.showInfo("The model is deterministic.", TITLE);
         } else {
-            String refStr = ReferenceHelper.getNodesAsString(fsm, (Collection) nondeterministicStates, 50);
+            String refStr = ReferenceHelper.getNodesAsString(fsm, nondeterministicStates, 50);
             String msg = "The model has non-deterministic states:\n" + refStr + "\n\nSelect non-deterministic states?\n";
             if (DialogUtils.showConfirmInfo(msg, TITLE, true)) {
                 final Framework framework = Framework.getInstance();
                 final MainWindow mainWindow = framework.getMainWindow();
                 mainWindow.getToolbox(we).selectToolInstance(SelectionTool.class);
                 VisualFsm visualFsm = WorkspaceUtils.getAs(we, VisualFsm.class);
-                SelectionHelper.selectByReferencedComponents(visualFsm, (HashSet) nondeterministicStates);
+                SelectionHelper.selectByReferencedComponents(visualFsm, nondeterministicStates);
             }
         }
         return nondeterministicStates.isEmpty();

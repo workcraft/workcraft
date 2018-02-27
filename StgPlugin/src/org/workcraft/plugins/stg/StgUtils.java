@@ -1,6 +1,8 @@
 package org.workcraft.plugins.stg;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.Collection;
 import java.util.Set;
 
@@ -14,6 +16,7 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 
@@ -26,7 +29,8 @@ public class StgUtils {
     public static final String MUTEX_FILE_SUFFIX = "-mutex";
     public static final String MODIFIED_FILE_SUFFIX = "-mod";
 
-    public static final String PLACES_FILE_NAME = "places.list";
+    public static final String DETAIL_FILE_PREFIX = "detail";
+    public static final String XML_FILE_EXTENSION = ".xml";
 
     private static void replaceNamedTransition(Stg stg, NamedTransition oldTransition, NamedTransition newTransition) {
         for (Node pred: stg.getPreset(oldTransition)) {
@@ -178,6 +182,20 @@ public class StgUtils {
         Set<String> dstInternal = dstStg.getSignalReferences(Type.INTERNAL);
 
         return srcInputs.equals(dstInputs) && srcOutputs.equals(dstOutputs) && srcInternal.equals(dstInternal);
+    }
+
+    public static StgModel importStg(File file) {
+        StgModel result = null;
+        if (file != null) {
+            try {
+                FileInputStream is = new FileInputStream(file);
+                StgImporter importer = new StgImporter();
+                result = importer.importStg(is);
+            } catch (DeserialisationException | FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return result;
     }
 
 }

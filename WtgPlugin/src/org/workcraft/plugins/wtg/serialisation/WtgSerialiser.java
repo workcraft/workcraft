@@ -154,11 +154,13 @@ public class WtgSerialiser implements ModelSerialiser {
         } else if (initialStates.size() > 1) {
             throw new FormatException("More that one initial state");
         } else {
-            writeNodeSet(out, wtg, refs, KEYWORD_INITIAL, (Collection) initialStates);
+            writeNodeSet(out, wtg, refs, KEYWORD_INITIAL, initialStates);
         }
     }
 
-    private void writeNodeSet(PrintWriter out, Wtg wtg, ReferenceProducer refs, String keyword, Collection<Node> nodes) {
+    private void writeNodeSet(PrintWriter out, Wtg wtg, ReferenceProducer refs, String keyword,
+            Collection<? extends Node> nodes) {
+
         if (nodes != null) {
             HashSet<String> nodeNames = new HashSet<>();
             for (Node node: nodes) {
@@ -208,7 +210,7 @@ public class WtgSerialiser implements ModelSerialiser {
             String waveformName = refs.getReference(waveform);
             throw new FormatException("Waveform '" + waveformName + "' has no entry transitions");
         } else {
-            writeNodeSet(out, wtg, refs, KEYWORD_ENTRY, (Collection) entryTransitions);
+            writeNodeSet(out, wtg, refs, KEYWORD_ENTRY, entryTransitions);
         }
     }
 
@@ -239,7 +241,7 @@ public class WtgSerialiser implements ModelSerialiser {
             String waveformName = refs.getReference(waveform);
             throw new FormatException("Waveform '" + waveformName + "' has no exit transitions");
         } else {
-            writeNodeSet(out, wtg, refs, KEYWORD_EXIT, (Collection) exitTransitions);
+            writeNodeSet(out, wtg, refs, KEYWORD_EXIT, exitTransitions);
         }
     }
 

@@ -1,4 +1,4 @@
-package org.workcraft.plugins.mpsat;
+package org.workcraft.plugins.mpsat.tasks;
 
 import org.workcraft.Trace;
 
@@ -6,6 +6,10 @@ public class MpsatSolution {
     private final Trace mainTrace;
     private final Trace branchTrace;
     private String comment;
+
+    public MpsatSolution(MpsatSolution solution) {
+        this(solution.getMainTrace(), solution.getBranchTrace(), solution.getComment());
+    }
 
     public MpsatSolution(Trace mainTrace, Trace branchTrace) {
         this(mainTrace, branchTrace, null);

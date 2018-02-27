@@ -1,9 +1,10 @@
 package org.workcraft.exceptions;
 
+@SuppressWarnings("serial")
 public class InvalidConnectionException extends Exception {
-    private static final long serialVersionUID = 1L;
 
-    public InvalidConnectionException(String msg) {
-        super(msg);
+    public InvalidConnectionException(String message) {
+        super(message);
     }
+
 }

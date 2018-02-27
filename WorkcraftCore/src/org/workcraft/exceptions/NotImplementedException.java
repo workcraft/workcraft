@@ -1,5 +1,6 @@
 package org.workcraft.exceptions;
 
+@SuppressWarnings("serial")
 @Deprecated // To warn users that they should implement the feature
 public class NotImplementedException extends RuntimeException {
 
@@ -10,7 +11,5 @@ public class NotImplementedException extends RuntimeException {
     public NotImplementedException(String message) {
         super(message);
     }
-
-    private static final long serialVersionUID = -6828334836877473788L;
 
 }

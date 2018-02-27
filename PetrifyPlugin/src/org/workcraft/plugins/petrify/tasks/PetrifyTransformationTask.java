@@ -3,7 +3,6 @@ package org.workcraft.plugins.petrify.tasks;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 
 import org.workcraft.Framework;
@@ -11,7 +10,8 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.exceptions.NoExporterException;
+import org.workcraft.interop.Exporter;
 import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.interop.Format;
 import org.workcraft.plugins.fsm.Fsm;
@@ -21,7 +21,9 @@ import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.plugins.petrify.PetrifyUtils;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExportOutput;
+import org.workcraft.plugins.shared.tasks.ExportTask;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
@@ -32,14 +34,13 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.DialogUtils;
-import org.workcraft.util.Export;
-import org.workcraft.util.Export.ExportTask;
+import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.ToolUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class PetrifyTransformationTask implements Task<PetrifyTransformationResult>, ExternalProcessListener {
-    private static final String MESSAGE_EXPORT_FAILED = "Unable to export the model.";
+public class PetrifyTransformationTask implements Task<PetrifyTransformationOutput>, ExternalProcessListener {
+
     private final WorkspaceEntry we;
     String[] args;
 
@@ -53,7 +54,7 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationResu
     }
 
     @Override
-    public Result<? extends PetrifyTransformationResult> run(ProgressMonitor<? super PetrifyTransformationResult> monitor) {
+    public Result<? extends PetrifyTransformationOutput> run(ProgressMonitor<? super PetrifyTransformationOutput> monitor) {
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
@@ -103,7 +104,7 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationResu
                 PetriNetModel petri = (PetriNetModel) model;
                 HashSet<Place> isolatedPlaces = PetriNetUtils.getIsolatedMarkedPlaces(petri);
                 if (!isolatedPlaces.isEmpty()) {
-                    String refStr = ReferenceHelper.getNodesAsString(petri, (Collection) isolatedPlaces, 50);
+                    String refStr = ReferenceHelper.getNodesAsString(petri, isolatedPlaces, 50);
                     String msg = "Petrify does not support isolated marked places.\n\n"
                             + "Problematic places are:\n" + refStr + "\n\n"
                             + "Proceed without these places?";
@@ -123,10 +124,10 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationResu
             boolean printStdout = PetrifySettings.getPrintStdout();
             boolean printStderr = PetrifySettings.getPrintStderr();
             ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
-            SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
-            Result<? extends ExternalProcessResult> res = task.run(mon);
+            SubtaskMonitor<ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
+            Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
 
-            if (res.getOutcome() == Outcome.SUCCESS) {
+            if (result.getOutcome() == Outcome.SUCCESS) {
                 StgModel outStg = null;
                 if (outFile.exists()) {
                     String out = FileUtils.readAllText(outFile);
@@ -137,18 +138,18 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationResu
                         return Result.exception(e);
                     }
                 }
-                PetrifyTransformationResult result = new PetrifyTransformationResult(res, outStg);
-                int returnCode = res.getReturnValue().getReturnCode();
-                String errorMessage = new String(res.getReturnValue().getErrors());
+                ExternalProcessOutput output = result.getPayload();
+                int returnCode = output.getReturnCode();
+                String errorMessage = new String(output.getStderr());
                 if ((returnCode != 0) || (errorMessage.contains(">>> ERROR: Cannot solve CSC.\n"))) {
-                    return Result.failure(result);
+                    return Result.failure(new PetrifyTransformationOutput(output, outStg));
                 }
-                return Result.success(result);
+                return Result.success(new PetrifyTransformationOutput(output, outStg));
             }
-            if (res.getOutcome() == Outcome.CANCEL) {
+            if (result.getOutcome() == Outcome.CANCEL) {
                 return Result.cancelation();
             }
-            return Result.failure(null);
+            return Result.failure();
         } catch (Throwable e) {
             throw new RuntimeException(e);
         } finally {
@@ -172,17 +173,17 @@ public class PetrifyTransformationTask implements Task<PetrifyTransformationResu
             throw new RuntimeException("This tool is not applicable to " + model.getDisplayName() + " model.");
         }
 
-        File modelFile = new File(directory, "original" + extension);
-        try {
-            ExportTask exportTask = Export.createExportTask(model, modelFile, format, framework.getPluginManager());
-            Result<? extends Object> exportResult = framework.getTaskManager().execute(exportTask, "Exporting model");
-            if (exportResult.getOutcome() != Outcome.SUCCESS) {
-                throw new RuntimeException(MESSAGE_EXPORT_FAILED);
-            }
-        } catch (SerialisationException e) {
-            throw new RuntimeException(MESSAGE_EXPORT_FAILED);
+        File file = new File(directory, "original" + extension);
+        Exporter exporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), model, format);
+        if (exporter == null) {
+            throw new NoExporterException(model, format);
         }
-        return modelFile;
+        ExportTask exportTask = new ExportTask(exporter, model, file);
+        Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(exportTask, "Exporting model");
+        if (exportResult.getOutcome() != Outcome.SUCCESS) {
+            throw new RuntimeException("Unable to export the model.");
+        }
+        return file;
     }
 
     @Override

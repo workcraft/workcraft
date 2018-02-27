@@ -9,7 +9,6 @@ import javax.swing.SwingUtilities;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.workspace.Path;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.MutexUtils;
 import org.workcraft.plugins.stg.StgModel;
@@ -21,7 +20,7 @@ import org.workcraft.workspace.Workspace;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class PcompResultHandler extends AbstractResultHandler<ExternalProcessResult> {
+public class PcompResultHandler extends AbstractResultHandler<PcompOutput> {
     private final boolean showInEditor;
     private final File outputFile;
     private final Collection<Mutex> mutexes;
@@ -33,7 +32,7 @@ public class PcompResultHandler extends AbstractResultHandler<ExternalProcessRes
     }
 
     @Override
-    public void handleResult(final Result<? extends ExternalProcessResult> result) {
+    public void handleResult(final Result<? extends PcompOutput> result) {
         try {
             SwingUtilities.invokeAndWait(new Runnable() {
                 @Override
@@ -46,7 +45,7 @@ public class PcompResultHandler extends AbstractResultHandler<ExternalProcessRes
                             message = result.getCause().getMessage();
                             result.getCause().printStackTrace();
                         } else {
-                            message = "Pcomp errors:\n" + result.getReturnValue().getErrorsHeadAndTail();
+                            message = "Pcomp errors:\n" + result.getPayload().getErrorsHeadAndTail();
                         }
                         DialogUtils.showError(message);
                     } else if (result.getOutcome() == Outcome.SUCCESS) {

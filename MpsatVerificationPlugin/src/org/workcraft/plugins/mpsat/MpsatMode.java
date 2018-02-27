@@ -8,6 +8,7 @@ public enum MpsatMode {
     STG_REACHABILITY_CONSISTENCY("-Fs", "STG reachability analysis for consistency", true, true),
     STG_REACHABILITY_OUTPUT_PERSISTENCY("-Fs", "STG reachability analysis for output persistency", true, true),
     STG_REACHABILITY_CONFORMATION("-Fs", "STG reachability analysis for conformation", true, true),
+    STG_REACHABILITY_CONFORMATION_NWAY("-Fs", "STG reachability analysis for N-way conformation", true, true),
     CSC_CONFLICT_DETECTION("-C", "CSC conflict detection", false, true),
     NORMALCY("-N", "Normalcy property checking", false, true),
     RESOLVE_ENCODING_CONFLICTS("-R -$1 -p0 -cl", "Resolve encoding conflicts", false, false),

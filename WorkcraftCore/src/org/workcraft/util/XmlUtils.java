@@ -38,7 +38,7 @@ public class XmlUtils {
         NodeList nl = element.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
             Node n = nl.item(i);
-            if (n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName().equals(tagName)) {
+            if ((n.getNodeType() == Node.ELEMENT_NODE) && tagName.equals(n.getNodeName())) {
                 result.add((Element) n);
             }
         }
@@ -49,7 +49,7 @@ public class XmlUtils {
         NodeList nl = element.getChildNodes();
         for (int i = 0; i < nl.getLength(); i++) {
             Node n = nl.item(i);
-            if (n.getNodeType() == Node.ELEMENT_NODE && n.getNodeName().equals(tagName)) {
+            if ((n.getNodeType() == Node.ELEMENT_NODE) && tagName.equals(n.getNodeName())) {
                 return (Element) n;
             }
         }

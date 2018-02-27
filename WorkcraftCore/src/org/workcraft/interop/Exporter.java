@@ -7,11 +7,7 @@ import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
 
 public interface Exporter {
-    int NOT_COMPATIBLE = 0;
-    int GENERAL_COMPATIBILITY = 1;
-    int BEST_COMPATIBILITY = 10;
-
     Format getFormat();
-    int getCompatibility(Model model);
+    boolean isCompatible(Model model);
     void export(Model model, OutputStream out) throws IOException, ModelValidationException, SerialisationException;
 }

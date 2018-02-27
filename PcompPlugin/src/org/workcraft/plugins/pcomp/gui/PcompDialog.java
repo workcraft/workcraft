@@ -42,7 +42,7 @@ public class PcompDialog extends JDialog {
     private JRadioButton internalize;
     private JRadioButton dummify;
     private JCheckBox sharedOutputs;
-    private JCheckBox savePlaces;
+    private JCheckBox saveDetail;
     private JCheckBox improvedPcomp;
 
     public PcompDialog(Window owner) {
@@ -64,8 +64,8 @@ public class PcompDialog extends JDialog {
         return sharedOutputs.isSelected();
     }
 
-    public boolean isSavePlacesChecked() {
-        return savePlaces.isSelected();
+    public boolean isSaveDetailsChecked() {
+        return saveDetail.isSelected();
     }
 
     public boolean isImprovedPcompChecked() {
@@ -128,7 +128,7 @@ public class PcompDialog extends JDialog {
         outputOptions.add(dummify);
 
         sharedOutputs = new JCheckBox("Allow the STGs to share outputs");
-        savePlaces = new JCheckBox("Save the lists of places in " + ParallelCompositionCommand.PLACES_FILE_NAME);
+        saveDetail = new JCheckBox("Save the composition details in " + ParallelCompositionCommand.DETAIL_FILE_NAME);
         improvedPcomp = new JCheckBox("No computational interference");
 
         JPanel options = new JPanel();
@@ -137,7 +137,7 @@ public class PcompDialog extends JDialog {
         options.add(showInEditor, 0);
         options.add(outputOptions, 1);
         options.add(sharedOutputs, 2);
-        options.add(savePlaces, 3);
+        options.add(saveDetail, 3);
         options.add(improvedPcomp, 4);
 
         content.add(options, "1 0");

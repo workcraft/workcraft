@@ -9,7 +9,6 @@ import org.workcraft.plugins.fsm.FsmDescriptor;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.fst.converters.FstToFsmConverter;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
 import org.workcraft.tasks.AbstractExtendedResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -17,7 +16,7 @@ import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
-public class PetriToFsmConversionResultHandler extends AbstractExtendedResultHandler<WriteSgConversionResult, WorkspaceEntry> {
+public class PetriToFsmConversionResultHandler extends AbstractExtendedResultHandler<WriteSgConversionOutput, WorkspaceEntry> {
     private final WriteSgConversionTask task;
 
     public PetriToFsmConversionResultHandler(final WriteSgConversionTask task) {
@@ -25,10 +24,11 @@ public class PetriToFsmConversionResultHandler extends AbstractExtendedResultHan
     }
 
     @Override
-    public WorkspaceEntry handleResult(final Result<? extends WriteSgConversionResult> result) {
+    public WorkspaceEntry handleResult(final Result<? extends WriteSgConversionOutput> result) {
         WorkspaceEntry weResult = null;
+        WriteSgConversionOutput output = result.getPayload();
         if (result.getOutcome() == Outcome.SUCCESS) {
-            final VisualFst fst = new VisualFst(result.getReturnValue().getConversionResult());
+            final VisualFst fst = new VisualFst(output.getFst());
             final VisualFsm fsm = new VisualFsm(new Fsm());
             final FstToFsmConverter converter = new FstToFsmConverter(fst, fsm);
             final MathModel model = converter.getDstModel().getMathModel();
@@ -38,8 +38,7 @@ public class PetriToFsmConversionResultHandler extends AbstractExtendedResultHan
             weResult = framework.createWork(me, path);
         } else if (result.getOutcome() == Outcome.FAILURE) {
             if (result.getCause() == null) {
-                final Result<? extends ExternalProcessResult> writeSgResult = result.getReturnValue().getResult();
-                DialogUtils.showWarning("Petrify output:\n" + writeSgResult.getReturnValue().getErrorsHeadAndTail());
+                DialogUtils.showWarning("Petrify output:\n" + output.getErrorsHeadAndTail());
             } else {
                 ExceptionDialog.show(result.getCause());
             }

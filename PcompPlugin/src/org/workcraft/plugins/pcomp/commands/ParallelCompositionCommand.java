@@ -22,7 +22,7 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.Export;
+import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.GUI;
 import org.workcraft.util.LogUtils;
@@ -33,7 +33,7 @@ import org.workcraft.workspace.WorkspaceUtils;
 public class ParallelCompositionCommand implements Command {
 
     public static final String RESULT_FILE_NAME = "result.g";
-    public static final String PLACES_FILE_NAME = "places.list";
+    public static final String DETAIL_FILE_NAME = "detail.xml";
 
     public String getSection() {
         return "Composition";
@@ -76,12 +76,12 @@ public class ParallelCompositionCommand implements Command {
 
                 File outputFile = new File(tmpDirectory, RESULT_FILE_NAME);
                 outputFile.deleteOnExit();
-                File placesFile = null;
-                if (dialog.isSavePlacesChecked()) {
-                    placesFile = new File(tmpDirectory, PLACES_FILE_NAME);
+                File detailsFile = null;
+                if (dialog.isSaveDetailsChecked()) {
+                    detailsFile = new File(tmpDirectory, DETAIL_FILE_NAME);
                 }
 
-                PcompTask pcompTask = new PcompTask(inputFiles.toArray(new File[0]), outputFile, placesFile,
+                PcompTask pcompTask = new PcompTask(inputFiles.toArray(new File[0]), outputFile, detailsFile,
                         dialog.getMode(), dialog.isSharedOutputsChecked(), dialog.isImprovedPcompChecked(),
                         tmpDirectory);
 
@@ -105,7 +105,7 @@ public class ParallelCompositionCommand implements Command {
             String stgFileExtension = stgFormat.getExtension();
             File file = FileUtils.createTempFile(prefix, stgFileExtension, directory);
             PluginManager pluginManager = Framework.getInstance().getPluginManager();
-            Export.exportToFile(model, file, stgFormat, pluginManager);
+            ExportUtils.exportToFile(model, file, stgFormat, pluginManager);
             return file;
         } catch (IOException e) {
             throw new RuntimeException(e);

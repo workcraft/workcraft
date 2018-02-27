@@ -16,6 +16,7 @@ import org.workcraft.gui.ExceptionDialog;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.SimulationTool;
 import org.workcraft.plugins.petri.PetriNetModel;
+import org.workcraft.plugins.petri.PetriUtils;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualPetriNet;
@@ -52,16 +53,12 @@ public class PetriSimulationTool extends SimulationTool {
     }
 
     @Override
-    public HashMap<Node, Integer> readModelState() {
-        HashMap<Node, Integer>  result = new HashMap<>();
-        for (Place place: getUnderlyingPetri().getPlaces()) {
-            result.put(place, place.getTokens());
-        }
-        return result;
+    public HashMap<? extends Node, Integer> readModelState() {
+        return PetriUtils.getMarking(getUnderlyingPetri());
     }
 
     @Override
-    public void writeModelState(Map<Node, Integer> state) {
+    public void writeModelState(Map<? extends Node, Integer> state) {
         HashSet<Place> places = new HashSet<>(getUnderlyingPetri().getPlaces());
         for (Node node: state.keySet()) {
             if (node instanceof Place) {

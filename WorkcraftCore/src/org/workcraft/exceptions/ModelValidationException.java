@@ -2,9 +2,9 @@ package org.workcraft.exceptions;
 
 import java.util.LinkedList;
 
+@SuppressWarnings("serial")
 public class ModelValidationException extends Exception {
 
-    private static final long serialVersionUID = 1L;
     private final LinkedList<String> errors = new LinkedList<>();
 
     public void addError(String message) {
@@ -23,4 +23,5 @@ public class ModelValidationException extends Exception {
         }
         return r;
     }
+
 }

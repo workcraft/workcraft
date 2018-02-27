@@ -9,13 +9,16 @@ import java.util.HashSet;
 import org.workcraft.Framework;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.dom.visual.VisualModel;
+import org.workcraft.exceptions.NoExporterException;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.plugins.petri.PetriNetUtils;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petrify.PetrifySettings;
 import org.workcraft.plugins.petrify.PetrifyUtils;
-import org.workcraft.plugins.shared.tasks.ExternalProcessResult;
+import org.workcraft.plugins.shared.tasks.ExportOutput;
+import org.workcraft.plugins.shared.tasks.ExportTask;
+import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
@@ -29,15 +32,14 @@ import org.workcraft.tasks.Result.Outcome;
 import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.DialogUtils;
-import org.workcraft.util.Export;
-import org.workcraft.util.Export.ExportTask;
+import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.ToolUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, ExternalProcessListener {
+public class PetrifySynthesisTask implements Task<PetrifySynthesisOutput>, ExternalProcessListener {
     private final WorkspaceEntry we;
     private final String[] args;
     private final Collection<Mutex> mutexes;
@@ -49,7 +51,7 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
     }
 
     @Override
-    public Result<? extends PetrifySynthesisResult> run(ProgressMonitor<? super PetrifySynthesisResult> monitor) {
+    public Result<? extends PetrifySynthesisOutput> run(ProgressMonitor<? super PetrifySynthesisOutput> monitor) {
         ArrayList<String> command = new ArrayList<>();
 
         // Name of the executable
@@ -116,7 +118,7 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
         // Check for isolated marked places and temporary remove them if requested
         HashSet<Place> isolatedPlaces = PetriNetUtils.getIsolatedMarkedPlaces(stg);
         if (!isolatedPlaces.isEmpty()) {
-            String refStr = ReferenceHelper.getNodesAsString(stg, (Collection) isolatedPlaces, 50);
+            String refStr = ReferenceHelper.getNodesAsString(stg, isolatedPlaces, 50);
             String msg = "Petrify does not support isolated marked places.\n\n"
                     + "Problematic places are:\n" + refStr + "\n\n"
                     + "Proceed without these places?";
@@ -135,27 +137,25 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
         boolean printStdout = PetrifySettings.getPrintStdout();
         boolean printStderr = PetrifySettings.getPrintStderr();
         ExternalProcessTask task = new ExternalProcessTask(command, null, printStdout, printStderr);
-        SubtaskMonitor<Object> mon = new SubtaskMonitor<>(monitor);
-        Result<? extends ExternalProcessResult> res = task.run(mon);
+        SubtaskMonitor<ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
+        Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
+
         try {
-            if (res.getOutcome() == Outcome.SUCCESS) {
+            if (result.getOutcome() == Outcome.SUCCESS) {
+                ExternalProcessOutput output = result.getPayload();
                 String log = getFileContent(logFile);
                 String equations = getFileContent(eqnFile);
                 String verilog = getFileContent(verilogFile);
-                String out = getFileContent(outFile);
-                String stdout = new String(res.getReturnValue().getOutput());
-                String stderr = new String(res.getReturnValue().getErrors());
-                PetrifySynthesisResult result = new PetrifySynthesisResult(log, equations, verilog, out, stdout, stderr);
-                if (res.getReturnValue().getReturnCode() == 0) {
-                    return Result.success(result);
-                } else {
-                    return Result.failure(result);
+                String stgOutput = getFileContent(outFile);
+                if (output.getReturnCode() != 0) {
+                    return Result.failure(new PetrifySynthesisOutput(output, log, equations, verilog, stgOutput));
                 }
+                return Result.success(new PetrifySynthesisOutput(output, log, equations, verilog, stgOutput));
             }
-            if (res.getOutcome() == Outcome.CANCEL) {
+            if (result.getOutcome() == Outcome.CANCEL) {
                 return Result.cancelation();
             }
-            return Result.failure(null);
+            return Result.failure();
         } catch (IOException e) {
             throw new RuntimeException(e);
         } finally {
@@ -170,15 +170,16 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisResult>, Exter
 
     private File getInputFile(Stg stg, File directory) {
         final Framework framework = Framework.getInstance();
-        Exporter stgExporter = Export.chooseBestExporter(framework.getPluginManager(), stg, StgFormat.getInstance());
+        StgFormat format = StgFormat.getInstance();
+        Exporter stgExporter = ExportUtils.chooseBestExporter(framework.getPluginManager(), stg, format);
         if (stgExporter == null) {
-            throw new RuntimeException("Exporter not available: model class " + stg.getClass().getName() + " to format STG.");
+            throw new NoExporterException(stg, format);
         }
 
-        String gExtension = StgFormat.getInstance().getExtension();
+        String gExtension = format.getExtension();
         File stgFile = new File(directory, StgUtils.SPEC_FILE_PREFIX + gExtension);
         ExportTask exportTask = new ExportTask(stgExporter, stg, stgFile.getAbsolutePath());
-        Result<? extends Object> exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
+        Result<? extends ExportOutput> exportResult = framework.getTaskManager().execute(exportTask, "Exporting .g");
         if (exportResult.getOutcome() != Outcome.SUCCESS) {
             throw new RuntimeException("Unable to export the model.");
         }

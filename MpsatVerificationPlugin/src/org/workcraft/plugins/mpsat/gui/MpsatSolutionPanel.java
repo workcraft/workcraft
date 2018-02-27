@@ -11,8 +11,8 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.plugins.mpsat.MpsatSolution;
-import org.workcraft.plugins.mpsat.MpsatUtils;
+import org.workcraft.plugins.mpsat.tasks.MpsatSolution;
+import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 import info.clearthought.layout.TableLayout;
