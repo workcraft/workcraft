@@ -4,6 +4,7 @@ public enum MpsatMode {
     UNDEFINED(null, null, false, false), // Special mode to integrate foreign tasks into MPSat toolchain (export, composition, unfolding)
     DEADLOCK("-D", "Deadlock checking", false, true),
     REACHABILITY("-F", "Reachability analysis", true, true),
+    REACHABILITY_REDUNDANCY("-F", "Redundancy analysis", true, true),
     STG_REACHABILITY("-Fs", "STG reachability analysis", true, true),
     STG_REACHABILITY_CONSISTENCY("-Fs", "STG reachability analysis for consistency", true, true),
     STG_REACHABILITY_OUTPUT_PERSISTENCY("-Fs", "STG reachability analysis for output persistency", true, true),

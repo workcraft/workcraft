@@ -654,7 +654,7 @@ public class MpsatParameters {
             }
         }
         String reachPlaceRedundancy = REACH_PLACE_REDUNDANCY.replace(REACH_PLACE_REDUNDANCY_NAMES, str);
-        return new MpsatParameters("Place redundancy", MpsatMode.REACHABILITY, 0,
+        return new MpsatParameters("Place redundancy", MpsatMode.REACHABILITY_REDUNDANCY, 0,
                 MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(), reachPlaceRedundancy, true);
     }
 

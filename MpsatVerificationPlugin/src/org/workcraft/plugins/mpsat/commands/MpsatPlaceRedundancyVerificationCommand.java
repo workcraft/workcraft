@@ -10,6 +10,7 @@ import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -47,7 +48,21 @@ public class MpsatPlaceRedundancyVerificationCommand extends MpsatAbstractVerifi
     }
 
     @Override
+    public void run(WorkspaceEntry we) {
+        if (getSelectedPlaces(we).size() < 1) {
+            DialogUtils.showWarning("At least one place must be selected for redundancy check.");
+            return;
+        }
+        super.run(we);
+    }
+
+    @Override
     public MpsatParameters getSettings(WorkspaceEntry we) {
+        HashSet<String> placeNames = getSelectedPlaces(we);
+        return MpsatParameters.getPlaceRedundancySettings(placeNames);
+    }
+
+    private HashSet<String> getSelectedPlaces(WorkspaceEntry we) {
         VisualModel model = we.getModelEntry().getVisualModel();
         HashSet<String> placeNames = new HashSet<>();
         for (Node node: model.getSelection()) {
@@ -58,7 +73,7 @@ public class MpsatPlaceRedundancyVerificationCommand extends MpsatAbstractVerifi
                 }
             }
         }
-        return MpsatParameters.getPlaceRedundancySettings(placeNames);
+        return placeNames;
     }
 
     @Override
