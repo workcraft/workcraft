@@ -14,7 +14,7 @@ https://workcraft.org/.
 
 ### Building
 
-Workcraft requires Java JDK 1.7 or newer for a successful build and
+Workcraft requires Java JDK 1.8 or newer for a successful build and
 is assembled via [Gradle](https://gradle.org/). It is tested with
 both [Open JDK](http://openjdk.java.net/) and [Oracle JDK]
 (http://www.oracle.com/technetwork/java/javase/downloads/index.html).
