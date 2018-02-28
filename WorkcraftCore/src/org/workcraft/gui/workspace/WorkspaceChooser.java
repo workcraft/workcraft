@@ -91,18 +91,24 @@ public class WorkspaceChooser extends JPanel {
     }
 
     private void updateFilter() {
-        filteredSource.setFilter(new Func<Path<String>, Boolean>() {
-            @Override
-            public Boolean eval(Path<String> arg) {
-                return (filter.eval(arg) && arg.getNode().contains(nameFilter.getText())) || getCheckedNodes().contains(arg);
-            }
-        });
-
+        filteredSource.setFilter(arg -> filter(arg));
         expand(filteredSource.getRoot());
+    }
+
+    private boolean filter(Path<String> arg) {
+        return (filter.eval(arg) && arg.getNode().contains(nameFilter.getText())) || getCheckedNodes().contains(arg);
     }
 
     public void clearCheckBoxes() {
         tree.clearCheckBoxes();
+    }
+
+    public void checkNode(Path<String> node) {
+        tree.setChecked(node, true);
+    }
+
+    public void uncheckNode(Path<String> node) {
+        tree.setChecked(node, false);
     }
 
     public void setCheckBoxMode(CheckBoxMode mode) {

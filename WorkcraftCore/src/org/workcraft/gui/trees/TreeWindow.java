@@ -287,4 +287,16 @@ public class TreeWindow<Node> extends JPanel {
         return new TreeWindow<Node>(source, decorator, popupProvider);
     }
 
+    public void setChecked(Node node, boolean value) {
+        boolean needsRepaint = false;
+        if (value) {
+            needsRepaint = checkedNodes.add(node);
+        } else {
+            needsRepaint = checkedNodes.remove(node);
+        }
+        if (needsRepaint) {
+            tree.repaint();
+        }
+    }
+
 }

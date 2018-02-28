@@ -17,7 +17,7 @@ import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
-import org.workcraft.plugins.mpsat.tasks.MpsatOutoutParser;
+import org.workcraft.plugins.mpsat.tasks.MpsatOutputParser;
 import org.workcraft.plugins.mpsat.tasks.MpsatOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
@@ -120,7 +120,7 @@ public class CheckStrictImplementationTask extends MpsatChainTask {
             }
             monitor.progressUpdate(0.80);
 
-            MpsatOutoutParser mpsatParser = new MpsatOutoutParser(mpsatResult.getPayload());
+            MpsatOutputParser mpsatParser = new MpsatOutputParser(mpsatResult.getPayload());
             if (!mpsatParser.getSolutions().isEmpty()) {
                 return new Result<MpsatChainOutput>(Outcome.SUCCESS,
                         new MpsatChainOutput(envExportResult, null, punfResult, mpsatResult, mpsatSettings,

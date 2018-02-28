@@ -61,7 +61,7 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
             Result<? extends MpsatOutput> mpsatResult = mpsatResultList.get(index);
             MpsatOutput mpsatOutput = mpsatResult.getPayload();
             MpsatParameters mpsatSettings = mpsatSettingsList.get(index);
-            MpsatOutoutParser mdp = new MpsatOutoutParser(mpsatOutput);
+            MpsatOutputParser mdp = new MpsatOutputParser(mpsatOutput);
             List<MpsatSolution> solutions = mdp.getSolutions();
             if (!MpsatUtils.hasTraces(solutions)) {
                 verifiedMessageDetailes += "\n * " + mpsatSettings.getName();
@@ -71,7 +71,11 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
             }
         }
         if (violationMpsatSettings == null) {
-            // No solution found in any of the Mpsat tasks
+            // No solution found in any of the MPSat tasks
+            if ((mutexes != null) && mutexes.isEmpty()) {
+                // Add trivial mutex implementability result if no mutex places found
+                verifiedMessageDetailes += "\n * Mutex implementability (trivially)";
+            }
             DialogUtils.showInfo("The following checks passed:" + verifiedMessageDetailes);
         } else {
             // One of the Mpsat tasks returned a solution trace
@@ -89,6 +93,9 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
             case ASSERTION:
                 SwingUtilities.invokeLater(new MpsatReachabilityOutputHandler(
                         we, violationMpsatOutput, violationMpsatSettings));
+                break;
+            case REACHABILITY_REDUNDANCY:
+                SwingUtilities.invokeLater(new MpsatRedundancyOutputHandler(we, violationMpsatOutput, violationMpsatSettings));
                 break;
             case DEADLOCK:
                 SwingUtilities.invokeLater(new MpsatDeadlockOutputHandler(

@@ -268,7 +268,7 @@ public class MpsatParameters {
                 .replace(REACH_MUTEX_G1, mutex.g1.name)
                 .replace(REACH_MUTEX_R2, mutex.r2.name)
                 .replace(REACH_MUTEX_G2, mutex.g2.name);
-        String propertName = "Implementability of mutex place '" + mutex.name + "'";
+        String propertName = "Mutex implementability for place '" + mutex.name + "'";
         return new MpsatParameters(propertName, MpsatMode.STG_REACHABILITY, 0,
                 MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(), reach, true);
     }
@@ -460,13 +460,13 @@ public class MpsatParameters {
     }
 
     // Reach expression for checking n-way conformation (this is a template, the lists of places and outputs need to be updated)
-    private static final String REACH_NWAY_CONFORMATION_PLACES =
+    private static final String REACH_CONFORMATION_NWAY_PLACES =
             "/* insert set of names of place here */"; // For example: {"p1", "<a+,b+>", "#1"}, {"<b+,c+>", "p2", "#2"},
 
-    private static final String REACH_NWAY_CONFORMATION_OUTPUTS =
+    private static final String REACH_CONFORMATION_NWAY_OUTPUTS =
             "/* insert set of names of outputs here */"; // For example: {"b","#1"}, {"c","#2"}
 
-    private static final String REACH_NWAY_CONFORMATION =
+    private static final String REACH_CONFORMATION_NWAY =
             "// Check whether several STGs conform to each other.\n" +
             "// LIMITATIONS (could be checked before parallel composition):\n" +
             "// - Each transition in each STG must have some arcs, i.e. its preset or postset is non-empty.\n" +
@@ -477,11 +477,11 @@ public class MpsatParameters {
             "    // each set of names is tagged by adding a string of the form #STG_number to it, e.g. \"#1\", \"#2\", \"#3\", etc.\n" +
             "    // note that the tags can never be confused with names, as the latter cannot contain \"#\";\n" +
             "    // note also that tags guarantee that no set of strings is empty\n" +
-            "    SETS_OF_PLACE_NAMES = {\n" + REACH_NWAY_CONFORMATION_PLACES +
+            "    SETS_OF_PLACE_NAMES = {\n" + REACH_CONFORMATION_NWAY_PLACES +
             "        {\"\"}} \\ {{\"\"}},\n" +
             "    // set of output signal names of all STGs;\n" +
             "    // each set of names is tagged as above, and the tags for the same STG must match\n" +
-            "    SETS_OF_OUTPUTS_NAMES = {\n" + REACH_NWAY_CONFORMATION_OUTPUTS +
+            "    SETS_OF_OUTPUTS_NAMES = {\n" + REACH_CONFORMATION_NWAY_OUTPUTS +
             "        {\"\"}} \\ {{\"\"}},\n" +
             "    // EXTENDED_PLACES includes places with the names of the form p@num.\n" +
             "    // Such places appeared during optimisation of the unfolding prefix due to splitting places\n" +
@@ -538,15 +538,15 @@ public class MpsatParameters {
     // Note: New (PNML-based) version of Punf is required to check conformation property. Old version of
     // Punf does not support dead signals, dead transitions and dead places well (e.g. a dead transition
     // may disappear from unfolding), therefore the conformation property cannot be checked reliably.
-    public static MpsatParameters getNwayConformationSettings(
+    public static MpsatParameters getConformationNwaySettings(
             ArrayList<Set<String>> allPlaceSets, ArrayList<Set<String>> allOutputSets) {
         String placeStr = getNameSetsAsString(allPlaceSets);
         String outputStr = getNameSetsAsString(allOutputSets);
-        String reachConformation = REACH_NWAY_CONFORMATION
-                .replace(REACH_NWAY_CONFORMATION_PLACES, placeStr)
-                .replace(REACH_NWAY_CONFORMATION_OUTPUTS, outputStr);
+        String reachConformationNway = REACH_CONFORMATION_NWAY
+                .replace(REACH_CONFORMATION_NWAY_PLACES, placeStr)
+                .replace(REACH_CONFORMATION_NWAY_OUTPUTS, outputStr);
         return new MpsatParameters("Interface conformation", MpsatMode.STG_REACHABILITY_CONFORMATION_NWAY, 0,
-                MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(), reachConformation, true);
+                MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(), reachConformationNway, true);
     }
 
     private static String getNameSetsAsString(ArrayList<Set<String>> allSets) {
@@ -654,7 +654,7 @@ public class MpsatParameters {
             }
         }
         String reachPlaceRedundancy = REACH_PLACE_REDUNDANCY.replace(REACH_PLACE_REDUNDANCY_NAMES, str);
-        return new MpsatParameters("Place redundancy", MpsatMode.REACHABILITY, 0,
+        return new MpsatParameters("Place redundancy", MpsatMode.REACHABILITY_REDUNDANCY, 0,
                 MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(), reachPlaceRedundancy, true);
     }
 

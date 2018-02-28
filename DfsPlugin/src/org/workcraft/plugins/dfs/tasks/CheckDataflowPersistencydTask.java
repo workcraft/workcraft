@@ -10,7 +10,7 @@ import org.workcraft.plugins.dfs.stg.DfsToStgConverter;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
-import org.workcraft.plugins.mpsat.tasks.MpsatOutoutParser;
+import org.workcraft.plugins.mpsat.tasks.MpsatOutputParser;
 import org.workcraft.plugins.mpsat.tasks.MpsatOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
@@ -96,7 +96,7 @@ public class CheckDataflowPersistencydTask extends MpsatChainTask {
             }
             monitor.progressUpdate(0.90);
 
-            MpsatOutoutParser mdp = new MpsatOutoutParser(mpsatResult.getPayload());
+            MpsatOutputParser mdp = new MpsatOutputParser(mpsatResult.getPayload());
             if (!mdp.getSolutions().isEmpty()) {
                 return new Result<MpsatChainOutput>(Outcome.SUCCESS,
                         new MpsatChainOutput(exportResult, null, punfResult, mpsatResult, settings, "Dataflow is not output-persistent"));

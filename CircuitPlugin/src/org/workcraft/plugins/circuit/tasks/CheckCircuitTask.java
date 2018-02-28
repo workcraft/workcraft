@@ -19,7 +19,7 @@ import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
-import org.workcraft.plugins.mpsat.tasks.MpsatOutoutParser;
+import org.workcraft.plugins.mpsat.tasks.MpsatOutputParser;
 import org.workcraft.plugins.mpsat.tasks.MpsatOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.pcomp.ComponentData;
@@ -264,7 +264,7 @@ public class CheckCircuitTask extends MpsatChainTask {
                 }
                 monitor.progressUpdate(0.50);
 
-                MpsatOutoutParser mpsatDeadlockParser = new MpsatOutoutParser(mpsatDeadlockResult.getPayload());
+                MpsatOutputParser mpsatDeadlockParser = new MpsatOutputParser(mpsatDeadlockResult.getPayload());
                 if (!mpsatDeadlockParser.getSolutions().isEmpty()) {
                     return new Result<MpsatChainOutput>(Outcome.SUCCESS,
                             new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatDeadlockResult, deadlockSettings,
@@ -291,7 +291,7 @@ public class CheckCircuitTask extends MpsatChainTask {
                 }
                 monitor.progressUpdate(0.70);
 
-                MpsatOutoutParser mpsatPersistencyParser = new MpsatOutoutParser(mpsatPersistencyResult.getPayload());
+                MpsatOutputParser mpsatPersistencyParser = new MpsatOutputParser(mpsatPersistencyResult.getPayload());
                 if (!mpsatPersistencyParser.getSolutions().isEmpty()) {
                     return new Result<MpsatChainOutput>(Outcome.SUCCESS,
                             new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatPersistencyResult, persistencySettings,
@@ -321,7 +321,7 @@ public class CheckCircuitTask extends MpsatChainTask {
                 }
                 monitor.progressUpdate(0.90);
 
-                MpsatOutoutParser mpsatConformationParser = new MpsatOutoutParser(mpsatConformationResult.getPayload());
+                MpsatOutputParser mpsatConformationParser = new MpsatOutputParser(mpsatConformationResult.getPayload());
                 if (!mpsatConformationParser.getSolutions().isEmpty()) {
                     return new Result<MpsatChainOutput>(Outcome.SUCCESS,
                             new MpsatChainOutput(devExportResult, pcompModResult, punfModResult, mpsatConformationResult, conformationSettings,
