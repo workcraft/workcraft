@@ -10,7 +10,7 @@ Workcraft is a cross-platform toolset to capture, simulate, synthesize
 and verify graph models. It supports a wide range of popular graph
 formalisms and provides a plugin-based framework to model and analyze
 new model types. For more information about Workcraft look at
-http://workcraft.org/.
+https://workcraft.org/.
 
 ### Building
 
