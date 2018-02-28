@@ -9,7 +9,7 @@ import java.util.regex.Pattern;
 
 import org.workcraft.Trace;
 
-public class MpsatOutoutParser {
+public class MpsatOutputParser {
 
     private final LinkedList<MpsatSolution> solutions;
 
@@ -43,7 +43,7 @@ public class MpsatOutoutParser {
             "triggers: .+\\R",
             Pattern.UNIX_LINES);
 
-    public MpsatOutoutParser(MpsatOutput mpsatResult) {
+    public MpsatOutputParser(MpsatOutput mpsatResult) {
         String mpsatOutput;
         try {
             mpsatOutput = new String(mpsatResult.getStdout(), "ISO-8859-1"); // iso-latin-1

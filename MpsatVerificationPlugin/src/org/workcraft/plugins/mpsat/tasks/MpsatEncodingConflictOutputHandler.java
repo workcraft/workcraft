@@ -35,7 +35,7 @@ final class MpsatEncodingConflictOutputHandler implements Runnable {
 
     @Override
     public void run() {
-        MpsatOutoutParser mdp = new MpsatOutoutParser(output);
+        MpsatOutputParser mdp = new MpsatOutputParser(output);
         List<MpsatSolution> solutions = mdp.getSolutions();
         final Framework framework = Framework.getInstance();
         if (!MpsatUtils.hasTraces(solutions)) {

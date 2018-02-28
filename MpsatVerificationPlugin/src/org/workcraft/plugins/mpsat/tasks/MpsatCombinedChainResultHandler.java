@@ -61,7 +61,7 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
             Result<? extends MpsatOutput> mpsatResult = mpsatResultList.get(index);
             MpsatOutput mpsatOutput = mpsatResult.getPayload();
             MpsatParameters mpsatSettings = mpsatSettingsList.get(index);
-            MpsatOutoutParser mdp = new MpsatOutoutParser(mpsatOutput);
+            MpsatOutputParser mdp = new MpsatOutputParser(mpsatOutput);
             List<MpsatSolution> solutions = mdp.getSolutions();
             if (!MpsatUtils.hasTraces(solutions)) {
                 verifiedMessageDetailes += "\n * " + mpsatSettings.getName();

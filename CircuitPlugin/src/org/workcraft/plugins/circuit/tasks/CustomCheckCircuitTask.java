@@ -11,7 +11,7 @@ import org.workcraft.plugins.mpsat.MpsatMode;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
-import org.workcraft.plugins.mpsat.tasks.MpsatOutoutParser;
+import org.workcraft.plugins.mpsat.tasks.MpsatOutputParser;
 import org.workcraft.plugins.mpsat.tasks.MpsatOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
@@ -144,7 +144,7 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
             }
             monitor.progressUpdate(0.50);
 
-            MpsatOutoutParser mpsatParser = new MpsatOutoutParser(mpsatResult.getPayload());
+            MpsatOutputParser mpsatParser = new MpsatOutputParser(mpsatResult.getPayload());
             if (!mpsatParser.getSolutions().isEmpty()) {
                 return new Result<MpsatChainOutput>(Outcome.SUCCESS,
                         new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, settings,

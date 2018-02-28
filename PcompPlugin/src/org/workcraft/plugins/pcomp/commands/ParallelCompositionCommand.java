@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 import org.workcraft.Framework;
 import org.workcraft.PluginManager;
@@ -22,6 +23,7 @@ import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.tasks.TaskManager;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.GUI;
@@ -53,44 +55,50 @@ public class ParallelCompositionCommand implements Command {
         final Framework framework = Framework.getInstance();
         if (!framework.isInGuiMode()) {
             LogUtils.logError("Command '" + getClass().getSimpleName() + "' only works in GUI mode.");
-        } else {
-            MainWindow mainWindow = framework.getMainWindow();
-            PcompDialog dialog = new PcompDialog(mainWindow);
-            GUI.centerToParent(dialog, mainWindow);
-            Collection<Mutex> mutexes = new HashSet<>();
-            if (dialog.run()) {
-                String tmpPrefix = FileUtils.getTempPrefix(we.getTitle());
-                File tmpDirectory = FileUtils.createTempDirectory(tmpPrefix);
-                ArrayList<File> inputFiles = new ArrayList<>();
-                for (Path<String> path : dialog.getSourcePaths()) {
-                    Workspace workspace = framework.getWorkspace();
-                    WorkspaceEntry inputWe = workspace.getWork(path);
-                    Stg stg = WorkspaceUtils.getAs(inputWe, Stg.class);
-                    Collection<Mutex> inputMutexes = MutexUtils.getMutexes(stg);
-                    if (inputMutexes != null) {
-                        mutexes.addAll(inputMutexes);
-                    }
-                    File stgFile = exportStg(inputWe, tmpDirectory);
-                    inputFiles.add(stgFile);
-                }
-
-                File outputFile = new File(tmpDirectory, RESULT_FILE_NAME);
-                outputFile.deleteOnExit();
-                File detailsFile = null;
-                if (dialog.isSaveDetailsChecked()) {
-                    detailsFile = new File(tmpDirectory, DETAIL_FILE_NAME);
-                }
-
-                PcompTask pcompTask = new PcompTask(inputFiles.toArray(new File[0]), outputFile, detailsFile,
-                        dialog.getMode(), dialog.isSharedOutputsChecked(), dialog.isImprovedPcompChecked(),
-                        tmpDirectory);
-
-                MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
-                PcompResultHandler pcompResult = new PcompResultHandler(dialog.showInEditor(), outputFile, mutexes);
-                TaskManager taskManager = framework.getTaskManager();
-                taskManager.queue(pcompTask, "Running parallel composition [PComp]", pcompResult);
-            }
+            return;
         }
+        MainWindow mainWindow = framework.getMainWindow();
+        PcompDialog dialog = new PcompDialog(mainWindow, we);
+        GUI.centerToParent(dialog, mainWindow);
+        Collection<Mutex> mutexes = new HashSet<>();
+        Set<Path<String>> paths = null;
+        if (dialog.run()) {
+            paths = dialog.getSourcePaths();
+        }
+        if ((paths == null) || (paths.size() < 2)) {
+            DialogUtils.showWarning("At least 2 STGs are required for parallel composition.");
+            return;
+        }
+        String tmpPrefix = FileUtils.getTempPrefix(we.getTitle());
+        File tmpDirectory = FileUtils.createTempDirectory(tmpPrefix);
+        ArrayList<File> inputFiles = new ArrayList<>();
+        for (Path<String> path: paths) {
+            Workspace workspace = framework.getWorkspace();
+            WorkspaceEntry inputWe = workspace.getWork(path);
+            Stg stg = WorkspaceUtils.getAs(inputWe, Stg.class);
+            Collection<Mutex> inputMutexes = MutexUtils.getMutexes(stg);
+            if (inputMutexes != null) {
+                mutexes.addAll(inputMutexes);
+            }
+            File stgFile = exportStg(inputWe, tmpDirectory);
+            inputFiles.add(stgFile);
+        }
+
+        File outputFile = new File(tmpDirectory, RESULT_FILE_NAME);
+        outputFile.deleteOnExit();
+        File detailsFile = null;
+        if (dialog.isSaveDetailsChecked()) {
+            detailsFile = new File(tmpDirectory, DETAIL_FILE_NAME);
+        }
+
+        PcompTask pcompTask = new PcompTask(inputFiles.toArray(new File[0]), outputFile, detailsFile,
+                dialog.getMode(), dialog.isSharedOutputsChecked(), dialog.isImprovedPcompChecked(),
+                tmpDirectory);
+
+        MutexUtils.logInfoPossiblyImplementableMutex(mutexes);
+        PcompResultHandler pcompResult = new PcompResultHandler(dialog.showInEditor(), outputFile, mutexes);
+        TaskManager taskManager = framework.getTaskManager();
+        taskManager.queue(pcompTask, "Running parallel composition [PComp]", pcompResult);
     }
 
     public File exportStg(WorkspaceEntry we, File directory) {
@@ -107,11 +115,7 @@ public class ParallelCompositionCommand implements Command {
             PluginManager pluginManager = Framework.getInstance().getPluginManager();
             ExportUtils.exportToFile(model, file, stgFormat, pluginManager);
             return file;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (ModelValidationException e) {
-            throw new RuntimeException(e);
-        } catch (SerialisationException e) {
+        } catch (IOException | ModelValidationException | SerialisationException e) {
             throw new RuntimeException(e);
         }
     }

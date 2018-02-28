@@ -28,13 +28,15 @@ import org.workcraft.plugins.pcomp.commands.ParallelCompositionCommand;
 import org.workcraft.plugins.pcomp.tasks.PcompTask.ConversionMode;
 import org.workcraft.plugins.stg.StgWorkspaceFilter;
 import org.workcraft.util.GUI;
+import org.workcraft.workspace.WorkspaceEntry;
 
 import info.clearthought.layout.TableLayout;
 
 @SuppressWarnings("serial")
 public class PcompDialog extends JDialog {
 
-    protected boolean result;
+    private final WorkspaceEntry we;
+    private boolean result;
     private WorkspaceChooser chooser;
     private Set<Path<String>> sourcePaths;
     private JCheckBox showInEditor;
@@ -45,49 +47,11 @@ public class PcompDialog extends JDialog {
     private JCheckBox saveDetail;
     private JCheckBox improvedPcomp;
 
-    public PcompDialog(Window owner) {
+    public PcompDialog(Window owner, WorkspaceEntry we) {
         super(owner, "Parallel composition", ModalityType.DOCUMENT_MODAL);
-        final JPanel content = createContents();
-        setContentPane(content);
-        setMinimumSize(new Dimension(500, 300));
-    }
-
-    public Set<Path<String>> getSourcePaths() {
-        return sourcePaths;
-    }
-
-    public boolean showInEditor() {
-        return showInEditor.isSelected();
-    }
-
-    public boolean isSharedOutputsChecked() {
-        return sharedOutputs.isSelected();
-    }
-
-    public boolean isSaveDetailsChecked() {
-        return saveDetail.isSelected();
-    }
-
-    public boolean isImprovedPcompChecked() {
-        return improvedPcomp.isSelected();
-    }
-
-    public ConversionMode getMode() {
-        if (leaveOutputs.isSelected()) {
-            return ConversionMode.OUTPUT;
-        }
-        if (internalize.isSelected()) {
-            return ConversionMode.INTERNAL;
-        }
-        if (dummify.isSelected()) {
-            return ConversionMode.DUMMY;
-        }
-        throw new NotSupportedException("No button is selected. Cannot proceed.");
-    }
-
-    public boolean run() {
-        setVisible(true);
-        return result;
+        this.we = we;
+        setContentPane(createContents());
+        setMinimumSize(new Dimension(600, 400));
     }
 
     private JPanel createContents() {
@@ -101,8 +65,10 @@ public class PcompDialog extends JDialog {
         final Framework framework = Framework.getInstance();
         chooser = new WorkspaceChooser(framework.getWorkspace(), new StgWorkspaceFilter());
         chooser.setBorder(SizeHelper.getTitledBorder("Source STGs"));
-
         chooser.setCheckBoxMode(TreeWindow.CheckBoxMode.LEAF);
+        if (we != null) {
+            chooser.checkNode(we.getWorkspacePath());
+        }
         content.add(chooser, "0 0 0 1");
 
         showInEditor = new JCheckBox();
@@ -193,6 +159,44 @@ public class PcompDialog extends JDialog {
     private void cancelAction() {
         result = false;
         setVisible(false);
+    }
+
+    public Set<Path<String>> getSourcePaths() {
+        return sourcePaths;
+    }
+
+    public boolean showInEditor() {
+        return showInEditor.isSelected();
+    }
+
+    public boolean isSharedOutputsChecked() {
+        return sharedOutputs.isSelected();
+    }
+
+    public boolean isSaveDetailsChecked() {
+        return saveDetail.isSelected();
+    }
+
+    public boolean isImprovedPcompChecked() {
+        return improvedPcomp.isSelected();
+    }
+
+    public ConversionMode getMode() {
+        if (leaveOutputs.isSelected()) {
+            return ConversionMode.OUTPUT;
+        }
+        if (internalize.isSelected()) {
+            return ConversionMode.INTERNAL;
+        }
+        if (dummify.isSelected()) {
+            return ConversionMode.DUMMY;
+        }
+        throw new NotSupportedException("No button is selected. Cannot proceed.");
+    }
+
+    public boolean run() {
+        setVisible(true);
+        return result;
     }
 
 }

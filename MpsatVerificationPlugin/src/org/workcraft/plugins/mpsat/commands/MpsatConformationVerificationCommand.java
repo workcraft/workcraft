@@ -30,7 +30,7 @@ public class MpsatConformationVerificationCommand extends AbstractVerificationCo
 
     @Override
     public String getDisplayName() {
-        return "   Conformation (without dummies) [MPSat]...";
+        return "   1-way conformation (1st STG without dummies) [MPSat]...";
     }
 
     @Override

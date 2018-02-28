@@ -116,7 +116,7 @@ public class MpsatUtils {
     }
 
     public static List<MpsatSolution> getSolutions(MpsatOutput output) {
-        MpsatOutoutParser mdp = new MpsatOutoutParser(output);
+        MpsatOutputParser mdp = new MpsatOutputParser(output);
         return mdp.getSolutions();
     }
 

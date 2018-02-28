@@ -65,7 +65,7 @@ class MpsatReachabilityOutputHandler implements Runnable {
 
     public List<MpsatSolution> getSolutions(int index) {
         List<MpsatSolution> solutions = new LinkedList<>();
-        MpsatOutoutParser mrp = new MpsatOutoutParser(getMpsatOutput());
+        MpsatOutputParser mrp = new MpsatOutputParser(getMpsatOutput());
         ComponentData data = getCompositionData(index);
         for (MpsatSolution solution: mrp.getSolutions()) {
             MpsatSolution processedSolution = processSolution(solution, data);

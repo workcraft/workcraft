@@ -135,7 +135,7 @@ public class MpsatConformationNwayTask implements Task<MpsatChainOutput> {
                 allPlaceSets.add(placeNames);
             }
 
-            MpsatParameters conformationSettings = MpsatParameters.getNwayConformationSettings(allPlaceSets, allOutputSets);
+            MpsatParameters conformationSettings = MpsatParameters.getConformationNwaySettings(allPlaceSets, allOutputSets);
             MpsatTask mpsatConformationTask = new MpsatTask(conformationSettings.getMpsatArguments(directory),
                     unfoldingFile, directory, stgFile);
             Result<? extends MpsatOutput>  mpsatConformationResult = taskManager.execute(
@@ -150,7 +150,7 @@ public class MpsatConformationNwayTask implements Task<MpsatChainOutput> {
             }
             monitor.progressUpdate(0.80);
 
-            MpsatOutoutParser mpsatConformationParser = new MpsatOutoutParser(mpsatConformationResult.getPayload());
+            MpsatOutputParser mpsatConformationParser = new MpsatOutputParser(mpsatConformationResult.getPayload());
             if (!mpsatConformationParser.getSolutions().isEmpty()) {
                 return new Result<MpsatChainOutput>(Outcome.SUCCESS,
                         new MpsatChainOutput(exportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings,

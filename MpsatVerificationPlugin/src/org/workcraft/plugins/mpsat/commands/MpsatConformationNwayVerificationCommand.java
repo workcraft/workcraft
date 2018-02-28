@@ -1,6 +1,7 @@
 package org.workcraft.plugins.mpsat.commands;
 
 import java.util.ArrayList;
+import java.util.Set;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
@@ -13,6 +14,7 @@ import org.workcraft.plugins.mpsat.tasks.MpsatConformationNwayTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.tasks.TaskManager;
+import org.workcraft.util.DialogUtils;
 import org.workcraft.util.GUI;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.Workspace;
@@ -46,24 +48,32 @@ public class MpsatConformationNwayVerificationCommand extends AbstractVerificati
         final Framework framework = Framework.getInstance();
         if (!framework.isInGuiMode()) {
             LogUtils.logError("Command '" + getClass().getSimpleName() + "' only works in GUI mode.");
-        } else {
-            MainWindow mainWindow = framework.getMainWindow();
-            NwayDialog dialog = new NwayDialog(mainWindow);
-            GUI.centerToParent(dialog, mainWindow);
-            if (dialog.run()) {
-                Workspace workspace = framework.getWorkspace();
-                ArrayList<WorkspaceEntry> wes = new ArrayList<>();
-                for (Path<String> path : dialog.getSourcePaths()) {
-                    wes.add(workspace.getWork(path));
-                }
-
-                MpsatConformationNwayTask task = new MpsatConformationNwayTask(wes);
-                TaskManager manager = framework.getTaskManager();
-                String description = MpsatUtils.getToolchainDescription(we.getTitle());
-                MpsatChainResultHandler monitor = new MpsatChainResultHandler(wes);
-                manager.queue(task, description, monitor);
-            }
+            return;
         }
+        Set<Path<String>> paths = null;
+        MainWindow mainWindow = framework.getMainWindow();
+        NwayDialog dialog = new NwayDialog(mainWindow, we);
+        GUI.centerToParent(dialog, mainWindow);
+        if (dialog.run()) {
+            paths = dialog.getSourcePaths();
+        }
+
+        if ((paths == null) || (paths.size() < 2)) {
+            DialogUtils.showWarning("At least two STGs are required for N-way conformation.");
+            return;
+        }
+
+        Workspace workspace = framework.getWorkspace();
+        ArrayList<WorkspaceEntry> wes = new ArrayList<>();
+        for (Path<String> path: paths) {
+            wes.add(workspace.getWork(path));
+        }
+
+        MpsatConformationNwayTask task = new MpsatConformationNwayTask(wes);
+        TaskManager manager = framework.getTaskManager();
+        String description = MpsatUtils.getToolchainDescription(we.getTitle());
+        MpsatChainResultHandler monitor = new MpsatChainResultHandler(wes);
+        manager.queue(task, description, monitor);
     }
 
     @Override

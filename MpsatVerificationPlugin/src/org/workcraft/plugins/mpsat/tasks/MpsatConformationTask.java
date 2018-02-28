@@ -159,7 +159,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             }
             monitor.progressUpdate(0.80);
 
-            MpsatOutoutParser mpsatConformationParser = new MpsatOutoutParser(mpsatConformationResult.getPayload());
+            MpsatOutputParser mpsatConformationParser = new MpsatOutputParser(mpsatConformationResult.getPayload());
             if (!mpsatConformationParser.getSolutions().isEmpty()) {
                 return new Result<MpsatChainOutput>(Outcome.SUCCESS,
                         new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings,
