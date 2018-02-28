@@ -25,7 +25,7 @@ public class MpsatConformationNwayVerificationCommand extends AbstractVerificati
 
     @Override
     public String getDisplayName() {
-        return "N-way conformation (without dummies) [MPSat]...";
+        return "  N-way conformation (without dummies) [MPSat]...";
     }
 
     @Override

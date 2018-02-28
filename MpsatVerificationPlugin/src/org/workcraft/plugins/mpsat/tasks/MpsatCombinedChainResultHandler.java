@@ -71,7 +71,11 @@ public class MpsatCombinedChainResultHandler extends AbstractResultHandler<Mpsat
             }
         }
         if (violationMpsatSettings == null) {
-            // No solution found in any of the Mpsat tasks
+            // No solution found in any of the MPSat tasks
+            if ((mutexes != null) && mutexes.isEmpty()) {
+                // Add trivial mutex implementability result if no mutex places found
+                verifiedMessageDetailes += "\n * Mutex implementability (trivially)";
+            }
             DialogUtils.showInfo("The following checks passed:" + verifiedMessageDetailes);
         } else {
             // One of the Mpsat tasks returned a solution trace

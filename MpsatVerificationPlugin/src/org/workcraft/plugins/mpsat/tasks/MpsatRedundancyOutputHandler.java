@@ -11,7 +11,7 @@ class MpsatRedundancyOutputHandler extends MpsatReachabilityOutputHandler {
 
     @Override
     public String getMessage(boolean isSatisfiable) {
-        return "The selected places are " + (isSatisfiable ? "necessary" : "redundant");
+        return "The selected places are " + (isSatisfiable ? "essential" : "redundant");
     }
 
     public String extendMessage(String message) {
