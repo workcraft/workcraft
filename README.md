@@ -16,10 +16,11 @@ https://workcraft.org/.
 
 Workcraft requires Java JDK 1.8 or newer for a successful build and
 is assembled via [Gradle](https://gradle.org/). It is tested with
-both [Open JDK](http://openjdk.java.net/) and [Oracle JDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html).
+both [Open JDK](http://openjdk.java.net/) and
+[Oracle JDK](http://www.oracle.com/technetwork/java/javase/downloads/index.html).
 
-These instructions use `gradlew`, a wrapper that downloads and runs a
-relatively new version of `gradle`. Alternatively a pre-installed
+These instructions use `gradlew`, a wrapper that downloads and runs
+a relatively new version of `gradle`. Alternatively a pre-installed
 version can be used.
 
 Use the `assemble` task to build the core and all the plugins:
@@ -37,10 +38,10 @@ You can run Workcraft directly after building it:
 Help and tutorial pages are available in the
 [workcraft-doc](https://github.com/workcraft/workcraft-doc) repo.
 
-Templates for building Windows, Linux and OS X distributions
-of Workcraft are available in the [workcraft-dist-template]
-(https://github.com/workcraft/workcraft-dist-template) repo.
-This includes the binaries of backend tools, gate libraries
+Templates for building Windows, Linux and OS X distributions of
+Workcraft are available in the
+[workcraft-dist-template](https://github.com/workcraft/workcraft-dist-template)
+repo. This includes the binaries of backend tools, gate libraries
 and other platform-specific content.
 
 If you would like to contribute to Workcraft development, then read
