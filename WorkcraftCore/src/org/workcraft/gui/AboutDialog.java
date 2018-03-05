@@ -3,8 +3,6 @@ package org.workcraft.gui;
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -88,11 +86,7 @@ public class AboutDialog extends JDialog {
         });
 
         JButton okButton = GUI.createDialogButton("OK");
-        okButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                ok();
-            }
-        });
+        okButton.addActionListener(event -> ok());
 
         JPanel buttonsPane = new JPanel(new FlowLayout(FlowLayout.CENTER, SizeHelper.getLayoutHGap(), SizeHelper.getLayoutVGap()));
         buttonsPane.add(okButton);
@@ -105,21 +99,11 @@ public class AboutDialog extends JDialog {
         setContentPane(contentPane);
         getRootPane().setDefaultButton(okButton);
 
-        getRootPane().registerKeyboardAction(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        ok();
-                    }
-                },
+        getRootPane().registerKeyboardAction(event -> ok(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-        getRootPane().registerKeyboardAction(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        ok();
-                    }
-                },
+        getRootPane().registerKeyboardAction(event -> ok(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 

@@ -4,8 +4,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -63,12 +61,7 @@ public class PetriToCpogDialog extends JDialog {
 
         setContentPane(content);
 
-        getRootPane().registerKeyboardAction(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        setVisible(false);
-                    }
-                },
+        getRootPane().registerKeyboardAction(event -> setVisible(false),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
@@ -93,6 +86,7 @@ public class PetriToCpogDialog extends JDialog {
         isomorphismCheck = new JCheckBox("", true);
         JLabel isomorphismLabel = new JLabel(PetriToCpogDialogSupport.textIsomorphismLabel);
         isomorphismLabel.addMouseListener(new MouseAdapter() {
+            @Override
             public void mouseClicked(MouseEvent e) {
                 isomorphismCheck.setSelected(isomorphismCheck.isSelected() ? false : true);
             }
@@ -139,26 +133,18 @@ public class PetriToCpogDialog extends JDialog {
 
         // run the converter
         JButton runButton = GUI.createDialogButton("Run");
-        runButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-                settings.setReduce(reduceCheck.isSelected() ? true : false);
-                settings.setIsomorphism(isomorphismCheck.isSelected() ? true : false);
-                settings.setSignificance(significanceBox.getSelectedIndex());
-                settings.setRemoveNodes(removeNodesCheck.isSelected() ? true : false);
-                modalResult = 1;
-            }
+        runButton.addActionListener(event -> {
+            setVisible(false);
+            settings.setReduce(reduceCheck.isSelected() ? true : false);
+            settings.setIsomorphism(isomorphismCheck.isSelected() ? true : false);
+            settings.setSignificance(significanceBox.getSelectedIndex());
+            settings.setRemoveNodes(removeNodesCheck.isSelected() ? true : false);
+            modalResult = 1;
         });
 
         // close the converter
         JButton closeButton = GUI.createDialogButton("Close");
-        closeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-            }
-        });
+        closeButton.addActionListener(event -> setVisible(false));
         buttonPanel.add(runButton);
         buttonPanel.add(closeButton);
     }

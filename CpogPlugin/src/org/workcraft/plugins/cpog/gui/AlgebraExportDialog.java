@@ -1,8 +1,6 @@
 package org.workcraft.plugins.cpog.gui;
 
 import java.awt.GridLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 
@@ -65,12 +63,8 @@ public class AlgebraExportDialog extends JDialog {
         add(filePanel);
         add(okPanel);
 
-        getRootPane().registerKeyboardAction(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+        getRootPane().registerKeyboardAction(event -> setVisible(false),
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         pack();
@@ -78,69 +72,46 @@ public class AlgebraExportDialog extends JDialog {
     }
 
     public void addSelectFileBtnListener() {
-        selectFileBtn.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                JFileChooser chooser = new JFileChooser();
-                if (chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-                    File f = chooser.getSelectedFile();
-                    filePath.setText(f.getAbsolutePath());
-                }
+        selectFileBtn.addActionListener(event -> {
+            JFileChooser chooser = new JFileChooser();
+            if (chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+                File f = chooser.getSelectedFile();
+                filePath.setText(f.getAbsolutePath());
             }
-
         });
     }
 
     public void addRadioButtonListener() {
-        pasteRB.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                if (pasteRB.isSelected()) {
-                    exportRB.setSelected(false);
-                    filePath.setEnabled(false);
-                    selectFileBtn.setEnabled(false);
-                }
+        pasteRB.addActionListener(event -> {
+            if (pasteRB.isSelected()) {
+                exportRB.setSelected(false);
+                filePath.setEnabled(false);
+                selectFileBtn.setEnabled(false);
             }
-
         });
 
-        exportRB.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (exportRB.isSelected()) {
-                    pasteRB.setSelected(false);
-                    filePath.setEnabled(true);
-                    selectFileBtn.setEnabled(true);
-                } else {
-                    filePath.setEnabled(false);
-                    selectFileBtn.setEnabled(false);
-                }
-
+        exportRB.addActionListener(event -> {
+            if (exportRB.isSelected()) {
+                pasteRB.setSelected(false);
+                filePath.setEnabled(true);
+                selectFileBtn.setEnabled(true);
+            } else {
+                filePath.setEnabled(false);
+                selectFileBtn.setEnabled(false);
             }
 
         });
     }
 
     public void addButtonListeners() {
-        okButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                okClicked = true;
-                setVisible(false);
-            }
+        okButton.addActionListener(event -> {
+            okClicked = true;
+            setVisible(false);
         });
 
-        cancelButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                okClicked = false;
-                setVisible(false);
-            }
-
+        cancelButton.addActionListener(event -> {
+            okClicked = false;
+            setVisible(false);
         });
     }
 

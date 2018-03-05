@@ -1,7 +1,5 @@
 package org.workcraft.gui;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -35,12 +33,7 @@ public final class LogAreaMouseListener implements MouseListener {
 
                 // Select all
                 JMenuItem miSelect = new JMenuItem("Select all");
-                miSelect.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        textArea.selectAll();
-                    }
-                });
+                miSelect.addActionListener(event -> textArea.selectAll());
                 miSelect.setText("Select All");
                 miSelect.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_A, DesktopApi.getMenuKeyMask()));
                 miCopy.setMnemonic(KeyEvent.VK_A);
@@ -49,12 +42,7 @@ public final class LogAreaMouseListener implements MouseListener {
                 // Clear
                 JMenuItem miClear = new JMenuItem("Clear");
                 miCopy.setMnemonic(KeyEvent.VK_R);
-                miClear.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        textArea.setText("");
-                    }
-                });
+                miClear.addActionListener(event -> textArea.setText(""));
                 popup.add(miClear);
 
                 popup.show(textArea, e.getX(), e.getY());

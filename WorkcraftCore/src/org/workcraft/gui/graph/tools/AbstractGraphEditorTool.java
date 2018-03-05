@@ -2,8 +2,6 @@ package org.workcraft.gui.graph.tools;
 
 import java.awt.Cursor;
 import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.Icon;
 import javax.swing.JPanel;
@@ -115,13 +113,10 @@ public abstract class AbstractGraphEditorTool implements GraphEditorTool {
         issueText = message;
         editor.repaint();
         if (issueTimer == null) {
-            issueTimer = new Timer(CommonEditorSettings.getFlashInterval(), new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    issueText = null;
-                    if (editor != null) {
-                        editor.repaint();
-                    }
+            issueTimer = new Timer(CommonEditorSettings.getFlashInterval(), event -> {
+                issueText = null;
+                if (editor != null) {
+                    editor.repaint();
                 }
             });
         }

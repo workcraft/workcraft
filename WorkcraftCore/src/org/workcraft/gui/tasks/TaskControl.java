@@ -2,8 +2,6 @@ package org.workcraft.gui.tasks;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -54,12 +52,7 @@ public class TaskControl extends JPanel {
         progressBar.setPreferredSize(new Dimension(300, 20));
 
         btnCancel = new JButton("Cancel");
-        btnCancel.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cancel();
-            }
-        });
+        btnCancel.addActionListener(event -> cancel());
 
         add(label, "0,0,2,0");
         add(progressBar, "0,1,2,1");

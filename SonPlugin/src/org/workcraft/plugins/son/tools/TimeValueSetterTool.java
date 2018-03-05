@@ -6,8 +6,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
@@ -112,42 +110,36 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
         buttonPanel.add(estimatorButton);
         buttonPanel.add(clearButton);
 
-        estimatorButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                editor.requestFocus();
-                editor.getWorkspaceEntry().saveMemento();
-                Granularity g = granularityPanel.getSelection();
-                TimeEstimatorDialog estimator = new TimeEstimatorDialog(editor, settings, selection, g);
-                visualNet.setForegroundColor(selection, selectedColor);
-                final Framework framework = Framework.getInstance();
-                final MainWindow mainWindow = framework.getMainWindow();
-                GUI.centerToParent(estimator, mainWindow);
-                estimator.setVisible(true);
-                if (estimator.getRun() == 1) {
-                    updateTimePanel(editor, visualSelection);
-                }
+        estimatorButton.addActionListener(event -> {
+            editor.requestFocus();
+            editor.getWorkspaceEntry().saveMemento();
+            Granularity g = granularityPanel.getSelection();
+            TimeEstimatorDialog estimator = new TimeEstimatorDialog(editor, settings, selection, g);
+            visualNet.setForegroundColor(selection, selectedColor);
+            final Framework framework = Framework.getInstance();
+            final MainWindow mainWindow = framework.getMainWindow();
+            GUI.centerToParent(estimator, mainWindow);
+            estimator.setVisible(true);
+            if (estimator.getRun() == 1) {
+                updateTimePanel(editor, visualSelection);
             }
         });
 
-        clearButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                editor.getWorkspaceEntry().saveMemento();
-                Interval interval = new Interval();
-                if (visualSelection != null) {
-                    if (visualSelection instanceof VisualComponent) {
-                        if ((selection instanceof Time) && !(selection instanceof Event)) {
-                            Time time = (Time) selection;
-                            time.setDuration(interval);
-                            time.setStartTime(interval);
-                            time.setEndTime(interval);
-                        }
-                    } else if (visualSelection instanceof VisualSONConnection) {
-                        ((SONConnection) selection).setTime(interval);
+        clearButton.addActionListener(event -> {
+            editor.getWorkspaceEntry().saveMemento();
+            Interval interval = new Interval();
+            if (visualSelection != null) {
+                if (visualSelection instanceof VisualComponent) {
+                    if ((selection instanceof Time) && !(selection instanceof Event)) {
+                        Time time = (Time) selection;
+                        time.setDuration(interval);
+                        time.setStartTime(interval);
+                        time.setEndTime(interval);
                     }
-                    updateTimePanel(editor, visualSelection);
+                } else if (visualSelection instanceof VisualSONConnection) {
+                    ((SONConnection) selection).setTime(interval);
                 }
+                updateTimePanel(editor, visualSelection);
             }
         });
 

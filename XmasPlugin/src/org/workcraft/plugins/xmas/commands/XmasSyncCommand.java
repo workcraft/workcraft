@@ -3,8 +3,6 @@ package org.workcraft.plugins.xmas.commands;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -350,14 +348,11 @@ public class XmasSyncCommand implements Command {
             panellist.get(panellist.size() - 1).add(new JTextField("Sync" + no));
             panellist.get(panellist.size() - 1).add(new JLabel(" Type "));
             panellist.get(panellist.size() - 1).add(combob = new JComboBox(choices));
-            combob.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent event) {
-                    JComboBox comboBox = (JComboBox) event.getSource();
-                    Object selected = comboBox.getSelectedItem();
-                    if (selected.toString().equals("mesochronous")) {
-                        setFields();
-                    }
+            combob.addActionListener(event -> {
+                JComboBox comboBox = (JComboBox) event.getSource();
+                Object selected = comboBox.getSelectedItem();
+                if (selected.toString().equals("mesochronous")) {
+                    setFields();
                 }
             });
             panellist.get(panellist.size() - 1).add(new JLabel(" ClkF1  "));
@@ -380,69 +375,58 @@ public class XmasSyncCommand implements Command {
         panelb.add(okButton);
         panelmain.add(panelb);
 
-        cancelButton.addActionListener(new ActionListener() {
+        cancelButton.addActionListener(event -> dispose());
 
-            public void actionPerformed(ActionEvent e) {
-                dispose();
+        okButton.addActionListener(event -> {
+            int no = 1;
+            dispose();
+            writeOutput();
+            storeFields();
+            updatesynclist();
+            writesynclist();
+            String gp = "";
+
+            no = 0;
+            for (Sync s : synclist) {
+                grnums1.set(no, s.gr1);
+                grnums2.set(no, s.gr2);
+                no++;
             }
-
-        });
-
-        okButton.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                int no = 1;
-
-                dispose();
-                writeOutput();
-                storeFields();
-                updatesynclist();
-                writesynclist();
-                String gp = "";
-
-                no = 0;
-                for (Sync s : synclist) {
-                    grnums1.set(no, s.gr1);
-                    grnums2.set(no, s.gr2);
-                    no++;
-                }
-                no = 0;
-                for (Node node : vnet.getNodes()) {
-                    if (node instanceof VisualSyncComponent) {   //won't work for sync
-                        VisualSyncComponent vsc = (VisualSyncComponent) node;
-                        SyncComponent sc = vsc.getReferencedSyncComponent();
-                        System.out.println("Sync component " + "Sync" + no + " = " + slist.get(no));
-                        System.out.println("group1 = " + grnums1.get(no) + " " + "group2 = " + grnums2.get(no));
-                        System.out.println("Clk1 = " + slist1.get(no) + " " + "Clk2 = " + slist2.get(no));
-                        String gp1 = slist1.get(no);
-                        sc.setGp1(gp1);
-                        String gp2 = slist2.get(no);
-                        sc.setGp2(gp2);
-                        String typ = slist.get(no);
-                        sc.setTyp(typ);
-                        no++;  //shifted
-                    } else if (node instanceof VisualSourceComponent) {
-                        VisualSourceComponent vsc = (VisualSourceComponent) node;
-                        SourceComponent sc = vsc.getReferencedSourceComponent();
-                        int sno = sc.getGr();
-                        for (int i = 0; i < grnums1.size(); i++) {
-                            if (grnums1.get(i) == sno) gp = slist1.get(i);
-                            if (grnums2.get(i) == sno) gp = slist2.get(i);
-                        }
-                        sc.setGp(gp);
-                    } else if (node instanceof VisualQueueComponent) {
-                        VisualQueueComponent vsc = (VisualQueueComponent) node;
-                        QueueComponent sc = vsc.getReferencedQueueComponent();
-                        int qno = sc.getGr();
-                        for (int i = 0; i < grnums1.size(); i++) {
-                            if (grnums1.get(i) == qno) gp = slist1.get(i);
-                            if (grnums2.get(i) == qno) gp = slist2.get(i);
-                        }
-                        sc.setGp(gp);
+            no = 0;
+            for (Node node : vnet.getNodes()) {
+                if (node instanceof VisualSyncComponent) {   //won't work for sync
+                    VisualSyncComponent vsc1 = (VisualSyncComponent) node;
+                    SyncComponent sc1 = vsc1.getReferencedSyncComponent();
+                    System.out.println("Sync component " + "Sync" + no + " = " + slist.get(no));
+                    System.out.println("group1 = " + grnums1.get(no) + " " + "group2 = " + grnums2.get(no));
+                    System.out.println("Clk1 = " + slist1.get(no) + " " + "Clk2 = " + slist2.get(no));
+                    String gp1 = slist1.get(no);
+                    sc1.setGp1(gp1);
+                    String gp2 = slist2.get(no);
+                    sc1.setGp2(gp2);
+                    String typ = slist.get(no);
+                    sc1.setTyp(typ);
+                    no++;  //shifted
+                } else if (node instanceof VisualSourceComponent) {
+                    VisualSourceComponent vsc2 = (VisualSourceComponent) node;
+                    SourceComponent sc2 = vsc2.getReferencedSourceComponent();
+                    int sno = sc2.getGr();
+                    for (int i1 = 0; i1 < grnums1.size(); i1++) {
+                        if (grnums1.get(i1) == sno) gp = slist1.get(i1);
+                        if (grnums2.get(i1) == sno) gp = slist2.get(i1);
                     }
+                    sc2.setGp(gp);
+                } else if (node instanceof VisualQueueComponent) {
+                    VisualQueueComponent vsc3 = (VisualQueueComponent) node;
+                    QueueComponent sc3 = vsc3.getReferencedQueueComponent();
+                    int qno = sc3.getGr();
+                    for (int i2 = 0; i2 < grnums1.size(); i2++) {
+                        if (grnums1.get(i2) == qno) gp = slist1.get(i2);
+                        if (grnums2.get(i2) == qno) gp = slist2.get(i2);
+                    }
+                    sc3.setGp(gp);
                 }
             }
-
         });
         mainFrame.pack();
         mainFrame.setVisible(true);

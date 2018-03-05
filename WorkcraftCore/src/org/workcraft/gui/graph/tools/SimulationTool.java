@@ -14,8 +14,6 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -202,116 +200,76 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
             }
         });
 
-        randomButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (timer == null) {
-                    timer = new Timer(getAnimationDelay(), new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            randomStep(editor);
-                        }
-                    });
-                    timer.start();
-                    random = true;
-                } else if (random) {
-                    timer.stop();
-                    timer = null;
-                    random = false;
-                } else {
-                    random = true;
-                }
-                updateState(editor);
-                editor.requestFocus();
+        randomButton.addActionListener(event -> {
+            if (timer == null) {
+                timer = new Timer(getAnimationDelay(), event1 -> randomStep(editor));
+                timer.start();
+                random = true;
+            } else if (random) {
+                timer.stop();
+                timer = null;
+                random = false;
+            } else {
+                random = true;
             }
+            updateState(editor);
+            editor.requestFocus();
         });
 
-        playButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (timer == null) {
-                    timer = new Timer(getAnimationDelay(), new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            step(editor);
-                        }
-                    });
-                    timer.start();
-                    random = false;
-                } else if (!random) {
-                    timer.stop();
-                    timer = null;
-                    random = false;
-                } else {
-                    random = false;
-                }
-                updateState(editor);
-                editor.requestFocus();
+        playButton.addActionListener(event -> {
+            if (timer == null) {
+                timer = new Timer(getAnimationDelay(), event1 -> step(editor));
+                timer.start();
+                random = false;
+            } else if (!random) {
+                timer.stop();
+                timer = null;
+                random = false;
+            } else {
+                random = false;
             }
+            updateState(editor);
+            editor.requestFocus();
         });
 
-        stopButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                clearTraces(editor);
-                editor.requestFocus();
-            }
+        stopButton.addActionListener(event -> {
+            clearTraces(editor);
+            editor.requestFocus();
         });
 
-        backwardButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                stepBack(editor);
-                editor.requestFocus();
-            }
+        backwardButton.addActionListener(event -> {
+            stepBack(editor);
+            editor.requestFocus();
         });
 
-        forwardButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                step(editor);
-                editor.requestFocus();
-            }
+        forwardButton.addActionListener(event -> {
+            step(editor);
+            editor.requestFocus();
         });
 
-        generateGraphButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                generateTraceGraph(editor);
-                editor.requestFocus();
-            }
+        generateGraphButton.addActionListener(event -> {
+            generateTraceGraph(editor);
+            editor.requestFocus();
         });
 
-        copyStateButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                copyState(editor);
-                editor.requestFocus();
-            }
+        copyStateButton.addActionListener(event -> {
+            copyState(editor);
+            editor.requestFocus();
         });
 
-        pasteStateButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                pasteState(editor);
-                editor.requestFocus();
-            }
+        pasteStateButton.addActionListener(event -> {
+            pasteState(editor);
+            editor.requestFocus();
         });
 
-        mergeTraceButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                mergeTrace(editor);
-                editor.requestFocus();
-            }
+        mergeTraceButton.addActionListener(event -> {
+            mergeTrace(editor);
+            editor.requestFocus();
         });
 
-        saveInitStateButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                savedState = readModelState();
-                editor.requestFocus();
-            }
+        saveInitStateButton.addActionListener(event -> {
+            savedState = readModelState();
+            editor.requestFocus();
         });
 
         traceTable.addMouseListener(new MouseListener() {

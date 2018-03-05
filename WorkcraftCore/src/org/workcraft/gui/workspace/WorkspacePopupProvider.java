@@ -1,8 +1,6 @@
 package org.workcraft.gui.workspace;
 
 import java.awt.Component;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -15,8 +13,8 @@ import javax.swing.JPopupMenu;
 
 import org.workcraft.Framework;
 import org.workcraft.MenuOrdering.Position;
-import org.workcraft.commands.Command;
 import org.workcraft.PluginManager;
+import org.workcraft.commands.Command;
 import org.workcraft.dom.Model;
 import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.gui.FileFilters;
@@ -55,33 +53,19 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
         if (file.isDirectory()) {
             popup.addSeparator();
             final JMenuItem miLink = new JMenuItem("Link external files or directories...");
-            miLink.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    wsWindow.addToWorkspace(path);
-                }
-            });
+            miLink.addActionListener(event -> wsWindow.addToWorkspace(path));
             popup.add(miLink);
             final JMenuItem miCreateWork = new JMenuItem("Create work...");
-            miCreateWork.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    try {
-                        framework.getMainWindow().createWork(path);
-                    } catch (OperationCancelledException e1) { }
+            miCreateWork.addActionListener(event -> {
+                try {
+                    framework.getMainWindow().createWork(path);
+                } catch (OperationCancelledException e1) {
                 }
             });
             popup.add(miCreateWork);
             final JMenuItem miCreateFolder = new JMenuItem("Create folder...");
-            miCreateFolder.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    try {
-                        createFolder(path);
-                    } catch (OperationCancelledException e1) { }
-                }
-
-                private void createFolder(Path<String> path) throws OperationCancelledException {
+            miCreateFolder.addActionListener(event -> {
+                try {
                     String name;
                     while (true) {
                         name = DialogUtils.showInput("Please enter the name of the new folder:", "");
@@ -96,8 +80,8 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                             break;
                         }
                     }
-
                     workspace.fireWorkspaceChanged();
+                } catch (OperationCancelledException e1) {
                 }
             });
             popup.add(miCreateFolder);
@@ -110,12 +94,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                 if (file.exists()) {
                     if (file.getName().endsWith(FileFilters.DOCUMENT_EXTENSION)) {
                         final JMenuItem miOpen = new JMenuItem("Open");
-                        miOpen.addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                mainWindow.openWork(file);
-                            }
-                        });
+                        miOpen.addActionListener(event -> mainWindow.openWork(file));
                         popup.add(miOpen);
                     }
 
@@ -128,12 +107,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                         }
                         JMenuItem mi = new JMenuItem(handler.getDisplayName());
                         handlers.put(mi, handler);
-                        mi.addActionListener(new ActionListener() {
-                            @Override
-                            public void actionPerformed(ActionEvent e) {
-                                handlers.get(e.getSource()).execute(file);
-                            }
-                        });
+                        mi.addActionListener(event -> handlers.get(event.getSource()).execute(file));
                         popup.add(mi);
                     }
                 }
@@ -147,32 +121,21 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                     popup.addSeparator();
 
                     JMenuItem miOpenView = new JMenuItem("Open editor");
-                    miOpenView.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            mainWindow.createEditorWindow(we);
-                        }
-                    });
+                    miOpenView.addActionListener(event -> mainWindow.createEditorWindow(we));
 
                     JMenuItem miSave = new JMenuItem("Save");
-                    miSave.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            try {
-                                mainWindow.saveWork(we);
-                            } catch (OperationCancelledException e1) {
-                            }
+                    miSave.addActionListener(event -> {
+                        try {
+                            mainWindow.saveWork(we);
+                        } catch (OperationCancelledException e1) {
                         }
                     });
 
                     JMenuItem miSaveAs = new JMenuItem("Save as...");
-                    miSaveAs.addActionListener(new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            try {
-                                mainWindow.saveWorkAs(we);
-                            } catch (OperationCancelledException e1) {
-                            }
+                    miSaveAs.addActionListener(event -> {
+                        try {
+                            mainWindow.saveWorkAs(we);
+                        } catch (OperationCancelledException e1) {
                         }
                     });
 
@@ -207,11 +170,7 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
                                 isFirstItem = false;
                                 JMenuItem item = new JMenuItem(command.getDisplayName().trim());
                                 commands.put(item, command);
-                                item.addActionListener(new ActionListener() {
-                                    public void actionPerformed(ActionEvent e) {
-                                        Commands.run(we, commands.get(e.getSource()));
-                                    }
-                                });
+                                item.addActionListener(event -> Commands.run(we, commands.get(event.getSource())));
                                 sectionMenu.add(item);
                             }
                         }
@@ -222,12 +181,10 @@ public class WorkspacePopupProvider implements TreePopupProvider<Path<String>> {
             popup.addSeparator();
 
             JMenuItem miRemove = new JMenuItem("Delete");
-            miRemove.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    try {
-                        workspace.deleteEntry(path);
-                    } catch (OperationCancelledException e1) { }
+            miRemove.addActionListener(event -> {
+                try {
+                    workspace.deleteEntry(path);
+                } catch (OperationCancelledException e1) {
                 }
             });
             popup.add(miRemove);

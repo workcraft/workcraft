@@ -1,7 +1,5 @@
 package org.workcraft.plugins.xmas.tools;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,13 +38,10 @@ public class SyncSelectionTool extends SelectionTool {
                 popup.setFocusable(false);
             }
             JMenuItem addInputMenuItem = new JMenuItem("Add input-output pair");
-            addInputMenuItem.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    editor.getWorkspaceEntry().saveMemento();
-                    component.addInput("", Positioning.TOP);
-                    component.addOutput("", Positioning.BOTTOM);
-                }
+            addInputMenuItem.addActionListener(event -> {
+                editor.getWorkspaceEntry().saveMemento();
+                component.addInput("", Positioning.TOP);
+                component.addOutput("", Positioning.BOTTOM);
             });
             popup.add(addInputMenuItem);
             return popup;

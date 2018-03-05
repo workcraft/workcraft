@@ -45,20 +45,15 @@ public class PresetManagerDialog<T> extends JDialog {
         this.add(content, BorderLayout.CENTER);
 
         JButton okButton = new JButton("OK");
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-            }
-        });
+        okButton.addActionListener(event -> setVisible(false));
 
         JButton deleteButton = new JButton("Delete");
         deleteButton.addActionListener(new ActionListener() {
+            @SuppressWarnings("unchecked")
             @Override
             public void actionPerformed(ActionEvent e) {
                 Object o = list.getSelectedValue();
                 if (o != null) {
-                    @SuppressWarnings("unchecked")
                     Preset<T> p = (Preset<T>) o;
                     String msg = "Are you sure you want to delete the preset \'" + p.getDescription() + "\'?";
                     if (DialogUtils.showConfirm(msg, DIALOG_DELETE_PRESET, false)) {

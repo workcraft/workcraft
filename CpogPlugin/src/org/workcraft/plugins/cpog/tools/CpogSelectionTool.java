@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Checkbox;
 import java.awt.Component;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Point2D.Double;
@@ -130,49 +128,46 @@ public class CpogSelectionTool extends SelectionTool {
         JPanel buttonPanel = new JPanel();
 
         JButton btnInsert = new JButton("Insert");
-        btnInsert.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                int prevLineEnd = 0;
-                ArrayList<String> expressions = new ArrayList<>();
-                editor.getWorkspaceEntry().captureMemento();
-                try {
-                    for (int i = 0; i < expressionText.getLineCount(); i++) {
-                        String exp = expressionText.getText().substring(prevLineEnd, expressionText.getLineEndOffset(i));
+        btnInsert.addActionListener(event -> {
+            int prevLineEnd = 0;
+            ArrayList<String> expressions = new ArrayList<>();
+            editor.getWorkspaceEntry().captureMemento();
+            try {
+                for (int i = 0; i < expressionText.getLineCount(); i++) {
+                    String exp1 = expressionText.getText().substring(prevLineEnd, expressionText.getLineEndOffset(i));
 
-                        exp = exp.replace("\n", "");
-                        exp = exp.replace("\t", " ");
+                    exp1 = exp1.replace("\n", "");
+                    exp1 = exp1.replace("\t", " ");
 
-                        if (exp.compareTo("") != 0) {
-                            expressions.add(exp);
-                        }
+                    if (exp1.compareTo("") != 0) {
+                        expressions.add(exp1);
+                    }
 
-                        prevLineEnd = expressionText.getLineEndOffset(i);
-                    }
-                    WorkspaceEntry we = editor.getWorkspaceEntry();
-                    VisualCpog visualCpog = WorkspaceUtils.getAs(we, VisualCpog.class);
-                    String exp = "";
-                    coordinate = getLowestVertex(visualCpog);
-                    coordinate.setLocation(coordinate.getX(), coordinate.getY() + 2);
-                    for (String s : expressions) {
-                        if (!s.contains("=")) {
-                            exp = exp + " " + s;
-                        } else {
-                            if (exp.compareTo("") != 0) {
-                                insertExpression(exp, visualCpog, false, false, true, false);
-                                exp = "";
-                            }
-                            exp = s;
-                        }
-                    }
-                    if (exp.compareTo("") != 0) {
-                        insertExpression(exp, visualCpog, false, false, true, false);
-                    }
-                    editor.getWorkspaceEntry().saveMemento();
-                } catch (BadLocationException e1) {
-                    editor.getWorkspaceEntry().cancelMemento();
-                    e1.printStackTrace();
+                    prevLineEnd = expressionText.getLineEndOffset(i);
                 }
+                WorkspaceEntry we = editor.getWorkspaceEntry();
+                VisualCpog visualCpog = WorkspaceUtils.getAs(we, VisualCpog.class);
+                String exp2 = "";
+                coordinate = getLowestVertex(visualCpog);
+                coordinate.setLocation(coordinate.getX(), coordinate.getY() + 2);
+                for (String s : expressions) {
+                    if (!s.contains("=")) {
+                        exp2 = exp2 + " " + s;
+                    } else {
+                        if (exp2.compareTo("") != 0) {
+                            insertExpression(exp2, visualCpog, false, false, true, false);
+                            exp2 = "";
+                        }
+                        exp2 = s;
+                    }
+                }
+                if (exp2.compareTo("") != 0) {
+                    insertExpression(exp2, visualCpog, false, false, true, false);
+                }
+                editor.getWorkspaceEntry().saveMemento();
+            } catch (BadLocationException e1) {
+                editor.getWorkspaceEntry().cancelMemento();
+                e1.printStackTrace();
             }
         });
         buttonPanel.add(btnInsert);
@@ -195,14 +190,11 @@ public class CpogSelectionTool extends SelectionTool {
     public void scenarioPageGroupButton(JPanel groupPanel) {
         JButton groupPageButton = GUI.createIconButton(GUI.createIconFromSVG(
                 "images/selection-page.svg"), "Combine selection as a scenario (Alt-G)");
-        groupPageButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                VisualCpog visualCpog = (VisualCpog) editor.getWorkspaceEntry().getModelEntry().getVisualModel();
-                visualCpog.groupScenarioPageSelection("scenario" + scenarioNo);
-                scenarioNo++;
-                editor.requestFocus();
-            }
+        groupPageButton.addActionListener(event -> {
+            VisualCpog visualCpog = (VisualCpog) editor.getWorkspaceEntry().getModelEntry().getVisualModel();
+            visualCpog.groupScenarioPageSelection("scenario" + scenarioNo);
+            scenarioNo++;
+            editor.requestFocus();
         });
         if (groupPanel != null) {
             groupPanel.add(groupPageButton, 1);

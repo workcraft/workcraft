@@ -5,8 +5,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
@@ -74,15 +72,10 @@ public class MpsatAssertionDialog extends JDialog {
 
         presetPanel.selectFirst();
 
-        getRootPane().registerKeyboardAction(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        modalResult = 0;
-                        setVisible(false);
-                    }
-                },
-                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
-                JComponent.WHEN_IN_FOCUSED_WINDOW);
+        getRootPane().registerKeyboardAction(event -> {
+            modalResult = 0;
+            setVisible(false);
+        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         addWindowListener(new WindowAdapter() {
             public void windowOpened(WindowEvent e) {
@@ -147,30 +140,19 @@ public class MpsatAssertionDialog extends JDialog {
         buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
         JButton runButton = GUI.createDialogButton("Run");
-        runButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                modalResult = 1;
-                setVisible(false);
-            }
+        runButton.addActionListener(event -> {
+            modalResult = 1;
+            setVisible(false);
         });
 
         JButton cancelButton = GUI.createDialogButton("Cancel");
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                modalResult = 0;
-                setVisible(false);
-            }
+        cancelButton.addActionListener(event -> {
+            modalResult = 0;
+            setVisible(false);
         });
 
         JButton helpButton = GUI.createDialogButton("Help");
-        helpButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                DesktopApi.open(new File("help/assertion.html"));
-            }
-        });
+        helpButton.addActionListener(event -> DesktopApi.open(new File("help/assertion.html")));
 
         buttonsPanel.add(runButton);
         buttonsPanel.add(cancelButton);

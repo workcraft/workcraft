@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.Set;
 
@@ -59,20 +57,10 @@ public class NwayDialog extends JDialog {
 
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton runButton = GUI.createDialogButton("Run");
-        runButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                runAction();
-            }
-        });
+        runButton.addActionListener(event -> runAction());
 
         JButton cancelButton = GUI.createDialogButton("Cancel");
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                cancelAction();
-            }
-        });
+        cancelButton.addActionListener(event -> cancelAction());
 
         buttonsPanel.add(runButton);
         buttonsPanel.add(cancelButton);
@@ -80,21 +68,11 @@ public class NwayDialog extends JDialog {
         content.add(buttonsPanel, BorderLayout.SOUTH);
 
         JRootPane rootPane = getRootPane();
-        rootPane.registerKeyboardAction(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        runAction();
-                    }
-                },
+        rootPane.registerKeyboardAction(event -> runAction(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-        rootPane.registerKeyboardAction(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        cancelAction();
-                    }
-                },
+        rootPane.registerKeyboardAction(event -> cancelAction(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 

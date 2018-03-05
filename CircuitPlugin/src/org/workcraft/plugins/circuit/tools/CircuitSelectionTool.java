@@ -1,7 +1,5 @@
 package org.workcraft.plugins.circuit.tools;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.HashMap;
@@ -50,42 +48,30 @@ public class CircuitSelectionTool extends SelectionTool {
                 popup.setFocusable(false);
             }
             JMenuItem addOutputMenuItem = new JMenuItem("Add output pin");
-            addOutputMenuItem.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    editor.getWorkspaceEntry().saveMemento();
-                    VisualCircuit circuit = (VisualCircuit) editor.getModel();
-                    circuit.getOrCreateContact(component, null, IOType.OUTPUT);
-                }
+            addOutputMenuItem.addActionListener(event -> {
+                editor.getWorkspaceEntry().saveMemento();
+                VisualCircuit circuit = (VisualCircuit) editor.getModel();
+                circuit.getOrCreateContact(component, null, IOType.OUTPUT);
             });
             popup.add(addOutputMenuItem);
             JMenuItem addInputMenuItem = new JMenuItem("Add input pin");
-            addInputMenuItem.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    editor.getWorkspaceEntry().saveMemento();
-                    VisualCircuit circuit = (VisualCircuit) editor.getModel();
-                    circuit.getOrCreateContact(component, null, IOType.INPUT);
-                }
+            addInputMenuItem.addActionListener(event -> {
+                editor.getWorkspaceEntry().saveMemento();
+                VisualCircuit circuit = (VisualCircuit) editor.getModel();
+                circuit.getOrCreateContact(component, null, IOType.INPUT);
             });
             popup.add(addInputMenuItem);
             popup.addSeparator();
             JMenuItem defaultContactPositionMenuItem = new JMenuItem("Set contacts in default position");
-            defaultContactPositionMenuItem.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    editor.getWorkspaceEntry().saveMemento();
-                    component.setContactsDefaultPosition();
-                }
+            defaultContactPositionMenuItem.addActionListener(event -> {
+                editor.getWorkspaceEntry().saveMemento();
+                component.setContactsDefaultPosition();
             });
             popup.add(defaultContactPositionMenuItem);
             JMenuItem centerPivotPointMenuItem = new JMenuItem("Center pivot point");
-            centerPivotPointMenuItem.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    editor.getWorkspaceEntry().saveMemento();
-                    component.centerPivotPoint(true, true);
-                }
+            centerPivotPointMenuItem.addActionListener(event -> {
+                editor.getWorkspaceEntry().saveMemento();
+                component.centerPivotPoint(true, true);
             });
             popup.add(centerPivotPointMenuItem);
         }

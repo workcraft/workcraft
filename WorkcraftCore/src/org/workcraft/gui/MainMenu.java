@@ -1,7 +1,6 @@
 package org.workcraft.gui;
 
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.util.ArrayList;
@@ -389,24 +388,14 @@ public class MainMenu extends JMenuBar {
                     miFile.setMnemonic(index + '0');
                     index++;
                 }
-                miFile.addActionListener(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        mainWindow.openWork(new File(entry));
-                    }
-                });
+                miFile.addActionListener(event -> mainWindow.openWork(new File(entry)));
                 mnRecent.add(miFile);
                 mnRecent.setEnabled(true);
             }
         }
         mnRecent.addSeparator();
         JMenuItem miClear = new JMenuItem("Clear the list");
-        miClear.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                mainWindow.clearRecentFilesMenu();
-            }
-        });
+        miClear.addActionListener(event -> mainWindow.clearRecentFilesMenu());
         mnRecent.add(miClear);
     }
 

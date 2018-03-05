@@ -2,8 +2,6 @@ package org.workcraft.plugins.plato.gui;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 
@@ -63,49 +61,33 @@ public class PlatoIncludesDialog extends JDialog {
         btnPanel.add(removeBtn);
         btnPanel.add(okBtn);
 
-        addBtn.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                JFileChooser chooser = new JFileChooser();
-                chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-                chooser.setFileFilter(new FileNameExtensionFilter("Haskell/Concept file (.hs)", "hs"));
-                chooser.setCurrentDirectory(lastDirUsed);
-                if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-                    File f = chooser.getSelectedFile();
-                    try {
-                        if (!f.exists()) {
-                            throw new FileNotFoundException();
-                        }
-                        includeListModel.addElement(f.getAbsolutePath());
-                        // includeList.setListData(includeListModel);
-                    } catch (FileNotFoundException e1) {
-                        DialogUtils.showError(e1.getMessage());
+        addBtn.addActionListener(event -> {
+            JFileChooser chooser = new JFileChooser();
+            chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+            chooser.setFileFilter(new FileNameExtensionFilter("Haskell/Concept file (.hs)", "hs"));
+            chooser.setCurrentDirectory(lastDirUsed);
+            if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+                File f = chooser.getSelectedFile();
+                try {
+                    if (!f.exists()) {
+                        throw new FileNotFoundException();
                     }
-
+                    includeListModel.addElement(f.getAbsolutePath());
+                    // includeList.setListData(includeListModel);
+                } catch (FileNotFoundException e1) {
+                    DialogUtils.showError(e1.getMessage());
                 }
+
             }
         });
 
-        removeBtn.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (!includeList.isSelectionEmpty()) {
-                    includeListModel.removeElement(includeList.getSelectedValue());
-                }
+        removeBtn.addActionListener(event -> {
+            if (!includeList.isSelectionEmpty()) {
+                includeListModel.removeElement(includeList.getSelectedValue());
             }
-
         });
 
-        okBtn.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-            }
-
-        });
+        okBtn.addActionListener(event -> setVisible(false));
     }
 
 }

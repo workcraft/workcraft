@@ -5,8 +5,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -120,63 +118,51 @@ public class ScenarioGeneratorTool extends SONSimulationTool {
         tabelPanel = new JScrollPane(scenarioTable);
         tabelPanel.setPreferredSize(new Dimension(1, 1));
 
-        startButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (startButton.isSelected()) {
-                    start();
-                } else {
-                    Step step = simuAlg.getEnabledNodes(sync, phases, isRev);
-                    setColors(step, greyoutColor);
-                    net.clearMarking();
-                }
-            }
-        });
-
-        resetButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                startButton.setSelected(true);
+        startButton.addActionListener(event -> {
+            if (startButton.isSelected()) {
                 start();
+            } else {
+                Step step = simuAlg.getEnabledNodes(sync, phases, isRev);
+                setColors(step, greyoutColor);
+                net.clearMarking();
             }
         });
 
-        saveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (!scenarioRef.isEmpty()) {
-                    scenarioTable.setIsCellColor(true);
-                    ScenarioRef cache = new ScenarioRef();
-                    //add scenario nodes
-                    cache.addAll(scenarioRef);
-                    //add scenario connections
-                    for (SONConnection con : scenarioRef.getRuntimeConnections(net)) {
-                        cache.add(net.getNodeReference(con));
-                    }
-                    saveList.add(cache);
-                    saveList.setPosition(saveList.size() - 1);
-                    updateState(editor);
+        resetButton.addActionListener(event -> {
+            startButton.setSelected(true);
+            start();
+        });
+
+        saveButton.addActionListener(event -> {
+            if (!scenarioRef.isEmpty()) {
+                scenarioTable.setIsCellColor(true);
+                ScenarioRef cache = new ScenarioRef();
+                //add scenario nodes
+                cache.addAll(scenarioRef);
+                //add scenario connections
+                for (SONConnection con : scenarioRef.getRuntimeConnections(net)) {
+                    cache.add(net.getNodeReference(con));
                 }
+                saveList.add(cache);
+                saveList.setPosition(saveList.size() - 1);
+                updateState(editor);
             }
         });
 
-        removeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
+        removeButton.addActionListener(event -> {
+            if (!saveList.isEmpty()) {
+                scenarioTable.setIsCellColor(true);
+                int currentPosition = saveList.getPosition();
+                saveList.remove(currentPosition);
+                scenarioRef.clear();
+                if (saveList.getPosition() > saveList.size() - 1) {
+                    saveList.decPosition(1);
+                }
                 if (!saveList.isEmpty()) {
-                    scenarioTable.setIsCellColor(true);
-                    int currentPosition = saveList.getPosition();
-                    saveList.remove(currentPosition);
-                    scenarioRef.clear();
-                    if (saveList.getPosition() > saveList.size() - 1) {
-                        saveList.decPosition(1);
-                    }
-                    if (!saveList.isEmpty()) {
-                        scenarioRef.addAll(saveList.get(saveList.getPosition()).getNodeRefs(net));
-                    }
-                    scenarioTable.runtimeUpdateColor();
-                    updateState(editor);
+                    scenarioRef.addAll(saveList.get(saveList.getPosition()).getNodeRefs(net));
                 }
+                scenarioTable.runtimeUpdateColor();
+                updateState(editor);
             }
         });
 
