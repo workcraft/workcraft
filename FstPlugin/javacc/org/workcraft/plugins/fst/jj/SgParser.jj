@@ -3,7 +3,7 @@
  */
 options
 {
-    JDK_VERSION = "1.7";
+    JDK_VERSION = "1.8";
     LOOKAHEAD= 1;
     STATIC = false;
     DEBUG_PARSER = true;
@@ -62,7 +62,8 @@ PARSER_END(SgParser)
 SKIP :
 {
     " "
-|   "\t"
+|
+    "\t"
 }
 
 <IGNORE_LINE>
@@ -80,26 +81,46 @@ TOKEN :
 TOKEN :
 {
     <COMMENT : "#" (~["\r", "\n"])*>
-|   <LINEBREAK : ((<COMMENT>)? ["\r", "\n"])+>
-|   <MODEL_NAME : ".model" | ".name">
-|   <INPUT_HEADER : ".inputs">
-|   <OUTPUT_HEADER : ".outputs">
-|   <INTERNAL_HEADER : ".internal">
-|   <DUMMY_HEADER : ".dummy">
-|   <STATE_GRAPH : ".state graph">
-|   <MARKING : ".marking">
-|   <END : ".end"> : IGNORE_ALL
-|   <UNSUPPORTED_HEADER : "." <NAME>> : IGNORE_LINE
-|   <NAME : ["A"-"Z", "a"-"z", "_"] (["_", "A"-"Z", "a"-"z", "0"-"9", "."])*>
-|   <DIRECTION : ["+", "-", "~"]>
-|   <INTEGER : (["0"-"9"])+>
-|   "{"
-|   "}"
-|   "<"
-|   ">"
-|   ","
-|   "/"
-|   "="
+|
+    <LINEBREAK : ((<COMMENT>)? ["\r", "\n"])+>
+|
+    <MODEL_NAME : ".model" | ".name">
+|
+    <INPUT_HEADER : ".inputs">
+|
+    <OUTPUT_HEADER : ".outputs">
+|
+    <INTERNAL_HEADER : ".internal">
+|
+    <DUMMY_HEADER : ".dummy">
+|
+    <STATE_GRAPH : ".state graph">
+|
+    <MARKING : ".marking">
+|
+    <END : ".end"> : IGNORE_ALL
+|
+    <UNSUPPORTED_HEADER : "." <NAME>> : IGNORE_LINE
+|
+    <NAME : ["A"-"Z", "a"-"z", "_"] (["_", "A"-"Z", "a"-"z", "0"-"9", "."])*>
+|
+    <DIRECTION : ["+", "-", "~"]>
+|
+    <INTEGER : (["0"-"9"])+>
+|
+    "{"
+|
+    "}"
+|
+    "<"
+|
+    ">"
+|
+    ","
+|
+    "/"
+|
+    "="
 }
 
 Fst parse() :
@@ -133,23 +154,28 @@ void header() :
         {
             fst.setTitle(t.image);
         }
-    |   <INPUT_HEADER> list = stringList()
+    |
+        <INPUT_HEADER> list = stringList()
         {
             addSignals(list, Type.INPUT);
         }
-    |   <OUTPUT_HEADER> list = stringList()
+    |
+        <OUTPUT_HEADER> list = stringList()
         {
             addSignals(list, Type.OUTPUT);
         }
-    |   <INTERNAL_HEADER> list = stringList()
+    |
+        <INTERNAL_HEADER> list = stringList()
         {
             addSignals(list, Type.INTERNAL);
         }
-    |   <DUMMY_HEADER> list = stringList()
+    |
+        <DUMMY_HEADER> list = stringList()
         {
             addSignals(list, Type.DUMMY);
         }
-    |   t = <UNSUPPORTED_HEADER> <REST>
+    |
+        t = <UNSUPPORTED_HEADER> <REST>
         {
             LogUtils.logWarning("Unsupported keyword '" + t.image + "' in line " + t.beginLine + ". The whole line is ignored.");
         }

@@ -3,7 +3,7 @@
 */
 
 options {
-  JDK_VERSION = "1.7";
+  JDK_VERSION = "1.8";
   STATIC = false;
   UNICODE_INPUT = true;
 }
@@ -117,20 +117,28 @@ PARSER_END(CpogFormulaParser)
 
 SKIP :
 {
-     " "
-|    "\r"
-|    "\t"
-|    "\n"
+    " "
+|
+    "\r"
+|
+    "\t"
+|
+    "\n"
 }
 
 TOKEN : /* OPERATORS */
 {
     < OVERLAY: "+" >
-|   < SEQUENCE: "->" | "^" >
-|   < BOOLOPEN: "[" >
-|   < BOOLCLOSE: "]" >
-|   < BRACKOPEN: "(" >
-|   < BRACKCLOSE: ")" >
+|
+    < SEQUENCE: "->" | "^" >
+|
+    < BOOLOPEN: "[" >
+|
+    < BOOLCLOSE: "]" >
+|
+    < BRACKOPEN: "(" >
+|
+    < BRACKCLOSE: ")" >
 }
 
 TOKEN :

@@ -3,7 +3,7 @@
  */
 
 options {
-    JDK_VERSION = "1.7";
+    JDK_VERSION = "1.8";
     LOOKAHEAD = 1;
     STATIC = false;
     DEBUG_PARSER = true;
@@ -42,17 +42,23 @@ PARSER_END(ExpressionParser)
 SKIP:
 {
     " "
-|   "\t"
-|   "\r"
-|   "\n"
-|   <"#" (~["\r", "\n"])*>
+|
+    "\t"
+|
+    "\r"
+|
+    "\n"
+|
+    <"#" (~["\r", "\n"])*>
 }
 
 TOKEN :
 {
     <CONST0 : "0">
-|   <CONST1 : "1">
-|   <NAME : ["A"-"Z", "a"-"z", "_"](["_", "A"-"Z", "a"-"z", "0"-"9", "."])*>
+|
+    <CONST1 : "1">
+|
+    <NAME : ["A"-"Z", "a"-"z", "_"](["_", "A"-"Z", "a"-"z", "0"-"9", "."])*>
 }
 
 Expression parseExpression():
@@ -116,12 +122,15 @@ Expression parseFactor():
 {
     (
         expression = parseLiteral()
-    |    expression = parseConstant()
-    |    ("!" | "~") expression = parseFactor()
+    |
+        expression = parseConstant()
+    |
+        ("!" | "~") expression = parseFactor()
         {
             return new Negation(expression);
         }
-    |     "(" expression = parseExpression() ")"
+    |
+        "(" expression = parseExpression() ")"
         {
             return new Factor(expression);
         }
@@ -152,7 +161,8 @@ Expression parseConstant():
         {
             return new Constant(false);
         }
-    |    <CONST1>
+    |
+        <CONST1>
         {
             return new Constant(true);
         }

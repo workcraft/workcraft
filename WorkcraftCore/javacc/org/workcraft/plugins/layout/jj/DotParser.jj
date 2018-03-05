@@ -3,7 +3,7 @@
  */
 
 options {
-  JDK_VERSION = "1.7";
+  JDK_VERSION = "1.8";
   LOOKAHEAD = 1;
   STATIC = false;
 }
@@ -32,20 +32,29 @@ PARSER_END(DotParser)
 SKIP :
 {
     " "
-|   "\t"
-|   "\r"
-|   "\n"
-|   <"#" (~["\r","\n"])* (["\r", "\n"])*>
-|   <"//" (~["\r","\n"])* (["\r", "\n"])*>
+|
+    "\t"
+|
+    "\r"
+|
+    "\n"
+|
+    <"#" (~["\r","\n"])* (["\r", "\n"])*>
+|
+    <"//" (~["\r","\n"])* (["\r", "\n"])*>
 }
 
 TOKEN :
 {
     "strict" | "graph" | "digraph" | "node" | "edge"
-|   <NAME: (["_","A"-"Z","a"-"z","0"-"9"])+>
-|   <INTEGER: (["0"-"9"])+>
-|   <QUOTED: "\""(~["\""] | "\\\"")*"\"" >
-|   <NUMERAL: (["-"])?("."(["0"-"9"])+ | (["0"-"9"])+ ("."(["0"-"9"])*)?)>
+|
+    <NAME: (["_","A"-"Z","a"-"z","0"-"9"])+>
+|
+    <INTEGER: (["0"-"9"])+>
+|
+    <QUOTED: "\""(~["\""] | "\\\"")*"\"">
+|
+    <NUMERAL: (["-"])?("."(["0"-"9"])+ | (["0"-"9"])+ ("."(["0"-"9"])*)?)>
 }
 
 String id() :
@@ -53,19 +62,15 @@ String id() :
   Token t;
 }
 {
-    t=< QUOTED >
+    t= <QUOTED>
     {
         return t.image.substring(1, t.image.length()-1);
     }
 |
     (
-      t = "strict"
-    | t = "graph"
-    | t = "digraph"
-    | t = "node"
-    | t = "edge"
-    | t = < NAME >
-    | t = < NUMERAL >
+        t = <NAME>
+    |
+        t = <NUMERAL>
     )
     {
         return t.image;
@@ -85,7 +90,7 @@ int integer() :
     Token token;
 }
 {
-    token = < INTEGER >
+    token = <INTEGER>
     {
       return Integer.parseInt(token.image);
     }
@@ -97,9 +102,9 @@ void attr(Map<String, String> attrs):
     String value = null;
 }
 {
-    name=id()
+    name = id()
     ["="
-    (value=id())
+    (value = id())
     ]
     [","]
     {
@@ -132,19 +137,21 @@ void attr_statement() :
 void statement(DotListener listener) :
 {
     Token name;
-    Map < String, String > prop;
+    Map <String, String> prop;
     String i, j;
 }
 {
     (
         attr_statement()
-    | i = id()
+    |
+        i = id()
         (
             prop = attr_list()
             {
                 listener.node(i, prop);
             }
-        | "->" j = id() prop = attr_list()
+        |
+            "->" j = id() prop = attr_list()
             {
                 listener.arc(i, j, prop);
             }

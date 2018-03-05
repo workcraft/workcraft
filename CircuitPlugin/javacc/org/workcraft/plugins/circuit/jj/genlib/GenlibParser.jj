@@ -3,7 +3,7 @@
  */
 
 options {
-    JDK_VERSION = "1.7";
+    JDK_VERSION = "1.8";
     LOOKAHEAD = 1;
     STATIC = false;
     DEBUG_PARSER = true;
@@ -37,39 +37,63 @@ PARSER_END(GenlibParser)
 <*> SKIP :
 {
     " "
-|   "\t"
-|   "\r"
-|   "\n"
-|   <"#" (~["\r", "\n"])*>
+|
+    "\t"
+|
+    "\r"
+|
+    "\n"
+|
+    <"#" (~["\r", "\n"])*>
 }
 
 TOKEN :
 {
     <GATE : "GATE"> : MODULE_NAME_EXPECTED
-|   <LATCH : "LATCH"> : MODULE_NAME_EXPECTED
-|   <PIN : "PIN">
-|   <CONSTRAINT : "CONSTRAINT">
-|   <INV : "INV">
-|   <NONINV : "NONINV">
-|   <UNKNOWN : "UNKNOWN">
-|   <SEQ : "SEQ">
-|   <ANY : "ANY">
-|   <ACTIVE_LOW : "ACTIVE_LOW">
-|   <ACTIVE_HIGH : "ACTIVE_HIGH">
-|   <RISING_EDGE : "RISING_EDGE">
-|   <FALLING_EDGE : "FALLING_EDGE">
-|   <CONTROL : "CONTROL">
-|   <ASYNCH : "ASYNCH">
-|   <PIN_NAME : ["A"-"Z", "a"-"z", "_"] (["A"-"Z", "a"-"z", "_", "0"-"9"])*>
-|   <NUMERAL: (["-"])?("."(["0"-"9"])+ | (["0"-"9"])+ ("."(["0"-"9"])*)?)>
-|   <FORMULA: "=" (~[";"])* ";">
+|
+    <LATCH : "LATCH"> : MODULE_NAME_EXPECTED
+|
+    <PIN : "PIN">
+|
+    <CONSTRAINT : "CONSTRAINT">
+|
+    <INV : "INV">
+|
+    <NONINV : "NONINV">
+|
+    <UNKNOWN : "UNKNOWN">
+|
+    <SEQ : "SEQ">
+|
+    <ANY : "ANY">
+|
+    <ACTIVE_LOW : "ACTIVE_LOW">
+|
+    <ACTIVE_HIGH : "ACTIVE_HIGH">
+|
+    <RISING_EDGE : "RISING_EDGE">
+|
+    <FALLING_EDGE : "FALLING_EDGE">
+|
+    <CONTROL : "CONTROL">
+|
+    <ASYNCH : "ASYNCH">
+|
+    <PIN_NAME : ["A"-"Z", "a"-"z", "_"] (["A"-"Z", "a"-"z", "_", "0"-"9"])*>
+|
+    <NUMERAL: (["-"])?("."(["0"-"9"])+ | (["0"-"9"])+ ("."(["0"-"9"])*)?)>
+|
+    <FORMULA: "=" (~[";"])* ";">
 }
 
 <MODULE_NAME_EXPECTED> TOKEN :
 {    <MODULE_SIMPLE_NAME : ["A"-"Z", "a"-"z", "_"] (["A"-"Z", "a"-"z", "_", "0"-"9"])*> : DEFAULT
-|   <MODULE_QUOTED_NAME : "\"" (<CHAR> | <ESCAPESEQ>)* "\""> : DEFAULT
-|   <#CHAR: [" ","!","#"-"[","]"-"~"]> // Printable ASCII characters excluding \ and "
-|   <#ESCAPESEQ: "\\" ["\"","\\","n"]> // 2-character sequences \\, \", and \n
+|
+    <MODULE_QUOTED_NAME : "\"" (<CHAR> | <ESCAPESEQ>)* "\""> : DEFAULT
+|
+    <#CHAR: [" ","!","#"-"[","]"-"~"]> // Printable ASCII characters excluding \ and "
+|
+    <#ESCAPESEQ: "\\" ["\"","\\","n"]> // 2-character sequences \\, \", and \n
 }
 
 Library parseGenlib() :
