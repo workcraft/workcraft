@@ -141,7 +141,8 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
                 Circuit circuit = verilogImporter.importCircuit(verilogStream, mutexes);
                 Path<String> path = we.getWorkspacePath();
                 ModelEntry dstMe = new ModelEntry(new CircuitDescriptor(), circuit);
-                dstWe = Framework.getInstance().createWork(dstMe, path);
+                Framework framework = Framework.getInstance();
+                dstWe = framework.createWork(dstMe, path);
 
                 VisualModel visualModel = dstWe.getModelEntry().getVisualModel();
                 if (visualModel instanceof VisualCircuit) {
@@ -157,15 +158,10 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
                             DialogUtils.showWarning("The STG with unsaved changes is set as the circuit environment.");
                         }
                     }
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            MainWindow mainWindow = Framework.getInstance().getMainWindow();
-                            if (mainWindow != null) {
-                                mainWindow.getCurrentEditor().updatePropertyView();
-                            }
-                        }
-                    });
+                    MainWindow mainWindow = framework.getMainWindow();
+                    if (mainWindow != null) {
+                        SwingUtilities.invokeLater(() -> mainWindow.getCurrentEditor().updatePropertyView());
+                    }
                 }
             } catch (final DeserialisationException e) {
                 throw new RuntimeException(e);

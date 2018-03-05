@@ -36,28 +36,22 @@ public class MainWindowIconManager {
     }
 
     static void apply(final MainWindow window) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                int size = SizeHelper.getIconSize();
-                ImageIcon activeSvg = GUI.createIconFromSVG("images/icon.svg", size, size, Color.WHITE);
-                ImageIcon inactiveSvg = GUI.createIconFromSVG("images/icon-inactive.svg", size, size, Color.WHITE);
-                final Image activeIcon = activeSvg.getImage();
-                final Image inactiveIcon = inactiveSvg.getImage();
-
-                try {
-                    SwingUtilities.invokeAndWait(new Runnable() {
-                        @Override
-                        public void run() {
-                            window.setIconImage(window.isActive() ? activeIcon : inactiveIcon);
-                            window.addWindowListener(new IconUpdater(window, inactiveIcon, activeIcon));
-                        }
-                    });
-                } catch (InterruptedException | InvocationTargetException e) {
-                    e.printStackTrace();
-                }
+        int size = SizeHelper.getIconSize();
+        Thread thread = new Thread(() -> {
+            ImageIcon activeSvg = GUI.createIconFromSVG("images/icon.svg", size, size, Color.WHITE);
+            ImageIcon inactiveSvg = GUI.createIconFromSVG("images/icon-inactive.svg", size, size, Color.WHITE);
+            final Image activeIcon = activeSvg.getImage();
+            final Image inactiveIcon = inactiveSvg.getImage();
+            try {
+                SwingUtilities.invokeAndWait(() -> {
+                    window.setIconImage(window.isActive() ? activeIcon : inactiveIcon);
+                    window.addWindowListener(new IconUpdater(window, inactiveIcon, activeIcon));
+                });
+            } catch (InterruptedException | InvocationTargetException e) {
+                e.printStackTrace();
             }
-        }).start();
+        });
+        thread.start();
     }
 
 }

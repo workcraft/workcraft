@@ -81,12 +81,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         @Override
         public void actionPerformed(ActionEvent arg0) {
             if (updateEditorPanelRequested) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        updateEditor();
-                    }
-                });
+                SwingUtilities.invokeLater(() -> updateEditor());
             }
         }
     }
@@ -95,12 +90,7 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
         @Override
         public void actionPerformed(ActionEvent arg0) {
             if (updatePropertyViewRequested) {
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        updatePropertyView();
-                    }
-                });
+                SwingUtilities.invokeLater(() -> updatePropertyView());
             }
         }
     }
@@ -588,61 +578,40 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
     }
 
     public void zoomIn() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                getViewport().zoom(1);
-                repaint();
-                requestFocus();
-            }
+        SwingUtilities.invokeLater(() -> {
+            getViewport().zoom(1);
+            repaint();
+            requestFocus();
         });
     }
 
     public void zoomOut() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                getViewport().zoom(-1);
-                repaint();
-                requestFocus();
-            }
+        SwingUtilities.invokeLater(() -> {
+            getViewport().zoom(-1);
+            repaint();
+            requestFocus();
         });
     }
 
     public void zoomDefault() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                getViewport().scaleDefault();
-                repaint();
-                requestFocus();
-            }
+        SwingUtilities.invokeLater(() -> {
+            getViewport().scaleDefault();
+            repaint();
+            requestFocus();
         });
     }
 
     public void zoomFit() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                Viewport viewport = getViewport();
-                Rectangle2D viewportBox = viewport.getShape();
-                VisualModel model = getModel();
-                Collection<Touchable> nodes = Hierarchy.getChildrenOfType(model.getRoot(), Touchable.class);
-                if (!model.getSelection().isEmpty()) {
-                    nodes.retainAll(model.getSelection());
-                }
-                Rectangle2D modelBox = BoundingBoxHelper.mergeBoundingBoxes(nodes);
-                if ((modelBox != null) && (viewportBox != null)) {
-                    Point2D ratio = getVewportRatio(viewportBox);
-                    double scaleX = ratio.getX() / modelBox.getWidth();
-                    double scaleY = ratio.getY() / modelBox.getHeight();
-                    double scale = 2.0 * Math.min(scaleX, scaleY);
-                    viewport.scale(scale);
-                    panCenter();
-                }
+        SwingUtilities.invokeLater(() -> {
+            Viewport viewport = getViewport();
+            Rectangle2D viewportBox = viewport.getShape();
+            VisualModel model = getModel();
+            Collection<Touchable> nodes = Hierarchy.getChildrenOfType(model.getRoot(), Touchable.class);
+            if (!model.getSelection().isEmpty()) {
+                nodes.retainAll(model.getSelection());
             }
-
-            private Point2D getVewportRatio(Rectangle2D viewportBox) {
+            Rectangle2D modelBox = BoundingBoxHelper.mergeBoundingBoxes(nodes);
+            if ((modelBox != null) && (viewportBox != null)) {
                 double ratioX = 1.0;
                 double ratioY = 1.0;
                 if ((viewportBox.getWidth() > VIEWPORT_MARGIN) && (viewportBox.getHeight() > VIEWPORT_MARGIN)) {
@@ -654,76 +623,66 @@ public class GraphEditorPanel extends JPanel implements StateObserver, GraphEdit
                         ratioY = (viewportBox.getHeight() - VIEWPORT_MARGIN) / viewportBox.getWidth();
                     }
                 }
-                return new Point2D.Double(ratioX, ratioY);
+                Point2D ratio = new Point2D.Double(ratioX, ratioY);
+                double scaleX = ratio.getX() / modelBox.getWidth();
+                double scaleY = ratio.getY() / modelBox.getHeight();
+                double scale = 2.0 * Math.min(scaleX, scaleY);
+                viewport.scale(scale);
+                panCenter();
             }
         });
     }
 
     public void panLeft() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                getViewport().pan(20, 0);
-                repaint();
-                requestFocus();
-            }
+        SwingUtilities.invokeLater(() -> {
+            getViewport().pan(20, 0);
+            repaint();
+            requestFocus();
         });
     }
 
     public void panUp() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                getViewport().pan(0, 20);
-                repaint();
-                requestFocus();
-            }
+        SwingUtilities.invokeLater(() -> {
+            getViewport().pan(0, 20);
+            repaint();
+            requestFocus();
         });
     }
 
     public void panRight() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                getViewport().pan(-20, 0);
-                repaint();
-                requestFocus();
-            }
+        SwingUtilities.invokeLater(() -> {
+            getViewport().pan(-20, 0);
+            repaint();
+            requestFocus();
         });
     }
 
     public void panDown() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                getViewport().pan(0, -20);
-                repaint();
-                requestFocus();
-            }
+        SwingUtilities.invokeLater(() -> {
+            getViewport().pan(0, -20);
+            repaint();
+            requestFocus();
         });
     }
 
     public void panCenter() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                Viewport viewport = getViewport();
-                Rectangle2D viewportBox = viewport.getShape();
-                VisualModel model = getModel();
-                Collection<Touchable> nodes = Hierarchy.getChildrenOfType(model.getRoot(), Touchable.class);
-                if (!model.getSelection().isEmpty()) {
-                    nodes.retainAll(model.getSelection());
-                }
-                Rectangle2D modelBox = BoundingBoxHelper.mergeBoundingBoxes(nodes);
-                if ((modelBox != null) && (viewportBox != null)) {
-                    int viewportCenterX = (int) Math.round(viewportBox.getCenterX());
-                    int viewportCenterY = (int) Math.round(viewportBox.getCenterY());
-                    Point2D modelCenter = new Point2D.Double(modelBox.getCenterX(), modelBox.getCenterY());
-                    Point modelCenterInScreenSpace = viewport.userToScreen(modelCenter);
-                    viewport.pan(viewportCenterX - modelCenterInScreenSpace.x, viewportCenterY - modelCenterInScreenSpace.y);
-                    repaint();
-                    requestFocus();
-                }
+        SwingUtilities.invokeLater(() -> {
+            Viewport viewport = getViewport();
+            Rectangle2D viewportBox = viewport.getShape();
+            VisualModel model = getModel();
+            Collection<Touchable> nodes = Hierarchy.getChildrenOfType(model.getRoot(), Touchable.class);
+            if (!model.getSelection().isEmpty()) {
+                nodes.retainAll(model.getSelection());
+            }
+            Rectangle2D modelBox = BoundingBoxHelper.mergeBoundingBoxes(nodes);
+            if ((modelBox != null) && (viewportBox != null)) {
+                int viewportCenterX = (int) Math.round(viewportBox.getCenterX());
+                int viewportCenterY = (int) Math.round(viewportBox.getCenterY());
+                Point2D modelCenter = new Point2D.Double(modelBox.getCenterX(), modelBox.getCenterY());
+                Point modelCenterInScreenSpace = viewport.userToScreen(modelCenter);
+                viewport.pan(viewportCenterX - modelCenterInScreenSpace.x, viewportCenterY - modelCenterInScreenSpace.y);
+                repaint();
+                requestFocus();
             }
         });
     }

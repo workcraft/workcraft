@@ -329,17 +329,13 @@ public class MainWindow extends JFrame {
         DockingManager.display(outputDockable);
         utilityWindows.add(documentPlaceholder);
 
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                // Hack to fix the annoying delay occurring when
-                // createGlyphVector is called for the first time.
-                Font font = new Font(Font.SANS_SERIF, Font.PLAIN, 1);
-                FontRenderContext frc = new FontRenderContext(new AffineTransform(), true, true);
-                font.createGlyphVector(frc, TITLE_PLACEHOLDER);
-                // Force SVG rendering classes to load.
-                GUI.createIconFromSVG("images/icon.svg");
-            }
+        new Thread(() -> {
+            // Hack to fix the annoying delay occurring when createGlyphVector is called for the first time.
+            Font font = new Font(Font.SANS_SERIF, Font.PLAIN, 1);
+            FontRenderContext frc = new FontRenderContext(new AffineTransform(), true, true);
+            font.createGlyphVector(frc, TITLE_PLACEHOLDER);
+            // Force SVG rendering classes to load.
+            GUI.createIconFromSVG("images/icon.svg");
         }).start();
 
         setWorkActionsEnableness(false);
@@ -814,14 +810,9 @@ public class MainWindow extends JFrame {
             mainMenu.setMenuForWorkspaceEntry(we);
             Framework.getInstance().updateJavaScript(we);
         }
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                if (editorInFocus != null) {
-                    editorInFocus.requestFocus();
-                }
-            }
-        });
+        if (editorInFocus != null) {
+            SwingUtilities.invokeLater(() -> editorInFocus.requestFocus());
+        }
     }
 
     public void updateDockableWindowVisibility() {
@@ -935,15 +926,12 @@ public class MainWindow extends JFrame {
             }
             // FIXME: Go through the newly open works and update their zoom,
             // in case tabs appeared and changed the viewport size.
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    for (WorkspaceEntry we: newWorkspaceEntries) {
-                        for (DockableWindow window: editorWindows.get(we)) {
-                            GraphEditor editor = getGraphEditorPanel(window);
-                            if (editor != null) {
-                                editor.zoomFit();
-                            }
+            SwingUtilities.invokeLater(() -> {
+                for (WorkspaceEntry we: newWorkspaceEntries) {
+                    for (DockableWindow window: editorWindows.get(we)) {
+                        GraphEditor editor = getGraphEditorPanel(window);
+                        if (editor != null) {
+                            editor.zoomFit();
                         }
                     }
                 }

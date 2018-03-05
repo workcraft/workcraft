@@ -10,7 +10,6 @@ import org.workcraft.Framework;
 import org.workcraft.commands.AbstractLayoutCommand;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.circuit.Circuit;
@@ -158,16 +157,10 @@ public class MpsatSynthesisResultHandler extends AbstractExtendedResultHandler<M
                             DialogUtils.showWarning("The STG with unsaved changes is set as the circuit environment.");
                         }
                     }
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (Framework.getInstance().isInGuiMode()) {
-                                MainWindow mainWindow = Framework.getInstance().getMainWindow();
-                                GraphEditorPanel editor = mainWindow.getCurrentEditor();
-                                editor.updatePropertyView();
-                            }
-                        }
-                    });
+                    if (Framework.getInstance().isInGuiMode()) {
+                        GraphEditorPanel editor = Framework.getInstance().getMainWindow().getCurrentEditor();
+                        SwingUtilities.invokeLater(() -> editor.updatePropertyView());
+                    }
                 }
             } catch (final DeserialisationException e) {
                 throw new RuntimeException(e);

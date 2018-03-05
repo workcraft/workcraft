@@ -10,6 +10,7 @@ import org.workcraft.Info;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.graph.GraphEditorPanel;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitDescriptor;
@@ -18,8 +19,8 @@ import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.tasks.BasicProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
-import org.workcraft.util.FileUtils;
 import org.workcraft.util.DialogUtils;
+import org.workcraft.util.FileUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -61,12 +62,8 @@ public class ScencoResultHandler extends BasicProgressMonitor<ScencoResult> {
                         final VisualCircuit visualCircuit = (VisualCircuit) visualModel;
                         final String title = we.getModelEntry().getModel().getTitle();
                         visualCircuit.setTitle(title);
-                        SwingUtilities.invokeLater(new Runnable() {
-                            @Override
-                            public void run() {
-                                mainWindow.getCurrentEditor().updatePropertyView();
-                            }
-                        });
+                        final GraphEditorPanel currentEditor = mainWindow.getCurrentEditor();
+                        SwingUtilities.invokeLater(() -> currentEditor.updatePropertyView());
                     }
                 } catch (DeserialisationException e) {
                     throw new RuntimeException(e);

@@ -550,12 +550,9 @@ public final class Framework {
             mainWindow.startup();
         } else {
             try {
-                SwingUtilities.invokeAndWait(new Runnable() {
-                    @Override
-                    public void run() {
-                        mainWindow = new MainWindow();
-                        mainWindow.startup();
-                    }
+                SwingUtilities.invokeAndWait(() -> {
+                    mainWindow = new MainWindow();
+                    mainWindow.startup();
                 });
             } catch (InterruptedException | InvocationTargetException e) {
                 e.printStackTrace();

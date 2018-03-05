@@ -15,19 +15,13 @@ public class TextAreaAppender extends WriterAppender {
         TextAreaAppender.jTextArea = jTextArea;
     }
 
+    /** Format and then append the loggingEvent to the stored JTextArea. */
     @Override
-    /**
-     * Format and then append the loggingEvent to the stored
-     * JTextArea.
-     */
     public void append(LoggingEvent loggingEvent) {
         final String message = this.layout.format(loggingEvent);
 
         // Append formatted message to textarea using the Swing Thread.
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                jTextArea.append(message);
-            }
-        });
+        SwingUtilities.invokeLater(() -> jTextArea.append(message));
     }
+
 }

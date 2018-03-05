@@ -24,21 +24,18 @@ public class TaskFailureNotifier extends BasicProgressMonitor<Object> {
     public void finished(final Result<? extends Object> result) {
         super.finished(result);
         if (result.getOutcome() == Outcome.FAILURE) {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    String message = "Task '" + description + "' has failed to complete as expected.";
-                    if (result.getCause() != null) {
-                        Throwable reason = result.getCause();
-                        reason.printStackTrace();
-                        message += "\n\nThe reason was: " + reason.toString();
-                        message += "\nPlease see the 'Problems' tab for further details.";
-                    }
-                    if (!errorMessage.isEmpty()) {
-                        message += "\n\nFollowing errors were reported:\n" + errorMessage;
-                    }
-                    DialogUtils.showError(message);
+            SwingUtilities.invokeLater(() -> {
+                String message = "Task '" + description + "' has failed to complete as expected.";
+                if (result.getCause() != null) {
+                    Throwable reason = result.getCause();
+                    reason.printStackTrace();
+                    message += "\n\nThe reason was: " + reason.toString();
+                    message += "\nPlease see the 'Problems' tab for further details.";
                 }
+                if (!errorMessage.isEmpty()) {
+                    message += "\n\nFollowing errors were reported:\n" + errorMessage;
+                }
+                DialogUtils.showError(message);
             });
         }
     }
