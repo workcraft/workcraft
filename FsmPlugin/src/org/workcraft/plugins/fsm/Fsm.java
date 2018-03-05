@@ -15,7 +15,6 @@ import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.fsm.propertydescriptors.EventSymbolPropertyDescriptor;
 import org.workcraft.plugins.fsm.propertydescriptors.SymbolPropertyDescriptor;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Identifier;
 
@@ -102,12 +101,7 @@ public class Fsm extends AbstractMathModel {
     }
 
     public final Collection<Event> getEvents(final Symbol symbol) {
-        return Hierarchy.getDescendantsOfType(getRoot(), Event.class, new Func<Event, Boolean>() {
-            @Override
-            public Boolean eval(Event arg) {
-                return arg.getSymbol() == symbol;
-            }
-        });
+        return Hierarchy.getDescendantsOfType(getRoot(), Event.class, event -> event.getSymbol() == symbol);
     }
 
     public State getInitialState() {

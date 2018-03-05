@@ -44,7 +44,6 @@ import org.workcraft.observation.StateEvent;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.observation.TransformChangedEvent;
 import org.workcraft.plugins.circuit.VisualContact.Direction;
-import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Abstract Component")
@@ -184,14 +183,9 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         Collection<VisualConnection> result = Collections.emptyList();
         Node root = Hierarchy.getRoot(this);
         if (root != null) {
-            final HashSet<VisualContact> contactsHashSet = new HashSet<>(contacts);
+            final HashSet<VisualContact> contactSet = new HashSet<>(contacts);
             result = Hierarchy.getDescendantsOfType(root, VisualConnection.class,
-                new Func<VisualConnection, Boolean>() {
-                    @Override
-                    public Boolean eval(VisualConnection arg) {
-                        return contactsHashSet.contains(arg.getFirst()) || contactsHashSet.contains(arg.getSecond());
-                    }
-                });
+                connection -> contactSet.contains(connection.getFirst()) || contactSet.contains(connection.getSecond()));
         }
         return result;
     }
@@ -492,12 +486,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         AffineTransform savedTransform = g.getTransform();
 
         for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class,
-                new Func<VisualContact, Boolean>() {
-                    @Override
-                    public Boolean eval(VisualContact arg) {
-                        return (arg.getDirection() == Direction.WEST) || (arg.getDirection() == Direction.EAST);
-                    }
-                })) {
+                contact -> (contact.getDirection() == Direction.WEST) || (contact.getDirection() == Direction.EAST))) {
             drawContactLabel(r, vc);
         }
 
@@ -506,12 +495,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         g.transform(rotateTransform);
 
         for (VisualContact vc: Hierarchy.getChildrenOfType(this, VisualContact.class,
-                new Func<VisualContact, Boolean>() {
-                    @Override
-                    public Boolean eval(VisualContact arg) {
-                        return (arg.getDirection() == Direction.NORTH) || (arg.getDirection() == Direction.SOUTH);
-                    }
-                })) {
+                contact -> (contact.getDirection() == Direction.NORTH) || (contact.getDirection() == Direction.SOUTH))) {
             drawContactLabel(r, vc);
         }
 

@@ -33,7 +33,6 @@ import org.workcraft.plugins.cpog.VisualScenario;
 import org.workcraft.plugins.cpog.VisualScenarioPage;
 import org.workcraft.plugins.cpog.VisualVariable;
 import org.workcraft.plugins.cpog.VisualVertex;
-import org.workcraft.util.Func;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -55,40 +54,36 @@ public class CpogParsingTool {
     private ArrayList<String> usedReferences;
 
     public BooleanFormula parseBool(String bool, final VisualCpog visualCpog) throws ParseException {
-        Func<String, BooleanVariable> boolVars = new Func<String, BooleanVariable>() {
-            public BooleanVariable eval(final String label) {
-                if (variableMap.containsKey(label)) {
-                    if (!visualCpog.getVariables(visualCpog.getRoot()).contains(variableMap.get(label))) {
-                        if (variableMap.get(label).getParent() != null) {
-                            return variableMap.get(label);
-                        } else  variableMap.remove(label);
-                    } else {
-                        variableMap.remove(label);
-                    }
-                }
-
-                VisualVariable visVar = visualCpog.createVisualVariable();
-                visVar.setLabel(label);
-                visVar.setPosition(new Point2D.Double(xpos, -2));
-                xpos++;
-                variableMap.put(label, visVar.getMathVariable());
-
-                return variableMap.get(label);
-            }
-        };
-
-        BooleanFormula boolForm;
-
         try {
-            boolForm = BooleanFormulaParser.parse(bool, boolVars);
+            return BooleanFormulaParser.parse(bool, label -> labelToVar(label, visualCpog));
         } catch (ParseException e) {
             throw new ParseException("Boolean error in: " + bool);
         }
-        return boolForm;
+    }
+
+    private BooleanVariable labelToVar(String label, final VisualCpog visualCpog) {
+        if (variableMap.containsKey(label)) {
+            HashSet<VisualVariable> vars = new HashSet<>(visualCpog.getVariables(visualCpog.getRoot()));
+            if (!vars.contains(variableMap.get(label))) {
+                if (variableMap.get(label).getParent() != null) {
+                    return variableMap.get(label);
+                }
+                variableMap.remove(label);
+            } else {
+                variableMap.remove(label);
+            }
+        }
+
+        VisualVariable visVar = visualCpog.createVisualVariable();
+        visVar.setLabel(label);
+        visVar.setPosition(new Point2D.Double(xpos, -2));
+        xpos++;
+        variableMap.put(label, visVar.getMathVariable());
+
+        return variableMap.get(label);
     }
 
     public void bfsLayout(Queue<Node> q, VisualCpog visualCpog, double originalX, double originalY) {
-
         ArrayList<ArrayList<Node>> outer = new ArrayList<>();
         HashSet<VisualPage> pages = new HashSet<>();
         Node current = q.remove();

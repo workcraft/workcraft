@@ -82,7 +82,6 @@ import org.workcraft.plugins.son.util.Phase;
 import org.workcraft.plugins.son.util.Step;
 import org.workcraft.plugins.son.util.StepRef;
 import org.workcraft.plugins.son.util.Trace;
-import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -949,31 +948,23 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
     @Override
     public void mousePressed(GraphEditorMouseEvent e) {
 
-        Node node = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(),
-                new Func<Node, Boolean>() {
-                    @Override
-                    public Boolean eval(Node node) {
-                        if (node instanceof VisualTransitionNode) {
-                            TransitionNode node1 = ((VisualTransitionNode) node).getMathTransitionNode();
-                            Step enabled = null;
-
-                            enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
-                            if (isEnabled(node1, enabled)) {
-                                return true;
-                            }
-                        }
-                        return false;
-
+        Node deepestNode = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(),
+                node -> {
+                    if (node instanceof VisualTransitionNode) {
+                        TransitionNode transitionNode = ((VisualTransitionNode) node).getMathTransitionNode();
+                        Step enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
+                        return isEnabled(transitionNode, enabled);
                     }
+                    return false;
                 });
 
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
 
-        if (node instanceof VisualTransitionNode) {
+        if (deepestNode instanceof VisualTransitionNode) {
 
             Step enabled = null;
-            TransitionNode select = ((VisualTransitionNode) node).getMathTransitionNode();
+            TransitionNode select = ((VisualTransitionNode) deepestNode).getMathTransitionNode();
 
             enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
 

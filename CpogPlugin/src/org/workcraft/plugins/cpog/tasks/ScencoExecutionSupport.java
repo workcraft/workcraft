@@ -40,7 +40,6 @@ import org.workcraft.plugins.cpog.VisualScenario;
 import org.workcraft.plugins.cpog.VisualScenarioPage;
 import org.workcraft.plugins.cpog.VisualVertex;
 import org.workcraft.util.DialogUtils;
-import org.workcraft.util.Func;
 import org.workcraft.util.Geometry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -497,20 +496,10 @@ public class ScencoExecutionSupport {
     protected void connectFormulaeToVisualVertex(int v, int a, Variable[] vars, HashMap<String,
             BooleanFormula> formulaeName, String[] optFormulaeVertices, String[] optVertices,
             String[] optFormulaeArcs, String[] arcNames) throws ParseException {
-        final Variable[] variables = vars;
         for (int i = 0; i < v; i++) {
             if (optFormulaeVertices[i].contains("x")) {
                 BooleanFormula formulaOpt = null;
-                formulaOpt = BooleanFormulaParser.parse(optFormulaeVertices[i], new Func<String, BooleanFormula>() {
-
-                    @Override
-                    public BooleanFormula eval(String arg) {
-                        arg = arg.substring("x_".length());
-                        int id = Integer.parseInt(arg);
-                        return variables[id];
-                    }
-                });
-
+                formulaOpt = BooleanFormulaParser.parse(optFormulaeVertices[i], name -> nameToVar(name, vars));
                 formulaeName.put(optVertices[i], formulaOpt);
 
             }
@@ -518,18 +507,16 @@ public class ScencoExecutionSupport {
         for (int i = 0; i < a; i++) {
             if (optFormulaeArcs[i].contains("x")) {
                 BooleanFormula formulaOpt = null;
-                formulaOpt = BooleanFormulaParser.parse(optFormulaeArcs[i], new Func<String, BooleanFormula>() {
-                    @Override
-                    public BooleanFormula eval(String arg) {
-                        arg = arg.substring("x_".length());
-                        int id = Integer.parseInt(arg);
-                        return variables[id];
-                    }
-                });
-
+                formulaOpt = BooleanFormulaParser.parse(optFormulaeArcs[i], name -> nameToVar(name, vars));
                 formulaeName.put(arcNames[i], formulaOpt);
             }
         }
+    }
+
+    private BooleanFormula nameToVar(String name, Variable[] vars) {
+        name = name.substring("x_".length());
+        int id = Integer.parseInt(name);
+        return vars[id];
     }
 
     // Instantiating encoding into graphs

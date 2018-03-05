@@ -753,21 +753,16 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
     public void mousePressed(GraphEditorMouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
             VisualModel model = e.getModel();
-            Node node = HitMan.hitDeepest(e.getPosition(), model.getRoot(),
-                    new Func<Node, Boolean>() {
-                        @Override
-                        public Boolean eval(Node node) {
-                            boolean result = false;
-                            if (node instanceof VisualComponent) {
-                                VisualComponent component = (VisualComponent) node;
-                                result = isEnabledNode(component.getReferencedComponent());
-                            }
-                            return result;
-                        }
-                    });
-
-            if (node instanceof VisualComponent) {
-                VisualComponent component = (VisualComponent) node;
+            Func<Node, Boolean> filter = node -> {
+                if (node instanceof VisualComponent) {
+                    VisualComponent component = (VisualComponent) node;
+                    return isEnabledNode(component.getReferencedComponent());
+                }
+                return false;
+            };
+            Node deepestNode = HitMan.hitDeepest(e.getPosition(), model.getRoot(), filter);
+            if (deepestNode instanceof VisualComponent) {
+                VisualComponent component = (VisualComponent) deepestNode;
                 executeTransition(e.getEditor(), component.getReferencedComponent());
             }
         }

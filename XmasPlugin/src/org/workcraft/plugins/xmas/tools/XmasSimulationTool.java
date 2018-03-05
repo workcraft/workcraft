@@ -44,9 +44,8 @@ import org.workcraft.plugins.xmas.stg.QueueStg;
 import org.workcraft.plugins.xmas.stg.SinkStg;
 import org.workcraft.plugins.xmas.stg.SlotStg;
 import org.workcraft.plugins.xmas.stg.SourceStg;
-import org.workcraft.plugins.xmas.stg.XmasToStgConverter;
 import org.workcraft.plugins.xmas.stg.SwitchStg;
-import org.workcraft.util.Func;
+import org.workcraft.plugins.xmas.stg.XmasToStgConverter;
 import org.workcraft.util.Hierarchy;
 
 public class XmasSimulationTool extends StgSimulationTool {
@@ -96,19 +95,14 @@ public class XmasSimulationTool extends StgSimulationTool {
         }
         if (e.getButton() == MouseEvent.BUTTON1) {
             Point2D posRoot = e.getPosition();
-            Node node = HitMan.hitDeepest(posRoot, e.getModel().getRoot(),
-                    new Func<Node, Boolean>() {
-                        @Override
-                        public Boolean eval(Node node) {
-                            return node instanceof VisualTransformableNode;
-                        }
-                    });
+            Node deepestNode = HitMan.hitDeepest(posRoot, e.getModel().getRoot(),
+                    node -> node instanceof VisualTransformableNode);
 
-            if (node instanceof VisualTransformableNode) {
-                AffineTransform rootToLocalTransform = TransformHelper.getTransform(e.getModel().getRoot(), node);
+            if (deepestNode instanceof VisualTransformableNode) {
+                AffineTransform rootToLocalTransform = TransformHelper.getTransform(e.getModel().getRoot(), deepestNode);
                 Point2D posLocal = rootToLocalTransform.transform(posRoot, null);
-                Point2D posNode = ((VisualTransformableNode) node).getParentToLocalTransform().transform(posLocal, null);
-                transition = getClickedComponentTransition(node, posNode);
+                Point2D posNode = ((VisualTransformableNode) deepestNode).getParentToLocalTransform().transform(posLocal, null);
+                transition = getClickedComponentTransition(deepestNode, posNode);
             }
         }
         if (transition != null) {

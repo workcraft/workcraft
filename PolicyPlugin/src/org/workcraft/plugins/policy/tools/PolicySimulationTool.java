@@ -25,7 +25,6 @@ import org.workcraft.plugins.policy.PolicyNet;
 import org.workcraft.plugins.policy.VisualBundledTransition;
 import org.workcraft.plugins.policy.VisualPolicyNet;
 import org.workcraft.plugins.shared.CommonDecorationSettings;
-import org.workcraft.util.Func;
 
 public class PolicySimulationTool extends PetriSimulationTool {
     private PolicyToPetriConverter converter;
@@ -46,18 +45,10 @@ public class PolicySimulationTool extends PetriSimulationTool {
     public void mousePressed(GraphEditorMouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
             VisualModel model = e.getModel();
-            Node node = HitMan.hitDeepest(e.getPosition(), model.getRoot(),
-                    new Func<Node, Boolean>() {
-                        @Override
-                        public Boolean eval(Node node) {
-                            return getExcitedTransitionOfNode(node) != null;
-                        }
-                    });
+            Node deepestNode = HitMan.hitDeepest(e.getPosition(), model.getRoot(),
+                    node -> getExcitedTransitionOfNode(node) != null);
 
-            Transition transition = null;
-            if (transition == null) {
-                transition = getExcitedTransitionOfNode(node);
-            }
+            Transition transition = getExcitedTransitionOfNode(deepestNode);
             if (transition != null) {
                 executeTransition(e.getEditor(), transition);
             }

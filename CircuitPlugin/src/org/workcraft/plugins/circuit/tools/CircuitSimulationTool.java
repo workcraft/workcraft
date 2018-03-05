@@ -40,7 +40,6 @@ import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.converters.SignalStg;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
-import org.workcraft.util.Func;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.Pair;
 
@@ -185,20 +184,15 @@ public class CircuitSimulationTool extends StgSimulationTool {
     public void mousePressed(GraphEditorMouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
             VisualModel model = e.getModel();
-            Node node = HitMan.hitDeepest(e.getPosition(), model.getRoot(),
-                    new Func<Node, Boolean>() {
-                        @Override
-                        public Boolean eval(Node node) {
-                            return (node instanceof VisualFunctionComponent) || (node instanceof VisualContact);
-                        }
-                    });
+            Node deepestNode = HitMan.hitDeepest(e.getPosition(), model.getRoot(),
+                    node -> (node instanceof VisualFunctionComponent) || (node instanceof VisualContact));
 
             GraphEditor editor = e.getEditor();
             VisualContact contact = null;
-            if (node instanceof VisualContact) {
-                contact = (VisualContact) node;
-            } else if (node instanceof VisualFunctionComponent) {
-                VisualFunctionComponent component = (VisualFunctionComponent) node;
+            if (deepestNode instanceof VisualContact) {
+                contact = (VisualContact) deepestNode;
+            } else if (deepestNode instanceof VisualFunctionComponent) {
+                VisualFunctionComponent component = (VisualFunctionComponent) deepestNode;
                 Collection<VisualContact> excitedOutputs = getExcitedOutputs(component);
                 if (excitedOutputs.size() == 1) {
                     contact = excitedOutputs.iterator().next();

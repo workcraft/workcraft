@@ -59,7 +59,6 @@ import org.workcraft.plugins.son.gui.TimeConsistencyDialog.Granularity;
 import org.workcraft.plugins.son.gui.TimeEstimatorDialog;
 import org.workcraft.plugins.son.gui.TimeInputFilter;
 import org.workcraft.plugins.son.util.Interval;
-import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -568,15 +567,15 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
         net.refreshNodeColor();
         Point2D position = e.getPosition();
         Container root = e.getModel().getRoot();
-        Node node = HitMan.hitDeepest(position, root, VisualSONConnection.class);
-        if (node instanceof VisualSONConnection) {
+        Node node1 = HitMan.hitDeepest(position, root, VisualSONConnection.class);
+        if (node1 instanceof VisualSONConnection) {
             estimatorButton.setEnabled(false);
-            VisualSONConnection con = (VisualSONConnection) node;
+            VisualSONConnection con = (VisualSONConnection) node1;
             selection = con.getReferencedConnection();
-            visualSelection = node;
+            visualSelection = node1;
             if (con.getSemantics() == Semantics.PNLINE) {
-                ((VisualSONConnection) node).setColor(selectedColor);
-                updateTimePanel(e.getEditor(), node);
+                ((VisualSONConnection) node1).setColor(selectedColor);
+                updateTimePanel(e.getEditor(), node1);
                 net.setTimeColor(selection, Color.BLACK);
                 return;
             }
@@ -595,13 +594,10 @@ public class TimeValueSetterTool extends AbstractGraphEditorTool {
             }
         }
 
-        Node node3 = HitMan.hitDeepest(position, root, new Func<Node, Boolean>() {
-            @Override
-            public Boolean eval(Node node) {
-                return (node instanceof VisualPlaceNode) || (node instanceof VisualEvent);
-            }
-        });
-        if (node3 instanceof VisualPlaceNode || node3 instanceof VisualEvent) {
+        Node node3 = HitMan.hitDeepest(position, root,
+                node -> (node instanceof VisualPlaceNode) || (node instanceof VisualEvent));
+
+        if ((node3 instanceof VisualPlaceNode) || (node3 instanceof VisualEvent)) {
             if (!(node3 instanceof VisualChannelPlace)) {
                 estimatorButton.setEnabled(true);
             }

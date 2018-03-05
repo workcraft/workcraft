@@ -14,7 +14,6 @@ import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.graph.propertydescriptors.VertexSymbolPropertyDescriptor;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
 public class Graph extends AbstractMathModel {
@@ -69,12 +68,7 @@ public class Graph extends AbstractMathModel {
     }
 
     public Collection<Vertex> getVertices(final Symbol symbol) {
-        return Hierarchy.getDescendantsOfType(getRoot(), Vertex.class, new Func<Vertex, Boolean>() {
-            @Override
-            public Boolean eval(Vertex arg) {
-                return arg.getSymbol() == symbol;
-            }
-        });
+        return Hierarchy.getDescendantsOfType(getRoot(), Vertex.class, vertex -> vertex.getSymbol() == symbol);
     }
 
     @Override

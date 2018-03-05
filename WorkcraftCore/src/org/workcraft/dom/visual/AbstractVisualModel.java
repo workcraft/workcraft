@@ -542,26 +542,11 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
         // Note: The order of removal influences the remaining selection because
         // there are listeners that remove hanging connections and replica nodes.
         // Remove selected connections
-        deleteSelection(new Func<Node, Boolean>() {
-            @Override
-            public Boolean eval(Node node) {
-                return node instanceof VisualConnection;
-            }
-        });
+        deleteSelection(node -> node instanceof VisualConnection);
         // Remove selected replica nodes
-        deleteSelection(new Func<Node, Boolean>() {
-            @Override
-            public Boolean eval(Node node) {
-                return node instanceof Replica;
-            }
-        });
+        deleteSelection(node -> node instanceof Replica);
         // Remove remaining selected nodes
-        deleteSelection(new Func<Node, Boolean>() {
-            @Override
-            public Boolean eval(Node node) {
-                return true;
-            }
-        });
+        deleteSelection(node -> true);
     }
 
     private void deleteSelection(final Func<Node, Boolean> filter) {

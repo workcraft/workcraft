@@ -15,7 +15,6 @@ import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.references.CircuitReferenceManager;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Identifier;
 import org.workcraft.util.MultiSet;
@@ -96,39 +95,19 @@ public class Circuit extends AbstractMathModel {
     }
 
     public Collection<Contact> getPorts() {
-        return Hierarchy.getDescendantsOfType(getRoot(), Contact.class, new Func<Contact, Boolean>() {
-            @Override
-            public Boolean eval(Contact arg) {
-                return arg.isPort();
-            }
-        });
+        return Hierarchy.getDescendantsOfType(getRoot(), Contact.class, contact -> contact.isPort());
     }
 
     public Collection<Contact> getInputPorts() {
-        return Hierarchy.getDescendantsOfType(getRoot(), Contact.class, new Func<Contact, Boolean>() {
-            @Override
-            public Boolean eval(Contact arg) {
-                return arg.isPort() && arg.isInput();
-            }
-        });
+        return Hierarchy.getDescendantsOfType(getRoot(), Contact.class, contact -> contact.isPort() && contact.isInput());
     }
 
     public Collection<Contact> getOutputPorts() {
-        return Hierarchy.getDescendantsOfType(getRoot(), Contact.class, new Func<Contact, Boolean>() {
-            @Override
-            public Boolean eval(Contact arg) {
-                return arg.isPort() && arg.isOutput();
-            }
-        });
+        return Hierarchy.getDescendantsOfType(getRoot(), Contact.class, contact -> contact.isPort() && contact.isOutput());
     }
 
     public Collection<Contact> getDrivers() {
-        return Hierarchy.getDescendantsOfType(getRoot(), Contact.class, new Func<Contact, Boolean>() {
-            @Override
-            public Boolean eval(Contact arg) {
-                return arg.isDriver();
-            }
-        });
+        return Hierarchy.getDescendantsOfType(getRoot(), Contact.class, contact -> contact.isDriver());
     }
 
     @Override
