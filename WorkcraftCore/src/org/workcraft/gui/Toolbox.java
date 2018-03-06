@@ -2,8 +2,6 @@ package org.workcraft.gui;
 
 import java.awt.Dimension;
 import java.awt.Insets;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
@@ -160,12 +158,7 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
         } else {
             button.setToolTipText(tool.getLabel());
         }
-        button.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                selectTool(tool);
-            }
-        });
+        button.addActionListener(event -> selectTool(tool));
         return button;
     }
 

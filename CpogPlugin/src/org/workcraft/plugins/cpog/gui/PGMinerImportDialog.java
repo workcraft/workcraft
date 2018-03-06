@@ -2,8 +2,6 @@ package org.workcraft.plugins.cpog.gui;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -19,14 +17,13 @@ import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 
 import org.workcraft.Framework;
-import org.workcraft.util.GUI;
 import org.workcraft.util.DialogUtils;
+import org.workcraft.util.GUI;
 
 @SuppressWarnings("serial")
 public class PGMinerImportDialog extends JDialog {
 
     private final JTextField filePath;
-    private final JButton selectFileBtn, importButton, cancelButton;
     private final JCheckBox extractConcurrencyCB, splitCB;
     private boolean canImport;
 
@@ -38,9 +35,9 @@ public class PGMinerImportDialog extends JDialog {
         filePath = new JTextField("", 25);
         filePath.setEditable(true);
 
-        selectFileBtn = GUI.createDialogButton("Browse for file");
+        JButton selectFileBtn = GUI.createDialogButton("Browse for file");
 
-        addSelectFileBtnListener();
+        selectFileBtn.addActionListener(event -> actionSelect());
 
         JPanel filePanel = new JPanel();
         JPanel selPanel = new JPanel(new FlowLayout());
@@ -53,17 +50,18 @@ public class PGMinerImportDialog extends JDialog {
         splitCB = new JCheckBox("Split traces into scenarios", false);
 
         splitCB.setEnabled(false);
-        addCheckBoxListener();
+        extractConcurrencyCB.addActionListener(event -> actionExtract());
 
         JPanel optionPanel = new JPanel();
         optionPanel.setLayout(new BoxLayout(optionPanel, BoxLayout.PAGE_AXIS));
         optionPanel.add(extractConcurrencyCB);
         optionPanel.add(splitCB);
 
-        importButton = GUI.createDialogButton("Import");
-        cancelButton = GUI.createDialogButton("Cancel");
+        JButton importButton = GUI.createDialogButton("Import");
+        importButton.addActionListener(event -> actionImport());
 
-        addButtonListeners();
+        JButton cancelButton = GUI.createDialogButton("Cancel");
+        cancelButton.addActionListener(event -> actionCancel());
 
         JPanel btnPanel = new JPanel();
         btnPanel.add(importButton);
@@ -76,16 +74,51 @@ public class PGMinerImportDialog extends JDialog {
 
         setContentPane(content);
 
-        getRootPane().registerKeyboardAction(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+        getRootPane().registerKeyboardAction(event -> setVisible(false),
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         pack();
         setLocationRelativeTo(Framework.getInstance().getMainWindow());
+    }
+
+    private void actionSelect() {
+        JFileChooser chooser = new JFileChooser();
+        if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+            File file = chooser.getSelectedFile();
+            try {
+                if (!file.exists()) {
+                    throw new FileNotFoundException();
+                }
+                filePath.setText(file.getAbsolutePath());
+            } catch (FileNotFoundException e1) {
+                DialogUtils.showError(e1.getMessage());
+            }
+        }
+    }
+
+    private void actionExtract() {
+        if (extractConcurrencyCB.isSelected()) {
+            splitCB.setEnabled(true);
+        } else {
+            splitCB.setSelected(false);
+            splitCB.setEnabled(false);
+        }
+    }
+
+    private void actionCancel() {
+        canImport = false;
+        setVisible(false);
+    }
+
+    private void actionImport() {
+        File eventLog = new File(filePath.getText());
+        if (!eventLog.exists()) {
+            DialogUtils.showError("The event log chosen does not exist");
+        } else {
+            canImport = true;
+            setVisible(false);
+        }
     }
 
     public boolean getExtractConcurrency() {
@@ -98,71 +131,6 @@ public class PGMinerImportDialog extends JDialog {
 
     public String getFilePath() {
         return filePath.getText();
-    }
-
-    public void addCheckBoxListener() {
-        extractConcurrencyCB.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                if (extractConcurrencyCB.isSelected()) {
-                    splitCB.setEnabled(true);
-                } else {
-                    splitCB.setSelected(false);
-                    splitCB.setEnabled(false);
-                }
-
-            }
-
-        });
-    }
-
-    public void addSelectFileBtnListener() {
-        selectFileBtn.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                JFileChooser chooser = new JFileChooser();
-                if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-                    File f = chooser.getSelectedFile();
-                    try {
-                        if (!f.exists()) {
-                            throw new FileNotFoundException();
-                        }
-                        filePath.setText(f.getAbsolutePath());
-                    } catch (FileNotFoundException e1) {
-                        DialogUtils.showError(e1.getMessage());
-                    }
-                }
-            }
-
-        });
-    }
-
-    public void addButtonListeners() {
-        importButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent arg0) {
-                File eventLog = new File(filePath.getText());
-                if (!eventLog.exists()) {
-                    DialogUtils.showError("The event log chosen does not exist");
-                } else {
-                    canImport = true;
-                    setVisible(false);
-                }
-            }
-        });
-
-        cancelButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                canImport = false;
-                setVisible(false);
-            }
-
-        });
     }
 
     public boolean getCanImport() {

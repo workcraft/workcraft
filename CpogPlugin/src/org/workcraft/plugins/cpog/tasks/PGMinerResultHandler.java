@@ -38,53 +38,51 @@ public class PGMinerResultHandler extends BasicProgressMonitor<ExternalProcessOu
 
     public void finished(final Result<? extends ExternalProcessOutput> result) {
         super.finished(result);
-        try {
-            SwingUtilities.invokeAndWait(new Runnable() {
+        if (result.getOutcome() == Outcome.FAILURE) {
+            DialogUtils.showError("PGMiner could not run, concurrency extraction failed.");
+        } else {
+            try {
+                ExternalProcessOutput output = result.getPayload();
+                SwingUtilities.invokeAndWait(() -> handleSuccess(output));
+            } catch (InvocationTargetException | InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 
-                @Override
-                public void run() {
-                    final Framework framework = Framework.getInstance();
-                    final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
-                    final Toolbox toolbox = editor.getToolBox();
-                    final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
-                    if (result.getOutcome() == Outcome.FAILURE) {
-                        DialogUtils.showError("PGMiner could not run, concurrency extraction failed.");
-                    } else {
-                        if (createNewWindow) {
-                            final CpogDescriptor cpogModel = new CpogDescriptor();
-                            final MathModel mathModel = cpogModel.createMathModel();
-                            final VisualModelDescriptor v = cpogModel.getVisualModelDescriptor();
-                            try {
-                                if (v == null) {
-                                    throw new VisualModelInstantiationException(
-                                            "visual model is not defined for '" + cpogModel.getDisplayName() + "'.");
-                                }
-                                visualCpog = (VisualCpog) v.create(mathModel);
-                                final ModelEntry me = new ModelEntry(cpogModel, visualCpog);
-                                final Path<String> path = we.getWorkspacePath();
-                                weResult = framework.createWork(me, path);
-                            } catch (final VisualModelInstantiationException e) {
-                                e.printStackTrace();
-                            }
-                        }
-                        final String[] output = new String(result.getPayload().getStdout()).split("\n");
-
-                        we.captureMemento();
-                        try {
-                            for (int i = 0; i < output.length; i++) {
-                                final String exp = output[i];
-                                tool.insertExpression(exp, visualCpog, false, false, true, false);
-                            }
-
-                            we.saveMemento();
-                        } catch (final Exception e) {
-                            we.cancelMemento();
-                        }
-                    }
+    private void handleSuccess(ExternalProcessOutput output) {
+        final Framework framework = Framework.getInstance();
+        final GraphEditorPanel editor = framework.getMainWindow().getCurrentEditor();
+        if (createNewWindow) {
+            final CpogDescriptor cpogModel = new CpogDescriptor();
+            final MathModel mathModel = cpogModel.createMathModel();
+            final VisualModelDescriptor v = cpogModel.getVisualModelDescriptor();
+            try {
+                if (v == null) {
+                    throw new VisualModelInstantiationException(
+                            "visual model is not defined for '" + cpogModel.getDisplayName() + "'.");
                 }
-            });
-        } catch (InvocationTargetException | InterruptedException e) {
-            e.printStackTrace();
+                visualCpog = (VisualCpog) v.create(mathModel);
+                final ModelEntry me = new ModelEntry(cpogModel, visualCpog);
+                final Path<String> path = we.getWorkspacePath();
+                weResult = framework.createWork(me, path);
+            } catch (final VisualModelInstantiationException e) {
+                e.printStackTrace();
+            }
+        }
+        final String[] stdout = new String(output.getStdout()).split("\n");
+
+        we.captureMemento();
+        try {
+            final Toolbox toolbox = editor.getToolBox();
+            final CpogSelectionTool tool = toolbox.getToolInstance(CpogSelectionTool.class);
+            for (int i = 0; i < stdout.length; i++) {
+                final String exp = stdout[i];
+                tool.insertExpression(exp, visualCpog, false, false, true, false);
+            }
+            we.saveMemento();
+        } catch (final Exception e) {
+            we.cancelMemento();
         }
     }
 

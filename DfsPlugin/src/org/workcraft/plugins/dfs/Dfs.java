@@ -12,7 +12,6 @@ import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
 @VisualClass (org.workcraft.plugins.dfs.VisualDfs.class)
@@ -120,21 +119,11 @@ public class Dfs extends AbstractMathModel {
     }
 
     public <T> Set<T> getRPreset(Node node, Class<T> type) {
-        return getPreset(node, type, new Func<Node, Boolean>() {
-            @Override
-            public Boolean eval(Node arg) {
-                return (arg instanceof Logic) || (arg instanceof CounterflowLogic);
-            }
-        });
+        return getPreset(node, type, arg -> (arg instanceof Logic) || (arg instanceof CounterflowLogic));
     }
 
     public <T> Set<T> getRPostset(Node node, Class<T> type) {
-        return getPostset(node, type, new Func<Node, Boolean>() {
-            @Override
-            public Boolean eval(Node arg) {
-                return (arg instanceof Logic) || (arg instanceof CounterflowLogic);
-            }
-        });
+        return getPostset(node, type, arg -> (arg instanceof Logic) || (arg instanceof CounterflowLogic));
     }
 
 }

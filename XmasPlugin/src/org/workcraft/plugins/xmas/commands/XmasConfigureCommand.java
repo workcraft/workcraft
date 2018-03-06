@@ -2,8 +2,6 @@ package org.workcraft.plugins.xmas.commands;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -184,19 +182,15 @@ public class XmasConfigureCommand implements Command {
             //panellist.get(panellist.size()-1).add(new JLabel(" Soln "));
             //panellist.get(panellist.size()-1).add(new JTextField("1", 1));
         }
-        lvcombob.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent event) {
-
-                JComboBox comboBox = (JComboBox) event.getSource();
-
-                Object selected = comboBox.getSelectedItem();
-                if (selected.toString().equals("normal")) {
-                        hlcombob.removeItemAt(1);
-                        hlcombob.addItem("local");
-                } else if (selected.toString().equals("advanced")) {
-                        hlcombob.removeItemAt(1);
-                        hlcombob.addItem("rel");
-                }
+        lvcombob.addActionListener(event -> {
+            JComboBox comboBox = (JComboBox) event.getSource();
+            Object selected = comboBox.getSelectedItem();
+            if (selected.toString().equals("normal")) {
+                hlcombob.removeItemAt(1);
+                hlcombob.addItem("local");
+            } else if (selected.toString().equals("advanced")) {
+                hlcombob.removeItemAt(1);
+                hlcombob.addItem("rel");
             }
         });
         initSettings();
@@ -215,21 +209,11 @@ public class XmasConfigureCommand implements Command {
         panelb.add(okButton);
         panelmain.add(panelb);
 
-        cancelButton.addActionListener(new ActionListener() {
+        cancelButton.addActionListener(event -> dispose());
 
-            public void actionPerformed(ActionEvent e) {
-                dispose();
-            }
-
-        });
-
-        okButton.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                dispose();
-                writeOutput();
-            }
-
+        okButton.addActionListener(event -> {
+            dispose();
+            writeOutput();
         });
 
         mainFrame.pack();

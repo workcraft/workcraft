@@ -34,34 +34,31 @@ public class PcompResultHandler extends AbstractResultHandler<PcompOutput> {
     @Override
     public void handleResult(final Result<? extends PcompOutput> result) {
         try {
-            SwingUtilities.invokeAndWait(new Runnable() {
-                @Override
-                public void run() {
-                    final Framework framework = Framework.getInstance();
-                    final Workspace workspace = framework.getWorkspace();
-                    if (result.getOutcome() == Outcome.FAILURE) {
-                        String message;
-                        if (result.getCause() != null) {
-                            message = result.getCause().getMessage();
-                            result.getCause().printStackTrace();
+            SwingUtilities.invokeAndWait(() -> {
+                final Framework framework = Framework.getInstance();
+                final Workspace workspace = framework.getWorkspace();
+                if (result.getOutcome() == Outcome.FAILURE) {
+                    String message;
+                    if (result.getCause() != null) {
+                        message = result.getCause().getMessage();
+                        result.getCause().printStackTrace();
+                    } else {
+                        message = "Pcomp errors:\n" + result.getPayload().getErrorsHeadAndTail();
+                    }
+                    DialogUtils.showError(message);
+                } else if (result.getOutcome() == Outcome.SUCCESS) {
+                    try {
+                        if (showInEditor) {
+                            WorkspaceEntry we = framework.loadWork(outputFile);
+                            StgModel model = WorkspaceUtils.getAs(we, StgModel.class);
+                            MutexUtils.restoreMutexPlacesByName(model, mutexes);
                         } else {
-                            message = "Pcomp errors:\n" + result.getPayload().getErrorsHeadAndTail();
+                            Path<String> path = Path.fromString(outputFile.getName());
+                            workspace.addMount(path, outputFile, true);
                         }
-                        DialogUtils.showError(message);
-                    } else if (result.getOutcome() == Outcome.SUCCESS) {
-                        try {
-                            if (showInEditor) {
-                                WorkspaceEntry we = framework.loadWork(outputFile);
-                                StgModel model = WorkspaceUtils.getAs(we, StgModel.class);
-                                MutexUtils.restoreMutexPlacesByName(model, mutexes);
-                            } else {
-                                Path<String> path = Path.fromString(outputFile.getName());
-                                workspace.addMount(path, outputFile, true);
-                            }
-                        } catch (DeserialisationException e) {
-                            DialogUtils.showError(e.getMessage());
-                            e.printStackTrace();
-                        }
+                    } catch (DeserialisationException e) {
+                        DialogUtils.showError(e.getMessage());
+                        e.printStackTrace();
                     }
                 }
             });

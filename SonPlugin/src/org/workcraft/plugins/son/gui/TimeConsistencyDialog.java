@@ -7,8 +7,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Insets;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -249,42 +247,36 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
         addAllButton.setEnabled(false);
         removeAllButton.setEnabled(false);
 
-        addAllButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (getTabIndex() == 0) {
-                    selectedGroups.clear();
-                } else if (getTabIndex() == 2) {
-                    selectedNodes.clear();
-                }
-
-                for (int i = 0; i < getList().getModel().getSize(); i++) {
-                    getList().getModel().getElementAt(i).setSelected(true);
-                    Object obj = getList().getModel().getElementAt(i).getListItem();
-                    if (obj instanceof ONGroup) {
-                        selectedGroups.add((ONGroup) obj);
-                    } else if (obj instanceof Time) {
-                        selectedNodes.add((Time) obj);
-                    }
-                    getList().getModel().getElementAt(i).setItemColor(Color.ORANGE);
-                }
-                getList().repaint();
+        addAllButton.addActionListener(event -> {
+            if (getTabIndex() == 0) {
+                selectedGroups.clear();
+            } else if (getTabIndex() == 2) {
+                selectedNodes.clear();
             }
+
+            for (int i = 0; i < getList().getModel().getSize(); i++) {
+                getList().getModel().getElementAt(i).setSelected(true);
+                Object obj = getList().getModel().getElementAt(i).getListItem();
+                if (obj instanceof ONGroup) {
+                    selectedGroups.add((ONGroup) obj);
+                } else if (obj instanceof Time) {
+                    selectedNodes.add((Time) obj);
+                }
+                getList().getModel().getElementAt(i).setItemColor(Color.ORANGE);
+            }
+            getList().repaint();
         });
 
-        removeAllButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                for (int i = 0; i < getList().getModel().getSize(); i++) {
-                    getList().getModel().getElementAt(i).setSelected(false);
-                    getList().getModel().getElementAt(i).setItemColor(Color.BLACK);
-                }
-                getList().repaint();
-                if (getTabIndex() == 0) {
-                    selectedGroups.clear();
-                } else if (getTabIndex() == 2) {
-                    selectedNodes.clear();
-                }
+        removeAllButton.addActionListener(event -> {
+            for (int i = 0; i < getList().getModel().getSize(); i++) {
+                getList().getModel().getElementAt(i).setSelected(false);
+                getList().getModel().getElementAt(i).setItemColor(Color.BLACK);
+            }
+            getList().repaint();
+            if (getTabIndex() == 0) {
+                selectedGroups.clear();
+            } else if (getTabIndex() == 2) {
+                selectedNodes.clear();
             }
         });
     }
@@ -315,16 +307,11 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
         causalConsistencyPanel.add(causalConsistency);
         causalConsistencyPanel.add(defaultDurationPanel);
 
-        causalConsistency.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-                boolean b = causalConsistency.isSelected();
-                defaultDurationPanel.getMin().setEnabled(b);
-                defaultDurationPanel.getMax().setEnabled(b);
-                defaultDurationPanel.getDurationLabel().setEnabled(b);
-            }
+        causalConsistency.addActionListener(event -> {
+            boolean b = causalConsistency.isSelected();
+            defaultDurationPanel.getMin().setEnabled(b);
+            defaultDurationPanel.getMax().setEnabled(b);
+            defaultDurationPanel.getDurationLabel().setEnabled(b);
         });
 
     }
@@ -374,27 +361,21 @@ public class TimeConsistencyDialog extends StructureVerifyDialog {
     protected void createButtonsPanel() {
         runButton = new JButton("Run");
         runButton.setPreferredSize(buttonSize);
-        runButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (defaultDurationPanel.isValidDuration()) {
-                    run = 1;
-                    setVisible(false);
-                } else {
-                    defaultDurationPanel.getMin().setForeground(Color.RED);
-                    defaultDurationPanel.getMax().setForeground(Color.RED);
-                }
+        runButton.addActionListener(event -> {
+            if (defaultDurationPanel.isValidDuration()) {
+                run = 1;
+                setVisible(false);
+            } else {
+                defaultDurationPanel.getMin().setForeground(Color.RED);
+                defaultDurationPanel.getMax().setForeground(Color.RED);
             }
         });
 
         cancelButton = new JButton("Cancel");
         cancelButton.setPreferredSize(buttonSize);
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                run = 2;
-                setVisible(false);
-            }
+        cancelButton.addActionListener(event -> {
+            run = 2;
+            setVisible(false);
         });
 
         confirmButtonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));

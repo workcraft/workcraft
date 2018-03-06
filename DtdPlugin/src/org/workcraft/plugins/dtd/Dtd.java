@@ -16,7 +16,6 @@ import org.workcraft.plugins.dtd.Signal.State;
 import org.workcraft.plugins.dtd.Signal.Type;
 import org.workcraft.plugins.dtd.SignalTransition.Direction;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Identifier;
 
@@ -55,12 +54,8 @@ public class Dtd extends AbstractMathModel {
     }
 
     public Collection<Signal> getSignals(final Type type) {
-        return Hierarchy.getDescendantsOfType(getRoot(), Signal.class, new Func<Signal, Boolean>() {
-            @Override
-            public Boolean eval(Signal arg) {
-                return (arg != null) && (arg.getType() == type);
-            }
-        });
+        return Hierarchy.getDescendantsOfType(getRoot(), Signal.class,
+                signal -> (signal != null) && (signal.getType() == type));
     }
 
     public Collection<SignalTransition> getTransitions() {
@@ -68,12 +63,8 @@ public class Dtd extends AbstractMathModel {
     }
 
     public Collection<SignalTransition> getTransitions(final Signal signal) {
-        return Hierarchy.getDescendantsOfType(getRoot(), SignalTransition.class, new Func<SignalTransition, Boolean>() {
-            @Override
-            public Boolean eval(SignalTransition arg) {
-                return (arg != null) && (arg.getSignal() == signal);
-            }
-        });
+        return Hierarchy.getDescendantsOfType(getRoot(), SignalTransition.class,
+                transition -> (transition != null) && (transition.getSignal() == signal));
     }
 
     public State getPreviousState(SignalEvent event) {

@@ -39,7 +39,6 @@ import org.workcraft.plugins.circuit.routing.RouterVisualiser;
 import org.workcraft.plugins.circuit.routing.impl.Router;
 import org.workcraft.plugins.circuit.routing.impl.RouterTask;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
-import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.Workspace;
@@ -193,12 +192,8 @@ public class VisualCircuit extends AbstractVisualModel {
             VisualComponent vComponent2 = (VisualComponent) second;
 
             Node vParent = Hierarchy.getCommonParent(vComponent1, vComponent2);
-            Container vContainer = (Container) Hierarchy.getNearestAncestor(vParent, new Func<Node, Boolean>() {
-                @Override
-                public Boolean eval(Node node) {
-                    return (node instanceof VisualGroup) || (node instanceof VisualPage);
-                }
-            });
+            Container vContainer = (Container) Hierarchy.getNearestAncestor(vParent,
+                    node -> (node instanceof VisualGroup) || (node instanceof VisualPage));
             if (mConnection == null) {
                 MathNode mComponent1 = vComponent1.getReferencedComponent();
                 MathNode mComponent2 = vComponent2.getReferencedComponent();
@@ -274,21 +269,11 @@ public class VisualCircuit extends AbstractVisualModel {
     }
 
     public Collection<VisualContact> getVisualPorts() {
-        return Hierarchy.getDescendantsOfType(getRoot(), VisualContact.class, new Func<VisualContact, Boolean>() {
-            @Override
-            public Boolean eval(VisualContact arg) {
-                return arg.isPort();
-            }
-        });
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualContact.class, contact -> contact.isPort());
     }
 
     public Collection<VisualContact> getVisualDrivers() {
-        return Hierarchy.getDescendantsOfType(getRoot(), VisualContact.class, new Func<VisualContact, Boolean>() {
-            @Override
-            public Boolean eval(VisualContact arg) {
-                return arg.isDriver();
-            }
-        });
+        return Hierarchy.getDescendantsOfType(getRoot(), VisualContact.class, contact -> contact.isDriver());
     }
 
     public Collection<Environment> getEnvironments() {

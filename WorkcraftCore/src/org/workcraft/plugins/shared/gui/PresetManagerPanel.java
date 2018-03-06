@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Dialog.ModalityType;
 import java.awt.FlowLayout;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -49,63 +47,47 @@ public class PresetManagerPanel<T> extends JPanel {
         for (Preset<T> p : presetManager.list()) {
             presetCombo.addItem(p);
         }
-        presetCombo.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Preset<T> p = (Preset<T>) presetCombo.getSelectedItem();
-
-                if (p == null) {
-                    return;
-                }
-
-                if (p.isBuiltIn()) {
-                    updatePresetButton.setEnabled(false);
-                    updatePresetButton.setToolTipText("Cannot make changes to a built-in preset");
-                } else {
-                    updatePresetButton.setEnabled(true);
-                    updatePresetButton.setToolTipText("Save these settings to the currently selected preset");
-                }
-
-                T settings = p.getSettings();
-                guiMapper.applySettingsToControls(settings);
+        presetCombo.addActionListener(event -> {
+            Preset<T> p = (Preset<T>) presetCombo.getSelectedItem();
+            if (p == null) {
+                return;
             }
+            if (p.isBuiltIn()) {
+                updatePresetButton.setEnabled(false);
+                updatePresetButton.setToolTipText("Cannot make changes to a built-in preset");
+            } else {
+                updatePresetButton.setEnabled(true);
+                updatePresetButton.setToolTipText("Save these settings to the currently selected preset");
+            }
+
+            T settings = p.getSettings();
+            guiMapper.applySettingsToControls(settings);
         });
 
         JButton manageButton = new JButton("Manage...");
-        manageButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                boolean haveCustomPresets = false;
-                for (Preset<T> p : presetManager.list()) {
-                    if (!p.isBuiltIn()) {
-                        haveCustomPresets = true;
-                        break;
-                    }
+        manageButton.addActionListener(event -> {
+            boolean haveCustomPresets = false;
+            for (Preset<T> p : presetManager.list()) {
+                if (!p.isBuiltIn()) {
+                    haveCustomPresets = true;
+                    break;
                 }
-                if (haveCustomPresets) {
-                    managePresets();
-                } else {
-                    JOptionPane.showMessageDialog(PresetManagerPanel.this, "There are no custom presets to manage.");
-                }
+            }
+            if (haveCustomPresets) {
+                managePresets();
+            } else {
+                JOptionPane.showMessageDialog(this, "There are no custom presets to manage.");
             }
         });
 
         updatePresetButton = new JButton("Update");
-        updatePresetButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Preset<T> selected = (Preset<T>) presetCombo.getSelectedItem();
-                presetManager.update(selected, guiMapper.getSettingsFromControls());
-            }
+        updatePresetButton.addActionListener(event -> {
+            Preset<T> selected = (Preset<T>) presetCombo.getSelectedItem();
+            presetManager.update(selected, guiMapper.getSettingsFromControls());
         });
 
         JButton saveAsButton = new JButton("Save as...");
-        saveAsButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                createPreset();
-            }
-        });
+        saveAsButton.addActionListener(event -> createPreset());
 
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         buttonsPanel.add(updatePresetButton);

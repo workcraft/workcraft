@@ -3,7 +3,7 @@
  */
 
 options {
-    JDK_VERSION = "1.7";
+    JDK_VERSION = "1.8";
     LOOKAHEAD = 1;
     STATIC = false;
     DEBUG_PARSER = true;
@@ -34,13 +34,20 @@ PARSER_END(VerilogParser)
 SKIP:
 {
     " "
-|   "\t"
-|   "\r"
-|   "\n"
-|   <"//" (~["\r", "\n"])*>
-|   <"`" (~["\r", "\n"])*>
-|   "specify" : WITHIN_SPECIFY
-|   "primitive" : WITHIN_PRIMITIVE
+|
+    "\t"
+|
+    "\r"
+|
+    "\n"
+|
+    <"//" (~["\r", "\n"])*>
+|
+    <"`" (~["\r", "\n"])*>
+|
+    "specify" : WITHIN_SPECIFY
+|
+    "primitive" : WITHIN_PRIMITIVE
 }
 
 <WITHIN_SPECIFY> SKIP:
@@ -58,39 +65,72 @@ SKIP:
 TOKEN:
 {
     <MODULE : "module">
-|   <ENDMODULE : "endmodule">
-|   <INPUT : "input">
-|   <OUTPUT : "output">
-|   <INOUT : "inout">
-|   <REG : "reg">
-|   <WIRE : "wire">
-|   <ASSIGN : "assign">
-|   <NAME : ["A"-"Z", "a"-"z", "_"] (["A"-"Z", "a"-"z", "_", "0"-"9", "."])*>
-|   <FORMULA: "=" (~[";"])* ";">
-|   <PETRIFY_NAME : ["A"-"Z", "a"-"z", "_", "/"] ([ "A"-"Z", "a"-"z", "_", "0"-"9", ":", "/", "\\", "-"])*>
-|   <STRING : "\"" (<CHAR> | <ESCAPESEQ>)* "\"">
-|   <#CHAR: [" ","!","#"-"[","]"-"~"]> // Printable ASCII characters excluding \ and "
-|   <#ESCAPESEQ: "\\" ["\"","\\","n"]> // 2-character sequences \\, \", and \n
-|   <LOGIC0 : "1'b0">
-|   <LOGIC1 : "1'b1">
-|   <INTEGER : ([ "0"-"9" ])+>
-|   <PETRIFY_EQUATION : "// Equation:" (~["\r", "\n"])* <NL>>
-|   <PETRIFY_UNMAPPED : "// Functions not mapped into library gates:"  <WS> <NL>>
-|   <PETRIFY_ZERO_DELAY : "// This inverter should have a short delay" <WS> <NL>>
-|   <MPSAT_ZERO_DELAY : "// #PRAGMA: zero delay" <WS> <NL>>
-|   <PETRIFY50_INIT_STATE : "// signal values at the initial state:" <WS> <NL> <WS> "//">
-|   <PETRIFY51_INIT_STATE : "// Initial state:" <WS> <NL> <WS> "//">
-|   <MPSAT_INIT_STATE : "// initial values of the signals" <WS> <NL> <WS> "//">
-|    <#WS: ([" ", "\t"])*>
-|    <#NL: (["\n", "\r"])+>
-|   "("
-|   ")"
-|   "["
-|   "]"
-|   ","
-|   "!"
-|   ";"
-|   "."
+|
+    <ENDMODULE : "endmodule">
+|
+    <INPUT : "input">
+|
+    <OUTPUT : "output">
+|
+    <INOUT : "inout">
+|
+    <REG : "reg">
+|
+    <WIRE : "wire">
+|
+    <ASSIGN : "assign">
+|
+    <NAME : ["A"-"Z", "a"-"z", "_"] (["A"-"Z", "a"-"z", "_", "0"-"9", "."])*>
+|
+    <FORMULA: "=" (~[";"])* ";">
+|
+    <PETRIFY_NAME : ["A"-"Z", "a"-"z", "_", "/"] ([ "A"-"Z", "a"-"z", "_", "0"-"9", ":", "/", "\\", "-"])*>
+|
+    <STRING : "\"" (<CHAR> | <ESCAPESEQ>)* "\"">
+|
+    <#CHAR: [" ","!","#"-"[","]"-"~"]> // Printable ASCII characters excluding \ and "
+|
+    <#ESCAPESEQ: "\\" ["\"","\\","n"]> // 2-character sequences \\, \", and \n
+|
+    <LOGIC0 : "1'b0">
+|
+    <LOGIC1 : "1'b1">
+|
+    <INTEGER : ([ "0"-"9" ])+>
+|
+    <PETRIFY_EQUATION : "// Equation:" (~["\r", "\n"])* <NL>>
+|
+    <PETRIFY_UNMAPPED : "// Functions not mapped into library gates:"  <WS> <NL>>
+|
+    <PETRIFY_ZERO_DELAY : "// This inverter should have a short delay" <WS> <NL>>
+|
+    <MPSAT_ZERO_DELAY : "// #PRAGMA: zero delay" <WS> <NL>>
+|
+    <PETRIFY50_INIT_STATE : "// signal values at the initial state:" <WS> <NL> <WS> "//">
+|
+    <PETRIFY51_INIT_STATE : "// Initial state:" <WS> <NL> <WS> "//">
+|
+    <MPSAT_INIT_STATE : "// initial values of the signals" <WS> <NL> <WS> "//">
+|
+     <#WS: ([" ", "\t"])*>
+|
+     <#NL: (["\n", "\r"])+>
+|
+    "("
+|
+    ")"
+|
+    "["
+|
+    "]"
+|
+    ","
+|
+    "!"
+|
+    ";"
+|
+    "."
 }
 
 List<Module> parseCircuit() :
@@ -183,7 +223,8 @@ List<Port> parsePorts():
     (
         LOOKAHEAD(parseCompactPorts())
         ports = parseCompactPorts()
-      | ports = parseComplexPorts()
+    |
+        ports = parseComplexPorts()
     )
     {
         return ports;
@@ -233,7 +274,8 @@ Port.Type parsePortType():
         {
             return Port.Type.INPUT;
         }
-    |    <OUTPUT>
+    |
+        <OUTPUT>
         {
             return Port.Type.OUTPUT;
         }
@@ -303,16 +345,17 @@ List<Port> parsePortsDefinition():
 }
 {
        (
-           ( type = parsePortType() names = parseNames() ";")
-        {
-            List<Port> ports = new LinkedList<Port>();
-            for (String name: names) {
-                Port port = new Port(name, type);
-                ports.add(port);
-            }
-             return ports;
-        }
-       |     ( (<WIRE> | <INOUT> | <REG>) parseNames() ";")
+           (type = parsePortType() names = parseNames() ";")
+           {
+               List<Port> ports = new LinkedList<Port>();
+               for (String name: names) {
+                   Port port = new Port(name, type);
+                   ports.add(port);
+               }
+               return ports;
+           }
+       |
+           ((<WIRE> | <INOUT> | <REG>) parseNames() ";")
            {
                return null;
            }
@@ -350,15 +393,16 @@ Map<String, Boolean> parseInitialState():
             {
                 state = false;
             }
-        |    (nameToken = <NAME>)
+        |
+            (nameToken = <NAME>)
             {
                 state = true;
             }
         ) [","]
-        {
+            {
                String name = nameToken.image;
                signalStates.put(name, state);
-           }
+            }
     )*
     {
         return signalStates;
@@ -406,7 +450,7 @@ List<Instance> parseInstances():
 }
 {
     (
-           instance = parseInstance()
+        instance = parseInstance()
         {
             instances.add(instance);
         }
@@ -425,7 +469,8 @@ Instance parseInstance():
     List<Pin> pins;
 }
 {
-    [ (<PETRIFY_ZERO_DELAY> | <MPSAT_ZERO_DELAY>)
+    [
+        (<PETRIFY_ZERO_DELAY> | <MPSAT_ZERO_DELAY>)
         {
             zeroDelay = true;
         }
@@ -447,7 +492,8 @@ List<Pin> parsePins():
     (
         LOOKAHEAD(parseNamedPins())
         pins = parseNamedPins()
-    |   pins = parseOrderedPins()
+    |
+        pins = parseOrderedPins()
     )
     {
         return pins;

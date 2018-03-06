@@ -1,6 +1,5 @@
 package org.workcraft.plugins.mpsat.gui;
 
-import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
@@ -62,12 +61,9 @@ public class MpsatSolutionPanel extends JPanel {
         buttonsPanel.setLayout(new BoxLayout(buttonsPanel, BoxLayout.Y_AXIS));
 
         JButton playButton = new JButton("Play");
-        playButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                MpsatUtils.playTrace(we, solution);
-                closeAction.actionPerformed(null);
-            }
+        playButton.addActionListener(event -> {
+            MpsatUtils.playTrace(we, solution);
+            closeAction.actionPerformed(null);
         });
 
         buttonsPanel.add(playButton);

@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
 
@@ -61,12 +59,7 @@ public class SingleSequentialScencoDialog extends AbstractScencoDialog {
 
         setContentPane(content);
 
-        getRootPane().registerKeyboardAction(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        setVisible(false);
-                    }
-                },
+        getRootPane().registerKeyboardAction(event -> setVisible(false),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
@@ -120,57 +113,51 @@ public class SingleSequentialScencoDialog extends AbstractScencoDialog {
 
         buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        JButton saveButton = GUI.createDialogButton("Run");
-        saveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-
-                // ENCODER EXECUTION
-                EncoderSettings settings = getSettings();
-
-                // abc disabled
-                settings.setAbcFlag(abcCheck.isSelected() ? true : false);
-
-                // number of bits selection
-                settings.setBits(bits + 1);
-
-                // optimise for option
-                settings.setCpogSize(optimiseBox.getSelectedIndex() == 0 ? false : true);
-
-                // verbose mode
-                settings.setVerboseMode(verboseModeCheck.isSelected());
-
-                // generation mode selection
-                settings.setGenerationModeInt(string.matches("Single-literal encoding") ? 4 : 5);
-
-                // custom encodings
-                settings.setNumPO(m);
-                if (settings.getGenMode() == GenerationMode.SEQUENTIAL) {
-                    settings.setCustomEncMode(true);
-                    String[] encodings = new String[m];
-                    for (int i = 0; i < m; i++) {
-                        encodings[i] = Integer.toBinaryString(i);
-                    }
-                    settings.setCustomEnc(encodings);
-                } else {
-                    settings.setBits(bits + 1);
-                    settings.setCustomEncMode(false);
-                }
-                setDone();
-            }
-        });
+        JButton runButton = GUI.createDialogButton("Run");
+        runButton.addActionListener(event -> actionRun(string));
 
         JButton closeButton = GUI.createDialogButton("Close");
-        closeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-            }
-        });
+        closeButton.addActionListener(event -> setVisible(false));
 
-        buttonsPanel.add(saveButton);
+        buttonsPanel.add(runButton);
         buttonsPanel.add(closeButton);
+    }
+
+    private void actionRun(final String string) {
+        setVisible(false);
+
+        // ENCODER EXECUTION
+        EncoderSettings settings = getSettings();
+
+        // abc disabled
+        settings.setAbcFlag(abcCheck.isSelected() ? true : false);
+
+        // number of bits selection
+        settings.setBits(bits + 1);
+
+        // optimise for option
+        settings.setCpogSize(optimiseBox.getSelectedIndex() == 0 ? false : true);
+
+        // verbose mode
+        settings.setVerboseMode(verboseModeCheck.isSelected());
+
+        // generation mode selection
+        settings.setGenerationModeInt(string.matches("Single-literal encoding") ? 4 : 5);
+
+        // custom encodings
+        settings.setNumPO(m);
+        if (settings.getGenMode() == GenerationMode.SEQUENTIAL) {
+            settings.setCustomEncMode(true);
+            String[] encodings = new String[m];
+            for (int i = 0; i < m; i++) {
+                encodings[i] = Integer.toBinaryString(i);
+            }
+            settings.setCustomEnc(encodings);
+        } else {
+            settings.setBits(bits + 1);
+            settings.setCustomEncMode(false);
+        }
+        setDone();
     }
 
 }

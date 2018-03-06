@@ -3,7 +3,7 @@
  */
 
 options {
-  JDK_VERSION = "1.7";
+  JDK_VERSION = "1.8";
   STATIC = false;
   UNICODE_INPUT = true;
 }
@@ -97,34 +97,47 @@ PARSER_END(BooleanFormulaParser)
 
 SKIP :
 {
-     " "
-|    "\r"
-|    "\t"
-|    "\n"
+    " "
+|
+    "\r"
+|
+    "\t"
+|
+    "\n"
 }
 TOKEN : /* OPERATORS */
 {
-    < EQUALS: "eq" | "=" | "==" | "<->" | "<=>" >
-|   < NOTEQUALS: "neq" | "!=" >
-|   < IMPLIES: "imp" | "=>" | "\u21d2" | "->" >
-|   < OR: "or" | "|" | "+" | "\u2228" >
-|   < XOR: "xor" | "^" | "\u2295" >
-|   < AND: "and" | "&" | "*" | "\u2227" | "\u2022" | "\u00b7" >
-|   < NOT: "not" | "!" | "~" | "\u00ac" >
-|   < POSTNOT: "'" >
+    <EQUALS: "eq" | "=" | "==" | "<->" | "<=>">
+|
+    <NOTEQUALS: "neq" | "!=">
+|
+    <IMPLIES: "imp" | "=>" | "\u21d2" | "->">
+|
+    <OR: "or" | "|" | "+" | "\u2228">
+|
+    <XOR: "xor" | "^" | "\u2295">
+|
+    <AND: "and" | "&" | "*" | "\u2227" | "\u2022" | "\u00b7">
+|
+    <NOT: "not" | "!" | "~" | "\u00ac">
+|
+    <POSTNOT: "'">
 }
+
 TOKEN :
 {
-    < CONSTANT: "0"|"1" >
-|   < VARIABLE: ["A"-"Z", "a"-"z", "_"](["A"-"Z", "a"-"z", "_", "0"-"9", ".", "[", "]"])* >
+    <CONSTANT: "0"|"1">
+|
+    <VARIABLE: ["A"-"Z", "a"-"z", "_"](["A"-"Z", "a"-"z", "_", "0"-"9", ".", "[", "]"])*>
 }
+
 BooleanFormula formula() :
 {
     BooleanFormula result;
     BooleanFormula op;
 }
 {
-    result = eqOp() ( < EQUALS > op = eqOp()
+    result = eqOp() ( <EQUALS> op = eqOp()
     { result = eq(result, op); } )*
     { return result; }
 }
@@ -135,7 +148,7 @@ BooleanFormula eqOp() :
     BooleanFormula op;
 }
 {
-    result = neqOp() ( < NOTEQUALS > op = neqOp()
+    result = neqOp() ( <NOTEQUALS> op = neqOp()
     { result = xor(result, op); } ) *
     { return result; }
 }
@@ -146,7 +159,7 @@ BooleanFormula neqOp() :
     BooleanFormula op;
 }
 {
-    result = implyOp() [ < IMPLIES > op = implyOp()
+    result = implyOp() [ <IMPLIES> op = implyOp()
     { result = imply(result, op); } ]
     { return result; }
 }
@@ -157,7 +170,7 @@ BooleanFormula implyOp() :
     BooleanFormula op;
 }
 {
-    result = orOp() ( < OR > op = orOp()
+    result = orOp() ( <OR> op = orOp()
     { result = or(result, op); } ) *
     { return result; }
 }
@@ -168,7 +181,7 @@ BooleanFormula orOp() :
     BooleanFormula op;
 }
 {
-    result = xorOp() ( < XOR > op = xorOp()
+    result = xorOp() ( <XOR> op = xorOp()
     { result = xor(result, op); } ) *
     { return result; }
 }
@@ -179,7 +192,7 @@ BooleanFormula xorOp() :
     BooleanFormula op;
 }
 {
-    result = andOp() ( < AND > op = andOp()
+    result = andOp() ( <AND> op = andOp()
     { result = and(result, op); } ) *
     { return result; }
 }
@@ -190,9 +203,9 @@ BooleanFormula andOp() :
     BooleanFormula result;
 }
 {
-    (< NOT > { inverse = !inverse; } )*
+    (<NOT> { inverse = !inverse; } )*
     result = literal()
-    (< POSTNOT > { inverse = !inverse; } )*
+    (<POSTNOT> { inverse = !inverse; } )*
     { return inverse ? not(result) : result; }
 }
 
@@ -203,10 +216,10 @@ BooleanFormula literal() :
 }
 {
     (
-        t = < VARIABLE >
+        t = <VARIABLE>
         { result = var(t.image); }
     |
-        t = < CONSTANT >
+        t = <CONSTANT>
         { result = constant(t.image); }
     |
         "(" result = formula() ")"

@@ -13,8 +13,6 @@ import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -82,7 +80,6 @@ import org.workcraft.plugins.son.util.Phase;
 import org.workcraft.plugins.son.util.Step;
 import org.workcraft.plugins.son.util.StepRef;
 import org.workcraft.plugins.son.util.Trace;
-import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -227,108 +224,62 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
             }
         });
 
-        playButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (timer == null) {
-                    timer = new Timer(getAnimationDelay(), new ActionListener() {
-                        @Override
-                        public void actionPerformed(ActionEvent e) {
-                            step(editor);
-                        }
-                    });
-                    timer.start();
-                } else {
-                    timer.stop();
-                    timer = null;
-                }
-                updateState(editor);
-                editor.requestFocus();
+        playButton.addActionListener(event -> {
+            if (timer == null) {
+                timer = new Timer(getAnimationDelay(), event1 -> step(editor));
+                timer.start();
+            } else {
+                timer.stop();
+                timer = null;
             }
+            updateState(editor);
+            editor.requestFocus();
         });
 
-        stopButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                reset(editor);
-                setDecoration(simuAlg.getEnabledNodes(sync, phases, isRev));
-            }
+        stopButton.addActionListener(event -> {
+            reset(editor);
+            setDecoration(simuAlg.getEnabledNodes(sync, phases, isRev));
         });
 
-        backwardButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                stepBack(editor);
-            }
+        backwardButton.addActionListener(event -> stepBack(editor));
+
+        forwardButton.addActionListener(event -> step(editor));
+
+        reverseButton.addActionListener(event -> {
+            Map<PlaceNode, Boolean> currentMarking = readSONMarking();
+            setReverse(editor, !isRev);
+            writeModelState(currentMarking);
+            setDecoration(simuAlg.getEnabledNodes(sync, phases, isRev));
+            excitedContainers.clear();
+            updateState(editor);
+            editor.requestFocus();
         });
 
-        forwardButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                step(editor);
-            }
-        });
-
-        reverseButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Map<PlaceNode, Boolean> currentMarking = readSONMarking();
-                setReverse(editor, !isRev);
-                writeModelState(currentMarking);
-                setDecoration(simuAlg.getEnabledNodes(sync, phases, isRev));
-                excitedContainers.clear();
-                updateState(editor);
-                editor.requestFocus();
-            }
-        });
-
-        autoSimuButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (autoSimuButton.isSelected()) {
-                    if (!acyclicChecker()) {
-                        autoSimuButton.setSelected(false);
-                        try {
-                            throw new InvalidStructureException("Cyclic structure error");
-                        } catch (InvalidStructureException e1) {
-                            errorMsg(e1.getMessage(), editor);
-                        }
-                    } else {
-                        autoSimulator(editor);
+        autoSimuButton.addActionListener(event -> {
+            if (autoSimuButton.isSelected()) {
+                if (!acyclicChecker()) {
+                    autoSimuButton.setSelected(false);
+                    try {
+                        throw new InvalidStructureException("Cyclic structure error");
+                    } catch (InvalidStructureException e1) {
+                        errorMsg(e1.getMessage(), editor);
                     }
+                } else {
+                    autoSimulator(editor);
                 }
             }
         });
 
-        errorButton.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                SONSettings.setErrorTracing(!SONSettings.isErrorTracing());
-                editor.repaint();
-            }
+        errorButton.addActionListener(event -> {
+            SONSettings.setErrorTracing(!SONSettings.isErrorTracing());
+            editor.repaint();
         });
 
-        copyStateButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                copyState(editor);
-            }
-        });
+        copyStateButton.addActionListener(event -> copyState(editor));
 
-        pasteStateButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                pasteState(editor);
-            }
-        });
+        pasteStateButton.addActionListener(event -> pasteState(editor));
 
-        mergeTraceButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                mergeTrace(editor);
-            }
-        });
+        mergeTraceButton.addActionListener(event -> mergeTrace(editor));
 
         traceTable.addMouseListener(new MouseListener() {
             @Override
@@ -949,31 +900,23 @@ public class SONSimulationTool extends AbstractGraphEditorTool implements Clipbo
     @Override
     public void mousePressed(GraphEditorMouseEvent e) {
 
-        Node node = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(),
-                new Func<Node, Boolean>() {
-                    @Override
-                    public Boolean eval(Node node) {
-                        if (node instanceof VisualTransitionNode) {
-                            TransitionNode node1 = ((VisualTransitionNode) node).getMathTransitionNode();
-                            Step enabled = null;
-
-                            enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
-                            if (isEnabled(node1, enabled)) {
-                                return true;
-                            }
-                        }
-                        return false;
-
+        Node deepestNode = HitMan.hitDeepest(e.getPosition(), e.getModel().getRoot(),
+                node -> {
+                    if (node instanceof VisualTransitionNode) {
+                        TransitionNode transitionNode = ((VisualTransitionNode) node).getMathTransitionNode();
+                        Step enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
+                        return isEnabled(transitionNode, enabled);
                     }
+                    return false;
                 });
 
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
 
-        if (node instanceof VisualTransitionNode) {
+        if (deepestNode instanceof VisualTransitionNode) {
 
             Step enabled = null;
-            TransitionNode select = ((VisualTransitionNode) node).getMathTransitionNode();
+            TransitionNode select = ((VisualTransitionNode) deepestNode).getMathTransitionNode();
 
             enabled = simuAlg.getEnabledNodes(sync, phases, isRev);
 

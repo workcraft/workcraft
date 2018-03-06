@@ -3,8 +3,6 @@ package org.workcraft.gui.graph.tools;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
@@ -121,12 +119,9 @@ public class SelectionTool extends AbstractGraphEditorTool {
             JButton groupButton = GUI.createIconButton(
                     GUI.createIconFromSVG("images/selection-group.svg"),
                     "Group selection (" + DesktopApi.getMenuKeyMaskName() + "-G)");
-            groupButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    groupSelection(editor);
-                    editor.requestFocus();
-                }
+            groupButton.addActionListener(event -> {
+                groupSelection(editor);
+                editor.requestFocus();
             });
             toolbar.add(groupButton);
         }
@@ -135,12 +130,9 @@ public class SelectionTool extends AbstractGraphEditorTool {
             JButton groupPageButton = GUI.createIconButton(
                     GUI.createIconFromSVG("images/selection-page.svg"),
                     "Combine selection into a page (Alt-G)");
-            groupPageButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    pageSelection(editor);
-                    editor.requestFocus();
-                }
+            groupPageButton.addActionListener(event -> {
+                pageSelection(editor);
+                editor.requestFocus();
             });
             toolbar.add(groupPageButton);
         }
@@ -149,36 +141,27 @@ public class SelectionTool extends AbstractGraphEditorTool {
             JButton ungroupButton = GUI.createIconButton(
                     GUI.createIconFromSVG("images/selection-ungroup.svg"),
                     "Ungroup selection (" + DesktopApi.getMenuKeyMaskName() + "+Shift-G)");
-            ungroupButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    ungroupSelection(editor);
-                    editor.requestFocus();
-                }
+            ungroupButton.addActionListener(event -> {
+                ungroupSelection(editor);
+                editor.requestFocus();
             });
             toolbar.add(ungroupButton);
 
             JButton levelUpButton = GUI.createIconButton(
                     GUI.createIconFromSVG("images/selection-level_up.svg"),
                     "Level up (PageUp)");
-            levelUpButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    changeLevelUp(editor);
-                    editor.requestFocus();
-                }
+            levelUpButton.addActionListener(event -> {
+                changeLevelUp(editor);
+                editor.requestFocus();
             });
             toolbar.add(levelUpButton);
 
             JButton levelDownButton = GUI.createIconButton(
                     GUI.createIconFromSVG("images/selection-level_down.svg"),
                     "Level down (PageDown)");
-            levelDownButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    changeLevelDown(editor);
-                    editor.requestFocus();
-                }
+            levelDownButton.addActionListener(event -> {
+                changeLevelDown(editor);
+                editor.requestFocus();
             });
             toolbar.add(levelDownButton);
         }
@@ -189,24 +172,18 @@ public class SelectionTool extends AbstractGraphEditorTool {
             JButton flipHorizontalButton = GUI.createIconButton(
                     GUI.createIconFromSVG("images/selection-flip_horizontal.svg"),
                     "Flip horizontal");
-            flipHorizontalButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    flipSelectionHorizontal(editor);
-                    editor.requestFocus();
-                }
+            flipHorizontalButton.addActionListener(event -> {
+                flipSelectionHorizontal(editor);
+                editor.requestFocus();
             });
             toolbar.add(flipHorizontalButton);
 
             JButton flipVerticalButton = GUI.createIconButton(
                     GUI.createIconFromSVG("images/selection-flip_vertical.svg"),
                     "Flip vertical");
-            flipVerticalButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    flipSelectionVertical(editor);
-                    editor.requestFocus();
-                }
+            flipVerticalButton.addActionListener(event -> {
+                flipSelectionVertical(editor);
+                editor.requestFocus();
             });
             toolbar.add(flipVerticalButton);
         }
@@ -215,24 +192,18 @@ public class SelectionTool extends AbstractGraphEditorTool {
             JButton rotateClockwiseButton = GUI.createIconButton(
                     GUI.createIconFromSVG("images/selection-rotate_clockwise.svg"),
                     "Rotate clockwise");
-            rotateClockwiseButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    rotateSelectionClockwise(editor);
-                    editor.requestFocus();
-                }
+            rotateClockwiseButton.addActionListener(event -> {
+                rotateSelectionClockwise(editor);
+                editor.requestFocus();
             });
             toolbar.add(rotateClockwiseButton);
 
             JButton rotateCounterclockwiseButton = GUI.createIconButton(
                     GUI.createIconFromSVG("images/selection-rotate_counterclockwise.svg"),
                     "Rotate counterclockwise");
-            rotateCounterclockwiseButton.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    rotateSelectionCounterclockwise(editor);
-                    editor.requestFocus();
-                }
+            rotateCounterclockwiseButton.addActionListener(event -> {
+                rotateSelectionCounterclockwise(editor);
+                editor.requestFocus();
             });
             toolbar.add(rotateCounterclockwiseButton);
         }

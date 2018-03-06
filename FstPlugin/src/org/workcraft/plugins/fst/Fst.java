@@ -23,7 +23,6 @@ import org.workcraft.plugins.fst.propertydescriptors.EventSignalPropertyDescript
 import org.workcraft.plugins.fst.propertydescriptors.SignalTypePropertyDescriptor;
 import org.workcraft.plugins.fst.propertydescriptors.TypePropertyDescriptor;
 import org.workcraft.serialisation.References;
-import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Identifier;
 
@@ -110,12 +109,8 @@ public class Fst extends Fsm {
     }
 
     public final Collection<Signal> getSignals(final Type type) {
-        return Hierarchy.getDescendantsOfType(getRoot(), Signal.class, new Func<Signal, Boolean>() {
-            @Override
-            public Boolean eval(Signal arg) {
-                return (arg != null) && (arg.getType() == type);
-            }
-        });
+        return Hierarchy.getDescendantsOfType(getRoot(), Signal.class,
+                signal -> (signal != null) && (signal.getType() == type));
     }
 
     public final Collection<SignalEvent> getSignalEvents() {

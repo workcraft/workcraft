@@ -18,7 +18,6 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.exceptions.VisualModelInstantiationException;
-import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Dataflow Structure")
@@ -162,21 +161,11 @@ public class VisualDfs extends AbstractVisualModel {
     }
 
     public <T> Set<T> getRPreset(Node node, Class<T> type) {
-        return getPreset(node, type, new Func<Node, Boolean>() {
-            @Override
-            public Boolean eval(Node arg) {
-                return (arg instanceof VisualLogic) || (arg instanceof VisualCounterflowLogic);
-            }
-        });
+        return getPreset(node, type, arg -> (arg instanceof VisualLogic) || (arg instanceof VisualCounterflowLogic));
     }
 
     public <T> Set<T> getRPostset(Node node, Class<T> type) {
-        return getPostset(node, type, new Func<Node, Boolean>() {
-            @Override
-            public Boolean eval(Node arg) {
-                return (arg instanceof VisualLogic) || (arg instanceof VisualCounterflowLogic);
-            }
-        });
+        return getPostset(node, type, arg -> (arg instanceof VisualLogic) || (arg instanceof VisualCounterflowLogic));
     }
 
     public Collection<VisualLogic> getVisualLogics() {

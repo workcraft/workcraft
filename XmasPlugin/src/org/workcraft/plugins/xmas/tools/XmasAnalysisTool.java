@@ -4,8 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.BufferedReader;
@@ -478,80 +476,71 @@ public class XmasAnalysisTool extends AbstractGraphEditorTool implements Command
         mainFrame.pack();
         mainFrame.setVisible(true);
 
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose();
-            }
+        cancelButton.addActionListener(event -> dispose());
 
-        });
+        okButton.addActionListener(event -> {
+            dispose();
+            if (index != 0) {
+                try {
+                    File cpnFile = XmasSettings.getTempVxmCpnFile();
+                    File inFile = XmasSettings.getTempVxmInFile();
+                    FileUtils.copyFile(cpnFile, inFile);
 
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                dispose();
-                if (index != 0) {
-                    try {
-                        File cpnFile = XmasSettings.getTempVxmCpnFile();
-                        File inFile = XmasSettings.getTempVxmInFile();
-                        FileUtils.copyFile(cpnFile, inFile);
+                    ArrayList<String> vxmCommand = new ArrayList<>();
+                    vxmCommand.add(XmasSettings.getTempVxmCommandFile().getAbsolutePath());
+                    vxmCommand.addAll(processArg(XmasSettings.getTempVxmVsettingsFile().getAbsolutePath(), index));
+                    ExternalProcessTask.printCommandLine(vxmCommand);
+                    String[] cmdArray = vxmCommand.toArray(new String[vxmCommand.size()]);
+                    Process vxmProcess = Runtime.getRuntime().exec(cmdArray, null, XmasSettings.getTempVxmDirectory());
 
-                        ArrayList<String> vxmCommand = new ArrayList<>();
-                        vxmCommand.add(XmasSettings.getTempVxmCommandFile().getAbsolutePath());
-                        vxmCommand.addAll(processArg(XmasSettings.getTempVxmVsettingsFile().getAbsolutePath(), index));
-                        ExternalProcessTask.printCommandLine(vxmCommand);
-                        String[] cmdArray = vxmCommand.toArray(new String[vxmCommand.size()]);
-                        Process vxmProcess = Runtime.getRuntime().exec(cmdArray, null, XmasSettings.getTempVxmDirectory());
-
-                        String s, str = "";
-                        InputStreamReader inputStreamReader = new InputStreamReader(vxmProcess.getInputStream());
-                        BufferedReader stdInput = new BufferedReader(inputStreamReader);
-                        int n = 0;
-                        int test = -1;
-                        initHighlight(xnet, vnet);
-                        while ((s = stdInput.readLine()) != null) {
-                            //if (n == 1) test = checkType(s);
-                            if (test == -1) test = checkType(s);
-                            if (n > 0) str = str + s + '\n';
-                            n++;
-                            System.out.println(s);
-                        }
-                        if (level.equals("advanced")) {
-                            System.out.println("LEVEL IS ADVANCED ");
-                            File qslFile = XmasSettings.getTempVxmQslFile();
-                            processQsl(qslFile.getAbsolutePath());
-
-                            File equFile = XmasSettings.getTempVxmEquFile();
-                            str = processEq(equFile.getAbsolutePath()); //testing str assignment - fpb
-                        } else if (level.equals("normal") && (test == 2)) {
-                            System.out.println("LEVEL IS NORMAL ");
-                            File locFile = XmasSettings.getTempVxmLocFile();
-                            str = processLoc(locFile.getAbsolutePath());
-                        }
-                        if (test > 0) {
-                            if (display.equals("popup")) {
-                                if (!level.equals("advanced")) {
-                                    new SolutionsDialog1(test, str);
-                                } else {
-                                    new SolutionsDialog2(test, str);
-                                }
-                            }
-                            if (test == 2) {
-                                if (highlight.equals("local")) {
-                                    localHighlight(str, xnet, vnet);
-                                } else if (highlight.equals("rel")) {
-                                    relHighlight(str, xnet, vnet);
-                                    activeHighlight(xnet, vnet);
-                                }
-                            }
-                        } else if (test == 0) {
-                            if (display.equals("popup")) {
-                                DialogUtils.showInfo("The system is deadlock-free.");
-                            }
-                        }
-                    } catch (Exception e1) {
-                        e1.printStackTrace();
+                    String s, str = "";
+                    InputStreamReader inputStreamReader = new InputStreamReader(vxmProcess.getInputStream());
+                    BufferedReader stdInput = new BufferedReader(inputStreamReader);
+                    int n = 0;
+                    int test = -1;
+                    initHighlight(xnet, vnet);
+                    while ((s = stdInput.readLine()) != null) {
+                        //if (n == 1) test = checkType(s);
+                        if (test == -1) test = checkType(s);
+                        if (n > 0) str = str + s + '\n';
+                        n++;
+                        System.out.println(s);
                     }
+                    if (level.equals("advanced")) {
+                        System.out.println("LEVEL IS ADVANCED ");
+                        File qslFile = XmasSettings.getTempVxmQslFile();
+                        processQsl(qslFile.getAbsolutePath());
+
+                        File equFile = XmasSettings.getTempVxmEquFile();
+                        str = processEq(equFile.getAbsolutePath()); //testing str assignment - fpb
+                    } else if (level.equals("normal") && (test == 2)) {
+                        System.out.println("LEVEL IS NORMAL ");
+                        File locFile = XmasSettings.getTempVxmLocFile();
+                        str = processLoc(locFile.getAbsolutePath());
+                    }
+                    if (test > 0) {
+                        if (display.equals("popup")) {
+                            if (!level.equals("advanced")) {
+                                new SolutionsDialog1(test, str);
+                            } else {
+                                new SolutionsDialog2(test, str);
+                            }
+                        }
+                        if (test == 2) {
+                            if (highlight.equals("local")) {
+                                localHighlight(str, xnet, vnet);
+                            } else if (highlight.equals("rel")) {
+                                relHighlight(str, xnet, vnet);
+                                activeHighlight(xnet, vnet);
+                            }
+                        }
+                    } else if (test == 0) {
+                        if (display.equals("popup")) {
+                            DialogUtils.showInfo("The system is deadlock-free.");
+                        }
+                    }
+                } catch (Exception e1) {
+                    e1.printStackTrace();
                 }
             }
         });

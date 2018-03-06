@@ -3,7 +3,7 @@
  */
 
 options {
-    JDK_VERSION = "1.7";
+    JDK_VERSION = "1.8";
     LOOKAHEAD = 1;
     STATIC = false;
     DEBUG_PARSER = true;
@@ -158,7 +158,8 @@ PARSER_END(StgParser)
 SKIP :
 {
    " "
-|  "\t"
+|
+   "\t"
 }
 
 <IGNORE_LINE>
@@ -176,28 +177,50 @@ TOKEN :
 TOKEN :
 {
     <COMMENT : "#" (~["\r", "\n"])*>
-|   <LINEBREAK : ((<COMMENT>)? ["\r", "\n"])+>
-|   <MODEL_NAME : ".model" | ".name">
-|   <INPUT_HEADER : ".inputs">
-|   <OUTPUT_HEADER : ".outputs">
-|   <INTERNAL_HEADER : ".internal">
-|   <DUMMY_HEADER : ".dummy">
-|   <SILENT_HEADER : ".silent">
-|   <GRAPH : ".graph">
-|   <MARKING : ".marking">
-|   <CAPACITY : ".capacity">
-|   <END : ".end"> : IGNORE_ALL
-|   <UNSUPPORTED_HEADER : "." <NAME>> : IGNORE_LINE
-|   <NAME : ["A"-"Z", "a"-"z", "_"] (["_", "A"-"Z", "a"-"z", "0"-"9", "."])*>
-|   <DIRECTION : ["+", "-", "~"]>
-|   <INTEGER : (["0"-"9"])+>
-|   "{"
-|   "}"
-|   "<"
-|   ">"
-|   ","
-|   "/"
-|   "="
+|
+    <LINEBREAK : ((<COMMENT>)? ["\r", "\n"])+>
+|
+    <MODEL_NAME : ".model" | ".name">
+|
+    <INPUT_HEADER : ".inputs">
+|
+    <OUTPUT_HEADER : ".outputs">
+|
+    <INTERNAL_HEADER : ".internal">
+|
+    <DUMMY_HEADER : ".dummy">
+|
+    <SILENT_HEADER : ".silent">
+|
+    <GRAPH : ".graph">
+|
+    <MARKING : ".marking">
+|
+    <CAPACITY : ".capacity">
+|
+    <END : ".end"> : IGNORE_ALL
+|
+    <UNSUPPORTED_HEADER : "." <NAME>> : IGNORE_LINE
+|
+    <NAME : ["A"-"Z", "a"-"z", "_"] (["_", "A"-"Z", "a"-"z", "0"-"9", "."])*>
+|
+    <DIRECTION : ["+", "-", "~"]>
+|
+    <INTEGER : (["0"-"9"])+>
+|
+    "{"
+|
+    "}"
+|
+    "<"
+|
+    ">"
+|
+    ","
+|
+    "/"
+|
+    "="
 }
 
 Stg parse() :
@@ -232,27 +255,33 @@ void header() :
         {
             stg.setTitle(t.image);
         }
-    |   <INPUT_HEADER> list = stringList()
+    |
+        <INPUT_HEADER> list = stringList()
         {
             addSignals(list, Type.INPUT);
         }
-    |   <OUTPUT_HEADER> list = stringList()
+    |
+        <OUTPUT_HEADER> list = stringList()
         {
             addSignals(list, Type.OUTPUT);
         }
-    |   <INTERNAL_HEADER> list = stringList()
+    |
+        <INTERNAL_HEADER> list = stringList()
         {
             addSignals(list, Type.INTERNAL);
         }
-    |   <DUMMY_HEADER> list = stringList()
+    |
+        <DUMMY_HEADER> list = stringList()
         {
             addDummies(list);
         }
-    |   <SILENT_HEADER> list = stringList()
+    |
+        <SILENT_HEADER> list = stringList()
         {
             addDummies(list);
         }
-    |   t = <UNSUPPORTED_HEADER> <REST>
+    |
+        t = <UNSUPPORTED_HEADER> <REST>
         {
             LogUtils.logWarning("Unsupported keyword '" + t.image + "' in line " + t.beginLine + ". The whole line is ignored.");
         }
@@ -280,8 +309,10 @@ void footer() :
 {}
 {
     <MARKING> marking()
-|   <CAPACITY> capacity()
-|   <UNSUPPORTED_HEADER> <REST>
+|
+    <CAPACITY> capacity()
+|
+    <UNSUPPORTED_HEADER> <REST>
 }
 
 void capacity() :
@@ -340,7 +371,8 @@ void markingEntry() :
     (
         (
             p = implicitPlaceReference()
-        |   p = explicitPlaceReference()
+        |
+            p = explicitPlaceReference()
         )
         (
             value = assignment()
@@ -373,10 +405,11 @@ StgPlace explicitPlaceReference() :
     Integer tokens = null;
 }
 {
-    (t = <NAME>
-    {
-        name = t.image;
-    }
+    (
+        t = <NAME>
+        {
+            name = t.image;
+        }
     )
     {
         return (StgPlace) stg.getNodeByReference(name);
@@ -409,7 +442,7 @@ Triple<String, Direction, Integer> signalTransition() :
         direction = Direction.fromString(t.image);
     }
     (
-        ("/" t = <INTEGER>)
+        "/" t = <INTEGER>
         {
             instance = Integer.parseInt(t.image);
         }
@@ -454,7 +487,8 @@ Node anyTransition() :
         {
             t = getOrCreate(r);
         }
-    |   r2 = dummyTransition()
+    |
+        r2 = dummyTransition()
         {
             t = getOrCreate(r2);
         }
@@ -473,7 +507,8 @@ void graphLine() :
     (
         LOOKAHEAD(<NAME> (<DIRECTION> | "/"))
         from = anyTransition()
-    |   t = <NAME>
+    |
+        t = <NAME>
         {
             from = getOrCreate(t.image);
         }
@@ -482,7 +517,8 @@ void graphLine() :
         (
             LOOKAHEAD(<NAME> (<DIRECTION> | "/"))
             to = anyTransition()
-        |   t = <NAME>
+        |
+            t = <NAME>
             {
                 to = getOrCreate(t.image);
             }

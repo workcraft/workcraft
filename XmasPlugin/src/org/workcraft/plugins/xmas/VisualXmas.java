@@ -68,6 +68,11 @@ public class VisualXmas extends AbstractVisualModel {
     }
 
     @Override
+    public Xmas getMathModel() {
+        return (Xmas) super.getMathModel();
+    }
+
+    @Override
     public VisualConnection connect(Node first, Node second, MathConnection mConnection) throws InvalidConnectionException {
         validateConnection(first, second);
         VisualXmasConnection connection = null;

@@ -3,8 +3,6 @@ package org.workcraft.plugins.xmas.commands;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
@@ -313,7 +311,6 @@ public class XmasSyncCommand implements Command {
     public void run(WorkspaceEntry we) {
         System.out.println("Running tests");
         final VisualXmas vnet = WorkspaceUtils.getAs(we, VisualXmas.class);
-        final Xmas cnet = WorkspaceUtils.getAs(we, Xmas.class);
         if (vnet != vnet1) {
             loaded = 0;
         }
@@ -327,390 +324,8 @@ public class XmasSyncCommand implements Command {
             slist2 = new ArrayList<String>();
             slist2 = new ArrayList<String>();
         }
-        VisualGroup gr1 = null;
-        VisualGroup gr2 = null;
-        int gno = 1;
-
-        for (VisualGroup vg: Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualGroup.class)) {
-            for (VisualComponent vp: vg.getComponents()) {
-                if (vp instanceof VisualSourceComponent) {
-                    VisualSourceComponent vsc = (VisualSourceComponent) vp;
-                    SourceComponent sc = vsc.getReferencedSourceComponent();
-                    sc.setGr(gno);
-                } else if (vp instanceof VisualSinkComponent) {
-                    VisualSinkComponent vsc = (VisualSinkComponent) vp;
-                    SinkComponent sc = vsc.getReferencedSinkComponent();
-                    sc.setGr(gno);
-                } else if (vp instanceof VisualFunctionComponent) {
-                    VisualFunctionComponent vsc = (VisualFunctionComponent) vp;
-                    FunctionComponent sc = vsc.getReferencedFunctionComponent();
-                    sc.setGr(gno);
-                } else if (vp instanceof VisualQueueComponent) {
-                    VisualQueueComponent vsc = (VisualQueueComponent) vp;
-                    QueueComponent sc = vsc.getReferencedQueueComponent();
-                    sc.setGr(gno);
-                    /*System.out.println("Queue no = " + gno + " " + sc.getGr());
-                      Collection<XmasContact> contacts2 = sc.getOutputs();
-                      for (XmasContact node : contacts2) {
-                      System.out.println("InputContact =" + cnet.getName(sc));
-                      }
-                      Collection<XmasContact> ccontacts = sc.getOutputs();
-                      for (XmasContact contactNode2 : ccontacts) {
-                      for (Connection c : cnet.getConnections(contactNode2)) {
-                      if (c.getSecond() instanceof XmasContact) {
-                      Node cpNode = c.getSecond().getParent();
-                      System.out.println("  Found contact = " + cnet.getName(cpNode));
-                    //if (checksynclist(cnet.getName(cpNode)) == 1) {
-                    //    synclist.add(new Sync(cnet.getName(cpNode), cnet.getName(sc), "", "o"));
-                    //}
-                      }
-                      }
-                      }*/
-                } else if (vp instanceof VisualForkComponent) {
-                    VisualForkComponent vsc = (VisualForkComponent) vp;
-                    ForkComponent sc = vsc.getReferencedForkComponent();
-                    sc.setGr(gno);
-                    //System.out.println("Fork no = " + gno + " " + sc.getGr());
-                } else if (vp instanceof VisualJoinComponent) {
-                    VisualJoinComponent vsc = (VisualJoinComponent) vp;
-                    JoinComponent sc = vsc.getReferencedJoinComponent();
-                    sc.setGr(gno);
-                    //System.out.println("Join no = " + gno + " " + sc.getGr());
-                } else if (vp instanceof VisualSwitchComponent) {
-                    VisualSwitchComponent vsc = (VisualSwitchComponent) vp;
-                    SwitchComponent sc = vsc.getReferencedSwitchComponent();
-                    sc.setGr(gno);
-                } else if (vp instanceof VisualMergeComponent) {
-                    VisualMergeComponent vsc = (VisualMergeComponent) vp;
-                    MergeComponent sc = vsc.getReferencedMergeComponent();
-                    sc.setGr(gno);
-                }
-            }
-            gno++;
-        }
-
-        //GEN JSON
-        File jsonFile = XmasSettings.getTempVxmJsonFile();
-        PrintWriter writer = null;
-
-        try {
-            writer = new PrintWriter(jsonFile);
-            List<VisualComponent> vcomps = new ArrayList<>();
-            List<VisualSyncComponent> vscomps = new ArrayList<>();
-
-            for (Node node : vnet.getNodes()) {
-                if (node instanceof VisualSyncComponent) {
-                    cntSyncnodes++;
-                    vscomps.add((VisualSyncComponent) node);
-                    if (loaded == 0) grnums1.add(0);
-                    if (loaded == 0) grnums2.add(0);
-                }
-            }
-
-            //Finds all components inside groups
-            int grnum = 1;
-            for (VisualGroup vg: Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualGroup.class)) {
-                for (VisualComponent vp: vg.getComponents()) {
-                    vcomps.add(vp);
-                    if (loaded == 0) grnums.add(grnum);
-                }
-                /*for (VisualConnection vc: vg.getConnections()) { //only connections inside group
-                  System.out.println("Found connections");
-                  }*/
-                grnum++;
-            }
-
-            synclist.clear();
-            //Finds all sync connections + groups
-            Collection<VisualConnection> lvc = ((VisualGroup) vnet.getRoot()).getConnections();
-            for (VisualConnection vc: lvc) {
-                VisualNode vc1 = vc.getFirst();
-                VisualNode vc2 = vc.getSecond();
-                Node vn1 = vc1.getParent();
-                Node vn2 = vc2.getParent();
-
-                //new
-                //if (vn1 instanceof VisualQueueComponent && vn2 instanceof VisualSyncComponent) {
-
-                if (vn2 instanceof VisualSyncComponent) {   //vn2
-                    Collection<XmasContact> ccontacts;
-                    if (vn1 instanceof VisualQueueComponent) {                    //Queue
-                        VisualQueueComponent vsc = (VisualQueueComponent) vn1;
-                        QueueComponent sc = vsc.getReferencedQueueComponent();
-                        ccontacts = sc.getOutputs();
-                        for (XmasContact contactNode2 : ccontacts) {
-                            for (Connection c : cnet.getConnections(contactNode2)) {
-                                if (c.getSecond() instanceof XmasContact) {
-                                    Node cpNode = c.getSecond().getParent();
-                                    //System.out.println("  Found contact = " + cnet.getName(cpNode));
-                                    if (checksynclist(cnet.getName(cpNode)) == 1) {
-                                        synclist.add(new Sync(cnet.getName(cpNode), cnet.getName(sc), "", "o", sc.getGr(), 0));
-                                    } else {
-                                        storeSname2(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), 0);
-                                    }
-                                }
-                            }
-                        }
-                    } else if (vn1 instanceof VisualFunctionComponent) {            //Fun
-                        VisualFunctionComponent vsc = (VisualFunctionComponent) vn1;
-                        FunctionComponent sc = vsc.getReferencedFunctionComponent();
-                        ccontacts = sc.getOutputs();
-                        for (XmasContact contactNode2 : ccontacts) {
-                            for (Connection c : cnet.getConnections(contactNode2)) {
-                                if (c.getSecond() instanceof XmasContact) {
-                                    Node cpNode = c.getSecond().getParent();
-                                    //System.out.println("  Found contact = " + cnet.getName(cpNode));
-                                    if (checksynclist(cnet.getName(cpNode)) == 1) {
-                                        synclist.add(new Sync(cnet.getName(cpNode), cnet.getName(sc), "", "o", sc.getGr(), 0));
-                                    } else {
-                                        storeSname2(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), 0);
-                                    }
-                                }
-                            }
-                        }
-                    } else if (vn1 instanceof VisualMergeComponent) {                //Merge
-                        VisualMergeComponent vsc = (VisualMergeComponent) vn1;
-                        MergeComponent sc = vsc.getReferencedMergeComponent();
-                        ccontacts = sc.getOutputs();
-                        for (XmasContact contactNode2 : ccontacts) {
-                            int cno = 0;
-                            for (Connection c : cnet.getConnections(contactNode2)) {
-                                if (c.getSecond() instanceof XmasContact) {
-                                    Node cpNode = c.getSecond().getParent();
-                                    cno++;
-                                    //System.out.println("  Found contact = " + cnet.getName(cpNode));
-                                    if (cnet.getName(cpNode).contains("Sync") || cnet.getName(cpNode).contains("sync")) {
-                                        if (checksynclist(cnet.getName(cpNode)) == 1) {
-                                            synclist.add(new Sync(cnet.getName(cpNode), cnet.getName(sc), "", "o", sc.getGr(), cno));
-                                        } else {
-                                            storeSname2(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), 0);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    } else if (vn1 instanceof VisualSwitchComponent) {                //Switch
-                        VisualSwitchComponent vsc = (VisualSwitchComponent) vn1;
-                        SwitchComponent sc = vsc.getReferencedSwitchComponent();
-                        ccontacts = sc.getOutputs();
-                        for (XmasContact contactNode2 : ccontacts) {
-                            int cno = 0;
-                            for (Connection c : cnet.getConnections(contactNode2)) {
-                                if (c.getSecond() instanceof XmasContact) {
-                                    Node cpNode = c.getSecond().getParent();
-                                    cno++;
-                                    //System.out.println("  Found contact = " + cnet.getName(cpNode));
-                                    if (cnet.getName(cpNode).contains("Sync") || cnet.getName(cpNode).contains("sync")) {
-                                        if (checksynclist(cnet.getName(cpNode)) == 1) {
-                                            synclist.add(new Sync(cnet.getName(cpNode), cnet.getName(sc), "", "o", sc.getGr(), cno));
-                                        } else {
-                                            storeSname2(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), 0);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    } else if (vn1 instanceof VisualForkComponent) {
-                        VisualForkComponent vsc = (VisualForkComponent) vn1;
-                        ForkComponent sc = vsc.getReferencedForkComponent();
-                        ccontacts = sc.getOutputs();
-                        for (XmasContact contactNode2: ccontacts) {
-                            int cno = 0;  //???
-                            for (Connection c: cnet.getConnections(contactNode2)) {
-                                if (c.getSecond() instanceof XmasContact) {
-                                    Node cpNode = c.getSecond().getParent();
-                                    cno++;
-                                    //System.out.println("  Found contact = " + cnet.getName(cp_node));
-                                    if (cnet.getName(cpNode).contains("Sync") || cnet.getName(cpNode).contains("sync")) {
-                                        if (checksynclist(cnet.getName(cpNode)) == 1) {
-                                            synclist.add(new Sync(cnet.getName(cpNode), cnet.getName(sc), "", "o", sc.getGr(), cno));
-                                        } else {
-                                            storeSname2(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), 0);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    } else if (vn1 instanceof VisualJoinComponent) {                   //Join
-                        VisualJoinComponent vsc = (VisualJoinComponent) vn1;
-                        JoinComponent sc = vsc.getReferencedJoinComponent();
-                        ccontacts = sc.getOutputs();
-                        for (XmasContact contactNode2 : ccontacts) {
-                            int cno = 0;
-                            for (Connection c : cnet.getConnections(contactNode2)) {
-                                if (c.getSecond() instanceof XmasContact) {
-                                    Node cpNode = c.getSecond().getParent();
-                                    cno++;
-                                    //System.out.println("  Found contact = " + cnet.getName(cpNode));
-                                    if (checksynclist(cnet.getName(cpNode)) == 1) {
-                                        synclist.add(new Sync(cnet.getName(cpNode), cnet.getName(sc), "", "o", sc.getGr(), cno));
-                                    } else {
-                                        storeSname2(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), 0);
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } else if (vn1 instanceof VisualSyncComponent) {    //vn1
-                    Collection<XmasContact> ccontacts;
-                    if (vn2 instanceof VisualQueueComponent) {               //Queue
-                        VisualQueueComponent vsc = (VisualQueueComponent) vn2;
-                        QueueComponent sc = vsc.getReferencedQueueComponent();
-                        ccontacts = sc.getInputs();
-                        for (XmasContact contactNode2 : ccontacts) {
-                            for (Connection c : cnet.getConnections(contactNode2)) {
-                                if (c.getSecond() instanceof XmasContact) {
-                                    Node cpNode = c.getFirst().getParent();
-                                    //System.out.println("  Found contact = " + cnet.getName(cpNode));
-                                    if (cnet.getName(cpNode).contains("Sync") || cnet.getName(cpNode).contains("sync")) {
-                                        if (checksynclist(cnet.getName(cpNode)) == 1) {
-                                            //System.out.println("Queue ___ = " + sc.getGr());
-                                            synclist.add(new Sync(cnet.getName(cpNode), "", cnet.getName(sc), "i", sc.getGr(), 0));
-                                        } else {
-                                            storeSname(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), 0);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    } else if (vn2 instanceof VisualFunctionComponent) {       //Function
-                        VisualFunctionComponent vsc = (VisualFunctionComponent) vn2;
-                        FunctionComponent sc = vsc.getReferencedFunctionComponent();
-                        ccontacts = sc.getInputs();
-                        for (XmasContact contactNode2 : ccontacts) {
-                            for (Connection c : cnet.getConnections(contactNode2)) {
-                                if (c.getSecond() instanceof XmasContact) {
-                                    Node cpNode = c.getFirst().getParent();
-                                    //System.out.println("  Found contact = " + cnet.getName(cpNode));
-                                    if (cnet.getName(cpNode).contains("Sync") || cnet.getName(cpNode).contains("sync")) {
-                                        if (checksynclist(cnet.getName(cpNode)) == 1) {
-                                            synclist.add(new Sync(cnet.getName(cpNode), "", cnet.getName(sc), "i", sc.getGr(), 0));
-                                        } else {
-                                            storeSname(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), 0);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    } else if (vn2 instanceof VisualMergeComponent) {                //Merge
-                        VisualMergeComponent vsc = (VisualMergeComponent) vn2;
-                        MergeComponent sc = vsc.getReferencedMergeComponent();
-                        ccontacts = sc.getInputs();
-                        int cno = 0;
-                        int cno2 = 0;
-                        for (XmasContact contactNode2 : ccontacts) {
-                            for (Connection c : cnet.getConnections(contactNode2)) {
-                                if (c.getSecond() instanceof XmasContact) {
-                                    Node cpNode = c.getFirst().getParent();
-                                    cno++;
-                                    //System.out.println("  Found contact__ = " + cnet.getName(cpNode));
-                                    if (cnet.getName(cpNode).contains("Sync") || cnet.getName(cpNode).contains("sync")) {
-                                        if (checksynclist(cnet.getName(cpNode)) == 1) {
-                                            //System.out.println("  Found contact__ = merge ");
-                                            if (cno == 1) {
-                                                cno2 = 2;
-                                            } else if (cno == 2) {
-                                                cno2 = 1;
-                                            }
-                                            synclist.add(new Sync(cnet.getName(cpNode), "", cnet.getName(sc), "i", sc.getGr(), cno2));
-                                        } else {
-                                            if (cno == 1) {
-                                                cno2 = 2;
-                                            } else if (cno == 2) {
-                                                cno2 = 1;
-                                            }
-                                            storeSname(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), cno2);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    } else if (vn2 instanceof VisualSwitchComponent) {           //Switch - base
-                        VisualSwitchComponent vsc = (VisualSwitchComponent) vn2;
-                        SwitchComponent sc = vsc.getReferencedSwitchComponent();
-                        ccontacts = sc.getInputs();
-                        for (XmasContact contactNode2 : ccontacts) {
-                            for (Connection c : cnet.getConnections(contactNode2)) {
-                                if (c.getSecond() instanceof XmasContact) {
-                                    Node cpNode = c.getFirst().getParent();
-                                    //System.out.println("  Found contact = " + cnet.getName(cpNode));
-                                    if (cnet.getName(cpNode).contains("Sync") || cnet.getName(cpNode).contains("sync")) {
-                                        if (checksynclist(cnet.getName(cpNode)) == 1) {
-                                            synclist.add(new Sync(cnet.getName(cpNode), "", cnet.getName(sc), "i", sc.getGr(), 0));
-                                        } else {
-                                            storeSname(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), 0);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    } else if (vn2 instanceof VisualJoinComponent) {
-                        VisualJoinComponent vsc = (VisualJoinComponent) vn2;
-                        JoinComponent sc = vsc.getReferencedJoinComponent();
-                        ccontacts = sc.getInputs();
-                        int cno = 0;
-                        int cno2 = 0;
-                        for (XmasContact contactNode2: ccontacts) {
-                            for (Connection c: cnet.getConnections(contactNode2)) {
-                                if (c.getSecond() instanceof XmasContact) {
-                                    Node cpNode = c.getFirst().getParent();
-                                    cno++;
-                                    //System.out.println("  Found contact__ = " + cnet.getName(cpNode));
-                                    if (cnet.getName(cpNode).contains("Sync") || cnet.getName(cpNode).contains("sync")) {
-                                        if (checksynclist(cnet.getName(cpNode)) == 1) {
-                                            //System.out.println("  Found 1st sync contact__ = join ");
-                                            if (cno == 1) {
-                                                cno2 = 2;
-                                            } else if (cno == 2) {
-                                                cno2 = 1;
-                                            }
-                                            synclist.add(new Sync(cnet.getName(cpNode), "", cnet.getName(sc), "i", sc.getGr(), cno2));
-                                        } else {
-                                            //System.out.println("  Found 2nd sync contact__ = join cno==" + cno);
-                                            if (cno == 1) {
-                                                cno2 = 2;
-                                            } else if (cno == 2) {
-                                                cno2 = 1;
-                                            }
-                                            storeSname(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), cno2);
-                                        }
-                                    } else {
-                                        //System.out.println("  Found other sync contact__ = ??? " + cnet.getName(cpNode) + "cno==" + cno);
-                                    }
-                                }
-                            }
-                        }
-                    } else if (vn2 instanceof VisualForkComponent) {           //Fork - base
-                        VisualForkComponent vsc = (VisualForkComponent) vn2;
-                        ForkComponent sc = vsc.getReferencedForkComponent();
-                        ccontacts = sc.getInputs();
-                        for (XmasContact contactNode2 : ccontacts) {
-                            for (Connection c : cnet.getConnections(contactNode2)) {
-                                if (c.getSecond() instanceof XmasContact) {
-                                    Node cpNode = c.getFirst().getParent();
-                                    //System.out.println("  Found contact = " + cnet.getName(cpNode));
-                                    if (cnet.getName(cpNode).contains("Sync") || cnet.getName(cpNode).contains("sync")) {
-                                        if (checksynclist(cnet.getName(cpNode)) == 1) {
-                                            synclist.add(new Sync(cnet.getName(cpNode), "", cnet.getName(sc), "i", sc.getGr(), 0));
-                                        } else {
-                                            storeSname(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), 0);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            if (writer != null) {
-                writer.close();
-            }
-        }
+        setGroups(vnet);
+        writeJson(vnet);
 
         String[] choices = {
             "asynchronous",
@@ -733,15 +348,11 @@ public class XmasSyncCommand implements Command {
             panellist.get(panellist.size() - 1).add(new JTextField("Sync" + no));
             panellist.get(panellist.size() - 1).add(new JLabel(" Type "));
             panellist.get(panellist.size() - 1).add(combob = new JComboBox(choices));
-            combob.addActionListener(new ActionListener() {
-                public void actionPerformed(ActionEvent event) {
-
-                    JComboBox comboBox = (JComboBox) event.getSource();
-
-                    Object selected = comboBox.getSelectedItem();
-                    if (selected.toString().equals("mesochronous")) {
-                        setFields();
-                    }
+            combob.addActionListener(event -> {
+                JComboBox comboBox = (JComboBox) event.getSource();
+                Object selected = comboBox.getSelectedItem();
+                if (selected.toString().equals("mesochronous")) {
+                    setFields();
                 }
             });
             panellist.get(panellist.size() - 1).add(new JLabel(" ClkF1  "));
@@ -764,85 +375,437 @@ public class XmasSyncCommand implements Command {
         panelb.add(okButton);
         panelmain.add(panelb);
 
-        cancelButton.addActionListener(new ActionListener() {
+        cancelButton.addActionListener(event -> dispose());
 
-            public void actionPerformed(ActionEvent e) {
-                dispose();
+        okButton.addActionListener(event -> {
+            int no = 1;
+            dispose();
+            writeOutput();
+            storeFields();
+            updatesynclist();
+            writesynclist();
+            String gp = "";
+
+            no = 0;
+            for (Sync s : synclist) {
+                grnums1.set(no, s.gr1);
+                grnums2.set(no, s.gr2);
+                no++;
             }
-
-        });
-
-        okButton.addActionListener(new ActionListener() {
-
-            public void actionPerformed(ActionEvent e) {
-                int no = 1;
-
-                dispose();
-                writeOutput();
-                storeFields();
-                updatesynclist();
-                writesynclist();
-                String gp = "";
-
-                no = 0;
-                for (Sync s : synclist) {
-                    grnums1.set(no, s.gr1);
-                    grnums2.set(no, s.gr2);
-                    no++;
-                }
-                //System.out.println("grnums = " + grnums);
-                //System.out.println("grnums1 = " + grnums1);
-                //System.out.println("grnums2 = " + grnums2);
-                //System.out.println("slist1 = " + slist1);
-                //System.out.println("slist2 = " + slist2);
-                no = 0;
-                for (Node node : vnet.getNodes()) {
-                    if (node instanceof VisualSyncComponent) {   //won't work for sync
-                        VisualSyncComponent vsc = (VisualSyncComponent) node;
-                        SyncComponent sc = vsc.getReferencedSyncComponent();
-                        //System.out.println("SSSync component " + "Sync" + no);
-                        System.out.println("Sync component " + "Sync" + no + " = " + slist.get(no));
-                        System.out.println("group1 = " + grnums1.get(no) + " " + "group2 = " + grnums2.get(no));
-                        System.out.println("Clk1 = " + slist1.get(no) + " " + "Clk2 = " + slist2.get(no));
-                        String gp1 = slist1.get(no);
-                        sc.setGp1(gp1);
-                        String gp2 = slist2.get(no);
-                        sc.setGp2(gp2);
-                        String typ = slist.get(no);
-                        sc.setTyp(typ);
-                        //System.out.println("Found Sync Type ===========" + sc.getTyp());
-                        //System.out.println("Found Source = " + " no= " + no + " grp= " + grnums.get(no) + " sl= " + gp);
-                        no++;  //shifted
-                    } else if (node instanceof VisualSourceComponent) {
-                        VisualSourceComponent vsc = (VisualSourceComponent) node;
-                        SourceComponent sc = vsc.getReferencedSourceComponent();
-                        int sno = sc.getGr();
-                        for (int i = 0; i < grnums1.size(); i++) {
-                            if (grnums1.get(i) == sno) gp = slist1.get(i);
-                            if (grnums2.get(i) == sno) gp = slist2.get(i);
-                        }
-                        //System.out.println("Found Source = " + " no= " + no + " grp= " + grnums.get(no) + " sl= " + gp);
-                        sc.setGp(gp);
-                    } else if (node instanceof VisualQueueComponent) {
-                        VisualQueueComponent vsc = (VisualQueueComponent) node;
-                        QueueComponent sc = vsc.getReferencedQueueComponent();
-                        int qno = sc.getGr();
-                        //System.out.println("grnumssize== " + grnums1.size() + "qno == " + qno);
-                        for (int i = 0; i < grnums1.size(); i++) {
-                            if (grnums1.get(i) == qno) gp = slist1.get(i);
-                            if (grnums2.get(i) == qno) gp = slist2.get(i);
-                        }
-                        //System.out.println("Found Queue = " + " no= " + no + " grp= " + grnums.get(no) + " sl= " + gp);
-                        //sc.setGp(Integer.parseInt(gp));
-                        sc.setGp(gp);
+            no = 0;
+            for (Node node : vnet.getNodes()) {
+                if (node instanceof VisualSyncComponent) {   //won't work for sync
+                    VisualSyncComponent vsc1 = (VisualSyncComponent) node;
+                    SyncComponent sc1 = vsc1.getReferencedSyncComponent();
+                    System.out.println("Sync component " + "Sync" + no + " = " + slist.get(no));
+                    System.out.println("group1 = " + grnums1.get(no) + " " + "group2 = " + grnums2.get(no));
+                    System.out.println("Clk1 = " + slist1.get(no) + " " + "Clk2 = " + slist2.get(no));
+                    String gp1 = slist1.get(no);
+                    sc1.setGp1(gp1);
+                    String gp2 = slist2.get(no);
+                    sc1.setGp2(gp2);
+                    String typ = slist.get(no);
+                    sc1.setTyp(typ);
+                    no++;  //shifted
+                } else if (node instanceof VisualSourceComponent) {
+                    VisualSourceComponent vsc2 = (VisualSourceComponent) node;
+                    SourceComponent sc2 = vsc2.getReferencedSourceComponent();
+                    int sno = sc2.getGr();
+                    for (int i1 = 0; i1 < grnums1.size(); i1++) {
+                        if (grnums1.get(i1) == sno) gp = slist1.get(i1);
+                        if (grnums2.get(i1) == sno) gp = slist2.get(i1);
                     }
-                    //no++;
+                    sc2.setGp(gp);
+                } else if (node instanceof VisualQueueComponent) {
+                    VisualQueueComponent vsc3 = (VisualQueueComponent) node;
+                    QueueComponent sc3 = vsc3.getReferencedQueueComponent();
+                    int qno = sc3.getGr();
+                    for (int i2 = 0; i2 < grnums1.size(); i2++) {
+                        if (grnums1.get(i2) == qno) gp = slist1.get(i2);
+                        if (grnums2.get(i2) == qno) gp = slist2.get(i2);
+                    }
+                    sc3.setGp(gp);
                 }
             }
-
         });
         mainFrame.pack();
         mainFrame.setVisible(true);
+    }
+
+    private void setGroups(final VisualXmas vnet) {
+        int gno = 1;
+        for (VisualGroup vg: Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualGroup.class)) {
+            for (VisualComponent vp: vg.getComponents()) {
+                if (vp instanceof VisualSourceComponent) {
+                    VisualSourceComponent vsc = (VisualSourceComponent) vp;
+                    SourceComponent sc = vsc.getReferencedSourceComponent();
+                    sc.setGr(gno);
+                } else if (vp instanceof VisualSinkComponent) {
+                    VisualSinkComponent vsc = (VisualSinkComponent) vp;
+                    SinkComponent sc = vsc.getReferencedSinkComponent();
+                    sc.setGr(gno);
+                } else if (vp instanceof VisualFunctionComponent) {
+                    VisualFunctionComponent vsc = (VisualFunctionComponent) vp;
+                    FunctionComponent sc = vsc.getReferencedFunctionComponent();
+                    sc.setGr(gno);
+                } else if (vp instanceof VisualQueueComponent) {
+                    VisualQueueComponent vsc = (VisualQueueComponent) vp;
+                    QueueComponent sc = vsc.getReferencedQueueComponent();
+                    sc.setGr(gno);
+                } else if (vp instanceof VisualForkComponent) {
+                    VisualForkComponent vsc = (VisualForkComponent) vp;
+                    ForkComponent sc = vsc.getReferencedForkComponent();
+                    sc.setGr(gno);
+                    //System.out.println("Fork no = " + gno + " " + sc.getGr());
+                } else if (vp instanceof VisualJoinComponent) {
+                    VisualJoinComponent vsc = (VisualJoinComponent) vp;
+                    JoinComponent sc = vsc.getReferencedJoinComponent();
+                    sc.setGr(gno);
+                    //System.out.println("Join no = " + gno + " " + sc.getGr());
+                } else if (vp instanceof VisualSwitchComponent) {
+                    VisualSwitchComponent vsc = (VisualSwitchComponent) vp;
+                    SwitchComponent sc = vsc.getReferencedSwitchComponent();
+                    sc.setGr(gno);
+                } else if (vp instanceof VisualMergeComponent) {
+                    VisualMergeComponent vsc = (VisualMergeComponent) vp;
+                    MergeComponent sc = vsc.getReferencedMergeComponent();
+                    sc.setGr(gno);
+                }
+            }
+            gno++;
+        }
+    }
+
+    private void writeJson(final VisualXmas vnet) {
+        //GEN JSON
+        File jsonFile = XmasSettings.getTempVxmJsonFile();
+        PrintWriter writer = null;
+        try {
+            writer = new PrintWriter(jsonFile);
+            List<VisualComponent> vcomps = new ArrayList<>();
+            List<VisualSyncComponent> vscomps = new ArrayList<>();
+
+            for (Node node : vnet.getNodes()) {
+                if (node instanceof VisualSyncComponent) {
+                    cntSyncnodes++;
+                    vscomps.add((VisualSyncComponent) node);
+                    if (loaded == 0) grnums1.add(0);
+                    if (loaded == 0) grnums2.add(0);
+                }
+            }
+
+            //Finds all components inside groups
+            int grnum = 1;
+            for (VisualGroup vg: Hierarchy.getDescendantsOfType(vnet.getRoot(), VisualGroup.class)) {
+                for (VisualComponent vp: vg.getComponents()) {
+                    vcomps.add(vp);
+                    if (loaded == 0) grnums.add(grnum);
+                }
+                grnum++;
+            }
+
+            synclist.clear();
+            //Finds all sync connections + groups
+            Collection<VisualConnection> lvc = ((VisualGroup) vnet.getRoot()).getConnections();
+            for (VisualConnection vc: lvc) {
+                VisualNode vc1 = vc.getFirst();
+                VisualNode vc2 = vc.getSecond();
+                Node vn1 = vc1.getParent();
+                Node vn2 = vc2.getParent();
+
+                if (vn2 instanceof VisualSyncComponent) {   //vn2
+                    if (vn1 instanceof VisualFunctionComponent) {
+                        writeJsonInFunction(vnet, (VisualFunctionComponent) vn1);
+                    } else if (vn1 instanceof VisualQueueComponent) {
+                        writeJsonInQueue(vnet, (VisualQueueComponent) vn1);
+                    } else if (vn1 instanceof VisualSwitchComponent) {
+                        writeJsonInSwitch(vnet, (VisualSwitchComponent) vn1);
+                    } else if (vn1 instanceof VisualMergeComponent) {
+                        writeJsonInMerge(vnet, (VisualMergeComponent) vn1);
+                    } else if (vn1 instanceof VisualForkComponent) {
+                        writeJsonInFork(vnet, (VisualForkComponent) vn1);
+                    } else if (vn1 instanceof VisualJoinComponent) {
+                        writeJsonInJoin(vnet, (VisualJoinComponent) vn1);
+                    }
+                } else if (vn1 instanceof VisualSyncComponent) {    //vn1
+                    if (vn2 instanceof VisualFunctionComponent) {
+                        writeJsonOutFunction(vnet, (VisualFunctionComponent) vn2);
+                    } else if (vn2 instanceof VisualQueueComponent) {
+                        writeJsonOutQueue(vnet, (VisualQueueComponent) vn2);
+                    } else if (vn2 instanceof VisualSwitchComponent) {
+                        writeJsonOutSwitch(vnet, (VisualSwitchComponent) vn2);
+                    } else if (vn2 instanceof VisualMergeComponent) {
+                        writeJsonOutMerge(vnet, (VisualMergeComponent) vn2);
+                    } else if (vn2 instanceof VisualForkComponent) {
+                        writeJsonOutFork(vnet, (VisualForkComponent) vn2);
+                    } else if (vn2 instanceof VisualJoinComponent) {
+                        writeJsonOutJoin(vnet, (VisualJoinComponent) vn2);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (writer != null) {
+                writer.close();
+            }
+        }
+    }
+
+    private void writeJsonInFunction(final VisualXmas vnet, final VisualFunctionComponent vsc) {
+        final Xmas cnet = vnet.getMathModel();
+        final FunctionComponent sc = vsc.getReferencedFunctionComponent();
+        for (XmasContact contactNode2 : sc.getOutputs()) {
+            for (Connection c : cnet.getConnections(contactNode2)) {
+                if (c.getSecond() instanceof XmasContact) {
+                    Node cpNode = c.getSecond().getParent();
+                    if (checksynclist(cnet.getName(cpNode)) == 1) {
+                        synclist.add(new Sync(cnet.getName(cpNode), cnet.getName(sc), "", "o", sc.getGr(), 0));
+                    } else {
+                        storeSname2(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), 0);
+                    }
+                }
+            }
+        }
+    }
+
+    private void writeJsonInQueue(final VisualXmas vnet, final VisualQueueComponent vsc) {
+        final Xmas cnet = vnet.getMathModel();
+        final QueueComponent sc = vsc.getReferencedQueueComponent();
+        for (XmasContact contactNode2 : sc.getOutputs()) {
+            for (Connection c : cnet.getConnections(contactNode2)) {
+                if (c.getSecond() instanceof XmasContact) {
+                    Node cpNode = c.getSecond().getParent();
+                    if (checksynclist(cnet.getName(cpNode)) == 1) {
+                        synclist.add(new Sync(cnet.getName(cpNode), cnet.getName(sc), "", "o", sc.getGr(), 0));
+                    } else {
+                        storeSname2(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), 0);
+                    }
+                }
+            }
+        }
+    }
+
+    private void writeJsonInSwitch(final VisualXmas vnet, final VisualSwitchComponent vsc) {
+        final Xmas cnet = vnet.getMathModel();
+        final SwitchComponent sc = vsc.getReferencedSwitchComponent();
+        for (XmasContact contactNode2 : sc.getOutputs()) {
+            int cno = 0;
+            for (Connection c : cnet.getConnections(contactNode2)) {
+                if (c.getSecond() instanceof XmasContact) {
+                    Node cpNode = c.getSecond().getParent();
+                    cno++;
+                    if (cnet.getName(cpNode).contains("Sync") || cnet.getName(cpNode).contains("sync")) {
+                        if (checksynclist(cnet.getName(cpNode)) == 1) {
+                            synclist.add(new Sync(cnet.getName(cpNode), cnet.getName(sc), "", "o", sc.getGr(), cno));
+                        } else {
+                            storeSname2(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), 0);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void writeJsonInMerge(final VisualXmas vnet, final VisualMergeComponent vsc) {
+        final Xmas cnet = vnet.getMathModel();
+        final MergeComponent sc = vsc.getReferencedMergeComponent();
+        for (XmasContact contactNode2 : sc.getOutputs()) {
+            int cno = 0;
+            for (Connection c : cnet.getConnections(contactNode2)) {
+                if (c.getSecond() instanceof XmasContact) {
+                    Node cpNode = c.getSecond().getParent();
+                    cno++;
+                    if (cnet.getName(cpNode).contains("Sync") || cnet.getName(cpNode).contains("sync")) {
+                        if (checksynclist(cnet.getName(cpNode)) == 1) {
+                            synclist.add(new Sync(cnet.getName(cpNode), cnet.getName(sc), "", "o", sc.getGr(), cno));
+                        } else {
+                            storeSname2(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), 0);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void writeJsonInFork(final VisualXmas vnet, final VisualForkComponent vsc) {
+        final Xmas cnet = vnet.getMathModel();
+        final ForkComponent sc = vsc.getReferencedForkComponent();
+        for (XmasContact contactNode2: sc.getOutputs()) {
+            int cno = 0;
+            for (Connection c: cnet.getConnections(contactNode2)) {
+                if (c.getSecond() instanceof XmasContact) {
+                    Node cpNode = c.getSecond().getParent();
+                    cno++;
+                    if (cnet.getName(cpNode).contains("Sync") || cnet.getName(cpNode).contains("sync")) {
+                        if (checksynclist(cnet.getName(cpNode)) == 1) {
+                            synclist.add(new Sync(cnet.getName(cpNode), cnet.getName(sc), "", "o", sc.getGr(), cno));
+                        } else {
+                            storeSname2(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), 0);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void writeJsonInJoin(final VisualXmas vnet, final VisualJoinComponent vsc) {
+        final Xmas cnet = vnet.getMathModel();
+        final JoinComponent sc = vsc.getReferencedJoinComponent();
+        for (XmasContact contactNode2 : sc.getOutputs()) {
+            int cno = 0;
+            for (Connection c : cnet.getConnections(contactNode2)) {
+                if (c.getSecond() instanceof XmasContact) {
+                    Node cpNode = c.getSecond().getParent();
+                    cno++;
+                    if (checksynclist(cnet.getName(cpNode)) == 1) {
+                        synclist.add(new Sync(cnet.getName(cpNode), cnet.getName(sc), "", "o", sc.getGr(), cno));
+                    } else {
+                        storeSname2(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), 0);
+                    }
+                }
+            }
+        }
+    }
+
+    private void writeJsonOutFunction(final VisualXmas vnet, final VisualFunctionComponent vsc) {
+        final Xmas cnet = vnet.getMathModel();
+        final FunctionComponent sc = vsc.getReferencedFunctionComponent();
+        for (XmasContact contactNode2 : sc.getInputs()) {
+            for (Connection c : cnet.getConnections(contactNode2)) {
+                if (c.getSecond() instanceof XmasContact) {
+                    Node cpNode = c.getFirst().getParent();
+                    if (cnet.getName(cpNode).contains("Sync") || cnet.getName(cpNode).contains("sync")) {
+                        if (checksynclist(cnet.getName(cpNode)) == 1) {
+                            synclist.add(new Sync(cnet.getName(cpNode), "", cnet.getName(sc), "i", sc.getGr(), 0));
+                        } else {
+                            storeSname(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), 0);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void writeJsonOutQueue(final VisualXmas vnet, final VisualQueueComponent vsc) {
+        final Xmas cnet = vnet.getMathModel();
+        final QueueComponent sc = vsc.getReferencedQueueComponent();
+        for (XmasContact contactNode2 : sc.getInputs()) {
+            for (Connection c : cnet.getConnections(contactNode2)) {
+                if (c.getSecond() instanceof XmasContact) {
+                    Node cpNode = c.getFirst().getParent();
+                    if (cnet.getName(cpNode).contains("Sync") || cnet.getName(cpNode).contains("sync")) {
+                        if (checksynclist(cnet.getName(cpNode)) == 1) {
+                            synclist.add(new Sync(cnet.getName(cpNode), "", cnet.getName(sc), "i", sc.getGr(), 0));
+                        } else {
+                            storeSname(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), 0);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void writeJsonOutSwitch(final VisualXmas vnet, final VisualSwitchComponent vsc) {
+        final Xmas cnet = vnet.getMathModel();
+        final SwitchComponent sc = vsc.getReferencedSwitchComponent();
+        for (XmasContact contactNode2 : sc.getInputs()) {
+            for (Connection c : cnet.getConnections(contactNode2)) {
+                if (c.getSecond() instanceof XmasContact) {
+                    Node cpNode = c.getFirst().getParent();
+                    if (cnet.getName(cpNode).contains("Sync") || cnet.getName(cpNode).contains("sync")) {
+                        if (checksynclist(cnet.getName(cpNode)) == 1) {
+                            synclist.add(new Sync(cnet.getName(cpNode), "", cnet.getName(sc), "i", sc.getGr(), 0));
+                        } else {
+                            storeSname(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), 0);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void writeJsonOutMerge(final VisualXmas vnet, final VisualMergeComponent vsc) {
+        final Xmas cnet = vnet.getMathModel();
+        final MergeComponent sc = vsc.getReferencedMergeComponent();
+        int cno = 0;
+        int cno2 = 0;
+        for (XmasContact contactNode2 : sc.getInputs()) {
+            for (Connection c : cnet.getConnections(contactNode2)) {
+                if (c.getSecond() instanceof XmasContact) {
+                    Node cpNode = c.getFirst().getParent();
+                    cno++;
+                    if (cnet.getName(cpNode).contains("Sync") || cnet.getName(cpNode).contains("sync")) {
+                        if (checksynclist(cnet.getName(cpNode)) == 1) {
+                            if (cno == 1) {
+                                cno2 = 2;
+                            } else if (cno == 2) {
+                                cno2 = 1;
+                            }
+                            synclist.add(new Sync(cnet.getName(cpNode), "", cnet.getName(sc), "i", sc.getGr(), cno2));
+                        } else {
+                            if (cno == 1) {
+                                cno2 = 2;
+                            } else if (cno == 2) {
+                                cno2 = 1;
+                            }
+                            storeSname(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), cno2);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void writeJsonOutFork(final VisualXmas vnet, final VisualForkComponent vn) {
+        final Xmas cnet = vnet.getMathModel();
+        final ForkComponent sc = vn.getReferencedForkComponent();
+        for (XmasContact contactNode2 : sc.getInputs()) {
+            for (Connection c : cnet.getConnections(contactNode2)) {
+                if (c.getSecond() instanceof XmasContact) {
+                    Node cpNode = c.getFirst().getParent();
+                    if (cnet.getName(cpNode).contains("Sync") || cnet.getName(cpNode).contains("sync")) {
+                        if (checksynclist(cnet.getName(cpNode)) == 1) {
+                            synclist.add(new Sync(cnet.getName(cpNode), "", cnet.getName(sc), "i", sc.getGr(), 0));
+                        } else {
+                            storeSname(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), 0);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void writeJsonOutJoin(final VisualXmas vnet, final VisualJoinComponent vsc) {
+        final Xmas cnet = vnet.getMathModel();
+        final JoinComponent sc = vsc.getReferencedJoinComponent();
+        int cno = 0;
+        int cno2 = 0;
+        for (XmasContact contactNode2: sc.getInputs()) {
+            for (Connection c: cnet.getConnections(contactNode2)) {
+                if (c.getSecond() instanceof XmasContact) {
+                    Node cpNode = c.getFirst().getParent();
+                    cno++;
+                    if (cnet.getName(cpNode).contains("Sync") || cnet.getName(cpNode).contains("sync")) {
+                        if (checksynclist(cnet.getName(cpNode)) == 1) {
+                            if (cno == 1) {
+                                cno2 = 2;
+                            } else if (cno == 2) {
+                                cno2 = 1;
+                            }
+                            synclist.add(new Sync(cnet.getName(cpNode), "", cnet.getName(sc), "i", sc.getGr(), cno2));
+                        } else {
+                            if (cno == 1) {
+                                cno2 = 2;
+                            } else if (cno == 2) {
+                                cno2 = 1;
+                            }
+                            storeSname(cnet.getName(cpNode), cnet.getName(sc), sc.getGr(), cno2);
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }

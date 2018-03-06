@@ -7,8 +7,6 @@ import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
@@ -207,48 +205,43 @@ public class StructureVerifyDialog extends JDialog {
     }
 
     protected void createSelectionButtonsPanel() {
-
         addAllButton = new JButton("Select All");
         addAllButton.setMaximumSize(buttonSize);
         addAllButton.setFont(this.getFont());
-
-        addAllButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                selectedGroups.clear();
-                for (int i = 0; i < getList().getModel().getSize(); i++) {
-                    ((ListItem) getList().getModel().getElementAt(i)).setSelected(true);
-                    Object obj = ((ListItem) getList().getModel().getElementAt(i)).getListItem();
-                    if (obj instanceof ONGroup) {
-                        selectedGroups.add((ONGroup) obj);
-                    }
-                    ((ListItem) getList().getModel().getElementAt(i)).setItemColor(Color.ORANGE);
-                }
-                getList().repaint();
-            }
-        });
+        addAllButton.addActionListener(event -> actionAddAll());
 
         removeAllButton = new JButton("Remove All");
         removeAllButton.setMaximumSize(buttonSize);
         removeAllButton.setFont(this.getFont());
-
-        removeAllButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                for (int i = 0; i < getList().getModel().getSize(); i++) {
-                    ((ListItem) getList().getModel().getElementAt(i)).setSelected(false);
-                    ((ListItem) getList().getModel().getElementAt(i)).setItemColor(Color.BLACK);
-                }
-                getList().repaint();
-                selectedGroups.clear();
-            }
-        });
+        removeAllButton.addActionListener(event -> actionRemoveAll());
 
         selectionButtonPanel = new JPanel();
         selectionButtonPanel.setLayout(new BoxLayout(selectionButtonPanel, BoxLayout.Y_AXIS));
         selectionButtonPanel.add(addAllButton);
         selectionButtonPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         selectionButtonPanel.add(removeAllButton);
+    }
+
+    private void actionAddAll() {
+        selectedGroups.clear();
+        for (int i = 0; i < getList().getModel().getSize(); i++) {
+            ((ListItem) getList().getModel().getElementAt(i)).setSelected(true);
+            Object obj = ((ListItem) getList().getModel().getElementAt(i)).getListItem();
+            if (obj instanceof ONGroup) {
+                selectedGroups.add((ONGroup) obj);
+            }
+            ((ListItem) getList().getModel().getElementAt(i)).setItemColor(Color.ORANGE);
+        }
+        getList().repaint();
+    }
+
+    private void actionRemoveAll() {
+        for (int i = 0; i < getList().getModel().getSize(); i++) {
+            ((ListItem) getList().getModel().getElementAt(i)).setSelected(false);
+            ((ListItem) getList().getModel().getElementAt(i)).setItemColor(Color.BLACK);
+        }
+        getList().repaint();
+        selectedGroups.clear();
     }
 
     protected void createSettingPanel() {
@@ -274,22 +267,16 @@ public class StructureVerifyDialog extends JDialog {
     protected void createButtonsPanel() {
         runButton = new JButton("Run");
         runButton.setPreferredSize(buttonSize);
-        runButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                run = 1;
-                setVisible(false);
-            }
+        runButton.addActionListener(event -> {
+            run = 1;
+            setVisible(false);
         });
 
         cancelButton = new JButton("Cancel");
         cancelButton.setPreferredSize(buttonSize);
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                run = 2;
-                setVisible(false);
-            }
+        cancelButton.addActionListener(event -> {
+            run = 2;
+            setVisible(false);
         });
 
         confirmButtonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));

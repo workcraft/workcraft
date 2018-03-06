@@ -31,7 +31,6 @@ import org.workcraft.plugins.stg.propertydescriptors.SignalPropertyDescriptor;
 import org.workcraft.plugins.stg.propertydescriptors.TypePropertyDescriptor;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.DialogUtils;
-import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.MultiSet;
 import org.workcraft.util.Pair;
@@ -125,13 +124,7 @@ public class Stg extends AbstractMathModel implements StgModel {
 
     @Override
     public final Collection<StgPlace> getMutexPlaces() {
-        return Hierarchy.getDescendantsOfType(getRoot(), StgPlace.class,
-                new Func<StgPlace, Boolean>() {
-                    @Override
-                    public Boolean eval(StgPlace arg) {
-                        return arg.isMutex();
-                    }
-                });
+        return Hierarchy.getDescendantsOfType(getRoot(), StgPlace.class, place -> place.isMutex());
     }
 
     @Override
@@ -152,12 +145,7 @@ public class Stg extends AbstractMathModel implements StgModel {
     @Override
     public Collection<SignalTransition> getSignalTransitions(final Type type) {
         return Hierarchy.getDescendantsOfType(getRoot(), SignalTransition.class,
-                new Func<SignalTransition, Boolean>() {
-                    @Override
-                    public Boolean eval(SignalTransition arg) {
-                        return arg.getSignalType() == type;
-                    }
-                });
+                transition -> transition.getSignalType() == type);
     }
 
     public Set<String> getSignalNames(Container container) {
@@ -187,12 +175,7 @@ public class Stg extends AbstractMathModel implements StgModel {
             container = getRoot();
         }
         return Hierarchy.getChildrenOfType(container, SignalTransition.class,
-                new Func<SignalTransition, Boolean>() {
-                    @Override
-                    public Boolean eval(SignalTransition arg) {
-                        return type.equals(arg.getSignalType());
-                    }
-                });
+                transition -> type.equals(transition.getSignalType()));
     }
 
     public Collection<SignalTransition> getSignalTransitions(final String signalName, Container container) {
@@ -200,12 +183,7 @@ public class Stg extends AbstractMathModel implements StgModel {
             container = getRoot();
         }
         return Hierarchy.getChildrenOfType(container, SignalTransition.class,
-                new Func<SignalTransition, Boolean>() {
-                    @Override
-                    public Boolean eval(SignalTransition arg) {
-                        return signalName.equals(arg.getSignalName());
-                    }
-                });
+                transition -> signalName.equals(transition.getSignalName()));
     }
 
     @Override

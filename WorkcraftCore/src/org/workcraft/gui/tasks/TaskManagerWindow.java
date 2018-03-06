@@ -45,22 +45,12 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
         @Override
         public void finished(Result<? extends Object> result) {
             super.finished(result);
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    window.removeTaskControl(taskControl);
-                }
-            });
+            SwingUtilities.invokeLater(() -> window.removeTaskControl(taskControl));
         }
 
         @Override
         public void progressUpdate(final double completion) {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    taskControl.progressUpdate(completion);
-                }
-            });
+            SwingUtilities.invokeLater(() -> taskControl.progressUpdate(completion));
         }
     }
 
@@ -160,22 +150,19 @@ public class TaskManagerWindow extends JPanel implements TaskMonitor {
     }
 
     private void setTabActivity(final boolean active) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                Container component = getParent().getParent();
-                Container parent = component.getParent();
-                if (parent instanceof JTabbedPane) {
-                    JTabbedPane tab = (JTabbedPane) parent;
-                    for (int i = 0; i < tab.getTabCount(); i++) {
-                        if (tab.getComponentAt(i) != component) continue;
+        SwingUtilities.invokeLater(() -> {
+            Container component = getParent().getParent();
+            Container parent = component.getParent();
+            if (parent instanceof JTabbedPane) {
+                JTabbedPane tab = (JTabbedPane) parent;
+                for (int i = 0; i < tab.getTabCount(); i++) {
+                    if (tab.getComponentAt(i) != component) continue;
 
-                        Component tabComponent = tab.getTabComponentAt(i);
-                        if (active) {
-                            tabComponent.setForeground(new Color(0.22f, 0.45f, 0.9f));
-                        } else {
-                            tabComponent.setForeground(Color.BLACK);
-                        }
+                    Component tabComponent = tab.getTabComponentAt(i);
+                    if (active) {
+                        tabComponent.setForeground(new Color(0.22f, 0.45f, 0.9f));
+                    } else {
+                        tabComponent.setForeground(Color.BLACK);
                     }
                 }
             }

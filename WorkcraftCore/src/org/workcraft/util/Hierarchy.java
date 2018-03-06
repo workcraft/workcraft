@@ -16,15 +16,7 @@ import net.sf.jga.fn.UnaryFunctor;
 public class Hierarchy {
 
     public static <T> Func<Node, Boolean> getTypeFilter(final Class<T> type) {
-        return new Func<Node, Boolean>() {
-            public Boolean eval(Node node) {
-                if (type.isInstance(node)) {
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-        };
+        return node -> type.isInstance(node);
     }
 
     public static  Collection<Node> fillterNodes(Collection<Node> nodes, UnaryFunctor<Node, Boolean> filter) {
@@ -137,12 +129,7 @@ public class Hierarchy {
 
     @SuppressWarnings({ "unchecked" })
     public static <T> T getNearestAncestor(Node node, final Class<T> type) {
-        return (T) getNearestAncestor(node, new Func<Node, Boolean>() {
-            @Override
-            public Boolean eval(Node node) {
-                return type.isInstance(node);
-            }
-        });
+        return (T) getNearestAncestor(node, n -> type.isInstance(n));
     }
 
     public static Node getNearestAncestor(Node node, Func<Node, Boolean> filter) {

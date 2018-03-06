@@ -3,7 +3,7 @@
  */
 
 options {
-    JDK_VERSION = "1.7";
+    JDK_VERSION = "1.8";
     LOOKAHEAD = 1;
     STATIC = false;
     DEBUG_PARSER = true;
@@ -29,19 +29,27 @@ PARSER_END(SubstitutionParser)
 SKIP:
 {
     " "
-|   "\t"
-|   "\r"
-|   "\n"
-|   <"//" (~["\r", "\n"])*>
-|   <"`" (~["\r", "\n"])*>
+|
+    "\t"
+|
+    "\r"
+|
+    "\n"
+|
+    <"//" (~["\r", "\n"])*>
+|
+    <"`" (~["\r", "\n"])*>
 }
 
 TOKEN :
 {
     <EXTENDED_NAME : ["A"-"Z", "a"-"z", "_", "/" ] ([ "A"-"Z", "a"-"z", "_", "0"-"9", ":", "/", "\\", "-"])*>
-|   "("
-|   ")"
-|   ","
+|
+    "("
+|
+    ")"
+|
+    ","
 }
 
 List<SubstitutionRule> parseSubstitutionRules() :

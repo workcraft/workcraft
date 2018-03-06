@@ -3,8 +3,6 @@ package org.workcraft.gui;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -140,18 +138,10 @@ public class CreateWorkDialog extends JDialog {
 
         okButton = GUI.createDialogButton("OK");
         okButton.setEnabled(false);
-        okButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                ok();
-            }
-        });
+        okButton.addActionListener(event -> ok());
 
         cancelButton = GUI.createDialogButton("Cancel");
-        cancelButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                cancel();
-            }
-        });
+        cancelButton.addActionListener(event -> cancel());
 
         buttonsPane.add(okButton);
         buttonsPane.add(cancelButton);
@@ -159,21 +149,11 @@ public class CreateWorkDialog extends JDialog {
         contentPane.add(buttonsPane, BorderLayout.SOUTH);
         getRootPane().setDefaultButton(okButton);
 
-        getRootPane().registerKeyboardAction(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        ok();
-                    }
-                },
+        getRootPane().registerKeyboardAction(event -> ok(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-        getRootPane().registerKeyboardAction(new ActionListener() {
-                    @Override
-                    public void actionPerformed(ActionEvent e) {
-                        cancel();
-                    }
-                },
+        getRootPane().registerKeyboardAction(event -> cancel(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
     }

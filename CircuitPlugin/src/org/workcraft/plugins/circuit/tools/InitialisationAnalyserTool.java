@@ -35,7 +35,6 @@ import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.VisualContact;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
-import org.workcraft.util.Func;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -205,19 +204,14 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
         GraphEditor editor = e.getEditor();
         VisualModel model = e.getModel();
         if (e.getButton() == MouseEvent.BUTTON1) {
-            Node node = HitMan.hitDeepest(e.getPosition(), model.getRoot(),
-                    new Func<Node, Boolean>() {
-                        @Override
-                        public Boolean eval(Node node) {
-                            return (node instanceof VisualFunctionComponent) || (node instanceof VisualContact);
-                        }
-                    });
+            Node deepestNode = HitMan.hitDeepest(e.getPosition(), model.getRoot(),
+                    node -> (node instanceof VisualFunctionComponent) || (node instanceof VisualContact));
 
             VisualContact contact = null;
-            if (node instanceof VisualFunctionContact) {
-                contact = (VisualFunctionContact) node;
-            } else if (node instanceof VisualFunctionComponent) {
-                VisualFunctionComponent component = (VisualFunctionComponent) node;
+            if (deepestNode instanceof VisualFunctionContact) {
+                contact = (VisualFunctionContact) deepestNode;
+            } else if (deepestNode instanceof VisualFunctionComponent) {
+                VisualFunctionComponent component = (VisualFunctionComponent) deepestNode;
                 contact = component.getMainVisualOutput();
             }
 

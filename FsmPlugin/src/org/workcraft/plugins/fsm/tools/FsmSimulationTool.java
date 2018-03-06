@@ -28,7 +28,6 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
 import org.workcraft.plugins.petri.tools.PetriSimulationTool;
 import org.workcraft.plugins.shared.CommonDecorationSettings;
-import org.workcraft.util.Func;
 
 public class FsmSimulationTool extends PetriSimulationTool {
 
@@ -87,15 +86,10 @@ public class FsmSimulationTool extends PetriSimulationTool {
     public void mousePressed(GraphEditorMouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
             VisualModel model = e.getModel();
-            Node node = HitMan.hitDeepest(e.getPosition(), model.getRoot(),
-                    new Func<Node, Boolean>() {
-                        @Override
-                        public Boolean eval(Node node) {
-                            return getExcitedTransitionOfNode(node) != null;
-                        }
-                    });
+            Node deepestNode = HitMan.hitDeepest(e.getPosition(), model.getRoot(),
+                    node -> getExcitedTransitionOfNode(node) != null);
 
-            Transition transition = getExcitedTransitionOfNode(node);
+            Transition transition = getExcitedTransitionOfNode(deepestNode);
             if (transition != null) {
                 executeTransition(e.getEditor(), transition);
             }

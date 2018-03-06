@@ -44,7 +44,6 @@ import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.shared.CommonDecorationSettings;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
-import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
 public class DfsSimulationTool extends StgSimulationTool {
@@ -159,49 +158,44 @@ public class DfsSimulationTool extends StgSimulationTool {
     public void mousePressed(GraphEditorMouseEvent e) {
         if (e.getButton() == MouseEvent.BUTTON1) {
             VisualModel model = e.getModel();
-            Node node = HitMan.hitDeepest(e.getPosition(), model.getRoot(),
-                    new Func<Node, Boolean>() {
-                        @Override
-                        public Boolean eval(Node node) {
-                            return getExcitedTransitionOfNode(node) != null;
-                        }
-                    });
+            Node deepestNode = HitMan.hitDeepest(e.getPosition(), model.getRoot(),
+                    node -> getExcitedTransitionOfNode(node) != null);
 
             Transition transition = null;
-            if (node instanceof VisualTransformableNode) {
-                AffineTransform rootToLocalTransform = TransformHelper.getTransform(e.getModel().getRoot(), node);
+            if (deepestNode instanceof VisualTransformableNode) {
+                AffineTransform rootToLocalTransform = TransformHelper.getTransform(e.getModel().getRoot(), deepestNode);
                 Point2D posLocal = rootToLocalTransform.transform(e.getPosition(), null);
-                Point2D posNode = ((VisualTransformableNode) node).getParentToLocalTransform().transform(posLocal, null);
-                if (node instanceof VisualCounterflowLogic) {
-                    CounterflowLogicStg lstg = converter.getCounterflowLogicStg((VisualCounterflowLogic) node);
+                Point2D posNode = ((VisualTransformableNode) deepestNode).getParentToLocalTransform().transform(posLocal, null);
+                if (deepestNode instanceof VisualCounterflowLogic) {
+                    CounterflowLogicStg lstg = converter.getCounterflowLogicStg((VisualCounterflowLogic) deepestNode);
                     if (posNode.getY() < 0) {
                         transition = getExcitedTransitionOfCollection(lstg.getForwardTransitions());
                     } else {
                         transition = getExcitedTransitionOfCollection(lstg.getBackwardTransitions());
                     }
-                } else if (node instanceof VisualCounterflowRegister) {
-                    CounterflowRegisterStg rstg = converter.getCounterflowRegisterStg((VisualCounterflowRegister) node);
+                } else if (deepestNode instanceof VisualCounterflowRegister) {
+                    CounterflowRegisterStg rstg = converter.getCounterflowRegisterStg((VisualCounterflowRegister) deepestNode);
                     if (posNode.getY() < 0) {
                         transition = getExcitedTransitionOfCollection(rstg.getOrTransitions());
                     } else {
                         transition = getExcitedTransitionOfCollection(rstg.getAndTransitions());
                     }
-                } else if (node instanceof VisualControlRegister) {
-                    BinaryRegisterStg rstg = converter.getControlRegisterStg((VisualControlRegister) node);
+                } else if (deepestNode instanceof VisualControlRegister) {
+                    BinaryRegisterStg rstg = converter.getControlRegisterStg((VisualControlRegister) deepestNode);
                     if (posNode.getY() < 0) {
                         transition = getExcitedTransitionOfCollection(rstg.getTrueTransitions());
                     } else {
                         transition = getExcitedTransitionOfCollection(rstg.getFalseTransitions());
                     }
-                } else if (node instanceof VisualPushRegister) {
-                    BinaryRegisterStg rstg = converter.getPushRegisterStg((VisualPushRegister) node);
+                } else if (deepestNode instanceof VisualPushRegister) {
+                    BinaryRegisterStg rstg = converter.getPushRegisterStg((VisualPushRegister) deepestNode);
                     if (posNode.getY() < 0) {
                         transition = getExcitedTransitionOfCollection(rstg.getTrueTransitions());
                     } else {
                         transition = getExcitedTransitionOfCollection(rstg.getFalseTransitions());
                     }
-                } else if (node instanceof VisualPopRegister) {
-                    BinaryRegisterStg rstg = converter.getPopRegisterStg((VisualPopRegister) node);
+                } else if (deepestNode instanceof VisualPopRegister) {
+                    BinaryRegisterStg rstg = converter.getPopRegisterStg((VisualPopRegister) deepestNode);
                     if (posNode.getY() < 0) {
                         transition = getExcitedTransitionOfCollection(rstg.getTrueTransitions());
                     } else {
@@ -211,7 +205,7 @@ public class DfsSimulationTool extends StgSimulationTool {
             }
 
             if (transition == null) {
-                transition = getExcitedTransitionOfNode(node);
+                transition = getExcitedTransitionOfNode(deepestNode);
             }
 
             if (transition != null) {

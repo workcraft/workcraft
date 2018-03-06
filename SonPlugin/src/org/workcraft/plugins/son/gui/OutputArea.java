@@ -5,8 +5,6 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
@@ -43,21 +41,8 @@ public class OutputArea extends JFrame {
         file.add(export);
         file.add(exit);
         toolBar.setFloatable(true);
-
-        class SaveAs implements ActionListener {
-            public void actionPerformed(ActionEvent e) {
-                export();
-            }
-        }
-
-        class Exit implements ActionListener {
-            public void actionPerformed(ActionEvent e) {
-                fileExit();
-            }
-        }
-
-        export.addActionListener(new SaveAs());
-        exit.addActionListener(new Exit());
+        export.addActionListener(event -> export());
+        exit.addActionListener(event -> fileExit());
     }
 
     private void export() {

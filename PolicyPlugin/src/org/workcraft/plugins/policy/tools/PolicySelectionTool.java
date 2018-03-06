@@ -1,7 +1,5 @@
 package org.workcraft.plugins.policy.tools;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.Collection;
@@ -38,23 +36,13 @@ public class PolicySelectionTool extends SelectionTool {
         JButton bundleButton = GUI.createIconButton(
                 GUI.createIconFromSVG("images/policy-selection-bundle.svg"),
                 "Bundle selected transitions (" + DesktopApi.getMenuKeyMaskName() + "-B)");
-        bundleButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                selectionBundle(editor);
-            }
-        });
+        bundleButton.addActionListener(event -> selectionBundle(editor));
         toolbar.add(bundleButton);
 
         JButton unbundleButton = GUI.createIconButton(
                 GUI.createIconFromSVG("images/policy-selection-unbundle.svg"),
                 "Unbundle selected transitions (" + DesktopApi.getMenuKeyMaskName() + "+Shift-B)");
-        unbundleButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                selectionUnbundle(editor);
-            }
-        });
+        unbundleButton.addActionListener(event -> selectionUnbundle(editor));
         toolbar.add(unbundleButton);
         if (toolbar.getComponentCount() > 0) {
             toolbar.addSeparator();

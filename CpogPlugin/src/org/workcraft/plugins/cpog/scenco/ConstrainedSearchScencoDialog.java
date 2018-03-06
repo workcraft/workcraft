@@ -5,8 +5,6 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -100,12 +98,8 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
 
         setContentPane(content);
 
-        getRootPane().registerKeyboardAction(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-            }
-        }, KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
+        getRootPane().registerKeyboardAction(event -> setVisible(false),
+                KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         if (mode != 1) {
@@ -116,7 +110,6 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
     }
 
     private void createCustomPanel(ArrayList<VisualTransformableNode> scenarios) {
-
         // TABLE OF ENCODINGS
         JLabel exampleLabel = new JLabel(
                 ScencoHelper.normalBitText +
@@ -127,38 +120,11 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
         customEncodings = new JCheckBox("", false);
         customEncLabel.addMouseListener(new MouseAdapter() {
             public void mouseClicked(MouseEvent e) {
-                customEncodings.setSelected(customEncodings.isSelected() ? false
-                        : true);
-                if (customEncodings.isSelected()) {
-                    encodingTable.setEnabled(true);
-                    encodingTable.setBackground(Color.WHITE);
-                    bitsText.setBackground(Color.WHITE);
-                    bitsText.setEnabled(true);
-                } else {
-                    encodingTable.setEnabled(false);
-                    encodingTable.setBackground(Color.LIGHT_GRAY);
-                    bitsText.setBackground(Color.LIGHT_GRAY);
-                    bitsText.setEnabled(false);
-                }
+                customEncodings.setSelected(customEncodings.isSelected() ? false : true);
+                actionCustomEncoding();
             }
         });
-        customEncodings.addActionListener(new ActionListener() {
-
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (customEncodings.isSelected()) {
-                    encodingTable.setEnabled(true);
-                    encodingTable.setBackground(Color.WHITE);
-                    bitsText.setBackground(Color.WHITE);
-                    bitsText.setEnabled(true);
-                } else {
-                    encodingTable.setEnabled(false);
-                    encodingTable.setBackground(Color.LIGHT_GRAY);
-                    bitsText.setBackground(Color.LIGHT_GRAY);
-                    bitsText.setEnabled(false);
-                }
-            }
-        });
+        customEncodings.addActionListener(event -> actionCustomEncoding());
 
         JLabel bitsLabel = new JLabel(ScencoHelper.textEncodingBitWidth);
         circuitSizeLabel = new JLabel(ScencoHelper.textCircuitSizeLabel);
@@ -174,24 +140,8 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
         bitsText.setPreferredSize(ScencoHelper.dimensionBitEncodingWidthText);
         bitsText.setBackground(Color.LIGHT_GRAY);
         bitsText.setEnabled(false);
-        bitsText.addActionListener(new ActionListener() {
+        bitsText.addActionListener(event -> actionBits());
 
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                if (Integer.parseInt(bitsText.getText()) < bits + 1) {
-                    DialogUtils.showError("Bits selected are not enough to encode all scenarios.");
-
-                    bitsText.setText(String.valueOf(bits + 1));
-                }
-                for (int i = 0; i < m; i++) {
-                    String data = "";
-                    for (int j = 0; j < Integer.parseInt(bitsText.getText()); j++) {
-                        data = data + ScencoHelper.dontCareBit;
-                    }
-                    encodingTable.getModel().setValueAt(data, i, 1);
-                }
-            }
-        });
         circuitSizeText = new JTextField();
         circuitSizeText.setText(String.valueOf(bits + 2));
         circuitSizeText.setPreferredSize(ScencoHelper.dimensionCircuitSizeText);
@@ -239,6 +189,35 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
         customPanel.add(scrollPane, BorderLayout.CENTER);
         customPanel.add(exampleLabel, BorderLayout.SOUTH);
 
+    }
+
+    private void actionBits() {
+        if (Integer.parseInt(bitsText.getText()) < bits + 1) {
+            DialogUtils.showError("Bits selected are not enough to encode all scenarios.");
+
+            bitsText.setText(String.valueOf(bits + 1));
+        }
+        for (int i = 0; i < m; i++) {
+            String data = "";
+            for (int j = 0; j < Integer.parseInt(bitsText.getText()); j++) {
+                data = data + ScencoHelper.dontCareBit;
+            }
+            encodingTable.getModel().setValueAt(data, i, 1);
+        }
+    }
+
+    private void actionCustomEncoding() {
+        if (customEncodings.isSelected()) {
+            encodingTable.setEnabled(true);
+            encodingTable.setBackground(Color.WHITE);
+            bitsText.setBackground(Color.WHITE);
+            bitsText.setEnabled(true);
+        } else {
+            encodingTable.setEnabled(false);
+            encodingTable.setBackground(Color.LIGHT_GRAY);
+            bitsText.setBackground(Color.LIGHT_GRAY);
+            bitsText.setEnabled(false);
+        }
     }
 
     private void createStandardPanel() {
@@ -317,80 +296,72 @@ public class ConstrainedSearchScencoDialog extends AbstractScencoDialog {
             generationPanel.add(new SimpleFlowLayout.LineBreak());
         }
         generationPanel.add(fast);
-
     }
 
     private void createButtonPanel(final int mode) {
         buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
         JButton saveButton = GUI.createDialogButton("Run");
-        saveButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-
-                // ENCODER EXECUTION
-                EncoderSettings settings = getSettings();
-
-                // abc disabled
-                settings.setAbcFlag(abcCheck.isSelected() ? true : false);
-
-                // speed-up mode selection
-                settings.setEffort(fast.isSelected() ? false : true);
-                settings.setCostFunc(false);
-
-                // optimise for option
-                settings.setCpogSize(optimiseBox.getSelectedIndex() == 0 ? false : true);
-
-                // verbose mode
-                settings.setVerboseMode(verboseModeCheck.isSelected());
-
-                // continuous mode or number of solutions
-                if (mode != 1) {
-                    settings.setSolutionNumber(Integer.parseInt(numberOfSolutionsText.getText()));
-                } else {
-                    // dummy value
-                    settings.setSolutionNumber(10);
-                }
-
-                // generation mode selection (Simulated annealing)
-                settings.setGenerationModeInt(mode);
-
-                // custom encodings
-                settings.setNumPO(m);
-                if (customEncodings.isSelected()) {
-                    // number of bits selection
-                    settings.setBits(Integer.parseInt(bitsText.getText()));
-
-                    settings.setCustomEncMode(true);
-                    String[] encodings = new String[m];
-                    for (int i = 0; i < m; i++) {
-                        encodings[i] = (String) encodingTable.getModel().getValueAt(i, 1);
-                    }
-                    for (int i = 0; i < m; i++) {
-                        encodings[i] = encodings[i].replace(ScencoHelper.reservedBit, "-");
-                        encodings[i] = encodings[i].replace(ScencoHelper.dontCareBit, "X");
-                    }
-                    settings.setCustomEnc(encodings);
-                } else {
-                    settings.setBits(bits + 1);
-                    settings.setCustomEncMode(false);
-                }
-                setDone();
-            }
-        });
+        saveButton.addActionListener(event -> actionSave(mode));
 
         JButton closeButton = GUI.createDialogButton("Close");
-        closeButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                setVisible(false);
-            }
-        });
+        closeButton.addActionListener(e -> setVisible(false));
 
         buttonsPanel.add(saveButton);
         buttonsPanel.add(closeButton);
+    }
 
+    private void actionSave(final int mode) {
+        setVisible(false);
+
+        // ENCODER EXECUTION
+        EncoderSettings settings = getSettings();
+
+        // abc disabled
+        settings.setAbcFlag(abcCheck.isSelected() ? true : false);
+
+        // speed-up mode selection
+        settings.setEffort(fast.isSelected() ? false : true);
+        settings.setCostFunc(false);
+
+        // optimise for option
+        settings.setCpogSize(optimiseBox.getSelectedIndex() == 0 ? false : true);
+
+        // verbose mode
+        settings.setVerboseMode(verboseModeCheck.isSelected());
+
+        // continuous mode or number of solutions
+        if (mode != 1) {
+            settings.setSolutionNumber(Integer.parseInt(numberOfSolutionsText.getText()));
+        } else {
+            // dummy value
+            settings.setSolutionNumber(10);
+        }
+
+        // generation mode selection (Simulated annealing)
+        settings.setGenerationModeInt(mode);
+
+        // custom encodings
+        settings.setNumPO(m);
+        if (customEncodings.isSelected()) {
+            // number of bits selection
+            settings.setBits(Integer.parseInt(bitsText.getText()));
+
+            settings.setCustomEncMode(true);
+            String[] encodings = new String[m];
+            for (int i1 = 0; i1 < m; i1++) {
+                encodings[i1] = (String) encodingTable.getModel().getValueAt(i1, 1);
+            }
+            for (int i2 = 0; i2 < m; i2++) {
+                encodings[i2] = encodings[i2].replace(ScencoHelper.reservedBit, "-");
+                encodings[i2] = encodings[i2].replace(ScencoHelper.dontCareBit, "X");
+            }
+            settings.setCustomEnc(encodings);
+        } else {
+            settings.setBits(bits + 1);
+            settings.setCustomEncMode(false);
+        }
+        setDone();
     }
 
     private void sizeWindow(int width, int height, int row1, int row2) {

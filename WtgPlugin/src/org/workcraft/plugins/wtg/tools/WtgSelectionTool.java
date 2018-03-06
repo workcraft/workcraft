@@ -1,7 +1,5 @@
 package org.workcraft.plugins.wtg.tools;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 
 import javax.swing.JMenuItem;
@@ -32,12 +30,9 @@ public class WtgSelectionTool extends DtdSelectionTool {
                 popup.setFocusable(false);
             }
             JMenuItem centerPivotPointMenuItem = new JMenuItem("Center pivot point");
-            centerPivotPointMenuItem.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    editor.getWorkspaceEntry().saveMemento();
-                    waveform.centerPivotPoint(false, true);
-                }
+            centerPivotPointMenuItem.addActionListener(event -> {
+                editor.getWorkspaceEntry().saveMemento();
+                waveform.centerPivotPoint(false, true);
             });
             popup.add(centerPivotPointMenuItem);
         }

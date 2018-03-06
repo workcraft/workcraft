@@ -47,13 +47,8 @@ public abstract class AbstractTaskManager implements TaskManager {
 
     @Override
     public final <T> void queue(final Task<T> task, final String description, final ProgressMonitor<? super T> observer) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                rawExecute(task, description, observer);
-            }
-        }
-        ).start();
+        Thread thread = new Thread(() -> rawExecute(task, description, observer));
+        thread.start();
     }
 
     public abstract <T> Result<? extends T> rawExecute(Task<T> task, String description, ProgressMonitor<? super T> observer);

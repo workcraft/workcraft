@@ -3,8 +3,6 @@ package org.workcraft.gui.workspace;
 import java.awt.Container;
 import java.awt.FlowLayout;
 import java.awt.Window;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -44,22 +42,10 @@ public class WorkspaceChooserDialog extends JDialog {
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
         JButton runButton = GUI.createDialogButton("OK");
-        runButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //modalResult = 1;
-                setVisible(false);
-            }
-        });
+        runButton.addActionListener(event -> setVisible(false));
 
         JButton cancelButton = GUI.createDialogButton("Cancel");
-        cancelButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                //modalResult = 0;
-                setVisible(false);
-            }
-        });
+        cancelButton.addActionListener(event -> setVisible(false));
 
         buttonsPanel.add(cancelButton);
         buttonsPanel.add(runButton);

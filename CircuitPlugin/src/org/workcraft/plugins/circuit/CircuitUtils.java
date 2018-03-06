@@ -16,7 +16,6 @@ import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.stg.SignalTransition.Type;
-import org.workcraft.util.Func;
 import org.workcraft.util.Hierarchy;
 
 public class CircuitUtils {
@@ -278,18 +277,15 @@ public class CircuitUtils {
         if (function == null) {
             return null;
         }
-        return BooleanFormulaParser.parse(function, new Func<String, BooleanFormula>() {
-            @Override
-            public BooleanFormula eval(String name) {
-                FunctionContact contact = (FunctionContact) circuit.getNodeByReference(component, name);
-                if (contact == null) {
-                    contact = new FunctionContact();
-                    contact.setIOType(IOType.INPUT);
-                    component.add(contact);
-                    circuit.setName(contact, name);
-                }
-                return contact;
+        return BooleanFormulaParser.parse(function, name -> {
+            FunctionContact contact = (FunctionContact) circuit.getNodeByReference(component, name);
+            if (contact == null) {
+                contact = new FunctionContact();
+                contact.setIOType(IOType.INPUT);
+                component.add(contact);
+                circuit.setName(contact, name);
             }
+            return contact;
         });
     }
 
@@ -297,18 +293,15 @@ public class CircuitUtils {
         if (function == null) {
             return null;
         }
-        return BooleanFormulaParser.parse(function, new Func<String, BooleanFormula>() {
-            @Override
-            public BooleanFormula eval(String name) {
-                FunctionContact port = (FunctionContact) circuit.getNodeByReference(null, name);
-                if (port == null) {
-                    port = new FunctionContact();
-                    port.setIOType(IOType.OUTPUT);
-                    circuit.add(port);
-                    circuit.setName(port, name);
-                }
-                return port;
+        return BooleanFormulaParser.parse(function, name -> {
+            FunctionContact port = (FunctionContact) circuit.getNodeByReference(null, name);
+            if (port == null) {
+                port = new FunctionContact();
+                port.setIOType(IOType.OUTPUT);
+                circuit.add(port);
+                circuit.setName(port, name);
             }
+            return port;
         });
     }
 
@@ -317,16 +310,13 @@ public class CircuitUtils {
         if (function == null) {
             return null;
         }
-        return BooleanFormulaParser.parse(function, new Func<String, BooleanFormula>() {
-            @Override
-            public BooleanFormula eval(String name) {
-                BooleanFormula result = null;
-                VisualFunctionContact contact = circuit.getOrCreateContact(component, name, IOType.INPUT);
-                if ((contact != null) && (contact.getReferencedContact() instanceof BooleanFormula)) {
-                    result = (BooleanFormula) contact.getReferencedContact();
-                }
-                return result;
+        return BooleanFormulaParser.parse(function, name -> {
+            BooleanFormula result = null;
+            VisualFunctionContact contact = circuit.getOrCreateContact(component, name, IOType.INPUT);
+            if ((contact != null) && (contact.getReferencedContact() instanceof BooleanFormula)) {
+                result = (BooleanFormula) contact.getReferencedContact();
             }
+            return result;
         });
     }
 
@@ -334,16 +324,13 @@ public class CircuitUtils {
         if (function == null) {
             return null;
         }
-        return BooleanFormulaParser.parse(function, new Func<String, BooleanFormula>() {
-            @Override
-            public BooleanFormula eval(String name) {
-                BooleanFormula result = null;
-                VisualFunctionContact port = circuit.getOrCreateContact(null, name, IOType.OUTPUT);
-                if ((port != null) && (port.getReferencedContact() instanceof BooleanFormula)) {
-                    result = (BooleanFormula) port.getReferencedContact();
-                }
-                return result;
+        return BooleanFormulaParser.parse(function, name -> {
+            BooleanFormula result = null;
+            VisualFunctionContact port = circuit.getOrCreateContact(null, name, IOType.OUTPUT);
+            if ((port != null) && (port.getReferencedContact() instanceof BooleanFormula)) {
+                result = (BooleanFormula) port.getReferencedContact();
             }
+            return result;
         });
     }
 

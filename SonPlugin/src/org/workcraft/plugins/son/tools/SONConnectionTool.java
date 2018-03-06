@@ -1,8 +1,5 @@
 package org.workcraft.plugins.son.tools;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
 import javax.swing.JToolBar;
@@ -23,19 +20,11 @@ public class SONConnectionTool extends ConnectionTool {
     @Override
     public void updateControlsToolbar(JToolBar toolbar, final GraphEditor editor) {
         JRadioButton polyButton = new JRadioButton("Causal Connection");
-        polyButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                semantic = Semantics.PNLINE;
-            }
-        });
+        polyButton.addActionListener(event -> semantic = Semantics.PNLINE);
         toolbar.add(polyButton);
 
         JRadioButton bhvButton = new JRadioButton("Behavioural Abstraction");
-        bhvButton.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent arg0) {
-                semantic = Semantics.BHVLINE;
-            }
-        });
+        bhvButton.addActionListener(event -> semantic = Semantics.BHVLINE);
         toolbar.add(bhvButton);
 
         polyButton.setSelected(true);

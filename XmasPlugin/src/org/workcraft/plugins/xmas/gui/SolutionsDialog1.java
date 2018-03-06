@@ -2,8 +2,6 @@ package org.workcraft.plugins.xmas.gui;
 
 import java.awt.BorderLayout;
 import java.awt.FlowLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
@@ -13,8 +11,8 @@ import javax.swing.JPanel;
 
 @SuppressWarnings("serial")
 public class SolutionsDialog1 extends JDialog {
-    public SolutionsDialog1(int n, String str) {
 
+    public SolutionsDialog1(int n, String str) {
         JPanel contents = new JPanel();
         contents.setLayout(new BorderLayout());
 
@@ -29,31 +27,20 @@ public class SolutionsDialog1 extends JDialog {
         JPanel solutionsPanel = new JPanel();
         solutionsPanel.setLayout(new BoxLayout(solutionsPanel, BoxLayout.Y_AXIS));
 
-        solutionsPanel.add(new SolutionPanel(str, new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                SolutionsDialog1.this.setVisible(false);
-            }
-        }));
+        solutionsPanel.add(new SolutionPanel(str, event -> setVisible(false)));
 
         contents.add(solutionsPanel, BorderLayout.CENTER);
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
         JButton okButton = new JButton("OK");
-        okButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                SolutionsDialog1.this.setVisible(false);
-            }
-        });
+        okButton.addActionListener(event -> setVisible(false));
 
         buttonsPanel.add(okButton);
         contents.add(buttonsPanel, BorderLayout.SOUTH);
 
-        this.setContentPane(contents);
-        //this.add(contents);
-        this.pack();
-        this.setVisible(true);
+        setContentPane(contents);
+        pack();
+        setVisible(true);
     }
 
 }
