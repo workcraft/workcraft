@@ -205,42 +205,43 @@ public class StructureVerifyDialog extends JDialog {
     }
 
     protected void createSelectionButtonsPanel() {
-
         addAllButton = new JButton("Select All");
         addAllButton.setMaximumSize(buttonSize);
         addAllButton.setFont(this.getFont());
-
-        addAllButton.addActionListener(event -> {
-            selectedGroups.clear();
-            for (int i = 0; i < getList().getModel().getSize(); i++) {
-                ((ListItem) getList().getModel().getElementAt(i)).setSelected(true);
-                Object obj = ((ListItem) getList().getModel().getElementAt(i)).getListItem();
-                if (obj instanceof ONGroup) {
-                    selectedGroups.add((ONGroup) obj);
-                }
-                ((ListItem) getList().getModel().getElementAt(i)).setItemColor(Color.ORANGE);
-            }
-            getList().repaint();
-        });
+        addAllButton.addActionListener(event -> actionAddAll());
 
         removeAllButton = new JButton("Remove All");
         removeAllButton.setMaximumSize(buttonSize);
         removeAllButton.setFont(this.getFont());
-
-        removeAllButton.addActionListener(event -> {
-            for (int i = 0; i < getList().getModel().getSize(); i++) {
-                ((ListItem) getList().getModel().getElementAt(i)).setSelected(false);
-                ((ListItem) getList().getModel().getElementAt(i)).setItemColor(Color.BLACK);
-            }
-            getList().repaint();
-            selectedGroups.clear();
-        });
+        removeAllButton.addActionListener(event -> actionRemoveAll());
 
         selectionButtonPanel = new JPanel();
         selectionButtonPanel.setLayout(new BoxLayout(selectionButtonPanel, BoxLayout.Y_AXIS));
         selectionButtonPanel.add(addAllButton);
         selectionButtonPanel.add(Box.createRigidArea(new Dimension(0, 10)));
         selectionButtonPanel.add(removeAllButton);
+    }
+
+    private void actionAddAll() {
+        selectedGroups.clear();
+        for (int i = 0; i < getList().getModel().getSize(); i++) {
+            ((ListItem) getList().getModel().getElementAt(i)).setSelected(true);
+            Object obj = ((ListItem) getList().getModel().getElementAt(i)).getListItem();
+            if (obj instanceof ONGroup) {
+                selectedGroups.add((ONGroup) obj);
+            }
+            ((ListItem) getList().getModel().getElementAt(i)).setItemColor(Color.ORANGE);
+        }
+        getList().repaint();
+    }
+
+    private void actionRemoveAll() {
+        for (int i = 0; i < getList().getModel().getSize(); i++) {
+            ((ListItem) getList().getModel().getElementAt(i)).setSelected(false);
+            ((ListItem) getList().getModel().getElementAt(i)).setItemColor(Color.BLACK);
+        }
+        getList().repaint();
+        selectedGroups.clear();
     }
 
     protected void createSettingPanel() {

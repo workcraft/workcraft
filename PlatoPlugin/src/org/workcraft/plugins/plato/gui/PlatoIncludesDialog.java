@@ -13,8 +13,8 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import org.workcraft.util.GUI;
 import org.workcraft.util.DialogUtils;
+import org.workcraft.util.GUI;
 
 @SuppressWarnings("serial")
 public class PlatoIncludesDialog extends JDialog {
@@ -61,33 +61,34 @@ public class PlatoIncludesDialog extends JDialog {
         btnPanel.add(removeBtn);
         btnPanel.add(okBtn);
 
-        addBtn.addActionListener(event -> {
-            JFileChooser chooser = new JFileChooser();
-            chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
-            chooser.setFileFilter(new FileNameExtensionFilter("Haskell/Concept file (.hs)", "hs"));
-            chooser.setCurrentDirectory(lastDirUsed);
-            if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-                File f = chooser.getSelectedFile();
-                try {
-                    if (!f.exists()) {
-                        throw new FileNotFoundException();
-                    }
-                    includeListModel.addElement(f.getAbsolutePath());
-                    // includeList.setListData(includeListModel);
-                } catch (FileNotFoundException e1) {
-                    DialogUtils.showError(e1.getMessage());
-                }
-
-            }
-        });
-
-        removeBtn.addActionListener(event -> {
-            if (!includeList.isSelectionEmpty()) {
-                includeListModel.removeElement(includeList.getSelectedValue());
-            }
-        });
-
+        addBtn.addActionListener(event -> actionAdd());
+        removeBtn.addActionListener(event -> actionRemove());
         okBtn.addActionListener(event -> setVisible(false));
+    }
+
+    private void actionAdd() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
+        chooser.setFileFilter(new FileNameExtensionFilter("Haskell/Concept file (.hs)", "hs"));
+        chooser.setCurrentDirectory(lastDirUsed);
+        if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+            File f = chooser.getSelectedFile();
+            try {
+                if (!f.exists()) {
+                    throw new FileNotFoundException();
+                }
+                includeListModel.addElement(f.getAbsolutePath());
+                // includeList.setListData(includeListModel);
+            } catch (FileNotFoundException e1) {
+                DialogUtils.showError(e1.getMessage());
+            }
+        }
+    }
+
+    private void actionRemove() {
+        if (!includeList.isSelectionEmpty()) {
+            includeListModel.removeElement(includeList.getSelectedValue());
+        }
     }
 
 }

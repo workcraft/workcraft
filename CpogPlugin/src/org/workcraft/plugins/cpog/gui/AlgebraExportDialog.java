@@ -20,7 +20,7 @@ import org.workcraft.util.GUI;
 public class AlgebraExportDialog extends JDialog {
 
     private final JTextField filePath;
-    private final JButton selectFileBtn, okButton, cancelButton;
+    private final JButton selectFileBtn;
     private final JRadioButton pasteRB, exportRB;
     private Boolean okClicked;
 
@@ -33,7 +33,7 @@ public class AlgebraExportDialog extends JDialog {
 
         selectFileBtn = GUI.createDialogButton("Select export location");
 
-        addSelectFileBtnListener();
+        selectFileBtn.addActionListener(event -> actionSelectFile());
 
         JPanel filePanel = new JPanel();
         filePanel.add(filePath);
@@ -43,20 +43,24 @@ public class AlgebraExportDialog extends JDialog {
         selectFileBtn.setEnabled(false);
 
         pasteRB = new JRadioButton("Paste expression into algebra text box", false);
+        pasteRB.addActionListener(event -> actionPaste());
+
         exportRB = new JRadioButton("Export expression to file", false);
-        addRadioButtonListener();
+        exportRB.addActionListener(event -> actionExport());
 
         JPanel optionPanel = new JPanel();
         optionPanel.add(pasteRB);
         optionPanel.add(exportRB);
 
-        okButton = GUI.createDialogButton("OK");
-        cancelButton = GUI.createDialogButton("Cancel");
+        JButton okButton = GUI.createDialogButton("OK");
+        okButton.addActionListener(event -> actionOk());
+
+        JButton cancelButton = GUI.createDialogButton("Cancel");
+        cancelButton.addActionListener(event -> actionCancel());
 
         JPanel okPanel = new JPanel();
         okPanel.add(okButton);
         okPanel.add(cancelButton);
-        addButtonListeners();
 
         setLayout(new GridLayout(3, 0));
         add(optionPanel);
@@ -71,48 +75,41 @@ public class AlgebraExportDialog extends JDialog {
         setLocationRelativeTo(Framework.getInstance().getMainWindow());
     }
 
-    public void addSelectFileBtnListener() {
-        selectFileBtn.addActionListener(event -> {
-            JFileChooser chooser = new JFileChooser();
-            if (chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-                File f = chooser.getSelectedFile();
-                filePath.setText(f.getAbsolutePath());
-            }
-        });
+    private void actionOk() {
+        okClicked = true;
+        setVisible(false);
     }
 
-    public void addRadioButtonListener() {
-        pasteRB.addActionListener(event -> {
-            if (pasteRB.isSelected()) {
-                exportRB.setSelected(false);
-                filePath.setEnabled(false);
-                selectFileBtn.setEnabled(false);
-            }
-        });
-
-        exportRB.addActionListener(event -> {
-            if (exportRB.isSelected()) {
-                pasteRB.setSelected(false);
-                filePath.setEnabled(true);
-                selectFileBtn.setEnabled(true);
-            } else {
-                filePath.setEnabled(false);
-                selectFileBtn.setEnabled(false);
-            }
-
-        });
+    private void actionCancel() {
+        okClicked = false;
+        setVisible(false);
     }
 
-    public void addButtonListeners() {
-        okButton.addActionListener(event -> {
-            okClicked = true;
-            setVisible(false);
-        });
+    private void actionSelectFile() {
+        JFileChooser chooser = new JFileChooser();
+        if (chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+            File f = chooser.getSelectedFile();
+            filePath.setText(f.getAbsolutePath());
+        }
+    }
 
-        cancelButton.addActionListener(event -> {
-            okClicked = false;
-            setVisible(false);
-        });
+    private void actionPaste() {
+        if (pasteRB.isSelected()) {
+            exportRB.setSelected(false);
+            filePath.setEnabled(false);
+            selectFileBtn.setEnabled(false);
+        }
+    }
+
+    private void actionExport() {
+        if (exportRB.isSelected()) {
+            pasteRB.setSelected(false);
+            filePath.setEnabled(true);
+            selectFileBtn.setEnabled(true);
+        } else {
+            filePath.setEnabled(false);
+            selectFileBtn.setEnabled(false);
+        }
     }
 
     public Boolean getOK() {

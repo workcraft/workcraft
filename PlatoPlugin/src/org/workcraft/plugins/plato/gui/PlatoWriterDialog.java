@@ -27,8 +27,8 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.visual.SizeHelper;
-import org.workcraft.util.GUI;
 import org.workcraft.util.DialogUtils;
+import org.workcraft.util.GUI;
 
 @SuppressWarnings("serial")
 public class PlatoWriterDialog extends JDialog {
@@ -127,66 +127,69 @@ public class PlatoWriterDialog extends JDialog {
             fileBtnPanel.add(dotLayoutCheckBox);
         }
 
-        openFileBtn.addActionListener(event -> {
-            JFileChooser chooser = new JFileChooser();
-            chooser.setFileFilter(new FileNameExtensionFilter("Haskell/Concept file (.hs)", "hs"));
-            chooser.setCurrentDirectory(lastDirUsed);
-            if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
-                File f = chooser.getSelectedFile();
-                try {
-                    if (!f.exists()) {
-                        throw new FileNotFoundException();
-                    }
-
-                    conceptsText.setText(readFile(f));
-                    updateLastDirUsed();
-                } catch (FileNotFoundException e1) {
-                    DialogUtils.showError(e1.getMessage());
-                }
-
-            }
-        });
-
-        saveFileBtn.addActionListener(event -> {
-            JFileChooser chooser = new JFileChooser();
-            chooser.setFileFilter(new FileNameExtensionFilter("Haskell/Concept file (.hs)", "hs"));
-            chooser.setCurrentDirectory(lastDirUsed);
-            if (chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
-                File file = chooser.getSelectedFile();
-                if (!file.getName().endsWith(".hs")) {
-                    file = new File(file.getAbsolutePath() + ".hs");
-                }
-                PrintStream concepts;
-                try {
-                    concepts = new PrintStream(file);
-                    String text = conceptsText.getText();
-                    concepts.print(text);
-                    concepts.close();
-                    lastFileUsed = file;
-                    changed = false;
-                    updateLastDirUsed();
-                } catch (FileNotFoundException ex) {
-                }
-            }
-        });
-
-        componentBtn.addActionListener(event -> {
-            conceptsText.setText(getDefaultComponentText());
-            lastFileUsed = null;
-            changed = false;
-        });
-
-        systemBtn.addActionListener(event -> {
-            conceptsText.setText(getDefaultSystemText());
-            lastFileUsed = null;
-            changed = false;
-        });
+        openFileBtn.addActionListener(event -> actionOpenFile());
+        saveFileBtn.addActionListener(event -> actionSaveFile());
+        componentBtn.addActionListener(event -> actionComponent());
+        systemBtn.addActionListener(event -> actionSystem());
 
         final PlatoIncludesDialog dialog = new PlatoIncludesDialog(this, lastDirUsed, includeList);
 
         includeBtn.addActionListener(event -> dialog.setVisible(true));
 
         btnPanel.add(fileBtnPanel, BorderLayout.WEST);
+    }
+
+    private void actionOpenFile() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileFilter(new FileNameExtensionFilter("Haskell/Concept file (.hs)", "hs"));
+        chooser.setCurrentDirectory(lastDirUsed);
+        if (chooser.showOpenDialog(null) == JFileChooser.APPROVE_OPTION) {
+            File f = chooser.getSelectedFile();
+            try {
+                if (!f.exists()) {
+                    throw new FileNotFoundException();
+                }
+                conceptsText.setText(readFile(f));
+                updateLastDirUsed();
+            } catch (FileNotFoundException e1) {
+                DialogUtils.showError(e1.getMessage());
+            }
+        }
+    }
+
+    private void actionSaveFile() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setFileFilter(new FileNameExtensionFilter("Haskell/Concept file (.hs)", "hs"));
+        chooser.setCurrentDirectory(lastDirUsed);
+        if (chooser.showSaveDialog(null) == JFileChooser.APPROVE_OPTION) {
+            File file = chooser.getSelectedFile();
+            if (!file.getName().endsWith(".hs")) {
+                file = new File(file.getAbsolutePath() + ".hs");
+            }
+            PrintStream concepts;
+            try {
+                concepts = new PrintStream(file);
+                String text = conceptsText.getText();
+                concepts.print(text);
+                concepts.close();
+                lastFileUsed = file;
+                changed = false;
+                updateLastDirUsed();
+            } catch (FileNotFoundException ex) {
+            }
+        }
+    }
+
+    private void actionComponent() {
+        conceptsText.setText(getDefaultComponentText());
+        lastFileUsed = null;
+        changed = false;
+    }
+
+    private void actionSystem() {
+        conceptsText.setText(getDefaultSystemText());
+        lastFileUsed = null;
+        changed = false;
     }
 
     private void createFinalBtnPanel() {

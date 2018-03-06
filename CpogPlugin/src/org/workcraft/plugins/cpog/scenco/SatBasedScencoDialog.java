@@ -145,49 +145,51 @@ public class SatBasedScencoDialog extends AbstractScencoDialog {
     private void createButtonPanel() {
         buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        JButton saveButton = GUI.createDialogButton("Run");
-        saveButton.addActionListener(event -> {
-            setVisible(false);
-
-            // ENCODER EXECUTION
-            EncoderSettings settings = getSettings();
-
-            // abc disabled
-            settings.setAbcFlag(abcCheck.isSelected() ? true : false);
-
-            // speed-up mode selection
-            settings.setEffort(true);
-            settings.setCostFunc(false);
-
-            // number of bits selection
-            settings.setBits(Integer.parseInt(bitsText.getText()));
-
-            // circuit size selection
-            settings.setCircuitSize(Integer.valueOf(circuitSizeText.getText()));
-
-            // optimise for option
-            settings.setCpogSize(optimiseBox.getSelectedIndex() == 0 ? false : true);
-
-            // verbose mode
-            settings.setVerboseMode(verboseModeCheck.isSelected());
-
-            // continuous mode or number of solutions
-            settings.setSolutionNumber(10);
-
-            // generation mode selection
-            settings.setGenerationModeInt(3);
-
-            // custom encodings
-            settings.setNumPO(m);
-            settings.setCustomEncMode(true);
-            setDone();
-        });
+        JButton runButton = GUI.createDialogButton("Run");
+        runButton.addActionListener(event -> actionRun());
 
         JButton closeButton = GUI.createDialogButton("Close");
         closeButton.addActionListener(e -> setVisible(false));
 
-        buttonsPanel.add(saveButton);
+        buttonsPanel.add(runButton);
         buttonsPanel.add(closeButton);
+    }
+
+    private void actionRun() {
+        setVisible(false);
+
+        // ENCODER EXECUTION
+        EncoderSettings settings = getSettings();
+
+        // abc disabled
+        settings.setAbcFlag(abcCheck.isSelected() ? true : false);
+
+        // speed-up mode selection
+        settings.setEffort(true);
+        settings.setCostFunc(false);
+
+        // number of bits selection
+        settings.setBits(Integer.parseInt(bitsText.getText()));
+
+        // circuit size selection
+        settings.setCircuitSize(Integer.valueOf(circuitSizeText.getText()));
+
+        // optimise for option
+        settings.setCpogSize(optimiseBox.getSelectedIndex() == 0 ? false : true);
+
+        // verbose mode
+        settings.setVerboseMode(verboseModeCheck.isSelected());
+
+        // continuous mode or number of solutions
+        settings.setSolutionNumber(10);
+
+        // generation mode selection
+        settings.setGenerationModeInt(3);
+
+        // custom encodings
+        settings.setNumPO(m);
+        settings.setCustomEncMode(true);
+        setDone();
     }
 
 }

@@ -107,34 +107,34 @@ public class PcompDialog extends JDialog {
         content.add(options, "1 0");
         JPanel buttonsPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT));
         JButton runButton = GUI.createDialogButton("Run");
-        runButton.addActionListener(event -> runAction());
+        runButton.addActionListener(event -> actionRun());
 
         JButton cancelButton = GUI.createDialogButton("Cancel");
-        cancelButton.addActionListener(event -> cancelAction());
+        cancelButton.addActionListener(event -> actionCancel());
 
         buttonsPanel.add(runButton);
         buttonsPanel.add(cancelButton);
 
         content.add(buttonsPanel, "1 1");
 
-        getRootPane().registerKeyboardAction(event -> runAction(),
+        getRootPane().registerKeyboardAction(event -> actionRun(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
-        getRootPane().registerKeyboardAction(event -> cancelAction(),
+        getRootPane().registerKeyboardAction(event -> actionCancel(),
                 KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0),
                 JComponent.WHEN_IN_FOCUSED_WINDOW);
 
         return content;
     }
 
-    private void runAction() {
+    private void actionRun() {
         result = true;
         sourcePaths = chooser.getCheckedNodes();
         setVisible(false);
     }
 
-    private void cancelAction() {
+    private void actionCancel() {
         result = false;
         setVisible(false);
     }
