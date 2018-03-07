@@ -12,7 +12,8 @@ public class ExternalProcess {
 
     abstract static class StreamReaderThread extends Thread {
         private final ReadableByteChannel channel;
-        private final ByteBuffer buffer = ByteBuffer.allocate(1024);
+        // Buffer is increased to 1MiB to reduce the number of updates for external processes with heavy output.
+        private final ByteBuffer buffer = ByteBuffer.allocate(1024 * 1024);
 
         StreamReaderThread(ReadableByteChannel channel) {
             this.channel = channel;
