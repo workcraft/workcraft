@@ -94,9 +94,9 @@ public class MpsatConformationNwayTask implements Task<MpsatChainOutput> {
 
             // Generating .g for the whole system (model and environment)
             File stgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
-            File detailsFile = new File(directory, StgUtils.DETAIL_FILE_PREFIX + StgUtils.XML_FILE_EXTENSION);
+            File detailFile = new File(directory, StgUtils.DETAIL_FILE_PREFIX + StgUtils.XML_FILE_EXTENSION);
             stgFile.deleteOnExit();
-            PcompTask pcompTask = new PcompTask(stgFiles.toArray(new File[0]), stgFile, detailsFile,
+            PcompTask pcompTask = new PcompTask(stgFiles.toArray(new File[0]), stgFile, detailFile,
                     ConversionMode.OUTPUT, false, false, directory);
 
             Result<? extends PcompOutput> pcompResult = taskManager.execute(
@@ -127,7 +127,7 @@ public class MpsatConformationNwayTask implements Task<MpsatChainOutput> {
             monitor.progressUpdate(0.60);
 
             // Check for interface conformation
-            CompositionData compositionData = new CompositionData(detailsFile);
+            CompositionData compositionData = new CompositionData(detailFile);
             ArrayList<Set<String>> allPlaceSets = new ArrayList<>();
             for (File file: stgFiles) {
                 ComponentData componentData = compositionData.getComponentData(file);

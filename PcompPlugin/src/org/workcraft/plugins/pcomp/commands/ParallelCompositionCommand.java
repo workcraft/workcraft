@@ -86,12 +86,12 @@ public class ParallelCompositionCommand implements Command {
 
         File outputFile = new File(tmpDirectory, RESULT_FILE_NAME);
         outputFile.deleteOnExit();
-        File detailsFile = null;
-        if (dialog.isSaveDetailsChecked()) {
-            detailsFile = new File(tmpDirectory, DETAIL_FILE_NAME);
+        File detailFile = null;
+        if (dialog.isSaveDetailChecked()) {
+            detailFile = new File(tmpDirectory, DETAIL_FILE_NAME);
         }
 
-        PcompTask pcompTask = new PcompTask(inputFiles.toArray(new File[0]), outputFile, detailsFile,
+        PcompTask pcompTask = new PcompTask(inputFiles.toArray(new File[0]), outputFile, detailFile,
                 dialog.getMode(), dialog.isSharedOutputsChecked(), dialog.isImprovedPcompChecked(),
                 tmpDirectory);
 

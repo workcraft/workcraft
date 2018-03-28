@@ -151,7 +151,7 @@ public class PcompDialog extends JDialog {
         return sharedOutputs.isSelected();
     }
 
-    public boolean isSaveDetailsChecked() {
+    public boolean isSaveDetailChecked() {
         return saveDetail.isSelected();
     }
 
