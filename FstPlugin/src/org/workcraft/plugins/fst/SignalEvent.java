@@ -2,7 +2,6 @@ package org.workcraft.plugins.fst;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
-import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.State;
@@ -22,15 +21,6 @@ public class SignalEvent extends Event {
 
         Direction(String name) {
             this.name = name;
-        }
-
-        public static Direction fromString(String s) {
-            for (Direction item : Direction.values()) {
-                if ((s != null) && (s.equals(item.name))) {
-                    return item;
-                }
-            }
-            throw new ArgumentException("Unexpected string: " + s);
         }
 
         @Override
