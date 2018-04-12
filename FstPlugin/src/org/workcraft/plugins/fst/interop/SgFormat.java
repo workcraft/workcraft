@@ -38,4 +38,9 @@ public final class SgFormat implements Format {
         return "State Graph";
     }
 
+    @Override
+    public String getKeyword() {
+        return ".state graph";
+    }
+
 }

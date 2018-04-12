@@ -17,7 +17,6 @@ import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.FormatException;
-import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
@@ -42,7 +41,7 @@ public class SerialiserUtils {
 
     public enum Style { STG, LPN };
 
-    public static void writeModel(Model model, OutputStream out, Style style) throws SerialisationException {
+    public static void writeModel(Model model, OutputStream out, Style style) {
         if (!(model instanceof PetriNetModel)) {
             throw new ArgumentException("Model class not supported: " + model.getClass().getName());
         }

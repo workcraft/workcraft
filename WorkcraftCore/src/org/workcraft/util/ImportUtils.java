@@ -7,6 +7,8 @@ import java.io.IOException;
 
 import org.workcraft.PluginProvider;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.interop.Format;
+import org.workcraft.interop.FormatFileFilter;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.workspace.ModelEntry;
@@ -16,7 +18,8 @@ public class ImportUtils {
     public static Importer chooseBestImporter(PluginProvider provider, File file) {
         for (PluginInfo<? extends Importer> info : provider.getPlugins(Importer.class)) {
             Importer importer = info.getSingleton();
-            if (importer.accept(file)) {
+            Format format = importer.getFormat();
+            if (FormatFileFilter.checkFileFormat(file, format)) {
                 return importer;
             }
         }

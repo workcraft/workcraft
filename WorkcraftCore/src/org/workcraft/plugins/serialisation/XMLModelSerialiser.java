@@ -40,19 +40,14 @@ public class XMLModelSerialiser implements ModelSerialiser {
     public ReferenceProducer serialise(final Model model, OutputStream out, ReferenceProducer refs)
             throws SerialisationException {
         try {
-
-            ReferenceProducer internalRefs = new ReferenceProducer() {
-                public String getReference(Object obj) {
-                    if (obj instanceof Node) {
-                        return model.getNodeReference((Node) obj);
-                    } else {
-                        return null;
-                    }
+            ReferenceProducer internalRefs = obj -> {
+                if (obj instanceof Node) {
+                    return model.getNodeReference((Node) obj);
                 }
+                return null;
             };
 
             Document doc = XmlUtils.createDocument();
-
             Element modelElement = doc.createElement("model");
             Element rootElement = doc.createElement("root");
 

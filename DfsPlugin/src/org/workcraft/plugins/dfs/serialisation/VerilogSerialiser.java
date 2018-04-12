@@ -3,7 +3,6 @@ package org.workcraft.plugins.dfs.serialisation;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
@@ -49,15 +48,6 @@ public class VerilogSerialiser implements ModelSerialiser {
     private static final String PREFIX_RO = NAME_RO + SEPARATOR;
     private static final String PREFIX_AO = NAME_AO + SEPARATOR;
 
-    class ReferenceResolver implements ReferenceProducer {
-        HashMap<Object, String> refMap = new HashMap<>();
-
-        @Override
-        public String getReference(Object obj) {
-            return refMap.get(obj);
-        }
-    }
-
     @Override
     public ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer refs) {
         if (model instanceof Dfs) {
@@ -68,7 +58,7 @@ public class VerilogSerialiser implements ModelSerialiser {
         } else {
             throw new ArgumentException("Model class not supported: " + model.getClass().getName());
         }
-        return new ReferenceResolver();
+        return refs;
     }
 
     @Override

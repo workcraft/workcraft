@@ -1,7 +1,6 @@
 package org.workcraft.plugins.circuit.interop;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
@@ -100,11 +99,6 @@ public class VerilogImporter implements Importer {
     @Override
     public VerilogFormat getFormat() {
         return VerilogFormat.getInstance();
-    }
-
-    @Override
-    public boolean accept(File file) {
-        return file.getName().endsWith(".v");
     }
 
     @Override
