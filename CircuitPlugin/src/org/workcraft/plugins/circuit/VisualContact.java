@@ -284,6 +284,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
                 g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
                 g.draw(shape);
             }
+            d.decorate(g);
         } else if (r.getModel().getConnections(this).size() > 1) {
             g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
             g.fill(VisualJoint.shape);

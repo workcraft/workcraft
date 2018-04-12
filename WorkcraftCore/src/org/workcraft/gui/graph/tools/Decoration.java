@@ -1,12 +1,21 @@
 package org.workcraft.gui.graph.tools;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 
 import org.workcraft.plugins.shared.CommonDecorationSettings;
 
 public interface Decoration {
-    Color getColorisation();
-    Color getBackground();
+    default Color getColorisation() {
+        return null;
+    }
+
+    default Color getBackground() {
+        return null;
+    }
+
+    default void decorate(Graphics2D g) {
+    }
 
     class Empty implements Decoration {
         @Override
@@ -25,10 +34,6 @@ public interface Decoration {
         public Color getColorisation() {
             return CommonDecorationSettings.getShadedComponentColor();
         }
-        @Override
-        public Color getBackground() {
-            return null;
-        }
         public static final Shaded INSTANCE = new Shaded();
     }
 
@@ -37,10 +42,6 @@ public interface Decoration {
         public Color getColorisation() {
             return CommonDecorationSettings.getHighlightedComponentColor();
         }
-        @Override
-        public Color getBackground() {
-            return null;
-        }
         public static final Highlighted INSTANCE = new Highlighted();
     }
 
@@ -48,10 +49,6 @@ public interface Decoration {
         @Override
         public Color getColorisation() {
             return CommonDecorationSettings.getSelectedComponentColor();
-        }
-        @Override
-        public Color getBackground() {
-            return null;
         }
         public static final Selected INSTANCE = new Selected();
     }

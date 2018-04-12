@@ -1,6 +1,7 @@
 package org.workcraft.gui;
 
 import java.awt.Color;
+import java.util.Arrays;
 import java.util.Collection;
 
 public class Coloriser {
@@ -43,6 +44,10 @@ public class Coloriser {
         if (comp3[1] > 1.0f) comp3[1] = 1.0f;
         if (comp3[2] > 1.0f) comp3[2] = 1.0f;
         return new Color(comp3[0], comp3[1], comp3[2], comp3[3]);
+    }
+
+    public static Color mix(Color... colors) {
+        return mix(Arrays.asList(colors));
     }
 
 }
