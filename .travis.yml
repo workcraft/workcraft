@@ -13,15 +13,19 @@ matrix:
     - jdk: openjdk8
       env: TARGET=test
     - os: osx
-      osx_image: xcode8.3
+      osx_image: xcode9.2
       env: TARGET=test
 
 before_install:
   - if [ $TARGET == test ]; then
         if [ $TRAVIS_OS_NAME == osx ]; then
-            brew update; brew install clasp;
+            brew update &> /dev/null;
+            # Temporary workaround for Python failure on OSX
+            brew upgrade python || true;
+            brew install clasp;
         else
-            sudo apt-get -qq update; sudo apt-get install -y clasp;
+            sudo apt-get -qq update;
+            sudo apt-get install -y clasp;
         fi
     fi
 
@@ -30,7 +34,11 @@ install:
 
 script:
   - ./gradlew $TARGET
-  - if [ $TARGET == test ]; then ./integration-tests/run.sh; fi
+  - if [ $TARGET == test ]; then
+        ./integration-tests/run.sh
+    fi
 
 after_success:
-  - if [ $TARGET == test -a $TRAVIS_JDK_VERSION == oraclejdk8 ]; then ./gradlew coveralls; fi
+  - if [ $TARGET == test -a $TRAVIS_JDK_VERSION == oraclejdk8 ]; then
+        ./gradlew coveralls;
+    fi
