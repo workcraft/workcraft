@@ -46,7 +46,7 @@ public class XMLDeserialisationManager implements DeserialiserFactory, NodeIniti
     }
 
     @Override
-    public Object initInstance(Element element, Object ... constructorParameters) throws DeserialisationException {
+    public Object initInstance(Element element, Object... constructorParameters) throws DeserialisationException {
         Object instance = nodeDeserialiser.initInstance(element, state.getExternalReferences(), constructorParameters);
 
         state.setInstanceElement(instance, element);

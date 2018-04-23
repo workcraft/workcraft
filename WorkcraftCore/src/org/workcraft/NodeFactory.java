@@ -53,7 +53,7 @@ public class NodeFactory {
         return createVisualComponentInternal(component);
     }
 
-    private static VisualComponent createVisualComponentInternal(MathNode component, Object ... constructorParameters) throws NodeCreationException {
+    private static VisualComponent createVisualComponentInternal(MathNode component, Object... constructorParameters) throws NodeCreationException {
         VisualComponentGeneratorAttribute generator = component.getClass().getAnnotation(VisualComponentGeneratorAttribute.class);
         if (generator != null) {
             try {
@@ -68,7 +68,7 @@ public class NodeFactory {
         }
     }
 
-    private static VisualComponent createVisualComponentSimple(MathNode component, Object ... constructorParameters) throws NodeCreationException {
+    private static VisualComponent createVisualComponentSimple(MathNode component, Object... constructorParameters) throws NodeCreationException {
         // Find the corresponding visual class
         VisualClass vcat = component.getClass().getAnnotation(VisualClass.class);
 

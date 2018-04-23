@@ -14,9 +14,9 @@ repositories {
 }
 
 ext {
-    checkstyleVersion = '7.5.1'
+    checkstyleVersion = '8.1'
     pmdVersion = '5.5.3'
-    jacocoVersion = '0.7.9'
+    jacocoVersion = '0.8.1'
 }
 
 subprojects {
