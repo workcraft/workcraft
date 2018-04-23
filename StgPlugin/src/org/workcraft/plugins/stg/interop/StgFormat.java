@@ -38,4 +38,9 @@ public final class StgFormat implements Format {
         return "Signal Transition Graph";
     }
 
+    @Override
+    public String getKeyword() {
+        return ".graph";
+    }
+
 }

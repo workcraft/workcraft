@@ -32,7 +32,6 @@ import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
-import javax.swing.filechooser.FileFilter;
 import javax.swing.plaf.MenuBarUI;
 
 import org.flexdock.docking.Dockable;
@@ -75,6 +74,7 @@ import org.workcraft.gui.workspace.Path;
 import org.workcraft.gui.workspace.WorkspaceWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Format;
+import org.workcraft.interop.FormatFileFilter;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.PluginInfo;
 import org.workcraft.plugins.shared.CommonEditorSettings;
@@ -83,6 +83,7 @@ import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.Commands;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.ExceptionUtils;
+import org.workcraft.util.ExportUtils;
 import org.workcraft.util.FileUtils;
 import org.workcraft.util.GUI;
 import org.workcraft.util.ImportUtils;
@@ -121,10 +122,6 @@ public class MainWindow extends JFrame {
     public static final String TITLE_TOOL_CONTROLS = "Tool controls";
     public static final String TITLE_EDITOR_TOOLS = "Editor tools";
     public static final String TITLE_PLACEHOLDER = "";
-
-    private static final String DIALOG_CLOSE_WORK = "Close work";
-    private static final String DIALOG_SAVE_WORK = "Save work";
-    private static final String DIALOG_RESET_LAYOUT = "Reset layout";
 
     private final ScriptedActionListener defaultActionListener = new ScriptedActionListener() {
         @Override
@@ -417,7 +414,7 @@ public class MainWindow extends JFrame {
             String title = we.getTitle();
             int result = JOptionPane.showConfirmDialog(this,
                     "Document '" + title + "' has unsaved changes.\n" + "Save before closing?",
-                    DIALOG_CLOSE_WORK, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    "Close work", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
             switch (result) {
             case JOptionPane.YES_OPTION:
@@ -576,7 +573,7 @@ public class MainWindow extends JFrame {
         if (framework.getWorkspace().isChanged() && !framework.getWorkspace().isTemporary()) {
             int result = JOptionPane.showConfirmDialog(this,
                     "Current workspace has unsaved changes.\n" + "Save before closing?",
-                    DIALOG_CLOSE_WORK, JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
+                    "Close work", JOptionPane.YES_NO_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE);
 
             switch (result) {
             case JOptionPane.YES_OPTION:
@@ -846,13 +843,14 @@ public class MainWindow extends JFrame {
         }
         if (importers != null) {
             for (Importer importer: importers) {
-                fc.addChoosableFileFilter(new ImporterFileFilter(importer));
+                Format format = importer.getFormat();
+                fc.addChoosableFileFilter(new FormatFileFilter(format));
             }
         }
         return fc;
     }
 
-    public JFileChooser createSaveDialog(String title, File file, Exporter exporter) {
+    public JFileChooser createSaveDialog(String title, File file, Format format) {
         JFileChooser fc = new JFileChooser();
         fc.setDialogType(JFileChooser.SAVE_DIALOG);
         fc.setDialogTitle(title);
@@ -866,42 +864,12 @@ public class MainWindow extends JFrame {
         }
         // Set file filters
         fc.setAcceptAllFileFilterUsed(false);
-        if (exporter == null) {
+        if (format == null) {
             fc.setFileFilter(FileFilters.DOCUMENT_FILES);
         } else {
-            fc.setFileFilter(new ExporterFileFilter(exporter));
+            fc.setFileFilter(new FormatFileFilter(format));
         }
         return fc;
-    }
-
-    private String getValidSavePath(JFileChooser fc, Exporter exporter) throws OperationCancelledException {
-        String path = null;
-        while (true) {
-            if (fc.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
-                path = fc.getSelectedFile().getPath();
-                if (exporter == null) {
-                    if (!path.endsWith(FileFilters.DOCUMENT_EXTENSION)) {
-                        path += FileFilters.DOCUMENT_EXTENSION;
-                    }
-                } else {
-                    String extension = exporter.getFormat().getExtension();
-                    if (!path.endsWith(extension)) {
-                        path += extension;
-                    }
-                }
-                File f = new File(path);
-                if (!f.exists()) {
-                    break;
-                }
-                String msg = "The file '" + f.getName() + "' already exists.\n" + "Overwrite it?";
-                if (DialogUtils.showConfirmWarning(msg, DIALOG_SAVE_WORK, false)) {
-                    break;
-                }
-            } else {
-                throw new OperationCancelledException("Save operation cancelled by user.");
-            }
-        }
-        return path;
     }
 
     public void runCommand(Command command) {
@@ -1019,7 +987,7 @@ public class MainWindow extends JFrame {
             file = new File(getFileNameForCurrentWork());
         }
         JFileChooser fc = createSaveDialog("Save work as", file, null);
-        String path = getValidSavePath(fc, null);
+        String path = ExportUtils.getValidSavePath(fc, null);
         saveWork(we, path);
     }
 
@@ -1058,7 +1026,8 @@ public class MainWindow extends JFrame {
     public void importFrom(File file, Importer[] importers) {
         if (FileUtils.checkAvailability(file, null, true)) {
             for (Importer importer: importers) {
-                if (!importer.accept(file)) continue;
+                Format format = importer.getFormat();
+                if (!FormatFileFilter.checkFileFormat(file, format)) continue;
                 try {
                     ModelEntry me = ImportUtils.importFromFile(importer, file);
                     String title = me.getMathModel().getTitle();
@@ -1079,10 +1048,11 @@ public class MainWindow extends JFrame {
     }
 
     public void export(Exporter exporter) throws OperationCancelledException {
-        String title = "Export as " + exporter.getFormat().getDescription();
+        Format format = exporter.getFormat();
+        String title = "Export as " + format.getDescription();
         File file = new File(getFileNameForCurrentWork());
-        JFileChooser fc = createSaveDialog(title, file, exporter);
-        String path = getValidSavePath(fc, exporter);
+        JFileChooser fc = createSaveDialog(title, file, format);
+        String path = ExportUtils.getValidSavePath(fc, format);
         VisualModel model = editorInFocus.getModel();
         ExportTask exportTask = new ExportTask(exporter, model, path);
         final Framework framework = Framework.getInstance();
@@ -1272,7 +1242,7 @@ public class MainWindow extends JFrame {
     public void resetLayout() {
         if (DialogUtils.showConfirmWarning(
                 "This will close all works and reset the GUI to the default layout.\n\n"
-                        + "Are you sure you want to do this?", DIALOG_RESET_LAYOUT, false)) {
+                        + "Are you sure you want to do this?", "Reset layout", false)) {
             try {
                 final Framework framework = Framework.getInstance();
                 framework.shutdownGUI();
@@ -1301,40 +1271,6 @@ public class MainWindow extends JFrame {
 
     public WorkspaceWindow getWorkspaceView() {
         return workspaceWindow;
-    }
-
-    private static class ImporterFileFilter extends FileFilter {
-        private final Importer importer;
-
-        ImporterFileFilter(Importer importer) {
-            this.importer = importer;
-        }
-
-        public boolean accept(File f) {
-            return f.isDirectory() || importer.accept(f);
-        }
-
-        public String getDescription() {
-            Format format = importer.getFormat();
-            return format.getDescription() + " (*" + format.getExtension() + ")";
-        }
-    }
-
-    private static class ExporterFileFilter extends FileFilter {
-        private final Exporter exporter;
-
-        ExporterFileFilter(Exporter exporter) {
-            this.exporter = exporter;
-        }
-
-        public boolean accept(File f) {
-            return f.isDirectory() || f.getName().endsWith(exporter.getFormat().getExtension());
-        }
-
-        public String getDescription() {
-            Format format = exporter.getFormat();
-            return format.getDescription() + " (*" + format.getExtension() + ")";
-        }
     }
 
 }

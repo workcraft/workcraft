@@ -25,6 +25,7 @@ import org.workcraft.plugins.fst.Signal;
 import org.workcraft.plugins.fst.Signal.Type;
 import org.workcraft.plugins.fst.SignalEvent;
 import org.workcraft.plugins.fst.SignalEvent.Direction;
+import org.workcraft.util.EnumUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.Pair;
 import org.workcraft.exceptions.FormatException;
@@ -257,7 +258,7 @@ void graphLine() :
             (
                 t = <DIRECTION>
                 {
-                    direction = Direction.fromString(t.image);
+                    direction = EnumUtils.itemFromString(t.image, Direction.class);
                 }
             )?
         )

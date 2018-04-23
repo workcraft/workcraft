@@ -5,13 +5,19 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.UUID;
 
+import javax.swing.JFileChooser;
+
+import org.workcraft.Framework;
 import org.workcraft.PluginProvider;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.NoExporterException;
+import org.workcraft.exceptions.OperationCancelledException;
 import org.workcraft.exceptions.SerialisationException;
+import org.workcraft.gui.FileFilters;
+import org.workcraft.gui.MainWindow;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Format;
 import org.workcraft.plugins.PluginInfo;
@@ -26,9 +32,9 @@ public class ExportUtils {
         for (PluginInfo<? extends Exporter> info : provider.getPlugins(Exporter.class)) {
             Exporter exporter = info.getSingleton();
             if (exporter.isCompatible(model)) {
-                Format exporterFormat = exporter.getFormat();
-                boolean formatMatchByName = (formatName != null) && formatName.equalsIgnoreCase(exporterFormat.getName());
-                boolean formatMatchByUuid = (formatUuid != null) && formatUuid.equals(exporterFormat.getUuid());
+                Format format = exporter.getFormat();
+                boolean formatMatchByName = (formatName != null) && formatName.equalsIgnoreCase(format.getName());
+                boolean formatMatchByUuid = (formatUuid != null) && formatUuid.equals(format.getUuid());
                 if (formatMatchByName || formatMatchByUuid) {
                     return exporter;
                 }
@@ -73,6 +79,37 @@ public class ExportUtils {
                 file.delete();
             }
         }
+    }
+
+    public static String getValidSavePath(JFileChooser fc, Format format) throws OperationCancelledException {
+        String path = null;
+        MainWindow mainWindow = Framework.getInstance().getMainWindow();
+        while (true) {
+            if (fc.showSaveDialog(mainWindow) == JFileChooser.APPROVE_OPTION) {
+                path = fc.getSelectedFile().getPath();
+                if (format == null) {
+                    if (!path.endsWith(FileFilters.DOCUMENT_EXTENSION)) {
+                        path += FileFilters.DOCUMENT_EXTENSION;
+                    }
+                } else {
+                    String extension = format.getExtension();
+                    if (!path.endsWith(extension)) {
+                        path += extension;
+                    }
+                }
+                File f = new File(path);
+                if (!f.exists()) {
+                    break;
+                }
+                String msg = "The file '" + f.getName() + "' already exists.\n" + "Overwrite it?";
+                if (DialogUtils.showConfirmWarning(msg, "Save work", false)) {
+                    break;
+                }
+            } else {
+                throw new OperationCancelledException("Save operation cancelled by user.");
+            }
+        }
+        return path;
     }
 
 }

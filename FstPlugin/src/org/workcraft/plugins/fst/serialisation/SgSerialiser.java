@@ -2,7 +2,6 @@ package org.workcraft.plugins.fst.serialisation;
 
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
 
@@ -25,30 +24,18 @@ import org.workcraft.serialisation.ReferenceProducer;
 
 public class SgSerialiser implements ModelSerialiser {
 
-    class ReferenceResolver implements ReferenceProducer {
-        HashMap<Object, String> refMap = new HashMap<>();
-
-        @Override
-        public String getReference(Object obj) {
-            return refMap.get(obj);
-        }
-    }
-
     @Override
     public ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer refs) {
         PrintWriter writer = new PrintWriter(out);
         writer.write(Info.getGeneratedByText("# SG file ", "\n"));
         writer.write(".model " + SerialiserUtils.getClearTitle(model) + "\n");
-
-        ReferenceResolver resolver = new ReferenceResolver();
-
         if (model instanceof Fsm) {
             writeFsm(writer, (Fsm) model);
         } else {
             throw new ArgumentException("Model class not supported: " + model.getClass().getName());
         }
         writer.close();
-        return resolver;
+        return refs;
     }
 
     @Override

@@ -2,7 +2,6 @@ package org.workcraft.plugins.stg;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.VisualClass;
-import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
@@ -56,15 +55,6 @@ public class SignalTransition extends NamedTransition {
 
         Direction(String name) {
             this.name = name;
-        }
-
-        public static Direction fromString(String s) {
-            for (Direction item : Direction.values()) {
-                if ((s != null) && (s.equals(item.name))) {
-                    return item;
-                }
-            }
-            throw new ArgumentException("Unexpected string: " + s);
         }
 
         @Override

@@ -26,29 +26,20 @@ public class SdcSerialiser implements ModelSerialiser {
     private static final String KEYWORD_FROM = "-from";
     private static final String KEYWORD_TO = "-to";
 
-    class ReferenceResolver implements ReferenceProducer {
-        HashMap<Object, String> refMap = new HashMap<>();
-
-        @Override
-        public String getReference(Object obj) {
-            return refMap.get(obj);
-        }
-    }
-
     @Override
     public ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer refs) {
         if (model instanceof Circuit) {
             String instancePrefix = DialogUtils.showInput("Prefix to add to all instance names:", "");
             if (instancePrefix != null) {
                 PrintWriter writer = new PrintWriter(out);
-                writer.write(Info.getGeneratedByText("// SDC file ", "\n"));
+                writer.write(Info.getGeneratedByText("# SDC file ", "\n"));
                 writeCircuit(writer, (Circuit) model, instancePrefix);
                 writer.close();
             }
-            return new ReferenceResolver();
         } else {
             throw new ArgumentException("Model class not supported: " + model.getClass().getName());
         }
+        return refs;
     }
 
     @Override

@@ -210,4 +210,9 @@ public abstract class AbstractGraphEditorTool implements GraphEditorTool {
         return true;
     }
 
+    @Override
+    public boolean isApplicableTo(WorkspaceEntry we) {
+        return true;
+    }
+
 }

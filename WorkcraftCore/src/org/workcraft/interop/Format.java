@@ -6,4 +6,8 @@ public interface Format {
     String getName();
     String getExtension();
     String getDescription();
+
+    default String getKeyword() {
+        return "";
+    }
 }

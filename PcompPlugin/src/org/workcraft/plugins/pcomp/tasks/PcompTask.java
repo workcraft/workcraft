@@ -76,7 +76,7 @@ public class PcompTask implements Task<PcompOutput> {
             command.add("-f" + outputFile.getAbsolutePath());
         }
 
-        // Composition details output file
+        // Composition detail output file
         if (detailFile != null) {
             command.add("-l" + detailFile.getAbsolutePath());
         }
