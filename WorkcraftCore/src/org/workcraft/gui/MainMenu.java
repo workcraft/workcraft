@@ -457,6 +457,7 @@ public class MainMenu extends JMenuBar {
             }
         }
         addCommandsMenu();
+        we.updateActionState();
     }
 
     public static boolean isPromotedSection(String section) {
