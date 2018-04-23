@@ -33,7 +33,6 @@ import org.workcraft.gui.graph.tools.Decorator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.propertyeditor.PropertyEditorTable;
 import org.workcraft.plugins.stg.VisualNamedTransition;
-import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
@@ -41,7 +40,6 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
     private static final int COLUMN_COLOR = 0;
     private static final int COLUMN_CORE = 1;
 
-    private VisualStg stg;
     private ArrayList<Core> cores;
     private ArrayList<Core> selectedCores;
     private CoreDensityMap density;
@@ -178,15 +176,8 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
     }
 
     @Override
-    public void activated(final GraphEditor editor) {
-        super.activated(editor);
-        stg = (VisualStg) editor.getModel();
-    }
-
-    @Override
     public void deactivated(final GraphEditor editor) {
         super.deactivated(editor);
-        stg = null;
         coresTable.clearSelection();
     }
 
@@ -214,7 +205,7 @@ public class EncodingConflictAnalyserTool extends AbstractGraphEditorTool {
             @Override
             public Decoration getDecoration(Node node) {
                 if (node instanceof VisualNamedTransition) {
-                    String name = stg.getNodeMathReference(node);
+                    String name = editor.getModel().getNodeMathReference(node);
                     boolean noColor = (selectedCores == null) && (density == null);
                     final Color color = noColor ? null : density.getColor(name);
 

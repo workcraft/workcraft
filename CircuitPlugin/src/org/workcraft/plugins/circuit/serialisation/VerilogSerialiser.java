@@ -33,15 +33,6 @@ public class VerilogSerialiser implements ModelSerialiser {
     private static final String KEYWORD_ENDMODULE = "endmodule";
     private static final String KEYWORD_ASSIGN = "assign";
 
-    class ReferenceResolver implements ReferenceProducer {
-        HashMap<Object, String> refMap = new HashMap<>();
-
-        @Override
-        public String getReference(Object obj) {
-            return refMap.get(obj);
-        }
-    }
-
     @Override
     public ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer refs) {
         if (model instanceof Circuit) {
@@ -52,7 +43,7 @@ public class VerilogSerialiser implements ModelSerialiser {
         } else {
             throw new ArgumentException("Model class not supported: " + model.getClass().getName());
         }
-        return new ReferenceResolver();
+        return refs;
     }
 
     @Override

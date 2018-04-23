@@ -74,15 +74,6 @@ public class Signal extends MathNode implements ObservableHierarchy, Container {
             this.name = name;
         }
 
-        public static Type fromString(String s) {
-            for (Type item : Type.values()) {
-                if ((s != null) && (s.equals(item.name))) {
-                    return item;
-                }
-            }
-            throw new ArgumentException("Unexpected string: " + s);
-        }
-
         @Override
         public String toString() {
             return name;

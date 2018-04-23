@@ -38,4 +38,9 @@ public final class LpnFormat implements Format {
         return "Labeled Petri Net";
     }
 
+    @Override
+    public String getKeyword() {
+        return ".graph";
+    }
+
 }

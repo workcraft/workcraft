@@ -141,7 +141,7 @@ public class MpsatPropertyDialog extends JDialog {
         optionsPanel = new JPanel(new BorderLayout());
         optionsPanel.setBorder(SizeHelper.getTitledBorder("MPSat settings"));
 
-        modeCombo = new JComboBox<MpsatMode>();
+        modeCombo = new JComboBox<>();
         modeCombo.setEditable(false);
         if (presetManager.isAllowStgPresets()) {
             modeCombo.addItem(MpsatMode.STG_REACHABILITY);

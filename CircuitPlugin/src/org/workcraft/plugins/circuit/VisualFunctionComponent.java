@@ -21,6 +21,7 @@ import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
 import org.workcraft.gui.Coloriser;
+import org.workcraft.gui.graph.tools.Decoration;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.observation.StateEvent;
@@ -381,6 +382,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
             super.draw(r);
         } else {
             Graphics2D g = r.getGraphics();
+            Decoration d = r.getDecoration();
             cacheRenderedText(r); // needed to better estimate the bounding box
 
             // Determine rotation by the direction of the main contact (usually the only output)
@@ -403,6 +405,7 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
             drawCelementSymbols(g, rr, at);
             drawLabelInLocalSpace(r);
             drawNameInLocalSpace(r);
+            d.decorate(g);
         }
     }
 

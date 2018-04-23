@@ -16,6 +16,7 @@ import javax.swing.JToolBar;
 import javax.swing.SwingConstants;
 
 import org.workcraft.Framework;
+import org.workcraft.PluginManager;
 import org.workcraft.annotations.Annotations;
 import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.VisualModel;
@@ -27,6 +28,8 @@ import org.workcraft.gui.graph.tools.GraphEditorKeyListener;
 import org.workcraft.gui.graph.tools.GraphEditorTool;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
 import org.workcraft.gui.graph.tools.ToolProvider;
+import org.workcraft.plugins.PluginInfo;
+import org.workcraft.workspace.WorkspaceEntry;
 
 public class Toolbox implements ToolProvider, GraphEditorKeyListener {
 
@@ -70,7 +73,9 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
 
     public Toolbox(GraphEditorPanel editor) {
         this.editor = editor;
+        WorkspaceEntry we = editor.getWorkspaceEntry();
         VisualModel model = editor.getModel();
+        // Tools registered via CustomToolProvider annotation
         Class<? extends CustomToolsProvider> customTools = Annotations.getCustomToolsProvider(model.getClass());
         if (customTools != null) {
             boolean isDefault = true;
@@ -81,25 +86,34 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
                 e.printStackTrace();
             }
             if (provider != null) {
-                for (GraphEditorTool tool : provider.getTools()) {
+                for (GraphEditorTool tool: provider.getTools()) {
                     addTool(tool, isDefault);
                     isDefault = false;
                 }
             }
         }
-
-        for (Class<?> cls : Annotations.getDefaultCreateButtons(model.getClass())) {
+        // Tools registered via DefaultCreateButtons annotation
+        for (Class<?> cls: Annotations.getDefaultCreateButtons(model.getClass())) {
             NodeGeneratorTool tool = new NodeGeneratorTool(new DefaultNodeGenerator(cls));
             addTool(tool, false);
         }
-
-        for (Class<? extends GraphEditorTool>  tool : Annotations.getCustomTools(model.getClass())) {
+        // Tools registered via CustomToolButtons annotation
+        for (Class<? extends GraphEditorTool>  tool: Annotations.getCustomTools(model.getClass())) {
             try {
                 addTool(tool.newInstance(), false);
             } catch (InstantiationException | IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
         }
+        // Tools registered via PluginManager
+        final PluginManager pm = Framework.getInstance().getPluginManager();
+        for (PluginInfo<? extends GraphEditorTool> info: pm.getPlugins(GraphEditorTool.class)) {
+            GraphEditorTool tool = info.getSingleton();
+            if (tool.isApplicableTo(we)) {
+                addTool(tool, false);
+            }
+        }
+        // Select default tool
         selectedTool = defaultTool;
         setToolButtonSelection(selectedTool, true);
     }
@@ -164,12 +178,12 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
 
     @SuppressWarnings("unchecked")
     public <T extends GraphEditorTool> T getToolInstance(Class<T> cls) {
-        for (GraphEditorTool tool : tools) {
+        for (GraphEditorTool tool: tools) {
             if (cls == tool.getClass()) {
                 return (T) tool;
             }
         }
-        for (GraphEditorTool tool : tools) {
+        for (GraphEditorTool tool: tools) {
             if (cls.isInstance(tool)) {
                 return (T) tool;
             }

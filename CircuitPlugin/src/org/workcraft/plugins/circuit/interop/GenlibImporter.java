@@ -1,6 +1,5 @@
 package org.workcraft.plugins.circuit.interop;
 
-import java.io.File;
 import java.io.InputStream;
 
 import org.workcraft.exceptions.DeserialisationException;
@@ -20,11 +19,6 @@ public class GenlibImporter implements Importer {
     @Override
     public GenlibFormat getFormat() {
         return GenlibFormat.getInstance();
-    }
-
-    @Override
-    public boolean accept(File file) {
-        return file.getName().endsWith(".lib");
     }
 
     @Override

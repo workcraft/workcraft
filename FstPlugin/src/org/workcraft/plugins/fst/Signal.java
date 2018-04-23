@@ -1,6 +1,5 @@
 package org.workcraft.plugins.fst;
 
-import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.observation.PropertyChangedEvent;
 import org.workcraft.plugins.fsm.Symbol;
 
@@ -18,15 +17,6 @@ public class Signal extends Symbol {
 
         Type(String name) {
             this.name = name;
-        }
-
-        public static Type fromString(String s) {
-            for (Type item : Type.values()) {
-                if ((s != null) && (s.equals(item.name))) {
-                    return item;
-                }
-            }
-            throw new ArgumentException("Unexpected string: " + s);
         }
 
         @Override

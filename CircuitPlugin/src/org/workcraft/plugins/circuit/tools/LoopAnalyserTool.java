@@ -134,7 +134,7 @@ public class LoopAnalyserTool extends AbstractGraphEditorTool {
         GraphEditor editor = e.getEditor();
         VisualModel model = e.getModel();
         if (e.getButton() == MouseEvent.BUTTON1) {
-            VisualNode node = (VisualNode) HitMan.hitFirstInCurrentLevel(e.getPosition(), model);
+            VisualNode node = (VisualNode) HitMan.hitDeepest(e.getPosition(), editor.getModel());
             if (node instanceof VisualContact) {
                 Contact contact = ((VisualContact) node).getReferencedContact();
                 if (contact.isDriven()) {

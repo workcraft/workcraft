@@ -23,6 +23,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.*;
+import org.workcraft.util.EnumUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.Pair;
 import org.workcraft.util.Triple;
@@ -439,7 +440,7 @@ Triple<String, Direction, Integer> signalTransition() :
     }
     t = <DIRECTION>
     {
-        direction = Direction.fromString(t.image);
+        direction = EnumUtils.itemFromString(t.image, Direction.class);
     }
     (
         "/" t = <INTEGER>

@@ -14,6 +14,8 @@ import java.io.OutputStream;
 import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.WritableByteChannel;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Scanner;
 
 import org.workcraft.gui.DesktopApi;
@@ -21,13 +23,13 @@ import org.workcraft.gui.DesktopApi;
 public class FileUtils {
     public static final String TEMP_DIRECTORY_PREFIX = "workcraft-";
 
-    public static void copyFile(File in, File out) throws IOException {
-        out.getParentFile().mkdirs();
-        FileOutputStream outStream = new FileOutputStream(out);
+    public static void copyFile(File inFile, File outFile) throws IOException {
+        outFile.getParentFile().mkdirs();
+        FileOutputStream os = new FileOutputStream(outFile);
         try {
-            copyFileToStream(in, outStream);
+            copyFileToStream(inFile, os);
         } finally {
-            outStream.close();
+            os.close();
         }
     }
 
@@ -47,10 +49,10 @@ public class FileUtils {
         fos.close();
     }
 
-    public static void copyFileToStream(File in, OutputStream out) throws IOException {
-        FileInputStream is = new FileInputStream(in);
+    public static void copyFileToStream(File inFile, OutputStream os) throws IOException {
+        FileInputStream is = new FileInputStream(inFile);
         FileChannel inChannel = is.getChannel();
-        WritableByteChannel outChannel = Channels.newChannel(out);
+        WritableByteChannel outChannel = Channels.newChannel(os);
         try {
             inChannel.transferTo(0, inChannel.size(), outChannel);
         } finally {
@@ -58,6 +60,10 @@ public class FileUtils {
             if (inChannel != null) inChannel.close();
             if (outChannel != null) outChannel.close();
         }
+    }
+
+    public static void copyStreamToFile(InputStream is, File outFile) throws IOException {
+        Files.copy(is, outFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
     }
 
     public static String getTempPrefix(String title) {
@@ -240,24 +246,25 @@ public class FileUtils {
         }
     }
 
-    public static boolean fileContainsKeyword(File file, String keyword) {
-        boolean result = false;
-        Scanner scanner = null;
+    public static boolean containsKeyword(File file, String keyword) {
         try {
-            scanner = new Scanner(file);
-            while (scanner.hasNextLine()) {
-                String line = scanner.nextLine().trim();
-                if (line.contains(keyword)) {
-                    result = true;
-                    break;
-                }
-            }
-        } catch (FileNotFoundException e) {
-        } finally {
-            if (scanner != null) {
-                scanner.close();
+            return containsKeyword(new FileInputStream(file), keyword);
+        } catch (FileNotFoundException e1) {
+        }
+        return false;
+    }
+
+    public static boolean containsKeyword(InputStream is, String keyword) {
+        boolean result = false;
+        Scanner scanner = new Scanner(is);
+        while (scanner.hasNextLine()) {
+            String line = scanner.nextLine();
+            if (line.contains(keyword)) {
+                result = true;
+                break;
             }
         }
+        scanner.close();
         return result;
     }
 

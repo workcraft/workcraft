@@ -1,6 +1,6 @@
 package org.workcraft;
 
-import org.workcraft.exceptions.ArgumentException;
+import org.workcraft.util.EnumUtils;
 
 public class Version implements Comparable<Version> {
 
@@ -22,15 +22,6 @@ public class Version implements Comparable<Version> {
         public String toString() {
             return name;
         }
-
-        public static Status fromString(String s) {
-            for (Status item : Status.values()) {
-                if ((s != null) && (s.equals(item.name))) {
-                    return item;
-                }
-            }
-            throw new ArgumentException("Unexpected string: " + s);
-        }
     }
 
     private static final int HASH_MAJOR = 1000;
@@ -44,7 +35,8 @@ public class Version implements Comparable<Version> {
     public final Status status;
 
     public Version(String major, String minor, String revision, String status) {
-        this(Integer.parseInt(major), Integer.parseInt(minor), Integer.parseInt(revision), Version.Status.fromString(status));
+        this(Integer.parseInt(major), Integer.parseInt(minor), Integer.parseInt(revision),
+                EnumUtils.itemFromString(status, Version.Status.class));
     }
 
     public Version(int major, int minor, int revision, Status status) {

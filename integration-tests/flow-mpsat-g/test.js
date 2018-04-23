@@ -1,5 +1,7 @@
 var successCount = 0;
 setConfigVar("CircuitSettings.gateLibrary", "libraries/workcraft.lib");
+setConfigVar("CircuitSettings.substitutionLibrary", "");
+
 for each (arg in args) {
     if (process(arg)) {
         successCount++;
