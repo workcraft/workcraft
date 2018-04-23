@@ -95,7 +95,7 @@ class DefaultNodeDeserialiser {
         }
     }
 
-    public Object initInstance(Element element, ReferenceResolver externalReferenceResolver, Object ... constructorParameters) throws DeserialisationException {
+    public Object initInstance(Element element, ReferenceResolver externalReferenceResolver, Object... constructorParameters) throws DeserialisationException {
         String className = element.getAttribute("class");
 
         if (className == null || className.isEmpty()) {

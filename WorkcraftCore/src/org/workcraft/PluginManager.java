@@ -125,7 +125,7 @@ public class PluginManager implements PluginProvider {
         });
     }
 
-    public <T> void registerClass(Class<T> interf, final Class<? extends T> cls, final Object ... constructorArgs) {
+    public <T> void registerClass(Class<T> interf, final Class<? extends T> cls, final Object... constructorArgs) {
         registerClass(interf, new Initialiser<T>() {
             @Override
             public T create() {
