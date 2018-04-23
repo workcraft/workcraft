@@ -108,7 +108,7 @@ public class Toolbox implements ToolProvider, GraphEditorKeyListener {
         // Tools registered via PluginManager
         final PluginManager pm = Framework.getInstance().getPluginManager();
         for (PluginInfo<? extends GraphEditorTool> info: pm.getPlugins(GraphEditorTool.class)) {
-            GraphEditorTool tool = info.getSingleton();
+            GraphEditorTool tool = info.newInstance();
             if (tool.isApplicableTo(we)) {
                 addTool(tool, false);
             }
