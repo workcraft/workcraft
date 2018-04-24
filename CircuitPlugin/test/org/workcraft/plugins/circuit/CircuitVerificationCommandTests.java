@@ -98,6 +98,17 @@ public class CircuitVerificationCommandTests {
         );
     }
 
+    @Test
+    public void mappedAbcdVerification() throws DeserialisationException {
+        testCircuitVerificationCommands("org/workcraft/plugins/circuit/abcd-tm.circuit.work",
+                false,  // combined
+                false,  // conformation
+                true,  // deadlock freeness
+                false,  // output persistency
+                null   // strict implementation
+        );
+    }
+
     private void testCircuitVerificationCommands(String testStgWork, Boolean combined,
             Boolean conformation, Boolean deadlockFreeness, Boolean outputPersistency,
             Boolean strictImplementation) throws DeserialisationException {
