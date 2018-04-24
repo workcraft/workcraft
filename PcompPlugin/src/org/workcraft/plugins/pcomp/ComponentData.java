@@ -28,7 +28,7 @@ public class ComponentData {
         for (Element element: XmlUtils.getChildElements(TAG_MAP, transitionsElelemnt)) {
             for (Element src: XmlUtils.getChildElements(TAG_SRC, element)) {
                 for (Element dst: XmlUtils.getChildElements(TAG_DST, element)) {
-                    transitionsDst2Src.put(src.getTextContent(), dst.getTextContent());
+                    transitionsDst2Src.put(dst.getTextContent(), src.getTextContent());
                 }
             }
         }
