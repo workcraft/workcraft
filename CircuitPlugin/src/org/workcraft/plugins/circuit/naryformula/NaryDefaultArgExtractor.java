@@ -5,34 +5,35 @@ import java.util.List;
 
 import org.workcraft.formula.BooleanVariable;
 
-public class DefaultArgExtractor implements NaryBooleanFormulaVisitor<List<NaryBooleanFormula>> {
+public class NaryDefaultArgExtractor implements NaryBooleanFormulaVisitor<List<NaryBooleanFormula>> {
 
-    private List<NaryBooleanFormula> defaultList(NaryBooleanFormula f) {
-        return Arrays.asList(new NaryBooleanFormula[]{f});
+    private List<NaryBooleanFormula> defaultList(NaryBooleanFormula formula) {
+        return Arrays.asList(new NaryBooleanFormula[]{formula});
     }
 
     @Override
     public List<NaryBooleanFormula> visit(BooleanVariable var) {
-        return defaultList(Util.getVar(var));
+        return defaultList(NaryUtils.getVar(var));
     }
 
     @Override
     public List<NaryBooleanFormula> visitNot(NaryBooleanFormula not) {
-        return defaultList(Util.getNot(not));
+        return defaultList(NaryUtils.getNot(not));
     }
 
     @Override
     public List<NaryBooleanFormula> visitAnd(List<NaryBooleanFormula> args) {
-        return defaultList(Util.getAnd(args));
+        return defaultList(NaryUtils.getAnd(args));
     }
 
     @Override
     public List<NaryBooleanFormula> visitOr(List<NaryBooleanFormula> args) {
-        return defaultList(Util.getOr(args));
+        return defaultList(NaryUtils.getOr(args));
     }
 
     @Override
     public List<NaryBooleanFormula> visitXor(List<NaryBooleanFormula> args) {
-        return defaultList(Util.getXor(args));
+        return defaultList(NaryUtils.getXor(args));
     }
+
 }
