@@ -11,6 +11,7 @@ import java.util.Map;
 
 import org.workcraft.formula.BooleanSolution;
 import org.workcraft.formula.BooleanVariable;
+import org.workcraft.formula.cnf.CnfTask;
 
 public class SolutionReader {
     private static Map<Integer, String> extractCnfMapping(String cnf) {

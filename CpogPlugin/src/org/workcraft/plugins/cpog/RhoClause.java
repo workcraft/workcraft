@@ -3,14 +3,14 @@ package org.workcraft.plugins.cpog;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.BooleanOperations;
+import org.workcraft.formula.One;
 import org.workcraft.observation.PropertyChangedEvent;
 
 @VisualClass(org.workcraft.plugins.cpog.VisualRhoClause.class)
 public class RhoClause extends MathNode {
     public static final String PROPERTY_FORMULA = "Formula";
 
-    private BooleanFormula formula = BooleanOperations.ONE;
+    private BooleanFormula formula = One.instance();
 
     public void setFormula(BooleanFormula value) {
         if (formula != value) {

@@ -27,17 +27,24 @@ public abstract class Nf<C> implements BooleanFormula {
         return clauses;
     }
 
-    public void add(List<C> list) {
+    private void addClauses(List<C> list) {
         clauses.addAll(list);
     }
 
-    public void add(C... arr) {
-        clauses.addAll(Arrays.asList(arr));
+    public void addClauses(C... arr) {
+        addClauses(Arrays.asList(arr));
+    }
+
+    public void add(Nf<C> nf) {
+        addClauses(nf.getClauses());
+    }
+
+    public void addAll(List<? extends Nf<C>> nfs) {
+        for (Nf<C> nf: nfs) {
+            add(nf);
+        }
     }
 
     public abstract <T> T accept(BooleanVisitor<T> visitor);
 
-    public void add(Nf<C> nf) {
-        add(nf.getClauses());
-    }
 }

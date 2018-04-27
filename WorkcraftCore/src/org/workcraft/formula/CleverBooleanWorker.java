@@ -3,77 +3,43 @@ package org.workcraft.formula;
 import org.workcraft.formula.utils.FormulaToString;
 
 public class CleverBooleanWorker implements BooleanWorker {
-    private static final BooleanFormula ZERO = Zero.instance();
-    private static final BooleanFormula ONE = One.instance();
+
+    @Override
+    public BooleanFormula zero() {
+        return Zero.instance();
+    }
+
+    @Override
+    public BooleanFormula one() {
+        return One.instance();
+    }
+
+    @Override
+    public BooleanFormula not(BooleanFormula x) {
+        if (x == One.instance()) {
+            return Zero.instance();
+        }
+        if (x == Zero.instance()) {
+            return One.instance();
+        }
+        return new Not(x);
+    }
 
     @Override
     public BooleanFormula and(BooleanFormula x, BooleanFormula y) {
         if (FormulaToString.toString(x).equals(FormulaToString.toString(y))) {
             return x;
         }
-        if (x == ZERO || y == ZERO) {
-            return ZERO;
+        if ((x == Zero.instance()) || (y == Zero.instance())) {
+            return Zero.instance();
         }
-        if (x == ONE) {
+        if (x == One.instance()) {
             return y;
         }
-        if (y == ONE) {
+        if (y == One.instance()) {
             return x;
         }
         return new And(x, y);
-    }
-
-    @Override
-    public BooleanFormula iff(BooleanFormula x, BooleanFormula y) {
-        if (FormulaToString.toString(x).equals(FormulaToString.toString(y))) {
-            return ONE;
-        }
-        if (x == ONE) {
-            return y;
-        }
-        if (x == ZERO) {
-            return not(y);
-        }
-        if (y == ONE) {
-            return x;
-        }
-        if (y == ZERO) {
-            return not(x);
-        }
-        return new Iff(x, y);
-    }
-
-    @Override
-    public BooleanFormula imply(BooleanFormula x, BooleanFormula y) {
-        if (FormulaToString.toString(x).equals(FormulaToString.toString(y))) {
-            return ONE;
-        }
-        if (x == ZERO || y == ONE) {
-            return ONE;
-        }
-        if (x == ONE) {
-            return y;
-        }
-        if (y == ZERO) {
-            return not(x);
-        }
-        return new Imply(x, y);
-    }
-
-    @Override
-    public BooleanFormula not(BooleanFormula x) {
-        if (x == ONE) {
-            return ZERO;
-        }
-        if (x == ZERO) {
-            return ONE;
-        }
-        return new Not(x);
-    }
-
-    @Override
-    public BooleanFormula one() {
-        return One.instance();
     }
 
     @Override
@@ -85,15 +51,15 @@ public class CleverBooleanWorker implements BooleanWorker {
             return x;
         }
         if (checkStrings(FormulaToString.toString(x), invertString(FormulaToString.toString(y)), " + ")) {
-            return ONE;
+            return One.instance();
         }
-        if (x == ONE || y == ONE) {
-            return ONE;
+        if ((x == One.instance()) || (y == One.instance())) {
+            return One.instance();
         }
-        if (x == ZERO) {
+        if (x == Zero.instance()) {
             return y;
         }
-        if (y == ZERO) {
+        if (y == Zero.instance()) {
             return x;
         }
         return new Or(x, y);
@@ -102,30 +68,61 @@ public class CleverBooleanWorker implements BooleanWorker {
     @Override
     public BooleanFormula xor(BooleanFormula x, BooleanFormula y) {
         if (FormulaToString.toString(x).equals(FormulaToString.toString(y))) {
-            return ZERO;
+            return Zero.instance();
         }
-        if (x == ONE) {
+        if (x == One.instance()) {
             return not(y);
         }
-        if (x == ZERO) {
+        if (x == Zero.instance()) {
             return y;
         }
-        if (y == ONE) {
+        if (y == One.instance()) {
             return not(x);
         }
-        if (y == ZERO) {
+        if (y == Zero.instance()) {
             return x;
         }
         return new Xor(x, y);
     }
 
     @Override
-    public BooleanFormula zero() {
-        return Zero.instance();
+    public BooleanFormula imply(BooleanFormula x, BooleanFormula y) {
+        if (FormulaToString.toString(x).equals(FormulaToString.toString(y))) {
+            return One.instance();
+        }
+        if ((x == Zero.instance()) || (y == One.instance())) {
+            return One.instance();
+        }
+        if (x == One.instance()) {
+            return y;
+        }
+        if (y == Zero.instance()) {
+            return not(x);
+        }
+        return new Imply(x, y);
     }
 
-    public boolean checkStrings(String x, String y, String op) {
+    @Override
+    public BooleanFormula iff(BooleanFormula x, BooleanFormula y) {
+        if (FormulaToString.toString(x).equals(FormulaToString.toString(y))) {
+            return One.instance();
+        }
+        if (x == One.instance()) {
+            return y;
+        }
+        if (x == Zero.instance()) {
+            return not(y);
+        }
+        if (y == One.instance()) {
+            return x;
+        }
+        if (y == Zero.instance()) {
+            return not(x);
+        }
+        return new Iff(x, y);
+    }
 
+    private boolean checkStrings(String x, String y, String op) {
         if (x.contains(y)) {
             if (x.startsWith(y + op)) {
                 return true;
@@ -138,9 +135,8 @@ public class CleverBooleanWorker implements BooleanWorker {
         return false;
     }
 
-    public String invertString(String x) {
+    private String invertString(String x) {
         String result = "";
-
         //find first operator
         int op = x.indexOf("*");
         if ((x.indexOf(" + ") < op) && (x.indexOf(" + ") > 0)) {
@@ -160,7 +156,6 @@ public class CleverBooleanWorker implements BooleanWorker {
                 return x + "'";
             }
         }
-
         if (x.substring(0, op).contains("'")) {
             result = x.substring(0, op).replace("'", "");
         } else {
@@ -168,7 +163,6 @@ public class CleverBooleanWorker implements BooleanWorker {
         }
         result = result + x.charAt(op) + invertString(x.substring(op + 1));
         return result;
-
     }
 
 }

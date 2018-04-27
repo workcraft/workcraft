@@ -1,6 +1,5 @@
 package org.workcraft.formula.utils;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -28,14 +27,6 @@ public class BooleanUtils {
         return cleverReplace(formula, Arrays.asList(param), Arrays.asList(value));
     }
 
-    public static BooleanFormula cleverReplace(BooleanFormula formula) {
-        BooleanFormula result = null;
-        if (formula != null) {
-            result = cleverReplace(formula, new ArrayList<BooleanVariable>(), new ArrayList<BooleanFormula>());
-        }
-        return result;
-    }
-
     public static BooleanFormula dumbReplace(BooleanFormula formula,
             List<? extends BooleanVariable> params, List<? extends BooleanFormula> values) {
         DumbBooleanWorker worker = new DumbBooleanWorker();
@@ -50,14 +41,6 @@ public class BooleanUtils {
         return result;
     }
 
-    public static BooleanFormula dumbReplace(BooleanFormula formula) {
-        BooleanFormula result = null;
-        if (formula != null) {
-            result = dumbReplace(formula, new ArrayList<BooleanVariable>(), new ArrayList<BooleanFormula>());
-        }
-        return result;
-    }
-
     public static BooleanFormula prettifyReplace(BooleanFormula formula,
             List<? extends BooleanVariable> params, List<? extends BooleanFormula> values) {
         BooleanWorker worker = new PrettifyBooleanWorker(new MemoryConservingBooleanWorker());
@@ -68,14 +51,6 @@ public class BooleanUtils {
         BooleanFormula result = null;
         if (formula != null) {
             result = prettifyReplace(formula, Arrays.asList(param), Arrays.asList(value));
-        }
-        return result;
-    }
-
-    public static BooleanFormula prettifyReplace(BooleanFormula formula) {
-        BooleanFormula result = null;
-        if (formula != null) {
-            result = prettifyReplace(formula, new ArrayList<BooleanVariable>(), new ArrayList<BooleanFormula>());
         }
         return result;
     }

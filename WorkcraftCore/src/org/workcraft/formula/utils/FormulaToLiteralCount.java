@@ -13,7 +13,6 @@ import org.workcraft.formula.Zero;
 
 public class FormulaToLiteralCount implements BooleanVisitor<Integer> {
 
-
     @Override
     public Integer visit(Zero node) {
         return 1;

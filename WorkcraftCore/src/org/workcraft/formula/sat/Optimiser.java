@@ -1,7 +1,5 @@
 package org.workcraft.formula.sat;
 
-import static org.workcraft.formula.BooleanOperations.ONE;
-import static org.workcraft.formula.BooleanOperations.ZERO;
 import static org.workcraft.formula.BooleanOperations.and;
 import static org.workcraft.formula.BooleanOperations.iff;
 import static org.workcraft.formula.BooleanOperations.not;
@@ -16,6 +14,8 @@ import java.util.Map;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.FreeVariable;
+import org.workcraft.formula.One;
+import org.workcraft.formula.Zero;
 import org.workcraft.formula.encoding.NumberProvider;
 import org.workcraft.formula.encoding.onehot.AndFunction;
 import org.workcraft.formula.encoding.onehot.OneHotIntBooleanFormula;
@@ -27,7 +27,7 @@ public class Optimiser<BooleanNumber> implements SatProblemGenerator<BooleanForm
     }
 
     BooleanFormula generateBinaryFunction(BooleanFormula[] arg1, BooleanFormula[] arg2, int funcId) {
-        BooleanFormula isIff = ZERO; //*/new FV("f" + funcId + "_isIff");
+        BooleanFormula isIff = Zero.instance(); //*/new FV("f" + funcId + "_isIff");
         BooleanNumber var1Number = generateInt("f" + funcId + "_v1_", arg1.length);
         BooleanNumber var2Number = generateInt("f" + funcId + "_v2_", arg2.length);
         //BooleanFormula less = numberProvider.less(var1Number, var2Number);
@@ -117,10 +117,10 @@ public class Optimiser<BooleanNumber> implements SatProblemGenerator<BooleanForm
                 Character c = s.charAt(j);
                 BooleanFormula cell;
                 if (c == '1') {
-                    cell = ONE;
+                    cell = One.instance();
                 } else {
                     if (c == '0') {
-                        cell = ZERO;
+                        cell = Zero.instance();
                     } else {
                         if (c == '-') {
                             cell = null;
@@ -167,8 +167,8 @@ public class Optimiser<BooleanNumber> implements SatProblemGenerator<BooleanForm
     private BooleanFormula eliminateUnrestrictableVar(BooleanFormula result, BooleanVariable v) {
         //System.out.println("original: " + FormulaToString.toString(result));
 
-        BooleanFormula one = replace(result, v, ONE);
-        BooleanFormula zero = replace(result, v, ZERO);
+        BooleanFormula one = replace(result, v, One.instance());
+        BooleanFormula zero = replace(result, v, Zero.instance());
         //System.out.println("one: " + FormulaToString.toString(one));
         //System.out.println("zero: " + FormulaToString.toString(zero));
         return and(one, zero);
@@ -220,7 +220,7 @@ public class Optimiser<BooleanNumber> implements SatProblemGenerator<BooleanForm
             encodings[i] = new BooleanFormula[variables.length];
             if (i == 0) {
                 for (int j = 0; j < variables.length; j++) {
-                    encodings[i][j] = ZERO;
+                    encodings[i][j] = Zero.instance();
                 }
                 for (int j = 0; j < 0 && j < variables.length; j++) {
                     encodings[i][j] = new FreeVariable("x" + j + "_s" + i);
