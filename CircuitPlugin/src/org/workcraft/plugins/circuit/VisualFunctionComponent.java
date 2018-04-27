@@ -97,6 +97,10 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         }
     }
 
+    public boolean isGate() {
+        return (getReferencedFunctionComponent() != null) && getReferencedFunctionComponent().isGate();
+    }
+
     public boolean isBuffer() {
         return (getReferencedFunctionComponent() != null) && getReferencedFunctionComponent().isBuffer();
     }
