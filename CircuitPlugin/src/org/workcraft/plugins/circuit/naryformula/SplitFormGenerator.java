@@ -24,7 +24,7 @@ public class SplitFormGenerator {
 
         @Override
         public SplitForm visit(BooleanVariable variable) {
-            return new SplitForm();
+            return new SplitForm(variable);
         }
 
         @Override
@@ -53,9 +53,9 @@ public class SplitFormGenerator {
             // Build the n-input formula
             Map<NaryBooleanFormula, BooleanVariable> argToVarMap = new HashMap<>();
             BooleanFormula formula = null;
-            int index = 0;
+            char index = 'A';
             for (NaryBooleanFormula arg: args) {
-                BooleanVariable variable = new FreeVariable("i" + index++);
+                BooleanVariable variable = new FreeVariable(String.valueOf(index++));
                 argToVarMap.put(arg, variable);
                 BooleanFormula oldFormula  = formula;
                 formula = variable;
@@ -73,7 +73,8 @@ public class SplitFormGenerator {
                 SplitForm operand = arg.accept(this);
                 if (negated) {
                     BooleanVariable variable = argToVarMap.get(arg);
-                    formula = BooleanUtils.dumbReplace(formula, variable, new Not(variable));
+                    BooleanVariable notVariable = new FreeVariable(variable.getLabel() + "N");
+                    formula = BooleanUtils.dumbReplace(formula, variable, new Not(notVariable));
                     negated = !negated;
                 }
                 operands.add(operand);

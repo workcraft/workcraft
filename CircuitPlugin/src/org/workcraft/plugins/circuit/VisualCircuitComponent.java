@@ -17,6 +17,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
+import java.util.List;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
@@ -710,7 +711,7 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         return Hierarchy.filterNodesByType(getChildren(), VisualContact.class);
     }
 
-    public Collection<VisualContact> getVisualInputs() {
+    public List<VisualContact> getVisualInputs() {
         ArrayList<VisualContact> result = new ArrayList<>();
         for (VisualContact contact: getVisualContacts()) {
             if (contact.isInput()) {
