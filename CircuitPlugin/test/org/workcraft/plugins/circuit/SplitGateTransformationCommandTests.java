@@ -7,11 +7,11 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.plugins.circuit.commands.DecomposeGateTransformationCommand;
+import org.workcraft.plugins.circuit.commands.SplitGateTransformationCommand;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class DecomposeGateTransformationCommandTests {
+public class SplitGateTransformationCommandTests {
 
     @BeforeClass
     public static void init() {
@@ -36,7 +36,7 @@ public class DecomposeGateTransformationCommandTests {
 
         circuit.selectAll();
 
-        DecomposeGateTransformationCommand contractCommand = new DecomposeGateTransformationCommand();
+        SplitGateTransformationCommand contractCommand = new SplitGateTransformationCommand();
         contractCommand.execute(we);
 
         int dstMappedGateCount = 0;

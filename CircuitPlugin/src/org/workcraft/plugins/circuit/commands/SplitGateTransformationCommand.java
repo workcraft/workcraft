@@ -40,16 +40,16 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class DecomposeGateTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
+public class SplitGateTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
     @Override
     public String getDisplayName() {
-        return "Decompose gates (selected or all)";
+        return "Split complex gates (selected or all)";
     }
 
     @Override
     public String getPopupName() {
-        return "Decompose gate";
+        return "Split complex gate";
     }
 
     @Override
@@ -103,23 +103,23 @@ public class DecomposeGateTransformationCommand extends AbstractTransformationCo
         BooleanFormula setFunction = outputContact.getSetFunction();
         String gateString = gateToString(circuit, complexGate);
         if (setFunction == null) {
-            LogUtils.logWarning("Gate " + gateString + " cannot be decomposed as it does not have set functions defined");
+            LogUtils.logWarning("Gate " + gateString + " cannot be split as it does not have set functions defined");
             return;
         }
 
         BooleanFormula resetFunction = outputContact.getResetFunction();
         if ((setFunction != null) && (resetFunction != null)) {
-            LogUtils.logWarning("Gate " + gateString + " cannot be decomposed as it has both set and reset functions defined");
+            LogUtils.logWarning("Gate " + gateString + " cannot be split as it has both set and reset functions defined");
             return;
         }
 
         SplitForm functions = SplitFormGenerator.generate(setFunction);
         if (getSplitGateCount(functions) < 2) {
-            LogUtils.logWarning("Gate " + gateString + " cannot be decomposed as it is too simple");
+            LogUtils.logWarning("Gate " + gateString + " cannot be split as it is too simple");
             return;
         }
 
-        LogUtils.logInfo("Decomposing gate " + gateString + "into:");
+        LogUtils.logInfo("Splitting complex gate " + gateString + "into:");
         List<Node> fromNodes = getComponentDriverNodes(circuit, complexGate);
         List<Node> toNodes = getComponentDrivenNodes(circuit, complexGate);
         Container container = (Container) complexGate.getParent();

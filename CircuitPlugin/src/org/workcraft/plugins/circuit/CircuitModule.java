@@ -27,7 +27,7 @@ import org.workcraft.plugins.circuit.commands.CircuitToStgWithEnvironmentConvers
 import org.workcraft.plugins.circuit.commands.CircuitVerificationCommand;
 import org.workcraft.plugins.circuit.commands.ContractComponentTransformationCommand;
 import org.workcraft.plugins.circuit.commands.ContractJointTransformationCommand;
-import org.workcraft.plugins.circuit.commands.DecomposeGateTransformationCommand;
+import org.workcraft.plugins.circuit.commands.SplitGateTransformationCommand;
 import org.workcraft.plugins.circuit.commands.DetachJointTransformationCommand;
 import org.workcraft.plugins.circuit.commands.InsertBufferTransformationCommand;
 import org.workcraft.plugins.circuit.commands.SplitJointTransformationCommand;
@@ -87,8 +87,8 @@ public class CircuitModule implements Module {
                 "transform the given Circuit 'work' by inserting buffers into selected wires");
         ScriptableCommandUtils.register(ToggleBubbleTransformationCommand.class, "transformCircuitToggleBubble",
                 "transform the given Circuit 'work' by toggling inversion of selected contacts and outputs of selected components");
-        ScriptableCommandUtils.register(DecomposeGateTransformationCommand.class, "transformCircuitDecomposeGate",
-                "transform the given Circuit 'work' by decomposing selected (or all) gates");
+        ScriptableCommandUtils.register(SplitGateTransformationCommand.class, "transformCircuitSplitGate",
+                "transform the given Circuit 'work' by splitting selected (or all) complex gates into simple gates");
 
         ScriptableCommandUtils.register(CircuitStatisticsCommand.class, "statCircuit",
                 "advanced complexity estimates for the Circuit 'work'");
