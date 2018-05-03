@@ -1,6 +1,7 @@
 package org.workcraft.plugins.mpsat.tasks;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.workcraft.Trace;
 import org.workcraft.plugins.mpsat.MpsatParameters;
@@ -11,6 +12,7 @@ import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -22,32 +24,42 @@ class MpsatConformationOutputHandler extends MpsatReachabilityOutputHandler {
 
     @Override
     public MpsatSolution processSolution(MpsatSolution solution, ComponentData data) {
+        final StgModel compStg = getMpsatOutput().getInputStg();
         StgModel stg = getSrcStg(data);
-        if ((solution == null) || (stg == null)) {
+        if ((solution == null) || (compStg == null) || (stg == null)) {
             return solution;
         }
-        LogUtils.logMessage("Processing reported trace: " + solution.getMainTrace());
-        Trace trace = getProjectedTrace(solution.getMainTrace(), data);
         MpsatSolution result = null;
-        HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
-        if (!PetriUtils.fireTrace(stg, trace)) {
-            LogUtils.logWarning("Cannot execute projected trace: " + trace);
+        Trace compTrace = solution.getMainTrace();
+        LogUtils.logMessage("Processing reported composition trace: " + compTrace);
+        HashMap<Place, Integer> compMarking = PetriUtils.getMarking(compStg);
+        if (!PetriUtils.fireTrace(compStg, compTrace)) {
+            LogUtils.logError("Cannot execute reported composition trace: " + compTrace);
         } else {
-            for (SignalTransition transition: stg.getSignalTransitions()) {
-                if (stg.isEnabled(transition) && (transition.getSignalType() == Type.OUTPUT)) {
-                    String signalRef = transition.getSignalName();
-                    LogUtils.logMessage("Output '" + signalRef + "' is unexpectedly enabled after projected trace: " + trace);
-                    trace.add(stg.getNodeReference(transition));
-                    String comment = "Unexpected change of output '" + signalRef + "'";
-                    result = new MpsatSolution(trace, null, comment);
-                    break;
+            HashSet<String> compEnabledSignals = StgUtils.getEnabledSignals(compStg);
+            Trace trace = getProjectedTrace(compTrace, data);
+            HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
+            if (!PetriUtils.fireTrace(stg, trace)) {
+                LogUtils.logError("Cannot execute projected trace: " + trace);
+            } else {
+                for (SignalTransition transition: stg.getSignalTransitions()) {
+                    if (stg.isEnabled(transition) && (transition.getSignalType() == Type.OUTPUT)
+                            && !compEnabledSignals.contains(transition.getSignalName())) {
+                        String signalRef = transition.getSignalName();
+                        LogUtils.logWarning("Output '" + signalRef + "' is unexpectedly enabled after projected trace: " + trace);
+                        trace.add(stg.getNodeReference(transition));
+                        String comment = "Unexpected change of output '" + signalRef + "'";
+                        result = new MpsatSolution(trace, null, comment);
+                        break;
+                    }
+                }
+                if (result == null) {
+                    LogUtils.logMessage("No outputs are enabled after projected trace: " + trace);
                 }
             }
+            PetriUtils.setMarking(stg, marking);
         }
-        PetriUtils.setMarking(stg, marking);
-        if (result == null) {
-            LogUtils.logMessage("No outputs are enabled after projected trace: " + trace);
-        }
+        PetriUtils.setMarking(compStg, compMarking);
         return result;
     }
 

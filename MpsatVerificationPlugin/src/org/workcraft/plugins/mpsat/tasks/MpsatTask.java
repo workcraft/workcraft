@@ -1,15 +1,19 @@
 package org.workcraft.plugins.mpsat.tasks;
 
 import java.io.File;
-import java.io.IOException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
+import org.workcraft.plugins.stg.StgModel;
+import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.tasks.ProgressMonitor;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -135,21 +139,9 @@ public class MpsatTask implements Task<MpsatOutput> {
             if (!success) {
                 return Result.failure(new MpsatOutput(output));
             } else {
-                byte[] netInput = null;
-                byte[] stgOutput = null;
-                try {
-                    if ((netFile != null) && netFile.exists()) {
-                        netInput = FileUtils.readAllBytes(netFile);
-                    }
-                    File stgFile = new File(directory, STG_FILE_NAME);
-                    if (stgFile.exists()) {
-                        stgOutput = FileUtils.readAllBytes(stgFile);
-                    }
-                } catch (IOException e) {
-                    return Result.exception(e);
-                }
-
-                return Result.success(new MpsatOutput(output, netInput, stgOutput));
+                StgModel inputStg = readStg(netFile);
+                StgModel outputStg = readStg(new File(directory, STG_FILE_NAME));
+                return Result.success(new MpsatOutput(output, inputStg, outputStg));
             }
         }
 
@@ -158,6 +150,19 @@ public class MpsatTask implements Task<MpsatOutput> {
         }
 
         return Result.failure();
+    }
+
+    private StgModel readStg(File file) {
+        if ((file != null) && file.exists()) {
+            try {
+                StgImporter importer = new StgImporter();
+                FileInputStream is = new FileInputStream(file);
+                return importer.importStg(is);
+            } catch (final DeserialisationException | FileNotFoundException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return null;
     }
 
 }

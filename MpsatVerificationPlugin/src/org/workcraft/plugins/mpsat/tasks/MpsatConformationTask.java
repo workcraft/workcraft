@@ -109,7 +109,6 @@ public class MpsatConformationTask extends MpsatChainTask {
             // Generating .g for the whole system (model and environment)
             File detailFile = new File(directory, StgUtils.DETAIL_FILE_PREFIX + StgUtils.XML_FILE_EXTENSION);
             File stgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
-            stgFile.deleteOnExit();
             PcompTask pcompTask = new PcompTask(new File[]{devStgFile, envStgFile}, stgFile, detailFile,
                     ConversionMode.OUTPUT, true, false, directory);
 
