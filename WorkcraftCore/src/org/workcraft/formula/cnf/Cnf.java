@@ -32,4 +32,5 @@ public class Cnf extends Nf<CnfClause> {
     public <T> T accept(BooleanVisitor<T> visitor) {
         return BooleanOperations.and(getClauses()).accept(visitor);
     }
+
 }

@@ -33,15 +33,15 @@ public class TwoHotRangeProvider {
         constraints.add(CnfSorter.sortRound(sort2, sort1));
 
         for (int i = 0; i < range - 2; i++) {
-            constraints.add(or(not(sort2.get(i))));
+            constraints.addClauses(or(not(sort2.get(i))));
         }
 
         for (int i = 0; i < range - 2; i += 2) {
-            constraints.add(or(not(literals.get(i)), not(literals.get(i + 1))));
+            constraints.addClauses(or(not(literals.get(i)), not(literals.get(i + 1))));
         }
 
-        constraints.add(or(sort2.get(range - 1)));
-        constraints.add(or(sort2.get(range - 2)));
+        constraints.addClauses(or(sort2.get(range - 1)));
+        constraints.addClauses(or(sort2.get(range - 2)));
 
         return new TwoHotRange(literals, thermo);
     }

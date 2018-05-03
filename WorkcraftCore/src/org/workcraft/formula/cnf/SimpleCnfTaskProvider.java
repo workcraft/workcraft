@@ -1,4 +1,4 @@
-package org.workcraft.formula.sat;
+package org.workcraft.formula.cnf;
 
 import static org.workcraft.formula.encoding.CnfOperations.not;
 import static org.workcraft.formula.encoding.CnfOperations.or;
@@ -8,15 +8,13 @@ import java.util.Map;
 
 import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.Literal;
-import org.workcraft.formula.cnf.Cnf;
-import org.workcraft.formula.cnf.CnfClause;
-import org.workcraft.formula.cnf.RawCnfGenerator;
+import org.workcraft.formula.sat.MiniSatCnfPrinter;
 
-public class SimpleCnfTaskProvider implements RawCnfGenerator<Cnf> {
+public class SimpleCnfTaskProvider implements CnfGenerator<Cnf> {
+
     @Override
     public CnfTask getCnf(Cnf cnf) {
         Map<String, BooleanVariable> vars = new HashMap<>();
-
         for (CnfClause clause : cnf.getClauses()) {
             for (Literal literal : clause.getLiterals()) {
                 BooleanVariable variable = literal.getVariable();
@@ -26,10 +24,9 @@ public class SimpleCnfTaskProvider implements RawCnfGenerator<Cnf> {
                 }
             }
         }
-
         cnf.getClauses().add(or(not(Literal.ZERO)));
         cnf.getClauses().add(or(Literal.ONE));
-
         return new CnfTask(cnf.toString(new MiniSatCnfPrinter()), vars);
     }
+
 }

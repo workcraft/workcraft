@@ -27,6 +27,7 @@ import org.workcraft.formula.Zero;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
 public class FormulaToGraphics {
+
     public final class Void {
         private Void() { }
     }
@@ -136,7 +137,6 @@ public class FormulaToGraphics {
             printer.unicodeAllowed = unicodeAllowed;
         }
 
-        public StringBuilder builder;
         public IffPrinter iff;
         public ImplyPrinter imply;
         public OrPrinter or;
@@ -150,10 +150,9 @@ public class FormulaToGraphics {
 
     public static class DelegatingPrinter implements BooleanVisitor<FormulaRenderingResult> {
         public DelegatingPrinter next;
-        public boolean unicodeAllowed = false;
-
         public FontRenderContext fontRenderContext;
         public Font font;
+        public boolean unicodeAllowed = false;
 
         public void setFontRenderContext(FontRenderContext fontRenderContext) {
             this.fontRenderContext = fontRenderContext;
@@ -179,16 +178,6 @@ public class FormulaToGraphics {
         }
 
         @Override
-        public FormulaRenderingResult visit(And node) {
-            return next.visit(node);
-        }
-
-        @Override
-        public FormulaRenderingResult visit(Iff node) {
-            return next.visit(node);
-        }
-
-        @Override
         public FormulaRenderingResult visit(Zero node) {
             return next.visit(node);
         }
@@ -199,85 +188,38 @@ public class FormulaToGraphics {
         }
 
         @Override
-        public FormulaRenderingResult visit(Not node) {
-            return next.visit(node);
-        }
-
-        @Override
-        public FormulaRenderingResult visit(Imply node) {
-            return next.visit(node);
-        }
-
-        @Override
         public FormulaRenderingResult visit(BooleanVariable node) {
             return next.visit(node);
         }
 
         @Override
-        public FormulaRenderingResult visit(Or node) {
+        public FormulaRenderingResult visit(Not node) {
             return next.visit(node);
         }
 
-        @Override
-        public FormulaRenderingResult visit(Xor node) {
-            return next.visit(node);
-        }
-    }
-
-    public static class IffPrinter extends DelegatingPrinter {
-        @Override
-        public FormulaRenderingResult visit(Iff node) {
-            return visitBinary(this, " = ", node);
-        }
-    }
-
-    public static class ImplyPrinter extends DelegatingPrinter {
-        @Override
-        public FormulaRenderingResult visit(Imply node) {
-            return visitBinary(next, unicodeAllowed ? " \u21d2 " : " => ", node);
-        }
-    }
-
-    public static class OrPrinter extends DelegatingPrinter {
-        @Override
-        public FormulaRenderingResult visit(Or node) {
-            return visitBinary(this, " + ", node);
-        }
-    }
-
-    public static class XorPrinter extends DelegatingPrinter {
-        @Override
-        public FormulaRenderingResult visit(Xor node) {
-            return visitBinary(this, unicodeAllowed ? " \u2295 " : " ^ ", node);
-        }
-    }
-
-    public static class AndPrinter extends DelegatingPrinter {
         @Override
         public FormulaRenderingResult visit(And node) {
-            return visitBinary(this, unicodeAllowed ? "\u00b7" : "*", node);
-        }
-    }
-
-    public static class NotPrinter extends DelegatingPrinter {
-        private final IffPrinter iff;
-
-        public NotPrinter(IffPrinter iff) {
-            this.iff = iff;
+            return next.visit(node);
         }
 
         @Override
-        public FormulaRenderingResult visit(Not node) {
-            FormulaRenderingResult res = node.getX().accept(iff);
+        public FormulaRenderingResult visit(Or node) {
+            return next.visit(node);
+        }
 
-            res.visualTop -= font.getSize2D() / 8.0;
+        @Override
+        public FormulaRenderingResult visit(Xor node) {
+            return next.visit(node);
+        }
 
-            res.inversionLines.add(new Line2D.Double(res.boundingBox.getMinX(),
-                    res.visualTop, res.boundingBox.getMaxX(), res.visualTop));
+        @Override
+        public FormulaRenderingResult visit(Imply node) {
+            return next.visit(node);
+        }
 
-            res.boundingBox.add(new Point2D.Double(res.boundingBox.getMaxX(),
-                    res.boundingBox.getMinY() - font.getSize2D() / 8.0));
-            return res;
+        @Override
+        public FormulaRenderingResult visit(Iff node) {
+            return next.visit(node);
         }
     }
 
@@ -307,6 +249,61 @@ public class FormulaToGraphics {
                 }
             }
             return print(label);
+        }
+    }
+
+    public static class NotPrinter extends DelegatingPrinter {
+        private final IffPrinter iff;
+
+        public NotPrinter(IffPrinter iff) {
+            this.iff = iff;
+        }
+
+        @Override
+        public FormulaRenderingResult visit(Not node) {
+            FormulaRenderingResult res = node.getX().accept(iff);
+            res.visualTop -= font.getSize2D() / 8.0;
+            double xMin = res.boundingBox.getMinX();
+            double xMax = res.boundingBox.getMaxX();
+            res.inversionLines.add(new Line2D.Double(xMin, res.visualTop, xMax, res.visualTop));
+            double y = res.boundingBox.getMinY() - font.getSize2D() / 8.0;
+            res.boundingBox.add(new Point2D.Double(xMax, y));
+            return res;
+        }
+    }
+
+    public static class AndPrinter extends DelegatingPrinter {
+        @Override
+        public FormulaRenderingResult visit(And node) {
+            return visitBinary(this, unicodeAllowed ? "\u00b7" : "*", node);
+        }
+    }
+
+    public static class OrPrinter extends DelegatingPrinter {
+        @Override
+        public FormulaRenderingResult visit(Or node) {
+            return visitBinary(this, " + ", node);
+        }
+    }
+
+    public static class XorPrinter extends DelegatingPrinter {
+        @Override
+        public FormulaRenderingResult visit(Xor node) {
+            return visitBinary(this, unicodeAllowed ? " \u2295 " : " ^ ", node);
+        }
+    }
+
+    public static class ImplyPrinter extends DelegatingPrinter {
+        @Override
+        public FormulaRenderingResult visit(Imply node) {
+            return visitBinary(next, unicodeAllowed ? " \u21d2 " : " => ", node);
+        }
+    }
+
+    public static class IffPrinter extends DelegatingPrinter {
+        @Override
+        public FormulaRenderingResult visit(Iff node) {
+            return visitBinary(this, " = ", node);
         }
     }
 

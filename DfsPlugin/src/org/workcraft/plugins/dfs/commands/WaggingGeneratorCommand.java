@@ -39,7 +39,9 @@ public class WaggingGeneratorCommand implements ScriptableCommand<Void> {
             DialogUtils.showError("Select at least one register for wagging.");
         } else {
             int count = getWayCount();
-            if (count >= 2) {
+            if (count < 2) {
+                DialogUtils.showError("Wagging cannot be less than 2-way.");
+            } else {
                 we.saveMemento();
                 WaggingGenerator generator = new WaggingGenerator(dfs, count);
                 generator.run();
@@ -54,9 +56,6 @@ public class WaggingGeneratorCommand implements ScriptableCommand<Void> {
         if (ans != null) {
             try {
                 count = Integer.parseInt(ans);
-                if (count < 2) {
-                    DialogUtils.showError("Wagging cannot be less than 2-way.");
-                }
             } catch (NumberFormatException e) {
                 DialogUtils.showError("Your input is not an integer.");
             }

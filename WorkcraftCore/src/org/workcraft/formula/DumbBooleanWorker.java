@@ -1,19 +1,15 @@
 package org.workcraft.formula;
 
 public class DumbBooleanWorker implements BooleanWorker {
+
     @Override
-    public BooleanFormula and(BooleanFormula x, BooleanFormula y) {
-        return new And(x, y);
+    public BooleanFormula zero() {
+        return Zero.instance();
     }
 
     @Override
-    public BooleanFormula iff(BooleanFormula x, BooleanFormula y) {
-        return new Iff(x, y);
-    }
-
-    @Override
-    public BooleanFormula imply(BooleanFormula x, BooleanFormula y) {
-        return new Imply(x, y);
+    public BooleanFormula one() {
+        return One.instance();
     }
 
     @Override
@@ -22,8 +18,8 @@ public class DumbBooleanWorker implements BooleanWorker {
     }
 
     @Override
-    public BooleanFormula one() {
-        return One.instance();
+    public BooleanFormula and(BooleanFormula x, BooleanFormula y) {
+        return new And(x, y);
     }
 
     @Override
@@ -37,8 +33,13 @@ public class DumbBooleanWorker implements BooleanWorker {
     }
 
     @Override
-    public BooleanFormula zero() {
-        return Zero.instance();
+    public BooleanFormula imply(BooleanFormula x, BooleanFormula y) {
+        return new Imply(x, y);
+    }
+
+    @Override
+    public BooleanFormula iff(BooleanFormula x, BooleanFormula y) {
+        return new Iff(x, y);
     }
 
 }

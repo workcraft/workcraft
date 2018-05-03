@@ -43,6 +43,8 @@ SKIP:
 |
     <"//" (~["\r", "\n"])*>
 |
+    <"/*"> : WITHIN_COMMENT
+| 
     <"`" (~["\r", "\n"])*>
 |
     "specify" : WITHIN_SPECIFY
@@ -50,16 +52,25 @@ SKIP:
     "primitive" : WITHIN_PRIMITIVE
 }
 
+<WITHIN_COMMENT> SKIP:
+{
+    <"*/"> : DEFAULT
+|
+    <~[]>
+}
+
 <WITHIN_SPECIFY> SKIP:
 {
     "endspecify" : DEFAULT
-|    <~[]>
+|
+     <~[]>
 }
 
 <WITHIN_PRIMITIVE> SKIP:
 {
     "endprimitive" : DEFAULT
-|    <~[]>
+|
+     <~[]>
 }
 
 TOKEN:

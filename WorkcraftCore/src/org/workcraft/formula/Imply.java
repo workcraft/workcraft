@@ -2,7 +2,7 @@ package org.workcraft.formula;
 
 public class Imply extends BinaryBooleanFormula {
 
-    Imply(BooleanFormula x, BooleanFormula y) {
+    public Imply(BooleanFormula x, BooleanFormula y) {
         super(x, y);
     }
 

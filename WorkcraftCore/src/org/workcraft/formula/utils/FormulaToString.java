@@ -17,6 +17,7 @@ import org.workcraft.formula.Xor;
 import org.workcraft.formula.Zero;
 
 public class FormulaToString implements BooleanVisitor<String> {
+
     public final class Void {
         private Void() { }
     }
@@ -145,13 +146,6 @@ public class FormulaToString implements BooleanVisitor<String> {
         }
     }
 
-    public static class IffPrinter extends DelegatingPrinter {
-        @Override
-        public Void visit(Iff node) {
-            return visitBinary(this, " = ", node);
-        }
-    }
-
     public static class ImplyPrinter extends DelegatingPrinter {
         @Override
         public Void visit(Imply node) {
@@ -163,6 +157,13 @@ public class FormulaToString implements BooleanVisitor<String> {
             default:
                 return visitBinary(next, " => ", node);
             }
+        }
+    }
+
+    public static class IffPrinter extends DelegatingPrinter {
+        @Override
+        public Void visit(Iff node) {
+            return visitBinary(this, " = ", node);
         }
     }
 
@@ -248,7 +249,7 @@ public class FormulaToString implements BooleanVisitor<String> {
                 varMap.put(label, var);
             } else {
                 if (nameHolder != var) {
-                    throw new RuntimeException("name conflict! duplicate name " + label);
+                    throw new RuntimeException("Duplicate variable name '" + label + "'");
                 }
             }
 
@@ -307,16 +308,16 @@ public class FormulaToString implements BooleanVisitor<String> {
         }
     }
 
-    public static String toString(BooleanFormula f) {
-        return toString(f, Style.DEFAULT);
+    public static String toString(BooleanFormula formula) {
+        return toString(formula, Style.DEFAULT);
     }
 
-    public static String toString(BooleanFormula f, Style style) {
-        if (f == null) {
+    public static String toString(BooleanFormula formula, Style style) {
+        if (formula == null) {
             return "";
         }
         DelegatingPrinter printer = getPrinter(style);
-        f.accept(printer);
+        formula.accept(printer);
         return printer.builder.toString();
     }
 
@@ -325,8 +326,6 @@ public class FormulaToString implements BooleanVisitor<String> {
         suite.init(style);
         return suite.iff;
     }
-
-    DelegatingPrinter printer;
 
     @Override
     public String visit(And node) {

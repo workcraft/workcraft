@@ -1,10 +1,11 @@
-package org.workcraft.formula.sat;
+package org.workcraft.formula.cnf;
 
 import java.util.Map;
 
 import org.workcraft.formula.BooleanVariable;
 
 public class CnfTask {
+
     private final String body;
     private final Map<String, BooleanVariable> vars;
 
@@ -19,4 +20,5 @@ public class CnfTask {
     public Map<String, BooleanVariable> getVars() {
         return vars;
     }
+
 }

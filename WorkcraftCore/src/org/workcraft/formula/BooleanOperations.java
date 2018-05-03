@@ -8,9 +8,6 @@ public class BooleanOperations {
     // FIXME: It looks like CPOG relies on PrettifyBooleanWorker.
     private static final BooleanWorker defaultWorker = new PrettifyBooleanWorker(new MemoryConservingBooleanWorker());
 
-    public static final Zero ZERO = Zero.instance();
-    public static final One ONE = One.instance();
-
     public static BooleanFormula not(BooleanFormula x) {
         return not(x, defaultWorker);
     }
@@ -34,7 +31,7 @@ public class BooleanOperations {
     private static BooleanFormula createAnd(List<? extends BooleanFormula> conditions, int start, int end) {
         int size = end - start;
         if (size == 0) {
-            return ONE;
+            return One.instance();
         } else {
             if (size == 1) {
                 return conditions.get(start);
@@ -60,7 +57,7 @@ public class BooleanOperations {
     private static BooleanFormula createOr(List<? extends BooleanFormula> conditions, int start, int end) {
         int size = end - start;
         if (size == 0) {
-            return ZERO;
+            return Zero.instance();
         } else {
             if (size == 1) {
                 return conditions.get(start);

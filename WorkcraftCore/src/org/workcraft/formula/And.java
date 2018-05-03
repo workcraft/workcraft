@@ -2,7 +2,7 @@ package org.workcraft.formula;
 
 public class And extends BinaryBooleanFormula implements SimpleBooleanFormula {
 
-    And(BooleanFormula x, BooleanFormula y) {
+    public And(BooleanFormula x, BooleanFormula y) {
         super(x, y);
     }
 
@@ -15,4 +15,5 @@ public class And extends BinaryBooleanFormula implements SimpleBooleanFormula {
     public void accept(ReducedBooleanVisitor visitor) {
         visitor.visit(this);
     }
+
 }

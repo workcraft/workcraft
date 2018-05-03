@@ -84,6 +84,11 @@ public class FunctionComponent extends CircuitComponent {
         return result;
     }
 
+    public boolean isGate() {
+        Collection<Contact> outputs = getOutputs();
+        return (outputs != null) && (outputs.size() == 1);
+    }
+
     public boolean isBuffer() {
         boolean result = false;
         Collection<FunctionContact> contacts = getFunctionContacts();

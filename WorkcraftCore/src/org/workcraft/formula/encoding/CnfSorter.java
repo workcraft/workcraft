@@ -29,12 +29,12 @@ public class CnfSorter {
         // (!s[i] + s[i-1] + x[i]) (!s[i-1] + s[i]) (!x[i] + s[i])
         Cnf result = new Cnf();
 
-        result.add(or(not(s.get(0)), x.get(0)));
-        result.add(or(not(x.get(0)), s.get(0)));
+        result.addClauses(or(not(s.get(0)), x.get(0)));
+        result.addClauses(or(not(x.get(0)), s.get(0)));
         for (int i = 1; i < s.size(); i++) {
-            result.add(or(not(s.get(i)), s.get(i - 1), x.get(i)));
-            result.add(or(not(s.get(i - 1)), s.get(i)));
-            result.add(or(not(x.get(i)), s.get(i)));
+            result.addClauses(or(not(s.get(i)), s.get(i - 1), x.get(i)));
+            result.addClauses(or(not(s.get(i - 1)), s.get(i)));
+            result.addClauses(or(not(x.get(i)), s.get(i)));
         }
 
         return result;

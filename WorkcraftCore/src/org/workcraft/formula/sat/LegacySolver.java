@@ -3,15 +3,15 @@ package org.workcraft.formula.sat;
 import org.workcraft.formula.BooleanSolution;
 import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.FreeVariable;
-import org.workcraft.formula.cnf.RawCnfGenerator;
+import org.workcraft.formula.cnf.CnfGenerator;
 import org.workcraft.formula.encoding.Encoding;
 
 public class LegacySolver<T> {
     private final SatProblemGenerator<? extends T> problemGenerator;
-    private final RawCnfGenerator<? super T> cnfConverter;
+    private final CnfGenerator<? super T> cnfConverter;
 
     public LegacySolver(SatProblemGenerator<? extends T> problemGenerator,
-            RawCnfGenerator<? super T> simpleCnfTaskProvider) {
+            CnfGenerator<? super T> simpleCnfTaskProvider) {
         this.problemGenerator = problemGenerator;
         this.cnfConverter = simpleCnfTaskProvider;
     }
