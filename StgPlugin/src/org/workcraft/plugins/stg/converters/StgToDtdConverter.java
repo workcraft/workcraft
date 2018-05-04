@@ -6,10 +6,10 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 
-import org.workcraft.Trace;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.gui.graph.tools.Trace;
 import org.workcraft.plugins.dtd.Dtd;
 import org.workcraft.plugins.dtd.Signal.Type;
 import org.workcraft.plugins.dtd.SignalTransition.Direction;

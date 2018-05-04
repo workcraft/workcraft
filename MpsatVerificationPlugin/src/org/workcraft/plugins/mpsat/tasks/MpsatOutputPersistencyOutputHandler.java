@@ -2,9 +2,11 @@ package org.workcraft.plugins.mpsat.tasks;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 
-import org.workcraft.Trace;
 import org.workcraft.dom.references.ReferenceHelper;
+import org.workcraft.gui.graph.tools.Trace;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
@@ -23,18 +25,27 @@ class MpsatOutputPersistencyOutputHandler extends MpsatReachabilityOutputHandler
     }
 
     @Override
-    public MpsatSolution processSolution(MpsatSolution solution, ComponentData data) {
+    public List<MpsatSolution> processSolutions(WorkspaceEntry we, List<MpsatSolution> solutions) {
+        List<MpsatSolution> result = new LinkedList<>();
+        ComponentData data = getCompositionData(0);
         StgModel stg = getSrcStg(data);
-        if ((solution == null) || (stg == null)) {
-            return solution;
-        }
-        LogUtils.logMessage("Processing reported trace: " + solution.getMainTrace());
-        Trace trace = getProjectedTrace(solution.getMainTrace(), data);
-        MpsatSolution result = null;
         HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
-        if (!PetriUtils.fireTrace(stg, trace)) {
-            LogUtils.logWarning("Cannot execute projected trace: " + trace);
-        } else {
+        for (MpsatSolution solution: solutions) {
+            if ((solution == null) || (stg == null)) {
+                result.add(solution);
+            }
+            Trace trace = solution.getMainTrace();
+            String traceText = trace.toText();
+            LogUtils.logMessage("Violation trace: " + traceText);
+            Trace projectedTrace = getProjectedTrace(trace, data);
+            if (!traceText.equals(projectedTrace.toText())) {
+                LogUtils.logMessage("Projection trace: " + projectedTrace.toText());
+            }
+            if (!PetriUtils.fireTrace(stg, projectedTrace)) {
+                PetriUtils.setMarking(stg, marking);
+                throw new RuntimeException("Cannot execute trace: " + projectedTrace.toText());
+            }
+            // Check if any local signal gets disabled by firing other signal event
             HashSet<String> enabledLocalSignals = StgUtils.getEnabledLocalSignals(stg);
             for (SignalTransition transition: StgUtils.getEnabledSignalTransitions(stg)) {
                 stg.fire(transition);
@@ -42,24 +53,18 @@ class MpsatOutputPersistencyOutputHandler extends MpsatReachabilityOutputHandler
                 nonpersistentLocalSignals.remove(transition.getSignalName());
                 nonpersistentLocalSignals.removeAll(StgUtils.getEnabledLocalSignals(stg));
                 if (!nonpersistentLocalSignals.isEmpty()) {
-                    String comment = null;
                     String signalList = ReferenceHelper.getReferencesAsString(nonpersistentLocalSignals);
-                    if (nonpersistentLocalSignals.size() > 1) {
-                        comment = "Non-persistent signals " + signalList;
-                    } else {
-                        comment = "Non-persistent signal '" + signalList + "'";
-                    }
-                    LogUtils.logMessage(comment + " after projected trace: " + trace);
-                    trace.add(stg.getNodeReference(transition));
-                    result = new MpsatSolution(trace, null, comment);
-                    break;
+                    String comment = "Non-persistent signal(s) " + signalList;
+                    String ref = stg.getNodeReference(transition);
+                    LogUtils.logWarning("Event '" + ref + "' disables signal(s) " + signalList);
+                    Trace processedTrace = new Trace(projectedTrace);
+                    processedTrace.add(ref);
+                    MpsatSolution processedSolution = new MpsatSolution(processedTrace, null, comment);
+                    result.add(processedSolution);
                 }
                 stg.unFire(transition);
             }
-        }
-        PetriUtils.setMarking(stg, marking);
-        if (result == null) {
-            LogUtils.logMessage("No non-persistent signals detected after projected trace: " + trace);
+            PetriUtils.setMarking(stg, marking);
         }
         return result;
     }

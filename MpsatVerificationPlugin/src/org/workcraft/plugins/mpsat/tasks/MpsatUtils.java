@@ -155,7 +155,7 @@ public class MpsatUtils {
         return result;
     }
 
-    public static void playTrace(WorkspaceEntry we, MpsatSolution solution) {
+    public static void playSolution(WorkspaceEntry we, MpsatSolution solution) {
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
         GraphEditorPanel editor = mainWindow.getEditor(we);
