@@ -29,145 +29,6 @@ import info.clearthought.layout.TableLayout;
 
 public class TreeWindow<Node> extends JPanel {
 
-    private final class RefreshKeyAdapter extends KeyAdapter {
-        private final TreeSource<Node> source;
-
-        private RefreshKeyAdapter(TreeSource<Node> source) {
-            this.source = source;
-        }
-
-        @Override
-        public void keyPressed(KeyEvent e) {
-            if (e.getKeyCode() == KeyEvent.VK_F5) {
-                sourceWithRestructuredTrapped.getListener().restructured(Path.root(source.getRoot()));
-            }
-        }
-    }
-
-    private final class ClickMouseAdapter extends MouseAdapter {
-        @SuppressWarnings("unchecked")
-        @Override
-        public void mouseClicked(MouseEvent e) {
-            final int x = e.getX();
-            final int y = e.getY();
-            int row = tree.getClosestRowForLocation(x, y);
-            if (row != -1) {
-                final Rectangle rowBounds = tree.getRowBounds(row);
-                if (rowBounds.contains(x, y)) {
-                    Node node = (Node) tree.getPathForRow(row).getLastPathComponent();
-                    if (checkedNodes.contains(node)) {
-                        checkedNodes.remove(node);
-                    } else {
-                        checkedNodes.add(node);
-                    }
-                    tree.repaint(rowBounds);
-                }
-            }
-        }
-    }
-
-    private final class PopupMouseAdapter extends MouseAdapter {
-        private final TreeSource<Node> source;
-
-        private PopupMouseAdapter(TreeSource<Node> source) {
-            this.source = source;
-        }
-
-        @Override
-        public void mousePressed(MouseEvent e) {
-            maybeShowPopup(e);
-        }
-
-        @Override
-        public void mouseReleased(MouseEvent e) {
-            maybeShowPopup(e);
-        }
-
-        private void maybeShowPopup(MouseEvent e) {
-            if (e.isPopupTrigger()) {
-                final int x = e.getX();
-                final int y = e.getY();
-                tree.setSelectionPath(tree.getClosestPathForLocation(x, y));
-                final Rectangle rowBounds = tree.getRowBounds(tree.getSelectionRows()[0]);
-                if (y < rowBounds.getMinY() || y > rowBounds.getMaxY()) {
-                    tree.setSelectionPath(null);
-                    popupProvider.getPopup(source.getRoot()).show(tree, x, y);
-                } else {
-                    popupProvider.getPopup(selected()).show(tree, x, y);
-                }
-            }
-        }
-    }
-
-    private final class TreeCellRenderer extends DefaultTreeCellRenderer {
-        private final TreeSource<Node> source;
-        private final TreeDecorator<Node> decorator;
-        private static final long serialVersionUID = 1L;
-
-        private final double[][] size = new double[][] {
-            {TableLayout.PREFERRED, TableLayout.PREFERRED },
-            {TableLayout.PREFERRED},
-        };
-
-        private final TableLayout layout = new TableLayout(size);
-        private final JPanel cellRenderer = new JPanel(layout);
-
-        private TreeCellRenderer(TreeSource<Node> source, TreeDecorator<Node> decorator) {
-            this.source = source;
-            this.decorator = decorator;
-            layout.setHGap(SizeHelper.getLayoutHGap());
-            layout.setVGap(SizeHelper.getLayoutVGap());
-        }
-
-        @SuppressWarnings("unchecked")
-        @Override
-        public Component getTreeCellRendererComponent(JTree tree,
-                Object value, boolean sel, boolean expanded, boolean leaf,
-                int row, boolean hasFocus) {
-
-            Node node = (Node) value;
-
-            String name = decorator.getName(node);
-            boolean tricky = name.startsWith("!");
-            if (tricky) {
-                name = name.substring(1);
-            }
-            Component res = super.getTreeCellRendererComponent(tree, name, sel, expanded, leaf, row, hasFocus);
-
-            if (tricky) {
-                res.setFont(res.getFont().deriveFont(Font.ITALIC));
-            } else {
-                res.setFont(res.getFont().deriveFont(Font.PLAIN));
-            }
-            Icon icon = decorator.getIcon(node);
-            if (icon != null) {
-                setIcon(icon);
-            }
-            cellRenderer.removeAll();
-
-            switch (checkBoxMode) {
-            case NONE:
-                return res;
-            case LEAF:
-                if (source.isLeaf(node)) {
-                    cellRenderer.add(checkBox, "0 0");
-                    cellRenderer.add(res, "1 0");
-                } else {
-                    return res;
-                }
-
-                break;
-            case ALL:
-                cellRenderer.add(checkBox, "0 0");
-                cellRenderer.add(res, "1 0");
-                break;
-            }
-
-            checkBox.setSelected(checkedNodes.contains(node));
-            return cellRenderer;
-        }
-    }
-
     private final class TreeSourceAdapterImplementation extends TreeSourceAdapter<Node> {
         private final TreeDecorator<Node> decorator;
         private final TreeSource<Node> source;
@@ -208,6 +69,141 @@ public class TreeWindow<Node> extends JPanel {
         }
     }
 
+    private final class PopupMouseAdapter extends MouseAdapter {
+        private final TreeSource<Node> source;
+
+        private PopupMouseAdapter(TreeSource<Node> source) {
+            this.source = source;
+        }
+
+        @Override
+        public void mousePressed(MouseEvent e) {
+            maybeShowPopup(e);
+        }
+
+        @Override
+        public void mouseReleased(MouseEvent e) {
+            maybeShowPopup(e);
+        }
+
+        private void maybeShowPopup(MouseEvent e) {
+            if (e.isPopupTrigger()) {
+                final int x = e.getX();
+                final int y = e.getY();
+                tree.setSelectionPath(tree.getClosestPathForLocation(x, y));
+                final Rectangle rowBounds = tree.getRowBounds(tree.getSelectionRows()[0]);
+                if (y < rowBounds.getMinY() || y > rowBounds.getMaxY()) {
+                    tree.setSelectionPath(null);
+                    popupProvider.getPopup(source.getRoot()).show(tree, x, y);
+                } else {
+                    popupProvider.getPopup(selected()).show(tree, x, y);
+                }
+            }
+        }
+    }
+
+    private final class ClickMouseAdapter extends MouseAdapter {
+        private final TreeSource<Node> source;
+
+        private ClickMouseAdapter(TreeSource<Node> source) {
+            this.source = source;
+        }
+
+        @Override
+        public void mouseClicked(MouseEvent e) {
+            final int x = e.getX();
+            final int y = e.getY();
+            int row = tree.getClosestRowForLocation(x, y);
+            if (row != -1) {
+                final Rectangle rowBounds = tree.getRowBounds(row);
+                if (rowBounds.contains(x, y)) {
+                    @SuppressWarnings("unchecked")
+                    Node node = (Node) tree.getPathForRow(row).getLastPathComponent();
+                    if ((checkBoxMode == CheckBoxMode.ALL)
+                            || ((checkBoxMode == CheckBoxMode.LEAF) && source.isLeaf(node))) {
+                        if (checkedNodes.contains(node)) {
+                            checkedNodes.remove(node);
+                        } else {
+                            checkedNodes.add(node);
+                        }
+                        tree.repaint(rowBounds);
+                    }
+                }
+            }
+        }
+    }
+
+    private final class TreeCellRenderer extends DefaultTreeCellRenderer {
+        private final TreeSource<Node> source;
+        private final TreeDecorator<Node> decorator;
+        private static final long serialVersionUID = 1L;
+
+        private final double[][] size = new double[][] {
+            {TableLayout.PREFERRED, TableLayout.PREFERRED },
+            {TableLayout.PREFERRED},
+        };
+
+        private final TableLayout layout = new TableLayout(size);
+        private final JPanel cellRenderer = new JPanel(layout);
+
+        private TreeCellRenderer(TreeSource<Node> source, TreeDecorator<Node> decorator) {
+            this.source = source;
+            this.decorator = decorator;
+            layout.setHGap(SizeHelper.getLayoutHGap());
+            layout.setVGap(SizeHelper.getLayoutVGap());
+        }
+
+        @Override
+        public Component getTreeCellRendererComponent(JTree tree,
+                Object value, boolean sel, boolean expanded, boolean leaf,
+                int row, boolean hasFocus) {
+
+            @SuppressWarnings("unchecked")
+            Node node = (Node) value;
+
+            String name = decorator.getName(node);
+            boolean tricky = name.startsWith("!");
+            if (tricky) {
+                name = name.substring(1);
+            }
+            Component res = super.getTreeCellRendererComponent(tree, name, sel, expanded, leaf, row, hasFocus);
+
+            if (tricky) {
+                res.setFont(res.getFont().deriveFont(Font.ITALIC));
+            } else {
+                res.setFont(res.getFont().deriveFont(Font.PLAIN));
+            }
+            Icon icon = decorator.getIcon(node);
+            if (icon != null) {
+                setIcon(icon);
+            }
+            cellRenderer.removeAll();
+            if ((checkBoxMode == CheckBoxMode.NONE) || ((checkBoxMode == CheckBoxMode.LEAF) && !source.isLeaf(node))) {
+                return res;
+            }
+            cellRenderer.add(checkBox, "0 0");
+            cellRenderer.add(res, "1 0");
+            checkBox.setSelected(checkedNodes.contains(node));
+            return cellRenderer;
+        }
+    }
+
+    private final class RefreshKeyAdapter extends KeyAdapter {
+        private final TreeSource<Node> source;
+
+        private RefreshKeyAdapter(TreeSource<Node> source) {
+            this.source = source;
+        }
+
+        @Override
+        public void keyPressed(KeyEvent e) {
+            if (e.getKeyCode() == KeyEvent.VK_F5) {
+                Path<Node> root = Path.root(source.getRoot());
+                sourceWithRestructuredTrapped.getListener().restructured(root);
+            }
+        }
+    }
+
     public enum CheckBoxMode {
         NONE,
         LEAF,
@@ -218,7 +214,6 @@ public class TreeWindow<Node> extends JPanel {
     private final TreePopupProvider<Node> popupProvider;
     private final Set<Node> checkedNodes = new HashSet<>();
     private CheckBoxMode checkBoxMode = CheckBoxMode.NONE;
-
     private JCheckBox checkBox;
 
     public TreeWindow(TreeSource<Node> source, TreeDecorator<Node> decorator, TreePopupProvider<Node> popupProvider) {
@@ -242,7 +237,8 @@ public class TreeWindow<Node> extends JPanel {
     public void setCheckBoxMode(CheckBoxMode mode) {
         this.checkBoxMode = mode;
         checkedNodes.clear();
-        sourceWithRestructuredTrapped.getListener().restructured(Path.root(sourceWithRestructuredTrapped.getRoot()));
+        Path<Node> root = Path.root(sourceWithRestructuredTrapped.getRoot());
+        sourceWithRestructuredTrapped.getListener().restructured(root);
     }
 
     public void clearCheckBoxes() {
@@ -271,7 +267,7 @@ public class TreeWindow<Node> extends JPanel {
         if (popupProvider != null) {
             tree.addMouseListener(new PopupMouseAdapter(source));
         }
-        tree.addMouseListener(new ClickMouseAdapter());
+        tree.addMouseListener(new ClickMouseAdapter(source));
         tree.setCellRenderer(new TreeCellRenderer(source, decorator));
         tree.addKeyListener(new RefreshKeyAdapter(source));
         setLayout(new BorderLayout());

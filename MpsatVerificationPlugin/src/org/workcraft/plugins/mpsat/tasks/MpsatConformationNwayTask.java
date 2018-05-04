@@ -95,7 +95,6 @@ public class MpsatConformationNwayTask implements Task<MpsatChainOutput> {
             // Generating .g for the whole system (model and environment)
             File stgFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + stgFileExtension);
             File detailFile = new File(directory, StgUtils.DETAIL_FILE_PREFIX + StgUtils.XML_FILE_EXTENSION);
-            stgFile.deleteOnExit();
             PcompTask pcompTask = new PcompTask(stgFiles.toArray(new File[0]), stgFile, detailFile,
                     ConversionMode.OUTPUT, false, false, directory);
 

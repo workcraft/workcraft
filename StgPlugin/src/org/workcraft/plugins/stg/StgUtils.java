@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Set;
 
 import org.workcraft.Framework;
@@ -194,6 +195,34 @@ public class StgUtils {
             } catch (DeserialisationException | FileNotFoundException e) {
                 throw new RuntimeException(e);
             }
+        }
+        return result;
+    }
+
+    public static HashSet<SignalTransition> getEnabledSignalTransitions(StgModel stg) {
+        HashSet<SignalTransition> result = new HashSet<>();
+        for (SignalTransition transition: stg.getSignalTransitions()) {
+            if (stg.isEnabled(transition)) {
+                result.add(transition);
+            }
+        }
+        return result;
+    }
+
+    public static HashSet<String> getEnabledLocalSignals(StgModel stg) {
+        HashSet<String> result = new HashSet<>();
+        for (SignalTransition transition: getEnabledSignalTransitions(stg)) {
+            if ((transition.getSignalType() == Type.OUTPUT) || (transition.getSignalType() == Type.INTERNAL)) {
+                result.add(transition.getSignalName());
+            }
+        }
+        return result;
+    }
+
+    public static HashSet<String> getEnabledSignals(StgModel stg) {
+        HashSet<String> result = new HashSet<>();
+        for (SignalTransition transition: getEnabledSignalTransitions(stg)) {
+            result.add(transition.getSignalName());
         }
         return result;
     }
