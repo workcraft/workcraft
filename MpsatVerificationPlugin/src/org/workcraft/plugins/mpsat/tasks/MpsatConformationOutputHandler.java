@@ -62,7 +62,7 @@ class MpsatConformationOutputHandler extends MpsatReachabilityOutputHandler {
                 String signal = transition.getSignalName();
                 if (stg.isEnabled(transition) && (type == Type.OUTPUT) && !compEnabledSignals.contains(signal)) {
                     String ref = stg.getNodeReference(transition);
-                    LogUtils.logWarning("Output event '" + ref + "' gets enabled which violats interface conformation");
+                    LogUtils.logWarning("Output '" + ref + "' becomes unexpectedly enabled");
                     projectedTrace.add(stg.getNodeReference(transition));
                     String comment = "Unexpected change of output '" + signal + "'";
                     MpsatSolution processedSolution = new MpsatSolution(projectedTrace, null, comment);
