@@ -138,10 +138,14 @@ class MpsatReachabilityOutputHandler implements Runnable {
     @Override
     public void run() {
         List<MpsatSolution> solutions = getSolutions();
-        boolean isViolated = MpsatUtils.hasTraces(solutions);
-        String message = getMessage(isViolated);
-        if (!isViolated) {
-            DialogUtils.showInfo(message, TITLE);
+        boolean isSatisfiable = MpsatUtils.hasTraces(solutions);
+        String message = getMessage(isSatisfiable);
+        if (!isSatisfiable) {
+            if (getSettings().getInversePredicate()) {
+                DialogUtils.showInfo(message, TITLE);
+            } else {
+                DialogUtils.showWarning(message, TITLE);
+            }
         } else {
             LogUtils.logWarning(message);
             List<MpsatSolution> processedSolutions = processSolutions(we, solutions);

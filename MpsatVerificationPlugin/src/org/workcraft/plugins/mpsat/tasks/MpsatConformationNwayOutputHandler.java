@@ -35,9 +35,9 @@ class MpsatConformationNwayOutputHandler extends MpsatConformationOutputHandler 
     @Override
     public void run() {
         List<MpsatSolution> solutions = getSolutions();
-        boolean isViolated = MpsatUtils.hasTraces(solutions);
-        String message = getMessage(isViolated);
-        if (!isViolated) {
+        boolean isConformant = solutions.isEmpty();
+        String message = getMessage(!isConformant);
+        if (isConformant) {
             DialogUtils.showInfo(message, TITLE);
         } else {
             LogUtils.logWarning(message);
