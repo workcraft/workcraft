@@ -455,7 +455,7 @@ public class MpsatParameters {
             str += "\"" + name + "\", ";
         }
         String reachConformation = REACH_CONFORMATION.replace(REACH_CONFORMATION_DEV_PLACES, str);
-        return new MpsatParameters("Interface conformation", MpsatMode.STG_REACHABILITY_CONFORMATION, 0,
+        return new MpsatParameters("Conformation", MpsatMode.STG_REACHABILITY_CONFORMATION, 0,
                 MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(), reachConformation, true);
     }
 
@@ -545,7 +545,7 @@ public class MpsatParameters {
         String reachConformationNway = REACH_CONFORMATION_NWAY
                 .replace(REACH_CONFORMATION_NWAY_PLACES, placeStr)
                 .replace(REACH_CONFORMATION_NWAY_OUTPUTS, outputStr);
-        return new MpsatParameters("Interface conformation", MpsatMode.STG_REACHABILITY_CONFORMATION_NWAY, 0,
+        return new MpsatParameters("N-way conformation", MpsatMode.STG_REACHABILITY_CONFORMATION_NWAY, 0,
                 MpsatSettings.getSolutionMode(), MpsatSettings.getSolutionCount(), reachConformationNway, true);
     }
 

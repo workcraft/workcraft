@@ -125,7 +125,7 @@ public class MpsatConformationNwayTask implements Task<MpsatChainOutput> {
             }
             monitor.progressUpdate(0.60);
 
-            // Check for interface conformation
+            // Check for conformation
             CompositionData compositionData = new CompositionData(detailFile);
             ArrayList<Set<String>> allPlaceSets = new ArrayList<>();
             for (File file: stgFiles) {
@@ -159,7 +159,7 @@ public class MpsatConformationNwayTask implements Task<MpsatChainOutput> {
 
             // Success
             unfoldingFile.delete();
-            String message = "All models conform to each other.";
+            String message = "N-way conformation holds.";
             return new Result<MpsatChainOutput>(Outcome.SUCCESS,
                     new MpsatChainOutput(exportResult, pcompResult, punfResult, null, toolchainCompletionSettings, message));
 
