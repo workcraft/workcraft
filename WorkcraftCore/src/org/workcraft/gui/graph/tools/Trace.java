@@ -1,11 +1,21 @@
-package org.workcraft;
+package org.workcraft.gui.graph.tools;
 
 import java.util.ArrayList;
 
 @SuppressWarnings("serial")
 public class Trace extends ArrayList<String> {
 
+    public static final String EMPTY_TRACE_TEXT = "[empty trace]";
+
     private int position = 0;
+
+    public Trace() {
+        super();
+    }
+
+    public Trace(Trace trace) {
+        super(trace);
+    }
 
     public int getPosition() {
         return position;
@@ -52,10 +62,9 @@ public class Trace extends ArrayList<String> {
     @Override
     public String toString() {
         StringBuffer result = new StringBuffer("");
-        // position
+        // Position
 //        result.append(String.valueOf(getPosition()));
-        //result.append(':');
-        // trace
+        // Trace
         boolean first = true;
         for (String t : this) {
             if (!first) {
@@ -73,7 +82,7 @@ public class Trace extends ArrayList<String> {
         boolean needToParsePosition = str.contains(":");
         for (String s : str.split(":")) {
             if (needToParsePosition) {
-                // position
+                // Position
                 try {
                     tmpPosition = Integer.valueOf(s.trim());
                 } catch (Exception e) {
@@ -81,13 +90,20 @@ public class Trace extends ArrayList<String> {
                 }
                 needToParsePosition = false;
             } else {
-                // trace
+                // Trace
                 for (String st : s.trim().split(",")) {
                     add(st.trim());
                 }
             }
         }
         setPosition(tmpPosition);
+    }
+
+    public String toText() {
+        if (isEmpty()) {
+            return EMPTY_TRACE_TEXT;
+        }
+        return toString();
     }
 
 }

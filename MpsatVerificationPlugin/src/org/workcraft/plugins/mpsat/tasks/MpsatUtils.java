@@ -155,7 +155,7 @@ public class MpsatUtils {
         return result;
     }
 
-    public static void playTrace(WorkspaceEntry we, MpsatSolution solution) {
+    public static void playSolution(WorkspaceEntry we, MpsatSolution solution) {
         final Framework framework = Framework.getInstance();
         final MainWindow mainWindow = framework.getMainWindow();
         GraphEditorPanel editor = mainWindow.getEditor(we);
@@ -165,8 +165,9 @@ public class MpsatUtils {
         tool.setTrace(solution.getMainTrace(), solution.getBranchTrace(), editor);
         String comment = solution.getComment();
         if ((comment != null) && !comment.isEmpty()) {
-            comment = comment.replaceAll("\\<.*?>", "");
-            LogUtils.logWarning(comment);
+            String traceText = solution.getMainTrace().toText();
+            String message = comment.replaceAll("\\<.*?>", "") + " after trace: " + traceText;
+            LogUtils.logWarning(message);
         }
     }
 

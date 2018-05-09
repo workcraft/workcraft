@@ -29,7 +29,6 @@ import javax.swing.table.TableCellEditor;
 import javax.swing.table.TableCellRenderer;
 
 import org.workcraft.Framework;
-import org.workcraft.Trace;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
@@ -37,6 +36,7 @@ import org.workcraft.dom.visual.SizeHelper;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.GraphEditor;
+import org.workcraft.gui.graph.tools.Trace;
 import org.workcraft.gui.propertyeditor.BooleanCellEditor;
 import org.workcraft.gui.propertyeditor.BooleanCellRenderer;
 import org.workcraft.gui.propertyeditor.ColorCellEditor;

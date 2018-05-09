@@ -1,6 +1,6 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import org.workcraft.Trace;
+import org.workcraft.gui.graph.tools.Trace;
 
 public class MpsatSolution {
     private final Trace mainTrace;
@@ -37,6 +37,7 @@ public class MpsatSolution {
         return comment;
     }
 
+    @Override
     public String toString() {
         String result = "";
         if (mainTrace != null) {

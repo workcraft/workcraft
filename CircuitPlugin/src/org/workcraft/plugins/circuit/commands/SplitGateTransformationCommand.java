@@ -23,7 +23,10 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.Not;
+import org.workcraft.formula.One;
+import org.workcraft.formula.Zero;
 import org.workcraft.formula.jj.ParseException;
+import org.workcraft.formula.utils.BooleanUtils;
 import org.workcraft.formula.utils.FormulaToString;
 import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact.IOType;
@@ -44,12 +47,12 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
 
     @Override
     public String getDisplayName() {
-        return "Split complex gates (selected or all)";
+        return "Split multi-level gates (selected or all)";
     }
 
     @Override
     public String getPopupName() {
-        return "Split complex gate";
+        return "Split multi-level gate";
     }
 
     @Override
@@ -97,47 +100,77 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
         }
     }
 
-    private void transformGate(VisualCircuit circuit, VisualFunctionComponent complexGate) {
-        VisualFunctionContact outputContact = complexGate.getGateOutput();
+    private void transformGate(VisualCircuit circuit, VisualFunctionComponent bigGate) {
+        VisualFunctionContact bigOutputContact = bigGate.getGateOutput();
 
-        BooleanFormula setFunction = outputContact.getSetFunction();
-        String gateString = gateToString(circuit, complexGate);
+        BooleanFormula setFunction = bigOutputContact.getSetFunction();
+        String str = gateToString(circuit, bigGate);
         if (setFunction == null) {
-            LogUtils.logWarning("Gate " + gateString + " cannot be split as it does not have set functions defined");
+            LogUtils.logWarning("Gate " + str + " cannot be split as it does not have set functions defined");
             return;
         }
 
-        BooleanFormula resetFunction = outputContact.getResetFunction();
+        BooleanFormula resetFunction = bigOutputContact.getResetFunction();
         if ((setFunction != null) && (resetFunction != null)) {
-            LogUtils.logWarning("Gate " + gateString + " cannot be split as it has both set and reset functions defined");
+            LogUtils.logWarning("Gate " + str + " cannot be split as it has both set and reset functions defined");
             return;
         }
 
         SplitForm functions = SplitFormGenerator.generate(setFunction);
         if (getSplitGateCount(functions) < 2) {
-            LogUtils.logWarning("Gate " + gateString + " cannot be split as it is too simple");
+            LogUtils.logWarning("Gate " + str + " cannot be split as it is too simple");
             return;
         }
 
-        LogUtils.logInfo("Splitting complex gate " + gateString + "into:");
-        List<Node> fromNodes = getComponentDriverNodes(circuit, complexGate);
-        List<Node> toNodes = getComponentDrivenNodes(circuit, complexGate);
-        Container container = (Container) complexGate.getParent();
-        Point2D defaultPosition = new Point2D.Double(complexGate.getX() + 1.0, complexGate.getY());
-        circuit.remove(complexGate);
+        LogUtils.logInfo("Splitting multi-level gate " + str + "into:");
+        List<Node> fromNodes = getComponentDriverNodes(circuit, bigGate);
+        List<Node> toNodes = getComponentDrivenNodes(circuit, bigGate);
+        Container container = (Container) bigGate.getParent();
+        circuit.remove(bigGate);
 
         Stack<List<Node>> toNodesStack = new Stack<>();
         toNodesStack.push(toNodes);
 
         Iterator<Node> fromNodeIterator = fromNodes.iterator();
+        boolean isRootGate = true;
+        LinkedList<VisualFunctionComponent> gates = new LinkedList<>();
         for (BooleanFormula function: functions.getClauses()) {
             if (function instanceof BooleanVariable) {
                 connectTerminal(circuit, toNodesStack, fromNodeIterator);
             } else {
                 VisualFunctionComponent gate = insertGate(circuit, function, container, toNodesStack);
-                if (defaultPosition == null) continue;
-                gate.setPosition(defaultPosition);
-                defaultPosition = null;
+                if (isRootGate) {
+                    Point2D pos = new Point2D.Double(bigGate.getX() + 1.0, bigGate.getY());
+                    gate.setPosition(pos);
+                    VisualFunctionContact outputContact = gate.getGateOutput();
+                    outputContact.copyStyle(bigOutputContact);
+                    isRootGate = false;
+                } else {
+                    gates.push(gate);
+                }
+            }
+        }
+        calcInitValues(circuit, gates);
+    }
+
+    private void calcInitValues(VisualCircuit circuit, LinkedList<VisualFunctionComponent> gates) {
+        for (VisualFunctionComponent gate: gates) {
+            VisualFunctionContact output = gate.getGateOutput();
+            if (output != null) {
+                LinkedList<BooleanVariable> variables = new LinkedList<>();
+                LinkedList<BooleanFormula> values = new LinkedList<>();
+                for (VisualContact input: gate.getVisualInputs()) {
+                    VisualContact driver = CircuitUtils.findDriver(circuit, input, false);
+                    if (driver != null) {
+                        BooleanVariable variable = input.getReferencedContact();
+                        variables.add(variable);
+                        BooleanFormula value = driver.getReferencedContact().getInitToOne() ? One.instance() : Zero.instance();
+                        values.add(value);
+                    }
+                }
+                BooleanFormula setFunction = BooleanUtils.cleverReplace(output.getSetFunction(), variables, values);
+                boolean isOne = One.instance().equals(setFunction);
+                output.getReferencedContact().setInitToOne(isOne);
             }
         }
     }

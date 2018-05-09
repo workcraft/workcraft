@@ -7,6 +7,7 @@ import org.workcraft.Framework;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.gui.MpsatReachibilityDialog;
+import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.GUI;
@@ -26,29 +27,34 @@ class MpsatConformationNwayOutputHandler extends MpsatConformationOutputHandler 
     }
 
     @Override
+    public ComponentData getCompositionData(WorkspaceEntry we) {
+        int index = wes.indexOf(we);
+        return getCompositionData(index);
+    }
+
+    @Override
     public void run() {
-        Framework framework = Framework.getInstance();
-        MainWindow mainWindow = framework.getMainWindow();
-        boolean isViolated = false;
-        int index = 0;
-        for (WorkspaceEntry we: wes) {
-            LogUtils.logInfo("Checking conformation for model '" + we.getTitle() + "'");
-            List<MpsatSolution> solutions = getSolutions(index++);
-            if (!solutions.isEmpty()) {
-                isViolated = true;
-                if (framework.isInGuiMode()) {
+        List<MpsatSolution> solutions = getSolutions();
+        boolean isConformant = solutions.isEmpty();
+        String message = getMessage(!isConformant);
+        if (isConformant) {
+            DialogUtils.showInfo(message, TITLE);
+        } else {
+            LogUtils.logWarning(message);
+            Framework framework = Framework.getInstance();
+            MainWindow mainWindow = framework.getMainWindow();
+            for (WorkspaceEntry we: wes) {
+                List<MpsatSolution> processedSolutions = processSolutions(we, solutions);
+                if (!processedSolutions.isEmpty() && framework.isInGuiMode()) {
                     mainWindow.requestFocus(we);
-                    String message = extendMessage(getMessage(true));
                     String title = TITLE + " for model '" + we.getTitle() + "'";
-                    MpsatReachibilityDialog solutionsDialog = new MpsatReachibilityDialog(we, title, message, solutions);
+                    String extendedMessage = extendMessage(message);
+                    MpsatReachibilityDialog solutionsDialog = new MpsatReachibilityDialog(
+                            we, title, extendedMessage, processedSolutions);
                     GUI.centerToParent(solutionsDialog, mainWindow);
                     solutionsDialog.setVisible(true);
                 }
             }
-        }
-        if (!isViolated) {
-            String message = getMessage(false);
-            DialogUtils.showInfo(message, TITLE);
         }
     }
 

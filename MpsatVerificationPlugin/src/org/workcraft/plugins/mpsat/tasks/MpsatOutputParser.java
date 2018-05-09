@@ -7,7 +7,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.workcraft.Trace;
+import org.workcraft.gui.graph.tools.Trace;
 
 public class MpsatOutputParser {
 

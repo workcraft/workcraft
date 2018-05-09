@@ -2,8 +2,8 @@ package org.workcraft.plugins.petri;
 
 import java.util.HashMap;
 
-import org.workcraft.Trace;
 import org.workcraft.dom.Node;
+import org.workcraft.gui.graph.tools.Trace;
 import org.workcraft.util.LogUtils;
 
 public class PetriUtils {

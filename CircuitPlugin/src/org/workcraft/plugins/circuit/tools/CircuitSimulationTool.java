@@ -5,11 +5,8 @@ import java.awt.event.MouseEvent;
 import java.util.Collection;
 import java.util.HashSet;
 
-import org.workcraft.Trace;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
-import org.workcraft.dom.hierarchy.NamespaceHelper;
-import org.workcraft.dom.hierarchy.NamespaceProvider;
 import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.HitMan;
 import org.workcraft.dom.visual.VisualGroup;
@@ -33,17 +30,15 @@ import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.VisualJoint;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.shared.CommonDecorationSettings;
-import org.workcraft.plugins.stg.LabelParser;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.converters.SignalStg;
 import org.workcraft.plugins.stg.tools.StgSimulationTool;
-import org.workcraft.util.LogUtils;
 import org.workcraft.util.Pair;
 
 public class CircuitSimulationTool extends StgSimulationTool {
+
     private CircuitToStgConverter converter;
 
     @Override
@@ -51,63 +46,6 @@ public class CircuitSimulationTool extends StgSimulationTool {
         VisualCircuit circuit = (VisualCircuit) model;
         converter = new CircuitToStgConverter(circuit);
         setUnderlyingModel(converter.getStg());
-    }
-
-    @Override
-    public void setTrace(Trace mainTrace, Trace branchTrace, GraphEditor editor) {
-        Trace circuitMainTrace = convertStgTraceToCircuitTrace(mainTrace);
-        if (circuitMainTrace != null) {
-            LogUtils.logMessage("Main trace conversion:");
-            LogUtils.logMessage("  original: " + mainTrace);
-            LogUtils.logMessage("  circuit:  " + circuitMainTrace);
-        }
-        Trace circuitBranchTrace = convertStgTraceToCircuitTrace(branchTrace);
-        if (circuitBranchTrace != null) {
-            LogUtils.logMessage("Branch trace conversion:");
-            LogUtils.logMessage("  original: " + branchTrace);
-            LogUtils.logMessage("  circuit:  " + circuitBranchTrace);
-        }
-        super.setTrace(circuitMainTrace, circuitBranchTrace, editor);
-    }
-
-    private Trace convertStgTraceToCircuitTrace(Trace trace) {
-        Trace circuitTrace = null;
-        if (trace != null) {
-            circuitTrace = new Trace();
-            for (String ref: trace) {
-                Transition t = getBestTransitionToFire(ref);
-                if (t != null) {
-                    String circuitRef = getUnderlyingStg().getNodeReference(t);
-                    circuitTrace.add(circuitRef);
-                    getUnderlyingStg().fire(t);
-                }
-            }
-            writeModelState(initialState);
-        }
-        return circuitTrace;
-    }
-
-    private Transition getBestTransitionToFire(String ref) {
-        Transition result = null;
-        if (ref != null) {
-            String parentName = NamespaceHelper.getParentReference(ref);
-            Node parent = getUnderlyingStg().getNodeByReference(parentName);
-            String nameWithInstance = NamespaceHelper.getReferenceName(ref);
-            String requiredName = LabelParser.getTransitionName(nameWithInstance);
-            if ((parent instanceof NamespaceProvider) && (requiredName != null)) {
-                for (Transition transition: getUnderlyingStg().getTransitions()) {
-                    if (transition.getParent() != parent) continue;
-                    if (!isEnabledNode(transition)) continue;
-                    String existingRef = getUnderlyingStg().getNodeReference((NamespaceProvider) parent, transition);
-                    String existingName = LabelParser.getTransitionName(existingRef);
-                    if (requiredName.equals(existingName)) {
-                        result = transition;
-                        break;
-                    }
-                }
-            }
-        }
-        return result;
     }
 
     @Override

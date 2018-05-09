@@ -19,8 +19,8 @@ import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
-import org.workcraft.plugins.mpsat.tasks.MpsatOutputParser;
 import org.workcraft.plugins.mpsat.tasks.MpsatOutput;
+import org.workcraft.plugins.mpsat.tasks.MpsatOutputParser;
 import org.workcraft.plugins.mpsat.tasks.MpsatTask;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
@@ -369,6 +369,16 @@ public class CheckCircuitTask extends MpsatChainTask {
     }
 
     private String getSuccessMessage(File environmentFile) {
+        int checkCount = 0;
+        if (checkConformation) {
+            checkCount++;
+        }
+        if (checkDeadlock) {
+            checkCount++;
+        }
+        if (checkPersistency) {
+            checkCount++;
+        }
         String message = "";
         boolean hasEnvironment = (environmentFile != null) && environmentFile.exists();
         if (hasEnvironment) {
@@ -376,15 +386,23 @@ public class CheckCircuitTask extends MpsatChainTask {
         } else {
             message = "Without environment restrictions";
         }
-        message += " the circuit is:\n";
+        message += " the circuit is";
+        message += checkCount > 1 ? ":\n" : " ";
         if (checkConformation) {
-            message += "  * conformant\n";
+            message += getPropertyMessage("conformant", checkCount > 1);
         }
         if (checkDeadlock) {
-            message += "  * deadlock-free\n";
+            message += getPropertyMessage("deadlock-free", checkCount > 1);
         }
         if (checkPersistency) {
-            message += "  * output-persistent\n";
+            message += getPropertyMessage("output-persistent", checkCount > 1);
+        }
+        return message;
+    }
+
+    private String getPropertyMessage(String message, boolean multiline) {
+        if (multiline) {
+            return "  * " + message + "\n";
         }
         return message;
     }

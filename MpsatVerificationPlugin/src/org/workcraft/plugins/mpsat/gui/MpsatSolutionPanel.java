@@ -10,6 +10,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
 import org.workcraft.dom.visual.SizeHelper;
+import org.workcraft.gui.graph.tools.Trace;
 import org.workcraft.plugins.mpsat.tasks.MpsatSolution;
 import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -47,7 +48,7 @@ public class MpsatSolutionPanel extends JPanel {
         JTextArea traceText = new JTextArea(1, columnCount);
         traceText.setMargin(SizeHelper.getTextMargin());
         if (solutionString.isEmpty()) {
-            traceText.setText("[empty trace]");
+            traceText.setText(Trace.EMPTY_TRACE_TEXT);
             traceText.setEnabled(false);
         } else {
             traceText.setText(solutionString);
@@ -62,7 +63,7 @@ public class MpsatSolutionPanel extends JPanel {
 
         JButton playButton = new JButton("Play");
         playButton.addActionListener(event -> {
-            MpsatUtils.playTrace(we, solution);
+            MpsatUtils.playSolution(we, solution);
             closeAction.actionPerformed(null);
         });
 

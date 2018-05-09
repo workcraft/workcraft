@@ -494,6 +494,8 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
         if (src instanceof VisualContact) {
             VisualContact srcComponent = (VisualContact) src;
             getReferencedContact().setInitToOne(srcComponent.getReferencedContact().getInitToOne());
+            getReferencedContact().setForcedInit(srcComponent.getReferencedContact().getForcedInit());
+            getReferencedContact().setPathBreaker(srcComponent.getReferencedContact().getPathBreaker());
             // TODO: Note that IOType and Direction are currently NOT copied to allow input/output
             //       port generation with Shift key (and not to be copied from a template node).
             // getReferencedContact().setIOType(srcComponent.getReferencedContact().getIOType());

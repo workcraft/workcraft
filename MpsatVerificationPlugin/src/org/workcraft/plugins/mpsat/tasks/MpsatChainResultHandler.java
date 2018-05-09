@@ -146,7 +146,7 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainOut
                         message += comment + AFTER_THE_TRACE_SUFFIX;
                         message += solution + ASK_SIMULATE_SUFFIX;
                         if (DialogUtils.showConfirmError(message, TITLE, true)) {
-                            MpsatUtils.playTrace(we, solution);
+                            MpsatUtils.playSolution(we, solution);
                         }
                         break;
                     case NOT_SAFE:
@@ -154,7 +154,7 @@ public class MpsatChainResultHandler extends AbstractResultHandler<MpsatChainOut
                         message +=  comment + AFTER_THE_TRACE_SUFFIX;
                         message += solution + ASK_SIMULATE_SUFFIX;
                         if (DialogUtils.showConfirmError(message, TITLE, true)) {
-                            MpsatUtils.playTrace(we, solution);
+                            MpsatUtils.playSolution(we, solution);
                         }
                         break;
                     case EMPTY_PRESET:

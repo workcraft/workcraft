@@ -7,8 +7,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import org.workcraft.Framework;
-import org.workcraft.Trace;
 import org.workcraft.gui.MainWindow;
+import org.workcraft.gui.graph.tools.Trace;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.mpsat.gui.MpsatReachibilityDialog;
 import org.workcraft.plugins.pcomp.ComponentData;
@@ -18,6 +18,7 @@ import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.GUI;
+import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 class MpsatReachabilityOutputHandler implements Runnable {
@@ -43,10 +44,6 @@ class MpsatReachabilityOutputHandler implements Runnable {
         this.settings = settings;
     }
 
-    public WorkspaceEntry getWorkspaceEntry() {
-        return we;
-    }
-
     public PcompOutput getPcompOutput() {
         return pcompOutput;
     }
@@ -60,27 +57,21 @@ class MpsatReachabilityOutputHandler implements Runnable {
     }
 
     public List<MpsatSolution> getSolutions() {
-        return getSolutions(0);
-    }
-
-    public List<MpsatSolution> getSolutions(int index) {
-        List<MpsatSolution> solutions = new LinkedList<>();
         MpsatOutputParser mrp = new MpsatOutputParser(getMpsatOutput());
-        ComponentData data = getCompositionData(index);
-        for (MpsatSolution solution: mrp.getSolutions()) {
-            MpsatSolution processedSolution = processSolution(solution, data);
-            if (processedSolution != null) {
-                solutions.add(processedSolution);
-            }
-        }
-        return solutions;
+        return mrp.getSolutions();
     }
 
-    public MpsatSolution processSolution(MpsatSolution solution, ComponentData data) {
-        Trace mainTrace = getProjectedTrace(solution.getMainTrace(), data);
-        Trace branchTrace = getProjectedTrace(solution.getBranchTrace(), data);
-        String comment = solution.getComment();
-        return new MpsatSolution(mainTrace, branchTrace, comment);
+    public List<MpsatSolution> processSolutions(WorkspaceEntry we, List<MpsatSolution> solutions) {
+        List<MpsatSolution> result = new LinkedList<>();
+        ComponentData data = getCompositionData(we);
+        for (MpsatSolution solution: solutions) {
+            Trace mainTrace = getProjectedTrace(solution.getMainTrace(), data);
+            Trace branchTrace = getProjectedTrace(solution.getBranchTrace(), data);
+            String comment = solution.getComment();
+            MpsatSolution processedSolution = new MpsatSolution(mainTrace, branchTrace, comment);
+            result.add(processedSolution);
+        }
+        return result;
     }
 
     public Trace getProjectedTrace(Trace trace, ComponentData data) {
@@ -95,6 +86,10 @@ class MpsatReachabilityOutputHandler implements Runnable {
             }
         }
         return result;
+    }
+
+    public ComponentData getCompositionData(WorkspaceEntry we) {
+        return getCompositionData(0);
     }
 
     public ComponentData getCompositionData(int index) {
@@ -143,16 +138,26 @@ class MpsatReachabilityOutputHandler implements Runnable {
     @Override
     public void run() {
         List<MpsatSolution> solutions = getSolutions();
-        String message = getMessage(!solutions.isEmpty());
-        Framework framework = Framework.getInstance();
-        if (!MpsatUtils.hasTraces(solutions)) {
-            DialogUtils.showInfo(message, TITLE);
-        } else if (framework.isInGuiMode()) {
-            message = extendMessage(message);
-            MpsatReachibilityDialog solutionsDialog = new MpsatReachibilityDialog(getWorkspaceEntry(), TITLE, message, solutions);
-            MainWindow mainWindow = framework.getMainWindow();
-            GUI.centerToParent(solutionsDialog, mainWindow);
-            solutionsDialog.setVisible(true);
+        boolean isSatisfiable = MpsatUtils.hasTraces(solutions);
+        String message = getMessage(isSatisfiable);
+        if (!isSatisfiable) {
+            if (getSettings().getInversePredicate()) {
+                DialogUtils.showInfo(message, TITLE);
+            } else {
+                DialogUtils.showWarning(message, TITLE);
+            }
+        } else {
+            LogUtils.logWarning(message);
+            List<MpsatSolution> processedSolutions = processSolutions(we, solutions);
+            Framework framework = Framework.getInstance();
+            if (framework.isInGuiMode()) {
+                message = extendMessage(message);
+                MpsatReachibilityDialog solutionsDialog = new MpsatReachibilityDialog(
+                        we, TITLE, message, processedSolutions);
+                MainWindow mainWindow = framework.getMainWindow();
+                GUI.centerToParent(solutionsDialog, mainWindow);
+                solutionsDialog.setVisible(true);
+            }
         }
     }
 

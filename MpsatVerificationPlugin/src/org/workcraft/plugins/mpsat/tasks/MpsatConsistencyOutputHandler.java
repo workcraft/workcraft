@@ -1,6 +1,9 @@
 package org.workcraft.plugins.mpsat.tasks;
 
-import org.workcraft.Trace;
+import java.util.LinkedList;
+import java.util.List;
+
+import org.workcraft.gui.graph.tools.Trace;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
@@ -17,21 +20,24 @@ class MpsatConsistencyOutputHandler extends MpsatReachabilityOutputHandler {
     }
 
     @Override
-    public MpsatSolution processSolution(MpsatSolution solution, ComponentData data) {
-        LogUtils.logMessage("Processing reported trace: " + solution.getMainTrace());
-        Trace trace = getProjectedTrace(solution.getMainTrace(), data);
-        MpsatSolution result = null;
-        int size = trace.size();
-        if (size <= 0) {
-            LogUtils.logMessage("No consistency violation detected");
-        } else {
-            String lastTransitionRef = trace.get(size - 1);
-            final Triple<String, Direction, Integer> r = LabelParser.parseSignalTransition(lastTransitionRef);
-            if (r != null) {
+    public List<MpsatSolution> processSolutions(WorkspaceEntry we, List<MpsatSolution> solutions) {
+        List<MpsatSolution> result = new LinkedList<>();
+        ComponentData data = getCompositionData(0);
+        for (MpsatSolution solution: solutions) {
+            LogUtils.logMessage("Processing reported trace: " + solution.getMainTrace());
+            Trace trace = getProjectedTrace(solution.getMainTrace(), data);
+            int size = trace.size();
+            if (size <= 0) {
+                LogUtils.logMessage("No consistency violation detected");
+            } else {
+                String lastTransitionRef = trace.get(size - 1);
+                final Triple<String, Direction, Integer> r = LabelParser.parseSignalTransition(lastTransitionRef);
+                if (r == null) continue;
                 String signalRef = r.getFirst();
                 String comment = "Signal '" + signalRef + "' is inconsistent";
                 LogUtils.logMessage(comment + " after projected trace: " + trace);
-                result = new MpsatSolution(trace, null, comment);
+                MpsatSolution processedSolution = new MpsatSolution(trace, null, comment);
+                result.add(processedSolution);
             }
         }
         return result;
