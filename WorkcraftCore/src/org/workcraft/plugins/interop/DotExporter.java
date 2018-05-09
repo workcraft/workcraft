@@ -16,6 +16,7 @@ import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.ModelValidationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.interop.Exporter;
+import org.workcraft.plugins.layout.DotLayoutSettings;
 import org.workcraft.util.Hierarchy;
 
 public class DotExporter implements Exporter {
@@ -42,6 +43,7 @@ public class DotExporter implements Exporter {
         out.println("digraph work {");
 //        out.println("graph [nodesep=\"0.5\", overlap=\"false\", splines=\"ortho\"];");
         out.println("graph [nodesep=\"0.5\", overlap=\"false\", splines=\"true\", ranksep=\"2.0\"];");
+        out.println("rankdir=" + DotLayoutSettings.getRankdir().value);
         out.println("node [shape=box];");
 
         for (ExportNode node : nodes) {
