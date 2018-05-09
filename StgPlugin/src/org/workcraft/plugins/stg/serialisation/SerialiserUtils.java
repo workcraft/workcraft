@@ -14,7 +14,6 @@ import org.workcraft.Info;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.PageNode;
-import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.plugins.petri.PetriNetModel;
@@ -172,7 +171,7 @@ public class SerialiserUtils {
         writeSignalsHeader(out, stg.getSignalReferences(Type.OUTPUT), KEYWORD_OUTPUTS);
         Set<String> pageRefs = getPageReferences(stg);
         if (!pageRefs.isEmpty()) {
-            out.write("# Pages added as dummies: " + ReferenceHelper.getReferencesAsString(pageRefs) + "\n");
+            out.write("# Pages added as dummies: " + String.join(", ", pageRefs) + "\n");
         }
         Set<String> dummyRefs = stg.getDummyReferences();
         dummyRefs.addAll(pageRefs);

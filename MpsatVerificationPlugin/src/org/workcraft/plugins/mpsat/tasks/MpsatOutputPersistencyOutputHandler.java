@@ -1,11 +1,11 @@
 package org.workcraft.plugins.mpsat.tasks;
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 
-import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.gui.graph.tools.Trace;
 import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.pcomp.ComponentData;
@@ -27,7 +27,7 @@ class MpsatOutputPersistencyOutputHandler extends MpsatReachabilityOutputHandler
     @Override
     public List<MpsatSolution> processSolutions(WorkspaceEntry we, List<MpsatSolution> solutions) {
         List<MpsatSolution> result = new LinkedList<>();
-        ComponentData data = getCompositionData(0);
+        ComponentData data = getCompositionData(we);
         StgModel stg = getSrcStg(data);
         HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
         for (MpsatSolution solution: solutions) {
@@ -35,15 +35,14 @@ class MpsatOutputPersistencyOutputHandler extends MpsatReachabilityOutputHandler
                 result.add(solution);
             }
             Trace trace = solution.getMainTrace();
-            String traceText = trace.toText();
-            LogUtils.logMessage("Violation trace: " + traceText);
-            Trace projectedTrace = getProjectedTrace(trace, data);
-            if (!traceText.equals(projectedTrace.toText())) {
-                LogUtils.logMessage("Projection trace: " + projectedTrace.toText());
+            LogUtils.logMessage("Violation trace: " + trace.toText());
+            if (data != null) {
+                trace = getProjectedTrace(trace, data);
+                LogUtils.logMessage("Projection trace: " + trace.toText());
             }
-            if (!PetriUtils.fireTrace(stg, projectedTrace)) {
+            if (!PetriUtils.fireTrace(stg, trace)) {
                 PetriUtils.setMarking(stg, marking);
-                throw new RuntimeException("Cannot execute trace: " + projectedTrace.toText());
+                throw new RuntimeException("Cannot execute trace: " + trace.toText());
             }
             // Check if any local signal gets disabled by firing other signal event
             HashSet<String> enabledLocalSignals = StgUtils.getEnabledLocalSignals(stg);
@@ -53,12 +52,12 @@ class MpsatOutputPersistencyOutputHandler extends MpsatReachabilityOutputHandler
                 nonpersistentLocalSignals.remove(transition.getSignalName());
                 nonpersistentLocalSignals.removeAll(StgUtils.getEnabledLocalSignals(stg));
                 if (!nonpersistentLocalSignals.isEmpty()) {
-                    String signalList = ReferenceHelper.getReferencesAsString(nonpersistentLocalSignals);
-                    String comment = "Non-persistent signal(s) " + signalList;
-                    String ref = stg.getNodeReference(transition);
-                    LogUtils.logWarning("Event '" + ref + "' disables signal(s) " + signalList);
-                    Trace processedTrace = new Trace(projectedTrace);
-                    processedTrace.add(ref);
+                    String comment = getMessageWithList("Non-persistent signal", nonpersistentLocalSignals);
+                    String transitionRef = stg.getNodeReference(transition);
+                    String msg = getMessageWithList("Event '" + transitionRef + "' disables signal", nonpersistentLocalSignals);
+                    LogUtils.logWarning(msg);
+                    Trace processedTrace = new Trace(trace);
+                    processedTrace.add(transitionRef);
                     MpsatSolution processedSolution = new MpsatSolution(processedTrace, null, comment);
                     result.add(processedSolution);
                 }
@@ -67,6 +66,16 @@ class MpsatOutputPersistencyOutputHandler extends MpsatReachabilityOutputHandler
             PetriUtils.setMarking(stg, marking);
         }
         return result;
+    }
+
+    private String getMessageWithList(String message, Collection<String> refs) {
+        if ((refs == null) || refs.isEmpty()) {
+            return message;
+        } else if (refs.size() == 1) {
+            return message + " '" + refs.iterator().next() + "'";
+        } else {
+            return message + "s: " + String.join(", ", refs);
+        }
     }
 
 }

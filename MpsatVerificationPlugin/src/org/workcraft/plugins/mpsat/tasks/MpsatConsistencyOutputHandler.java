@@ -22,7 +22,7 @@ class MpsatConsistencyOutputHandler extends MpsatReachabilityOutputHandler {
     @Override
     public List<MpsatSolution> processSolutions(WorkspaceEntry we, List<MpsatSolution> solutions) {
         List<MpsatSolution> result = new LinkedList<>();
-        ComponentData data = getCompositionData(0);
+        ComponentData data = getCompositionData(we);
         for (MpsatSolution solution: solutions) {
             LogUtils.logMessage("Processing reported trace: " + solution.getMainTrace());
             Trace trace = getProjectedTrace(solution.getMainTrace(), data);
@@ -35,7 +35,7 @@ class MpsatConsistencyOutputHandler extends MpsatReachabilityOutputHandler {
                 if (r == null) continue;
                 String signalRef = r.getFirst();
                 String comment = "Signal '" + signalRef + "' is inconsistent";
-                LogUtils.logMessage(comment + " after projected trace: " + trace);
+                LogUtils.logWarning(comment + " after trace: " + trace);
                 MpsatSolution processedSolution = new MpsatSolution(trace, null, comment);
                 result.add(processedSolution);
             }

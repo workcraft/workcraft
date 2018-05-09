@@ -107,7 +107,7 @@ class MpsatReachabilityOutputHandler implements Runnable {
 
     public StgModel getSrcStg(ComponentData data) {
         if (data == null) {
-            return null;
+            return getMpsatOutput().getInputStg();
         }
         if (!srcStgs.containsKey(data.getFileName())) {
             File file = new File(data.getFileName());
