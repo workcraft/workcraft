@@ -34,16 +34,22 @@ public class DotLayoutSettings implements Settings {
     private static final LinkedList<PropertyDescriptor> properties = new LinkedList<>();
     private static final String prefix = "DotLayout";
 
-    private static final String keyImportConnectionsShape = prefix + ".importConnectionsShape";
-    private static final String keyRankdir = prefix + ".rankdir";
     private static final String keyCommand = prefix + ".command";
+    private static final String keyRankdir = prefix + ".rankdir";
+    private static final String keyNodesep = prefix + ".sepNodesep";
+    private static final String keyRanksep = prefix + ".sepRanksep";
+    private static final String keyImportConnectionsShape = prefix + ".importConnectionsShape";
 
     private static final String defaultCommand = DesktopApi.getOs().isWindows() ? "tools\\GraphvizMinimal\\dot.exe" : "dot";
-    private static final Rankdir defaultRankdir = Rankdir.TB;
+    private static final Rankdir defaultRankdir = Rankdir.LR;
+    private static final double defaultNodesep = 1.0;
+    private static final double defaultRanksep = 1.0;
     private static final boolean defaultImportConnectionsShape = true;
 
     private static String dotCommand = defaultCommand;
     private static Rankdir rankdir = defaultRankdir;
+    private static double nodesep = defaultNodesep;
+    private static double ranksep = defaultRanksep;
     private static boolean importConnectionsShape = defaultImportConnectionsShape;
 
     public DotLayoutSettings() {
@@ -58,7 +64,7 @@ public class DotLayoutSettings implements Settings {
         });
 
         properties.add(new PropertyDeclaration<DotLayoutSettings, Rankdir>(
-                this, "SAT solver", Rankdir.class, true, false, false) {
+                this, "Direction of layout", Rankdir.class, true, false, false) {
             protected void setter(DotLayoutSettings object, Rankdir value) {
                 setRankdir(value);
             }
@@ -67,8 +73,28 @@ public class DotLayoutSettings implements Settings {
             }
         });
 
+        properties.add(new PropertyDeclaration<DotLayoutSettings, Double>(
+                this, "Node separation", Double.class, true, false, false) {
+            protected void setter(DotLayoutSettings object, Double value) {
+                setNodesep(value);
+            }
+            protected Double getter(DotLayoutSettings object) {
+                return getNodesep();
+            }
+        });
+
+        properties.add(new PropertyDeclaration<DotLayoutSettings, Double>(
+                this, "Rank separation", Double.class, true, false, false) {
+            protected void setter(DotLayoutSettings object, Double value) {
+                setRanksep(value);
+            }
+            protected Double getter(DotLayoutSettings object) {
+                return getRanksep();
+            }
+        });
+
         properties.add(new PropertyDeclaration<DotLayoutSettings, Boolean>(
-                this, "Import connections shape from Dot graph", Boolean.class, true, false, false) {
+                this, "Import connections shape", Boolean.class, true, false, false) {
             protected void setter(DotLayoutSettings object, Boolean value) {
                 setImportConnectionsShape(value);
             }
@@ -87,6 +113,8 @@ public class DotLayoutSettings implements Settings {
     public void load(Config config) {
         setCommand(config.getString(keyCommand, defaultCommand));
         setRankdir(config.getEnum(keyRankdir, Rankdir.class, defaultRankdir));
+        setNodesep(config.getDouble(keyNodesep, defaultNodesep));
+        setRanksep(config.getDouble(keyRanksep, defaultRanksep));
         setImportConnectionsShape(config.getBoolean(keyImportConnectionsShape, defaultImportConnectionsShape));
     }
 
@@ -94,6 +122,8 @@ public class DotLayoutSettings implements Settings {
     public void save(Config config) {
         config.set(keyCommand, getCommand());
         config.setEnum(keyRankdir, Rankdir.class, getRankdir());
+        config.setDouble(keyNodesep, getNodesep());
+        config.setDouble(keyRanksep, getRanksep());
         config.setBoolean(keyImportConnectionsShape, getImportConnectionsShape());
     }
 
@@ -123,11 +153,39 @@ public class DotLayoutSettings implements Settings {
         rankdir = value;
     }
 
-    public static Boolean getImportConnectionsShape() {
+    public static double getNodesep() {
+        return nodesep;
+    }
+
+    public static void setNodesep(double value) {
+        if (value < 0.0) {
+            value = 0.0;
+        }
+        if (value > 10.0) {
+            value = 10.0;
+        }
+        nodesep = value;
+    }
+
+    public static double getRanksep() {
+        return ranksep;
+    }
+
+    public static void setRanksep(double value) {
+        if (value < 0.0) {
+            value = 0.0;
+        }
+        if (value > 10.0) {
+            value = 10.0;
+        }
+        ranksep = value;
+    }
+
+    public static boolean getImportConnectionsShape() {
         return importConnectionsShape;
     }
 
-    public static void setImportConnectionsShape(Boolean value) {
+    public static void setImportConnectionsShape(boolean value) {
         importConnectionsShape = value;
     }
 }

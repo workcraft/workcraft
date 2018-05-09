@@ -30,5 +30,5 @@ vme.stg.ps:
 
 vme.stg.dot:
 digraph work {
-graph [nodesep="0.5", overlap="false", splines="true", ranksep="2.0"];
+graph [overlap="false", splines="true", nodesep="1.0", ranksep="1.0"];
 
