@@ -4,7 +4,8 @@
 [![Code Climate](https://codeclimate.com/github/workcraft/workcraft/badges/gpa.svg)](https://codeclimate.com/github/workcraft/workcraft)
 [![Coverage Status](https://coveralls.io/repos/github/workcraft/workcraft/badge.svg?branch=master)](https://coveralls.io/github/workcraft/workcraft?branch=master)
 [![Stories in Ready](https://img.shields.io/waffle/label/workcraft/workcraft/status:confirmed.svg?label=issues)](https://waffle.io/workcraft/workcraft)
-![Repo Size](https://reposs.herokuapp.com/?path=workcraft/workcraft&color=lightgray)
+![Repo Size](https://github-size-badge.herokuapp.com/workcraft/workcraft.svg)
+
 
 Workcraft is a cross-platform toolset to capture, simulate, synthesize
 and verify graph models. It supports a wide range of popular graph
