@@ -1,8 +1,10 @@
 package org.workcraft.plugins.petrify.tasks;
 
 import java.io.ByteArrayInputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,6 +18,7 @@ import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitDescriptor;
+import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
@@ -47,19 +50,23 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
     private final boolean boxSequentialComponents;
     private final boolean boxCombinationalComponents;
     private final boolean sequentialAssign;
+    private final boolean technologyMapping;
     private final Collection<Mutex> mutexes;
 
-    public PetrifySynthesisResultHandler(final WorkspaceEntry we, final boolean boxSequentialComponents,
-            final boolean boxCombinationalComponents, final boolean sequentialAssign, Collection<Mutex> mutexes) {
+    public PetrifySynthesisResultHandler(WorkspaceEntry we,
+            boolean boxSequentialComponents, boolean boxCombinationalComponents,
+            boolean sequentialAssign, boolean technologyMapping, Collection<Mutex> mutexes) {
+
         this.we = we;
         this.boxSequentialComponents = boxSequentialComponents;
         this.boxCombinationalComponents = boxCombinationalComponents;
         this.sequentialAssign = sequentialAssign;
+        this.technologyMapping = technologyMapping;
         this.mutexes = mutexes;
     }
 
     @Override
-    public WorkspaceEntry handleResult(final Result<? extends PetrifySynthesisOutput> result) {
+    public WorkspaceEntry handleResult(Result<? extends PetrifySynthesisOutput> result) {
         WorkspaceEntry weResult = null;
         PetrifySynthesisOutput petrifyResult = result.getPayload();
         if (result.getOutcome() == Outcome.SUCCESS) {
@@ -87,20 +94,44 @@ public class PetrifySynthesisResultHandler extends AbstractExtendedResultHandler
 
         WorkspaceEntry result = handleVerilogSynthesisResult(petrifyOutput);
 
-        String errorMessage = new String(petrifyOutput.getStderr());
-        String signalNames = "";
-        Matcher matcher = patternAddingStateSignal.matcher(errorMessage);
-        while (matcher.find()) {
-            if (!signalNames.isEmpty()) {
-                signalNames += ", ";
-            }
-            signalNames += matcher.group(1);
-        }
-        if (!signalNames.isEmpty()) {
-            LogUtils.logWarning("Petrify automatically resolved CSC conflicts by inserting new signals: " + signalNames);
+        // Report inserted CSC signals and unmapped signals AFTER importing the Verilog, so the circuit is visible
+        checkNewSignals(petrifyOutput);
+        if (technologyMapping) {
+            checkUnmappedSignals(result);
         }
 
         return result;
+    }
+
+    private void checkNewSignals(PetrifySynthesisOutput petrifyOutput) {
+        String errorMessage = new String(petrifyOutput.getStderr());
+        List<String> signals = new ArrayList<>();
+        Matcher matcher = patternAddingStateSignal.matcher(errorMessage);
+        while (matcher.find()) {
+            signals.add(matcher.group(1));
+        }
+        if (!signals.isEmpty()) {
+            String signalNames = String.join(", ", signals);
+            String msg = "Petrify automatically resolved CSC conflicts by inserting new signal" +
+                         (signals.size() > 1 ? "s: " + signalNames : " '" + signalNames + "'");
+            DialogUtils.showWarning(msg);
+        }
+    }
+
+    private void checkUnmappedSignals(WorkspaceEntry dstWe) {
+        Circuit circuit = WorkspaceUtils.getAs(dstWe, Circuit.class);
+        List<String> signals = new ArrayList<>();
+        for (FunctionComponent component: circuit.getFunctionComponents()) {
+            if (!component.isMapped()) {
+                signals.add(circuit.getNodeReference(component));
+            }
+        }
+        if (!signals.isEmpty()) {
+            String signalNames = String.join(", ", signals);
+            String msg = "Petrify did not map implementation of signal" +
+                    (signals.size() > 1 ? "s: " + signalNames : " '" + signalNames + "'");
+            DialogUtils.showWarning(msg);
+        }
     }
 
     private WorkspaceEntry handleStgSynthesisResult(PetrifySynthesisOutput petrifyResult) {

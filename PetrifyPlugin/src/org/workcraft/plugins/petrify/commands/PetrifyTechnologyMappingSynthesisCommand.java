@@ -25,4 +25,8 @@ public class PetrifyTechnologyMappingSynthesisCommand extends PetrifyAbstractSyn
         return Position.BOTTOM;
     }
 
+    public boolean technologyMapping() {
+        return true;
+    }
+
 }
