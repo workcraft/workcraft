@@ -1,11 +1,12 @@
 # ![Workcraft logo](logo.png)
 
-[![Build Status](https://travis-ci.org/workcraft/workcraft.svg?branch=master)](https://travis-ci.org/workcraft/workcraft)
-[![Code Climate](https://codeclimate.com/github/workcraft/workcraft/badges/gpa.svg)](https://codeclimate.com/github/workcraft/workcraft)
-[![Coverage Status](https://coveralls.io/repos/github/workcraft/workcraft/badge.svg?branch=master)](https://coveralls.io/github/workcraft/workcraft?branch=master)
-[![Stories in Ready](https://img.shields.io/waffle/label/workcraft/workcraft/status:confirmed.svg?label=issues)](https://waffle.io/workcraft/workcraft)
-![Repo Size](https://github-size-badge.herokuapp.com/workcraft/workcraft.svg)
-
+[![Build status](https://travis-ci.org/workcraft/workcraft.svg)](https://travis-ci.org/workcraft/workcraft)
+[![Code maintainability](https://codeclimate.com/github/workcraft/workcraft/badges/gpa.svg)](https://codeclimate.com/github/workcraft/workcraft)
+[![Coverage](https://img.shields.io/coveralls/github/workcraft/workcraft.svg)](https://coveralls.io/github/workcraft/workcraft)
+[![Confirmed issues](https://img.shields.io/waffle/label/workcraft/workcraft/status:confirmed.svg?label=issues)](https://waffle.io/workcraft/workcraft)
+![Repo size](https://img.shields.io/github/repo-size/workcraft/workcraft.svg)
+![Code size](https://img.shields.io/github/languages/code-size/workcraft/workcraft.svg)
+[![Current release](https://img.shields.io/github/release/workcraft/workcraft.svg)](https://github.com/workcraft/workcraft/releases)
 
 Workcraft is a cross-platform toolset to capture, simulate, synthesize
 and verify graph models. It supports a wide range of popular graph
