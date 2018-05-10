@@ -139,7 +139,7 @@ public class MpsatConformationTask extends MpsatChainTask {
             }
             monitor.progressUpdate(0.60);
 
-            // Check for interface conformation
+            // Check for conformation
             CompositionData compositionData = new CompositionData(detailFile);
             ComponentData devComponentData = compositionData.getComponentData(devStgFile);
             Set<String> devPlaceNames = devComponentData.getDstPlaces();

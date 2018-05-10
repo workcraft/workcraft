@@ -300,7 +300,7 @@ public class CheckCircuitTask extends MpsatChainTask {
             }
             monitor.progressUpdate(0.80);
 
-            // Check for interface conformation (only if requested and if the environment is specified)
+            // Check for conformation (only if requested and if the environment is specified)
             if ((envStg != null) && checkConformation) {
                 CompositionData compositionData = new CompositionData(detailModFile);
                 ComponentData devComponentData = compositionData.getComponentData(devStgFile);

@@ -36,12 +36,11 @@ class MpsatConformationOutputHandler extends MpsatReachabilityOutputHandler {
         if (needsMultiLineMessage) {
             LogUtils.logMessage("Unique projection(s) to '" + we.getTitle() + "':");
         }
+        StgModel stg = getSrcStg(data);
         for (MpsatSolution solution: solutions) {
-            Trace trace = solution.getMainTrace();
-            StgModel stg = getSrcStg(data);
             // Get unique projection trace
-            Trace projectedTrace = getProjectedTrace(trace, data);
-            String traceText = projectedTrace.toText();
+            Trace trace = getProjectedTrace(solution.getMainTrace(), data);
+            String traceText = trace.toText();
             if (visitedTraces.contains(traceText)) continue;
             visitedTraces.add(traceText);
             if (needsMultiLineMessage) {
@@ -51,7 +50,7 @@ class MpsatConformationOutputHandler extends MpsatReachabilityOutputHandler {
             }
             // Execute trace to potentially interesting state
             HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
-            if (!PetriUtils.fireTrace(stg, projectedTrace)) {
+            if (!PetriUtils.fireTrace(stg, trace)) {
                 PetriUtils.setMarking(stg, marking);
                 throw new RuntimeException("Cannot execute projected trace: " + traceText);
             }
@@ -63,9 +62,9 @@ class MpsatConformationOutputHandler extends MpsatReachabilityOutputHandler {
                 if (stg.isEnabled(transition) && (type == Type.OUTPUT) && !compEnabledSignals.contains(signal)) {
                     String ref = stg.getNodeReference(transition);
                     LogUtils.logWarning("Output '" + ref + "' becomes unexpectedly enabled");
-                    projectedTrace.add(stg.getNodeReference(transition));
+                    trace.add(stg.getNodeReference(transition));
                     String comment = "Unexpected change of output '" + signal + "'";
-                    MpsatSolution processedSolution = new MpsatSolution(projectedTrace, null, comment);
+                    MpsatSolution processedSolution = new MpsatSolution(trace, null, comment);
                     result.add(processedSolution);
                     break;
                 }

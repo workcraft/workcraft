@@ -29,7 +29,7 @@ public class ReferenceHelper {
     public static String getNodesAsString(final Model model, Collection<? extends Node> nodes) {
         ArrayList<String> refs = getReferenceList(model, nodes);
         Collections.sort(refs);
-        return getReferencesAsString(refs);
+        return String.join(", ", refs);
     }
 
     public static ArrayList<String> getReferenceList(final Model model, Collection<? extends Node> nodes) {
@@ -44,18 +44,7 @@ public class ReferenceHelper {
     }
 
     public static String getReferencesAsString(Collection<String> refs, int len) {
-        return wrapString(getReferencesAsString(refs), len);
-    }
-
-    public static String getReferencesAsString(Collection<String> refs) {
-        String str = "";
-        for (String ref: refs) {
-            if (!str.isEmpty()) {
-                str += ", ";
-            }
-            str += ref;
-        }
-        return str;
+        return wrapString(String.join(", ", refs), len);
     }
 
     private static String wrapString(String str, int len) {

@@ -573,7 +573,7 @@ public class VerilogImporter implements Importer {
         }
         if (!internalSignals.isEmpty()) {
             DialogUtils.showWarning("Mutex grants will be exposed as output ports: "
-                    + ReferenceHelper.getReferencesAsString(internalSignals) + ".\n\n"
+                    + String.join(", ", internalSignals) + ".\n\n"
                     + "This is necessary (due to technical reasons) for verification\n"
                     + "of a circuit with mutex against its environment STG.");
         }
