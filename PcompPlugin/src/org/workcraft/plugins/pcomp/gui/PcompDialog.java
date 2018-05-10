@@ -75,7 +75,7 @@ public class PcompDialog extends JDialog {
 
         JPanel outputOptions = new JPanel();
         outputOptions.setLayout(new BoxLayout(outputOptions, BoxLayout.Y_AXIS));
-        outputOptions.setBorder(SizeHelper.getTitledBorder("Outputs"));
+        outputOptions.setBorder(SizeHelper.getTitledBorder("Shared signals"));
 
         leaveOutputs = new JRadioButton("Leave as outputs");
         internalize = new JRadioButton("Make internal");
@@ -93,7 +93,7 @@ public class PcompDialog extends JDialog {
 
         sharedOutputs = new JCheckBox("Allow the STGs to share outputs");
         saveDetail = new JCheckBox("Save the composition details in " + ParallelCompositionCommand.DETAIL_FILE_NAME);
-        improvedPcomp = new JCheckBox("No computational interference");
+        improvedPcomp = new JCheckBox("Guaranteed N-way conformation");
 
         JPanel options = new JPanel();
         options.setLayout(new BoxLayout(options, BoxLayout.Y_AXIS));
