@@ -47,7 +47,8 @@ public abstract class PetrifyAbstractSynthesisCommand extends AbstractSynthesisC
         TaskManager taskManager = framework.getTaskManager();
         PetrifySynthesisTask task = new PetrifySynthesisTask(we, getSynthesisParameter(), mutexes);
         PetrifySynthesisResultHandler monitor = new PetrifySynthesisResultHandler(we,
-                boxSequentialComponents(), boxCombinationalComponents(), sequentialAssign(), mutexes);
+                boxSequentialComponents(), boxCombinationalComponents(), sequentialAssign(),
+                technologyMapping(), mutexes);
 
         taskManager.queue(task, "Petrify logic synthesis", monitor);
         return monitor;
@@ -62,6 +63,10 @@ public abstract class PetrifyAbstractSynthesisCommand extends AbstractSynthesisC
     }
 
     public boolean sequentialAssign() {
+        return false;
+    }
+
+    public boolean technologyMapping() {
         return false;
     }
 
