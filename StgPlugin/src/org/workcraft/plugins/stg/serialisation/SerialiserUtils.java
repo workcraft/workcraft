@@ -22,8 +22,8 @@ import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.StgPlace;
+import org.workcraft.util.ExportUtils;
 import org.workcraft.util.Hierarchy;
-import org.workcraft.util.LogUtils;
 
 public class SerialiserUtils {
 
@@ -56,7 +56,8 @@ public class SerialiserUtils {
         }
         PrintWriter writer = new PrintWriter(out);
         writer.write(Info.getGeneratedByText(prefix, "\n"));
-        writer.write(keyword + " " + getClearTitle(petriModel) + "\n");
+        String title = ExportUtils.getClearModelTitle(petriModel);
+        writer.write(keyword + " " + title + "\n");
         if (petriModel instanceof StgModel) {
             writeSTG((StgModel) petriModel, writer, needInstanceNumbers);
         } else {
@@ -144,25 +145,6 @@ public class SerialiserUtils {
             }
         }
         out.write("\n");
-    }
-
-    public static String getClearTitle(Model model) {
-        String title = model.getTitle();
-        // Non-empty model name must be present in .model line of .g file.
-        // Otherwise Petrify will use the full file name (possibly with bad characters) as a Verilog module name.
-        if ((title == null) || title.isEmpty()) {
-            title = "Untitled";
-        }
-        // If the title start with a number then prepend it with an underscore.
-        if (Character.isDigit(title.charAt(0))) {
-            title = "_" + title;
-        }
-        // Petrify does not allow spaces and special symbols in the model name, so replace them with underscores.
-        String result = title.replaceAll("[^A-Za-z0-9_]", "_");
-        if (!result.equals(model.getTitle())) {
-            LogUtils.logWarning("Model title was exported as '" + result + "'.");
-        }
-        return result;
     }
 
     private static void writeSTG(StgModel stg, PrintWriter out, boolean needInstanceNumbers) {

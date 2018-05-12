@@ -18,9 +18,9 @@ import org.workcraft.plugins.fst.Signal;
 import org.workcraft.plugins.fst.Signal.Type;
 import org.workcraft.plugins.fst.SignalEvent;
 import org.workcraft.plugins.fst.interop.SgFormat;
-import org.workcraft.plugins.stg.serialisation.SerialiserUtils;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
+import org.workcraft.util.ExportUtils;
 
 public class SgSerialiser implements ModelSerialiser {
 
@@ -28,7 +28,8 @@ public class SgSerialiser implements ModelSerialiser {
     public ReferenceProducer serialise(Model model, OutputStream out, ReferenceProducer refs) {
         PrintWriter writer = new PrintWriter(out);
         writer.write(Info.getGeneratedByText("# SG file ", "\n"));
-        writer.write(".model " + SerialiserUtils.getClearTitle(model) + "\n");
+        String title = ExportUtils.getClearModelTitle(model);
+        writer.write(".model " + title + "\n");
         if (model instanceof Fsm) {
             writeFsm(writer, (Fsm) model);
         } else {
