@@ -112,4 +112,18 @@ public class ExportUtils {
         return path;
     }
 
+    public static String getClearModelTitle(Model model) {
+        String title = model.getTitle();
+        // Non-empty module name is required.
+        if ((title == null) || title.isEmpty()) {
+            title = "Untitled";
+        }
+        // If the title start with a number then prepend it with an underscore.
+        if (Character.isDigit(title.charAt(0))) {
+            title = "_" + title;
+        }
+        // Replace spaces and special symbols with underscores.
+        return title.replaceAll("[^A-Za-z0-9_]", "_");
+    }
+
 }

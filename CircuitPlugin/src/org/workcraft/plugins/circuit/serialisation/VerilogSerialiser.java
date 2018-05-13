@@ -23,6 +23,7 @@ import org.workcraft.plugins.circuit.verilog.SubstitutionRule;
 import org.workcraft.plugins.circuit.verilog.SubstitutionUtils;
 import org.workcraft.serialisation.ModelSerialiser;
 import org.workcraft.serialisation.ReferenceProducer;
+import org.workcraft.util.ExportUtils;
 import org.workcraft.util.LogUtils;
 
 public class VerilogSerialiser implements ModelSerialiser {
@@ -65,12 +66,8 @@ public class VerilogSerialiser implements ModelSerialiser {
     }
 
     private void writeHeader(PrintWriter out, Circuit circuit) {
-        String topName = circuit.getTitle();
-        if ((topName == null) || topName.isEmpty()) {
-            topName = "UNTITLED";
-            LogUtils.logWarning("The top module does not have a name. Exporting as '" + topName + "' module.");
-        }
-        out.print(KEYWORD_MODULE + " " + topName + " (");
+        String title = ExportUtils.getClearModelTitle(circuit);
+        out.print(KEYWORD_MODULE + " " + title + " (");
         String inputPorts = "";
         String outputPorts = "";
         boolean isFirstPort = true;

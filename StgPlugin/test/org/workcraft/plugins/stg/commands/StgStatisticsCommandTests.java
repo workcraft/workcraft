@@ -20,6 +20,8 @@ public class StgStatisticsCommandTests {
                     + "\n  Arc -  16"
                     + "\n",
             "Signal Transition Graph analysis:"
+                    + "\n  Signal count -  3"
+                    + "\n    * Input / output / internal -  2 / 1 / 0"
                     + "\n  Transition count -  6"
                     + "\n    * Input / output / internal / dummy -  4 / 2 / 0 / 0"
                     + "\n    * Rising / falling / toggle -  3 / 3 / 0"
@@ -51,6 +53,8 @@ public class StgStatisticsCommandTests {
                     + "\n  Arc -  62"
                     + "\n",
             "Signal Transition Graph analysis:"
+                    + "\n  Signal count -  7"
+                    + "\n    * Input / output / internal -  5 / 2 / 0"
                     + "\n  Transition count -  28"
                     + "\n    * Input / output / internal / dummy -  20 / 8 / 0 / 0"
                     + "\n    * Rising / falling / toggle -  14 / 14 / 0"
@@ -82,6 +86,8 @@ public class StgStatisticsCommandTests {
                     + "\n  Arc -  38"
                     + "\n",
             "Signal Transition Graph analysis:"
+                    + "\n  Signal count -  6"
+                    + "\n    * Input / output / internal -  3 / 3 / 0"
                     + "\n  Transition count -  17"
                     + "\n    * Input / output / internal / dummy -  7 / 10 / 0 / 0"
                     + "\n    * Rising / falling / toggle -  10 / 7 / 0"

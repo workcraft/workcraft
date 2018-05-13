@@ -1,4 +1,6 @@
 Signal Transition Graph analysis:
+  Signal count -  15
+    * Input / output / internal -  3 / 3 / 9
   Transition count -  73
     * Input / output / internal / dummy -  7 / 18 / 48 / 0
     * Rising / falling / toggle -  39 / 34 / 0
