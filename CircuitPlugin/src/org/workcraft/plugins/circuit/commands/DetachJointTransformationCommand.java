@@ -2,22 +2,16 @@ package org.workcraft.plugins.circuit.commands;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Set;
 
 import org.workcraft.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
-import org.workcraft.dom.Connection;
-import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
-import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitComponent;
-import org.workcraft.plugins.circuit.VisualCircuitConnection;
 import org.workcraft.plugins.circuit.VisualContact;
-import org.workcraft.plugins.circuit.VisualJoint;
-import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -95,35 +89,7 @@ public class DetachJointTransformationCommand extends AbstractTransformationComm
         if ((model instanceof VisualCircuit) && (node instanceof VisualContact)) {
             VisualCircuit circuit = (VisualCircuit) model;
             VisualContact driver = (VisualContact) node;
-            if (driver.isDriver() && (circuit.getConnections(driver).size() > 1)) {
-                Set<Connection> connections = new HashSet<>(model.getConnections(node));
-
-                Container container = (Container) driver.getParent();
-                if (container instanceof VisualCircuitComponent) {
-                    container = (Container) container.getParent();
-                }
-                VisualJoint joint = circuit.createJoint(container);
-                joint.setRootSpacePosition(driver.getRootSpacePosition());
-
-                try {
-                    circuit.connect(driver, joint);
-                } catch (InvalidConnectionException e) {
-                    LogUtils.logWarning(e.getMessage());
-                }
-
-                for (Connection connection: connections) {
-                    if (!(connection instanceof VisualCircuitConnection)) continue;
-                    circuit.remove(connection);
-                    try {
-                        Node driven = connection.getSecond();
-                        VisualCircuitConnection newConnection = (VisualCircuitConnection) circuit.connect(joint, driven);
-                        newConnection.copyShape((VisualCircuitConnection) connection);
-                        newConnection.copyStyle((VisualCircuitConnection) connection);
-                    } catch (InvalidConnectionException e) {
-                        LogUtils.logWarning(e.getMessage());
-                    }
-                }
-            }
+            CircuitUtils.detachJoint(circuit, driver);
         }
     }
 

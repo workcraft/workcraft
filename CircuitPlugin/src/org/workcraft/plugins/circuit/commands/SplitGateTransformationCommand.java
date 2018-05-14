@@ -1,7 +1,6 @@
 package org.workcraft.plugins.circuit.commands;
 
 import java.awt.geom.Point2D;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -18,7 +17,10 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
+import org.workcraft.dom.visual.VisualNode;
+import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
@@ -27,6 +29,7 @@ import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.utils.BooleanUtils;
+import org.workcraft.formula.utils.FormulaToLiterals;
 import org.workcraft.formula.utils.FormulaToString;
 import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact.IOType;
@@ -39,11 +42,18 @@ import org.workcraft.plugins.circuit.naryformula.SplitForm;
 import org.workcraft.plugins.circuit.naryformula.SplitFormGenerator;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
+import org.workcraft.util.Pair;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class SplitGateTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
+
+    private class NodeConnectionPair extends Pair<VisualNode, VisualConnection> {
+        NodeConnectionPair(VisualNode first, VisualConnection second) {
+            super(first, second);
+        }
+    }
 
     @Override
     public String getDisplayName() {
@@ -123,56 +133,37 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
         }
 
         LogUtils.logInfo("Splitting multi-level gate " + str + "into:");
-        List<Node> fromNodes = getComponentDriverNodes(circuit, bigGate);
-        List<Node> toNodes = getComponentDrivenNodes(circuit, bigGate);
+        List<NodeConnectionPair> fromNodeConnections = getComponentDriverNodes(circuit, bigGate);
+        Set<NodeConnectionPair> toNodeConnections = getComponentNonLoopDrivenNodes(circuit, bigGate);
         Container container = (Container) bigGate.getParent();
         circuit.remove(bigGate);
 
-        Stack<List<Node>> toNodesStack = new Stack<>();
-        toNodesStack.push(toNodes);
+        Stack<Set<NodeConnectionPair>> toNodeConnectionsStack = new Stack<>();
+        toNodeConnectionsStack.push(toNodeConnections);
 
-        Iterator<Node> fromNodeIterator = fromNodes.iterator();
+        Iterator<NodeConnectionPair> fromNodeConnectionIterator = fromNodeConnections.iterator();
         boolean isRootGate = true;
-        LinkedList<VisualFunctionComponent> gates = new LinkedList<>();
+        LinkedList<VisualFunctionComponent> nonRootGates = new LinkedList<>();
         for (BooleanFormula function: functions.getClauses()) {
             if (function instanceof BooleanVariable) {
-                connectTerminal(circuit, toNodesStack, fromNodeIterator);
+                connectTerminal(circuit, fromNodeConnectionIterator, toNodeConnectionsStack);
             } else {
-                VisualFunctionComponent gate = insertGate(circuit, function, container, toNodesStack);
-                if (isRootGate) {
+                VisualFunctionComponent gate = insertGate(circuit, function, container, toNodeConnectionsStack);
+                if (!isRootGate) {
+                    nonRootGates.push(gate);
+                } else {
                     Point2D pos = new Point2D.Double(bigGate.getX() + 1.0, bigGate.getY());
                     gate.setPosition(pos);
                     VisualFunctionContact outputContact = gate.getGateOutput();
+                    // Update fromNodes for self-loops
+                    fromNodeConnections.replaceAll(pair -> (pair.getFirst() == bigOutputContact)
+                            ? new NodeConnectionPair(outputContact, pair.getSecond()) : pair);
                     outputContact.copyStyle(bigOutputContact);
                     isRootGate = false;
-                } else {
-                    gates.push(gate);
                 }
             }
         }
-        calcInitValues(circuit, gates);
-    }
-
-    private void calcInitValues(VisualCircuit circuit, LinkedList<VisualFunctionComponent> gates) {
-        for (VisualFunctionComponent gate: gates) {
-            VisualFunctionContact output = gate.getGateOutput();
-            if (output != null) {
-                LinkedList<BooleanVariable> variables = new LinkedList<>();
-                LinkedList<BooleanFormula> values = new LinkedList<>();
-                for (VisualContact input: gate.getVisualInputs()) {
-                    VisualContact driver = CircuitUtils.findDriver(circuit, input, false);
-                    if (driver != null) {
-                        BooleanVariable variable = input.getReferencedContact();
-                        variables.add(variable);
-                        BooleanFormula value = driver.getReferencedContact().getInitToOne() ? One.instance() : Zero.instance();
-                        values.add(value);
-                    }
-                }
-                BooleanFormula setFunction = BooleanUtils.cleverReplace(output.getSetFunction(), variables, values);
-                boolean isOne = One.instance().equals(setFunction);
-                output.getReferencedContact().setInitToOne(isOne);
-            }
-        }
+        propagateInitValues(circuit, nonRootGates);
     }
 
     private String gateToString(VisualCircuit circuit, VisualFunctionComponent gate) {
@@ -195,16 +186,18 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
         return count;
     }
 
-    private void connectTerminal(VisualCircuit circuit, Stack<List<Node>> toNodesStack, Iterator<Node> fromNodeIterator) {
-        Node fromNode = fromNodeIterator.next();
-        if (!toNodesStack.isEmpty()) {
-            List<Node> toNodes = toNodesStack.pop();
-            connectFanout(circuit, fromNode, toNodes);
+    private void connectTerminal(VisualCircuit circuit, Iterator<NodeConnectionPair> fromNodeConnectionIterator,
+            Stack<Set<NodeConnectionPair>> toNodeConnectionsStack) {
+
+        NodeConnectionPair fromNodeConnection = fromNodeConnectionIterator.next();
+        if (!toNodeConnectionsStack.isEmpty()) {
+            Set<NodeConnectionPair> toNodeConnections = toNodeConnectionsStack.pop();
+            connectFanoutCopyFrom(circuit, fromNodeConnection, toNodeConnections);
         }
     }
 
     private VisualFunctionComponent insertGate(VisualCircuit circuit, BooleanFormula function,
-            Container container, Stack<List<Node>> toNodesStack) {
+            Container container, Stack<Set<NodeConnectionPair>> toNodeConnectionsStack) {
 
         FunctionComponent mathGate = new FunctionComponent();
         Container mathContainer = NamespaceHelper.getMathContainer(circuit, container);
@@ -214,40 +207,57 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
         VisualFunctionContact outputContact = createGateOutput(circuit, gate, function);
         LogUtils.logInfo("  - " + gateToString(circuit, gate));
 
-        if (!toNodesStack.isEmpty()) {
-            List<Node> toNodes = toNodesStack.pop();
-            connectFanout(circuit, outputContact, toNodes);
-            alignGateWithFanout(gate, toNodes);
+        if (!toNodeConnectionsStack.isEmpty()) {
+            Set<NodeConnectionPair> toNodeConnections = toNodeConnectionsStack.pop();
+            connectFanout(circuit, outputContact, toNodeConnections);
+            if (toNodeConnections.size() == 1) {
+                NodeConnectionPair nodeConnection = toNodeConnections.iterator().next();
+                VisualComponent toNode = (VisualComponent) nodeConnection.getFirst();
+                double x = toNode.getRootSpaceX() - 1.0;
+                double y = toNode.getRootSpaceY();
+                gate.setRootSpacePosition(new Point2D.Double(x, y));
+            }
         }
 
         List<VisualContact> inputContacts = gate.getVisualInputs();
         Collections.reverse(inputContacts);
         for (VisualContact inputContact: inputContacts) {
-            toNodesStack.push(Arrays.asList(inputContact));
+            Set<NodeConnectionPair> toNodes = new HashSet<>();
+            toNodes.add(new NodeConnectionPair(inputContact, null));
+            toNodeConnectionsStack.push(toNodes);
         }
         return gate;
     }
 
-    private List<Node> getComponentDriverNodes(VisualCircuit circuit, VisualFunctionComponent component) {
-        List<Node> result = new LinkedList<>();
-        for (VisualContact inputContact: component.getVisualInputs()) {
-            Set<Connection> connections = circuit.getConnections(inputContact);
-            if (connections.isEmpty()) {
-                result.add(null);
-            } else {
-                for (Connection connection: connections) {
-                    result.add(connection.getFirst());
-                }
+    private List<NodeConnectionPair> getComponentDriverNodes(VisualCircuit circuit, VisualFunctionComponent component) {
+        List<NodeConnectionPair> result = new LinkedList<>();
+        VisualFunctionContact outputContact = component.getGateOutput();
+        BooleanFormula setFunction = outputContact.getSetFunction();
+        List<BooleanVariable> orderedLiterals = setFunction.accept(new FormulaToLiterals());
+        for (BooleanVariable literal: orderedLiterals) {
+            VisualContact inputContact = circuit.getVisualComponent((MathNode) literal, VisualContact.class);
+            VisualNode driver = null;
+            VisualConnection visualConnection = null;
+            for (Connection connection: circuit.getConnections(inputContact)) {
+                if (!(connection instanceof VisualConnection)) continue;
+                visualConnection = (VisualConnection) connection;
+                driver = visualConnection.getFirst();
+                break;
             }
+            result.add(new NodeConnectionPair(driver, visualConnection));
         }
         return result;
     }
 
-    private List<Node> getComponentDrivenNodes(VisualCircuit circuit, VisualFunctionComponent component) {
-        List<Node> result = new LinkedList<>();
-        VisualFunctionContact output = component.getGateOutput();
-        for (Connection connection: circuit.getConnections(output)) {
-            result.add(connection.getSecond());
+    private Set<NodeConnectionPair> getComponentNonLoopDrivenNodes(VisualCircuit circuit, VisualFunctionComponent component) {
+        Set<NodeConnectionPair> result = new HashSet<>();
+        for (VisualContact outputContact: component.getVisualOutputs()) {
+            for (Connection connection: circuit.getConnections(outputContact)) {
+                if (!CircuitUtils.isSelfLoop(connection) && (connection instanceof VisualConnection)) {
+                    VisualConnection visualConnection = (VisualConnection) connection;
+                    result.add(new NodeConnectionPair(visualConnection.getSecond(), visualConnection));
+                }
+            }
         }
         return result;
     }
@@ -267,11 +277,18 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
         return outputContact;
     }
 
-    private void connectFanout(VisualCircuit circuit, Node fromNode, List<Node> toNodes) {
-        for (Node toNode: toNodes) {
-            if ((fromNode != null) && (toNode != null)) {
+    private void connectFanoutCopyFrom(VisualCircuit circuit, NodeConnectionPair fromNodeConnection,
+            Set<NodeConnectionPair> toNodeConnections) {
+
+        for (NodeConnectionPair toNodeConnection: toNodeConnections) {
+            if ((fromNodeConnection != null) && (toNodeConnection != null)) {
                 try {
-                    circuit.connect(fromNode, toNode);
+                    VisualNode fromNode = fromNodeConnection.getFirst();
+                    VisualNode toNode = toNodeConnection.getFirst();
+                    VisualConnection connection = (VisualConnection) circuit.connect(fromNode, toNode);
+                    VisualConnection fromConnection = fromNodeConnection.getSecond();
+                    connection.copyShape(fromConnection);
+                    connection.copyStyle(fromConnection);
                 } catch (InvalidConnectionException e) {
                     System.err.println(e.getMessage());
                 }
@@ -279,23 +296,42 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
         }
     }
 
-    private void alignGateWithFanout(VisualFunctionComponent component, List<Node> toNodes) {
-        double xMin = 0.0;
-        double ySum = 0.0;
-        int count = 0;
-        for (Node toNode: toNodes) {
-            if (toNode instanceof VisualComponent) {
-                VisualComponent toContactOrJoint = (VisualComponent) toNode;
-                double x = toContactOrJoint.getRootSpaceX();
-                if ((count == 0) || (x < xMin)) {
-                    xMin = x;
+    private void connectFanout(VisualCircuit circuit, VisualNode fromNode, Set<NodeConnectionPair> toNodeConnections) {
+        for (NodeConnectionPair toNodeConnection: toNodeConnections) {
+            if ((fromNode != null) && (toNodeConnection != null)) {
+                try {
+                    VisualNode toNode = toNodeConnection.getFirst();
+                    VisualConnection toConnection = toNodeConnection.getSecond();
+                    VisualConnection connection = (VisualConnection) circuit.connect(fromNode, toNode);
+                    connection.copyShape(toConnection);
+                    connection.copyStyle(toConnection);
+                } catch (InvalidConnectionException e) {
+                    System.err.println(e.getMessage());
                 }
-                ySum += toContactOrJoint.getRootSpaceY();
-                count++;
             }
         }
-        if (count > 0) {
-            component.setRootSpacePosition(new Point2D.Double(xMin - 1.0, ySum / count));
+    }
+
+    private void propagateInitValues(VisualCircuit circuit, LinkedList<VisualFunctionComponent> gates) {
+        for (VisualFunctionComponent gate: gates) {
+            VisualFunctionContact output = gate.getGateOutput();
+            if (output != null) {
+                LinkedList<BooleanVariable> variables = new LinkedList<>();
+                LinkedList<BooleanFormula> values = new LinkedList<>();
+                for (VisualContact input: gate.getVisualInputs()) {
+                    VisualContact driver = CircuitUtils.findDriver(circuit, input, false);
+                    if (driver != null) {
+                        BooleanVariable variable = input.getReferencedContact();
+                        variables.add(variable);
+                        boolean initToOne = driver.getReferencedContact().getInitToOne();
+                        BooleanFormula value = initToOne ? One.instance() : Zero.instance();
+                        values.add(value);
+                    }
+                }
+                BooleanFormula setFunction = BooleanUtils.cleverReplace(output.getSetFunction(), variables, values);
+                boolean isOne = One.instance().equals(setFunction);
+                output.getReferencedContact().setInitToOne(isOne);
+            }
         }
     }
 
