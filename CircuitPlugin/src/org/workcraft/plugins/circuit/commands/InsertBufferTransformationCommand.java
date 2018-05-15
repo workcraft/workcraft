@@ -20,6 +20,7 @@ import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitComponent;
 import org.workcraft.plugins.circuit.VisualCircuitConnection;
+import org.workcraft.plugins.circuit.VisualContact.Direction;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.util.Hierarchy;
@@ -98,6 +99,13 @@ public class InsertBufferTransformationCommand extends AbstractTransformationCom
             outputContact.setPosition(new Point2D.Double(1.5, 0.0));
             outputContact.setSetFunction(inputContact.getReferencedContact());
 
+            Point2D predPoint = ConnectionHelper.getPredPoint(connection, pos);
+            Point2D succPoint = ConnectionHelper.getSuccPoint(connection, pos);
+            Direction direction = getDirection(predPoint, succPoint);
+            if (direction != null) {
+                outputContact.setDirection(direction);
+            }
+
             LinkedList<Point2D> prefixControlPoints = ConnectionHelper.getPrefixControlPoints(connection, pos);
             LinkedList<Point2D> suffixControlPoints = ConnectionHelper.getSuffixControlPoints(connection, pos);
             circuit.remove(connection);
@@ -111,6 +119,20 @@ public class InsertBufferTransformationCommand extends AbstractTransformationCom
             }
             boolean initToOne = inputContact.getReferencedFunctionContact().getInitToOne();
             outputContact.getReferencedFunctionContact().setInitToOne(initToOne);
+        }
+    }
+
+    private Direction getDirection(Point2D predPoint, Point2D succPoint) {
+        if ((predPoint == null) || (succPoint == null)) {
+            return null;
+        } else {
+            double dx = succPoint.getX() - predPoint.getX();
+            double dy = succPoint.getY() - predPoint.getY();
+            if (Math.abs(dx) > Math.abs(dy)) {
+                return dx > 0 ? Direction.EAST : Direction.WEST;
+            } else {
+                return dy > 0 ? Direction.SOUTH : Direction.NORTH;
+            }
         }
     }
 
