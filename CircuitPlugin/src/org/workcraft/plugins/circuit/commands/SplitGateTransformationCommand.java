@@ -17,7 +17,6 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
-import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
@@ -29,13 +28,13 @@ import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.utils.BooleanUtils;
-import org.workcraft.formula.utils.FormulaToLiterals;
 import org.workcraft.formula.utils.FormulaToString;
 import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualContact;
+import org.workcraft.plugins.circuit.VisualContact.Direction;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.circuit.naryformula.SplitForm;
@@ -143,16 +142,20 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
 
         Iterator<NodeConnectionPair> fromNodeConnectionIterator = fromNodeConnections.iterator();
         boolean isRootGate = true;
+        Direction direction = bigOutputContact.getDirection();
         LinkedList<VisualFunctionComponent> nonRootGates = new LinkedList<>();
         for (BooleanFormula function: functions.getClauses()) {
             if (function instanceof BooleanVariable) {
                 connectTerminal(circuit, fromNodeConnectionIterator, toNodeConnectionsStack);
             } else {
-                VisualFunctionComponent gate = insertGate(circuit, function, container, toNodeConnectionsStack);
+                VisualFunctionComponent gate = insertGate(circuit, function, container, toNodeConnectionsStack, direction);
+                gate.copyStyle(bigGate);
+                gate.setLabel("");
                 if (!isRootGate) {
                     nonRootGates.push(gate);
                 } else {
-                    Point2D pos = new Point2D.Double(bigGate.getX() + 1.0, bigGate.getY());
+                    Point2D offset = getOffset(direction);
+                    Point2D pos = new Point2D.Double(bigGate.getX() - offset.getX(), bigGate.getY() - offset.getY());
                     gate.setPosition(pos);
                     VisualFunctionContact outputContact = gate.getGateOutput();
                     // Update fromNodes for self-loops
@@ -196,8 +199,8 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
         }
     }
 
-    private VisualFunctionComponent insertGate(VisualCircuit circuit, BooleanFormula function,
-            Container container, Stack<Set<NodeConnectionPair>> toNodeConnectionsStack) {
+    private VisualFunctionComponent insertGate(VisualCircuit circuit, BooleanFormula function, Container container,
+            Stack<Set<NodeConnectionPair>> toNodeConnectionsStack, Direction direction) {
 
         FunctionComponent mathGate = new FunctionComponent();
         Container mathContainer = NamespaceHelper.getMathContainer(circuit, container);
@@ -207,14 +210,16 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
         VisualFunctionContact outputContact = createGateOutput(circuit, gate, function);
         LogUtils.logInfo("  - " + gateToString(circuit, gate));
 
+        outputContact.setDirection(direction);
+        Point2D offset = getOffset(direction);
         if (!toNodeConnectionsStack.isEmpty()) {
             Set<NodeConnectionPair> toNodeConnections = toNodeConnectionsStack.pop();
             connectFanout(circuit, outputContact, toNodeConnections);
             if (toNodeConnections.size() == 1) {
                 NodeConnectionPair nodeConnection = toNodeConnections.iterator().next();
                 VisualComponent toNode = (VisualComponent) nodeConnection.getFirst();
-                double x = toNode.getRootSpaceX() - 1.0;
-                double y = toNode.getRootSpaceY();
+                double x = toNode.getRootSpaceX() + offset.getX();
+                double y = toNode.getRootSpaceY() + offset.getY();
                 gate.setRootSpacePosition(new Point2D.Double(x, y));
             }
         }
@@ -229,13 +234,19 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
         return gate;
     }
 
+    private Point2D getOffset(Direction direction) {
+        switch (direction) {
+        case WEST: return new Point2D.Double(1.0, 0.0);
+        case NORTH: return new Point2D.Double(0.0, 1.0);
+        case EAST: return new Point2D.Double(-1.0, 0.0);
+        case SOUTH: return new Point2D.Double(0.0, -1.0);
+        default: return new Point2D.Double(0.0, 0.0);
+        }
+    }
+
     private List<NodeConnectionPair> getComponentDriverNodes(VisualCircuit circuit, VisualFunctionComponent component) {
         List<NodeConnectionPair> result = new LinkedList<>();
-        VisualFunctionContact outputContact = component.getGateOutput();
-        BooleanFormula setFunction = outputContact.getSetFunction();
-        List<BooleanVariable> orderedLiterals = setFunction.accept(new FormulaToLiterals());
-        for (BooleanVariable literal: orderedLiterals) {
-            VisualContact inputContact = circuit.getVisualComponent((MathNode) literal, VisualContact.class);
+        for (VisualContact inputContact: component.getOrderedVisualFunctionContacts()) {
             VisualNode driver = null;
             VisualConnection visualConnection = null;
             for (Connection connection: circuit.getConnections(inputContact)) {

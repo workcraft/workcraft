@@ -2,13 +2,17 @@ package org.workcraft.plugins.circuit;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Node;
 import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
 import org.workcraft.formula.utils.BooleanUtils;
+import org.workcraft.formula.utils.FormulaToLiterals;
 import org.workcraft.observation.HierarchyEvent;
 import org.workcraft.observation.HierarchySupervisor;
 import org.workcraft.observation.NodesDeletingEvent;
@@ -124,6 +128,49 @@ public class FunctionComponent extends CircuitComponent {
                 BooleanFormula zeroReplace = BooleanUtils.cleverReplace(setFunction, inputContact, Zero.instance());
                 BooleanFormula oneReplace = BooleanUtils.cleverReplace(setFunction, inputContact, One.instance());
                 result = (zeroReplace == One.instance()) && (oneReplace == Zero.instance());
+            }
+        }
+        return result;
+    }
+
+    public FunctionContact getGateOutput() {
+        FunctionContact gateOutput = null;
+        for (Node node: getChildren()) {
+            if (!(node instanceof FunctionContact)) continue;
+            FunctionContact contact = (FunctionContact) node;
+            if (!contact.isOutput()) continue;
+            if (gateOutput == null) {
+                gateOutput = contact;
+            } else {
+                // more than one output - not a gate
+                gateOutput = null;
+                break;
+            }
+        }
+        return gateOutput;
+    }
+
+    public boolean isSequentialGate() {
+        FunctionContact gateOutput = getGateOutput();
+        BooleanFormula setFunction = null;
+        BooleanFormula resetFunction = null;
+        if (gateOutput != null) {
+            setFunction = gateOutput.getSetFunction();
+            resetFunction = gateOutput.getResetFunction();
+        }
+        return (setFunction != null) && (resetFunction != null);
+    }
+
+    public List<FunctionContact> getOrderedFunctionContacts() {
+        List<FunctionContact> result = new LinkedList<>();
+        FunctionContact outputContact = getGateOutput();
+        if (outputContact != null) {
+            BooleanFormula setFunction = outputContact.getSetFunction();
+            List<BooleanVariable> orderedLiterals = setFunction.accept(new FormulaToLiterals());
+            for (BooleanVariable literal: orderedLiterals) {
+                if (!(literal instanceof FunctionContact)) continue;
+                FunctionContact contact = (FunctionContact) literal;
+                result.add(contact);
             }
         }
         return result;

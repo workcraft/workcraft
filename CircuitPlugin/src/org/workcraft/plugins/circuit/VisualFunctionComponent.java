@@ -9,6 +9,8 @@ import java.awt.geom.Line2D;
 import java.awt.geom.Path2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
@@ -113,6 +115,41 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
         return (getReferencedFunctionComponent() != null) && getReferencedFunctionComponent().isInverter();
     }
 
+    public VisualFunctionContact getGateOutput() {
+        if (getReferencedFunctionComponent() != null) {
+            FunctionContact contact = getReferencedFunctionComponent().getGateOutput();
+            return getVisualContact(contact);
+        }
+        return null;
+    }
+
+    public boolean isSequentialGate() {
+        return (getReferencedFunctionComponent() != null) && getReferencedFunctionComponent().isSequentialGate();
+    }
+
+    public List<VisualFunctionContact> getOrderedVisualFunctionContacts() {
+        List<VisualFunctionContact> result = new LinkedList<>();
+        if (getReferencedFunctionComponent() != null) {
+            for (FunctionContact contact: getReferencedFunctionComponent().getOrderedFunctionContacts()) {
+                VisualFunctionContact visualContact = getVisualContact(contact);
+                if (visualContact == null) continue;
+                result.add(visualContact);
+            }
+        }
+        return result;
+    }
+
+    public VisualFunctionContact getVisualContact(Contact contact) {
+        for (Node node: getChildren()) {
+            if (!(node instanceof VisualFunctionContact)) continue;
+            VisualFunctionContact visualContact = (VisualFunctionContact) node;
+            if (visualContact.getReferencedContact() == contact) {
+                return visualContact;
+            }
+        }
+        return null;
+    }
+
     private ComponentRenderingResult getRenderingResult() {
         if (groupImpl == null) return null;
         if (renderingResult != null) {
@@ -143,36 +180,6 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
             }
         }
         return renderingResult;
-    }
-
-    public VisualFunctionContact getGateOutput() {
-        VisualFunctionContact gateOutput = null;
-        for (Node node: getChildren()) {
-            if (node instanceof VisualFunctionContact) {
-                VisualFunctionContact vc = (VisualFunctionContact) node;
-                if (vc.isOutput()) {
-                    if (gateOutput == null) {
-                        gateOutput = vc;
-                    } else {
-                        // more than one output - not a gate
-                        gateOutput = null;
-                        break;
-                    }
-                }
-            }
-        }
-        return gateOutput;
-    }
-
-    public boolean isSequentialGate() {
-        VisualFunctionContact gateOutput = getGateOutput();
-        BooleanFormula setFunction = null;
-        BooleanFormula resetFunction = null;
-        if (gateOutput != null) {
-            setFunction = gateOutput.getSetFunction();
-            resetFunction = gateOutput.getResetFunction();
-        }
-        return (setFunction != null) && (resetFunction != null);
     }
 
     public void invalidateRenderingResult() {
