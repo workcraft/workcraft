@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.BooleanOperations;
 import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.BooleanWorker;
 import org.workcraft.formula.CleverBooleanWorker;
@@ -59,6 +60,14 @@ public class BooleanUtils {
         Integer result = null;
         if (formula != null) {
             result = formula.accept(new FormulaToLiteralCount());
+        }
+        return result;
+    }
+
+    public static BooleanFormula demorganProcess(BooleanFormula formula) {
+        BooleanFormula result = null;
+        if (formula != null) {
+            result = BooleanOperations.not(formula.accept(new BooleanComplementer()));
         }
         return result;
     }

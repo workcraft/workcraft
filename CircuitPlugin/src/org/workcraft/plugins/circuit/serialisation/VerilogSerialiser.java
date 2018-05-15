@@ -11,7 +11,7 @@ import org.workcraft.dom.Model;
 import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.DumbBooleanWorker;
+import org.workcraft.formula.BooleanOperations;
 import org.workcraft.formula.utils.FormulaToString;
 import org.workcraft.formula.utils.FormulaToString.Style;
 import org.workcraft.plugins.circuit.Circuit;
@@ -138,7 +138,7 @@ public class VerilogSerialiser implements ModelSerialiser {
             String setExpr = FormulaToString.toString(setFormula, Style.VERILOG);
             BooleanFormula resetFormula = signalInfo.resetFormula;
             if (resetFormula != null) {
-                resetFormula = new DumbBooleanWorker().not(resetFormula);
+                resetFormula = BooleanOperations.not(resetFormula);
             }
             String resetExpr = FormulaToString.toString(resetFormula, Style.VERILOG);
             String expr = null;

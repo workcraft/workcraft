@@ -1,5 +1,6 @@
 transformCircuitContractComponent(work) - transform the given Circuit 'work' by contracting selected single-input/single-output components
 transformCircuitContractJoint(work) - transform the given Circuit 'work' by contracting selected (or all) joints
+transformCircuitDemorganGate(work) - transform the given Circuit 'work' by applying De Morgan rule to selected (or all) gates
 transformCircuitDetachJoint(work) - transform the given Circuit 'work' by detaching selected (or all joints)
 transformCircuitInsertBuffer(work) - transform the given Circuit 'work' by inserting buffers into selected wires
 transformCircuitSplitGate(work) - transform the given Circuit 'work' by splitting selected (or all) complex gates into simple gates

@@ -17,6 +17,7 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
+import org.workcraft.formula.utils.FormulaToString;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.util.Hierarchy;
@@ -519,6 +520,17 @@ public class CircuitUtils {
         return ((firstParent instanceof VisualCircuitComponent) || (firstParent instanceof CircuitComponent))
                 && ((secondParent instanceof VisualCircuitComponent) || (secondParent instanceof CircuitComponent))
                 && (firstParent == secondParent);
+    }
+
+    public static String gateToString(VisualCircuit circuit, VisualFunctionComponent gate) {
+        String gateRef = circuit.getNodeMathReference(gate);
+
+        VisualFunctionContact outputContact = gate.getGateOutput();
+        String outputName = outputContact.getName();
+
+        BooleanFormula setFunction = outputContact.getSetFunction();
+        String functionString = FormulaToString.toString(setFunction);
+        return gateRef + " [" + outputName + " = " + functionString + "]";
     }
 
 }

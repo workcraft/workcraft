@@ -113,7 +113,7 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
         VisualFunctionContact bigOutputContact = bigGate.getGateOutput();
 
         BooleanFormula setFunction = bigOutputContact.getSetFunction();
-        String str = gateToString(circuit, bigGate);
+        String str = CircuitUtils.gateToString(circuit, bigGate);
         if (setFunction == null) {
             LogUtils.logWarning("Gate " + str + " cannot be split as it does not have set functions defined");
             return;
@@ -131,7 +131,7 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
             return;
         }
 
-        LogUtils.logInfo("Splitting multi-level gate " + str + "into:");
+        LogUtils.logInfo("Splitting multi-level gate " + str + " into:");
         List<NodeConnectionPair> fromNodeConnections = getComponentDriverNodes(circuit, bigGate);
         Set<NodeConnectionPair> toNodeConnections = getComponentNonLoopDrivenNodes(circuit, bigGate);
         Container container = (Container) bigGate.getParent();
@@ -169,17 +169,6 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
         propagateInitValues(circuit, nonRootGates);
     }
 
-    private String gateToString(VisualCircuit circuit, VisualFunctionComponent gate) {
-        String gateRef = circuit.getNodeMathReference(gate);
-
-        VisualFunctionContact outputContact = gate.getGateOutput();
-        String outputName = outputContact.getName();
-
-        BooleanFormula setFunction = outputContact.getSetFunction();
-        String functionString = FormulaToString.toString(setFunction);
-        return gateRef + " [" + outputName + " = " + functionString + "]";
-    }
-
     private int getSplitGateCount(SplitForm functions) {
         int count = 0;
         for (BooleanFormula function: functions.getClauses()) {
@@ -208,7 +197,7 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
 
         VisualFunctionComponent gate = circuit.createVisualComponent(mathGate, VisualFunctionComponent.class, container);
         VisualFunctionContact outputContact = createGateOutput(circuit, gate, function);
-        LogUtils.logInfo("  - " + gateToString(circuit, gate));
+        LogUtils.logInfo("  - " + CircuitUtils.gateToString(circuit, gate));
 
         outputContact.setDirection(direction);
         Point2D offset = getOffset(direction);
