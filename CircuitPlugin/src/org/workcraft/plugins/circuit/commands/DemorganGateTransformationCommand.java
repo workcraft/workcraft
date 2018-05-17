@@ -19,6 +19,7 @@ import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
+import org.workcraft.plugins.circuit.FunctionContact;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
@@ -103,40 +104,94 @@ public class DemorganGateTransformationCommand extends AbstractTransformationCom
             return;
         }
 
-        BooleanFormula demorganFunction = BooleanUtils.demorganProcess(setFunction);
-        outputContact.setSetFunction(demorganFunction);
-        gate.setLabel("");
-        renameContacts(circuit.getMathModel(), gate.getReferencedFunctionComponent());
-        String newGateStr = CircuitUtils.gateToString(circuit, gate);
-        LogUtils.logInfo("Transforming gate " + gateStr + " into " + newGateStr);
+        BooleanFormula demorganFunction = BooleanUtils.transformDeMorgan(setFunction);
+        if (!BooleanUtils.compareFunctions(setFunction, demorganFunction)) {
+            outputContact.setSetFunction(demorganFunction);
+            gate.setLabel("");
+            renameContacts(circuit.getMathModel(), gate.getReferencedFunctionComponent());
+            String newGateStr = CircuitUtils.gateToString(circuit, gate);
+            LogUtils.logInfo("Transforming gate " + gateStr + " into " + newGateStr);
+        }
     }
 
     private void renameContacts(Circuit circuit, FunctionComponent gate) {
         if (checkContactNamePattern(gate)) {
-            Contact outputContact = gate.getGateOutput();
-            invertContactName(circuit, outputContact);
-            for (Contact contact: gate.getInputs()) {
-                invertContactName(circuit, contact);
+            Set<FunctionContact> bubbleContacts = CircuitUtils.getBubbleContacts(gate);
+            for (Contact contact: gate.getContacts()) {
+                renameContactBubbleHeuristic(circuit, contact, bubbleContacts);
             }
-            renameContactHeuristic(circuit, gate, new String[] {"A", "BN"}, new String[] {"B", "AN"});
-            renameContactHeuristic(circuit, gate, new String[] {"A", "B", "CN"}, new String[] {"C", "B", "AN"});
-            renameContactHeuristic(circuit, gate, new String[] {"A", "BN", "CN"}, new String[] {"C", "BN", "AN"});
-            renameContactHeuristic(circuit, gate, new String[] {"A", "B", "C", "DN"}, new String[] {"D", "B", "C", "AN"});
-            renameContactHeuristic(circuit, gate, new String[] {"A", "B", "CN", "DN"}, new String[] {"D", "C", "BN", "AN"});
-            renameContactHeuristic(circuit, gate, new String[] {"A", "BN", "CN", "DN"}, new String[] {"D", "BN", "CN", "AN"});
-            renameContactHeuristic(circuit, gate, new String[] {"A1", "A2N"}, new String[] {"A2", "A1N"});
-            renameContactHeuristic(circuit, gate, new String[] {"A1", "A2", "A3N"}, new String[] {"A3", "A2", "A1N"});
-            renameContactHeuristic(circuit, gate, new String[] {"A1", "A2N", "A3N"}, new String[] {"A3", "A2N", "A1N"});
-            renameContactHeuristic(circuit, gate, new String[] {"B1", "B2N"}, new String[] {"B2", "B1N"});
-            renameContactHeuristic(circuit, gate, new String[] {"B1", "B2", "B3N"}, new String[] {"B3", "B2", "B1N"});
-            renameContactHeuristic(circuit, gate, new String[] {"B1", "B2N", "B3N"}, new String[] {"B3", "B2N", "B1N"});
-            renameContactHeuristic(circuit, gate, new String[] {"C1", "C2N"}, new String[] {"C2", "C1N"});
-            renameContactHeuristic(circuit, gate, new String[] {"C1", "C2", "C3N"}, new String[] {"C3", "C2", "C1N"});
-            renameContactHeuristic(circuit, gate, new String[] {"C1", "C2N", "C3N"}, new String[] {"C3", "C2N", "C1N"});
+            renameContactsOrderHeuristic(circuit, gate,
+                    new String[] {"A", "BN"},
+                    new String[] {"B", "AN"});
+            renameContactsOrderHeuristic(circuit, gate,
+                    new String[] {"A", "B", "CN"},
+                    new String[] {"C", "B", "AN"});
+            renameContactsOrderHeuristic(circuit, gate,
+                    new String[] {"A", "BN", "CN"},
+                    new String[] {"C", "BN", "AN"});
+            renameContactsOrderHeuristic(circuit, gate,
+                    new String[] {"A", "B", "C", "DN"},
+                    new String[] {"D", "B", "C", "AN"});
+            renameContactsOrderHeuristic(circuit, gate,
+                    new String[] {"A", "B", "CN", "DN"},
+                    new String[] {"D", "C", "BN", "AN"});
+            renameContactsOrderHeuristic(circuit, gate,
+                    new String[] {"A", "BN", "CN", "DN"},
+                    new String[] {"D", "BN", "CN", "AN"});
+            renameContactsOrderHeuristic(circuit, gate,
+                    new String[] {"A1", "A2N"},
+                    new String[] {"A2", "A1N"});
+            renameContactsOrderHeuristic(circuit, gate,
+                    new String[] {"A1", "A2", "A3N"},
+                    new String[] {"A3", "A2", "A1N"});
+            renameContactsOrderHeuristic(circuit, gate,
+                    new String[] {"A1", "A2N", "A3N"},
+                    new String[] {"A3", "A2N", "A1N"});
+            renameContactsOrderHeuristic(circuit, gate,
+                    new String[] {"B1", "B2N"},
+                    new String[] {"B2", "B1N"});
+            renameContactsOrderHeuristic(circuit, gate,
+                    new String[] {"B1", "B2", "B3N"},
+                    new String[] {"B3", "B2", "B1N"});
+            renameContactsOrderHeuristic(circuit, gate,
+                    new String[] {"B1", "B2N", "B3N"},
+                    new String[] {"B3", "B2N", "B1N"});
+            renameContactsOrderHeuristic(circuit, gate,
+                    new String[] {"C1", "C2N"},
+                    new String[] {"C2", "C1N"});
+            renameContactsOrderHeuristic(circuit, gate,
+                    new String[] {"C1", "C2", "C3N"},
+                    new String[] {"C3", "C2", "C1N"});
+            renameContactsOrderHeuristic(circuit, gate,
+                    new String[] {"C1", "C2N", "C3N"},
+                    new String[] {"C3", "C2N", "C1N"});
         }
     }
 
-    private void renameContactHeuristic(Circuit circuit, FunctionComponent gate, String[] srcNames, String[] dstNames) {
+    private boolean checkContactNamePattern(FunctionComponent gate) {
+        if (gate.getInputs().size() < 2) {
+            return false;
+        }
+        for (Contact contact: gate.getContacts()) {
+            Matcher matcher = PIN_NAME_PATTERN.matcher(contact.getName());
+            if (!matcher.matches()) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private void renameContactBubbleHeuristic(Circuit circuit, Contact contact, Set<FunctionContact> bubbleContacts) {
+        String name = circuit.getName(contact);
+        if (name.endsWith("N") && !bubbleContacts.contains(contact)) {
+            name = name.substring(0, name.length() - 1);
+        } else if (!name.endsWith("N") && bubbleContacts.contains(contact)) {
+            name += "N";
+        }
+        circuit.setName(contact, name);
+    }
+
+    private void renameContactsOrderHeuristic(Circuit circuit, FunctionComponent gate, String[] srcNames, String[] dstNames) {
         Map<String, Contact> nameToContactMap = new HashMap<>();
         for (Contact contact: gate.getContacts()) {
             nameToContactMap.put(contact.getName(), contact);
@@ -155,29 +210,6 @@ public class DemorganGateTransformationCommand extends AbstractTransformationCom
                 }
             }
         }
-    }
-
-    private boolean checkContactNamePattern(FunctionComponent gate) {
-        if (gate.getInputs().size() < 2) {
-            return false;
-        }
-        for (Contact contact: gate.getContacts()) {
-            Matcher matcher = PIN_NAME_PATTERN.matcher(contact.getName());
-            if (!matcher.matches()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    private void invertContactName(Circuit circuit, Contact contact) {
-        String name = circuit.getName(contact);
-        if (name.endsWith("N")) {
-            name = name.substring(0, name.length() - 1);
-        } else {
-            name += "N";
-        }
-        circuit.setName(contact, name);
     }
 
 }
