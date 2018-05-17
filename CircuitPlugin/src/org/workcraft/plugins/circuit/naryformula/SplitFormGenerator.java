@@ -74,7 +74,7 @@ public class SplitFormGenerator {
                 if (negated) {
                     BooleanVariable variable = argToVarMap.get(arg);
                     BooleanVariable notVariable = new FreeVariable(variable.getLabel() + "N");
-                    formula = BooleanUtils.dumbReplace(formula, variable, new Not(notVariable));
+                    formula = BooleanUtils.replaceDumb(formula, variable, new Not(notVariable));
                     negated = !negated;
                 }
                 operands.add(operand);

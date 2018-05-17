@@ -20,7 +20,7 @@ import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.BooleanWorker;
 import org.workcraft.formula.CleverBooleanWorker;
-import org.workcraft.formula.utils.FormulaToString;
+import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.util.Func;
 
 public class BooleanFormulaParser {
@@ -88,7 +88,7 @@ public class BooleanFormulaParser {
     }
 
     public static void main(String [] args) throws Exception {
-        System.out.println(FormulaToString.toString(new BooleanFormulaParser(System.in).formula()));
+        System.out.println(StringGenerator.toString(new BooleanFormulaParser(System.in).formula()));
     }
 
 }

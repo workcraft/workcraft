@@ -29,7 +29,7 @@ import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.sat.CleverCnfGenerator;
 import org.workcraft.formula.sat.DefaultSolver;
 import org.workcraft.formula.sat.Optimiser;
-import org.workcraft.formula.utils.FormulaToString;
+import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.plugins.cpog.EncoderSettings;
 import org.workcraft.plugins.cpog.EncoderSettings.GenerationMode;
 import org.workcraft.plugins.cpog.Variable;
@@ -309,7 +309,7 @@ public class ScencoExecutionSupport {
                         if (condition != One.instance() && condition != Zero.instance()) {
 
                             // Format output by substituting ' with !
-                            String cond = FormulaToString.toString(condition).replace("'", "!");
+                            String cond = StringGenerator.toString(condition).replace("'", "!");
                             String result = "";
                             String tmp = "";
                             for (int i = 0; i < cond.length(); i++) {

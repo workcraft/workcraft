@@ -3,7 +3,7 @@ package org.workcraft.formula;
 import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.formula.encoding.BinaryNumberProvider;
-import org.workcraft.formula.utils.FormulaToString;
+import org.workcraft.formula.utils.StringGenerator;
 
 public class BinaryNumberProviderTests {
 
@@ -12,7 +12,7 @@ public class BinaryNumberProviderTests {
         BinaryNumberProvider p = new BinaryNumberProvider();
         p.generate("x", 25);
         BooleanFormula formula = p.getConstraints();
-        String str = FormulaToString.toString(formula);
+        String str = StringGenerator.toString(formula);
         Assert.assertEquals("(xb4 * xb3 * (xb2' * xb1' * xb0')')'", str);
     }
 
@@ -38,7 +38,7 @@ public class BinaryNumberProviderTests {
         f[7] = new FreeVariable("h");
         f[8] = new FreeVariable("i");
         BooleanFormula formula = p.select(f, num);
-        String str = formula.accept(new FormulaToString());
+        String str = formula.accept(new StringGenerator());
         Assert.assertEquals("((b3 * b2' * b1' * b0' * i)' * (b3' * ((b2 * ((b1 * ((b0 * h)' * (b0' * g)')')' * (b1' * ((b0 * f)' * (b0' * e)')')')')' * (b2' * ((b1 * ((b0 * d)' * (b0' * c)')')' * (b1' * ((b0 * b)' * (b0' * a)')')')')')')')'", str);
     }
 
@@ -47,7 +47,7 @@ public class BinaryNumberProviderTests {
         BinaryNumberProvider p = new BinaryNumberProvider();
         p.generate("x", 2);
         BooleanFormula formula = p.getConstraints();
-        String str = formula.accept(new FormulaToString());
+        String str = formula.accept(new StringGenerator());
         Assert.assertEquals("1", str);
     }
 
@@ -55,7 +55,7 @@ public class BinaryNumberProviderTests {
     public void testZeroBitEmptyConstraint() {
         BinaryNumberProvider p = new BinaryNumberProvider();
         p.generate("", 1);
-        Assert.assertEquals("1", p.getConstraints().accept(new FormulaToString()));
+        Assert.assertEquals("1", p.getConstraints().accept(new StringGenerator()));
     }
 
     @Test
@@ -65,7 +65,7 @@ public class BinaryNumberProviderTests {
         BooleanFormula[] f = new BooleanFormula[1];
         f[0] = new FreeVariable("x");
         BooleanFormula result = p.select(f, num);
-        Assert.assertEquals("x", result.accept(new FormulaToString()));
+        Assert.assertEquals("x", result.accept(new StringGenerator()));
     }
 
     @Test
@@ -76,7 +76,7 @@ public class BinaryNumberProviderTests {
         f[0] = new FreeVariable("x");
         f[1] = new FreeVariable("y");
         BooleanFormula result = p.select(f, num);
-        String str = result.accept(new FormulaToString());
+        String str = result.accept(new StringGenerator());
         Assert.assertEquals("((b0 * y)' * (b0' * x)')'", str);
     }
 
@@ -89,7 +89,7 @@ public class BinaryNumberProviderTests {
         f[1] = new FreeVariable("y");
         f[2] = new FreeVariable("z");
         BooleanFormula result = p.select(f, num);
-        String str = result.accept(new FormulaToString());
+        String str = result.accept(new StringGenerator());
         Assert.assertEquals("((b1 * b0' * z)' * (b1' * ((b0 * y)' * (b0' * x)')')')'", str);
     }
 

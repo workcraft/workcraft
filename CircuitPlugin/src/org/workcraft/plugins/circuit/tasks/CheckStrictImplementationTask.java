@@ -7,8 +7,8 @@ import java.util.Collection;
 import org.workcraft.Framework;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.utils.FormulaToString;
-import org.workcraft.formula.utils.FormulaToString.Style;
+import org.workcraft.formula.utils.StringGenerator;
+import org.workcraft.formula.utils.StringGenerator.Style;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitSignalInfo;
 import org.workcraft.plugins.circuit.FunctionComponent;
@@ -98,9 +98,9 @@ public class CheckStrictImplementationTask extends MpsatChainTask {
                 for (CircuitSignalInfo.SignalInfo signalInfo: circuitInfo.getComponentSignalInfos(component)) {
                     String signalName = circuitInfo.getContactSignal(signalInfo.contact);
                     BooleanFormula setFormula = signalInfo.setFormula;
-                    String setExpr = FormulaToString.toString(setFormula, Style.VERILOG);
+                    String setExpr = StringGenerator.toString(setFormula, Style.VERILOG);
                     BooleanFormula resetFormula = signalInfo.resetFormula;
-                    String resetExpr = FormulaToString.toString(resetFormula, Style.VERILOG);
+                    String resetExpr = StringGenerator.toString(resetFormula, Style.VERILOG);
                     signalInfos.add(new MpsatParameters.SignalInfo(signalName, setExpr, resetExpr));
                 }
             }

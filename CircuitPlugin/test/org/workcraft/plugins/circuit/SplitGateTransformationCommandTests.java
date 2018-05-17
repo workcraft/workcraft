@@ -20,11 +20,11 @@ public class SplitGateTransformationCommandTests {
     }
 
     @Test
-    public void testVmeDecomposeGateTransformationCommand() throws DeserialisationException {
-        testDecomposeGateTransformationCommand("org/workcraft/plugins/circuit/vme-tm.circuit.work", 15, 18);
+    public void testVmeSplitGateTransformationCommand() throws DeserialisationException {
+        testSplitGateTransformationCommand("org/workcraft/plugins/circuit/vme-tm.circuit.work", 15, 18);
     }
 
-    private void testDecomposeGateTransformationCommand(String work, int expMappedGateCount, int expUnmappedGateCount)
+    private void testSplitGateTransformationCommand(String work, int expMappedGateCount, int expUnmappedGateCount)
             throws DeserialisationException {
 
         final Framework framework = Framework.getInstance();
@@ -36,8 +36,8 @@ public class SplitGateTransformationCommandTests {
 
         circuit.selectAll();
 
-        SplitGateTransformationCommand contractCommand = new SplitGateTransformationCommand();
-        contractCommand.execute(we);
+        SplitGateTransformationCommand command = new SplitGateTransformationCommand();
+        command.execute(we);
 
         int dstMappedGateCount = 0;
         int dstUnmappedGateCount = 0;

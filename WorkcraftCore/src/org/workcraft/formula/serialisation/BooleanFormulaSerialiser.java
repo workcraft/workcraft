@@ -4,9 +4,9 @@ import org.w3c.dom.Element;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
-import org.workcraft.formula.utils.FormulaToString;
-import org.workcraft.formula.utils.FormulaToString.PrinterSuite;
-import org.workcraft.formula.utils.FormulaToString.Void;
+import org.workcraft.formula.utils.StringGenerator;
+import org.workcraft.formula.utils.StringGenerator.PrinterSuite;
+import org.workcraft.formula.utils.StringGenerator.Void;
 import org.workcraft.serialisation.ReferenceProducer;
 import org.workcraft.serialisation.xml.CustomXMLSerialiser;
 import org.workcraft.serialisation.xml.NodeSerialiser;
@@ -29,8 +29,8 @@ public abstract class BooleanFormulaSerialiser implements CustomXMLSerialiser {
             return;
         }
 
-        PrinterSuite printers = new FormulaToString.PrinterSuite();
-        printers.vars = new FormulaToString.VariablePrinter() {
+        PrinterSuite printers = new StringGenerator.PrinterSuite();
+        printers.vars = new StringGenerator.VariablePrinter() {
             @Override
             public Void visit(BooleanVariable node) {
 

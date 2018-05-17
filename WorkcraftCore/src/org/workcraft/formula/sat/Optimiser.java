@@ -175,7 +175,7 @@ public class Optimiser<BooleanNumber> implements SatProblemGenerator<BooleanForm
     }
 
     private BooleanFormula replace(BooleanFormula where, BooleanVariable what, BooleanFormula with) {
-        return BooleanUtils.prettifyReplace(where, what, with);
+        return BooleanUtils.replacePretty(where, what, with);
     }
 
     /**
@@ -236,7 +236,7 @@ public class Optimiser<BooleanNumber> implements SatProblemGenerator<BooleanForm
         for (int i = 0; i < functionCount; i++) {
             BooleanFormula value = functions[i];
             for (int j = 0; j < scenarios.length; j++) {
-                BooleanFormula substituted = BooleanUtils.prettifyReplace(value, Arrays.asList(variables), Arrays.asList(encodings[j]));
+                BooleanFormula substituted = BooleanUtils.replacePretty(value, Arrays.asList(variables), Arrays.asList(encodings[j]));
 
                 BooleanFormula required = scenarios[j][i];
                 if (required != null) {

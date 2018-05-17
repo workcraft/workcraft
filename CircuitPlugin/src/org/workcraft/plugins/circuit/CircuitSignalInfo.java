@@ -112,8 +112,8 @@ public class CircuitSignalInfo {
         }
         for (FunctionContact contact: component.getFunctionContacts()) {
             if (contact.isOutput()) {
-                BooleanFormula setFunction = BooleanUtils.cleverReplace(contact.getSetFunction(), variables, values);
-                BooleanFormula resetFunction = BooleanUtils.cleverReplace(contact.getResetFunction(), variables, values);
+                BooleanFormula setFunction = BooleanUtils.replaceClever(contact.getSetFunction(), variables, values);
+                BooleanFormula resetFunction = BooleanUtils.replaceClever(contact.getResetFunction(), variables, values);
                 SignalInfo signalInfo = new SignalInfo(contact, setFunction, resetFunction);
                 result.add(signalInfo);
             }

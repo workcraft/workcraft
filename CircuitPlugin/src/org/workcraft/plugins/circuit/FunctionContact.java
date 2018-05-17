@@ -2,7 +2,7 @@ package org.workcraft.plugins.circuit;
 
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.utils.FormulaToString;
+import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.observation.PropertyChangedEvent;
 
 @VisualClass(org.workcraft.plugins.circuit.VisualFunctionContact.class)
@@ -27,8 +27,8 @@ public class FunctionContact extends Contact {
 
     public void setSetFunction(BooleanFormula value) {
         if (setFunction != value) {
-            String setFunctionString = FormulaToString.toString(setFunction);
-            String valueString = FormulaToString.toString(value);
+            String setFunctionString = StringGenerator.toString(setFunction);
+            String valueString = StringGenerator.toString(value);
             if (!setFunctionString.equals(valueString)) {
                 setSetFunctionQuiet(value);
                 sendNotification(new PropertyChangedEvent(this, PROPERTY_SET_FUNCTION));
@@ -50,8 +50,8 @@ public class FunctionContact extends Contact {
 
     public void setResetFunction(BooleanFormula value) {
         if (resetFunction != value) {
-            String resetFunctionString = FormulaToString.toString(resetFunction);
-            String valueString = FormulaToString.toString(value);
+            String resetFunctionString = StringGenerator.toString(resetFunction);
+            String valueString = StringGenerator.toString(value);
             if (!resetFunctionString.equals(valueString)) {
                 setResetFunctionQuiet(value);
                 sendNotification(new PropertyChangedEvent(this, PROPERTY_RESET_FUNCTION));

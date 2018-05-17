@@ -115,7 +115,7 @@ class CnfGeneratingOneHotNumberProvider implements NumberProvider<OneHotIntBoole
         List<CnfClause> result = select(literals, number, false);
 
         Cnf cnf = new Cnf(result);
-        return BooleanUtils.prettifyReplace(cnf, params, Arrays.asList(vars));
+        return BooleanUtils.replacePretty(cnf, params, Arrays.asList(vars));
     }
 
     @Override

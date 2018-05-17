@@ -6,17 +6,25 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.Set;
 
+import org.workcraft.dom.Connection;
+import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
+import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.BooleanVariable;
+import org.workcraft.formula.Not;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
+import org.workcraft.formula.utils.BubbledLiteralsExtractor;
+import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.util.Hierarchy;
+import org.workcraft.util.LogUtils;
 
 public class CircuitUtils {
 
@@ -470,6 +478,79 @@ public class CircuitUtils {
             VisualContact visualContact = visualCircuit.getVisualComponent(mathContact, VisualContact.class);
             if (visualContact != null) {
                 result.add(visualContact);
+            }
+        }
+        return result;
+    }
+
+    public static boolean detachJoint(VisualCircuit circuit, VisualContact driver) {
+        Set<Connection> connections = new HashSet<>(circuit.getConnections(driver));
+        if (!driver.isDriver() || (connections.size() <= 1)) {
+            return false;
+        }
+
+        Container container = (Container) driver.getParent();
+        if (container instanceof VisualCircuitComponent) {
+            container = (Container) container.getParent();
+        }
+        VisualJoint joint = circuit.createJoint(container);
+        joint.setRootSpacePosition(driver.getRootSpacePosition());
+
+        try {
+            circuit.connect(driver, joint);
+        } catch (InvalidConnectionException e) {
+            LogUtils.logWarning(e.getMessage());
+        }
+
+        for (Connection connection: connections) {
+            if (!(connection instanceof VisualCircuitConnection)) continue;
+            circuit.remove(connection);
+            try {
+                Node driven = connection.getSecond();
+                VisualCircuitConnection newConnection = (VisualCircuitConnection) circuit.connect(joint, driven);
+                newConnection.copyShape((VisualCircuitConnection) connection);
+                newConnection.copyStyle((VisualCircuitConnection) connection);
+            } catch (InvalidConnectionException e) {
+                LogUtils.logWarning(e.getMessage());
+            }
+        }
+        return true;
+    }
+
+    public static boolean isSelfLoop(Connection connection) {
+        Node firstParent = connection.getFirst().getParent();
+        Node secondParent = connection.getSecond().getParent();
+        return ((firstParent instanceof VisualCircuitComponent) || (firstParent instanceof CircuitComponent))
+                && ((secondParent instanceof VisualCircuitComponent) || (secondParent instanceof CircuitComponent))
+                && (firstParent == secondParent);
+    }
+
+    public static String gateToString(VisualCircuit circuit, VisualFunctionComponent gate) {
+        String gateRef = circuit.getNodeMathReference(gate);
+
+        VisualFunctionContact outputContact = gate.getGateOutput();
+        String outputName = outputContact.getName();
+
+        BooleanFormula setFunction = outputContact.getSetFunction();
+        String functionString = StringGenerator.toString(setFunction);
+        return gateRef + " [" + outputName + " = " + functionString + "]";
+    }
+
+    public static Set<FunctionContact> getBubbleContacts(FunctionComponent component) {
+        Set<FunctionContact> result = new HashSet<>();
+        for (FunctionContact outputContact: component.getFunctionOutputs()) {
+            BooleanFormula setFunction = outputContact.getSetFunction();
+            BooleanFormula resetFunction = outputContact.getResetFunction();
+            if ((setFunction == null) || (resetFunction != null)) continue;
+            if (setFunction instanceof Not) {
+                result.add(outputContact);
+            }
+            Set<BooleanVariable> bubbleLiterals = setFunction.accept(new BubbledLiteralsExtractor());
+            for (BooleanVariable literal: bubbleLiterals) {
+                if (literal instanceof FunctionContact) {
+                    FunctionContact inputContact = (FunctionContact) literal;
+                    result.add(inputContact);
+                }
             }
         }
         return result;

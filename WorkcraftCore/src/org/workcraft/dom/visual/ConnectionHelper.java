@@ -235,4 +235,53 @@ public class ConnectionHelper {
         return (graphic == null) ? null : (VisualConnection) graphic.getParent();
     }
 
+    public static Point2D getPredPoint(VisualConnection connection, Point2D splitPointInLocalSpace) {
+        Point2D locationInRootSpace = null;
+        if ((connection != null) && (connection.getGraphic() instanceof Polyline) && (splitPointInLocalSpace != null)) {
+            Polyline polyline = (Polyline) connection.getGraphic();
+            int splitIndex = polyline.getNearestSegment(splitPointInLocalSpace, null);
+            AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(connection);
+            int index = -1;
+            for (ControlPoint cp:  polyline.getControlPoints()) {
+                index++;
+                if (index < splitIndex) {
+                    Point2D locationInLocalSpace = cp.getPosition();
+                    if ((index < splitIndex - 1) || areDifferentAnchorPoints(locationInLocalSpace, splitPointInLocalSpace)) {
+                        locationInRootSpace = localToRootTransform.transform(locationInLocalSpace, null);
+                    }
+                }
+            }
+        }
+        if ((locationInRootSpace == null) && (connection.getFirst() instanceof VisualTransformableNode)) {
+            VisualTransformableNode first = (VisualTransformableNode) connection.getFirst();
+            locationInRootSpace = first.getRootSpacePosition();
+        }
+        return locationInRootSpace;
+    }
+
+    public static Point2D getSuccPoint(VisualConnection connection, Point2D splitPointInLocalSpace) {
+        Point2D locationInRootSpace = null;
+        if ((connection != null) && (connection.getGraphic() instanceof Polyline) && (splitPointInLocalSpace != null)) {
+            Polyline polyline = (Polyline) connection.getGraphic();
+            int splitIndex = polyline.getNearestSegment(splitPointInLocalSpace, null);
+            AffineTransform localToRootTransform = TransformHelper.getTransformToRoot(connection);
+            int index = -1;
+            for (ControlPoint cp:  polyline.getControlPoints()) {
+                index++;
+                if (index >= splitIndex) {
+                    Point2D locationInLocalSpace = cp.getPosition();
+                    if ((index > splitIndex) || areDifferentAnchorPoints(locationInLocalSpace, splitPointInLocalSpace)) {
+                        locationInRootSpace = localToRootTransform.transform(locationInLocalSpace, null);
+                        break;
+                    }
+                }
+            }
+        }
+        if ((locationInRootSpace == null) && (connection.getFirst() instanceof VisualTransformableNode)) {
+            VisualTransformableNode second = (VisualTransformableNode) connection.getSecond();
+            locationInRootSpace = second.getRootSpacePosition();
+        }
+        return locationInRootSpace;
+    }
+
 }

@@ -180,8 +180,8 @@ public class InitialisationAnalyserTool extends AbstractGraphEditorTool {
 
     private HashSet<Node> chooseFunctionLevelSet(FunctionContact contact,
             LinkedList<BooleanVariable> variables, LinkedList<BooleanFormula> values) {
-        BooleanFormula setFunction = BooleanUtils.cleverReplace(contact.getSetFunction(), variables, values);
-        BooleanFormula resetFunction = BooleanUtils.cleverReplace(contact.getResetFunction(), variables, values);
+        BooleanFormula setFunction = BooleanUtils.replaceClever(contact.getSetFunction(), variables, values);
+        BooleanFormula resetFunction = BooleanUtils.replaceClever(contact.getResetFunction(), variables, values);
         if (isEvaluatedHigh(setFunction, resetFunction)) {
             return initHighSet;
         } else if (isEvaluatedLow(setFunction, resetFunction)) {

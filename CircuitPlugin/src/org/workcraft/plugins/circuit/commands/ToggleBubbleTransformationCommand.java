@@ -128,11 +128,11 @@ public class ToggleBubbleTransformationCommand extends AbstractTransformationCom
                     BooleanFormula setFunction = dependantContact.getSetFunction();
                     BooleanFormula notContact = BooleanOperations.not(contact);
                     if (setFunction != null) {
-                        dependantContact.setSetFunctionQuiet(BooleanUtils.dumbReplace(setFunction, contact, notContact));
+                        dependantContact.setSetFunctionQuiet(BooleanUtils.replaceDumb(setFunction, contact, notContact));
                     }
                     BooleanFormula resetFunction = dependantContact.getResetFunction();
                     if (resetFunction != null) {
-                        dependantContact.setResetFunctionQuiet(BooleanUtils.dumbReplace(resetFunction, contact, notContact));
+                        dependantContact.setResetFunctionQuiet(BooleanUtils.replaceDumb(resetFunction, contact, notContact));
                     }
                 }
             }

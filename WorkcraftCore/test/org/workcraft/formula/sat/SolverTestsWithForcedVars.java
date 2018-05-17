@@ -10,7 +10,7 @@ import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.encoding.Encoding;
 import org.workcraft.formula.encoding.onehot.OneHotIntBooleanFormula;
 import org.workcraft.formula.encoding.onehot.OneHotNumberProvider;
-import org.workcraft.formula.utils.FormulaToString;
+import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.plugins.shared.CommonSatSettings;
 import org.workcraft.plugins.shared.CommonSatSettings.SatSolver;
 
@@ -59,7 +59,7 @@ public class SolverTestsWithForcedVars {
             System.out.println("Functions:");
             BooleanFormula[] functions = solution.getFunctions();
             for (int i = 0; i < functions.length; i++) {
-                System.out.println(FormulaToString.toString(functions[i]));
+                System.out.println(StringGenerator.toString(functions[i]));
             }
         }
     }

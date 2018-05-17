@@ -1,6 +1,6 @@
 package org.workcraft.formula;
 
-import org.workcraft.formula.utils.FormulaToString;
+import org.workcraft.formula.utils.StringGenerator;
 
 public class CleverBooleanWorker implements BooleanWorker {
 
@@ -27,7 +27,7 @@ public class CleverBooleanWorker implements BooleanWorker {
 
     @Override
     public BooleanFormula and(BooleanFormula x, BooleanFormula y) {
-        if (FormulaToString.toString(x).equals(FormulaToString.toString(y))) {
+        if (StringGenerator.toString(x).equals(StringGenerator.toString(y))) {
             return x;
         }
         if ((x == Zero.instance()) || (y == Zero.instance())) {
@@ -44,13 +44,13 @@ public class CleverBooleanWorker implements BooleanWorker {
 
     @Override
     public BooleanFormula or(BooleanFormula x, BooleanFormula y) {
-        if (FormulaToString.toString(x).equals(FormulaToString.toString(y))) {
+        if (StringGenerator.toString(x).equals(StringGenerator.toString(y))) {
             return x;
         }
-        if (checkStrings(FormulaToString.toString(x), FormulaToString.toString(y), " + ")) {
+        if (checkStrings(StringGenerator.toString(x), StringGenerator.toString(y), " + ")) {
             return x;
         }
-        if (checkStrings(FormulaToString.toString(x), invertString(FormulaToString.toString(y)), " + ")) {
+        if (checkStrings(StringGenerator.toString(x), invertString(StringGenerator.toString(y)), " + ")) {
             return One.instance();
         }
         if ((x == One.instance()) || (y == One.instance())) {
@@ -67,7 +67,7 @@ public class CleverBooleanWorker implements BooleanWorker {
 
     @Override
     public BooleanFormula xor(BooleanFormula x, BooleanFormula y) {
-        if (FormulaToString.toString(x).equals(FormulaToString.toString(y))) {
+        if (StringGenerator.toString(x).equals(StringGenerator.toString(y))) {
             return Zero.instance();
         }
         if (x == One.instance()) {
@@ -87,7 +87,7 @@ public class CleverBooleanWorker implements BooleanWorker {
 
     @Override
     public BooleanFormula imply(BooleanFormula x, BooleanFormula y) {
-        if (FormulaToString.toString(x).equals(FormulaToString.toString(y))) {
+        if (StringGenerator.toString(x).equals(StringGenerator.toString(y))) {
             return One.instance();
         }
         if ((x == Zero.instance()) || (y == One.instance())) {
@@ -104,7 +104,7 @@ public class CleverBooleanWorker implements BooleanWorker {
 
     @Override
     public BooleanFormula iff(BooleanFormula x, BooleanFormula y) {
-        if (FormulaToString.toString(x).equals(FormulaToString.toString(y))) {
+        if (StringGenerator.toString(x).equals(StringGenerator.toString(y))) {
             return One.instance();
         }
         if (x == One.instance()) {

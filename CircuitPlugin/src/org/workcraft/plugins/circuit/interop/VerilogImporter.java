@@ -26,7 +26,7 @@ import org.workcraft.exceptions.FormatException;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.utils.BooleanUtils;
-import org.workcraft.formula.utils.FormulaToString;
+import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.interop.Importer;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitDescriptor;
@@ -914,7 +914,7 @@ public class VerilogImporter implements Importer {
                         replacementContacts.add(inputContact);
                         newToOldContactMap.put(inputContact, leafInputContact);
                     }
-                    leafSetFunction = BooleanUtils.dumbReplace(
+                    leafSetFunction = BooleanUtils.replaceDumb(
                             leafOutputContact.getSetFunction(), leafInputContacts, replacementContacts);
                 }
 
@@ -937,18 +937,18 @@ public class VerilogImporter implements Importer {
     }
 
     private BooleanFormula printFunctionSubstitution(BooleanFormula function, List<Contact> inputContacts, List<BooleanFormula> inputFunctions) {
-        final BooleanFormula setFunction = BooleanUtils.dumbReplace(function, inputContacts, inputFunctions);
+        final BooleanFormula setFunction = BooleanUtils.replaceDumb(function, inputContacts, inputFunctions);
         if (CommonDebugSettings.getVerboseImport()) {
             LogUtils.logInfo("Expression substitution");
-            LogUtils.logInfo("  Original: " + FormulaToString.toString(function));
+            LogUtils.logInfo("  Original: " + StringGenerator.toString(function));
             Iterator<Contact> contactIterator = inputContacts.iterator();
             Iterator<BooleanFormula> formulaIterator = inputFunctions.iterator();
             while (contactIterator.hasNext() && formulaIterator.hasNext()) {
                 Contact contact = contactIterator.next();
                 BooleanFormula formula = formulaIterator.next();
-                LogUtils.logInfo("  Replacement: " + contact.getName() + " = " + FormulaToString.toString(formula));
+                LogUtils.logInfo("  Replacement: " + contact.getName() + " = " + StringGenerator.toString(formula));
             }
-            LogUtils.logInfo("  Result: " + FormulaToString.toString(setFunction));
+            LogUtils.logInfo("  Result: " + StringGenerator.toString(setFunction));
         }
         return setFunction;
     }
