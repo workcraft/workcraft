@@ -12,8 +12,8 @@ import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanOperations;
-import org.workcraft.formula.utils.FormulaToString;
-import org.workcraft.formula.utils.FormulaToString.Style;
+import org.workcraft.formula.utils.StringGenerator;
+import org.workcraft.formula.utils.StringGenerator.Style;
 import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitSignalInfo;
 import org.workcraft.plugins.circuit.Contact;
@@ -135,12 +135,12 @@ public class VerilogSerialiser implements ModelSerialiser {
         for (CircuitSignalInfo.SignalInfo signalInfo: circuitInfo.getComponentSignalInfos(component)) {
             String signalName = circuitInfo.getContactSignal(signalInfo.contact);
             BooleanFormula setFormula = signalInfo.setFormula;
-            String setExpr = FormulaToString.toString(setFormula, Style.VERILOG);
+            String setExpr = StringGenerator.toString(setFormula, Style.VERILOG);
             BooleanFormula resetFormula = signalInfo.resetFormula;
             if (resetFormula != null) {
                 resetFormula = BooleanOperations.not(resetFormula);
             }
-            String resetExpr = FormulaToString.toString(resetFormula, Style.VERILOG);
+            String resetExpr = StringGenerator.toString(resetFormula, Style.VERILOG);
             String expr = null;
             if (!setExpr.isEmpty() && !resetExpr.isEmpty()) {
                 expr = setExpr + " | " + signalName + " & (" + resetExpr + ")";

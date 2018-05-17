@@ -29,7 +29,7 @@ import org.workcraft.formula.cnf.CnfClause;
 import org.workcraft.formula.cnf.CnfGenerator;
 import org.workcraft.formula.cnf.CnfTask;
 import org.workcraft.formula.cnf.SimpleCnfTaskProvider;
-import org.workcraft.formula.utils.FormulaToString;
+import org.workcraft.formula.utils.StringGenerator;
 
 public class CleverCnfGenerator implements CnfGenerator<BooleanFormula>, BooleanVisitor<Literal> {
 
@@ -226,7 +226,7 @@ public class CleverCnfGenerator implements CnfGenerator<BooleanFormula>, Boolean
         public void printReport() {
             for (Entry<BooleanFormula, Integer> entry : met.entrySet()) {
                 if (entry.getValue() > 100) {
-                    System.out.println(">100: " + entry.getValue() + ": " + FormulaToString.toString(entry.getKey()));
+                    System.out.println(">100: " + entry.getValue() + ": " + StringGenerator.toString(entry.getKey()));
                 }
             }
         }

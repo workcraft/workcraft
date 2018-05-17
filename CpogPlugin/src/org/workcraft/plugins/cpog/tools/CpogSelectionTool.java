@@ -38,7 +38,7 @@ import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.VisualPage;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.BooleanFormula;
-import org.workcraft.formula.utils.FormulaToString;
+import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.editors.AbstractInplaceEditor;
 import org.workcraft.gui.graph.editors.LabelInplaceEditor;
@@ -120,7 +120,7 @@ public class CpogSelectionTool extends SelectionTool {
             BooleanFormula bf;
             if (vertexMap.containsKey(label)) {
                 vertex = vertexMap.get(label);
-                String s = FormulaToString.toString(vertex.getCondition());
+                String s = StringGenerator.toString(vertex.getCondition());
                 if (boolExpression != "") {
                     if (s == "") {
                         try {
@@ -148,7 +148,7 @@ public class CpogSelectionTool extends SelectionTool {
             }
 
             if (boolExpression != "") {
-                String s = FormulaToString.toString(vertex.getCondition());
+                String s = StringGenerator.toString(vertex.getCondition());
                 if (s == "") {
                     try {
                         bf = parsingTool.parseBool(boolExpression, visualCpog);
@@ -462,10 +462,10 @@ public class CpogSelectionTool extends SelectionTool {
         VisualVertex v;
         while (it.hasNext()) {
             v = it.next();
-            if (FormulaToString.toString(v.getCondition()).compareTo("1") == 0) {
+            if (StringGenerator.toString(v.getCondition()).compareTo("1") == 0) {
                 normalForm = normalForm + v.getLabel();
             } else {
-                normalForm = normalForm + "[" + FormulaToString.toString(v.getCondition()) + "]" + v.getLabel();
+                normalForm = normalForm + "[" + StringGenerator.toString(v.getCondition()) + "]" + v.getLabel();
             }
             if (it.hasNext()) {
                 normalForm = normalForm + " + ";

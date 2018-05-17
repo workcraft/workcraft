@@ -22,7 +22,7 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.exceptions.NodeCreationException;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
-import org.workcraft.formula.utils.FormulaToString;
+import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.util.Hierarchy;
@@ -55,9 +55,9 @@ public class VisualCpog extends AbstractVisualModel {
 
         @Override
         public Object getValue() throws InvocationTargetException {
-            if (node instanceof VisualRhoClause) return FormulaToString.toString(((VisualRhoClause) node).getFormula());
-            if (node instanceof VisualVertex) return FormulaToString.toString(((VisualVertex) node).getCondition());
-            return FormulaToString.toString(((VisualArc) node).getCondition());
+            if (node instanceof VisualRhoClause) return StringGenerator.toString(((VisualRhoClause) node).getFormula());
+            if (node instanceof VisualVertex) return StringGenerator.toString(((VisualVertex) node).getCondition());
+            return StringGenerator.toString(((VisualArc) node).getCondition());
         }
 
         @Override

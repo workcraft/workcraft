@@ -34,12 +34,12 @@ public class FunctionConsistencySupervisor extends HierarchySupervisor {
                 Hierarchy.getChildrenOfType(getRoot(), FunctionContact.class));
 
         for (final FunctionContact functionContact: functionContacts) {
-            final BooleanFormula setFunction = BooleanUtils.cleverReplace(
+            final BooleanFormula setFunction = BooleanUtils.replaceClever(
                     functionContact.getSetFunction(), contact, Zero.instance());
 
             functionContact.setSetFunction(setFunction);
 
-            final BooleanFormula resetFunction = BooleanUtils.cleverReplace(
+            final BooleanFormula resetFunction = BooleanUtils.replaceClever(
                     functionContact.getResetFunction(), contact, Zero.instance());
 
             functionContact.setResetFunction(resetFunction);

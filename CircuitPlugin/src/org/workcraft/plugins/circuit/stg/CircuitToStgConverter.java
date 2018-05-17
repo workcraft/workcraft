@@ -28,7 +28,7 @@ import org.workcraft.formula.Literal;
 import org.workcraft.formula.dnf.Dnf;
 import org.workcraft.formula.dnf.DnfClause;
 import org.workcraft.formula.dnf.DnfGenerator;
-import org.workcraft.formula.utils.FormulaToString;
+import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact;
@@ -285,8 +285,8 @@ public class CircuitToStgConverter {
                 new Comparator<DnfClause>() {
                     @Override
                     public int compare(DnfClause arg0, DnfClause arg1) {
-                        String st1 = FormulaToString.toString(arg0);
-                        String st2 = FormulaToString.toString(arg1);
+                        String st1 = StringGenerator.toString(arg0);
+                        String st2 = StringGenerator.toString(arg1);
                         return st1.compareTo(st2);
                     }
                 });
@@ -323,7 +323,7 @@ public class CircuitToStgConverter {
 
             if (!isDeadTransition) {
                 VisualSignalTransition transition = stg.createVisualSignalTransition(signalName, signalType, direction);
-                transition.setLabel(FormulaToString.toString(clause));
+                transition.setLabel(StringGenerator.toString(clause));
                 transitions.add(transition);
                 // Create read-arcs.
                 for (VisualPlace place : placesToRead) {

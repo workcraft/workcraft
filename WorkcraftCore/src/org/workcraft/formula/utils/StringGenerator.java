@@ -16,7 +16,7 @@ import org.workcraft.formula.Or;
 import org.workcraft.formula.Xor;
 import org.workcraft.formula.Zero;
 
-public class FormulaToString implements BooleanVisitor<String> {
+public class StringGenerator implements BooleanVisitor<String> {
 
     public final class Void {
         private Void() { }

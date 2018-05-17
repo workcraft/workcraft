@@ -15,9 +15,12 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.formula.BooleanFormula;
+import org.workcraft.formula.BooleanVariable;
+import org.workcraft.formula.Not;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
-import org.workcraft.formula.utils.FormulaToString;
+import org.workcraft.formula.utils.BubbledLiteralsExtractor;
+import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.util.Hierarchy;
@@ -529,8 +532,28 @@ public class CircuitUtils {
         String outputName = outputContact.getName();
 
         BooleanFormula setFunction = outputContact.getSetFunction();
-        String functionString = FormulaToString.toString(setFunction);
+        String functionString = StringGenerator.toString(setFunction);
         return gateRef + " [" + outputName + " = " + functionString + "]";
+    }
+
+    public static Set<FunctionContact> getBubbleContacts(FunctionComponent component) {
+        Set<FunctionContact> result = new HashSet<>();
+        for (FunctionContact outputContact: component.getFunctionOutputs()) {
+            BooleanFormula setFunction = outputContact.getSetFunction();
+            BooleanFormula resetFunction = outputContact.getResetFunction();
+            if ((setFunction == null) || (resetFunction != null)) continue;
+            if (setFunction instanceof Not) {
+                result.add(outputContact);
+            }
+            Set<BooleanVariable> bubbleLiterals = setFunction.accept(new BubbledLiteralsExtractor());
+            for (BooleanVariable literal: bubbleLiterals) {
+                if (literal instanceof FunctionContact) {
+                    FunctionContact inputContact = (FunctionContact) literal;
+                    result.add(inputContact);
+                }
+            }
+        }
+        return result;
     }
 
 }

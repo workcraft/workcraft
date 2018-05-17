@@ -14,7 +14,7 @@ import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.One;
 import org.workcraft.formula.utils.FormulaRenderingResult;
 import org.workcraft.formula.utils.FormulaToGraphics;
-import org.workcraft.formula.utils.FormulaToString;
+import org.workcraft.formula.utils.StringGenerator;
 
 public class RenderedFormula implements Touchable {
     public final String text;
@@ -28,7 +28,7 @@ public class RenderedFormula implements Touchable {
 
     public RenderedFormula(String text, BooleanFormula formula, Font font, Positioning positioning, Point2D offset) {
         this.text = text;
-        this.formulaString = FormulaToString.toString(formula);
+        this.formulaString = StringGenerator.toString(formula);
         this.font = font;
         this.positioning = positioning;
         this.xOffset = offset.getX();
@@ -48,7 +48,7 @@ public class RenderedFormula implements Touchable {
         if (text == null) {
             text = "";
         }
-        String formulaString = FormulaToString.toString(formula);
+        String formulaString = StringGenerator.toString(formula);
         return !text.equals(this.text) || !formulaString.equals(this.formulaString) || !font.equals(this.font)
                 || positioning != this.positioning || offset.getX() != this.xOffset || offset.getY() != this.yOffset;
     }

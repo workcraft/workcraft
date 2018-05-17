@@ -24,7 +24,7 @@ import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.BooleanVariable;
 import org.workcraft.formula.jj.BooleanFormulaParser;
 import org.workcraft.formula.jj.ParseException;
-import org.workcraft.formula.utils.FormulaToString;
+import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.cpog.Variable;
 import org.workcraft.plugins.cpog.VisualArc;
@@ -478,7 +478,7 @@ public class CpogParsingTool {
     }
 
     private static String formulaToString(BooleanFormula condition) {
-        return FormulaToString.toString(condition);
+        return StringGenerator.toString(condition);
     }
 
     public static HashSet<Node> getRoots(VisualCpog visualCpog, ArrayList<Node> vertices) {
@@ -772,7 +772,7 @@ public class CpogParsingTool {
                                     ArrayList<VisualArc> toBeRemoved = new ArrayList<>();
                                     if (dupArcs.size() > 1) {
                                         for (VisualArc va : dupArcs) {
-                                            if (FormulaToString.toString(va.getCondition()).compareTo("1") != 0) {
+                                            if (StringGenerator.toString(va.getCondition()).compareTo("1") != 0) {
                                                 toBeRemoved.add(va);
                                                 conditionFound = true;
                                             }
@@ -793,10 +793,10 @@ public class CpogParsingTool {
                                     }
 
                                     try {
-                                        if (FormulaToString.toString(arc.getCondition()).compareTo("1") == 0) {
+                                        if (StringGenerator.toString(arc.getCondition()).compareTo("1") == 0) {
                                             arc.setCondition(parseBool(a.getBoolForm(), visualCpog));
                                         } else {
-                                            arc.setCondition(parseBool(FormulaToString.toString(arc.getCondition()) + "|" + a.getBoolForm(), visualCpog));
+                                            arc.setCondition(parseBool(StringGenerator.toString(arc.getCondition()) + "|" + a.getBoolForm(), visualCpog));
                                         }
                                     } catch (ParseException e) {
                                         e.printStackTrace();

@@ -5,7 +5,7 @@ import java.util.Map;
 import org.workcraft.dom.Node;
 import org.workcraft.formula.BooleanFormula;
 import org.workcraft.formula.jj.ParseException;
-import org.workcraft.formula.utils.FormulaToString;
+import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.gui.propertyeditor.Disableable;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 
@@ -67,7 +67,7 @@ public class VisualContactFormulaProperties {
             }
             @Override
             public Object getValue() {
-                return FormulaToString.toString(contact.getSetFunction());
+                return StringGenerator.toString(contact.getSetFunction());
             }
             @Override
             public String getName() {
@@ -89,7 +89,7 @@ public class VisualContactFormulaProperties {
             }
             @Override
             public Object getValue() {
-                return FormulaToString.toString(contact.getResetFunction());
+                return StringGenerator.toString(contact.getResetFunction());
             }
             @Override
             public String getName() {

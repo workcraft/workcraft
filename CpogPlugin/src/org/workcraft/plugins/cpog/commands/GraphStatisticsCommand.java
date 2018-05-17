@@ -9,7 +9,7 @@ import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
-import org.workcraft.formula.utils.FormulaToString;
+import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.plugins.cpog.VisualArc;
 import org.workcraft.plugins.cpog.VisualCpog;
 import org.workcraft.plugins.cpog.VisualScenario;
@@ -75,7 +75,7 @@ public class GraphStatisticsCommand implements Command {
                 if (v.getCondition() == One.instance() || v.getCondition() == Zero.instance()) {
                     simpleVertices++;
                 } else {
-                    conditions.add(FormulaToString.toString(v.getCondition()));
+                    conditions.add(StringGenerator.toString(v.getCondition()));
                 }
             }
 
@@ -84,7 +84,7 @@ public class GraphStatisticsCommand implements Command {
                 if (a.getCondition() == One.instance() || a.getCondition() == Zero.instance()) {
                     simpleArcs++;
                 } else {
-                    conditions.add(FormulaToString.toString(a.getCondition()));
+                    conditions.add(StringGenerator.toString(a.getCondition()));
                 }
             }
 

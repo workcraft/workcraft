@@ -13,7 +13,7 @@ import org.workcraft.formula.Or;
 import org.workcraft.formula.Xor;
 import org.workcraft.formula.Zero;
 
-public class BooleanComplementer implements BooleanVisitor<BooleanFormula> {
+public class BooleanComplementTransformer implements BooleanVisitor<BooleanFormula> {
 
     @Override
     public BooleanFormula visit(Zero node) {

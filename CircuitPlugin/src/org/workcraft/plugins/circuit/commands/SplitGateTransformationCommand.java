@@ -28,7 +28,7 @@ import org.workcraft.formula.One;
 import org.workcraft.formula.Zero;
 import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.utils.BooleanUtils;
-import org.workcraft.formula.utils.FormulaToString;
+import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.circuit.FunctionComponent;
@@ -268,7 +268,7 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
         String outputName = (function instanceof Not) ? "ON" : "O";
         VisualFunctionContact outputContact = circuit.getOrCreateContact(component, outputName, IOType.OUTPUT);
         try {
-            String formulaString = FormulaToString.toString(function);
+            String formulaString = StringGenerator.toString(function);
             BooleanFormula setFuncton = CircuitUtils.parseContactFuncton(circuit, component, formulaString);
             outputContact.setSetFunction(setFuncton);
         } catch (ParseException e) {
@@ -328,7 +328,7 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
                         values.add(value);
                     }
                 }
-                BooleanFormula setFunction = BooleanUtils.cleverReplace(output.getSetFunction(), variables, values);
+                BooleanFormula setFunction = BooleanUtils.replaceClever(output.getSetFunction(), variables, values);
                 boolean isOne = One.instance().equals(setFunction);
                 output.getReferencedContact().setInitToOne(isOne);
             }

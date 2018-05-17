@@ -15,7 +15,7 @@ import org.workcraft.formula.Or;
 import org.workcraft.formula.Xor;
 import org.workcraft.formula.Zero;
 
-public class FormulaToLiterals implements BooleanVisitor<List<BooleanVariable>> {
+public class LiteralsExtractor implements BooleanVisitor<List<BooleanVariable>> {
 
     @Override
     public List<BooleanVariable> visit(Zero node) {

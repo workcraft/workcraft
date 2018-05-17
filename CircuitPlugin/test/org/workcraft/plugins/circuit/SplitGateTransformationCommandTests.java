@@ -36,8 +36,8 @@ public class SplitGateTransformationCommandTests {
 
         circuit.selectAll();
 
-        SplitGateTransformationCommand contractCommand = new SplitGateTransformationCommand();
-        contractCommand.execute(we);
+        SplitGateTransformationCommand command = new SplitGateTransformationCommand();
+        command.execute(we);
 
         int dstMappedGateCount = 0;
         int dstUnmappedGateCount = 0;
