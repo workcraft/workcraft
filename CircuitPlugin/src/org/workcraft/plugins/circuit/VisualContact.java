@@ -115,6 +115,14 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
             }
         }
 
+        public boolean isHorisontal() {
+            return (this == WEST) || (this == EAST);
+        }
+
+        public boolean isVertical() {
+            return (this == NORTH) || (this == SOUTH);
+        }
+
     };
 
     public static final Color inputColor = Color.RED;
@@ -215,24 +223,26 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
     }
 
     private Shape getPortShape() {
-        double d = 0.5 * (size - CircuitSettings.getWireWidth());
+        double w2 = 0.5 * (size - CircuitSettings.getWireWidth());
+        double h2 = 0.5 * (size - CircuitSettings.getWireWidth());
         Path2D path = new Path2D.Double();
-        path.moveTo(-d, -d);
-        path.lineTo(0, -d);
-        path.lineTo(d, 0);
-        path.lineTo(0, d);
-        path.lineTo(-d, d);
+        path.moveTo(-w2, -h2);
+        path.lineTo(0.0, -h2);
+        path.lineTo(w2, 0.0);
+        path.lineTo(0.0, h2);
+        path.lineTo(-w2, h2);
         path.closePath();
         return path;
     }
 
     private Shape getContactShape() {
-        double d = 0.5 * size - CircuitSettings.getWireWidth();
+        double w2 = 0.5 * size - CircuitSettings.getWireWidth();
+        double h2 = 0.5 * size - CircuitSettings.getWireWidth();
         Path2D path = new Path2D.Double();
-        path.moveTo(-d, -d);
-        path.lineTo(d, -d);
-        path.lineTo(d, d);
-        path.lineTo(-d, d);
+        path.moveTo(-w2, -h2);
+        path.lineTo(w2, -h2);
+        path.lineTo(w2, h2);
+        path.lineTo(-w2, h2);
         path.closePath();
         return path;
     }
@@ -279,19 +289,15 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
             g.setStroke(new BasicStroke(width));
             g.setColor(fillColor);
             g.fill(shape);
-            boolean outlineContact = (d.getColorisation() != null) || (d.getBackground() == null);
-            if (outlineContact) {
-                g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
-                g.draw(shape);
-            }
-            d.decorate(g);
+            g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
+            g.draw(shape);
         } else if (r.getModel().getConnections(this).size() > 1) {
             g.setColor(Coloriser.colorise(getForegroundColor(), colorisation));
             g.fill(VisualJoint.shape);
         }
-        g.setTransform(savedTransform);
 
         if (!(getParent() instanceof VisualCircuitComponent)) {
+            g.setTransform(savedTransform);
             rotateTransform.setToIdentity();
             if (getDirection() == Direction.NORTH || getDirection() == Direction.SOUTH) {
                 rotateTransform.quadrantRotate(-1);
@@ -299,6 +305,9 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
             g.transform(rotateTransform);
             drawNameInLocalSpace(r);
         }
+
+        g.setTransform(savedTransform);
+        d.decorate(g);
     }
 
     @Override

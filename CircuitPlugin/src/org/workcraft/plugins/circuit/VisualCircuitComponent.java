@@ -533,6 +533,10 @@ public class VisualCircuitComponent extends VisualComponent implements Container
         drawContactLabels(r);
         drawLabelInLocalSpace(r);
         drawNameInLocalSpace(r);
+        // External decorations
+        Graphics2D g = r.getGraphics();
+        Decoration d = r.getDecoration();
+        d.decorate(g);
     }
 
     @Override
