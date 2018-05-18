@@ -58,7 +58,7 @@ public class InsertBufferTransformationCommand extends AbstractTransformationCom
 
     @Override
     public Position getPosition() {
-        return Position.TOP;
+        return null;
     }
 
     @Override
@@ -93,9 +93,9 @@ public class InsertBufferTransformationCommand extends AbstractTransformationCom
             Point2D pos = connection.getMiddleSegmentCenterPoint();
             component.setPosition(pos);
 
-            VisualFunctionContact inputContact = circuit.getOrCreateContact(component, null, IOType.INPUT);
+            VisualFunctionContact inputContact = circuit.getOrCreateContact(component, "I", IOType.INPUT);
             inputContact.setPosition(new Point2D.Double(-1.5, 0.0));
-            VisualFunctionContact outputContact = circuit.getOrCreateContact(component, null, IOType.OUTPUT);
+            VisualFunctionContact outputContact = circuit.getOrCreateContact(component, "O", IOType.OUTPUT);
             outputContact.setPosition(new Point2D.Double(1.5, 0.0));
             outputContact.setSetFunction(inputContact.getReferencedContact());
 

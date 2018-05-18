@@ -9,14 +9,14 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.circuit.commands.CircuitVerificationCommand;
-import org.workcraft.plugins.circuit.commands.DemorganGateTransformationCommand;
+import org.workcraft.plugins.circuit.commands.PropagateInversionTransformationCommand;
 import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class DemorganGateTransformationCommandTests {
+public class PropagateInversionTransformationCommandTests {
 
     @BeforeClass
     public static void init() {
@@ -43,11 +43,11 @@ public class DemorganGateTransformationCommandTests {
     }
 
     @Test
-    public void testVmeDemorganGateTransformationCommand() throws DeserialisationException {
-        testDemorganGateTransformationCommand("org/workcraft/plugins/circuit/vme-tm.circuit.work", 13, 8);
+    public void testVmePropagateInversionTransformationCommand() throws DeserialisationException {
+        testPropagateInversionTransformationCommand("org/workcraft/plugins/circuit/vme-tm.circuit.work", 12, 9);
     }
 
-    private void testDemorganGateTransformationCommand(String work, int expMappedGateCount, int expUnmappedGateCount)
+    private void testPropagateInversionTransformationCommand(String work, int expMappedGateCount, int expUnmappedGateCount)
             throws DeserialisationException {
 
         final Framework framework = Framework.getInstance();
@@ -59,7 +59,7 @@ public class DemorganGateTransformationCommandTests {
 
         circuit.selectAll();
 
-        DemorganGateTransformationCommand command = new DemorganGateTransformationCommand();
+        PropagateInversionTransformationCommand command = new PropagateInversionTransformationCommand();
         command.execute(we);
 
         int dstMappedGateCount = 0;

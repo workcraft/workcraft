@@ -523,7 +523,7 @@ public class MainWindow extends JFrame {
             LogUtils.logWarning("Window layout could not be loaded from '" + file.getAbsolutePath() + "'.");
         }
 
-        float xSplit = 0.888f;
+        float xSplit = 0.87f;
         float ySplit = 0.8f;
 
         outputDockable = createDockableWindow(outputWindow, TITLE_OUTPUT, DockableWindowContentPanel.CLOSE_BUTTON,
