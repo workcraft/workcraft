@@ -131,7 +131,7 @@ public class VerilogSerialiser implements ModelSerialiser {
     private boolean writeAssigns(PrintWriter out, CircuitSignalInfo circuitInfo, FunctionComponent component) {
         boolean result = false;
         String instanceFlatName = circuitInfo.getComponentFlattenReference(component);
-        LogUtils.logWarning("Component '" + instanceFlatName + "' is not associated to a module and is exported as assign statements.");
+        LogUtils.logWarning("Component '" + instanceFlatName + "' is not associated to a module and is exported as assign statement.");
         for (CircuitSignalInfo.SignalInfo signalInfo: circuitInfo.getComponentSignalInfos(component)) {
             String signalName = circuitInfo.getContactSignal(signalInfo.contact);
             BooleanFormula setFormula = signalInfo.setFormula;

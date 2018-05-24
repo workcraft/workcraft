@@ -155,7 +155,7 @@ public class MainWindow extends JFrame {
     private JToolBar modelToolbar;
     private JToolBar controlToolbar;
 
-    private String lastDirectory = null;
+    private File lastDirectory = null;
     private final LinkedHashSet<String> recentFiles = new LinkedHashSet<>();
 
     private int dockableIDCounter = 0;
@@ -694,7 +694,8 @@ public class MainWindow extends JFrame {
 
     public void loadRecentFilesFromConfig() {
         final Framework framework = Framework.getInstance();
-        lastDirectory = framework.getConfigVar(CONFIG_GUI_MAIN_LAST_DIRECTORY, false);
+        String lastDirectoryName = framework.getConfigVar(CONFIG_GUI_MAIN_LAST_DIRECTORY, false);
+        setLastDirectory(new File(lastDirectoryName));
         for (int i = 0; i < CommonEditorSettings.getRecentCount(); i++) {
             String entry = framework.getConfigVar(CONFIG_GUI_MAIN_RECENT_FILE + i, false);
             pushRecentFile(entry, false);
@@ -704,8 +705,9 @@ public class MainWindow extends JFrame {
 
     public void saveRecentFilesToConfig() {
         final Framework framework = Framework.getInstance();
-        if (lastDirectory != null) {
-            framework.setConfigVar(CONFIG_GUI_MAIN_LAST_DIRECTORY, lastDirectory, false);
+        if (getLastDirectory() != null) {
+            String lastDirectoryPath = getLastDirectory().getAbsolutePath();
+            framework.setConfigVar(CONFIG_GUI_MAIN_LAST_DIRECTORY, lastDirectoryPath, false);
         }
         int recentCount = CommonEditorSettings.getRecentCount();
         String[] tmp = recentFiles.toArray(new String[recentCount]);
@@ -745,11 +747,20 @@ public class MainWindow extends JFrame {
         mainMenu.setRecentMenu(new ArrayList<String>(recentFiles));
     }
 
-    public void setLastDirectory(String value) {
-        lastDirectory = value;
+    public void setLastDirectory(File value) {
+        if (value != null) {
+            if (value.isDirectory()) {
+                lastDirectory = value;
+            } else {
+                File parentFile = value.getParentFile();
+                if ((parentFile != null) && parentFile.isDirectory()) {
+                    lastDirectory = parentFile;
+                }
+            }
+        }
     }
 
-    public String getLastDirectory() {
+    public File getLastDirectory() {
         return lastDirectory;
     }
 
@@ -833,9 +844,7 @@ public class MainWindow extends JFrame {
         fc.setDialogType(JFileChooser.OPEN_DIALOG);
         fc.setDialogTitle(title);
         GUI.sizeFileChooserToScreen(fc, getDisplayMode());
-        if (lastDirectory != null) {
-            fc.setCurrentDirectory(new File(lastDirectory));
-        }
+        fc.setCurrentDirectory(getLastDirectory());
         fc.setAcceptAllFileFilterUsed(false);
         fc.setMultiSelectionEnabled(multiSelection);
         if (allowWorkFiles) {
@@ -859,8 +868,8 @@ public class MainWindow extends JFrame {
         fc.setSelectedFile(file);
         if (file.exists()) {
             fc.setCurrentDirectory(file.getParentFile());
-        } else if (lastDirectory != null) {
-            fc.setCurrentDirectory(new File(lastDirectory));
+        } else {
+            fc.setCurrentDirectory(getLastDirectory());
         }
         // Set file filters
         fc.setAcceptAllFileFilterUsed(false);
@@ -916,7 +925,7 @@ public class MainWindow extends JFrame {
             try {
                 we = framework.loadWork(file);
                 pushRecentFile(file.getPath(), true);
-                lastDirectory = file.getParent();
+                setLastDirectory(file);
             } catch (DeserialisationException e) {
                 DialogUtils.showError("A problem was encountered while trying to load '" + file.getPath() + "'.");
                 ExceptionUtils.printCause(e);
@@ -1001,7 +1010,7 @@ public class MainWindow extends JFrame {
         } catch (SerialisationException e) {
             DialogUtils.showError(e.getMessage());
         }
-        lastDirectory = we.getFile().getParent();
+        setLastDirectory(we.getFile());
         pushRecentFile(we.getFile().getPath(), true);
     }
 
@@ -1037,7 +1046,7 @@ public class MainWindow extends JFrame {
                     }
                     final Framework framework = Framework.getInstance();
                     framework.createWork(me, Path.<String>empty(), file.getName());
-                    lastDirectory = file.getParent();
+                    setLastDirectory(file);
                     break;
                 } catch (IOException | DeserialisationException e) {
                     e.printStackTrace();
@@ -1060,7 +1069,7 @@ public class MainWindow extends JFrame {
         String description = "Exporting " + title;
         final TaskFailureNotifier monitor = new TaskFailureNotifier(description);
         taskManager.queue(exportTask, description, monitor);
-        lastDirectory = fc.getCurrentDirectory().getPath();
+        setLastDirectory(fc.getCurrentDirectory());
     }
 
     private String getFileNameForCurrentWork() {
