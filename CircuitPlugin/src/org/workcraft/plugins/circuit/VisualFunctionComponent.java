@@ -420,6 +420,8 @@ public class VisualFunctionComponent extends VisualCircuitComponent {
             drawCelementSymbols(g, rr, at);
             drawLabelInLocalSpace(r);
             drawNameInLocalSpace(r);
+
+            // External decorations
             d.decorate(g);
         }
     }

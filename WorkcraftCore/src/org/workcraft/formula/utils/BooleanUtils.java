@@ -64,7 +64,7 @@ public class BooleanUtils {
         return result;
     }
 
-    public static BooleanFormula transformDeMorgan(BooleanFormula formula) {
+    public static BooleanFormula propagateInversion(BooleanFormula formula) {
         BooleanFormula result = null;
         if (formula != null) {
             result = BooleanOperations.not(formula.accept(new BooleanComplementTransformer()));
@@ -73,9 +73,9 @@ public class BooleanUtils {
     }
 
     public static boolean compareFunctions(BooleanFormula func1, BooleanFormula func2) {
-        String setFunctionString = func1.accept(new StringGenerator());
-        String demorganFunctionString = func2.accept(new StringGenerator());
-        return setFunctionString.equals(demorganFunctionString);
+        String str1 = StringGenerator.toString(func1);
+        String str2 = StringGenerator.toString(func2);
+        return str1.equals(str2);
     }
 
 }

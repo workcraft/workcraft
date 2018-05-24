@@ -501,7 +501,7 @@ public class StgSimulationTool extends PetriSimulationTool {
 
     @Override
     public String getTraceLabelByReference(final String ref) {
-        String result = null;
+        String result = ref;
         if (ref != null) {
             final String name = NamespaceHelper.getReferenceName(ref);
             final String nameWithoutInstance = LabelParser.getTransitionName(name);

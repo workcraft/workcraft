@@ -526,14 +526,25 @@ public class CircuitUtils {
     }
 
     public static String gateToString(VisualCircuit circuit, VisualFunctionComponent gate) {
-        String gateRef = circuit.getNodeMathReference(gate);
+        String result = circuit.getNodeMathReference(gate);
 
         VisualFunctionContact outputContact = gate.getGateOutput();
         String outputName = outputContact.getName();
 
         BooleanFormula setFunction = outputContact.getSetFunction();
-        String functionString = StringGenerator.toString(setFunction);
-        return gateRef + " [" + outputName + " = " + functionString + "]";
+        String setString = StringGenerator.toString(setFunction);
+
+        BooleanFormula resetFunction = outputContact.getResetFunction();
+        String resetString = StringGenerator.toString(resetFunction);
+
+        if (!setString.isEmpty() && resetString.isEmpty()) {
+            result += " [" + outputName + " = " + setString + "]";
+        } else if (setString.isEmpty() && !resetString.isEmpty()) {
+            result += " [" + outputName + "\u2193 = " + resetString + "]";
+        } else if (!setString.isEmpty() && !resetString.isEmpty()) {
+            result += " [" + outputName + "\u2191 = " + setString + "; " + outputName + "\u2193 = " + resetString + "]";
+        }
+        return result;
     }
 
     public static Set<FunctionContact> getBubbleContacts(FunctionComponent component) {

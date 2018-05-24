@@ -1,11 +1,12 @@
 transformCircuitContractComponent(work) - transform the given Circuit 'work' by contracting selected single-input/single-output components
 transformCircuitContractJoint(work) - transform the given Circuit 'work' by contracting selected (or all) joints
-transformCircuitDemorganGate(work) - transform the given Circuit 'work' by applying De Morgan rule to selected (or all) gates
 transformCircuitDetachJoint(work) - transform the given Circuit 'work' by detaching selected (or all joints)
 transformCircuitInsertBuffer(work) - transform the given Circuit 'work' by inserting buffers into selected wires
+transformCircuitPropagateInversion(work) - transform the given Circuit 'work' by propagating inversion through selected (or all) gates
 transformCircuitSplitGate(work) - transform the given Circuit 'work' by splitting selected (or all) complex gates into simple gates
 transformCircuitSplitJoint(work) - transform the given Circuit 'work' by splitting selected (or all) joints
 transformCircuitToggleBubble(work) - transform the given Circuit 'work' by toggling inversion of selected contacts and outputs of selected components
+transformCircuitToggleZeroDelay(work) - transform the given Circuit 'work' by toggling zero delay of selected inverters and buffers
 transformDfsContractComponent(work) -  transform the given DFS 'work' by contracting selected components
 transformDfsMergeComponent(work) -  transform the given DFS 'work' by merging selected components
 transformDfsWagging2Way(work) - transform the given DFS 'work' by applying 2-way wagging to the selected pipeline section

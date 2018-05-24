@@ -29,18 +29,20 @@ import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class DemorganGateTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
+public class PropagateInversionTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
     private static final Pattern PIN_NAME_PATTERN = Pattern.compile("(([ABCDEF][0-9]?)|O)N?");
 
     @Override
     public String getDisplayName() {
-        return "Apply De Morgan law to gates (selected or all)";
+        return "Propagate inversion through gates (selected or all)";
+        //return "Apply De Morgan law to gates (selected or all)";
     }
 
     @Override
     public String getPopupName() {
-        return "Apply De Morgan law to gate";
+        return "Propagate inversion through gate";
+        //return "Apply De Morgan law to gate";
     }
 
     @Override
@@ -90,23 +92,20 @@ public class DemorganGateTransformationCommand extends AbstractTransformationCom
 
     private void transformGate(VisualCircuit circuit, VisualFunctionComponent gate) {
         VisualFunctionContact outputContact = gate.getGateOutput();
+        String gateStr = CircuitUtils.gateToString(circuit, gate);
 
         BooleanFormula setFunction = outputContact.getSetFunction();
-        String gateStr = CircuitUtils.gateToString(circuit, gate);
+        BooleanFormula resetFunction = outputContact.getResetFunction();
         if (setFunction == null) {
             LogUtils.logWarning("Gate " + gateStr + " cannot be transformed as it does not have set functions defined");
             return;
         }
 
-        BooleanFormula resetFunction = outputContact.getResetFunction();
-        if ((setFunction != null) && (resetFunction != null)) {
-            LogUtils.logWarning("Gate " + gateStr + " cannot be transformed as it has both set and reset functions defined");
-            return;
-        }
-
-        BooleanFormula demorganFunction = BooleanUtils.transformDeMorgan(setFunction);
-        if (!BooleanUtils.compareFunctions(setFunction, demorganFunction)) {
-            outputContact.setSetFunction(demorganFunction);
+        BooleanFormula newSetFunction = BooleanUtils.propagateInversion(setFunction);
+        BooleanFormula newResetFunction = BooleanUtils.propagateInversion(resetFunction);
+        if (!BooleanUtils.compareFunctions(setFunction, newSetFunction)
+                || !BooleanUtils.compareFunctions(resetFunction, newResetFunction)) {
+            outputContact.setSetFunction(newSetFunction);
             gate.setLabel("");
             renameContacts(circuit.getMathModel(), gate.getReferencedFunctionComponent());
             String newGateStr = CircuitUtils.gateToString(circuit, gate);
