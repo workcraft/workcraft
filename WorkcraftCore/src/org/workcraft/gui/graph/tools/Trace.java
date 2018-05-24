@@ -92,7 +92,9 @@ public class Trace extends ArrayList<String> {
             } else {
                 // Trace
                 for (String st : s.trim().split(",")) {
-                    add(st.trim());
+                    st = st.trim();
+                    if (st.isEmpty()) continue;
+                    add(st);
                 }
             }
         }

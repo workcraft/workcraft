@@ -521,12 +521,9 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         if (hasTransferableText) {
             try {
                 str = (String) contents.getTransferData(DataFlavor.stringFlavor);
-            } catch (UnsupportedFlavorException ex) {
-                System.out.println(ex);
-                ex.printStackTrace();
-            } catch (IOException ex) {
-                System.out.println(ex);
-                ex.printStackTrace();
+            } catch (UnsupportedFlavorException | IOException e) {
+                System.out.println(e);
+                e.printStackTrace();
             }
         }
 
@@ -534,22 +531,22 @@ public abstract class SimulationTool extends AbstractGraphEditorTool implements 
         mainTrace.clear();
         branchTrace.clear();
         boolean first = true;
-        for (String s: str.split("\n")) {
+        for (String traceString: str.split("\n")) {
             if (first) {
-                mainTrace.fromString(s);
+                mainTrace.fromString(traceString);
                 int mainTracePosition = mainTrace.getPosition();
                 mainTrace.setPosition(0);
-                boolean work = true;
-                while (work && (mainTrace.getPosition() < mainTracePosition)) {
-                    work = quietStep();
+                boolean mainProgress = true;
+                while (mainProgress && (mainTrace.getPosition() < mainTracePosition)) {
+                    mainProgress = quietStep();
                 }
             } else {
-                branchTrace.fromString(s);
+                branchTrace.fromString(traceString);
                 int branchTracePosition = branchTrace.getPosition();
                 branchTrace.setPosition(0);
-                boolean work = true;
-                while (work && (branchTrace.getPosition() < branchTracePosition)) {
-                    work = quietStep();
+                boolean branchProgress = true;
+                while (branchProgress && (branchTrace.getPosition() < branchTracePosition)) {
+                    branchProgress = quietStep();
                 }
                 break;
             }

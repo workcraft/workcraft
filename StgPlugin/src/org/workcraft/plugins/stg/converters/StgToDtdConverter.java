@@ -84,6 +84,7 @@ public class StgToDtdConverter {
         double x = EVENT_OFFSET;
         for (String transitionRef: trace) {
             Node node = stg.getNodeByReference(transitionRef);
+            if (node == null) continue;
             boolean skip = true;
             if (node instanceof SignalTransition) {
                 SignalTransition transition = (SignalTransition) node;
