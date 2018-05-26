@@ -28,6 +28,7 @@ import org.workcraft.plugins.circuit.CircuitUtils;
 import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.VisualCircuitComponent;
 import org.workcraft.plugins.circuit.VisualContact;
+import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.VisualJoint;
 import org.workcraft.plugins.circuit.routing.RouterClient;
 import org.workcraft.plugins.circuit.routing.basic.Point;
@@ -56,7 +57,7 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
         if (model instanceof VisualCircuit) {
             VisualCircuit circuit = (VisualCircuit) model;
             if (!skipLayoutPlacement()) {
-                setContactPositions(circuit);
+                setContactOrientation(circuit);
                 setComponentPositions(circuit);
                 alignBasicGates(circuit);
                 alignPorts(circuit);
@@ -81,10 +82,20 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
         return false;
     }
 
-    private void setContactPositions(VisualCircuit circuit) {
-        for (VisualCircuitComponent component: Hierarchy.getDescendantsOfType(
-                circuit.getRoot(), VisualCircuitComponent.class)) {
-            setContactPositions(component);
+    private void setContactOrientation(VisualCircuit circuit) {
+        for (VisualContact port: circuit.getVisualPorts()) {
+            port.setDefaultDirection();
+        }
+
+        for (VisualFunctionComponent component: circuit.getVisualFunctionComponents()) {
+            for (VisualContact contact: component.getContacts()) {
+                if (contact.isInput()) {
+                    contact.setPosition(new Point2D.Double(-1.5, 0.0));
+                } else {
+                    contact.setPosition(new Point2D.Double(1.5, 0.0));
+                }
+            }
+            component.setContactsDefaultPosition();
         }
     }
 
@@ -128,17 +139,6 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
             }
             x += layerWidth / 2.0;
         }
-    }
-
-    private void setContactPositions(VisualCircuitComponent circuitComponent) {
-        for (VisualContact contact: circuitComponent.getContacts()) {
-            if (contact.isInput()) {
-                contact.setPosition(new Point2D.Double(-1.5, 0.0));
-            } else {
-                contact.setPosition(new Point2D.Double(1.5, 0.0));
-            }
-        }
-        circuitComponent.setContactsDefaultPosition();
     }
 
     private LinkedList<HashSet<VisualComponent>> rankComponents(VisualCircuit model) {
@@ -219,7 +219,7 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
     }
 
     private boolean isBasicGate(VisualCircuitComponent component) {
-        return (component.getVisualOutputs().size() == 1) && (component.getVisualInputs().size() == 1);
+        return (component.getVisualOutputs().size() == 1) && (component.getVisualInputs().size() < 2);
     }
 
     private void prepareConnections(VisualCircuit circuit) {
@@ -281,13 +281,13 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
                     VisualContact driven = drivens.iterator().next();
                     double x = driven.getRootSpaceX();
                     double y = driven.getRootSpaceY();
-                    if (driven.isPort()) {
-                        VisualContact input = component.getFirstVisualInput();
-                        VisualContact driver = CircuitUtils.findDriver(circuit, input);
-                        if (driven != null) {
-                            y = driver.getRootSpaceY();
-                        }
-                    }
+//                    if (driven.isPort()) {
+//                        VisualContact input = component.getFirstVisualInput();
+//                        VisualContact driver = CircuitUtils.findDriver(circuit, input);
+//                        if (driven != null) {
+//                            y = driver.getRootSpaceY();
+//                        }
+//                    }
                     component.setRootSpacePosition(new Point2D.Double(x - xOffset, y));
                 }
             }
@@ -346,7 +346,7 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
                     if (!contact2.isOutput()) continue;
                     if (contact2 == contact1) continue;
                     if (Math.abs(contact2.getRootSpaceY() - y) > 0.5) continue;
-                    contact2.setRootSpaceY(contact1.getRootSpaceY() + 1.0);
+                    contact2.setRootSpaceY(y + 1.0);
                     done = false;
                 }
             }

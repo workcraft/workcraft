@@ -17,7 +17,8 @@ import org.workcraft.plugins.circuit.routing.basic.RouterPort;
 public class RouterCellsBuilder {
 
     public RouterCells buildRouterCells(CoordinatesRegistry coordinatesRegistry, RouterTask routerTask) {
-        RouterCells routerCells = new RouterCells(coordinatesRegistry.getXCoords().size(),
+        RouterCells routerCells = new RouterCells(
+                coordinatesRegistry.getXCoords().size(),
                 coordinatesRegistry.getYCoords().size());
 
         markVerticalPublic(coordinatesRegistry, routerCells);
@@ -30,8 +31,8 @@ public class RouterCellsBuilder {
     }
 
     private void markBlocked(CoordinatesRegistry coordinatesRegistry, RouterCells routerCells, RouterTask routerTask) {
-        double snapMinor = CircuitLayoutSettings.getSnapMinor();
-        for (RouterPort port : routerTask.getPorts()) {
+        double snapMinor = CircuitLayoutSettings.getSnappingMinor();
+        for (RouterPort port: routerTask.getPorts()) {
             Point location = port.getLocation();
             IndexedPoint ip = coordinatesRegistry.getIndexedCoordinate(port.getLocation());
             IndexedInterval xInterval = coordinatesRegistry.getXCoords().getIndexedIntervalExclusive(
@@ -50,7 +51,7 @@ public class RouterCellsBuilder {
             }
         }
 
-        for (Line segment : routerTask.getSegments()) {
+        for (Line segment: routerTask.getSegments()) {
             markBlockedSegment(coordinatesRegistry, routerCells, segment, null);
         }
     }
@@ -104,7 +105,7 @@ public class RouterCellsBuilder {
 
     private void markBusy(CoordinatesRegistry coordinatesRegistry, RouterCells routerCells, RouterTask routerTask) {
         double marginBusy = CircuitLayoutSettings.getMarginObstacleBusy();
-        for (Rectangle rectangle : routerTask.getRectangles()) {
+        for (Rectangle rectangle: routerTask.getRectangles()) {
             IndexedInterval xInt = coordinatesRegistry.getXCoords().getIndexedIntervalExclusive(
                     rectangle.getX() - marginBusy, rectangle.getX() + rectangle.getWidth() + marginBusy);
 
@@ -121,7 +122,7 @@ public class RouterCellsBuilder {
         }
         int ylen = routerCells.cells[0].length;
         int x = 0;
-        for (Coordinate dx : coordinatesRegistry.getXCoords().getValues()) {
+        for (Coordinate dx: coordinatesRegistry.getXCoords().getValues()) {
             if (dx.isPublic()) {
                 routerCells.mark(x, 0, x, ylen - 1, CellState.VERTICAL_PUBLIC);
             }
@@ -132,7 +133,7 @@ public class RouterCellsBuilder {
     private void markHorizontalPublic(CoordinatesRegistry coordinatesRegistry, RouterCells routerCells) {
         int xlen = routerCells.cells.length;
         int y = 0;
-        for (Coordinate dy : coordinatesRegistry.getYCoords().getValues()) {
+        for (Coordinate dy: coordinatesRegistry.getYCoords().getValues()) {
             if (dy.isPublic()) {
                 routerCells.mark(0, y, xlen - 1, y, CellState.HORIZONTAL_PUBLIC);
             }

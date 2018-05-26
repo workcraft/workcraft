@@ -9,7 +9,6 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
-import org.workcraft.dom.visual.SnapHelper;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutSettings;
 import org.workcraft.plugins.circuit.routing.basic.Coordinate;
 import org.workcraft.plugins.circuit.routing.basic.CoordinateOrientation;
@@ -137,7 +136,7 @@ public class IndexedCoordinates {
             boolean doLower = coordinate.getOrientation() == CoordinateOrientation.ORIENT_HIGHER
                     || coordinate.getOrientation() == CoordinateOrientation.ORIENT_BOTH;
 
-            double snapMinor = CircuitLayoutSettings.getSnapMinor();
+            double snapMinor = CircuitLayoutSettings.getSnappingMinor();
             if (doHigher) {
                 addValue(coordinate.isPublic(), coordinate.getOrientation(),
                         coordinate.getValue() + i * snapMinor);

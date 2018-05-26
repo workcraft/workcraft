@@ -12,7 +12,7 @@ public class Router {
     private final AbstractRoutingAlgorithm algorithm = new DijkstraRouter();
     private RouterTask routerTask = null;
     private List<Route> routesFound = null;
-    private CoordinatesRegistry coordinatesPhase2 = null;
+    private CoordinatesRegistry coordinatesPhase = null;
 
     public void routeConnections(RouterTask routerTask) {
         if (routerTask == null || routerTask.equals(this.routerTask)) {
@@ -20,15 +20,14 @@ public class Router {
         }
         this.routerTask = routerTask;
         // 1st phase
-        CoordinatesRegistry coordinatesPhase1 = registryBuilder.buildPhase1Coordinates(routerTask);
-        coordinatesPhase1.setRouterCells(cellsBuilder.buildRouterCells(coordinatesPhase1, routerTask));
-        routesFound = algorithm.route(routerTask, coordinatesPhase1, false);
-
+        coordinatesPhase = registryBuilder.buildPhase1Coordinates(routerTask);
+        coordinatesPhase.setRouterCells(cellsBuilder.buildRouterCells(coordinatesPhase, routerTask));
+        routesFound = algorithm.route(routerTask, coordinatesPhase, false);
         // 2nd phase
         UsageCounter usageCounter = algorithm.getUsageCounter();
-        coordinatesPhase2 = registryBuilder.buildPhase2Coordinates(routerTask, coordinatesPhase1, usageCounter);
-        coordinatesPhase2.setRouterCells(cellsBuilder.buildRouterCells(coordinatesPhase2, routerTask));
-        routesFound = algorithm.route(routerTask, coordinatesPhase2, true);
+        coordinatesPhase = registryBuilder.buildPhase2Coordinates(routerTask, coordinatesPhase, usageCounter);
+        coordinatesPhase.setRouterCells(cellsBuilder.buildRouterCells(coordinatesPhase, routerTask));
+        routesFound = algorithm.route(routerTask, coordinatesPhase, true);
     }
 
     public RouterTask getObstacles() {
@@ -36,7 +35,7 @@ public class Router {
     }
 
     public CoordinatesRegistry getCoordinatesRegistry() {
-        return coordinatesPhase2;
+        return coordinatesPhase;
     }
 
     public List<Route> getRoutingResult() {

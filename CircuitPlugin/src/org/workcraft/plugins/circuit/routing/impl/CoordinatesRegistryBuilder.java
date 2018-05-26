@@ -1,6 +1,5 @@
 package org.workcraft.plugins.circuit.routing.impl;
 
-import org.workcraft.dom.visual.SnapHelper;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutSettings;
 import org.workcraft.plugins.circuit.routing.basic.Coordinate;
 import org.workcraft.plugins.circuit.routing.basic.CoordinateOrientation;
@@ -71,17 +70,16 @@ public class CoordinatesRegistryBuilder {
     }
 
     private void registerObstacleCoordinates(CoordinatesRegistry baseRegistry, RouterTask routerTask) {
-        for (Rectangle rec : routerTask.getRectangles()) {
-            boolean foundHorizontal = baseRegistry.getXCoords().isIntervalOccupied(rec.getX(),
-                    rec.getX() + rec.getWidth());
-            boolean foundVertical = baseRegistry.getYCoords().isIntervalOccupied(rec.getY(),
-                    rec.getY() + rec.getHeight());
-
+        for (Rectangle rec: routerTask.getRectangles()) {
+            boolean foundHorizontal = baseRegistry.getXCoords().isIntervalOccupied(
+                    rec.getX(), rec.getX() + rec.getWidth());
             if (!foundHorizontal) {
                 baseRegistry.getXCoords().addPrivate(CoordinateOrientation.ORIENT_NONE,
                         rec.getX() + rec.getWidth() / 2);
             }
 
+            boolean foundVertical = baseRegistry.getYCoords().isIntervalOccupied(
+                    rec.getY(), rec.getY() + rec.getHeight());
             if (!foundVertical) {
                 baseRegistry.getYCoords().addPrivate(CoordinateOrientation.ORIENT_NONE,
                         rec.getY() + rec.getHeight() / 2);
@@ -90,32 +88,31 @@ public class CoordinatesRegistryBuilder {
     }
 
     private void registerPorts(CoordinatesRegistry baseRegistry, RouterTask routerTask) {
-        for (RouterPort port : routerTask.getPorts()) {
+        for (RouterPort port: routerTask.getPorts()) {
             baseRegistry.registerPort(port);
         }
     }
 
     private void registerRectangles(CoordinatesRegistry baseRegistry, RouterTask routerTask) {
-        for (Rectangle rec : routerTask.getRectangles()) {
+        for (Rectangle rec: routerTask.getRectangles()) {
             registerSnappedRectangle(baseRegistry, rec);
         }
     }
 
     private void registerSnappedRectangle(CoordinatesRegistry baseRegistry, Rectangle rec) {
         double marginObstacle = CircuitLayoutSettings.getMarginObstacle();
-        double snapMajor = CircuitLayoutSettings.getSnapMajor();
-        double minx = SnapHelper.snapToLower(rec.getX() - marginObstacle,
-                snapMajor);
-        double maxx = SnapHelper.snapToHigher(rec.getX() + rec.getWidth() + marginObstacle,
-                snapMajor);
-        double miny = SnapHelper.snapToLower(rec.getY() - marginObstacle,
-                snapMajor);
-        double maxy = SnapHelper.snapToHigher(rec.getY() + rec.getHeight() + marginObstacle,
-                snapMajor);
+        double snapMajor = CircuitLayoutSettings.getSnappingMajor();
 
+        double minx = SnapHelper.snapToLower(rec.getX() - marginObstacle, snapMajor);
         baseRegistry.getXCoords().addPublic(CoordinateOrientation.ORIENT_LOWER, minx);
+
+        double maxx = SnapHelper.snapToHigher(rec.getX() + rec.getWidth() + marginObstacle, snapMajor);
         baseRegistry.getXCoords().addPublic(CoordinateOrientation.ORIENT_HIGHER, maxx);
+
+        double miny = SnapHelper.snapToLower(rec.getY() - marginObstacle, snapMajor);
         baseRegistry.getYCoords().addPublic(CoordinateOrientation.ORIENT_LOWER, miny);
+
+        double maxy = SnapHelper.snapToHigher(rec.getY() + rec.getHeight() + marginObstacle, snapMajor);
         baseRegistry.getYCoords().addPublic(CoordinateOrientation.ORIENT_HIGHER, maxy);
     }
 

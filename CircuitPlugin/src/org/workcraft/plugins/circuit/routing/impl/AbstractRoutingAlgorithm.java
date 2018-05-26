@@ -22,20 +22,17 @@ public abstract class AbstractRoutingAlgorithm {
     protected int height;
 
     public List<Route> route(RouterTask task, CoordinatesRegistry coordinates, boolean occupyCells) {
+        this.task = task;
+        this.coordinates = coordinates;
 
         width = coordinates.getXCoordinates().size();
         height = coordinates.getYCoordinates().size();
-
-        this.task = task;
-
-        this.coordinates = coordinates;
-
         analyser = new CellAnalyser(coordinates);
 
         List<Route> routes = new ArrayList<>();
         List<List<IndexedPoint>> paths = new ArrayList<List<IndexedPoint>>();
 
-        for (RouterConnection connection : task.getConnections()) {
+        for (RouterConnection connection: task.getConnections()) {
             IndexedPoint sourcePoint = coordinates.getIndexedCoordinate(connection.getSource().getLocation());
             IndexedPoint destinationPoint = coordinates.getIndexedCoordinate(connection.getDestination().getLocation());
 
@@ -46,7 +43,6 @@ public abstract class AbstractRoutingAlgorithm {
             Route route = new Route(connection.getSource(), connection.getDestination());
 
             if (path != null) {
-
                 path = getCleanPath(path);
                 paths.add(path);
                 augmentRouteSegments(route, path);
@@ -66,12 +62,6 @@ public abstract class AbstractRoutingAlgorithm {
 
         usageCounter = new UsageCounter(width, height);
         usageCounter.updateUsageCounter(paths);
-
-
-        // for (int x = 0; x < width; x++) {
-        // System.out.print(usageCounter.getXCoordUsage(x) + " ");
-        // }
-        // System.out.println();
 
         return routes;
     }
@@ -95,7 +85,7 @@ public abstract class AbstractRoutingAlgorithm {
      * @return route with path information added
      */
     protected Route augmentRouteSegments(Route route, List<IndexedPoint> path) {
-        for (IndexedPoint point : path) {
+        for (IndexedPoint point: path) {
             route.add(coordinates.getPoint(point.getX(), point.getY()));
         }
         return route;
@@ -166,10 +156,10 @@ public abstract class AbstractRoutingAlgorithm {
         return path;
     }
 
-    protected abstract List<IndexedPoint> findRoute(IndexedPoint source, IndexedPoint destination);
-
     protected UsageCounter getUsageCounter() {
         return usageCounter;
     }
+
+    protected abstract List<IndexedPoint> findRoute(IndexedPoint source, IndexedPoint destination);
 
 }

@@ -133,7 +133,7 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
 
     public VisualContact(Contact contact) {
         super(contact, true, false, false);
-        setDirection(contact.getIOType() == IOType.INPUT ? Direction.WEST : Direction.EAST);
+        setDefaultDirection();
         contact.addObserver(this);
         addPropertyDeclarations();
     }
@@ -395,6 +395,10 @@ public class VisualContact extends VisualComponent implements StateObserver, Cus
             }
         }
         return hitTestInLocalSpace(pointInLocalSpace) ? this : null;
+    }
+
+    public void setDefaultDirection() {
+        setDirection(getReferencedContact().getIOType() == IOType.INPUT ? Direction.WEST : Direction.EAST);
     }
 
     public void setDirection(Direction value) {

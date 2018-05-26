@@ -1,4 +1,4 @@
-package org.workcraft.dom.visual;
+package org.workcraft.plugins.circuit.routing.impl;
 
 public class SnapHelper {
 
