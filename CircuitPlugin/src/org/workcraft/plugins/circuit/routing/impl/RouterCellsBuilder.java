@@ -41,12 +41,12 @@ public class RouterCellsBuilder {
                     location.getY() - snapMinor, location.getY() + snapMinor);
 
             if (ip != null && xInterval != null && yInterval != null) {
-                if (port.getDirection().isVertical()) {
-                    routerCells.mark(xInterval.getFrom(), yInterval.getFrom(), xInterval.getTo(), yInterval.getTo(),
-                            CellState.HORIZONTAL_BLOCK);
-                } else {
-                    routerCells.mark(xInterval.getFrom(), yInterval.getFrom(), xInterval.getTo(), yInterval.getTo(),
-                            CellState.VERTICAL_BLOCK);
+                if (port.isFixedDirection()) {
+                    if (port.getDirection().isHorizontal()) {
+                        routerCells.mark(xInterval, yInterval, CellState.VERTICAL_BLOCK);
+                    } else {
+                        routerCells.mark(xInterval, yInterval, CellState.HORIZONTAL_BLOCK);
+                    }
                 }
             }
         }
@@ -68,23 +68,24 @@ public class RouterCellsBuilder {
         IndexedCoordinates yCoords = coordinatesRegistry.getYCoords();
 
         IndexedInterval xInclusive = xCoords.getIndexedInterval(x1, x2);
-        IndexedInterval yInclusive = yCoords.getIndexedInterval(y1, y2);
-        IndexedInterval xWithMarginInclusive = xCoords.getIndexedInterval(x1 - margin, x2 + margin);
-        IndexedInterval yWithMarginInclusive = yCoords.getIndexedInterval(y1 - margin, y2 + margin);
         IndexedInterval xWithMarginExclusive = xCoords.getIndexedIntervalExclusive(x1 - margin, x2 + margin);
-        IndexedInterval yWithMarginExclusive = yCoords.getIndexedIntervalExclusive(y1 - margin, y2 + margin);
+        IndexedInterval xWithMarginInclusive = xCoords.getIndexedInterval(x1 - margin, x2 + margin);
 
-        if (segment.isVertical()) {
-            routerCells.mark(xWithMarginExclusive, yWithMarginExclusive, CellState.VERTICAL_BLOCK);
-            routerCells.unmark(xInclusive, yInclusive, CellState.VERTICAL_BLOCK);
-            routerCells.unmark(xWithMarginInclusive, yWithMarginInclusive, CellState.VERTICAL_PUBLIC);
+        IndexedInterval yInclusive = yCoords.getIndexedInterval(y1, y2);
+        IndexedInterval yWithMarginExclusive = yCoords.getIndexedIntervalExclusive(y1 - margin, y2 + margin);
+        IndexedInterval yWithMarginInclusive = yCoords.getIndexedInterval(y1 - margin, y2 + margin);
+
+        if (segment.isHorizontal()) {
+            routerCells.unmark(xWithMarginInclusive, yWithMarginInclusive, CellState.HORIZONTAL_PUBLIC);
+            routerCells.mark(xWithMarginExclusive, yWithMarginExclusive, CellState.HORIZONTAL_BLOCK);
+            routerCells.unmark(xInclusive, yInclusive, CellState.HORIZONTAL_BLOCK);
             routerCells.markSourcePorts(xInclusive, yInclusive, sourcePort);
         }
 
-        if (segment.isHorizontal()) {
-            routerCells.mark(xWithMarginExclusive, yWithMarginExclusive, CellState.HORIZONTAL_BLOCK);
-            routerCells.unmark(xInclusive, yInclusive, CellState.HORIZONTAL_BLOCK);
-            routerCells.unmark(xWithMarginInclusive, yWithMarginInclusive, CellState.HORIZONTAL_PUBLIC);
+        if (segment.isVertical()) {
+            routerCells.unmark(xWithMarginInclusive, yWithMarginInclusive, CellState.VERTICAL_PUBLIC);
+            routerCells.mark(xWithMarginExclusive, yWithMarginExclusive, CellState.VERTICAL_BLOCK);
+            routerCells.unmark(xInclusive, yInclusive, CellState.VERTICAL_BLOCK);
             routerCells.markSourcePorts(xInclusive, yInclusive, sourcePort);
         }
     }
