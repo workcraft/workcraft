@@ -1,10 +1,8 @@
 package org.workcraft.plugins.circuit.routing.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
@@ -166,12 +164,11 @@ public class IndexedCoordinates {
      * Create the value-to-index mapping after all the values were added.
      */
     public void build() {
-        if (isBuilt) {
+        if (isBuilt()) {
             return;
         }
 
         clearMaps();
-
         toCoordinate = new Coordinate[values.size()];
         int idx = 0;
         for (Coordinate coordinate : values.values()) {
@@ -304,65 +301,6 @@ public class IndexedCoordinates {
 
     public boolean isPublic(double value) {
         return publicValues.contains(value);
-    }
-
-    public void mergeCoordinates() {
-
-        Coordinate last = null;
-        List<Coordinate> toAdd = new ArrayList<Coordinate>();
-        List<Coordinate> toDelete = new ArrayList<Coordinate>();
-        double marginSegment = CircuitLayoutSettings.getMarginSegment();
-        for (Coordinate coordinate : getValues()) {
-            if (!(coordinate.isPublic())) {
-                continue;
-            }
-
-            if (coordinate.getOrientation() == CoordinateOrientation.ORIENT_HIGHER
-                    || coordinate.getOrientation() == CoordinateOrientation.ORIENT_BOTH) {
-
-                if (last != null && (last.getOrientation() == CoordinateOrientation.ORIENT_HIGHER)) {
-                    toDelete.add(last);
-                }
-
-                last = coordinate;
-                continue;
-            }
-
-            if (last != null) {
-                if (coordinate.getOrientation() == CoordinateOrientation.ORIENT_LOWER) {
-                    toDelete.add(coordinate);
-                }
-
-                if (last.getOrientation() == CoordinateOrientation.ORIENT_HIGHER) {
-                    toDelete.add(last);
-
-                    if (coordinate.getOrientation() == CoordinateOrientation.ORIENT_LOWER) {
-
-                        double middle = SnapHelper.snapToClosest((last.getValue() + coordinate.getValue()) / 2,
-                                marginSegment);
-
-                        if (coordinate.getOrientation() == CoordinateOrientation.ORIENT_BOTH) {
-                            middle = coordinate.getValue();
-                        }
-
-                        coordinate = new Coordinate(CoordinateOrientation.ORIENT_BOTH, true, middle);
-
-                        toAdd.add(coordinate);
-                    }
-                }
-
-            }
-
-            last = coordinate;
-        }
-
-        for (Coordinate coordinate : toDelete) {
-            remove(coordinate.getValue());
-        }
-
-        for (Coordinate coordinate : toAdd) {
-            add(coordinate);
-        }
     }
 
 }

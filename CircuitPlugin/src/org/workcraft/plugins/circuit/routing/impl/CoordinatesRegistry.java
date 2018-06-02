@@ -1,14 +1,11 @@
 package org.workcraft.plugins.circuit.routing.impl;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import org.workcraft.plugins.circuit.routing.basic.Coordinate;
 import org.workcraft.plugins.circuit.routing.basic.IndexedInterval;
 import org.workcraft.plugins.circuit.routing.basic.IndexedPoint;
 import org.workcraft.plugins.circuit.routing.basic.Point;
-import org.workcraft.plugins.circuit.routing.basic.Rectangle;
 import org.workcraft.plugins.circuit.routing.basic.RouterPort;
 
 /**
@@ -16,8 +13,6 @@ import org.workcraft.plugins.circuit.routing.basic.RouterPort;
  */
 public class CoordinatesRegistry {
 
-    // TODO: remove this variable
-    public final List<Rectangle> blocked = new ArrayList<Rectangle>();
     private final IndexedCoordinates xCoords = new IndexedCoordinates();
     private final IndexedCoordinates yCoords = new IndexedCoordinates();
 
@@ -48,7 +43,6 @@ public class CoordinatesRegistry {
     }
 
     public void clear() {
-        blocked.clear();
         xCoords.clear();
         yCoords.clear();
     }

@@ -63,43 +63,29 @@ public class RouterCellsBuilder {
         double x2 = Math.max(segment.getX1(), segment.getX2());
         double y1 = Math.min(segment.getY1(), segment.getY2());
         double y2 = Math.max(segment.getY1(), segment.getY2());
-        double marginSegment = CircuitLayoutSettings.getMarginSegment();
+        double margin = CircuitLayoutSettings.getMarginSegment();
+        IndexedCoordinates xCoords = coordinatesRegistry.getXCoords();
+        IndexedCoordinates yCoords = coordinatesRegistry.getYCoords();
 
-        IndexedInterval xWithMargin = coordinatesRegistry.getXCoords().getIndexedIntervalExclusive(
-                x1 - marginSegment, x2 + marginSegment);
-        IndexedInterval yWithMargin = coordinatesRegistry.getYCoords().getIndexedIntervalExclusive(
-                y1 - marginSegment, y2 + marginSegment);
-        IndexedInterval xInclude = coordinatesRegistry.getXCoords().getIndexedInterval(x1, x2);
-        IndexedInterval yInclude = coordinatesRegistry.getYCoords().getIndexedInterval(y1, y2);
+        IndexedInterval xInclusive = xCoords.getIndexedInterval(x1, x2);
+        IndexedInterval yInclusive = yCoords.getIndexedInterval(y1, y2);
+        IndexedInterval xWithMarginInclusive = xCoords.getIndexedInterval(x1 - margin, x2 + margin);
+        IndexedInterval yWithMarginInclusive = yCoords.getIndexedInterval(y1 - margin, y2 + margin);
+        IndexedInterval xWithMarginExclusive = xCoords.getIndexedIntervalExclusive(x1 - margin, x2 + margin);
+        IndexedInterval yWithMarginExclusive = yCoords.getIndexedIntervalExclusive(y1 - margin, y2 + margin);
 
         if (segment.isVertical()) {
-            coordinatesRegistry.blocked.add(new Rectangle(x1 - marginSegment, y1 - marginSegment,
-                    x2 - x1 + 2 * marginSegment, y2 - y1 + 2 * marginSegment));
-
-            routerCells.mark(xWithMargin, yWithMargin, CellState.VERTICAL_BLOCK);
-
-            IndexedInterval yIncludeMin = coordinatesRegistry.getYCoords().getIndexedInterval(y1 - marginSegment, y1);
-            IndexedInterval yIncludeMax = coordinatesRegistry.getYCoords().getIndexedInterval(y2, y2 + marginSegment);
-
-            routerCells.unmark(xInclude, yIncludeMin, CellState.VERTICAL_BLOCK);
-            routerCells.unmark(xInclude, yIncludeMax, CellState.VERTICAL_BLOCK);
-            routerCells.markSourcePorts(xInclude.getFrom(), yInclude.getFrom(),
-                    xInclude.getTo(), yInclude.getTo(), sourcePort);
+            routerCells.mark(xWithMarginExclusive, yWithMarginExclusive, CellState.VERTICAL_BLOCK);
+            routerCells.unmark(xInclusive, yInclusive, CellState.VERTICAL_BLOCK);
+            routerCells.unmark(xWithMarginInclusive, yWithMarginInclusive, CellState.VERTICAL_PUBLIC);
+            routerCells.markSourcePorts(xInclusive, yInclusive, sourcePort);
         }
 
         if (segment.isHorizontal()) {
-            coordinatesRegistry.blocked.add(new Rectangle(x1 - marginSegment, y1 - marginSegment,
-                    x2 - x1 + 2 * marginSegment, y2 - y1 + 2 * marginSegment));
-
-            routerCells.mark(xWithMargin, yWithMargin, CellState.HORIZONTAL_BLOCK);
-
-            IndexedInterval xIncludeMin = coordinatesRegistry.getXCoords().getIndexedInterval(x1 - marginSegment, x1);
-            IndexedInterval xIncludeMax = coordinatesRegistry.getXCoords().getIndexedInterval(x2, x2 + marginSegment);
-
-            routerCells.unmark(xIncludeMin, yInclude, CellState.HORIZONTAL_BLOCK);
-            routerCells.unmark(xIncludeMax, yInclude, CellState.HORIZONTAL_BLOCK);
-            routerCells.markSourcePorts(xInclude.getFrom(), yInclude.getFrom(), xInclude.getTo(),
-                    yInclude.getTo(), sourcePort);
+            routerCells.mark(xWithMarginExclusive, yWithMarginExclusive, CellState.HORIZONTAL_BLOCK);
+            routerCells.unmark(xInclusive, yInclusive, CellState.HORIZONTAL_BLOCK);
+            routerCells.unmark(xWithMarginInclusive, yWithMarginInclusive, CellState.HORIZONTAL_PUBLIC);
+            routerCells.markSourcePorts(xInclusive, yInclusive, sourcePort);
         }
     }
 

@@ -38,11 +38,13 @@ public abstract class AbstractRoutingAlgorithm {
 
             analyser.initialise(connection);
 
-            List<IndexedPoint> path = findRoute(sourcePoint, destinationPoint);
-
+            List<IndexedPoint> path = findPath(sourcePoint, destinationPoint);
             Route route = new Route(connection.getSource(), connection.getDestination());
-
-            if (path != null) {
+            if (path == null) {
+                route.setRouteFound(false);
+                route.add(connection.getSource().getLocation());
+                route.add(connection.getDestination().getLocation());
+            } else {
                 path = getCleanPath(path);
                 paths.add(path);
                 augmentRouteSegments(route, path);
@@ -51,10 +53,6 @@ public abstract class AbstractRoutingAlgorithm {
                 if (occupyCells) {
                     markBlockedCells(route, coordinates);
                 }
-            } else {
-                route.setRouteFound(false);
-                route.add(connection.getSource().getLocation());
-                route.add(connection.getDestination().getLocation());
             }
 
             routes.add(route);
@@ -160,6 +158,6 @@ public abstract class AbstractRoutingAlgorithm {
         return usageCounter;
     }
 
-    protected abstract List<IndexedPoint> findRoute(IndexedPoint source, IndexedPoint destination);
+    protected abstract List<IndexedPoint> findPath(IndexedPoint source, IndexedPoint destination);
 
 }

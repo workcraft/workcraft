@@ -17,7 +17,7 @@ public class DijkstraRouter extends AbstractRoutingAlgorithm {
     private IndexedPoint destination;
 
     @Override
-    protected List<IndexedPoint> findRoute(IndexedPoint source, IndexedPoint destination) {
+    protected List<IndexedPoint> findPath(IndexedPoint source, IndexedPoint destination) {
         this.source = source;
         this.destination = destination;
         visited = new boolean[width][height];

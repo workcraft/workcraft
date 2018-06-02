@@ -34,15 +34,19 @@ public class RouterCells {
         }
     }
 
-    public void markSourcePorts(int x1, int y1, int x2, int y2, RouterPort sourcePort) {
+    public void markSourcePorts(IndexedInterval hInterval, IndexedInterval vInterval, RouterPort sourcePort) {
+        if (hInterval == null || vInterval == null) {
+            return;
+        }
+        markSourcePorts(hInterval.getFrom(), vInterval.getFrom(), hInterval.getTo(), vInterval.getTo(), sourcePort);
+    }
 
+    public void markSourcePorts(int x1, int y1, int x2, int y2, RouterPort sourcePort) {
         for (int y = y1; y <= y2; y++) {
             for (int x = x1; x <= x2; x++) {
-
                 if (x1 == x2) {
                     verticalSourcePorts[x][y] = sourcePort;
                 }
-
                 if (y1 == y2) {
                     horizontalSourcePorts[x][y] = sourcePort;
                 }
