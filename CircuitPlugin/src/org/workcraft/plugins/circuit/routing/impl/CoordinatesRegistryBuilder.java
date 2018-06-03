@@ -100,19 +100,19 @@ public class CoordinatesRegistryBuilder {
     }
 
     private void registerSnappedRectangle(CoordinatesRegistry baseRegistry, Rectangle rec) {
-        double marginObstacle = CircuitLayoutSettings.getMarginObstacle();
+        double margin = CircuitLayoutSettings.getMarginObstacle();
         double snapMajor = CircuitLayoutSettings.getSnappingMajor();
 
-        double minx = SnapHelper.snapToLower(rec.getX() - marginObstacle, snapMajor);
+        double minx = SnapHelper.snapToLower(rec.getX() - margin, snapMajor);
         baseRegistry.getXCoords().addPublic(CoordinateOrientation.ORIENT_LOWER, minx);
 
-        double maxx = SnapHelper.snapToHigher(rec.getX() + rec.getWidth() + marginObstacle, snapMajor);
+        double maxx = SnapHelper.snapToHigher(rec.getX() + rec.getWidth() + margin, snapMajor);
         baseRegistry.getXCoords().addPublic(CoordinateOrientation.ORIENT_HIGHER, maxx);
 
-        double miny = SnapHelper.snapToLower(rec.getY() - marginObstacle, snapMajor);
+        double miny = SnapHelper.snapToLower(rec.getY() - margin, snapMajor);
         baseRegistry.getYCoords().addPublic(CoordinateOrientation.ORIENT_LOWER, miny);
 
-        double maxy = SnapHelper.snapToHigher(rec.getY() + rec.getHeight() + marginObstacle, snapMajor);
+        double maxy = SnapHelper.snapToHigher(rec.getY() + rec.getHeight() + margin, snapMajor);
         baseRegistry.getYCoords().addPublic(CoordinateOrientation.ORIENT_HIGHER, maxy);
     }
 

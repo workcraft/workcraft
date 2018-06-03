@@ -170,6 +170,21 @@ public abstract class VisualTransformableNode extends VisualNode implements Mova
         return new Point2D.Double(getX(), getY());
     }
 
+    @NoAutoSerialisation
+    public final Point2D getRootSpaceTranslation() {
+        double dx = 0.0;
+        double dy = 0.0;
+        Node node = this;
+        do {
+            if (node instanceof VisualTransformableNode) {
+                dx += ((VisualTransformableNode) node).getX();
+                dy += ((VisualTransformableNode) node).getY();
+            }
+            node = node.getParent();
+        } while (node != null);
+        return new Point2D.Double(dx, dy);
+    }
+
     protected void transformChanging() {
         sendNotification(new TransformChangingEvent(this));
     }

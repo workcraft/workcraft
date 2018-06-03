@@ -418,6 +418,12 @@ public abstract class VisualComponent extends VisualTransformableNode implements
         return transformToParentSpace(getInternalBoundingBoxInLocalSpace());
     }
 
+    public Rectangle2D getInternalBoundingBoxInRootSpace() {
+        Point2D p = getRootSpaceTranslation();
+        Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
+        return new Rectangle2D.Double(bb.getX() + p.getX(), bb.getY() + p.getY(), bb.getWidth(), bb.getHeight());
+    }
+
     @Override
     public Rectangle2D getBoundingBoxInLocalSpace() {
         Rectangle2D bb = getInternalBoundingBoxInLocalSpace();
