@@ -8,7 +8,6 @@ import java.util.List;
 public class Router {
 
     private final CoordinatesRegistryBuilder registryBuilder = new CoordinatesRegistryBuilder();
-    private final RouterCellsBuilder cellsBuilder = new RouterCellsBuilder();
     private final AbstractRoutingAlgorithm algorithm = new DijkstraRouter();
     private RouterTask routerTask = null;
     private List<Route> routesFound = null;
@@ -19,14 +18,22 @@ public class Router {
             return;
         }
         this.routerTask = routerTask;
-        // 1st phase
+        routeConnectionsPhase1();
+        routeConnectionsPhase2();
+    }
+
+    private void routeConnectionsPhase1() {
         coordinatesPhase = registryBuilder.buildPhase1Coordinates(routerTask);
-        coordinatesPhase.setRouterCells(cellsBuilder.buildRouterCells(coordinatesPhase, routerTask));
+        RouterCells routerCells = RouterCellsBuilder.buildRouterCells(coordinatesPhase, routerTask);
+        coordinatesPhase.setRouterCells(routerCells);
         routesFound = algorithm.route(routerTask, coordinatesPhase, false);
-        // 2nd phase
+    }
+
+    private void routeConnectionsPhase2() {
         UsageCounter usageCounter = algorithm.getUsageCounter();
         coordinatesPhase = registryBuilder.buildPhase2Coordinates(routerTask, coordinatesPhase, usageCounter);
-        coordinatesPhase.setRouterCells(cellsBuilder.buildRouterCells(coordinatesPhase, routerTask));
+        RouterCells routerCells = RouterCellsBuilder.buildRouterCells(coordinatesPhase, routerTask);
+        coordinatesPhase.setRouterCells(routerCells);
         routesFound = algorithm.route(routerTask, coordinatesPhase, true);
     }
 

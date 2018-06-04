@@ -2,7 +2,7 @@ package org.workcraft.plugins.circuit.routing.basic;
 
 public class CellState {
 
-    /** Cell is occupied by an obstacle. */
+    /** Cell is occupied by an obstacle (gate, port, or pin). */
     public static final int BUSY = 1;
 
     /** Vertical propagation is blocked for routing. */

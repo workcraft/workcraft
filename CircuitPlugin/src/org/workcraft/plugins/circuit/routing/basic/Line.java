@@ -94,4 +94,21 @@ public final class Line {
     public double getY2() {
         return y2;
     }
+
+    public double getMinX() {
+        return x1 < x2 ? x1 : x2;
+    }
+
+    public double getMinY() {
+        return y1 < y2 ? y1 : y2;
+    }
+
+    public double getMaxX() {
+        return x1 > x2 ? x1 : x2;
+    }
+
+    public double getMaxY() {
+        return y1 > y2 ? y1 : y2;
+    }
+
 }

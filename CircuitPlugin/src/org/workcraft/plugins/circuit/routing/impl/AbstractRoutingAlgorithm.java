@@ -3,14 +3,16 @@ package org.workcraft.plugins.circuit.routing.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.workcraft.plugins.circuit.commands.CircuitLayoutSettings;
+import org.workcraft.plugins.circuit.routing.basic.CellState;
+import org.workcraft.plugins.circuit.routing.basic.IndexedInterval;
 import org.workcraft.plugins.circuit.routing.basic.IndexedPoint;
 import org.workcraft.plugins.circuit.routing.basic.Line;
 import org.workcraft.plugins.circuit.routing.basic.Point;
 import org.workcraft.plugins.circuit.routing.basic.RouterConnection;
+import org.workcraft.plugins.circuit.routing.basic.RouterPort;
 
 public abstract class AbstractRoutingAlgorithm {
-
-    private final RouterCellsBuilder cellsBuilder = new RouterCellsBuilder();
 
     protected CellAnalyser analyser;
     protected RouterTask task;
@@ -70,9 +72,47 @@ public abstract class AbstractRoutingAlgorithm {
             Point from = route.getPoints().get(i - 1);
             Point to = route.getPoints().get(i);
             Line segment = new Line(from.getX(), from.getY(), to.getX(), to.getY());
-
-            cellsBuilder.markBlockedSegment(registry, cells, segment, route.source);
+            markBlockedSegment(registry, cells, segment, route.source);
         }
+    }
+
+    private void markBlockedSegment(CoordinatesRegistry coordinatesRegistry, RouterCells routerCells,
+            Line segment, RouterPort sourcePort) {
+
+        double x1 = Math.min(segment.getX1(), segment.getX2());
+        double x2 = Math.max(segment.getX1(), segment.getX2());
+        double y1 = Math.min(segment.getY1(), segment.getY2());
+        double y2 = Math.max(segment.getY1(), segment.getY2());
+        double margin = CircuitLayoutSettings.getMarginChannel();
+        IndexedCoordinates xCoords = coordinatesRegistry.getXCoords();
+        IndexedCoordinates yCoords = coordinatesRegistry.getYCoords();
+
+        IndexedInterval xInclusive = xCoords.getIndexedInterval(x1, x2);
+        IndexedInterval xWithMarginExclusive = xCoords.getIndexedIntervalExclusive(x1 - margin, x2 + margin);
+        IndexedInterval xWithMarginInclusive = xCoords.getIndexedInterval(x1 - margin, x2 + margin);
+
+        IndexedInterval yInclusive = yCoords.getIndexedInterval(y1, y2);
+        IndexedInterval yWithMarginExclusive = yCoords.getIndexedIntervalExclusive(y1 - margin, y2 + margin);
+        IndexedInterval yWithMarginInclusive = yCoords.getIndexedInterval(y1 - margin, y2 + margin);
+
+        if (segment.isHorizontal()) {
+            routerCells.unmark(xWithMarginInclusive, yWithMarginInclusive, CellState.HORIZONTAL_PUBLIC);
+            routerCells.mark(xWithMarginExclusive, yWithMarginExclusive, CellState.HORIZONTAL_BLOCK);
+            IndexedInterval xInclusiveMin = coordinatesRegistry.getXCoords().getIndexedInterval(x1 - margin, x1);
+            routerCells.unmark(xInclusiveMin, yInclusive, CellState.HORIZONTAL_BLOCK);
+            IndexedInterval xInclusiveMax = coordinatesRegistry.getXCoords().getIndexedInterval(x2, x2 + margin);
+            routerCells.unmark(xInclusiveMax, yInclusive, CellState.HORIZONTAL_BLOCK);
+        }
+
+        if (segment.isVertical()) {
+            routerCells.unmark(xWithMarginInclusive, yWithMarginInclusive, CellState.VERTICAL_PUBLIC);
+            routerCells.mark(xWithMarginExclusive, yWithMarginExclusive, CellState.VERTICAL_BLOCK);
+            IndexedInterval yInclusiveMin = coordinatesRegistry.getYCoords().getIndexedInterval(y1 - margin, y1);
+            routerCells.unmark(xInclusive, yInclusiveMin, CellState.VERTICAL_BLOCK);
+            IndexedInterval yInclusiveMax = coordinatesRegistry.getYCoords().getIndexedInterval(y2, y2 + margin);
+            routerCells.unmark(xInclusive, yInclusiveMax, CellState.VERTICAL_BLOCK);
+        }
+        routerCells.markSourcePorts(xInclusive, yInclusive, sourcePort);
     }
 
     /**

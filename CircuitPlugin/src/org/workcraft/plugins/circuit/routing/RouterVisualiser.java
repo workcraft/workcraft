@@ -3,13 +3,17 @@ package org.workcraft.plugins.circuit.routing;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
+import java.awt.Shape;
 import java.awt.geom.Path2D;
+import java.awt.geom.Rectangle2D;
 
 import org.workcraft.plugins.circuit.CircuitSettings;
+import org.workcraft.plugins.circuit.commands.CircuitLayoutSettings;
 import org.workcraft.plugins.circuit.routing.basic.CellState;
 import org.workcraft.plugins.circuit.routing.basic.Coordinate;
 import org.workcraft.plugins.circuit.routing.basic.Line;
 import org.workcraft.plugins.circuit.routing.basic.Point;
+import org.workcraft.plugins.circuit.routing.basic.Rectangle;
 import org.workcraft.plugins.circuit.routing.impl.Route;
 import org.workcraft.plugins.circuit.routing.impl.Router;
 import org.workcraft.plugins.circuit.routing.impl.RouterCells;
@@ -20,6 +24,18 @@ public class RouterVisualiser {
         drawSegments(router, g);
         drawRoutes(router, g);
         drawCells(router, g);
+        drawRectangles(router, g);
+    }
+
+    private static void drawRectangles(Router router, Graphics2D g) {
+        double margin = CircuitLayoutSettings.getMarginObstacleBusy();
+        g.setStroke(new BasicStroke(0.1f * (float) CircuitSettings.getBorderWidth()));
+        g.setColor(Color.GRAY);
+        for (Rectangle rect: router.getObstacles().getRectangles()) {
+            Shape shape = new Rectangle2D.Double(rect.getX() - margin, rect.getY() - margin,
+                    rect.getWidth() + 2 * margin, rect.getHeight() + 2 * margin);
+            g.draw(shape);
+        }
     }
 
     public static void drawSegments(Router router, Graphics2D g) {

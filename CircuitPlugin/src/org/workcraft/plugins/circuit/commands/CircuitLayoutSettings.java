@@ -25,7 +25,7 @@ public class CircuitLayoutSettings implements Settings {
     private static final double defaultSpacingHorizontal = 5.0;
     private static final double defaultSpacingVertical = 2.0;
     private static final double defaultMarginObstacle = 1.0;
-    private static final double defaultMarginObstacleBusy = 0.5;
+    private static final double defaultMarginObstacleBusy = 0.2;
     private static final double defaultMarginChannel = 0.2;
     private static final double defaultSnappingMajor = 1.0;
     private static final double defaultSnappingMinor = 0.5;
