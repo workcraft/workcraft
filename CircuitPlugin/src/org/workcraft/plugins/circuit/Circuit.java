@@ -115,6 +115,8 @@ public class Circuit extends AbstractMathModel {
         MultiSet<String> result = new MultiSet<>();
         result.add("Component", getFunctionComponents().size());
         result.add("Port", getPorts().size());
+        KotlinTest.print("Kotlin test");
+        KotlinTest.printAll("a", "b", "c");
         return result;
     }
 
