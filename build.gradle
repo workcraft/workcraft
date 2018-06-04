@@ -6,11 +6,8 @@ buildscript {
         classpath 'ca.coglinc:javacc-gradle-plugin:2.4.0'
         classpath 'de.aaschmid:gradle-cpd-plugin:1.0'
         classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.1'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.41'
     }
-}
-
-repositories {
-    jcenter()
 }
 
 ext {
@@ -25,9 +22,9 @@ subprojects {
     }
 
     apply plugin: 'java'
+    apply plugin: 'kotlin'
     apply plugin: 'ca.coglinc.javacc'
     apply plugin: 'jacoco'
-
     apply plugin: 'eclipse'
 
     sourceCompatibility = 1.8
@@ -37,6 +34,9 @@ subprojects {
             java {
                 srcDir 'src'
                 srcDir 'src-gen'
+            }
+            kotlin {
+                srcDir 'src'
             }
             resources {
                 srcDir 'res'
@@ -80,9 +80,10 @@ subprojects {
     dependencies {
         compile fileTree(dir: '../ThirdParty', include: ['*.jar'])
         compile fileTree(dir: '../ThirdParty/batik', include: ['*.jar'])
+        compile "org.jetbrains.kotlin:kotlin-stdlib:1.2.41"
 
         testCompile 'junit:junit:4.12'
-        javacc 'net.java.dev.javacc:javacc:7.0.2'
+        javacc 'net.java.dev.javacc:javacc:7.0.3'
     }
 
     apply plugin: 'checkstyle'
