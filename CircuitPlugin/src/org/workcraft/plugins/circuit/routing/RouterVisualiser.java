@@ -21,16 +21,18 @@ import org.workcraft.plugins.circuit.routing.impl.RouterCells;
 public class RouterVisualiser {
 
     public static void drawEverything(Router router, Graphics2D g) {
-        drawSegments(router, g);
+        drawObstacleRectangles(router, g);
+        drawObstacleSegments(router, g);
         drawRoutes(router, g);
         drawCells(router, g);
-        drawRectangles(router, g);
     }
 
-    private static void drawRectangles(Router router, Graphics2D g) {
-        double margin = CircuitLayoutSettings.getMarginObstacleBusy();
-        g.setStroke(new BasicStroke(0.1f * (float) CircuitSettings.getBorderWidth()));
+    private static void drawObstacleRectangles(Router router, Graphics2D g) {
+        float width = 0.2f * (float) CircuitSettings.getBorderWidth();
+        float[] pattern = {0.05f, 0.05f};
+        g.setStroke(new BasicStroke(width, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f));
         g.setColor(Color.GRAY);
+        double margin = CircuitLayoutSettings.getMarginObstacleBusy();
         for (Rectangle rect: router.getObstacles().getRectangles()) {
             Shape shape = new Rectangle2D.Double(rect.getX() - margin, rect.getY() - margin,
                     rect.getWidth() + 2 * margin, rect.getHeight() + 2 * margin);
@@ -38,7 +40,7 @@ public class RouterVisualiser {
         }
     }
 
-    public static void drawSegments(Router router, Graphics2D g) {
+    public static void drawObstacleSegments(Router router, Graphics2D g) {
         g.setStroke(new BasicStroke(0.5f * (float) CircuitSettings.getBorderWidth()));
         g.setColor(Color.GREEN.darker());
         for (Line registeredSegment: router.getObstacles().getSegments()) {
@@ -82,7 +84,7 @@ public class RouterVisualiser {
                     if (isVerticalBlock) {
                         drawCellVerticalBlock(g, dy, dx);
                     } else {
-                        boolean isVerticalPrivate = (cells[x][y] & CellState.VERTICAL_PUBLIC) == 0;
+                        boolean isVerticalPrivate = (cells[x][y] & CellState.VERTICAL_PRIVATE) != 0;
                         if (isVerticalPrivate) {
                             drawCellVerticalPrivate(g, dy, dx);
                         }
@@ -91,7 +93,7 @@ public class RouterVisualiser {
                     if (isHorizontalBlock) {
                         drawCellHorisontalBlock(g, dy, dx);
                     } else {
-                        boolean isHorizontalPrivate = (cells[x][y] & CellState.HORIZONTAL_PUBLIC) == 0;
+                        boolean isHorizontalPrivate = (cells[x][y] & CellState.HORIZONTAL_PRIVATE) != 0;
                         if (isHorizontalPrivate) {
                             drawCellHorisontalPrivate(g, dy, dx);
                         }

@@ -83,7 +83,7 @@ public abstract class AbstractRoutingAlgorithm {
         double x2 = Math.max(segment.getX1(), segment.getX2());
         double y1 = Math.min(segment.getY1(), segment.getY2());
         double y2 = Math.max(segment.getY1(), segment.getY2());
-        double margin = CircuitLayoutSettings.getMarginChannel();
+        double margin = 0.5 * CircuitLayoutSettings.getChannelWidth();
         IndexedCoordinates xCoords = coordinatesRegistry.getXCoords();
         IndexedCoordinates yCoords = coordinatesRegistry.getYCoords();
 
@@ -96,7 +96,7 @@ public abstract class AbstractRoutingAlgorithm {
         IndexedInterval yWithMarginInclusive = yCoords.getIndexedInterval(y1 - margin, y2 + margin);
 
         if (segment.isHorizontal()) {
-            routerCells.unmark(xWithMarginInclusive, yWithMarginInclusive, CellState.HORIZONTAL_PUBLIC);
+            routerCells.mark(xWithMarginInclusive, yWithMarginInclusive, CellState.HORIZONTAL_PRIVATE);
             routerCells.mark(xWithMarginExclusive, yWithMarginExclusive, CellState.HORIZONTAL_BLOCK);
             IndexedInterval xInclusiveMin = coordinatesRegistry.getXCoords().getIndexedInterval(x1 - margin, x1);
             routerCells.unmark(xInclusiveMin, yInclusive, CellState.HORIZONTAL_BLOCK);
@@ -105,7 +105,7 @@ public abstract class AbstractRoutingAlgorithm {
         }
 
         if (segment.isVertical()) {
-            routerCells.unmark(xWithMarginInclusive, yWithMarginInclusive, CellState.VERTICAL_PUBLIC);
+            routerCells.mark(xWithMarginInclusive, yWithMarginInclusive, CellState.VERTICAL_PRIVATE);
             routerCells.mark(xWithMarginExclusive, yWithMarginExclusive, CellState.VERTICAL_BLOCK);
             IndexedInterval yInclusiveMin = coordinatesRegistry.getYCoords().getIndexedInterval(y1 - margin, y1);
             routerCells.unmark(xInclusive, yInclusiveMin, CellState.VERTICAL_BLOCK);

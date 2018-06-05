@@ -11,7 +11,7 @@ public class Router {
     private final AbstractRoutingAlgorithm algorithm = new DijkstraRouter();
     private RouterTask routerTask = null;
     private List<Route> routesFound = null;
-    private CoordinatesRegistry coordinatesPhase = null;
+    private CoordinatesRegistry coordPhase = null;
 
     public void routeConnections(RouterTask routerTask) {
         if (routerTask == null || routerTask.equals(this.routerTask)) {
@@ -23,18 +23,18 @@ public class Router {
     }
 
     private void routeConnectionsPhase1() {
-        coordinatesPhase = registryBuilder.buildPhase1Coordinates(routerTask);
-        RouterCells routerCells = RouterCellsBuilder.buildRouterCells(coordinatesPhase, routerTask);
-        coordinatesPhase.setRouterCells(routerCells);
-        routesFound = algorithm.route(routerTask, coordinatesPhase, false);
+        coordPhase = registryBuilder.buildPhase1Coordinates(routerTask);
+        RouterCells routerCells = RouterCellsBuilder.buildRouterCells(coordPhase, routerTask);
+        coordPhase.setRouterCells(routerCells);
+        routesFound = algorithm.route(routerTask, coordPhase, false);
     }
 
     private void routeConnectionsPhase2() {
         UsageCounter usageCounter = algorithm.getUsageCounter();
-        coordinatesPhase = registryBuilder.buildPhase2Coordinates(routerTask, coordinatesPhase, usageCounter);
-        RouterCells routerCells = RouterCellsBuilder.buildRouterCells(coordinatesPhase, routerTask);
-        coordinatesPhase.setRouterCells(routerCells);
-        routesFound = algorithm.route(routerTask, coordinatesPhase, true);
+        coordPhase = registryBuilder.buildPhase2Coordinates(routerTask, coordPhase, usageCounter);
+        RouterCells routerCells = RouterCellsBuilder.buildRouterCells(coordPhase, routerTask);
+        coordPhase.setRouterCells(routerCells);
+        routesFound = algorithm.route(routerTask, coordPhase, true);
     }
 
     public RouterTask getObstacles() {
@@ -42,7 +42,7 @@ public class Router {
     }
 
     public CoordinatesRegistry getCoordinatesRegistry() {
-        return coordinatesPhase;
+        return coordPhase;
     }
 
     public List<Route> getRoutingResult() {

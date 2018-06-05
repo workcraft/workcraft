@@ -14,8 +14,8 @@ public class CoordinatesRegistryBuilder {
 
     public CoordinatesRegistry buildPhase1Coordinates(RouterTask routerTask) {
         CoordinatesRegistry baseRegistry = new CoordinatesRegistry();
-        registerRectangles(baseRegistry, routerTask);
         registerBoundaries(baseRegistry, routerTask);
+        registerRectangles(baseRegistry, routerTask);
         registerPorts(baseRegistry, routerTask);
         registerObstacleCoordinates(baseRegistry, routerTask);
         return baseRegistry;
@@ -36,8 +36,8 @@ public class CoordinatesRegistryBuilder {
             Coordinate yCoord = otherRegistry.getYCoords().getCoordinateByIndex(y);
             baseRegistry.getYCoords().addCoordinate(yCoord, yUsage);
         }
-        registerRectangles(baseRegistry, routerTask);
         registerBoundaries(baseRegistry, routerTask);
+        registerRectangles(baseRegistry, routerTask);
         registerPorts(baseRegistry, routerTask);
         registerObstacleCoordinates(baseRegistry, routerTask);
         return baseRegistry;
@@ -47,42 +47,40 @@ public class CoordinatesRegistryBuilder {
         if (!routerTask.getRectangles().isEmpty()) {
             Rectangle first = routerTask.getRectangles().iterator().next();
 
-            double minx = first.getX();
-            double maxx = first.getX() + first.getWidth();
-            double miny = first.getY();
-            double maxy = first.getY() + first.getHeight();
+            double xMin = first.getX();
+            double xMax = first.getX() + first.getWidth();
+            double yMin = first.getY();
+            double yMax = first.getY() + first.getHeight();
 
-            for (Rectangle rec : routerTask.getRectangles()) {
-                minx = Math.min(minx, rec.getX());
-                miny = Math.min(miny, rec.getY());
-                maxx = Math.max(maxx, rec.getX() + rec.getWidth());
-                maxy = Math.max(maxy, rec.getY() + rec.getHeight());
+            for (Rectangle rec: routerTask.getRectangles()) {
+                xMin = Math.min(xMin, rec.getX());
+                yMin = Math.min(yMin, rec.getY());
+                xMax = Math.max(xMax, rec.getX() + rec.getWidth());
+                yMax = Math.max(yMax, rec.getY() + rec.getHeight());
             }
 
-            for (RouterPort port : routerTask.getPorts()) {
-                minx = Math.min(minx, port.getLocation().getX());
-                miny = Math.min(miny, port.getLocation().getY());
-                maxx = Math.max(maxx, port.getLocation().getX());
-                maxy = Math.max(maxy, port.getLocation().getY());
+            for (RouterPort port: routerTask.getPorts()) {
+                xMin = Math.min(xMin, port.getLocation().getX());
+                yMin = Math.min(yMin, port.getLocation().getY());
+                xMax = Math.max(xMax, port.getLocation().getX());
+                yMax = Math.max(yMax, port.getLocation().getY());
             }
-            registerSnappedRectangle(baseRegistry, new Rectangle(minx, miny, maxx - minx, maxy - miny));
+            registerSnappedRectangle(baseRegistry, new Rectangle(xMin, yMin, xMax - xMin, yMax - yMin));
         }
     }
 
     private void registerObstacleCoordinates(CoordinatesRegistry baseRegistry, RouterTask routerTask) {
         for (Rectangle rec: routerTask.getRectangles()) {
-            boolean foundHorizontal = baseRegistry.getXCoords().isIntervalOccupied(
-                    rec.getX(), rec.getX() + rec.getWidth());
+            IndexedCoordinates xCoords = baseRegistry.getXCoords();
+            boolean foundHorizontal = xCoords.isIntervalOccupied(rec.getX(), rec.getX() + rec.getWidth());
             if (!foundHorizontal) {
-                baseRegistry.getXCoords().addPrivate(CoordinateOrientation.ORIENT_NONE,
-                        rec.getX() + rec.getWidth() / 2);
+                xCoords.addPrivate(CoordinateOrientation.ORIENT_NONE, rec.getX() + rec.getWidth() / 2);
             }
 
-            boolean foundVertical = baseRegistry.getYCoords().isIntervalOccupied(
-                    rec.getY(), rec.getY() + rec.getHeight());
+            IndexedCoordinates yCoords = baseRegistry.getYCoords();
+            boolean foundVertical = yCoords.isIntervalOccupied(rec.getY(), rec.getY() + rec.getHeight());
             if (!foundVertical) {
-                baseRegistry.getYCoords().addPrivate(CoordinateOrientation.ORIENT_NONE,
-                        rec.getY() + rec.getHeight() / 2);
+                yCoords.addPrivate(CoordinateOrientation.ORIENT_NONE, rec.getY() + rec.getHeight() / 2);
             }
         }
     }
@@ -101,19 +99,19 @@ public class CoordinatesRegistryBuilder {
 
     private void registerSnappedRectangle(CoordinatesRegistry baseRegistry, Rectangle rec) {
         double margin = CircuitLayoutSettings.getMarginObstacle();
-        double snapMajor = CircuitLayoutSettings.getSnappingMajor();
+        double snap = CircuitLayoutSettings.getSnappingMajor();
 
-        double minx = SnapHelper.snapToLower(rec.getX() - margin, snapMajor);
-        baseRegistry.getXCoords().addPublic(CoordinateOrientation.ORIENT_LOWER, minx);
+        double xMin = SnapHelper.snapToLower(rec.getX() - margin, snap);
+        baseRegistry.getXCoords().addPublic(CoordinateOrientation.ORIENT_LOWER, xMin);
 
-        double maxx = SnapHelper.snapToHigher(rec.getX() + rec.getWidth() + margin, snapMajor);
-        baseRegistry.getXCoords().addPublic(CoordinateOrientation.ORIENT_HIGHER, maxx);
+        double xMax = SnapHelper.snapToHigher(rec.getX() + rec.getWidth() + margin, snap);
+        baseRegistry.getXCoords().addPublic(CoordinateOrientation.ORIENT_HIGHER, xMax);
 
-        double miny = SnapHelper.snapToLower(rec.getY() - margin, snapMajor);
-        baseRegistry.getYCoords().addPublic(CoordinateOrientation.ORIENT_LOWER, miny);
+        double yMin = SnapHelper.snapToLower(rec.getY() - margin, snap);
+        baseRegistry.getYCoords().addPublic(CoordinateOrientation.ORIENT_LOWER, yMin);
 
-        double maxy = SnapHelper.snapToHigher(rec.getY() + rec.getHeight() + margin, snapMajor);
-        baseRegistry.getYCoords().addPublic(CoordinateOrientation.ORIENT_HIGHER, maxy);
+        double yMax = SnapHelper.snapToHigher(rec.getY() + rec.getHeight() + margin, snap);
+        baseRegistry.getYCoords().addPublic(CoordinateOrientation.ORIENT_HIGHER, yMax);
     }
 
 }
