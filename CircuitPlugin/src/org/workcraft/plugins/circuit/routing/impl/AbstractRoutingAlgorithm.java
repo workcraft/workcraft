@@ -3,14 +3,16 @@ package org.workcraft.plugins.circuit.routing.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.workcraft.plugins.circuit.commands.CircuitLayoutSettings;
+import org.workcraft.plugins.circuit.routing.basic.CellState;
+import org.workcraft.plugins.circuit.routing.basic.IndexedInterval;
 import org.workcraft.plugins.circuit.routing.basic.IndexedPoint;
 import org.workcraft.plugins.circuit.routing.basic.Line;
 import org.workcraft.plugins.circuit.routing.basic.Point;
 import org.workcraft.plugins.circuit.routing.basic.RouterConnection;
+import org.workcraft.plugins.circuit.routing.basic.RouterPort;
 
 public abstract class AbstractRoutingAlgorithm {
-
-    private final RouterCellsBuilder cellsBuilder = new RouterCellsBuilder();
 
     protected CellAnalyser analyser;
     protected RouterTask task;
@@ -22,31 +24,29 @@ public abstract class AbstractRoutingAlgorithm {
     protected int height;
 
     public List<Route> route(RouterTask task, CoordinatesRegistry coordinates, boolean occupyCells) {
+        this.task = task;
+        this.coordinates = coordinates;
 
         width = coordinates.getXCoordinates().size();
         height = coordinates.getYCoordinates().size();
-
-        this.task = task;
-
-        this.coordinates = coordinates;
-
         analyser = new CellAnalyser(coordinates);
 
         List<Route> routes = new ArrayList<>();
         List<List<IndexedPoint>> paths = new ArrayList<List<IndexedPoint>>();
 
-        for (RouterConnection connection : task.getConnections()) {
+        for (RouterConnection connection: task.getConnections()) {
             IndexedPoint sourcePoint = coordinates.getIndexedCoordinate(connection.getSource().getLocation());
             IndexedPoint destinationPoint = coordinates.getIndexedCoordinate(connection.getDestination().getLocation());
 
             analyser.initialise(connection);
 
-            List<IndexedPoint> path = findRoute(sourcePoint, destinationPoint);
-
+            List<IndexedPoint> path = findPath(sourcePoint, destinationPoint);
             Route route = new Route(connection.getSource(), connection.getDestination());
-
-            if (path != null) {
-
+            if (path == null) {
+                route.setRouteFound(false);
+                route.add(connection.getSource().getLocation());
+                route.add(connection.getDestination().getLocation());
+            } else {
                 path = getCleanPath(path);
                 paths.add(path);
                 augmentRouteSegments(route, path);
@@ -55,10 +55,6 @@ public abstract class AbstractRoutingAlgorithm {
                 if (occupyCells) {
                     markBlockedCells(route, coordinates);
                 }
-            } else {
-                route.setRouteFound(false);
-                route.add(connection.getSource().getLocation());
-                route.add(connection.getDestination().getLocation());
             }
 
             routes.add(route);
@@ -66,12 +62,6 @@ public abstract class AbstractRoutingAlgorithm {
 
         usageCounter = new UsageCounter(width, height);
         usageCounter.updateUsageCounter(paths);
-
-
-        // for (int x = 0; x < width; x++) {
-        // System.out.print(usageCounter.getXCoordUsage(x) + " ");
-        // }
-        // System.out.println();
 
         return routes;
     }
@@ -82,9 +72,47 @@ public abstract class AbstractRoutingAlgorithm {
             Point from = route.getPoints().get(i - 1);
             Point to = route.getPoints().get(i);
             Line segment = new Line(from.getX(), from.getY(), to.getX(), to.getY());
-
-            cellsBuilder.markBlockedSegment(registry, cells, segment, route.source);
+            markBlockedSegment(registry, cells, segment, route.source);
         }
+    }
+
+    private void markBlockedSegment(CoordinatesRegistry coordinatesRegistry, RouterCells routerCells,
+            Line segment, RouterPort sourcePort) {
+
+        double x1 = Math.min(segment.getX1(), segment.getX2());
+        double x2 = Math.max(segment.getX1(), segment.getX2());
+        double y1 = Math.min(segment.getY1(), segment.getY2());
+        double y2 = Math.max(segment.getY1(), segment.getY2());
+        double margin = 0.5 * CircuitLayoutSettings.getChannelWidth();
+        IndexedCoordinates xCoords = coordinatesRegistry.getXCoords();
+        IndexedCoordinates yCoords = coordinatesRegistry.getYCoords();
+
+        IndexedInterval xInclusive = xCoords.getIndexedInterval(x1, x2);
+        IndexedInterval xWithMarginExclusive = xCoords.getIndexedIntervalExclusive(x1 - margin, x2 + margin);
+        IndexedInterval xWithMarginInclusive = xCoords.getIndexedInterval(x1 - margin, x2 + margin);
+
+        IndexedInterval yInclusive = yCoords.getIndexedInterval(y1, y2);
+        IndexedInterval yWithMarginExclusive = yCoords.getIndexedIntervalExclusive(y1 - margin, y2 + margin);
+        IndexedInterval yWithMarginInclusive = yCoords.getIndexedInterval(y1 - margin, y2 + margin);
+
+        if (segment.isHorizontal()) {
+            routerCells.mark(xWithMarginInclusive, yWithMarginInclusive, CellState.HORIZONTAL_PRIVATE);
+            routerCells.mark(xWithMarginExclusive, yWithMarginExclusive, CellState.HORIZONTAL_BLOCK);
+            IndexedInterval xInclusiveMin = coordinatesRegistry.getXCoords().getIndexedInterval(x1 - margin, x1);
+            routerCells.unmark(xInclusiveMin, yInclusive, CellState.HORIZONTAL_BLOCK);
+            IndexedInterval xInclusiveMax = coordinatesRegistry.getXCoords().getIndexedInterval(x2, x2 + margin);
+            routerCells.unmark(xInclusiveMax, yInclusive, CellState.HORIZONTAL_BLOCK);
+        }
+
+        if (segment.isVertical()) {
+            routerCells.mark(xWithMarginInclusive, yWithMarginInclusive, CellState.VERTICAL_PRIVATE);
+            routerCells.mark(xWithMarginExclusive, yWithMarginExclusive, CellState.VERTICAL_BLOCK);
+            IndexedInterval yInclusiveMin = coordinatesRegistry.getYCoords().getIndexedInterval(y1 - margin, y1);
+            routerCells.unmark(xInclusive, yInclusiveMin, CellState.VERTICAL_BLOCK);
+            IndexedInterval yInclusiveMax = coordinatesRegistry.getYCoords().getIndexedInterval(y2, y2 + margin);
+            routerCells.unmark(xInclusive, yInclusiveMax, CellState.VERTICAL_BLOCK);
+        }
+        routerCells.markSourcePorts(xInclusive, yInclusive, sourcePort);
     }
 
     /**
@@ -95,7 +123,7 @@ public abstract class AbstractRoutingAlgorithm {
      * @return route with path information added
      */
     protected Route augmentRouteSegments(Route route, List<IndexedPoint> path) {
-        for (IndexedPoint point : path) {
+        for (IndexedPoint point: path) {
             route.add(coordinates.getPoint(point.getX(), point.getY()));
         }
         return route;
@@ -166,10 +194,10 @@ public abstract class AbstractRoutingAlgorithm {
         return path;
     }
 
-    protected abstract List<IndexedPoint> findRoute(IndexedPoint source, IndexedPoint destination);
-
     protected UsageCounter getUsageCounter() {
         return usageCounter;
     }
+
+    protected abstract List<IndexedPoint> findPath(IndexedPoint source, IndexedPoint destination);
 
 }

@@ -136,8 +136,8 @@ public class CellAnalyser {
         }
 
         boolean isBlocked = cells.isMarked(x, y, CellState.HORIZONTAL_BLOCK);
-        boolean isPrivate = y != destinationPoint.getY() && y != sourcePoint.getY()
-                && !cells.isMarked(x, y, CellState.HORIZONTAL_PUBLIC);
+        boolean isPrivate = (y != destinationPoint.getY()) && (y != sourcePoint.getY())
+                && cells.isMarked(x, y, CellState.HORIZONTAL_PRIVATE);
         return isBlocked || isPrivate;
     }
 
@@ -146,8 +146,8 @@ public class CellAnalyser {
             return false;
         }
         boolean isBlocked = cells.isMarked(x, y, CellState.VERTICAL_BLOCK);
-        boolean isPrivate = x != destinationPoint.getX() && x != sourcePoint.getX()
-                && !cells.isMarked(x, y, CellState.VERTICAL_PUBLIC);
+        boolean isPrivate = (x != destinationPoint.getX()) && (x != sourcePoint.getX())
+                && cells.isMarked(x, y, CellState.VERTICAL_PRIVATE);
         return isBlocked || isPrivate;
     }
 

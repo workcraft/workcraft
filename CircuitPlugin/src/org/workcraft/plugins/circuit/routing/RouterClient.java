@@ -27,12 +27,12 @@ public class RouterClient {
     public RouterTask registerObstacles(VisualCircuit circuit) {
         contactToRouterPortMap.clear();
         RouterTask routerTask = new RouterTask();
-        for (VisualFunctionComponent component : circuit.getVisualFunctionComponents()) {
-            Rectangle2D bb = component.getInternalBoundingBox();
+        for (VisualFunctionComponent component: circuit.getVisualFunctionComponents()) {
+            Rectangle2D bb = component.getInternalBoundingBoxInRootSpace();
             Rectangle internalBoundingBox = new Rectangle(bb.getX(), bb.getY(), bb.getWidth(), bb.getHeight());
             routerTask.addRectangle(internalBoundingBox);
-            for (VisualContact contact : component.getContacts()) {
-                Point pos = new Point(contact.getX() + component.getX(), contact.getY() + component.getY());
+            for (VisualContact contact: component.getContacts()) {
+                Point pos = new Point(contact.getRootSpaceX(), contact.getRootSpaceY());
                 RouterPort routerPort = new RouterPort(getDirection(contact), pos, false);
                 contactToRouterPortMap.put(contact, routerPort);
                 routerTask.addPort(routerPort);
@@ -41,8 +41,8 @@ public class RouterClient {
             }
         }
 
-        for (VisualContact port : circuit.getVisualPorts()) {
-            Rectangle2D bb = port.getInternalBoundingBox();
+        for (VisualContact port: circuit.getVisualPorts()) {
+            Rectangle2D bb = port.getInternalBoundingBoxInRootSpace();
             routerTask.addRectangle(new Rectangle(bb.getX(), bb.getY(), bb.getWidth(), bb.getHeight()));
             Point pos = new Point(bb.getCenterX(), bb.getCenterY());
             RouterPort routerPort = new RouterPort(getDirection(port), pos, true);
@@ -50,7 +50,7 @@ public class RouterClient {
             routerTask.addPort(routerPort);
         }
 
-        for (Entry<VisualContact, RouterPort> entry : contactToRouterPortMap.entrySet()) {
+        for (Entry<VisualContact, RouterPort> entry: contactToRouterPortMap.entrySet()) {
             VisualContact srcContact = entry.getKey();
             if (srcContact.isDriven()) continue;
             RouterPort srcRouterPort = entry.getValue();

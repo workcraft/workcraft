@@ -17,27 +17,27 @@ public class CircuitLayoutSettings implements Settings {
     private static final String keySpacingVertical = prefix + ".spacingVertical";
     private static final String keyMarginObstacle = prefix + ".marginObstacle";
     private static final String keyMarginObstacleBusy = prefix + ".marginObstacleBusy";
-    private static final String keyMarginSegment = prefix + ".marginSegment";
-    private static final String keySnapMajor = prefix + ".snapMajor";
-    private static final String keySnapMinor = prefix + ".snapMinor";
+    private static final String keyChannelWidth = prefix + ".channelWidth";
+    private static final String keySnappingMajor = prefix + ".snappingMajor";
+    private static final String keySnappingMinor = prefix + ".snappingMinor";
     private static final String keyDebugRouting = prefix + ".debugRouting";
 
     private static final double defaultSpacingHorizontal = 5.0;
     private static final double defaultSpacingVertical = 2.0;
     private static final double defaultMarginObstacle = 1.0;
-    private static final double defaultMarginObstacleBusy = 0.5;
-    private static final double defaultMarginSegment = 0.1;
-    private static final double defaultSnapMajor = 1.0;
-    private static final double defaultSnapMinor = 0.5;
+    private static final double defaultMarginObstacleBusy = 0.2;
+    private static final double defaultChannelWidth = 0.2;
+    private static final double defaultSnappingMajor = 1.0;
+    private static final double defaultSnappingMinor = 0.5;
     private static final boolean defaultDebugRouting = false;
 
     private static double spacingHorizontal = defaultSpacingHorizontal;
     private static double spacingVertical = defaultSpacingVertical;
     private static double marginObstacle = defaultMarginObstacle;
     private static double marginObstacleBusy = defaultMarginObstacleBusy;
-    private static double marginSegment = defaultMarginSegment;
-    private static double snapMajor = defaultSnapMajor;
-    private static double snapMinor = defaultSnapMinor;
+    private static double channelWidth = defaultChannelWidth;
+    private static double snappingMajor = defaultSnappingMajor;
+    private static double snappingMinor = defaultSnappingMinor;
     private static boolean debugRouting = defaultDebugRouting;
 
     public CircuitLayoutSettings() {
@@ -60,7 +60,7 @@ public class CircuitLayoutSettings implements Settings {
             }
         });
         properties.add(new PropertyDeclaration<CircuitLayoutSettings, Double>(
-                this, "Routing margins for obstacles", Double.class, true, false, false) {
+                this, "Routing prefered margin to bypass obstacles", Double.class, true, false, false) {
             protected void setter(CircuitLayoutSettings object, Double value) {
                 setMarginObstacle(value);
             }
@@ -69,7 +69,7 @@ public class CircuitLayoutSettings implements Settings {
             }
         });
         properties.add(new PropertyDeclaration<CircuitLayoutSettings, Double>(
-                this, "Routing margins for obstacles in busy locations", Double.class, true, false, false) {
+                this, "Routing minimal margin for obstacles in busy locations", Double.class, true, false, false) {
             protected void setter(CircuitLayoutSettings object, Double value) {
                 setMarginObstacleBusy(value);
             }
@@ -78,30 +78,30 @@ public class CircuitLayoutSettings implements Settings {
             }
         });
         properties.add(new PropertyDeclaration<CircuitLayoutSettings, Double>(
-                this, "Routing margins for wires", Double.class, true, false, false) {
+                this, "Routing channel width for wires", Double.class, true, false, false) {
             protected void setter(CircuitLayoutSettings object, Double value) {
-                setMarginSegment(value);
+                setChannelWidth(value);
             }
             protected Double getter(CircuitLayoutSettings object) {
-                return getMarginSegment();
+                return getChannelWidth();
             }
         });
         properties.add(new PropertyDeclaration<CircuitLayoutSettings, Double>(
                 this, "Routing major snapping", Double.class, true, false, false) {
             protected void setter(CircuitLayoutSettings object, Double value) {
-                setSnapMajor(value);
+                setSnappingMajor(value);
             }
             protected Double getter(CircuitLayoutSettings object) {
-                return getSnapMajor();
+                return getSnappingMajor();
             }
         });
         properties.add(new PropertyDeclaration<CircuitLayoutSettings, Double>(
                 this, "Routing minor snapping", Double.class, true, false, false) {
             protected void setter(CircuitLayoutSettings object, Double value) {
-                setSnapMinor(value);
+                setSnappingMinor(value);
             }
             protected Double getter(CircuitLayoutSettings object) {
-                return getSnapMinor();
+                return getSnappingMinor();
             }
         });
         properties.add(new PropertyDeclaration<CircuitLayoutSettings, Boolean>(
@@ -126,9 +126,9 @@ public class CircuitLayoutSettings implements Settings {
         setSpacingVertical(config.getDouble(keySpacingVertical, defaultSpacingVertical));
         setMarginObstacle(config.getDouble(keyMarginObstacle, defaultMarginObstacle));
         setMarginObstacleBusy(config.getDouble(keyMarginObstacleBusy, defaultMarginObstacleBusy));
-        setMarginSegment(config.getDouble(keyMarginSegment, defaultMarginSegment));
-        setSnapMajor(config.getDouble(keySnapMajor, defaultSnapMajor));
-        setSnapMinor(config.getDouble(keySnapMinor, defaultSnapMinor));
+        setChannelWidth(config.getDouble(keyChannelWidth, defaultChannelWidth));
+        setSnappingMajor(config.getDouble(keySnappingMajor, defaultSnappingMajor));
+        setSnappingMinor(config.getDouble(keySnappingMinor, defaultSnappingMinor));
         setDebugRouting(config.getBoolean(keyDebugRouting, defaultDebugRouting));
     }
 
@@ -138,9 +138,9 @@ public class CircuitLayoutSettings implements Settings {
         config.setDouble(keySpacingVertical, getSpacingVertical());
         config.setDouble(keyMarginObstacle, getMarginObstacle());
         config.setDouble(keyMarginObstacleBusy, getMarginObstacleBusy());
-        config.setDouble(keyMarginSegment, getMarginSegment());
-        config.setDouble(keySnapMajor, getSnapMajor());
-        config.setDouble(keySnapMinor, getSnapMinor());
+        config.setDouble(keyChannelWidth, getChannelWidth());
+        config.setDouble(keySnappingMajor, getSnappingMajor());
+        config.setDouble(keySnappingMinor, getSnappingMinor());
         config.setBoolean(keyDebugRouting, getDebugRouting());
     }
 
@@ -186,28 +186,28 @@ public class CircuitLayoutSettings implements Settings {
         marginObstacleBusy = value;
     }
 
-    public static double getMarginSegment() {
-        return marginSegment;
+    public static double getChannelWidth() {
+        return channelWidth;
     }
 
-    public static void setMarginSegment(double value) {
-        marginSegment = value;
+    public static void setChannelWidth(double value) {
+        channelWidth = value;
     }
 
-    public static double getSnapMajor() {
-        return snapMajor;
+    public static double getSnappingMajor() {
+        return snappingMajor;
     }
 
-    public static void setSnapMajor(double value) {
-        snapMajor = value;
+    public static void setSnappingMajor(double value) {
+        snappingMajor = value;
     }
 
-    public static double getSnapMinor() {
-        return snapMinor;
+    public static double getSnappingMinor() {
+        return snappingMinor;
     }
 
-    public static void setSnapMinor(double value) {
-        snapMinor = value;
+    public static void setSnappingMinor(double value) {
+        snappingMinor = value;
     }
 
     public static boolean getDebugRouting() {

@@ -1,9 +1,9 @@
 package org.workcraft.plugins.circuit.routing.basic;
 
 public enum CoordinateOrientation {
-    /** coordinate facing higher coordinates. */
+    /** Coordinate facing higher coordinates. */
     ORIENT_HIGHER,
-    /** coordinate facing lower coordinates. */
+    /** Coordinate facing lower coordinates. */
     ORIENT_LOWER,
     /** Coordinate facing both sides. */
     ORIENT_BOTH,

@@ -16,127 +16,83 @@ import org.workcraft.plugins.circuit.routing.basic.RouterPort;
  */
 public class RouterCellsBuilder {
 
-    public RouterCells buildRouterCells(CoordinatesRegistry coordinatesRegistry, RouterTask routerTask) {
-        RouterCells routerCells = new RouterCells(coordinatesRegistry.getXCoords().size(),
-                coordinatesRegistry.getYCoords().size());
+    public static RouterCells buildRouterCells(CoordinatesRegistry coordRegistry, RouterTask routerTask) {
+        RouterCells routerCells = new RouterCells(
+                coordRegistry.getXCoords().size(),
+                coordRegistry.getYCoords().size());
 
-        markVerticalPublic(coordinatesRegistry, routerCells);
-        markHorizontalPublic(coordinatesRegistry, routerCells);
-
-        markBusy(coordinatesRegistry, routerCells, routerTask);
-        markBlocked(coordinatesRegistry, routerCells, routerTask);
-
+        markPrivate(coordRegistry, routerCells);
+        markBlocked(coordRegistry, routerCells, routerTask);
+        markBusy(coordRegistry, routerCells, routerTask);
         return routerCells;
     }
 
-    private void markBlocked(CoordinatesRegistry coordinatesRegistry, RouterCells routerCells, RouterTask routerTask) {
-        double snapMinor = CircuitLayoutSettings.getSnapMinor();
-        for (RouterPort port : routerTask.getPorts()) {
-            Point location = port.getLocation();
-            IndexedPoint ip = coordinatesRegistry.getIndexedCoordinate(port.getLocation());
-            IndexedInterval xInterval = coordinatesRegistry.getXCoords().getIndexedIntervalExclusive(
-                    location.getX() - snapMinor, location.getX() + snapMinor);
-            IndexedInterval yInterval = coordinatesRegistry.getYCoords().getIndexedIntervalExclusive(
-                    location.getY() - snapMinor, location.getY() + snapMinor);
-
-            if (ip != null && xInterval != null && yInterval != null) {
-                if (port.getDirection().isVertical()) {
-                    routerCells.mark(xInterval.getFrom(), yInterval.getFrom(), xInterval.getTo(), yInterval.getTo(),
-                            CellState.HORIZONTAL_BLOCK);
-                } else {
-                    routerCells.mark(xInterval.getFrom(), yInterval.getFrom(), xInterval.getTo(), yInterval.getTo(),
-                            CellState.VERTICAL_BLOCK);
-                }
-            }
-        }
-
-        for (Line segment : routerTask.getSegments()) {
-            markBlockedSegment(coordinatesRegistry, routerCells, segment, null);
-        }
-    }
-
-    public void markBlockedSegment(CoordinatesRegistry coordinatesRegistry, RouterCells routerCells,
-            Line segment, RouterPort sourcePort) {
-
-        double x1 = Math.min(segment.getX1(), segment.getX2());
-        double x2 = Math.max(segment.getX1(), segment.getX2());
-        double y1 = Math.min(segment.getY1(), segment.getY2());
-        double y2 = Math.max(segment.getY1(), segment.getY2());
-        double marginSegment = CircuitLayoutSettings.getMarginSegment();
-
-        IndexedInterval xWithMargin = coordinatesRegistry.getXCoords().getIndexedIntervalExclusive(
-                x1 - marginSegment, x2 + marginSegment);
-        IndexedInterval yWithMargin = coordinatesRegistry.getYCoords().getIndexedIntervalExclusive(
-                y1 - marginSegment, y2 + marginSegment);
-        IndexedInterval xInclude = coordinatesRegistry.getXCoords().getIndexedInterval(x1, x2);
-        IndexedInterval yInclude = coordinatesRegistry.getYCoords().getIndexedInterval(y1, y2);
-
-        if (segment.isVertical()) {
-            coordinatesRegistry.blocked.add(new Rectangle(x1 - marginSegment, y1 - marginSegment,
-                    x2 - x1 + 2 * marginSegment, y2 - y1 + 2 * marginSegment));
-
-            routerCells.mark(xWithMargin, yWithMargin, CellState.VERTICAL_BLOCK);
-
-            IndexedInterval yIncludeMin = coordinatesRegistry.getYCoords().getIndexedInterval(y1 - marginSegment, y1);
-            IndexedInterval yIncludeMax = coordinatesRegistry.getYCoords().getIndexedInterval(y2, y2 + marginSegment);
-
-            routerCells.unmark(xInclude, yIncludeMin, CellState.VERTICAL_BLOCK);
-            routerCells.unmark(xInclude, yIncludeMax, CellState.VERTICAL_BLOCK);
-            routerCells.markSourcePorts(xInclude.getFrom(), yInclude.getFrom(),
-                    xInclude.getTo(), yInclude.getTo(), sourcePort);
-        }
-
-        if (segment.isHorizontal()) {
-            coordinatesRegistry.blocked.add(new Rectangle(x1 - marginSegment, y1 - marginSegment,
-                    x2 - x1 + 2 * marginSegment, y2 - y1 + 2 * marginSegment));
-
-            routerCells.mark(xWithMargin, yWithMargin, CellState.HORIZONTAL_BLOCK);
-
-            IndexedInterval xIncludeMin = coordinatesRegistry.getXCoords().getIndexedInterval(x1 - marginSegment, x1);
-            IndexedInterval xIncludeMax = coordinatesRegistry.getXCoords().getIndexedInterval(x2, x2 + marginSegment);
-
-            routerCells.unmark(xIncludeMin, yInclude, CellState.HORIZONTAL_BLOCK);
-            routerCells.unmark(xIncludeMax, yInclude, CellState.HORIZONTAL_BLOCK);
-            routerCells.markSourcePorts(xInclude.getFrom(), yInclude.getFrom(), xInclude.getTo(),
-                    yInclude.getTo(), sourcePort);
-        }
-    }
-
-    private void markBusy(CoordinatesRegistry coordinatesRegistry, RouterCells routerCells, RouterTask routerTask) {
-        double marginBusy = CircuitLayoutSettings.getMarginObstacleBusy();
-        for (Rectangle rectangle : routerTask.getRectangles()) {
-            IndexedInterval xInt = coordinatesRegistry.getXCoords().getIndexedIntervalExclusive(
-                    rectangle.getX() - marginBusy, rectangle.getX() + rectangle.getWidth() + marginBusy);
-
-            IndexedInterval yInt = coordinatesRegistry.getYCoords().getIndexedIntervalExclusive(
-                    rectangle.getY() - marginBusy, rectangle.getY() + rectangle.getHeight() + marginBusy);
-
-            routerCells.markBusy(xInt, yInt);
-        }
-    }
-
-    private void markVerticalPublic(CoordinatesRegistry coordinatesRegistry, RouterCells routerCells) {
+    private static void markPrivate(CoordinatesRegistry coordRegistry, RouterCells routerCells) {
         if (routerCells.cells.length == 0) {
             return;
         }
+        int xlen = routerCells.cells.length;
         int ylen = routerCells.cells[0].length;
         int x = 0;
-        for (Coordinate dx : coordinatesRegistry.getXCoords().getValues()) {
+        for (Coordinate dx: coordRegistry.getXCoords().getValues()) {
             if (dx.isPublic()) {
-                routerCells.mark(x, 0, x, ylen - 1, CellState.VERTICAL_PUBLIC);
+                routerCells.unmark(x, 0, x, ylen - 1, CellState.VERTICAL_PRIVATE);
+            } else {
+                routerCells.mark(x, 0, x, ylen - 1, CellState.VERTICAL_PRIVATE);
             }
             x++;
         }
-    }
-
-    private void markHorizontalPublic(CoordinatesRegistry coordinatesRegistry, RouterCells routerCells) {
-        int xlen = routerCells.cells.length;
         int y = 0;
-        for (Coordinate dy : coordinatesRegistry.getYCoords().getValues()) {
+        for (Coordinate dy: coordRegistry.getYCoords().getValues()) {
             if (dy.isPublic()) {
-                routerCells.mark(0, y, xlen - 1, y, CellState.HORIZONTAL_PUBLIC);
+                routerCells.unmark(0, y, xlen - 1, y, CellState.HORIZONTAL_PRIVATE);
+            } else {
+                routerCells.mark(0, y, xlen - 1, y, CellState.HORIZONTAL_PRIVATE);
             }
             y++;
+        }
+    }
+
+    private static void markBlocked(CoordinatesRegistry coordRegistry, RouterCells routerCells, RouterTask routerTask) {
+        double snap = CircuitLayoutSettings.getSnappingMinor();
+        for (RouterPort port: routerTask.getPorts()) {
+            if (!port.isFixedDirection()) continue;
+
+            Point p = port.getLocation();
+            IndexedPoint ip = coordRegistry.getIndexedCoordinate(port.getLocation());
+            IndexedCoordinates xCoords = coordRegistry.getXCoords();
+            IndexedInterval xInterval = xCoords.getIndexedIntervalExclusive(p.getX() - snap, p.getX() + snap);
+            IndexedCoordinates yCoords = coordRegistry.getYCoords();
+            IndexedInterval yInterval = yCoords.getIndexedIntervalExclusive(p.getY() - snap, p.getY() + snap);
+
+            if ((ip != null) && (xInterval != null) && (yInterval != null)) {
+                if (port.getDirection().isHorizontal()) {
+                    routerCells.mark(xInterval, yInterval, CellState.VERTICAL_BLOCK);
+                } else {
+                    routerCells.mark(xInterval, yInterval, CellState.HORIZONTAL_BLOCK);
+                }
+            }
+        }
+    }
+
+    private static void markBusy(CoordinatesRegistry coordRegistry, RouterCells routerCells, RouterTask routerTask) {
+        double margin = CircuitLayoutSettings.getMarginObstacleBusy();
+        IndexedCoordinates xCoords = coordRegistry.getXCoords();
+        IndexedCoordinates yCoords = coordRegistry.getYCoords();
+        for (Rectangle rect: routerTask.getRectangles()) {
+            IndexedInterval xInterval = xCoords.getIndexedIntervalExclusive(
+                    rect.getX() - margin, rect.getX() + rect.getWidth() + margin);
+
+            IndexedInterval yInterval = yCoords.getIndexedIntervalExclusive(
+                    rect.getY() - margin, rect.getY() + rect.getHeight() + margin);
+
+            routerCells.markBusy(xInterval, yInterval);
+        }
+
+        for (Line line: routerTask.getSegments()) {
+            IndexedInterval xInt = xCoords.getIndexedInterval(line.getMinX(), line.getMaxX());
+            IndexedInterval yInt = yCoords.getIndexedInterval(line.getMinY(), line.getMaxY());
+            routerCells.markBusy(xInt, yInt);
         }
     }
 

@@ -368,7 +368,7 @@ public class MainWindowActions {
         }
         @Override
         public KeyStroke getKeyStroke() {
-            return KeyStroke.getKeyStroke(KeyEvent.VK_O, DesktopApi.getMenuKeyMask());
+            return KeyStroke.getKeyStroke(KeyEvent.VK_0, DesktopApi.getMenuKeyMask());
         }
         @Override
         public void run() {

@@ -8,27 +8,33 @@ import java.util.List;
 public class Router {
 
     private final CoordinatesRegistryBuilder registryBuilder = new CoordinatesRegistryBuilder();
-    private final RouterCellsBuilder cellsBuilder = new RouterCellsBuilder();
     private final AbstractRoutingAlgorithm algorithm = new DijkstraRouter();
     private RouterTask routerTask = null;
     private List<Route> routesFound = null;
-    private CoordinatesRegistry coordinatesPhase2 = null;
+    private CoordinatesRegistry coordPhase = null;
 
     public void routeConnections(RouterTask routerTask) {
         if (routerTask == null || routerTask.equals(this.routerTask)) {
             return;
         }
         this.routerTask = routerTask;
-        // 1st phase
-        CoordinatesRegistry coordinatesPhase1 = registryBuilder.buildPhase1Coordinates(routerTask);
-        coordinatesPhase1.setRouterCells(cellsBuilder.buildRouterCells(coordinatesPhase1, routerTask));
-        routesFound = algorithm.route(routerTask, coordinatesPhase1, false);
+        routeConnectionsPhase1();
+        routeConnectionsPhase2();
+    }
 
-        // 2nd phase
+    private void routeConnectionsPhase1() {
+        coordPhase = registryBuilder.buildPhase1Coordinates(routerTask);
+        RouterCells routerCells = RouterCellsBuilder.buildRouterCells(coordPhase, routerTask);
+        coordPhase.setRouterCells(routerCells);
+        routesFound = algorithm.route(routerTask, coordPhase, false);
+    }
+
+    private void routeConnectionsPhase2() {
         UsageCounter usageCounter = algorithm.getUsageCounter();
-        coordinatesPhase2 = registryBuilder.buildPhase2Coordinates(routerTask, coordinatesPhase1, usageCounter);
-        coordinatesPhase2.setRouterCells(cellsBuilder.buildRouterCells(coordinatesPhase2, routerTask));
-        routesFound = algorithm.route(routerTask, coordinatesPhase2, true);
+        coordPhase = registryBuilder.buildPhase2Coordinates(routerTask, coordPhase, usageCounter);
+        RouterCells routerCells = RouterCellsBuilder.buildRouterCells(coordPhase, routerTask);
+        coordPhase.setRouterCells(routerCells);
+        routesFound = algorithm.route(routerTask, coordPhase, true);
     }
 
     public RouterTask getObstacles() {
@@ -36,7 +42,7 @@ public class Router {
     }
 
     public CoordinatesRegistry getCoordinatesRegistry() {
-        return coordinatesPhase2;
+        return coordPhase;
     }
 
     public List<Route> getRoutingResult() {

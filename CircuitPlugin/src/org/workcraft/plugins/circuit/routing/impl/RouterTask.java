@@ -12,7 +12,7 @@ import org.workcraft.plugins.circuit.routing.basic.RouterConnection;
 import org.workcraft.plugins.circuit.routing.basic.RouterPort;
 
 /**
- * The class completely defines the routing task. It's equality function can be
+ * The class completely defines the routing task. Its equality function can be
  * used to determine if two routing tasks would produce the same routes.
  */
 public class RouterTask {
