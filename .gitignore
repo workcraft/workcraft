@@ -14,9 +14,13 @@
 /*/.classpath
 /*/.project
 /*/.settings
-!/WorkcraftRunner/.classpath
-!/WorkcraftRunner/.project
 /*/bin/
+
+# InteliJ IDEA
+/workcraft.iml
+/workcraft.ipr
+/workcraft.iws
+/*/*.iml
 
 # Generated source files
 /*/src-gen/

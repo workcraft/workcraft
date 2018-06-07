@@ -5,12 +5,9 @@ buildscript {
     dependencies {
         classpath 'ca.coglinc:javacc-gradle-plugin:2.4.0'
         classpath 'de.aaschmid:gradle-cpd-plugin:1.0'
-        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.1'
+        classpath 'org.kt3k.gradle.plugin:coveralls-gradle-plugin:2.8.2'
+        classpath 'org.jetbrains.kotlin:kotlin-gradle-plugin:1.2.41'
     }
-}
-
-repositories {
-    jcenter()
 }
 
 ext {
@@ -19,43 +16,43 @@ ext {
     jacocoVersion = '0.8.1'
 }
 
+repositories {
+    jcenter()
+}
+
 subprojects {
     repositories {
         jcenter()
     }
 
     apply plugin: 'java'
-    apply plugin: 'ca.coglinc.javacc'
-    apply plugin: 'jacoco'
-
-    apply plugin: 'eclipse'
-
-    sourceCompatibility = 1.8
+    sourceCompatibility = '1.8'
+    targetCompatibility = '1.8'
 
     sourceSets {
-        main {
-            java {
-                srcDir 'src'
-                srcDir 'src-gen'
-            }
-            resources {
-                srcDir 'res'
-            }
-        }
-        test {
-            java {
-                srcDir 'test'
-            }
-            resources {
-                srcDir 'test'
-            }
-        }
+        main.java.srcDirs = ['src', 'src-gen']
+        main.resources.srcDirs = ['res']
+        test.java.srcDirs = ['test']
+        test.resources.srcDirs = ['test']
     }
 
     compileJava {
         options.encoding = 'UTF-8'
         options.compilerArgs << "-Xlint:deprecation"
     }
+
+    apply plugin: 'kotlin'
+
+    sourceSets {
+        main.kotlin.srcDirs = ['src']
+        test.kotlin.srcDirs = ['test']
+    }
+
+    compileKotlin {
+        kotlinOptions.jvmTarget = '1.8'
+    }
+
+    apply plugin: 'ca.coglinc.javacc'
 
     compileJavacc {
         inputDirectory = file('javacc')
@@ -64,25 +61,54 @@ subprojects {
         arguments = [grammar_encoding: 'UTF-8', static: 'false']
     }
 
+    task cleanJavacc(type: Delete) {
+        delete compileJavacc.outputDirectory
+    }
+
+    dependencies {
+        compile fileTree(dir: '../ThirdParty', include: ['*.jar'])
+        compile fileTree(dir: '../ThirdParty/batik', include: ['*.jar'])
+        compile 'org.jetbrains.kotlin:kotlin-stdlib:1.2.41'
+
+        testCompile 'junit:junit:4.12'
+        javacc 'net.java.dev.javacc:javacc:7.0.3'
+    }
+
+    apply plugin: 'eclipse'
+
+    eclipse {
+        project {
+            buildCommand  'org.jetbrains.kotlin.ui.kotlinBuilder'
+             natures 'org.jetbrains.kotlin.core.kotlinNature'
+        }
+        classpath {
+            containers 'org.jetbrains.kotlin.core.KOTLIN_CONTAINER'
+        }
+    }
+
+    eclipseClasspath.dependsOn compileJavacc
+
+    apply plugin: 'idea'
+
+    idea.module {
+        sourceDirs = [file('src'), file('javacc'), file('src-gen')]
+        generatedSourceDirs = [file('src-gen')]
+        testSourceDirs = [file('test')]
+        resourceDirs = [file('res'), file('models')]
+        excludeDirs = [file('.gradle'), file('.settings'), file('bin'), file('build'), file('gradle')]
+        inheritOutputDirs = false
+        outputDir = file('build')
+    }
+
+    ideaModule.dependsOn compileJavacc
+
+    task cleanAll(dependsOn: ['clean', 'cleanEclipse', 'cleanIdea', 'cleanJavacc'])
+
     test {
         testLogging {
             events "failed"
             exceptionFormat "full"
         }
-    }
-
-    task cleanJavacc(type: Delete) {
-        delete 'src-gen'
-    }
-
-    task cleanAll(dependsOn: ['clean', 'cleanJavacc'])
-
-    dependencies {
-        compile fileTree(dir: '../ThirdParty', include: ['*.jar'])
-        compile fileTree(dir: '../ThirdParty/batik', include: ['*.jar'])
-
-        testCompile 'junit:junit:4.12'
-        javacc 'net.java.dev.javacc:javacc:7.0.2'
     }
 
     apply plugin: 'checkstyle'
@@ -91,6 +117,7 @@ subprojects {
         toolVersion = checkstyleVersion
         configFile file("${project.rootDir}/config/checkstyle/checkstyle.xml")
     }
+
     checkstyleMain.exclude '**/jj/**'
 
     task checkstyle(dependsOn: tasks.withType(Checkstyle))
@@ -103,6 +130,7 @@ subprojects {
         ruleSetFiles = files("${project.rootDir}/config/pmd/rules.xml")
         ruleSets = []
     }
+
     pmdMain.exclude '**/jj/**'
 
     task pmd(dependsOn: tasks.withType(Pmd))
@@ -121,7 +149,10 @@ subprojects {
         }
         source = sourceSets.main.allJava
     }
+
     cpdCheck.exclude '**/jj/**'
+
+    apply plugin: 'jacoco'
 
     jacoco {
         toolVersion = jacocoVersion
@@ -185,3 +216,33 @@ tasks.coveralls {
     group = 'Coverage reports'
     dependsOn jacocoRootReport
 }
+
+apply plugin: 'idea'
+
+idea.module {
+    excludeDirs = [file('.gradle'), file('config'), file('dist-template'), file('doc'), file('gradle')]
+    outputDir = file('build')
+}
+
+def workcraftRunConfiguration = '''
+    <configuration default="false" name="Workcraft" type="Application" factoryName="Application" singleton="true">
+        <option name="MAIN_CLASS_NAME" value="org.workcraft.Console" />
+        <option name="WORKING_DIRECTORY" value="file://$PROJECT_DIR$" />
+        <module name="WorkcraftRunner" />
+    </configuration>
+'''
+
+idea.workspace.iws {
+    withXml { workspace ->
+        def runManagerNode = workspace.node.component.find { it.@name == 'RunManager' }
+        def workcraftRunNode = runManagerNode.find { it.@name == 'Workcraft' }
+        if (workcraftRunNode != null) runManagerNode?.remove(workcraftRunNode)
+        runManagerNode?.append(new XmlParser().parseText(workcraftRunConfiguration))
+    }
+}
+
+tasks.cleanIdea.doLast {
+    project.delete 'workcraft.iws'
+}
+
+task cleanAll(dependsOn: 'cleanIdea')
