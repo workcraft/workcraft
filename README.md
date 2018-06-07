@@ -22,8 +22,7 @@ and documentation ([workcraft-doc](https://github.com/workcraft/workcraft-doc) r
 
     git clone https://github.com/workcraft/workcraft.git
     cd workcraft
-    git submodule init
-    git submodule update
+    git submodule update --init --remote
 
 ### Building
 
