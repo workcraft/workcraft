@@ -5,21 +5,22 @@ Read the [README.md](README.md) first if you have not done it yet.
 
 ### Testing
 
-Testing includes a collection of JUnit tests and checkstyle to enforce a sane
-code style throughout the Java codebase (see below). The tests should be run
-before proposing your changes for the merge into the master repo as follows:
+Testing includes a collection of [JUnit](https://junit.org/) tests and also
+[checkstyle](https://github.com/checkstyle/checkstyle) and
+[PMD](https://pmd.github.io/) checks to enforce a sane code style throughout
+the Java codebase (see below). The tests should be run before proposing your
+changes for the merge into the master as follows:
 
     ./gradlew check
 
 ### Code style
 
-The code style is configured via [checkstyle.xml](config/checkstyle/checkstyle.xml).
-
-The style is similar to [Google's Java style](https://google.github.io/styleguide/javaguide.html),
-but it is more lax and indents with four spaces.
-
-To give a quick overview of it, here is a code snippet showing the
-basics:
+The code style is configured via
+[config/checkstyle/checkstyle.xml](config/checkstyle/checkstyle.xml) and
+[config/pmd/rules.xml](config/pmd/rules.xml). The style is similar to
+[Google's Java style](https://google.github.io/styleguide/javaguide.html),
+but it is more lax and indents with four spaces. To give a quick overview
+of it, here is a code snippet showing the basics:
 
 ```java
 class Foo {
@@ -40,78 +41,55 @@ class Foo {
 }
 ```
 
+### InteliJ IDEA integration
+
+[InteliJ IDEA](https://www.jetbrains.com/idea/) is the preferred development
+environment for Workcraft. Generate IDEA project and Workcraft application
+runner from Gradle config files as follows:
+
+    ./gradlew idea
+
+Now just start IDEA and open `workcraft` directory as the project.
+
+Check that a correct version of Java is selected in
+`File->Project Structure...` dialog under `Project->Project SDK` section.
+
 ### Eclipse integration
 
 [Eclipse IDE](https://www.eclipse.org/) is a convenient environment for
-developing and debugging Workcraft.
+developing and debugging Workcraft. Generate Eclipse projects from Gradle
+config files:
 
-#### Integration of Gradle build system
+    ./gradlew eclipse
 
-1. Clone the Workcraft git repo and set it as the current directory:
+Start Eclipse and select `workcraft` as the current `Workspace` directory.
+Import all Workcraft projects via the `File->Import...` and selecting the
+`General->Existing Projects into Workspace` item.
 
-        git clone https://github.com/workcraft/workcraft.git
-        cd workcraft
+Create a `Java Application` runner with the following configuration:
 
-2. Generate Java parser classes from JavaCC grammar files:
-
-        ./gradlew compileJavacc
-
-3. Generate Eclipse projects from Gradle config files:
-
-        ./gradlew eclipse
-
-4. Start Eclipse and select `workcraft` as the current `Workspace` directory.
-
-5. Import all `workcraft` projects via the `File->Import...` as a
-  `General->Existing Projects into Workspace` item.
-
-6. Create a `Java Application` runner with the following configuration:
-
-  * Name: Workcraft
-  * Project: WorkcraftRunner
-  * Main class: org.workcraft.Console
-
-#### Code style adjustments
+  * Name: `Workcraft`
+  * Project: `WorkcraftRunner`
+  * Main class: `org.workcraft.Console`
+  * Working directory (at Arguments tab): `${workspace_loc}`
 
 The default code style of eclipse uses tabs for indentation. This
 contradicts to the checkstyle that requires 4 spaces for each level of
 indentation. Therefore Eclipse settings need to be modified as follows:
 
-1. Select `Windows->Preferences` menu.
-
-2. Go to the `Java->Code Style->Formatter` section.
-
-3. Edit the indentation policy of `Eclipse [built-in]` profile by
-   changing its tab policy to `Spaces only`.
-
-4. Save the modified profile under a new name and select it as the active
+  * Select `Windows->Preferences` menu and go to the
+  `Java->Code Style->Formatter` section.
+  * Edit the indentation policy of `Eclipse [built-in]` profile by
+  changing its tab policy to `Spaces only`.
+  * Save the modified profile under a new name and select it as the active
    profile.
 
-#### Integration of backend tools
-
-1. Create symbolic link pointing to the location of the backend tools for
-   your platform, e.g. for Linux:
-
-        ln -s dist-template/linux/tools
-
-2. Choose `Run->Run Configurations...` menu and edit the Workcraft runner
-  under `Java Application` section (the one created in the previous
-  section): on the `Arguments` tab modify the `Working directory` so
-  it points to `${workspace_loc}`.
-
-This will set `workcraft` as the current directory when Workcraft is
-started from Eclipse and the tools directory will be in the right place
-to locate the backend tools.
-
-Note: Workcraft requires Java 1.7 or newer for a successful build. You
-may have several versions of Java installed with Java 1.7 being active
-system-wide. However, Eclipse may have a different version of Java set
-as its default. Check this under `Windows->Preferences->Java->Compiler`
-section.
+Check that a correct version of Java is selected in `Windows->Preferences`
+dialog under `Java->Compiler` section.
 
 ### Common issues
 
-If Gradle complains about a missing `JAVA_HOME` env var even though it
+Note: If Gradle complains about a missing `JAVA_HOME` env var even though it
 is set properly, the following may help in Debian-like systems:
 
     sudo ln -s /usr/lib/jvm/your-jdk /usr/lib/jvm/default-java
