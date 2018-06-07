@@ -14,6 +14,17 @@ formalisms and provides a plugin-based framework to model and analyze
 new model types. For more information about Workcraft look at
 https://workcraft.org/.
 
+### Getting source
+
+Get Workcraft source code and submodules for its platform-specific backend tools
+([workcraft-dist-template](https://github.com/workcraft/workcraft-dist-template) repo)
+and documentation ([workcraft-doc](https://github.com/workcraft/workcraft-doc) repo):
+
+    git clone https://github.com/workcraft/workcraft.git
+    cd workcraft
+    git submodule init
+    git submodule update
+
 ### Building
 
 Workcraft requires Java JDK 1.8 or newer for a successful build and
@@ -35,16 +46,13 @@ You can run Workcraft directly after building it:
 
     ./workcraft
 
-### Miscellaneous
+Note that Workcraft relies on backend tools for some of its functionality
+and expects them in `tools` directory by default. Therefore create a
+symbolic link pointing to the location of the backend tools for your
+platform. E.g. for Linux:
 
-Help and tutorial pages are available in the
-[workcraft-doc](https://github.com/workcraft/workcraft-doc) repo.
+    ln -s dist-template/linux/tools
 
-Templates for building Windows, Linux and OS X distributions of
-Workcraft are available in the
-[workcraft-dist-template](https://github.com/workcraft/workcraft-dist-template)
-repo. This includes the binaries of backend tools, gate libraries
-and other platform-specific content.
-
+---
 If you would like to contribute to Workcraft development, then read
 through the [CONTRIBUTING.md](CONTRIBUTING.md) document.
