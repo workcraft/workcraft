@@ -188,12 +188,15 @@ Module parseModule():
     <MODULE> name = parseModuleName()
     ports = parsePorts()
     (
-        (            assign = parseAssign()
-            {                assigns.add(assign);
+        (
+            assign = parseAssign()
+            {
+                assigns.add(assign);
             }
         |
             instance = parseInstance()
-            {                instances.add(instance);
+            {
+                instances.add(instance);
             }
         )
     )*
@@ -250,12 +253,12 @@ List<Port> parseCompactPorts():
 {
     [
         "("
-           (
-               port = parseCompactPort() [","]
-               {
-                   ports.add(port);
-               }
-           )*
+            (
+                port = parseCompactPort() [","]
+                {
+                    ports.add(port);
+                }
+            )*
         ")"
     ]
     ";"
@@ -267,12 +270,13 @@ List<Port> parseCompactPorts():
 Port parseCompactPort():
 {
     Port.Type type;
+    Port.Range range = null;
     Token nameToken;
 }
 {
-    type = parsePortType() nameToken = <NAME>
+    type = parsePortType() [range = parseRange()] nameToken = <NAME>
     {
-        return new Port(nameToken.image, type);
+        return new Port(nameToken.image, type, range);
     }
 }
 
@@ -302,14 +306,16 @@ List<Port> parseComplexPorts():
     declarations = parsePortsDeclaration()
     definitions = parsePortsDefinitions()
     {
-        HashMap<String, Port.Type> nameToType = new HashMap<String, Port.Type>();
+        HashMap<String, Port> nameToPort = new HashMap<String, Port>();
         for (Port port: definitions) {
-            nameToType.put(port.name, port.type);
+            nameToPort.put(port.name, port);
         }
         List<Port> ports = new LinkedList<Port>();
-           for (String name: declarations) {
-               Port.Type type = nameToType.get(name);
-            ports.add(new Port(name, type));
+        for (String name: declarations) {
+            Port port = nameToPort.get(name);
+            if (port != null) {
+                ports.add(port);
+            }
         }
         return ports;
     }
@@ -339,9 +345,7 @@ List<Port> parsePortsDefinitions():
     (
         ports = parsePortsDefinition()
         {
-            if (ports != null) {
-                allPorts.addAll(ports);
-            }
+            allPorts.addAll(ports);
         }
     )*
     {
@@ -351,26 +355,40 @@ List<Port> parsePortsDefinitions():
 
 List<Port> parsePortsDefinition():
 {
-    List<String> names;
     Port.Type type;
+    Port.Range range = null;
+    List<String> names;
+    List<Port> ports = new LinkedList<Port>();
 }
 {
-       (
-           (type = parsePortType() names = parseNames() ";")
-           {
-               List<Port> ports = new LinkedList<Port>();
-               for (String name: names) {
-                   Port port = new Port(name, type);
-                   ports.add(port);
-               }
-               return ports;
-           }
-       |
-           ((<WIRE> | <INOUT> | <REG>) parseNames() ";")
-           {
-               return null;
-           }
-       )
+    (
+        <WIRE> [range = parseRange()] parseNames() ";"
+    |
+        (type = parsePortType() [range = parseRange()] names = parseNames() ";")
+        {
+            for (String name: names) {
+                Port port = new Port(name, type, range);
+                ports.add(port);
+            }
+        }
+    )
+    {
+        return ports;
+    }
+}
+
+Port.Range parseRange():
+{
+    Token firstToken;
+    Token secondToken;
+}
+{
+    "[" firstToken = <INTEGER> ":" secondToken = <INTEGER> "]"
+    {
+        Integer first = Integer.parseInt(firstToken.image);
+        Integer second = Integer.parseInt(secondToken.image);
+        return new Port.Range(first, second);
+    }
 }
 
 List<String> parseNames():
@@ -400,20 +418,20 @@ Map<String, Boolean> parseInitialState():
 {
     (
         (
-            ("!" nameToken = <NAME>)
+            "!" nameToken = <NAME>
             {
                 state = false;
             }
         |
-            (nameToken = <NAME>)
+            nameToken = <NAME>
             {
                 state = true;
             }
         ) [","]
-            {
-               String name = nameToken.image;
-               signalStates.put(name, state);
-            }
+        {
+           String name = nameToken.image;
+           signalStates.put(name, state);
+        }
     )*
     {
         return signalStates;
@@ -530,28 +548,64 @@ List<Pin> parseNamedPins():
 
 Pin parseNamedPin():
 {
-    Token portName;
-    Token netName;
+    Token nameToken;
+    Pin wire;
+    Integer netIndex = null;
 }
 {
-    "." portName = <NAME> "(" netName = <NAME> ")" [","]
+    "." nameToken = <NAME> "(" wire = parseWire() ")" [","]
     {
-        return new Pin(portName.image, netName.image);
+        return new Pin(nameToken.image, wire.netName, wire.netIndex);
     }
 }
 
 List<Pin> parseOrderedPins():
 {
-    List<String> wires;
-    List<Pin> pins = new LinkedList<Pin>();
+    List<Pin> pins;
 }
 {
-    wires = parseNames()
+    pins = parseWires()
     {
-        for (String wire: wires) {
-            Pin pin = new Pin(null, wire);
-            pins.add(pin);
-        }
         return pins;
+    }
+}
+
+List<Pin> parseWires():
+{
+    Pin wire;
+    List<Pin> wires = new LinkedList<Pin>();
+}
+{
+    (
+        wire = parseWire() [","]
+        {
+            wires.add(wire);
+        }
+    )*
+    {
+        return wires;
+    }
+}
+
+Pin parseWire():
+{
+    Token nameToken;
+    Integer index = null;
+}
+{
+    nameToken = <NAME> [ index = parseIndex()]
+    {
+        return new Pin(null, nameToken.image, index);
+    }
+}
+
+Integer parseIndex():
+{
+    Token indexToken;
+}
+{
+    "[" indexToken = <INTEGER> "]"
+    {
+        return Integer.parseInt(indexToken.image);
     }
 }
