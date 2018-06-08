@@ -17,6 +17,7 @@
 /*/bin/
 
 # InteliJ IDEA
+/.idea
 /workcraft.iml
 /workcraft.ipr
 /workcraft.iws
