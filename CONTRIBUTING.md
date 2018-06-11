@@ -49,7 +49,7 @@ runner from Gradle config files as follows:
 
     ./gradlew idea
 
-Now just start IDEA and open `workcraft` directory as the project.
+Now just start IDEA and open `workcraft.ipr` project file.
 
 Check that a correct version of Java is selected in
 `File->Project Structure...` dialog under `Project->Project SDK` section.

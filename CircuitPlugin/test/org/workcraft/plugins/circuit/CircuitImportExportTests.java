@@ -14,17 +14,19 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.circuit.interop.VerilogFormat;
+import org.workcraft.util.Pair;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
 public class CircuitImportExportTests {
 
-    private static final String[] TEST_CIRCUIT_WORKS = {
-        "org/workcraft/plugins/circuit/buffer.circuit.work",
-        "org/workcraft/plugins/circuit/celement.circuit.work",
-        "org/workcraft/plugins/circuit/buffer-tm.circuit.work",
-        "org/workcraft/plugins/circuit/celement-tm.circuit.work",
-        "org/workcraft/plugins/circuit/vme-tm.circuit.work",
+    private static final Pair<String, String>[] TEST_CIRCUIT_WORKS = new Pair[]{
+            new Pair("org/workcraft/plugins/circuit/buffer.circuit.work", null),
+            new Pair("org/workcraft/plugins/circuit/celement.circuit.work", null),
+            new Pair("org/workcraft/plugins/circuit/buffer-tm.circuit.work", null),
+            new Pair("org/workcraft/plugins/circuit/celement-tm.circuit.work", null),
+            new Pair("org/workcraft/plugins/circuit/vme-tm.circuit.work", null),
+            new Pair("org/workcraft/plugins/circuit/bus.circuit.work", "org/workcraft/plugins/circuit/bus.circuit.v"),
     };
 
     @BeforeClass
@@ -46,10 +48,11 @@ public class CircuitImportExportTests {
     }
 
     @Test
-    public void testCircuitImport() throws DeserialisationException {
+    public void testCircuitImportExport() throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        for (String testCircuitWork: TEST_CIRCUIT_WORKS) {
+        for (Pair<String, String> testCircuitPair: TEST_CIRCUIT_WORKS) {
+            String testCircuitWork = testCircuitPair.getFirst();
             URL wUrl = classLoader.getResource(testCircuitWork);
 
             WorkspaceEntry wWe = framework.loadWork(wUrl.getFile());
@@ -58,10 +61,10 @@ public class CircuitImportExportTests {
             Set<String> wGates = new HashSet<>();
             countCircuitNodes(wWe, wInputs, wOutputs, wGates);
 
+            WorkspaceEntry vWe = null;
             Set<String> vInputs = new HashSet<>();
             Set<String> vOutputs = new HashSet<>();
             Set<String> vGates = new HashSet<>();
-            WorkspaceEntry vWe = null;
             try {
                 File vFile = File.createTempFile("workcraft-", ".v");
                 vFile.deleteOnExit();
@@ -74,6 +77,23 @@ public class CircuitImportExportTests {
             Assert.assertEquals(wInputs, vInputs);
             Assert.assertEquals(wOutputs, vOutputs);
             Assert.assertEquals(wGates, vGates);
+
+            String testCircuitVerilog = testCircuitPair.getSecond();
+            if (testCircuitVerilog != null) {
+                URL sUrl = classLoader.getResource(testCircuitVerilog);
+                WorkspaceEntry sWe = framework.loadWork(sUrl.getFile());
+
+                Set<String> sInputs = new HashSet<>();
+                Set<String> sOutputs = new HashSet<>();
+                Set<String> sGates = new HashSet<>();
+                countCircuitNodes(sWe, sInputs, sOutputs, sGates);
+
+                Assert.assertEquals(wInputs, sInputs);
+                Assert.assertEquals(wOutputs, sOutputs);
+                Assert.assertEquals(wGates, sGates);
+
+                framework.closeWork(sWe);
+            }
 
             framework.closeWork(wWe);
             framework.closeWork(vWe);

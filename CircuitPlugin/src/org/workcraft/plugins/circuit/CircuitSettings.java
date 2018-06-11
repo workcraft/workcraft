@@ -42,6 +42,7 @@ public class CircuitSettings implements Settings {
     private static final String keyGateLibrary = prefix + ".gateLibrary";
     private static final String keySubstitutionLibrary = prefix + ".substitutionLibrary";
     private static final String keyMutexData = prefix + ".mutexData";
+    private static final String keyBusSuffix = prefix + ".busSuffix";
 
     private static final boolean defaultShowContacts = false;
     private static final boolean defaultShowZeroDelayNames = false;
@@ -55,6 +56,7 @@ public class CircuitSettings implements Settings {
     private static final String defaultGateLibrary = DesktopApi.getOs().isWindows() ? "libraries\\workcraft.lib" : "libraries/workcraft.lib";
     private static final String defaultSubstitutionLibrary = "";
     private static final String defaultMutexData = "MUTEX ((r1, g1), (r2, g2))";
+    private static final String defaultBusSuffix = "__$";
 
     private static boolean showContacts = defaultShowContacts;
     private static boolean showZeroDelayNames = defaultShowZeroDelayNames;
@@ -68,6 +70,7 @@ public class CircuitSettings implements Settings {
     private static String gateLibrary = defaultGateLibrary;
     private static String substitutionLibrary = defaultSubstitutionLibrary;
     private static String mutexData = defaultMutexData;
+    private static String busSuffix = defaultBusSuffix;
 
     public CircuitSettings() {
         properties.add(new PropertyDeclaration<CircuitSettings, Boolean>(
@@ -193,6 +196,16 @@ public class CircuitSettings implements Settings {
                 return getMutexData();
             }
         });
+
+        properties.add(new PropertyDeclaration<CircuitSettings, String>(
+                this, "Bus split suffix ($ is replaced by index)", String.class, true, false, false) {
+            protected void setter(CircuitSettings object, String value) {
+                setBusSuffix(value);
+            }
+            protected String getter(CircuitSettings object) {
+                return getBusSuffix();
+            }
+        });
     }
 
     @Override
@@ -224,6 +237,7 @@ public class CircuitSettings implements Settings {
         setGateLibrary(config.getString(keyGateLibrary, defaultGateLibrary));
         setSubstitutionLibrary(config.getString(keySubstitutionLibrary, defaultSubstitutionLibrary));
         setMutexData(config.getString(keyMutexData, defaultMutexData));
+        setBusSuffix(config.getString(keyBusSuffix, defaultBusSuffix));
     }
 
     @Override
@@ -240,6 +254,7 @@ public class CircuitSettings implements Settings {
         config.set(keyGateLibrary, getGateLibrary());
         config.set(keySubstitutionLibrary, getSubstitutionLibrary());
         config.set(keyMutexData, getMutexData());
+        config.set(keyBusSuffix, getBusSuffix());
     }
 
     public static boolean getShowContacts() {
@@ -353,6 +368,14 @@ public class CircuitSettings implements Settings {
             result = new Mutex(matcher.group(MUTEX_NAME_GROUP), r1, g1, r2, g2);
         }
         return result;
+    }
+
+    public static String getBusSuffix() {
+        return busSuffix;
+    }
+
+    public static void setBusSuffix(String value) {
+        busSuffix = value;
     }
 
 }

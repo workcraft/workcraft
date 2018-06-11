@@ -2,15 +2,8 @@ package org.workcraft.plugins.circuit.interop;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
@@ -159,45 +152,33 @@ public class VerilogImporter implements Importer {
     }
 
     private void printModule(Module module) {
-        System.out.print("module " + module.name + " ");
-        boolean firstPort = true;
+        String portNames = module.ports.stream()
+                .map(port -> port.name)
+                .collect(Collectors.joining(", "));
+        System.out.println("module " + module.name + " (" + portNames + ");");
         for (Port port: module.ports) {
-            if (firstPort) {
-                System.out.print("(");
-            } else {
-                System.out.print(",");
-            }
-            System.out.print("\n    " + port.type + " " + port.name);
-            firstPort = false;
+            System.out.println("    " + port.type + " " + ((port.range == null) ? "" : port.range + " ") + port.name + ";");
         }
-        System.out.println(");");
-
         for (Assign assign: module.assigns) {
             System.out.println("    assign " + assign.name + " = " + assign.formula + ";");
         }
 
         for (Instance instance: module.instances) {
-            System.out.print("    " + instance.moduleName);
-            if (instance.name != null) {
-                System.out.print(" " + instance.name);
-            }
-            boolean firstPin = true;
-            for (Pin connection: instance.connections) {
-                if (firstPin) {
-                    System.out.print(" (");
-                } else {
-                    System.out.print(", ");
-                }
-                if (connection.name != null) {
-                    System.out.print("." + connection.name + "(" + connection.netName + ")");
-                } else {
-                    System.out.print(connection.netName);
-                }
-                firstPin = false;
-            }
-            System.out.println(");");
+            String instanceName = (instance.name == null) ? "" : instance.name;
+            String pinNames = instance.connections.stream()
+                    .map(pin -> getConnectionString(pin))
+                    .collect(Collectors.joining(", "));
+            System.out.println("    " + instance.moduleName + " " + instanceName + " (" + pinNames + ");");
         }
-        System.out.print("endmodule\n\n");
+        System.out.println("endmodule\n");
+    }
+
+    private String getConnectionString(Pin pin) {
+        String result = pin.netName + ((pin.netIndex == null) ? "" : "[" + pin.netIndex + "]");
+        if (pin.name != null) {
+            result = "." + pin.name + "(" + result + ")";
+        }
+        return result;
     }
 
     private Circuit createCircuit(Module topModule, HashMap<String, Module> modules, Collection<Mutex> mutexes) {
@@ -380,51 +361,93 @@ public class VerilogImporter implements Importer {
     private HashMap<String, Wire> createPorts(Circuit circuit, Module module) {
         HashMap<String, Wire> wires = new HashMap<>();
         for (Port verilogPort: module.ports) {
-            LinkedList<String> portPath = NamespaceHelper.splitReference(verilogPort.name);
-            if (portPath.size() == 1) {
-                // Primary port
-                FunctionContact contact = new FunctionContact();
-                Wire wire = getOrCreateWire(verilogPort.name, wires);
-                if (verilogPort.isInput()) {
-                    contact.setIOType(IOType.INPUT);
-                    wire.source = contact;
-                } else if (verilogPort.isOutput()) {
-                    contact.setIOType(IOType.OUTPUT);
-                    wire.sinks.add(contact);
-                }
-                circuit.setName(contact, verilogPort.name);
-                circuit.add(contact);
-            } else if (portPath.size() == 2) {
-                // Environment component pin
-                String componentName = portPath.get(0);
-                String contactName = portPath.get(1);
-                FunctionComponent component = null;
-                Node parent = circuit.getNodeByReference(componentName);
-                if (parent instanceof FunctionComponent) {
-                    component = (FunctionComponent) parent;
-                } else {
-                    component = new FunctionComponent();
-                    circuit.add(component);
-                    circuit.setName(component, componentName);
-                    component.setIsEnvironment(true);
-                }
-                FunctionContact contact = new FunctionContact();
-                Wire wire = getOrCreateWire(verilogPort.name, wires);
-                if (verilogPort.isInput()) {
-                    contact.setIOType(IOType.OUTPUT);
-                    wire.source = contact;
-                } else if (verilogPort.isOutput()) {
-                    contact.setIOType(IOType.INPUT);
-                    wire.sinks.add(contact);
-                }
-                component.add(contact);
-                circuit.setName(contact, contactName);
-            } else {
-                // Neither primary port nor environment component pin
-                throw new RuntimeException("Port '" + verilogPort.name + "' cannot be imported.");
+            List<String> portNames = getPortNames(verilogPort);
+            if (verilogPort.range != null) {
+                LogUtils.logInfo("Bus " + verilogPort.name + verilogPort.range + " is split to wires: "
+                        + String.join(", ", portNames));
+            }
+            for (String portName: portNames) {
+                createPort(circuit, wires, portName, verilogPort.isInput());
             }
         }
         return wires;
+    }
+
+    private void createPort(Circuit circuit, HashMap<String, Wire> wires, String portName, boolean isInput) {
+        LinkedList<String> portPath = NamespaceHelper.splitReference(portName);
+        if (portPath.size() == 1) {
+            createPortPrimary(circuit, wires, portName, isInput);
+        } else if (portPath.size() == 2) {
+            createPortEnvironment(circuit, wires, portName, isInput);
+        } else {
+            // Neither primary port nor environment component pin
+            throw new RuntimeException("Port '" + portName + "' cannot be imported.");
+        }
+    }
+
+    private void createPortPrimary(Circuit circuit, HashMap<String, Wire> wires, String portName, boolean isInput) {
+        FunctionContact contact = new FunctionContact();
+        Wire wire = getOrCreateWire(portName, wires);
+        if (isInput) {
+            contact.setIOType(IOType.INPUT);
+            wire.source = contact;
+        } else {
+            contact.setIOType(IOType.OUTPUT);
+            wire.sinks.add(contact);
+        }
+        circuit.setName(contact, portName);
+        circuit.add(contact);
+    }
+
+    private void createPortEnvironment(Circuit circuit, HashMap<String, Wire> wires, String portName, boolean isInput) {
+        LinkedList<String> portPath = NamespaceHelper.splitReference(portName);
+        String componentName = portPath.get(0);
+        String contactName = portPath.get(1);
+        FunctionComponent component = null;
+        Node parent = circuit.getNodeByReference(componentName);
+        if (parent instanceof FunctionComponent) {
+            component = (FunctionComponent) parent;
+        } else {
+            component = new FunctionComponent();
+            circuit.add(component);
+            circuit.setName(component, componentName);
+            component.setIsEnvironment(true);
+        }
+        FunctionContact contact = new FunctionContact();
+        Wire wire = getOrCreateWire(portName, wires);
+        if (isInput) {
+            contact.setIOType(IOType.OUTPUT);
+            wire.source = contact;
+        } else {
+            contact.setIOType(IOType.INPUT);
+            wire.sinks.add(contact);
+        }
+        component.add(contact);
+        circuit.setName(contact, contactName);
+    }
+
+    private List<String> getPortNames(Port verilogPort) {
+        List<String> result = new ArrayList<>();
+        if (verilogPort.range == null) {
+            result.add(verilogPort.name);
+        } else {
+            int first = verilogPort.range.getFirst();
+            int second = verilogPort.range.getSecond();
+            if (first < second) {
+                for (int i = first; i <= second; i++) {
+                    result.add(verilogPort.name + getBusSuffix(i));
+                }
+            } else {
+                for (int i = first; i >= second; i--) {
+                    result.add(verilogPort.name + getBusSuffix(i));
+                }
+            }
+        }
+        return result;
+    }
+
+    private String getBusSuffix(Integer index) {
+        return (index == null) ? "" : CircuitSettings.getBusSuffix().replace("$", Integer.toString(index));
     }
 
     private Gate createPrimitiveGate(Instance verilogInstance) {
@@ -500,7 +523,8 @@ public class VerilogImporter implements Importer {
         FunctionComponent component = GenlibUtils.instantiateGate(gate, verilogInstance.name, circuit);
         int index = 0;
         for (Pin verilogPin: verilogInstance.connections) {
-            Wire wire = getOrCreateWire(verilogPin.netName, wires);
+            String wireName = getWireName(verilogPin);
+            Wire wire = getOrCreateWire(wireName, wires);
             String pinName = gate.isPrimitive() ? getPrimitiveGatePinName(index++) : verilogPin.name;
             Node node = circuit.getNodeByReference(component, pinName);
             if (node instanceof FunctionContact) {
@@ -513,6 +537,10 @@ public class VerilogImporter implements Importer {
             }
         }
         return component;
+    }
+
+    private String getWireName(Pin verilogPin) {
+        return verilogPin.netName + getBusSuffix(verilogPin.netIndex);
     }
 
     private FunctionComponent createBlackBox(Circuit circuit, Instance verilogInstance,
