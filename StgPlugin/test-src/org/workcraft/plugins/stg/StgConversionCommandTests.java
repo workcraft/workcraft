@@ -1,4 +1,4 @@
-package org.workcraft.plugins.stg.commands;
+package org.workcraft.plugins.stg;
 
 import java.io.IOException;
 import java.net.URL;
@@ -9,7 +9,9 @@ import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.petri.VisualPetriNet;
-import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.plugins.stg.commands.PetriToStgConversionCommand;
+import org.workcraft.plugins.stg.commands.StgToPetriConversionCommand;
+import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -23,23 +25,26 @@ public class StgConversionCommandTests {
 
     @Test
     public void testCelementPetriConversionCommands() throws IOException, DeserialisationException {
-        testPetriConversionCommands("org/workcraft/plugins/stg/celement.stg.work");
+        String workName = PackageUtils.getPackagePath(getClass(), "celement.stg.work");
+        testPetriConversionCommands(workName);
     }
 
     @Test
     public void testBuckPetriConversionCommands() throws IOException, DeserialisationException {
-        testPetriConversionCommands("org/workcraft/plugins/stg/buck.stg.work");
+        String workName = PackageUtils.getPackagePath(getClass(), "buck.stg.work");
+        testPetriConversionCommands(workName);
     }
 
     @Test
     public void testVmePetriConversionCommands() throws DeserialisationException {
-        testPetriConversionCommands("org/workcraft/plugins/stg/vme.stg.work");
+        String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
+        testPetriConversionCommands(workName);
     }
 
-    private void testPetriConversionCommands(String testStgWork) throws DeserialisationException {
+    private void testPetriConversionCommands(String workName) throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        URL url = classLoader.getResource(testStgWork);
+        URL url = classLoader.getResource(workName);
 
         WorkspaceEntry srcWe = framework.loadWork(url.getFile());
         VisualStg srcStg = WorkspaceUtils.getAs(srcWe, VisualStg.class);

@@ -13,6 +13,7 @@ import org.workcraft.plugins.circuit.commands.PropagateInversionTransformationCo
 import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.punf.PunfSettings;
+import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -44,16 +45,16 @@ public class PropagateInversionTransformationCommandTests {
 
     @Test
     public void testVmePropagateInversionTransformationCommand() throws DeserialisationException {
-        testPropagateInversionTransformationCommand("org/workcraft/plugins/circuit/vme-tm.circuit.work",
-                12, 9);
+        String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
+        testPropagateInversionTransformationCommand(workName, 12, 9);
     }
 
-    private void testPropagateInversionTransformationCommand(String work, int expMappedGateCount, int expUnmappedGateCount)
+    private void testPropagateInversionTransformationCommand(String workName, int expMappedGateCount, int expUnmappedGateCount)
             throws DeserialisationException {
 
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        URL url = classLoader.getResource(work);
+        URL url = classLoader.getResource(workName);
 
         WorkspaceEntry we = framework.loadWork(url.getFile());
         VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);

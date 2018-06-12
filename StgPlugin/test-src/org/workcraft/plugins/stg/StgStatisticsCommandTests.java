@@ -1,4 +1,4 @@
-package org.workcraft.plugins.stg.commands;
+package org.workcraft.plugins.stg;
 
 import java.net.URL;
 
@@ -8,6 +8,8 @@ import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.statistics.BasicStatisticsCommand;
+import org.workcraft.plugins.stg.commands.StgStatisticsCommand;
+import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class StgStatisticsCommandTests {
@@ -20,7 +22,8 @@ public class StgStatisticsCommandTests {
 
     @Test
     public void testCelementStgStatisticsCommands() throws DeserialisationException {
-        testStgStatisticsCommands("org/workcraft/plugins/stg/celement.stg.work",
+        String workName = PackageUtils.getPackagePath(getClass(), "celement.stg.work");
+        testStgStatisticsCommands(workName,
                 "Component count:"
                         + "\n  Place -  8"
                         + "\n  Transition -  6"
@@ -55,7 +58,8 @@ public class StgStatisticsCommandTests {
     }
     @Test
     public void testBuckStgStatisticsCommands() throws DeserialisationException {
-        testStgStatisticsCommands("org/workcraft/plugins/stg/buck.stg.work",
+        String workName = PackageUtils.getPackagePath(getClass(), "buck.stg.work");
+        testStgStatisticsCommands(workName,
                 "Component count:"
                         + "\n  Place -  29"
                         + "\n  Transition -  28"
@@ -90,7 +94,8 @@ public class StgStatisticsCommandTests {
     }
     @Test
     public void testVmeStgStatisticsCommands() throws DeserialisationException {
-        testStgStatisticsCommands("org/workcraft/plugins/stg/vme.stg.work",
+        String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
+        testStgStatisticsCommands(workName,
                 "Component count:"
                         + "\n  Place -  17"
                         + "\n  Transition -  17"
@@ -124,12 +129,12 @@ public class StgStatisticsCommandTests {
                         + "\n");
     }
 
-    private void testStgStatisticsCommands(String stgWork, String expectedBasicStatistics, String expectedAdvancedStatistics)
+    private void testStgStatisticsCommands(String workName, String expectedBasicStatistics, String expectedAdvancedStatistics)
             throws DeserialisationException {
 
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        URL url = classLoader.getResource(stgWork);
+        URL url = classLoader.getResource(workName);
         WorkspaceEntry we = framework.loadWork(url.getFile());
 
         BasicStatisticsCommand basicStatisticsCommand = new BasicStatisticsCommand();

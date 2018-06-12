@@ -14,6 +14,7 @@ import org.workcraft.plugins.petrify.commands.PetrifyCscConflictResolutionComman
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgPlace;
+import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -39,20 +40,22 @@ public class PetrifyCscConflictResolutionCommandTests {
 
     @Test
     public void vmeCscConflictResolution() throws DeserialisationException {
-        testCscConflictResolutionCommand("org/workcraft/plugins/petrify/vme.stg.work", new String[] {"csc0"});
+        String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
+        testCscConflictResolutionCommand(workName, new String[] {"csc0"});
     }
 
     @Test
     public void arbitrationCscConflictResolution() throws DeserialisationException {
-        testCscConflictResolutionCommand("org/workcraft/plugins/petrify/arbitration-3.stg.work", new String[] {});
+        String workName = PackageUtils.getPackagePath(getClass(), "arbitration-3.stg.work");
+        testCscConflictResolutionCommand(workName, new String[] {});
     }
 
-    private void testCscConflictResolutionCommand(String work, String[] cscSignals)
+    private void testCscConflictResolutionCommand(String workName, String[] cscSignals)
             throws DeserialisationException {
 
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        URL url = classLoader.getResource(work);
+        URL url = classLoader.getResource(workName);
         WorkspaceEntry srcWe = framework.loadWork(url.getFile());
 
         Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);

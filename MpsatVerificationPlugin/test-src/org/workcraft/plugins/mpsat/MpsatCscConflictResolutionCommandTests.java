@@ -15,6 +15,7 @@ import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgPlace;
+import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -43,21 +44,23 @@ public class MpsatCscConflictResolutionCommandTests {
 
     @Test
     public void testVmeCscConflictResolution() throws DeserialisationException {
+        String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
         String[] cscSignals = DesktopApi.getOs().isMac() ? new String[]{"csc1", "csc"} : new String[]{"csc1", "csc2"};
-        testCscConflictResolutionCommand("org/workcraft/plugins/mpsat/vme.stg.work", cscSignals);
+        testCscConflictResolutionCommand(workName, cscSignals);
     }
 
     @Test
     public void testCycleCscConflictResolution() throws DeserialisationException {
-        testCscConflictResolutionCommand("org/workcraft/plugins/mpsat/cycle.stg.work", new String[] {});
+        String workName = PackageUtils.getPackagePath(getClass(), "cycle.stg.work");
+        testCscConflictResolutionCommand(workName, new String[] {});
     }
 
-    private void testCscConflictResolutionCommand(String work, String[] cscSignals)
+    private void testCscConflictResolutionCommand(String workName, String[] cscSignals)
             throws DeserialisationException {
 
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        URL url = classLoader.getResource(work);
+        URL url = classLoader.getResource(workName);
         WorkspaceEntry srcWe = framework.loadWork(url.getFile());
 
         Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);

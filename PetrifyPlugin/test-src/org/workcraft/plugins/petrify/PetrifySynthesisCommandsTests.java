@@ -21,6 +21,7 @@ import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgPlace;
+import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -49,76 +50,86 @@ public class PetrifySynthesisCommandsTests {
 
     @Test
     public void bufferComplexGateSynthesis() {
-        testComplexGateSynthesisCommand("org/workcraft/plugins/petrify/buffer-compact.stg.work", 1);
+        String workName = PackageUtils.getPackagePath(getClass(), "buffer-compact.stg.work");
+        testComplexGateSynthesisCommand(workName, 1);
     }
 
     @Test
     public void celementComplexGateSynthesis() {
-        testComplexGateSynthesisCommand("org/workcraft/plugins/petrify/celement-compact.stg.work", 1);
+        String workName = PackageUtils.getPackagePath(getClass(), "celement-compact.stg.work");
+        testComplexGateSynthesisCommand(workName, 1);
     }
 
     @Test
     public void constComplexGateSynthesis() {
-        testComplexGateSynthesisCommand("org/workcraft/plugins/petrify/const.stg.work", 3);
+        String workName = PackageUtils.getPackagePath(getClass(), "const.stg.work");
+        testComplexGateSynthesisCommand(workName, 3);
     }
 
     @Test
     public void arbitrationComplexGateSynthesis() {
-        testComplexGateSynthesisCommand("org/workcraft/plugins/petrify/arbitration-3.stg.work", 6);
+        String workName = PackageUtils.getPackagePath(getClass(), "arbitration-3.stg.work");
+        testComplexGateSynthesisCommand(workName, 6);
     }
 
     @Test
     public void edcComplexGateSynthesis() {
-        testComplexGateSynthesisCommand("org/workcraft/plugins/petrify/edc.stg.work", 7);
+        String workName = PackageUtils.getPackagePath(getClass(), "edc.stg.work");
+        testComplexGateSynthesisCommand(workName, 7);
     }
 
     @Test
     public void bufferTechnologyMappingSynthesis() {
-        testTechnologyMappingSynthesisCommad("org/workcraft/plugins/petrify/buffer-compact.stg.work", 1);
+        String workName = PackageUtils.getPackagePath(getClass(), "buffer-compact.stg.work");
+        testTechnologyMappingSynthesisCommad(workName, 1);
     }
 
     @Test
     public void celementTechnologyMappingSynthesis() {
-        testTechnologyMappingSynthesisCommad("org/workcraft/plugins/petrify/celement-compact.stg.work", 1);
+        String workName = PackageUtils.getPackagePath(getClass(), "celement-compact.stg.work");
+        testTechnologyMappingSynthesisCommad(workName, 1);
     }
 
     @Test
     public void constTechnologyMappingSynthesis() {
-        testTechnologyMappingSynthesisCommad("org/workcraft/plugins/petrify/const.stg.work", 3);
+        String workName = PackageUtils.getPackagePath(getClass(), "const.stg.work");
+        testTechnologyMappingSynthesisCommad(workName, 3);
     }
 
     @Test
     public void arbitrationTechnologyMappingSynthesis() {
-        testTechnologyMappingSynthesisCommad("org/workcraft/plugins/petrify/arbitration-3.stg.work", 6);
+        String workName = PackageUtils.getPackagePath(getClass(), "arbitration-3.stg.work");
+        testTechnologyMappingSynthesisCommad(workName, 6);
     }
 
     @Test
     public void edcTechnologyMappingSynthesis() {
-        testTechnologyMappingSynthesisCommad("org/workcraft/plugins/petrify/edc.stg.work", 7);
+        String workName = PackageUtils.getPackagePath(getClass(), "edc.stg.work");
+        testTechnologyMappingSynthesisCommad(workName, 7);
     }
 
-    private void testComplexGateSynthesisCommand(String testStgWork, int expectedGateCount) {
+    private void testComplexGateSynthesisCommand(String workName, int expectedGateCount) {
         try {
-            testSynthesisCommand(PetrifyComplexGateSynthesisCommand.class, testStgWork, expectedGateCount);
+            testSynthesisCommand(PetrifyComplexGateSynthesisCommand.class, workName, expectedGateCount);
         } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
     }
 
-    private void testTechnologyMappingSynthesisCommad(String testStgWork, int expectedGateCount) {
+    private void testTechnologyMappingSynthesisCommad(String workName, int expectedGateCount) {
         try {
-            testSynthesisCommand(PetrifyTechnologyMappingSynthesisCommand.class, testStgWork, expectedGateCount);
+            testSynthesisCommand(PetrifyTechnologyMappingSynthesisCommand.class, workName, expectedGateCount);
         } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
     }
 
-    private <C extends PetrifyAbstractSynthesisCommand> void testSynthesisCommand(Class<C> cls, String testStgWork, int expectedGateCount)
+    private <C extends PetrifyAbstractSynthesisCommand> void testSynthesisCommand(Class<C> cls, String workName, int expectedGateCount)
             throws DeserialisationException, InstantiationException, IllegalAccessException {
 
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        URL srcUrl = classLoader.getResource(testStgWork);
+        URL srcUrl = classLoader.getResource(workName);
 
         WorkspaceEntry srcWe = framework.loadWork(srcUrl.getFile());
         Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);

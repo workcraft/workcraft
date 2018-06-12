@@ -1,4 +1,4 @@
-package org.workcraft.plugins.stg.commands;
+package org.workcraft.plugins.stg;
 
 import java.net.URL;
 
@@ -7,6 +7,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class StgOpenSaveTests {
@@ -19,13 +20,14 @@ public class StgOpenSaveTests {
 
     @Test
     public void testVmeNotChangedAfterOpen() throws DeserialisationException {
-        testNotChangedAfterOpen("org/workcraft/plugins/stg/vme.stg.work");
+        String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
+        testNotChangedAfterOpen(workName);
     }
 
-    private void testNotChangedAfterOpen(String testStgWork) throws DeserialisationException {
+    private void testNotChangedAfterOpen(String workName) throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        URL srcUrl = classLoader.getResource(testStgWork);
+        URL srcUrl = classLoader.getResource(workName);
 
         WorkspaceEntry srcWe = framework.loadWork(srcUrl.getFile());
         Assert.assertFalse(srcWe.isChanged());

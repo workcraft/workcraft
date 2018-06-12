@@ -14,6 +14,7 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.SerialisationException;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.circuit.interop.VerilogFormat;
+import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -39,40 +40,46 @@ public class CircuitImportExportTests {
 
     @Test
     public void testBufferCircuitImportExport() throws DeserialisationException {
-        testCircuitImportExport("org/workcraft/plugins/circuit/buffer.circuit.work", null);
+        String workName = PackageUtils.getPackagePath(getClass(), "buffer.circuit.work");
+        testCircuitImportExport(workName, null);
     }
 
     @Test
     public void testCelementCircuitImportExport() throws DeserialisationException {
-        testCircuitImportExport("org/workcraft/plugins/circuit/celement.circuit.work", null);
+        String workName = PackageUtils.getPackagePath(getClass(), "celement.circuit.work");
+        testCircuitImportExport(workName, null);
     }
 
     @Test
     public void testBufferTmCircuitImportExport() throws DeserialisationException {
-        testCircuitImportExport("org/workcraft/plugins/circuit/buffer-tm.circuit.work", null);
+        String workName = PackageUtils.getPackagePath(getClass(), "buffer-tm.circuit.work");
+        testCircuitImportExport(workName, null);
     }
 
     @Test
     public void testCelementTmCircuitImportExport() throws DeserialisationException {
-        testCircuitImportExport("org/workcraft/plugins/circuit/celement-tm.circuit.work", null);
+        String workName = PackageUtils.getPackagePath(getClass(), "celement-tm.circuit.work");
+        testCircuitImportExport(workName, null);
     }
 
     @Test
     public void testVmeTmCircuitImportExport() throws DeserialisationException {
-        testCircuitImportExport("org/workcraft/plugins/circuit/vme-tm.circuit.work", null);
+        String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
+        testCircuitImportExport(workName, null);
     }
 
     @Test
     public void testBusCircuitImportExport() throws DeserialisationException {
-        testCircuitImportExport("org/workcraft/plugins/circuit/bus.circuit.work",
-                "org/workcraft/plugins/circuit/bus.circuit.v");
+        String workName = PackageUtils.getPackagePath(getClass(), "bus.circuit.work");
+        String verilogName = PackageUtils.getPackagePath(getClass(), "bus.circuit.v");
+        testCircuitImportExport(workName, verilogName);
     }
 
-    private void testCircuitImportExport(String testCircuitWork, String testCircuitVerilog) throws DeserialisationException {
+    private void testCircuitImportExport(String workName, String verilogName) throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
 
-        URL wUrl = classLoader.getResource(testCircuitWork);
+        URL wUrl = classLoader.getResource(workName);
 
         WorkspaceEntry wWe = framework.loadWork(wUrl.getFile());
         Set<String> wInputs = new HashSet<>();
@@ -97,8 +104,8 @@ public class CircuitImportExportTests {
         Assert.assertEquals(wOutputs, vOutputs);
         Assert.assertEquals(wGates, vGates);
 
-        if (testCircuitVerilog != null) {
-            URL sUrl = classLoader.getResource(testCircuitVerilog);
+        if (verilogName != null) {
+            URL sUrl = classLoader.getResource(verilogName);
             WorkspaceEntry sWe = framework.loadWork(sUrl.getFile());
 
             Set<String> sInputs = new HashSet<>();

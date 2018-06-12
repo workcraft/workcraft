@@ -10,6 +10,7 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.circuit.commands.CircuitStatisticsCommand;
 import org.workcraft.plugins.statistics.BasicStatisticsCommand;
+import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class CircuitStatisticsCommandTests {
@@ -34,7 +35,8 @@ public class CircuitStatisticsCommandTests {
 
     @Test
     public void testBufferTmCircuitStatisticsCommand() throws DeserialisationException {
-        testCircuitStatisticsCommand("org/workcraft/plugins/circuit/buffer-tm.circuit.work",
+        String workName = PackageUtils.getPackagePath(getClass(), "buffer-tm.circuit.work");
+        testCircuitStatisticsCommand(workName,
                 "Component count:"
                         + "\n  Component -  1"
                         + "\n  Port -  2"
@@ -54,7 +56,8 @@ public class CircuitStatisticsCommandTests {
 
     @Test
     public void testCelementDecomposedTmCircuitStatisticsCommand() throws DeserialisationException {
-        testCircuitStatisticsCommand("org/workcraft/plugins/circuit/celement-decomposed-tm.circuit.work",
+        String workName = PackageUtils.getPackagePath(getClass(), "celement-decomposed-tm.circuit.work");
+        testCircuitStatisticsCommand(workName,
                 "Component count:"
                         + "\n  Component -  5"
                         + "\n  Port -  3"
@@ -74,7 +77,8 @@ public class CircuitStatisticsCommandTests {
 
     @Test
     public void testVmeTmCircuitStatisticsCommand() throws DeserialisationException {
-        testCircuitStatisticsCommand("org/workcraft/plugins/circuit/vme-tm.circuit.work",
+        String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
+        testCircuitStatisticsCommand(workName,
                 "Component count:"
                         + "\n  Component -  21"
                         + "\n  Port -  6"
@@ -92,11 +96,11 @@ public class CircuitStatisticsCommandTests {
                         + "\n");
     }
 
-    private void testCircuitStatisticsCommand(String circuitWork, String expectedBasicStatistics, String expectedAdvancedStatistics)
+    private void testCircuitStatisticsCommand(String workName, String expectedBasicStatistics, String expectedAdvancedStatistics)
             throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        URL url = classLoader.getResource(circuitWork);
+        URL url = classLoader.getResource(workName);
         WorkspaceEntry we = framework.loadWork(url.getFile());
 
         BasicStatisticsCommand basicStatisticsCommand = new BasicStatisticsCommand();

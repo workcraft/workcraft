@@ -22,6 +22,7 @@ import org.workcraft.plugins.mpsat.commands.MpsatOutputPersistencyVerificationCo
 import org.workcraft.plugins.mpsat.commands.MpsatUscVerificationCommand;
 import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.punf.PunfSettings;
+import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class MpsatVerificationCommandTests {
@@ -52,7 +53,8 @@ public class MpsatVerificationCommandTests {
 
     @Test
     public void testVmeVerification() throws DeserialisationException {
-        testVerificationCommands("org/workcraft/plugins/mpsat/vme.stg.work",
+        String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
+        testVerificationCommands(workName,
                 true,  // combined
                 true,  // consistency
                 true,  // deadlock freeness
@@ -69,7 +71,8 @@ public class MpsatVerificationCommandTests {
 
     @Test
     public void testArbitrationVerification() throws DeserialisationException {
-        testVerificationCommands("org/workcraft/plugins/mpsat/arbitration-3.stg.work",
+        String workName = PackageUtils.getPackagePath(getClass(), "arbitration-3.stg.work");
+        testVerificationCommands(workName,
                 true,  // combined
                 true,  // consistency
                 true,  // deadlock freeness
@@ -86,7 +89,8 @@ public class MpsatVerificationCommandTests {
 
     @Test
     public void testBadVerification() throws DeserialisationException {
-        testVerificationCommands("org/workcraft/plugins/mpsat/bad.stg.work",
+        String workName = PackageUtils.getPackagePath(getClass(), "bad.stg.work");
+        testVerificationCommands(workName,
                 false, // combined
                 true,  // consistency
                 false, // deadlock freeness
@@ -103,7 +107,8 @@ public class MpsatVerificationCommandTests {
 
     @Test
     public void testCycleVerification() throws DeserialisationException {
-        testVerificationCommands("org/workcraft/plugins/mpsat/cycle.stg.work",
+        String workName = PackageUtils.getPackagePath(getClass(), "cycle.stg.work");
+        testVerificationCommands(workName,
                 false, // combined
                 true,  // consistency
                 true,  // deadlock freeness
@@ -118,7 +123,7 @@ public class MpsatVerificationCommandTests {
         );
     }
 
-    private void testVerificationCommands(String work, Boolean combined,
+    private void testVerificationCommands(String workName, Boolean combined,
             Boolean consistency, Boolean deadlockFreeness,
             Boolean inputProperness, Boolean outputPersistency,
             Boolean csc, Boolean usc,
@@ -129,7 +134,7 @@ public class MpsatVerificationCommandTests {
 
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        URL url = classLoader.getResource(work);
+        URL url = classLoader.getResource(workName);
         WorkspaceEntry we = framework.loadWork(url.getFile());
 
         MpsatCombinedVerificationCommand combinedCommand = new MpsatCombinedVerificationCommand();

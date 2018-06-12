@@ -8,6 +8,7 @@ import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.commands.SplitGateTransformationCommand;
+import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -21,15 +22,16 @@ public class SplitGateTransformationCommandTests {
 
     @Test
     public void testVmeSplitGateTransformationCommand() throws DeserialisationException {
-        testSplitGateTransformationCommand("org/workcraft/plugins/circuit/vme-tm.circuit.work", 15, 18);
+        String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
+        testSplitGateTransformationCommand(workName, 15, 18);
     }
 
-    private void testSplitGateTransformationCommand(String work, int expMappedGateCount, int expUnmappedGateCount)
+    private void testSplitGateTransformationCommand(String workName, int expMappedGateCount, int expUnmappedGateCount)
             throws DeserialisationException {
 
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        URL url = classLoader.getResource(work);
+        URL url = classLoader.getResource(workName);
 
         WorkspaceEntry we = framework.loadWork(url.getFile());
         VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);

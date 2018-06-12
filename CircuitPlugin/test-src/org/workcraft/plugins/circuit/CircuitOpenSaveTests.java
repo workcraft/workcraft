@@ -7,6 +7,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class CircuitOpenSaveTests {
@@ -19,18 +20,20 @@ public class CircuitOpenSaveTests {
 
     @Test
     public void testCelementNotChangedAfterOpen() throws DeserialisationException {
-        testNotChangedAfterOpen("org/workcraft/plugins/circuit/celement.circuit.work");
+        String workName = PackageUtils.getPackagePath(getClass(), "celement.circuit.work");
+        testNotChangedAfterOpen(workName);
     }
 
     @Test
     public void testVmeTmNotChangedAfterOpen() throws DeserialisationException {
-        testNotChangedAfterOpen("org/workcraft/plugins/circuit/vme-tm.circuit.work");
+        String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
+        testNotChangedAfterOpen(workName);
     }
 
-    private void testNotChangedAfterOpen(String testCircuitWork) throws DeserialisationException {
+    private void testNotChangedAfterOpen(String workName) throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        URL srcUrl = classLoader.getResource(testCircuitWork);
+        URL srcUrl = classLoader.getResource(workName);
         WorkspaceEntry srcWe = framework.loadWork(srcUrl.getFile());
         Assert.assertFalse(srcWe.isChanged());
         framework.closeWork(srcWe);

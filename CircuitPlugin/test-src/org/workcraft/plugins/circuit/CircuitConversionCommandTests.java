@@ -16,6 +16,7 @@ import org.workcraft.plugins.circuit.commands.CircuitToStgWithEnvironmentConvers
 import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
+import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -41,27 +42,29 @@ public class CircuitConversionCommandTests {
 
     @Test
     public void testBufferCircuitConversionCommands() throws IOException, DeserialisationException {
-        testCircuitConversionCommands("org/workcraft/plugins/circuit/buffer.circuit.work", false, 0);
+        String workName = PackageUtils.getPackagePath(getClass(), "buffer.circuit.work");
+        testCircuitConversionCommands(workName, false, 0);
     }
 
     @Test
     public void testCelementCircuitConversionCommands() throws IOException, DeserialisationException {
-        testCircuitConversionCommands("org/workcraft/plugins/circuit/celement.circuit.work", false, 0);
+        String workName = PackageUtils.getPackagePath(getClass(), "celement.circuit.work");
+        testCircuitConversionCommands(workName, false, 0);
     }
 
     @Test
     public void testVmeCircuitConversionCommands() throws IOException, DeserialisationException {
-        String testCircuitWork = "org/workcraft/plugins/circuit/vme-tm.circuit.work";
-        testCircuitConversionCommands(testCircuitWork, false, 0);
-        testCircuitConversionCommands(testCircuitWork, true, 17);
+        String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
+        testCircuitConversionCommands(workName, false, 0);
+        testCircuitConversionCommands(workName, true, 17);
     }
 
-    private void testCircuitConversionCommands(String testCircuitWork, boolean composeEnvironment, int extraPlaceCount)
+    private void testCircuitConversionCommands(String workName, boolean composeEnvironment, int extraPlaceCount)
             throws IOException, DeserialisationException {
 
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        URL srcUrl = classLoader.getResource(testCircuitWork);
+        URL srcUrl = classLoader.getResource(workName);
 
         WorkspaceEntry srcWe = framework.loadWork(srcUrl.getFile());
         Circuit srcCircuit = WorkspaceUtils.getAs(srcWe, Circuit.class);

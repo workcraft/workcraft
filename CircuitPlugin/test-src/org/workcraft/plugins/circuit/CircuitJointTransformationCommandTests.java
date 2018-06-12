@@ -11,6 +11,7 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.commands.ContractJointTransformationCommand;
 import org.workcraft.plugins.circuit.commands.DetachJointTransformationCommand;
 import org.workcraft.plugins.circuit.commands.SplitJointTransformationCommand;
+import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -24,15 +25,16 @@ public class CircuitJointTransformationCommandTests {
 
     @Test
     public void testVmeJointTransformationCommands() throws DeserialisationException {
-        testJointTransformationCommands("org/workcraft/plugins/circuit/vme-tm.circuit.work", new String[] {"lds"});
+        String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
+        testJointTransformationCommands(workName, new String[] {"lds"});
     }
 
-    private void testJointTransformationCommands(String work, String[] portRefs)
+    private void testJointTransformationCommands(String workName, String[] portRefs)
             throws DeserialisationException {
 
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        URL url = classLoader.getResource(work);
+        URL url = classLoader.getResource(workName);
 
         WorkspaceEntry we = framework.loadWork(url.getFile());
         Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);

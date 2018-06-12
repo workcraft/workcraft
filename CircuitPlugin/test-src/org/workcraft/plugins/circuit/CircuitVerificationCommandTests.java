@@ -15,6 +15,7 @@ import org.workcraft.plugins.circuit.commands.CircuitStrictImplementationVerific
 import org.workcraft.plugins.mpsat.MpsatSettings;
 import org.workcraft.plugins.pcomp.PcompSettings;
 import org.workcraft.plugins.punf.PunfSettings;
+import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 
 public class CircuitVerificationCommandTests {
@@ -45,7 +46,8 @@ public class CircuitVerificationCommandTests {
 
     @Test
     public void bufferVerification() throws DeserialisationException {
-        testCircuitVerificationCommands("org/workcraft/plugins/circuit/buffer.circuit.work",
+        String workName = PackageUtils.getPackagePath(getClass(), "buffer.circuit.work");
+        testCircuitVerificationCommands(workName,
                 true,  // combined
                 true,  // conformation
                 true,  // deadlock freeness
@@ -56,7 +58,8 @@ public class CircuitVerificationCommandTests {
 
     @Test
     public void withoutEnvironmentVerification() throws DeserialisationException {
-        testCircuitVerificationCommands("org/workcraft/plugins/circuit/buffer-without_environment.circuit.work",
+        String workName = PackageUtils.getPackagePath(getClass(), "buffer-without_environment.circuit.work");
+        testCircuitVerificationCommands(workName,
                 false, // combined
                 null,  // conformation
                 true,  // deadlock freeness
@@ -67,7 +70,8 @@ public class CircuitVerificationCommandTests {
 
     @Test
     public void celementVerification() throws DeserialisationException {
-        testCircuitVerificationCommands("org/workcraft/plugins/circuit/celement.circuit.work",
+        String workName = PackageUtils.getPackagePath(getClass(), "celement.circuit.work");
+        testCircuitVerificationCommands(workName,
                 true,  // combined
                 true,  // conformation
                 true,  // deadlock freeness
@@ -78,7 +82,8 @@ public class CircuitVerificationCommandTests {
 
     @Test
     public void mappedCelementVerification() throws DeserialisationException {
-        testCircuitVerificationCommands("org/workcraft/plugins/circuit/celement-decomposed-tm.circuit.work",
+        String workName = PackageUtils.getPackagePath(getClass(), "celement-decomposed-tm.circuit.work");
+        testCircuitVerificationCommands(workName,
                 true,  // combined
                 true,  // conformation
                 true,  // deadlock freeness
@@ -89,7 +94,8 @@ public class CircuitVerificationCommandTests {
 
     @Test
     public void mappedVmeVerification() throws DeserialisationException {
-        testCircuitVerificationCommands("org/workcraft/plugins/circuit/vme-tm.circuit.work",
+        String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
+        testCircuitVerificationCommands(workName,
                 true,  // combined
                 true,  // conformation
                 true,  // deadlock freeness
@@ -100,7 +106,8 @@ public class CircuitVerificationCommandTests {
 
     @Test
     public void mappedAbcdVerification() throws DeserialisationException {
-        testCircuitVerificationCommands("org/workcraft/plugins/circuit/abcd-tm.circuit.work",
+        String workName = PackageUtils.getPackagePath(getClass(), "abcd-tm.circuit.work");
+        testCircuitVerificationCommands(workName,
                 false,  // combined
                 false,  // conformation
                 true,  // deadlock freeness
@@ -109,13 +116,13 @@ public class CircuitVerificationCommandTests {
         );
     }
 
-    private void testCircuitVerificationCommands(String testStgWork, Boolean combined,
+    private void testCircuitVerificationCommands(String workName, Boolean combined,
             Boolean conformation, Boolean deadlockFreeness, Boolean outputPersistency,
             Boolean strictImplementation) throws DeserialisationException {
 
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        URL url = classLoader.getResource(testStgWork);
+        URL url = classLoader.getResource(workName);
 
         WorkspaceEntry we = framework.loadWork(url.getFile());
 

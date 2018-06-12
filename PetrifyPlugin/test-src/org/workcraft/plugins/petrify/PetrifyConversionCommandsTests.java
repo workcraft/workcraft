@@ -15,6 +15,7 @@ import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
+import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -40,18 +41,20 @@ public class PetrifyConversionCommandsTests {
 
     @Test
     public void bufferUntoggleConversion() throws DeserialisationException {
-        testUntoggleConversion("org/workcraft/plugins/petrify/buffer-compact.stg.work");
+        String workName = PackageUtils.getPackagePath(getClass(), "buffer-compact.stg.work");
+        testUntoggleConversion(workName);
     }
 
     @Test
     public void celementUntoggleConversion() throws DeserialisationException {
-        testUntoggleConversion("org/workcraft/plugins/petrify/celement-compact.stg.work");
+        String workName = PackageUtils.getPackagePath(getClass(), "celement-compact.stg.work");
+        testUntoggleConversion(workName);
     }
 
-    private void testUntoggleConversion(String testStgWork) throws DeserialisationException {
+    private void testUntoggleConversion(String workName) throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        URL srcUrl = classLoader.getResource(testStgWork);
+        URL srcUrl = classLoader.getResource(workName);
 
         WorkspaceEntry srcWe = framework.loadWork(srcUrl.getFile());
         Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);

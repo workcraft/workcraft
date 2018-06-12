@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.circuit.commands.ContractComponentTransformationCommand;
+import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -22,15 +23,16 @@ public class ContractComponentTransformationCommandTests {
 
     @Test
     public void testVmeContractComponentTransformationCommands() throws DeserialisationException {
-        testContractComponentTransformationCommands("org/workcraft/plugins/circuit/vme-tm.circuit.work");
+        String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
+        testContractComponentTransformationCommands(workName);
     }
 
-    private void testContractComponentTransformationCommands(String work)
+    private void testContractComponentTransformationCommands(String workName)
             throws DeserialisationException {
 
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        URL url = classLoader.getResource(work);
+        URL url = classLoader.getResource(workName);
 
         WorkspaceEntry we = framework.loadWork(url.getFile());
         VisualCircuit circuit = WorkspaceUtils.getAs(we, VisualCircuit.class);

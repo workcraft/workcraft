@@ -22,6 +22,7 @@ import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgPlace;
+import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -53,76 +54,86 @@ public class MpsatSynthesisCommandsTests {
 
     @Test
     public void bufferComplexGateSynthesis() {
-        testComplexGateSynthesisCommand("org/workcraft/plugins/mpsat/buffer-compact.stg.work", 1);
+        String workName = PackageUtils.getPackagePath(getClass(), "buffer-compact.stg.work");
+        testComplexGateSynthesisCommand(workName, 1);
     }
 
     @Test
     public void celementComplexGateSynthesis() {
-        testComplexGateSynthesisCommand("org/workcraft/plugins/mpsat/celement-compact.stg.work", 1);
+        String workName = PackageUtils.getPackagePath(getClass(), "celement-compact.stg.work");
+        testComplexGateSynthesisCommand(workName, 1);
     }
 
     @Test
     public void constComplexGateSynthesis() {
-        testComplexGateSynthesisCommand("org/workcraft/plugins/mpsat/const.stg.work", 3);
+        String workName = PackageUtils.getPackagePath(getClass(), "const.stg.work");
+        testComplexGateSynthesisCommand(workName, 3);
     }
 
     @Test
     public void arbitrationComplexGateSynthesis() {
-        testComplexGateSynthesisCommand("org/workcraft/plugins/mpsat/arbitration-3.stg.work", 6);
+        String workName = PackageUtils.getPackagePath(getClass(), "arbitration-3.stg.work");
+        testComplexGateSynthesisCommand(workName, 6);
     }
 
     //@Test
     public void edcComplexGateSynthesis() {
-        testComplexGateSynthesisCommand("org/workcraft/plugins/mpsat/edc-csc.stg.work", 6);
+        String workName = PackageUtils.getPackagePath(getClass(), "edc-csc.stg.work");
+        testComplexGateSynthesisCommand(workName, 6);
     }
 
     @Test
     public void bufferTechnologyMappingSynthesis() {
-        testTechnologyMappingSynthesisCommand("org/workcraft/plugins/mpsat/buffer-compact.stg.work", 1);
+        String workName = PackageUtils.getPackagePath(getClass(), "buffer-compact.stg.work");
+        testTechnologyMappingSynthesisCommand(workName, 1);
     }
 
     @Test
     public void celementTechnologyMappingSynthesis() {
-        testTechnologyMappingSynthesisCommand("org/workcraft/plugins/mpsat/celement-compact.stg.work", 1);
+        String workName = PackageUtils.getPackagePath(getClass(), "celement-compact.stg.work");
+        testTechnologyMappingSynthesisCommand(workName, 1);
     }
 
     @Test
     public void constTechnologyMappingSynthesis() {
-        testTechnologyMappingSynthesisCommand("org/workcraft/plugins/mpsat/const.stg.work", 5);
+        String workName = PackageUtils.getPackagePath(getClass(), "const.stg.work");
+        testTechnologyMappingSynthesisCommand(workName, 5);
     }
 
     @Test
     public void arbitrationTechnologyMappingSynthesis() {
-        testTechnologyMappingSynthesisCommand("org/workcraft/plugins/mpsat/arbitration-3.stg.work", 6);
+        String workName = PackageUtils.getPackagePath(getClass(), "arbitration-3.stg.work");
+        testTechnologyMappingSynthesisCommand(workName, 6);
     }
 
     //@Test
     public void edcTechnologyMappingSynthesis() {
-        testTechnologyMappingSynthesisCommand("org/workcraft/plugins/mpsat/edc-csc.stg.work", 10);
+        String workName = PackageUtils.getPackagePath(getClass(), "edc-csc.stg.work");
+        testTechnologyMappingSynthesisCommand(workName, 10);
     }
 
-    private void testComplexGateSynthesisCommand(String testStgWork, int expectedGateCount) {
+    private void testComplexGateSynthesisCommand(String workName, int expectedGateCount) {
         try {
-            testSynthesisCommand(MpsatComplexGateSynthesisCommand.class, testStgWork, expectedGateCount);
+            testSynthesisCommand(MpsatComplexGateSynthesisCommand.class, workName, expectedGateCount);
         } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
     }
 
-    private void testTechnologyMappingSynthesisCommand(String testStgWork, int expectedGateCount) {
+    private void testTechnologyMappingSynthesisCommand(String workName, int expectedGateCount) {
         try {
-            testSynthesisCommand(MpsatTechnologyMappingSynthesisCommand.class, testStgWork, expectedGateCount);
+            testSynthesisCommand(MpsatTechnologyMappingSynthesisCommand.class, workName, expectedGateCount);
         } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
     }
 
-    private <C extends MpsatAbstractSynthesisCommand> void testSynthesisCommand(Class<C> cls, String testStgWork, int expectedGateCount)
+    private <C extends MpsatAbstractSynthesisCommand> void testSynthesisCommand(Class<C> cls, String workName, int expectedGateCount)
             throws DeserialisationException, InstantiationException, IllegalAccessException {
 
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        URL srcUrl = classLoader.getResource(testStgWork);
+        URL srcUrl = classLoader.getResource(workName);
 
         WorkspaceEntry srcWe = framework.loadWork(srcUrl.getFile());
         Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);

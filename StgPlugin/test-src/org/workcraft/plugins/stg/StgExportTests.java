@@ -1,4 +1,4 @@
-package org.workcraft.plugins.stg.commands;
+package org.workcraft.plugins.stg;
 
 import java.io.File;
 import java.io.IOException;
@@ -20,6 +20,7 @@ import org.workcraft.plugins.interop.SvgFormat;
 import org.workcraft.plugins.stg.interop.LpnFormat;
 import org.workcraft.plugins.stg.interop.StgFormat;
 import org.workcraft.util.FileUtils;
+import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -54,8 +55,8 @@ public class StgExportTests {
         String dotHeader = "digraph work {\n" +
                 "graph [overlap=\"false\", splines=\"true\", nodesep=\"1.0\", ranksep=\"1.0\"];";
 
-        testCircuitExport("org/workcraft/plugins/stg/vme.stg.work",
-                gHeader, lpnHeader, svgHeader, pngHeader, pdfHeader, epsHeader, psHeader, dotHeader);
+        String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
+        testCircuitExport(workName, gHeader, lpnHeader, svgHeader, pngHeader, pdfHeader, epsHeader, psHeader, dotHeader);
     }
 
     public void testCircuitExport(String workName, String gHeader, String lpnHeader,

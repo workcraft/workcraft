@@ -18,6 +18,7 @@ import org.workcraft.plugins.interop.PngFormat;
 import org.workcraft.plugins.interop.PsFormat;
 import org.workcraft.plugins.interop.SvgFormat;
 import org.workcraft.util.FileUtils;
+import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 
@@ -44,8 +45,8 @@ public class CircuitExportTests {
         String epsHeader = "%!PS-Adobe-3.0 EPSF-3.0";
         String psHeader = "%!PS-Adobe-3.0";
 
-        testCircuitExport("org/workcraft/plugins/circuit/vme-tm.circuit.work",
-                vHeader, svgHeader, pngHeader, pdfHeader, epsHeader, psHeader);
+        String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
+        testCircuitExport(workName, vHeader, svgHeader, pngHeader, pdfHeader, epsHeader, psHeader);
     }
 
     private void testCircuitExport(String workName, String vHeader,

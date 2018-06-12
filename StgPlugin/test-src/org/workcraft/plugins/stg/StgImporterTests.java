@@ -1,4 +1,4 @@
-package org.workcraft.plugins.stg.interop;
+package org.workcraft.plugins.stg;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -12,11 +12,10 @@ import org.workcraft.dom.Connection;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.StgPlace;
+import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.ImportUtils;
+import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.ModelEntry;
 
 public class StgImporterTests {
@@ -57,7 +56,8 @@ public class StgImporterTests {
     @Test
     public void test2() throws Throwable {
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        final InputStream test = classLoader.getResourceAsStream("org/workcraft/plugins/stg/test2.g");
+        String resourceName = PackageUtils.getPackagePath(getClass(), "test2.g");
+        final InputStream test = classLoader.getResourceAsStream(resourceName);
         StgModel imported = new StgImporter().importStg(test);
         Assert.assertEquals(17, imported.getTransitions().size());
         Assert.assertEquals(0, imported.getDummyTransitions().size());

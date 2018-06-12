@@ -11,6 +11,7 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.circuit.commands.CircuitLayoutCommand;
+import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -36,23 +37,26 @@ public class CircuitLayoutCommandTests {
 
     @Test
     public void testBufferTmCircuitImport() throws DeserialisationException {
-        testCircuitImport("org/workcraft/plugins/circuit/buffer-tm.circuit.work");
+        String workName = PackageUtils.getPackagePath(getClass(), "buffer-tm.circuit.work");
+        testCircuitImport(workName);
     }
 
     @Test
     public void testCelementTmCircuitImport() throws DeserialisationException {
-        testCircuitImport("org/workcraft/plugins/circuit/celement-tm.circuit.work");
+        String workName = PackageUtils.getPackagePath(getClass(), "celement-tm.circuit.work");
+        testCircuitImport(workName);
     }
 
     @Test
     public void testVmeTmCircuitImport() throws DeserialisationException {
-        testCircuitImport("org/workcraft/plugins/circuit/vme-tm.circuit.work");
+        String workName = PackageUtils.getPackagePath(getClass(), "vme-tm.circuit.work");
+        testCircuitImport(workName);
     }
 
-    private void testCircuitImport(String testCircuitWork) throws DeserialisationException {
+    private void testCircuitImport(String workName) throws DeserialisationException {
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        URL url = classLoader.getResource(testCircuitWork);
+        URL url = classLoader.getResource(workName);
 
         WorkspaceEntry we = framework.loadWork(url.getFile());
         Set<String> srcInputs = new HashSet<>();

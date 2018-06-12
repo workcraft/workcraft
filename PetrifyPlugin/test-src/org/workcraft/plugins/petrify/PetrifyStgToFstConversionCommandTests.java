@@ -19,6 +19,7 @@ import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.petrify.commands.PetrifyStgToBinaryFstConversionCommand;
 import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
+import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -44,16 +45,16 @@ public class PetrifyStgToFstConversionCommandTests {
 
     @Test
     public void vmeStgToFstConversion() throws DeserialisationException {
-        testStgToFstConversionCommand("org/workcraft/plugins/petrify/vme.stg.work",
-                new String[] {"011101_csc", "011001_csc", "101001_csc"});
+        String workName = PackageUtils.getPackagePath(getClass(), "vme.stg.work");
+        testStgToFstConversionCommand(workName, new String[] {"011101_csc", "011001_csc", "101001_csc"});
     }
 
-    private void testStgToFstConversionCommand(String work, String[] conflictStateSuffixes)
+    private void testStgToFstConversionCommand(String workName, String[] conflictStateSuffixes)
             throws DeserialisationException {
 
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        URL url = classLoader.getResource(work);
+        URL url = classLoader.getResource(workName);
         WorkspaceEntry srcWe = framework.loadWork(url.getFile());
 
         Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
