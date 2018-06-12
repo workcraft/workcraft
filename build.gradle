@@ -32,8 +32,8 @@ subprojects {
     sourceSets {
         main.java.srcDirs = ['src', 'src-gen']
         main.resources.srcDirs = ['res']
-        test.java.srcDirs = ['test']
-        test.resources.srcDirs = ['test']
+        test.java.srcDirs = ['test-src']
+        test.resources.srcDirs = ['test-res']
     }
 
     compileJava {
@@ -45,7 +45,7 @@ subprojects {
 
     sourceSets {
         main.kotlin.srcDirs = ['src']
-        test.kotlin.srcDirs = ['test']
+        test.kotlin.srcDirs = ['test-src']
     }
 
     compileKotlin {
@@ -93,8 +93,9 @@ subprojects {
     idea.module {
         sourceDirs = [file('src'), file('javacc'), file('src-gen')]
         generatedSourceDirs = [file('src-gen')]
-        testSourceDirs = [file('test')]
         resourceDirs = [file('res'), file('models')]
+        testSourceDirs = [file('test-src')]
+        testResourceDirs = [file('test-res')]
         excludeDirs = [file('.gradle'), file('.settings'), file('bin'), file('build'), file('gradle')]
         inheritOutputDirs = false
         outputDir = file('build')
@@ -105,6 +106,7 @@ subprojects {
     task cleanAll(dependsOn: ['clean', 'cleanEclipse', 'cleanIdea', 'cleanJavacc'])
 
     test {
+        workingDir = "../"
         testLogging {
             events "failed"
             exceptionFormat "full"

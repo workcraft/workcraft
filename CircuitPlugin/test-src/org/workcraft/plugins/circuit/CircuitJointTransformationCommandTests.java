@@ -1,0 +1,100 @@
+package org.workcraft.plugins.circuit;
+
+import java.net.URL;
+import java.util.Collection;
+
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.workcraft.Framework;
+import org.workcraft.exceptions.DeserialisationException;
+import org.workcraft.plugins.circuit.commands.ContractJointTransformationCommand;
+import org.workcraft.plugins.circuit.commands.DetachJointTransformationCommand;
+import org.workcraft.plugins.circuit.commands.SplitJointTransformationCommand;
+import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
+
+public class CircuitJointTransformationCommandTests {
+
+    @BeforeClass
+    public static void init() {
+        final Framework framework = Framework.getInstance();
+        framework.init();
+    }
+
+    @Test
+    public void testVmeJointTransformationCommands() throws DeserialisationException {
+        testJointTransformationCommands("org/workcraft/plugins/circuit/vme-tm.circuit.work", new String[] {"lds"});
+    }
+
+    private void testJointTransformationCommands(String work, String[] portRefs)
+            throws DeserialisationException {
+
+        final Framework framework = Framework.getInstance();
+        final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
+        URL url = classLoader.getResource(work);
+
+        WorkspaceEntry we = framework.loadWork(url.getFile());
+        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
+
+        int srcForkCount = countForks(circuit);
+
+        SplitJointTransformationCommand splitCommand = new SplitJointTransformationCommand();
+        splitCommand.execute(we);
+
+        Assert.assertEquals(0, circuit.getJoints().size());
+
+        DetachJointTransformationCommand detachCommand = new DetachJointTransformationCommand();
+        detachCommand.execute(we);
+
+        Assert.assertEquals(srcForkCount, circuit.getJoints().size());
+
+        VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
+        for (String portRef: portRefs) {
+            VisualContact port = visualCircuit.getVisualComponentByMathReference(portRef, VisualContact.class);
+            if (port != null) {
+                visualCircuit.remove(port);
+            }
+        }
+
+        int redundantJointCount = countRedundantJoints(circuit);
+
+        ContractJointTransformationCommand contractCommand = new ContractJointTransformationCommand();
+        contractCommand.execute(we);
+
+        Assert.assertEquals(srcForkCount, circuit.getJoints().size() + redundantJointCount);
+
+        framework.closeWork(we);
+    }
+
+    private int countForks(Circuit circuit) {
+        int result = 0;
+        for (FunctionComponent component: circuit.getFunctionComponents()) {
+            for (FunctionContact contact: component.getFunctionOutputs()) {
+                Collection<Contact> driven = CircuitUtils.findDriven(circuit, contact, false);
+                if ((driven != null) && (driven.size() > 1)) {
+                    result++;
+                }
+            }
+        }
+        for (Contact input: circuit.getInputPorts()) {
+            Collection<Contact> driven = CircuitUtils.findDriven(circuit, input, false);
+            if ((driven != null) && (driven.size() > 1)) {
+                result++;
+            }
+        }
+        return result;
+    }
+
+
+    private int countRedundantJoints(Circuit circuit) {
+        int result = 0;
+        for (Joint joint: circuit.getJoints()) {
+            if ((circuit.getPreset(joint).size() < 2) && (circuit.getPostset(joint).size() < 2)) {
+                result++;
+            }
+        }
+        return result;
+    }
+
+}
