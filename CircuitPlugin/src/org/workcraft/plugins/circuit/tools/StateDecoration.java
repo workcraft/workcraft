@@ -24,7 +24,7 @@ public interface StateDecoration extends Decoration {
             return true;
         }
 
-        public static final Empty INSTANCE = new Empty();
+        public static final StateDecoration.Empty INSTANCE = new StateDecoration.Empty();
     }
 
 }
