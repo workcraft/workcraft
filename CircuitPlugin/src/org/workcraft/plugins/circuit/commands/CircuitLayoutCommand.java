@@ -194,7 +194,7 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
     private LinkedList<HashSet<VisualComponent>> filterBasicGates(VisualCircuit circuit, LinkedList<HashSet<VisualComponent>> layers) {
         LinkedList<HashSet<VisualComponent>> result = new LinkedList<>();
         for (HashSet<VisualComponent> layer: layers) {
-            HashSet<VisualComponent> filteredLayer = new HashSet<VisualComponent>();
+            HashSet<VisualComponent> filteredLayer = new HashSet<>();
             for (VisualComponent component: layer) {
                 if (component instanceof VisualContact) {
                     filteredLayer.add(component);
@@ -211,7 +211,9 @@ public class CircuitLayoutCommand extends AbstractLayoutCommand {
                     }
                 }
             }
-            if (!filteredLayer.isEmpty()) {
+            if (filteredLayer.isEmpty()) {
+                result.add(layer);
+            } else {
                 result.add(filteredLayer);
             }
         }
