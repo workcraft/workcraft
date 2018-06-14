@@ -219,20 +219,21 @@ public class Stg extends AbstractMathModel implements StgModel {
         return result;
     }
 
-    public String getSignalReference(SignalTransition t) {
-        String reference = referenceManager.getNodeReference(null, t);
+    @Override
+    public String getSignalReference(SignalTransition st) {
+        String reference = referenceManager.getNodeReference(null, st);
         String path = NamespaceHelper.getReferencePath(reference);
-        return path + t.getSignalName();
+        return path + st.getSignalName();
     }
 
     @Override
-    public int getInstanceNumber(Node st) {
-        return referenceManager.getInstanceNumber(st);
+    public int getInstanceNumber(NamedTransition nt) {
+        return referenceManager.getInstanceNumber(nt);
     }
 
     @Override
-    public void setInstanceNumber(Node st, int number) {
-        referenceManager.setInstanceNumber(st, number);
+    public void setInstanceNumber(NamedTransition nt, int number) {
+        referenceManager.setInstanceNumber(nt, number);
     }
 
     public Direction getDirection(Node t) {

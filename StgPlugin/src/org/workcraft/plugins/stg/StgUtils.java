@@ -3,9 +3,7 @@ package org.workcraft.plugins.stg;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 import org.workcraft.Framework;
 import org.workcraft.dom.Container;
@@ -14,6 +12,9 @@ import org.workcraft.dom.math.MathModel;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.plugins.petri.PetriUtils;
+import org.workcraft.plugins.petri.Place;
+import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.SignalTransition.Type;
@@ -201,9 +202,9 @@ public class StgUtils {
 
     public static HashSet<SignalTransition> getEnabledSignalTransitions(StgModel stg) {
         HashSet<SignalTransition> result = new HashSet<>();
-        for (SignalTransition transition: stg.getSignalTransitions()) {
-            if (stg.isEnabled(transition)) {
-                result.add(transition);
+        for (Transition transition: PetriUtils.getEnabledTransitions(stg)) {
+            if (transition instanceof SignalTransition) {
+                result.add((SignalTransition) transition);
             }
         }
         return result;
@@ -224,6 +225,43 @@ public class StgUtils {
         for (SignalTransition transition: getEnabledSignalTransitions(stg)) {
             result.add(transition.getSignalName());
         }
+        return result;
+    }
+
+    public static HashMap<String, Boolean> getInitialState(StgModel stg) {
+        return getInitialState(stg, 100000);
+    }
+
+    public static HashMap<String, Boolean> getInitialState(StgModel stg, int maxStateCount) {
+        HashMap<String, Boolean> result = new HashMap<>();
+        Set<String> signalRefs = stg.getSignalReferences();
+        HashSet<HashMap<Place, Integer>> visitedMarkings = new HashSet<>();
+        Queue<HashMap<Place, Integer>> queue = new LinkedList<>();
+        HashMap<Place, Integer> initialMarking = PetriUtils.getMarking(stg);
+        queue.add(initialMarking);
+        while (!queue.isEmpty() && !signalRefs.isEmpty()) {
+            HashMap<Place, Integer> curMarking = queue.remove();
+            if (visitedMarkings.size() > maxStateCount) break;
+            visitedMarkings.add(curMarking);
+            PetriUtils.setMarking(stg, curMarking);
+            List<Transition> enabledTransitions = new ArrayList<>(PetriUtils.getEnabledTransitions(stg));
+            for (Transition transition: enabledTransitions) {
+                if (transition instanceof SignalTransition) {
+                    SignalTransition signalTransition = (SignalTransition) transition;
+                    String signalRef = stg.getSignalReference(signalTransition);
+                    if (signalRefs.remove(signalRef)) {
+                        result.put(signalRef, signalTransition.getDirection() == Direction.MINUS);
+                        if (signalRefs.isEmpty()) break;
+                    }
+                }
+                stg.fire(transition);
+                HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
+                if (visitedMarkings.contains(marking)) continue;
+                queue.add(marking);
+                stg.unFire(transition);
+            }
+        }
+        PetriUtils.setMarking(stg, initialMarking);
         return result;
     }
 
