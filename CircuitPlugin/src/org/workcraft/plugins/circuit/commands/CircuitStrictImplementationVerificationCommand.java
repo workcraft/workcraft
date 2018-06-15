@@ -18,7 +18,7 @@ import org.workcraft.plugins.circuit.tasks.CheckStrictImplementationTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
-import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.tasks.Result;
@@ -97,7 +97,7 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
         StgUtils.restoreInterfaceSignals(envStg, circuitInputSignals, circuitOutputSignals);
 
         // Check that the set of circuit input signals is a subset of STG input signals.
-        Set<String> stgInputSignals = envStg.getSignalNames(Type.INPUT, null);
+        Set<String> stgInputSignals = envStg.getSignalNames(Signal.Type.INPUT, null);
         if (!stgInputSignals.containsAll(circuitInputSignals)) {
             Set<String> missingInputSignals = new HashSet<>(circuitInputSignals);
             missingInputSignals.removeAll(stgInputSignals);
@@ -111,8 +111,8 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
 
         // Check that the set of local signals is the same for the circuit and STG.
         Set<String> stgLocalSignals = new HashSet<>();
-        stgLocalSignals.addAll(envStg.getSignalNames(Type.INTERNAL, null));
-        stgLocalSignals.addAll(envStg.getSignalNames(Type.OUTPUT, null));
+        stgLocalSignals.addAll(envStg.getSignalNames(Signal.Type.INTERNAL, null));
+        stgLocalSignals.addAll(envStg.getSignalNames(Signal.Type.OUTPUT, null));
         Set<String> circuitLocalSignals = new HashSet<>();
         for (FunctionComponent component: circuit.getFunctionComponents()) {
             Collection<Contact> componentOutputs = component.getOutputs();

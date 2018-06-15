@@ -9,7 +9,7 @@ public class PetrifyGeneralisedCelementSynthesisCommand extends PetrifyAbstractS
 
     @Override
     public String getDisplayName() {
-        return "Generalized C-element [Petrify]";
+        return "Generalised C-element [Petrify]";
     }
 
     @Override

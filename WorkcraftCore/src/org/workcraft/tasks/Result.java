@@ -49,23 +49,23 @@ public class Result<T> {
     }
 
     public static <T> Result<T> exception(Throwable e) {
-        return new Result<T>(e);
+        return new Result<>(e);
     }
 
     public static <T> Result<T> cancelation() {
-        return new Result<T>(Outcome.CANCEL);
+        return new Result<>(Outcome.CANCEL);
     }
 
     public static <T> Result<T> success(T payload) {
-        return new Result<T>(Outcome.SUCCESS, payload);
+        return new Result<>(Outcome.SUCCESS, payload);
     }
 
     public static <T> Result<T> failure() {
-        return new Result<T>(Outcome.FAILURE);
+        return new Result<>(Outcome.FAILURE);
     }
 
     public static <T> Result<T> failure(T payload) {
-        return new Result<T>(Outcome.FAILURE, payload);
+        return new Result<>(Outcome.FAILURE, payload);
     }
 
 }

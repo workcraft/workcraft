@@ -1,6 +1,5 @@
 package org.workcraft.plugins.son.propertydescriptors;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
@@ -41,13 +40,13 @@ public class EndTimePropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public Object getValue() throws InvocationTargetException {
+    public Object getValue() {
         Interval value = t.getEndTime();
         return value.toString();
     }
 
     @Override
-    public void setValue(Object value) throws InvocationTargetException {
+    public void setValue(Object value) {
         String input = (String) value;
         Interval result = new Interval(Interval.getMin(input), Interval.getMax(input));
         t.setEndTime(result);

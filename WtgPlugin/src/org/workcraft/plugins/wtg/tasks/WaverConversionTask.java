@@ -61,9 +61,9 @@ public class WaverConversionTask implements Task<WaverConversionResult> {
 
             if (wtgExportResult.getOutcome() != Outcome.SUCCESS) {
                 if (wtgExportResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<WaverConversionResult>(Outcome.CANCEL);
+                    return new Result<>(Outcome.CANCEL);
                 }
-                return new Result<WaverConversionResult>(Outcome.FAILURE);
+                return new Result<>(Outcome.FAILURE);
             }
             monitor.progressUpdate(0.20);
 
@@ -90,7 +90,7 @@ public class WaverConversionTask implements Task<WaverConversionResult> {
                 return Result.failure(new WaverConversionResult(waverResult, null));
             }
         } catch (Throwable e) {
-            return new Result<WaverConversionResult>(e);
+            return new Result<>(e);
         }
     }
 

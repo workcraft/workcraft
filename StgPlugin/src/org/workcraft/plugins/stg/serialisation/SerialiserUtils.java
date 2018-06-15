@@ -14,7 +14,6 @@ import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.*;
-import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.util.ExportUtils;
 import org.workcraft.util.Hierarchy;
 
@@ -61,9 +60,9 @@ public class SerialiserUtils {
 
         if ((style == Style.LPN) && (petri instanceof StgModel)) {
             StgModel stg = (StgModel) petri;
-            HashMap<String, Boolean> initialState = StgUtils.getInitialState(stg);
+            HashMap<String, Boolean> initialState = StgUtils.getInitialState(stg, 1000);
             writer.write("#@.init_state [");
-            for (final Type type: Type.values()) {
+            for (final Signal.Type type: Signal.Type.values()) {
                 final Set<String> signals = stg.getSignalReferences(type);
                 for (String signal : signals) {
                     Boolean signalState = initialState.get(signal);
@@ -154,9 +153,9 @@ public class SerialiserUtils {
     }
 
     private static void writeSTG(PrintWriter out, StgModel stg, boolean needInstanceNumbers) {
-        writeSignalsHeader(out, stg.getSignalReferences(Type.INTERNAL), KEYWORD_INTERNAL);
-        writeSignalsHeader(out, stg.getSignalReferences(Type.INPUT), KEYWORD_INPUTS);
-        writeSignalsHeader(out, stg.getSignalReferences(Type.OUTPUT), KEYWORD_OUTPUTS);
+        writeSignalsHeader(out, stg.getSignalReferences(Signal.Type.INTERNAL), KEYWORD_INTERNAL);
+        writeSignalsHeader(out, stg.getSignalReferences(Signal.Type.INPUT), KEYWORD_INPUTS);
+        writeSignalsHeader(out, stg.getSignalReferences(Signal.Type.OUTPUT), KEYWORD_OUTPUTS);
         Set<String> pageRefs = getPageReferences(stg);
         if (!pageRefs.isEmpty()) {
             out.write("# Pages added as dummies: " + String.join(", ", pageRefs) + "\n");

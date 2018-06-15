@@ -1,6 +1,5 @@
 package org.workcraft.plugins.fsm.propertydescriptors;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.workcraft.dom.Node;
@@ -34,7 +33,7 @@ public class EventSymbolPropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public Object getValue() throws InvocationTargetException {
+    public Object getValue() {
         Symbol symbol = event.getSymbol();
         String symbolName = "";
         if (symbol != null) {
@@ -44,7 +43,7 @@ public class EventSymbolPropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public void setValue(Object value) throws InvocationTargetException {
+    public void setValue(Object value) {
         Symbol symbol = null;
         String symbolName = (String) value;
         if (!symbolName.isEmpty()) {

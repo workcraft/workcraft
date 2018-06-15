@@ -14,10 +14,9 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.plugins.fst.Fst;
-import org.workcraft.plugins.fst.Signal;
 import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.petrify.commands.PetrifyStgToBinaryFstConversionCommand;
-import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -58,9 +57,9 @@ public class PetrifyStgToFstConversionCommandTests {
         WorkspaceEntry srcWe = framework.loadWork(url.getFile());
 
         Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
-        Set<String> srcInputs = srcStg.getSignalNames(Type.INPUT, null);
-        Set<String> srcInternals = srcStg.getSignalNames(Type.INTERNAL, null);
-        Set<String> srcOutputs = srcStg.getSignalNames(Type.OUTPUT, null);
+        Set<String> srcInputs = srcStg.getSignalNames(Signal.Type.INPUT, null);
+        Set<String> srcInternals = srcStg.getSignalNames(Signal.Type.INTERNAL, null);
+        Set<String> srcOutputs = srcStg.getSignalNames(Signal.Type.OUTPUT, null);
 
         PetrifyStgToBinaryFstConversionCommand command = new PetrifyStgToBinaryFstConversionCommand();
         WorkspaceEntry dstWe = command.execute(srcWe);
@@ -69,7 +68,7 @@ public class PetrifyStgToFstConversionCommandTests {
         Set<String> dstInputs = new HashSet<>();
         Set<String> dstInternals = new HashSet<>();
         Set<String> dstOutputs = new HashSet<>();
-        for (Signal signal: dstFst.getSignals()) {
+        for (org.workcraft.plugins.fst.Signal signal: dstFst.getSignals()) {
             String signalName = dstFst.getNodeReference(signal);
             switch (signal.getType()) {
             case INPUT:

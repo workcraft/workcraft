@@ -11,7 +11,6 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.fsm.VisualState;
-import org.workcraft.plugins.fst.Signal.Type;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Finite State Transducer")
@@ -36,7 +35,7 @@ public class VisualFst extends VisualFsm {
         State mState2 = vState2.getReferencedState();
 
         if (mConnection == null) {
-            Signal signal = ((Fst) getMathModel()).createSignal(null, Type.DUMMY);
+            Signal signal = ((Fst) getMathModel()).createSignal(null, Signal.Type.DUMMY);
             mConnection = ((Fst) getMathModel()).createSignalEvent(mState1, mState2, signal);
         }
         VisualSignalEvent vEvent = new VisualSignalEvent((SignalEvent) mConnection, vState1, vState2);

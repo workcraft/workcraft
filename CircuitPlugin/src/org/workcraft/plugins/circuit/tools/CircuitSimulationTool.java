@@ -69,26 +69,6 @@ public class CircuitSimulationTool extends StgSimulationTool {
         }
     }
 
-    @Override
-    public void initialiseSignalState() {
-        super.initialiseSignalState();
-        for (String signalName: signalDataMap.keySet()) {
-            SignalData signalState = signalDataMap.get(signalName);
-            String zeroName = SignalStg.getLowName(signalName);
-            Node zeroNode = getUnderlyingStg().getNodeByReference(zeroName);
-            if (zeroNode instanceof Place) {
-                Place zeroPlace = (Place) zeroNode;
-                signalState.value = (zeroPlace.getTokens() > 0) ? SignalState.LOW : SignalState.HIGH;
-            }
-            String oneName = SignalStg.getHighName(signalName);
-            Node oneNode = getUnderlyingStg().getNodeByReference(oneName);
-            if (oneNode instanceof Place) {
-                Place onePlace = (Place) oneNode;
-                signalState.value = (onePlace.getTokens() > 0) ? SignalState.HIGH : SignalState.LOW;
-            }
-        }
-    }
-
     // Return all enabled transitions associated with the contact
     public HashSet<SignalTransition> getContactExcitedTransitions(VisualContact contact) {
         HashSet<SignalTransition> result = new HashSet<>();

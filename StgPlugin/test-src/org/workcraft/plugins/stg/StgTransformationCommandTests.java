@@ -9,7 +9,6 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
-import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.commands.*;
 import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -48,15 +47,15 @@ public class StgTransformationCommandTests {
 
         WorkspaceEntry we = framework.loadWork(url.getFile());
         Stg stg = WorkspaceUtils.getAs(we, Stg.class);
-        Set<String> srcInputs = stg.getSignalNames(Type.INPUT, null);
-        Set<String> srcOutputs = stg.getSignalNames(Type.OUTPUT, null);
-        Set<String> srcInternals = stg.getSignalNames(Type.INTERNAL, null);
+        Set<String> srcInputs = stg.getSignalNames(Signal.Type.INPUT, null);
+        Set<String> srcOutputs = stg.getSignalNames(Signal.Type.OUTPUT, null);
+        Set<String> srcInternals = stg.getSignalNames(Signal.Type.INTERNAL, null);
 
         MirrorSignalTransformationCommand command = new MirrorSignalTransformationCommand();
         command.execute(we);
-        Set<String> dstInputs = stg.getSignalNames(Type.INPUT, null);
-        Set<String> dstOutputs = stg.getSignalNames(Type.OUTPUT, null);
-        Set<String> dstInternals = stg.getSignalNames(Type.INTERNAL, null);
+        Set<String> dstInputs = stg.getSignalNames(Signal.Type.INPUT, null);
+        Set<String> dstOutputs = stg.getSignalNames(Signal.Type.OUTPUT, null);
+        Set<String> dstInternals = stg.getSignalNames(Signal.Type.INTERNAL, null);
 
         Assert.assertEquals(srcInputs, dstOutputs);
         Assert.assertEquals(srcOutputs, dstInputs);

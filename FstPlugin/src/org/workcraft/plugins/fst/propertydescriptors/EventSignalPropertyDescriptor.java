@@ -1,13 +1,11 @@
 package org.workcraft.plugins.fst.propertydescriptors;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.workcraft.dom.Node;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.Signal;
-import org.workcraft.plugins.fst.Signal.Type;
 import org.workcraft.plugins.fst.SignalEvent;
 
 public class EventSignalPropertyDescriptor implements PropertyDescriptor {
@@ -35,7 +33,7 @@ public class EventSignalPropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public Object getValue() throws InvocationTargetException {
+    public Object getValue() {
         Signal signal = signalEvent.getSignal();
         if (signal != null) {
             return fst.getName(signal);
@@ -44,7 +42,7 @@ public class EventSignalPropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public void setValue(Object value) throws InvocationTargetException {
+    public void setValue(Object value) {
         Signal signal = null;
         String signalName = (String) value;
         if (!signalName.isEmpty()) {
@@ -53,7 +51,7 @@ public class EventSignalPropertyDescriptor implements PropertyDescriptor {
                 signal = (Signal) node;
             } else {
                 Signal oldSignal = signalEvent.getSignal();
-                Type type = oldSignal.getType();
+                Signal.Type type = oldSignal.getType();
                 signal = fst.createSignal(signalName, type);
             }
         }

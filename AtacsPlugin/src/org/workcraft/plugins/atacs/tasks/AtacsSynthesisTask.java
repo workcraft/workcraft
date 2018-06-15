@@ -16,7 +16,6 @@ import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
-import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.plugins.stg.interop.LpnFormat;
@@ -135,9 +134,9 @@ public class AtacsSynthesisTask implements Task<AtacsSynthesisOutput>, ExternalP
             for (Mutex mutex: mutexes) {
                 LogUtils.logInfo("Factored out " + mutex);
                 setMutexRequest(stg, mutex.r1);
-                stg.setSignalType(mutex.g1.name, Type.INPUT);
+                stg.setSignalType(mutex.g1.name, Signal.Type.INPUT);
                 setMutexRequest(stg, mutex.r2);
-                stg.setSignalType(mutex.g2.name, Type.INPUT);
+                stg.setSignalType(mutex.g2.name, Signal.Type.INPUT);
             }
             file = new File(directory, StgUtils.SPEC_FILE_PREFIX + StgUtils.MUTEX_FILE_SUFFIX + extension);
             exportTask = new ExportTask(exporter, stg, file.getAbsolutePath());
@@ -150,9 +149,9 @@ public class AtacsSynthesisTask implements Task<AtacsSynthesisOutput>, ExternalP
     }
 
     private void setMutexRequest(Stg stg, Signal signal) {
-        if (signal.type == Type.INTERNAL) {
+        if (signal.type == Signal.Type.INTERNAL) {
             LogUtils.logInfo("Internal signal " + signal.name + " is temporary changed to output, so it is not optimised away.");
-            stg.setSignalType(signal.name, Type.OUTPUT);
+            stg.setSignalType(signal.name, Signal.Type.OUTPUT);
         }
     }
 

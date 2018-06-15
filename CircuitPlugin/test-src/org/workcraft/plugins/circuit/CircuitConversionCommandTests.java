@@ -14,7 +14,7 @@ import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.circuit.commands.CircuitToStgConversionCommand;
 import org.workcraft.plugins.circuit.commands.CircuitToStgWithEnvironmentConversionCommand;
 import org.workcraft.plugins.pcomp.PcompSettings;
-import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -94,8 +94,8 @@ public class CircuitConversionCommandTests {
 
         Stg dstStg = WorkspaceUtils.getAs(dstWe, Stg.class);
         int dstStgPlaceCount = dstStg.getPlaces().size();
-        Set<String> dstStgInputs = dstStg.getSignalNames(Type.INPUT, null);
-        Set<String> dstStgOutputs = dstStg.getSignalNames(Type.OUTPUT, null);
+        Set<String> dstStgInputs = dstStg.getSignalNames(Signal.Type.INPUT, null);
+        Set<String> dstStgOutputs = dstStg.getSignalNames(Signal.Type.OUTPUT, null);
 
         Assert.assertEquals(2 * srcCircuitSignalCount + extraPlaceCount, dstStgPlaceCount);
         Assert.assertEquals(srcCircuitInputs, dstStgInputs);

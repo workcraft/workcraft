@@ -11,8 +11,7 @@ import org.workcraft.dom.hierarchy.NamespaceHelper;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.gui.graph.tools.Trace;
 import org.workcraft.plugins.dtd.Dtd;
-import org.workcraft.plugins.dtd.Signal.Type;
-import org.workcraft.plugins.dtd.SignalTransition.Direction;
+import org.workcraft.plugins.dtd.Signal;
 import org.workcraft.plugins.dtd.VisualDtd;
 import org.workcraft.plugins.dtd.VisualDtd.SignalEvent;
 import org.workcraft.plugins.dtd.VisualSignal;
@@ -45,19 +44,19 @@ public class StgToDtdConverter {
         return dtd;
     }
 
-    private Type convertSignalType(SignalTransition.Type type) {
+    private Signal.Type convertSignalType(org.workcraft.plugins.stg.Signal.Type type) {
         switch (type) {
-        case INPUT:    return Type.INPUT;
-        case OUTPUT:   return Type.OUTPUT;
-        case INTERNAL: return Type.INTERNAL;
+        case INPUT:    return Signal.Type.INPUT;
+        case OUTPUT:   return Signal.Type.OUTPUT;
+        case INTERNAL: return Signal.Type.INTERNAL;
         default:       return null;
         }
     }
 
-    private Direction getDirection(SignalTransition.Direction direction) {
+    private org.workcraft.plugins.dtd.SignalTransition.Direction getDirection(SignalTransition.Direction direction) {
         switch (direction) {
-        case PLUS:  return Direction.RISE;
-        case MINUS: return Direction.FALL;
+        case PLUS:  return org.workcraft.plugins.dtd.SignalTransition.Direction.RISE;
+        case MINUS: return org.workcraft.plugins.dtd.SignalTransition.Direction.FALL;
         default:    return null;
         }
     }
@@ -70,7 +69,7 @@ public class StgToDtdConverter {
             String flatName = NamespaceHelper.flattenReference(ref);
             VisualSignal signal = dtd.createVisualSignal(flatName);
             signal.setPosition(new Point2D.Double(0.0, SIGNAL_OFFSET * result.size()));
-            Type type = convertSignalType(stg.getSignalType(ref));
+            Signal.Type type = convertSignalType(stg.getSignalType(ref));
             signal.setType(type);
             signal.setForegroundColor(color);
             result.put(ref, signal);
@@ -107,7 +106,7 @@ public class StgToDtdConverter {
                 SignalTransition transition = (SignalTransition) node;
                 String signalRef = stg.getSignalReference(transition);
                 VisualSignal signal = signalMap.get(signalRef);
-                Direction direction = getDirection(transition.getDirection());
+                org.workcraft.plugins.dtd.SignalTransition.Direction direction = getDirection(transition.getDirection());
                 SignalEvent curEvent = dtd.appendSignalEvent(signal, direction);
                 result.put(curEvent, transition);
                 x += EVENT_OFFSET;

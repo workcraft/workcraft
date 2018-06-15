@@ -12,39 +12,6 @@ public class SignalTransition extends NamedTransition {
     public static final String PROPERTY_SIGNAL_NAME = "Signal name";
     public static final String PROPERTY_DIRECTION = "Direction";
 
-    public enum Type {
-        INPUT("input"),
-        OUTPUT("output"),
-        INTERNAL("internal");
-
-        private final String name;
-
-        Type(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public String toString() {
-            return name;
-        }
-
-        public Type mirror() {
-            switch (this) {
-            case INPUT: return OUTPUT;
-            case OUTPUT: return INPUT;
-            default: return this;
-            }
-        }
-
-        public Type toggle() {
-            switch (this) {
-            case INPUT: return INTERNAL;
-            case OUTPUT: return INPUT;
-            case INTERNAL: return OUTPUT;
-            default: return this;
-            }
-        }
-    }
 
     public enum Direction {
         PLUS("+"),
@@ -80,15 +47,15 @@ public class SignalTransition extends NamedTransition {
         }
     }
 
-    private Type type = Type.INTERNAL;
+    private Signal.Type type = Signal.Type.INTERNAL;
     private Direction direction = Direction.TOGGLE;
     private String signalName = "";
 
-    public Type getSignalType() {
+    public Signal.Type getSignalType() {
         return type;
     }
 
-    public void setSignalType(Type value) {
+    public void setSignalType(Signal.Type value) {
         if (type != value) {
             type = value;
             sendNotification(new PropertyChangedEvent(this, PROPERTY_SIGNAL_TYPE));

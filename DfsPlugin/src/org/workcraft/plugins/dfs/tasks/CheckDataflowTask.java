@@ -63,9 +63,9 @@ public class CheckDataflowTask extends MpsatChainTask {
 
             if (exportResult.getOutcome() != Outcome.SUCCESS) {
                 if (exportResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
+                    return new Result<>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                return new Result<>(Outcome.FAILURE,
                         new MpsatChainOutput(exportResult, null, null, null, toolchainPreparationSettings));
             }
             monitor.progressUpdate(0.20);
@@ -77,9 +77,9 @@ public class CheckDataflowTask extends MpsatChainTask {
 
             if (punfResult.getOutcome() != Outcome.SUCCESS) {
                 if (punfResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
+                    return new Result<>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                return new Result<>(Outcome.FAILURE,
                         new MpsatChainOutput(exportResult, null, punfResult, null, toolchainPreparationSettings));
             }
             monitor.progressUpdate(0.40);
@@ -91,16 +91,16 @@ public class CheckDataflowTask extends MpsatChainTask {
 
             if (deadlockMpsatResult.getOutcome() != Outcome.SUCCESS) {
                 if (deadlockMpsatResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
+                    return new Result<>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                return new Result<>(Outcome.FAILURE,
                         new MpsatChainOutput(exportResult, null, punfResult, deadlockMpsatResult, deadlockSettings));
             }
             monitor.progressUpdate(0.60);
 
             MpsatOutputParser deadlockMpsatResultParser = new MpsatOutputParser(deadlockMpsatResult.getPayload());
             if (!deadlockMpsatResultParser.getSolutions().isEmpty()) {
-                return new Result<MpsatChainOutput>(Outcome.SUCCESS,
+                return new Result<>(Outcome.SUCCESS,
                         new MpsatChainOutput(exportResult, null, punfResult, deadlockMpsatResult, deadlockSettings, "Dataflow has a deadlock"));
             }
             monitor.progressUpdate(0.70);
@@ -110,25 +110,25 @@ public class CheckDataflowTask extends MpsatChainTask {
             Result<? extends MpsatOutput> persistencyMpsatResult = framework.getTaskManager().execute(persistencyMpsatTask, "Running semimodularity checking [MPSat]", mon);
             if (persistencyMpsatResult.getOutcome() != Outcome.SUCCESS) {
                 if (persistencyMpsatResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
+                    return new Result<>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                return new Result<>(Outcome.FAILURE,
                         new MpsatChainOutput(exportResult, null, punfResult, persistencyMpsatResult, persistencySettings));
             }
             monitor.progressUpdate(0.90);
 
             MpsatOutputParser persistencyMpsatResultParser = new MpsatOutputParser(persistencyMpsatResult.getPayload());
             if (!persistencyMpsatResultParser.getSolutions().isEmpty()) {
-                return new Result<MpsatChainOutput>(Outcome.SUCCESS,
+                return new Result<>(Outcome.SUCCESS,
                         new MpsatChainOutput(exportResult, null, punfResult, persistencyMpsatResult, persistencySettings, "Dataflow is not output-persistent"));
             }
             monitor.progressUpdate(1.0);
 
-            return new Result<MpsatChainOutput>(Outcome.SUCCESS,
+            return new Result<>(Outcome.SUCCESS,
                     new MpsatChainOutput(exportResult, null, punfResult, null, toolchainCompletionSettings, "Dataflow is deadlock-free and output-persistent"));
 
         } catch (Throwable e) {
-            return new Result<MpsatChainOutput>(e);
+            return new Result<>(e);
         } finally {
             FileUtils.deleteOnExitRecursively(directory);
         }

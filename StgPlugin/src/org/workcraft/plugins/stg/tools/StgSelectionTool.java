@@ -15,8 +15,7 @@ import org.workcraft.gui.graph.tools.SelectionTool;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.SignalTransition.Direction;
-import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
 import org.workcraft.plugins.stg.VisualNamedTransition;
@@ -84,13 +83,13 @@ public class StgSelectionTool extends SelectionTool {
 
     private void toggleSignalType(SignalTransition transition, GraphEditor editor) {
         editor.getWorkspaceEntry().saveMemento();
-        Type type = transition.getSignalType();
+        Signal.Type type = transition.getSignalType();
         transition.setSignalType(type.mirror());
     }
 
     private void toggleDirection(SignalTransition transition, GraphEditor editor) {
         editor.getWorkspaceEntry().saveMemento();
-        Direction direction = transition.getDirection();
+        SignalTransition.Direction direction = transition.getDirection();
         VisualModel model = editor.getModel();
         if (model instanceof VisualStg) {
             Stg stg = (Stg) model.getMathModel();

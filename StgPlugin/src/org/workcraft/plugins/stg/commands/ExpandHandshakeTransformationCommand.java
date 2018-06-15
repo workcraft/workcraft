@@ -17,8 +17,8 @@ import org.workcraft.dom.visual.TransformHelper;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.VisualReadArc;
-import org.workcraft.plugins.stg.SignalTransition.Direction;
-import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.Signal;
+import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.util.DialogUtils;
@@ -100,7 +100,7 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
             VisualStg stg = (VisualStg) model;
             VisualSignalTransition transition = (VisualSignalTransition) node;
             String ref = stg.getSignalReference(transition);
-            Direction direction = transition.getDirection();
+            SignalTransition.Direction direction = transition.getDirection();
             Container container = Hierarchy.getNearestContainer(transition);
             String reqSuffix = SUFFIX_REQ;
             String ackSuffix = SUFFIX_ACK;
@@ -108,8 +108,8 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
                 reqSuffix = suffixPair.getFirst();
                 ackSuffix = suffixPair.getSecond();
             }
-            VisualSignalTransition reqTransition = stg.createVisualSignalTransition(ref + reqSuffix, Type.OUTPUT, direction, container);
-            VisualSignalTransition ackTransition = stg.createVisualSignalTransition(ref + ackSuffix, Type.INPUT, direction, container);
+            VisualSignalTransition reqTransition = stg.createVisualSignalTransition(ref + reqSuffix, Signal.Type.OUTPUT, direction, container);
+            VisualSignalTransition ackTransition = stg.createVisualSignalTransition(ref + ackSuffix, Signal.Type.INPUT, direction, container);
             Pair<Point2D, Point2D> positionPair = getReqAckPositions(stg, transition);
             reqTransition.setRootSpacePosition(positionPair.getFirst());
             ackTransition.setRootSpacePosition(positionPair.getSecond());

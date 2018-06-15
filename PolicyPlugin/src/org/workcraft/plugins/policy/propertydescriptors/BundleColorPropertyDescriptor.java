@@ -1,7 +1,6 @@
 package org.workcraft.plugins.policy.propertydescriptors;
 
 import java.awt.Color;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
@@ -33,12 +32,12 @@ public final class BundleColorPropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public Object getValue() throws InvocationTargetException {
+    public Object getValue() {
         return bundle.getColor();
     }
 
     @Override
-    public void setValue(Object value) throws InvocationTargetException {
+    public void setValue(Object value) {
         bundle.setColor((Color) value);
     }
 

@@ -16,8 +16,6 @@ import org.workcraft.plugins.petri.PetriUtils;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualReadArc;
-import org.workcraft.plugins.stg.SignalTransition.Direction;
-import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
@@ -111,7 +109,7 @@ public class StgUtils {
 
     public static VisualSignalTransition convertDummyToSignalTransition(VisualStg stg, VisualNamedTransition dummyTransition) {
         Container container = (Container) dummyTransition.getParent();
-        VisualSignalTransition signalTransition = stg.createVisualSignalTransition(null, Type.INTERNAL, Direction.TOGGLE, container);
+        VisualSignalTransition signalTransition = stg.createVisualSignalTransition(null, Signal.Type.INTERNAL, SignalTransition.Direction.TOGGLE, container);
         replaceNamedTransition(stg, dummyTransition, signalTransition);
         return signalTransition;
     }
@@ -158,30 +156,30 @@ public class StgUtils {
     public static void restoreInterfaceSignals(Stg stg, Collection<String> inputSignalNames, Collection<String> outputSignalNames) {
         Container container = stg.getRoot();
         for (String signalName: stg.getSignalNames(container)) {
-            stg.setSignalType(signalName, Type.INTERNAL, container);
+            stg.setSignalType(signalName, Signal.Type.INTERNAL, container);
         }
         for (String inputName: inputSignalNames) {
-            stg.setSignalType(inputName, Type.INPUT, container);
+            stg.setSignalType(inputName, Signal.Type.INPUT, container);
         }
         for (String outputName: outputSignalNames) {
-            stg.setSignalType(outputName, Type.OUTPUT, container);
+            stg.setSignalType(outputName, Signal.Type.OUTPUT, container);
         }
     }
 
     public static void convertInternalSignalsToDummies(Stg stg) {
-        for (SignalTransition transition: stg.getSignalTransitions(Type.INTERNAL)) {
+        for (SignalTransition transition: stg.getSignalTransitions(Signal.Type.INTERNAL)) {
             StgUtils.convertSignalToDummyTransition(stg, transition);
         }
     }
 
     public static boolean isSameSignals(StgModel srcStg, StgModel dstStg) {
-        Set<String> srcInputs = srcStg.getSignalReferences(Type.INPUT);
-        Set<String> srcOutputs = srcStg.getSignalReferences(Type.OUTPUT);
-        Set<String> srcInternal = srcStg.getSignalReferences(Type.INTERNAL);
+        Set<String> srcInputs = srcStg.getSignalReferences(Signal.Type.INPUT);
+        Set<String> srcOutputs = srcStg.getSignalReferences(Signal.Type.OUTPUT);
+        Set<String> srcInternal = srcStg.getSignalReferences(Signal.Type.INTERNAL);
 
-        Set<String> dstInputs = dstStg.getSignalReferences(Type.INPUT);
-        Set<String> dstOutputs = dstStg.getSignalReferences(Type.OUTPUT);
-        Set<String> dstInternal = dstStg.getSignalReferences(Type.INTERNAL);
+        Set<String> dstInputs = dstStg.getSignalReferences(Signal.Type.INPUT);
+        Set<String> dstOutputs = dstStg.getSignalReferences(Signal.Type.OUTPUT);
+        Set<String> dstInternal = dstStg.getSignalReferences(Signal.Type.INTERNAL);
 
         return srcInputs.equals(dstInputs) && srcOutputs.equals(dstOutputs) && srcInternal.equals(dstInternal);
     }
@@ -213,7 +211,7 @@ public class StgUtils {
     public static HashSet<String> getEnabledLocalSignals(StgModel stg) {
         HashSet<String> result = new HashSet<>();
         for (SignalTransition transition: getEnabledSignalTransitions(stg)) {
-            if ((transition.getSignalType() == Type.OUTPUT) || (transition.getSignalType() == Type.INTERNAL)) {
+            if ((transition.getSignalType() == Signal.Type.OUTPUT) || (transition.getSignalType() == Signal.Type.INTERNAL)) {
                 result.add(transition.getSignalName());
             }
         }
@@ -228,20 +226,16 @@ public class StgUtils {
         return result;
     }
 
-    public static HashMap<String, Boolean> getInitialState(StgModel stg) {
-        return getInitialState(stg, 100000);
-    }
-
-    public static HashMap<String, Boolean> getInitialState(StgModel stg, int maxStateCount) {
+    public static HashMap<String, Boolean> getInitialState(StgModel stg, int timeout) {
         HashMap<String, Boolean> result = new HashMap<>();
         Set<String> signalRefs = stg.getSignalReferences();
         HashSet<HashMap<Place, Integer>> visitedMarkings = new HashSet<>();
         Queue<HashMap<Place, Integer>> queue = new LinkedList<>();
         HashMap<Place, Integer> initialMarking = PetriUtils.getMarking(stg);
         queue.add(initialMarking);
-        while (!queue.isEmpty() && !signalRefs.isEmpty()) {
+        long endTime = System.currentTimeMillis() + timeout;
+        while (!queue.isEmpty() && !signalRefs.isEmpty() && System.currentTimeMillis() < endTime) {
             HashMap<Place, Integer> curMarking = queue.remove();
-            if (visitedMarkings.size() > maxStateCount) break;
             visitedMarkings.add(curMarking);
             PetriUtils.setMarking(stg, curMarking);
             List<Transition> enabledTransitions = new ArrayList<>(PetriUtils.getEnabledTransitions(stg));
@@ -250,14 +244,15 @@ public class StgUtils {
                     SignalTransition signalTransition = (SignalTransition) transition;
                     String signalRef = stg.getSignalReference(signalTransition);
                     if (signalRefs.remove(signalRef)) {
-                        result.put(signalRef, signalTransition.getDirection() == Direction.MINUS);
-                        if (signalRefs.isEmpty()) break;
+                        result.put(signalRef, signalTransition.getDirection() == SignalTransition.Direction.MINUS);
                     }
                 }
+                if (signalRefs.isEmpty() || (System.currentTimeMillis() >= endTime)) break;
                 stg.fire(transition);
                 HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
-                if (visitedMarkings.contains(marking)) continue;
-                queue.add(marking);
+                if (!visitedMarkings.contains(marking)) {
+                    queue.add(marking);
+                }
                 stg.unFire(transition);
             }
         }

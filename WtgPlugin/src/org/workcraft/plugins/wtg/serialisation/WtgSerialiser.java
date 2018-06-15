@@ -15,11 +15,9 @@ import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.exceptions.FormatException;
 import org.workcraft.plugins.dtd.DtdUtils;
 import org.workcraft.plugins.dtd.Signal;
-import org.workcraft.plugins.dtd.Signal.Type;
 import org.workcraft.plugins.dtd.SignalEntry;
 import org.workcraft.plugins.dtd.SignalExit;
 import org.workcraft.plugins.dtd.SignalTransition;
-import org.workcraft.plugins.dtd.SignalTransition.Direction;
 import org.workcraft.plugins.wtg.State;
 import org.workcraft.plugins.wtg.Waveform;
 import org.workcraft.plugins.wtg.Wtg;
@@ -71,7 +69,7 @@ public class WtgSerialiser implements ModelSerialiser {
             Signal signal = transition.getSignal();
             String result = wtg.getName(signal);
             Signal.State previousState = wtg.getPreviousState(transition);
-            Direction direction = transition.getDirection();
+            SignalTransition.Direction direction = transition.getDirection();
             switch (previousState) {
             case UNSTABLE:
                 Signal.State signalState = DtdUtils.getNextState(direction);
@@ -116,9 +114,9 @@ public class WtgSerialiser implements ModelSerialiser {
 
     private void write(PrintWriter out, Wtg wtg, ReferenceProducer refs) {
         out.write(Info.getGeneratedByText("# WTG file ", "\n"));
-        writeSignalHeader(out, wtg, refs, Type.INPUT);
-        writeSignalHeader(out, wtg, refs, Type.OUTPUT);
-        writeSignalHeader(out, wtg, refs, Type.INTERNAL);
+        writeSignalHeader(out, wtg, refs, Signal.Type.INPUT);
+        writeSignalHeader(out, wtg, refs, Signal.Type.OUTPUT);
+        writeSignalHeader(out, wtg, refs, Signal.Type.INTERNAL);
         writeInitial(out, wtg, refs);
         for (Waveform waveform: wtg.getWaveforms()) {
             writeWaveform(out, wtg, refs, waveform);
@@ -126,7 +124,7 @@ public class WtgSerialiser implements ModelSerialiser {
         writeEnd(out);
     }
 
-    private void writeSignalHeader(PrintWriter out, Wtg wtg, ReferenceProducer refs, Type type) {
+    private void writeSignalHeader(PrintWriter out, Wtg wtg, ReferenceProducer refs, Signal.Type type) {
         Collection<Node> signals = new HashSet<>();
         signals.addAll(wtg.getSignals(type));
         switch (type) {

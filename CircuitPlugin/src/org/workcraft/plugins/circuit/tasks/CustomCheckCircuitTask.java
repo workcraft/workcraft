@@ -18,7 +18,7 @@ import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
-import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.plugins.stg.interop.StgFormat;
@@ -64,8 +64,8 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
             Stg envStg = StgUtils.loadStg(envFile);
             if (envStg != null) {
                 // Make sure that input signals of the device STG are also inputs in the environment STG
-                Set<String> inputSignalNames = devStg.getSignalNames(Type.INPUT, null);
-                Set<String> outputSignalNames = devStg.getSignalNames(Type.OUTPUT, null);
+                Set<String> inputSignalNames = devStg.getSignalNames(Signal.Type.INPUT, null);
+                Set<String> outputSignalNames = devStg.getSignalNames(Signal.Type.OUTPUT, null);
                 StgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
             }
 
@@ -75,9 +75,9 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
             Result<? extends ExportOutput> devExportResult = CircuitStgUtils.exportStg(devStg, devStgFile, directory, monitor);
             if (devExportResult.getOutcome() != Outcome.SUCCESS) {
                 if (devExportResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
+                    return new Result<>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                return new Result<>(Outcome.FAILURE,
                         new MpsatChainOutput(devExportResult, null, null, null, toolchainPreparationSettings));
             }
             monitor.progressUpdate(0.10);
@@ -93,9 +93,9 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
                 Result<? extends ExportOutput> envExportResult = CircuitStgUtils.exportStg(envStg, envStgFile, directory, monitor);
                 if (envExportResult.getOutcome() != Outcome.SUCCESS) {
                     if (envExportResult.getOutcome() == Outcome.CANCEL) {
-                        return new Result<MpsatChainOutput>(Outcome.CANCEL);
+                        return new Result<>(Outcome.CANCEL);
                     }
-                    return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                    return new Result<>(Outcome.FAILURE,
                             new MpsatChainOutput(envExportResult, null, null, null, toolchainPreparationSettings));
                 }
 
@@ -105,9 +105,9 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
                 pcompResult = CircuitStgUtils.composeDevWithEnv(devStgFile, envStgFile, sysStgFile, detailFile, directory, monitor);
                 if (pcompResult.getOutcome() != Outcome.SUCCESS) {
                     if (pcompResult.getOutcome() == Outcome.CANCEL) {
-                        return new Result<MpsatChainOutput>(Outcome.CANCEL);
+                        return new Result<>(Outcome.CANCEL);
                     }
-                    return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                    return new Result<>(Outcome.FAILURE,
                             new MpsatChainOutput(devExportResult, pcompResult, null, null, toolchainPreparationSettings));
                 }
             }
@@ -121,9 +121,9 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
 
             if (punfResult.getOutcome() != Outcome.SUCCESS) {
                 if (punfResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
+                    return new Result<>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                return new Result<>(Outcome.FAILURE,
                         new MpsatChainOutput(devExportResult, pcompResult, punfResult, null, toolchainPreparationSettings));
             }
             monitor.progressUpdate(0.40);
@@ -137,28 +137,28 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
 
             if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
                 if (mpsatResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
+                    return new Result<>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                return new Result<>(Outcome.FAILURE,
                         new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, settings));
             }
             monitor.progressUpdate(0.50);
 
             MpsatOutputParser mpsatParser = new MpsatOutputParser(mpsatResult.getPayload());
             if (!mpsatParser.getSolutions().isEmpty()) {
-                return new Result<MpsatChainOutput>(Outcome.SUCCESS,
+                return new Result<>(Outcome.SUCCESS,
                         new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, settings,
                                 "Custom property is violated after the following trace(s):"));
             }
             monitor.progressUpdate(1.00);
 
             // Success
-            return new Result<MpsatChainOutput>(Outcome.SUCCESS,
+            return new Result<>(Outcome.SUCCESS,
                     new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatResult, toolchainCompletionSettings,
                             "Custom property holds"));
 
         } catch (Throwable e) {
-            return new Result<MpsatChainOutput>(e);
+            return new Result<>(e);
         } finally {
             FileUtils.deleteOnExitRecursively(directory);
         }

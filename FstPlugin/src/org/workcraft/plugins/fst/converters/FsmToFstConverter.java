@@ -14,7 +14,6 @@ import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.Signal;
-import org.workcraft.plugins.fst.Signal.Type;
 import org.workcraft.plugins.fst.SignalEvent;
 import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.fst.VisualSignalEvent;
@@ -41,7 +40,7 @@ public class FsmToFstConverter extends DefaultModelConverter<VisualFsm, VisualFs
             Fsm fsm = (Fsm) getSrcModel().getMathModel();
             String name = fsm.getName(srcSymbol);
             Fst fst = (Fst) getDstModel().getMathModel();
-            Signal dstSignal = fst.getOrCreateSignal(name, Type.DUMMY);
+            Signal dstSignal = fst.getOrCreateSignal(name, Signal.Type.DUMMY);
             SignalEvent dstSignalEvent = (SignalEvent) dstConnection.getReferencedConnection();
             dstSignalEvent.setSymbol(dstSignal);
         }

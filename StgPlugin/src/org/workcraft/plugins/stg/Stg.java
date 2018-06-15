@@ -23,8 +23,6 @@ import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
 import org.workcraft.plugins.petri.PetriNet;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.stg.SignalTransition.Direction;
-import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.propertydescriptors.DirectionPropertyDescriptor;
 import org.workcraft.plugins.stg.propertydescriptors.InstancePropertyDescriptor;
 import org.workcraft.plugins.stg.propertydescriptors.SignalPropertyDescriptor;
@@ -143,7 +141,7 @@ public class Stg extends AbstractMathModel implements StgModel {
     }
 
     @Override
-    public Collection<SignalTransition> getSignalTransitions(final Type type) {
+    public Collection<SignalTransition> getSignalTransitions(final Signal.Type type) {
         return Hierarchy.getDescendantsOfType(getRoot(), SignalTransition.class,
                 transition -> transition.getSignalType() == type);
     }
@@ -159,7 +157,7 @@ public class Stg extends AbstractMathModel implements StgModel {
         return result;
     }
 
-    public Set<String> getSignalNames(final Type type, Container container) {
+    public Set<String> getSignalNames(final Signal.Type type, Container container) {
         if (container == null) {
             container = getRoot();
         }
@@ -170,7 +168,7 @@ public class Stg extends AbstractMathModel implements StgModel {
         return result;
     }
 
-    public Collection<SignalTransition> getSignalTransitions(final Type type, Container container) {
+    public Collection<SignalTransition> getSignalTransitions(final Signal.Type type, Container container) {
         if (container == null) {
             container = getRoot();
         }
@@ -211,7 +209,7 @@ public class Stg extends AbstractMathModel implements StgModel {
     }
 
     @Override
-    public Set<String> getSignalReferences(Type type) {
+    public Set<String> getSignalReferences(Signal.Type type) {
         Set<String> result = new HashSet<>();
         for (SignalTransition t: getSignalTransitions(type)) {
             result.add(getSignalReference(t));
@@ -236,8 +234,8 @@ public class Stg extends AbstractMathModel implements StgModel {
         referenceManager.setInstanceNumber(nt, number);
     }
 
-    public Direction getDirection(Node t) {
-        Direction result = null;
+    public SignalTransition.Direction getDirection(Node t) {
+        SignalTransition.Direction result = null;
         String name = referenceManager.getName(t);
         if (name != null) {
             result = LabelParser.parseSignalTransition(name).getSecond();
@@ -245,9 +243,9 @@ public class Stg extends AbstractMathModel implements StgModel {
         return result;
     }
 
-    public void setDirection(Node t, Direction direction) {
+    public void setDirection(Node t, SignalTransition.Direction direction) {
         String name = referenceManager.getName(t);
-        Triple<String, Direction, Integer> old = LabelParser.parseSignalTransition(name);
+        Triple<String, SignalTransition.Direction, Integer> old = LabelParser.parseSignalTransition(name);
         referenceManager.setName(t, old.getFirst() + direction.toString());
     }
 
@@ -273,8 +271,8 @@ public class Stg extends AbstractMathModel implements StgModel {
         return getSignalTransitions(signalName, container);
     }
 
-    public Type getSignalType(String signalReference) {
-        Type type = null;
+    public Signal.Type getSignalType(String signalReference) {
+        Signal.Type type = null;
         Collection<SignalTransition> transitions = getSignalTransitions(signalReference);
         if (!transitions.isEmpty()) {
             type = transitions.iterator().next().getSignalType();
@@ -282,7 +280,7 @@ public class Stg extends AbstractMathModel implements StgModel {
         return type;
     }
 
-    public void setSignalType(String signalReference, Type signalType) {
+    public void setSignalType(String signalReference, Signal.Type signalType) {
         for (SignalTransition transition: getSignalTransitions(signalReference)) {
             transition.setSignalType(signalType);
             // It is sufficient to change the type of a single transition
@@ -291,8 +289,8 @@ public class Stg extends AbstractMathModel implements StgModel {
         }
     }
 
-    public Type getSignalType(String signalName, Container container) {
-        Type type = null;
+    public Signal.Type getSignalType(String signalName, Container container) {
+        Signal.Type type = null;
         Collection<SignalTransition> transitions = getSignalTransitions(signalName, container);
         if (!transitions.isEmpty()) {
             type = transitions.iterator().next().getSignalType();
@@ -300,7 +298,7 @@ public class Stg extends AbstractMathModel implements StgModel {
         return type;
     }
 
-    public void setSignalType(String signalName, Type signalType, Container container) {
+    public void setSignalType(String signalName, Signal.Type signalType, Container container) {
         for (SignalTransition transition: getSignalTransitions(signalName, container)) {
             transition.setSignalType(signalType);
             // It is sufficient to change the type of a single transition
@@ -393,39 +391,39 @@ public class Stg extends AbstractMathModel implements StgModel {
             for (MathNode srcNode: srcNodes) {
                 if (srcNode instanceof SignalTransition) {
                     SignalTransition srcSignalTransition = (SignalTransition) srcNode;
-                    if (srcSignalTransition.getSignalType() == Type.OUTPUT) {
+                    if (srcSignalTransition.getSignalType() == Signal.Type.OUTPUT) {
                         foundOutput = true;
                     }
-                    if (srcSignalTransition.getSignalType() == Type.INPUT) {
+                    if (srcSignalTransition.getSignalType() == Signal.Type.INPUT) {
                         foundInput = true;
                     }
-                    if (srcSignalTransition.getSignalType() == Type.INTERNAL) {
+                    if (srcSignalTransition.getSignalType() == Signal.Type.INTERNAL) {
                         foundInternal = true;
                     }
-                    if (srcSignalTransition.getDirection() == Direction.TOGGLE) {
+                    if (srcSignalTransition.getDirection() == SignalTransition.Direction.TOGGLE) {
                         foundToggle = true;
                     }
-                    if (srcSignalTransition.getDirection() == Direction.PLUS) {
+                    if (srcSignalTransition.getDirection() == SignalTransition.Direction.PLUS) {
                         foundPlus = true;
                     }
-                    if (srcSignalTransition.getDirection() == Direction.MINUS) {
+                    if (srcSignalTransition.getDirection() == SignalTransition.Direction.MINUS) {
                         foundMinus = true;
                     }
                 }
             }
             if (foundOutput) {
-                signalTransition.setSignalType(Type.OUTPUT);
+                signalTransition.setSignalType(Signal.Type.OUTPUT);
             } else if (foundInput) {
-                signalTransition.setSignalType(Type.INPUT);
+                signalTransition.setSignalType(Signal.Type.INPUT);
             } else if (foundInternal) {
-                signalTransition.setSignalType(Type.INTERNAL);
+                signalTransition.setSignalType(Signal.Type.INTERNAL);
             }
             if (foundToggle || (foundPlus && foundMinus)) {
-                setDirection(signalTransition, Direction.TOGGLE);
+                setDirection(signalTransition, SignalTransition.Direction.TOGGLE);
             } else if (foundPlus) {
-                setDirection(signalTransition, Direction.PLUS);
+                setDirection(signalTransition, SignalTransition.Direction.PLUS);
             } else if (foundMinus) {
-                setDirection(signalTransition, Direction.MINUS);
+                setDirection(signalTransition, SignalTransition.Direction.MINUS);
             }
         }
         return result;
@@ -461,8 +459,8 @@ public class Stg extends AbstractMathModel implements StgModel {
                     return false;
                 }
                 // Check for name clash with a signal of different type.
-                Type srcSignalType = srcTransition.getSignalType();
-                Type dstSignalType = getSignalType(dstSignalRef);
+                Signal.Type srcSignalType = srcTransition.getSignalType();
+                Signal.Type dstSignalType = getSignalType(dstSignalRef);
                 if (srcSignalType != dstSignalType) {
                     DialogUtils.showError("Cannot move an " + srcSignalType
                             + " transition '" + srcTransitionName + "' because there is an "

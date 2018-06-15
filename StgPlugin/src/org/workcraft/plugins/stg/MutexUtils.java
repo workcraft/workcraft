@@ -10,7 +10,6 @@ import java.util.Set;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.references.ReferenceHelper;
 import org.workcraft.plugins.petri.Place;
-import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.Pair;
@@ -61,10 +60,8 @@ public class MutexUtils {
 
     public static Mutex getMutex(Stg stg, StgPlace place) {
         String name = stg.getNodeReference(place);
-        Signal r1 = null;
-        Signal g1 = null;
-        Signal r2 = null;
-        Signal g2 = null;
+        Signal r1, g1;
+        Signal r2, g2;
         Set<Node> preset = stg.getPreset(place);
         Set<Node> postset = stg.getPostset(place);
         if ((preset.size() != 2) || (postset.size() != 2)) {
@@ -78,7 +75,7 @@ public class MutexUtils {
         }
         SignalTransition tSucc1 = (SignalTransition) succ1;
         SignalTransition tSucc2 = (SignalTransition) succ2;
-        if ((tSucc1.getSignalType() == Type.INPUT) || (tSucc2.getSignalType() == Type.INPUT)) {
+        if ((tSucc1.getSignalType() == Signal.Type.INPUT) || (tSucc2.getSignalType() == Signal.Type.INPUT)) {
             return null;
         }
         g1 = createSignalFromTransition(stg, tSucc1);

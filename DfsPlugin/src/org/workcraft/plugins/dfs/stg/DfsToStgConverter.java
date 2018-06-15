@@ -28,7 +28,9 @@ import org.workcraft.plugins.dfs.VisualPopRegister;
 import org.workcraft.plugins.dfs.VisualPushRegister;
 import org.workcraft.plugins.dfs.VisualRegister;
 import org.workcraft.plugins.petri.VisualPlace;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
+import org.workcraft.plugins.stg.StgSettings;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.converters.AbstractToStgConverter;
 import org.workcraft.plugins.stg.converters.NodeStg;
@@ -44,8 +46,8 @@ public class DfsToStgConverter extends AbstractToStgConverter {
     public static final String nameAndM    = "andM_";
     public static final String nameTrueM   = "trueM_";
     public static final String nameFalseM  = "falseM_";
-    public static final String name0       = "_0";
-    public static final String name1       = "_1";
+    public static final String name0       = StgSettings.getLowLevelSuffix();
+    public static final String name1       = StgSettings.getHighLevelSuffix();
     public static final String labelC      = "C(";
     public static final String labelFwC    = "fwC(";
     public static final String labelBwC    = "bwC(";
@@ -173,7 +175,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         double x = pos.getX();
         double y = pos.getY();
         Collection<Node> nodes = new LinkedList<>();
-        SignalTransition.Type type = SignalTransition.Type.INTERNAL;
+        Signal.Type type = Signal.Type.INTERNAL;
         ColorGenerator tokenColorGenerator = createColorGenerator(getDfsModel().getPreset(l).size() == 0);
 
         Container curContainer = null;
@@ -284,11 +286,11 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         double x = pos.getX();
         double y = pos.getY();
         Collection<Node> nodes = new LinkedList<>();
-        SignalTransition.Type type = SignalTransition.Type.INTERNAL;
+        Signal.Type type = Signal.Type.INTERNAL;
         if (getDfsModel().getPreset(r).size() == 0) {
-            type = SignalTransition.Type.INPUT;
+            type = Signal.Type.INPUT;
         } else if (getDfsModel().getPostset(r).size() == 0) {
-            type = SignalTransition.Type.OUTPUT;
+            type = Signal.Type.OUTPUT;
         }
         ColorGenerator tokenColorGenerator = createColorGenerator(getDfsModel().getPreset(r).size() == 0);
         Container curContainer = null;
@@ -413,7 +415,7 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         double x = pos.getX();
         double y = pos.getY();
         Collection<Node> nodes = new LinkedList<>();
-        SignalTransition.Type type = SignalTransition.Type.INTERNAL;
+        Signal.Type type = Signal.Type.INTERNAL;
         ColorGenerator presetTokenColorGenerator = createColorGenerator(getDfsModel().getPreset(l).size() == 0);
         ColorGenerator postsetTokenColorGenerator = createColorGenerator(getDfsModel().getPostset(l).size() == 0);
 
@@ -577,9 +579,9 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         double x = pos.getX();
         double y = pos.getY();
         Collection<Node> nodes = new LinkedList<>();
-        SignalTransition.Type type = SignalTransition.Type.INTERNAL;
+        Signal.Type type = Signal.Type.INTERNAL;
         if (getDfsModel().getPreset(r).size() == 0 || getDfsModel().getPostset(r).size() == 0) {
-            type = SignalTransition.Type.INPUT;
+            type = Signal.Type.INPUT;
         }
         ColorGenerator presetTokenColorGenerator = createColorGenerator(getDfsModel().getPreset(r).size() == 0);
         ColorGenerator postsetTokenColorGenerator = createColorGenerator(getDfsModel().getPostset(r).size() == 0);
@@ -754,11 +756,11 @@ public class DfsToStgConverter extends AbstractToStgConverter {
         Point2D pos = getComponentPosition(r);
         double x = pos.getX();
         double y = pos.getY();
-        SignalTransition.Type type = SignalTransition.Type.INTERNAL;
+        Signal.Type type = Signal.Type.INTERNAL;
         if (getDfsModel().getPreset(r, VisualControlRegister.class).size() == 0) {
-            type = SignalTransition.Type.INPUT;
+            type = Signal.Type.INPUT;
         } else if (getDfsModel().getPostset(r).size() == 0) {
-            type = SignalTransition.Type.OUTPUT;
+            type = Signal.Type.OUTPUT;
         }
         ColorGenerator tokenColorGenerator = createColorGenerator(getDfsModel().getPreset(r).size() == 0);
         Container curContainer = null;

@@ -16,8 +16,6 @@ import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.dom.visual.VisualGroup;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
-import org.workcraft.plugins.dtd.Signal.State;
-import org.workcraft.plugins.dtd.SignalTransition.Direction;
 import org.workcraft.util.Hierarchy;
 
 @DisplayName("Digital Timing Diagram")
@@ -90,11 +88,11 @@ public class VisualDtd extends AbstractVisualModel {
                 throw new InvalidConnectionException("Invalid order of transitions.");
             }
             if (firstTransition.getParent() == secondTransition.getParent()) {
-                if (firstTransition.getDirection() == Direction.STABILISE) {
+                if (firstTransition.getDirection() == SignalTransition.Direction.STABILISE) {
                     throw new InvalidConnectionException("Signal at unknown state cannot change.");
                 }
-                if ((firstTransition.getDirection() != Direction.DESTABILISE)
-                        && (secondTransition.getDirection() == Direction.STABILISE)) {
+                if ((firstTransition.getDirection() != SignalTransition.Direction.DESTABILISE)
+                        && (secondTransition.getDirection() == SignalTransition.Direction.STABILISE)) {
                     throw new InvalidConnectionException("Only unstable signal can stabilise.");
                 }
                 if (firstTransition.getDirection() == secondTransition.getDirection()) {
@@ -123,19 +121,19 @@ public class VisualDtd extends AbstractVisualModel {
             if (firstSignal != secondSignal) {
                 throw new InvalidConnectionException("Cannot relate entry and transition of different signals.");
             }
-            if (firstSignal.getInitialState() == State.STABLE) {
+            if (firstSignal.getInitialState() == Signal.State.STABLE) {
                 throw new InvalidConnectionException("Signal at unknown state cannot change.");
             }
-            if ((firstSignal.getInitialState() != State.UNSTABLE)
-                    && (secondTransition.getDirection() == Direction.STABILISE)) {
+            if ((firstSignal.getInitialState() != Signal.State.UNSTABLE)
+                    && (secondTransition.getDirection() == SignalTransition.Direction.STABILISE)) {
                 throw new InvalidConnectionException("Only unstable signal can stabilise.");
             }
-            if ((firstSignal.getInitialState() == State.HIGH)
-                    && (secondTransition.getDirection() == Direction.RISE)) {
+            if ((firstSignal.getInitialState() == Signal.State.HIGH)
+                    && (secondTransition.getDirection() == SignalTransition.Direction.RISE)) {
                 throw new InvalidConnectionException("Signal is already high.");
             }
-            if ((firstSignal.getInitialState() == State.LOW)
-                    && (secondTransition.getDirection() == Direction.FALL)) {
+            if ((firstSignal.getInitialState() == Signal.State.LOW)
+                    && (secondTransition.getDirection() == SignalTransition.Direction.FALL)) {
                 throw new InvalidConnectionException("Signal is already low.");
             }
             return;
@@ -247,7 +245,7 @@ public class VisualDtd extends AbstractVisualModel {
         }
     }
 
-    public VisualSignalTransition createVisualTransition(VisualSignal signal, Direction direction) {
+    public VisualSignalTransition createVisualTransition(VisualSignal signal, SignalTransition.Direction direction) {
         Signal mathSignal = signal.getReferencedSignal();
         SignalTransition mathTransition = new SignalTransition();
         if (direction != null) {
@@ -260,7 +258,7 @@ public class VisualDtd extends AbstractVisualModel {
         return transition;
     }
 
-    public SignalEvent appendSignalEvent(VisualSignal signal, Direction direction) {
+    public SignalEvent appendSignalEvent(VisualSignal signal, SignalTransition.Direction direction) {
         VisualSignalEvent event = signal.getVisualSignalEntry();
         for (VisualSignalTransition transition: signal.getVisualTransitions()) {
             if ((event == null) || (transition.getX() > event.getX())) {
@@ -272,13 +270,13 @@ public class VisualDtd extends AbstractVisualModel {
         if (connection != null) {
             remove(connection);
         }
-        State state = signal.getInitialState();
+        Signal.State state = signal.getInitialState();
         if (direction == null) {
             state = DtdUtils.getNextState(event.getReferencedSignalEvent());
             direction = DtdUtils.getNextDirection(state);
         } else {
             if (event instanceof VisualSignalEntry) {
-                State previousState = DtdUtils.getPreviousState(direction);
+                Signal.State previousState = DtdUtils.getPreviousState(direction);
                 if (previousState != null) {
                     signal.setInitialState(previousState);
                 }
@@ -318,10 +316,10 @@ public class VisualDtd extends AbstractVisualModel {
     public SignalPulse insertSignalPulse(VisualLevelConnection connection) {
         VisualSignalEvent fromEvent = (VisualSignalEvent) connection.getFirst();
         VisualSignalEvent toEvent = (VisualSignalEvent) connection.getSecond();
-        State state = DtdUtils.getNextState(fromEvent.getReferencedSignalEvent());
+        Signal.State state = DtdUtils.getNextState(fromEvent.getReferencedSignalEvent());
         VisualSignal signal = fromEvent.getVisualSignal();
-        Direction leadDirection = DtdUtils.getPreviousDirection(state);
-        Direction trailDirection = DtdUtils.getNextDirection(state);
+        SignalTransition.Direction leadDirection = DtdUtils.getPreviousDirection(state);
+        SignalTransition.Direction trailDirection = DtdUtils.getNextDirection(state);
         VisualSignalTransition leadEdge = createVisualTransition(signal, leadDirection);
         VisualSignalTransition trailEdge = createVisualTransition(signal, trailDirection);
 

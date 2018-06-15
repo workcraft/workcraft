@@ -54,7 +54,7 @@ public class VisualCpog extends AbstractVisualModel {
         }
 
         @Override
-        public Object getValue() throws InvocationTargetException {
+        public Object getValue() {
             if (node instanceof VisualRhoClause) return StringGenerator.toString(((VisualRhoClause) node).getFormula());
             if (node instanceof VisualVertex) return StringGenerator.toString(((VisualVertex) node).getCondition());
             return StringGenerator.toString(((VisualArc) node).getCondition());

@@ -1,6 +1,5 @@
 package org.workcraft.gui.propertyeditor;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.workcraft.dom.AbstractModel;
@@ -22,12 +21,12 @@ public class NamePropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public Object getValue() throws InvocationTargetException {
+    public Object getValue() {
         return model.getName(node);
     }
 
     @Override
-    public void setValue(Object value) throws InvocationTargetException {
+    public void setValue(Object value) {
         String name = (String) value;
         if (Identifier.isName(name)) {
             if (!name.equals(model.getName(node))) {

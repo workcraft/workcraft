@@ -30,8 +30,6 @@ import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
 import org.workcraft.plugins.petri.VisualTransition;
-import org.workcraft.plugins.stg.SignalTransition.Direction;
-import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.propertydescriptors.SignalNamePropertyDescriptor;
 import org.workcraft.plugins.stg.propertydescriptors.SignalTypePropertyDescriptor;
 import org.workcraft.util.Hierarchy;
@@ -319,8 +317,8 @@ public class VisualStg extends AbstractVisualModel {
         return createVisualComponent(mathTransition, VisualDummyTransition.class, container);
     }
 
-    public VisualSignalTransition createVisualSignalTransition(String signalRef, SignalTransition.Type type,
-            Direction direction) {
+    public VisualSignalTransition createVisualSignalTransition(String signalRef, Signal.Type type,
+            SignalTransition.Direction direction) {
         Stg stg = (Stg) getMathModel();
         String mathName = null;
         if ((signalRef != null) && (direction != null)) {
@@ -331,8 +329,8 @@ public class VisualStg extends AbstractVisualModel {
         return createVisualComponent(mathTransition, VisualSignalTransition.class);
     }
 
-    public VisualSignalTransition createVisualSignalTransition(String signalRef, SignalTransition.Type type,
-            Direction direction, Container container) {
+    public VisualSignalTransition createVisualSignalTransition(String signalRef, Signal.Type type,
+            SignalTransition.Direction direction, Container container) {
         Stg stg = (Stg) getMathModel();
         String mathName = null;
         if ((signalRef != null) && (direction != null)) {
@@ -416,7 +414,7 @@ public class VisualStg extends AbstractVisualModel {
         ModelProperties properties = super.getProperties(node);
         if (node == null) {
             Stg stg = (Stg) getMathModel();
-            for (Type type : Type.values()) {
+            for (Signal.Type type : Signal.Type.values()) {
                 Container container = NamespaceHelper.getMathContainer(this, getCurrentLevel());
                 for (final String signalName : stg.getSignalNames(type, container)) {
                     if (stg.getSignalTransitions(signalName, container).isEmpty()) continue;

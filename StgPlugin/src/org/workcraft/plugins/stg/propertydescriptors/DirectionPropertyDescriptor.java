@@ -1,6 +1,5 @@
 package org.workcraft.plugins.stg.propertydescriptors;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -8,7 +7,6 @@ import org.workcraft.dom.Node;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.SignalTransition.Direction;
 
 public class DirectionPropertyDescriptor implements PropertyDescriptor {
     private final Stg stg;
@@ -45,19 +43,19 @@ public class DirectionPropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public Object getValue() throws InvocationTargetException {
+    public Object getValue() {
         return stg.getDirection(st);
     }
 
     @Override
-    public void setValue(Object value) throws InvocationTargetException {
-        stg.setDirection(st, (Direction) value);
+    public void setValue(Object value) {
+        stg.setDirection(st, (SignalTransition.Direction) value);
     }
 
     @Override
-    public Map<Direction, String> getChoice() {
-        Map<Direction, String> result = new LinkedHashMap<>();
-        for (Direction item : Direction.values()) {
+    public Map<SignalTransition.Direction, String> getChoice() {
+        Map<SignalTransition.Direction, String> result = new LinkedHashMap<>();
+        for (SignalTransition.Direction item: SignalTransition.Direction.values()) {
             result.put(item, item.toString());
         }
         return result;

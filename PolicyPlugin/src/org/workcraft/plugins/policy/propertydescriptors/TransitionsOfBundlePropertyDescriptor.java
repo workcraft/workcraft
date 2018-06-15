@@ -1,6 +1,5 @@
 package org.workcraft.plugins.policy.propertydescriptors;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
@@ -32,12 +31,12 @@ public final class TransitionsOfBundlePropertyDescriptor implements PropertyDesc
     }
 
     @Override
-    public Object getValue() throws InvocationTargetException {
+    public Object getValue() {
         return model.getTransitionsOfBundleAsString(bundle);
     }
 
     @Override
-    public void setValue(Object value) throws InvocationTargetException {
+    public void setValue(Object value) {
         model.setTransitionsOfBundleAsString(bundle, (String) value);
     }
 

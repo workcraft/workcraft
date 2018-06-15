@@ -46,7 +46,6 @@ import org.workcraft.plugins.circuit.verilog.Port;
 import org.workcraft.plugins.shared.CommonDebugSettings;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
-import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
@@ -587,10 +586,10 @@ public class VerilogImporter implements Importer {
             Mutex moduleMutex = CircuitSettings.parseMutexData();
             if ((moduleMutex != null) && (moduleMutex.name != null)) {
                 for (Mutex instanceMutex: mutexes) {
-                    if (instanceMutex.g1.type == Type.INTERNAL) {
+                    if (instanceMutex.g1.type == Signal.Type.INTERNAL) {
                         internalSignals.add(instanceMutex.g1.name);
                     }
-                    if (instanceMutex.g2.type == Type.INTERNAL) {
+                    if (instanceMutex.g2.type == Signal.Type.INTERNAL) {
                         internalSignals.add(instanceMutex.g2.name);
                     }
                     createMutex(circuit, instanceMutex, moduleMutex, wires, modules);
@@ -608,7 +607,7 @@ public class VerilogImporter implements Importer {
     }
 
     private void removeTemporaryOutput(Circuit circuit, HashMap<String, Wire> wires, Signal signal) {
-        if (signal.type == Type.INTERNAL) {
+        if (signal.type == Signal.Type.INTERNAL) {
             Node node = circuit.getNodeByReference(signal.name);
             if (node instanceof FunctionContact) {
                 FunctionContact contact = (FunctionContact) node;
@@ -687,7 +686,7 @@ public class VerilogImporter implements Importer {
     private FunctionContact addMutexPin(Circuit circuit, FunctionComponent component, Signal port, Signal signal,
             HashMap<String, Wire> wires) {
         FunctionContact contact = new FunctionContact();
-        if (port.type == Type.INPUT) {
+        if (port.type == Signal.Type.INPUT) {
             contact.setIOType(IOType.INPUT);
         } else {
             contact.setIOType(IOType.OUTPUT);
@@ -695,7 +694,7 @@ public class VerilogImporter implements Importer {
         component.add(contact);
         circuit.setName(contact, port.name);
         Wire wire = getOrCreateWire(signal.name, wires);
-        if (port.type == Type.INPUT) {
+        if (port.type == Signal.Type.INPUT) {
             wire.sinks.add(contact);
         } else {
             wire.source = contact;

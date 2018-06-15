@@ -90,7 +90,7 @@ public class ReachabilityTask implements Task<VerificationResult> {
                     "Double click on condition/channel place or use property editor"
                     + " to mark some nodes and check the reachability.",
                     "Marking required", JOptionPane.INFORMATION_MESSAGE);
-            return new Result<VerificationResult>(Outcome.SUCCESS);
+            return new Result<>(Outcome.SUCCESS);
         }
 
         if (reachabilityTask()) {
@@ -107,14 +107,14 @@ public class ReachabilityTask implements Task<VerificationResult> {
                         throw new RuntimeException("Reachability task error, doesn't reach selected marking" + ref);
                     }
                 }
-                return new Result<VerificationResult>(Outcome.SUCCESS);
+                return new Result<>(Outcome.SUCCESS);
             }
         } else {
             JOptionPane.showMessageDialog(mainWindow,
                     "The selected marking is UNREACHABLE from the initial states",
                     "Reachability task result", JOptionPane.INFORMATION_MESSAGE);
         }
-        return new Result<VerificationResult>(Outcome.SUCCESS);
+        return new Result<>(Outcome.SUCCESS);
     }
 
     private Map<PlaceNode, Boolean> simulation() {

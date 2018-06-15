@@ -11,9 +11,8 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.petrify.commands.PetrifyCscConflictResolutionCommand;
 import org.workcraft.plugins.petrify.commands.PetrifyUntoggleConversionCommand;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.SignalTransition.Direction;
-import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -58,20 +57,20 @@ public class PetrifyConversionCommandsTests {
 
         WorkspaceEntry srcWe = framework.loadWork(srcUrl.getFile());
         Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
-        Set<String> srcInputs = srcStg.getSignalNames(Type.INPUT, null);
-        Set<String> srcOutputs = srcStg.getSignalNames(Type.OUTPUT, null);
-        Set<String> srcInternals = srcStg.getSignalNames(Type.INTERNAL, null);
+        Set<String> srcInputs = srcStg.getSignalNames(Signal.Type.INPUT, null);
+        Set<String> srcOutputs = srcStg.getSignalNames(Signal.Type.OUTPUT, null);
+        Set<String> srcInternals = srcStg.getSignalNames(Signal.Type.INTERNAL, null);
 
         PetrifyUntoggleConversionCommand command = new PetrifyUntoggleConversionCommand();
         WorkspaceEntry dstWe = command.execute(srcWe);
         Stg dstStg = WorkspaceUtils.getAs(dstWe, Stg.class);
-        Set<String> dstInputs = dstStg.getSignalNames(Type.INPUT, null);
-        Set<String> dstOutputs = dstStg.getSignalNames(Type.OUTPUT, null);
-        Set<String> dstInternals = dstStg.getSignalNames(Type.INTERNAL, null);
+        Set<String> dstInputs = dstStg.getSignalNames(Signal.Type.INPUT, null);
+        Set<String> dstOutputs = dstStg.getSignalNames(Signal.Type.OUTPUT, null);
+        Set<String> dstInternals = dstStg.getSignalNames(Signal.Type.INTERNAL, null);
 
         int dstToggleCount = 0;
         for (SignalTransition dstTransition: dstStg.getSignalTransitions()) {
-            if (dstTransition.getDirection() == Direction.TOGGLE) {
+            if (dstTransition.getDirection() == SignalTransition.Direction.TOGGLE) {
                 dstToggleCount++;
             }
         }
@@ -99,18 +98,18 @@ public class PetrifyConversionCommandsTests {
 
         WorkspaceEntry srcWe = framework.loadWork(srcUrl.getFile());
         Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
-        Set<String> srcInputs = srcStg.getSignalNames(Type.INPUT, null);
-        Set<String> srcOutputs = srcStg.getSignalNames(Type.OUTPUT, null);
-        Set<String> srcInternals = srcStg.getSignalNames(Type.INTERNAL, null);
+        Set<String> srcInputs = srcStg.getSignalNames(Signal.Type.INPUT, null);
+        Set<String> srcOutputs = srcStg.getSignalNames(Signal.Type.OUTPUT, null);
+        Set<String> srcInternals = srcStg.getSignalNames(Signal.Type.INTERNAL, null);
 
         srcInternals.add("csc0");
 
         PetrifyCscConflictResolutionCommand command = new PetrifyCscConflictResolutionCommand();
         WorkspaceEntry dstWe = command.execute(srcWe);
         Stg dstStg = WorkspaceUtils.getAs(dstWe, Stg.class);
-        Set<String> dstInputs = dstStg.getSignalNames(Type.INPUT, null);
-        Set<String> dstOutputs = dstStg.getSignalNames(Type.OUTPUT, null);
-        Set<String> dstInternals = dstStg.getSignalNames(Type.INTERNAL, null);
+        Set<String> dstInputs = dstStg.getSignalNames(Signal.Type.INPUT, null);
+        Set<String> dstOutputs = dstStg.getSignalNames(Signal.Type.OUTPUT, null);
+        Set<String> dstInternals = dstStg.getSignalNames(Signal.Type.INTERNAL, null);
 
         Assert.assertEquals(srcInputs, dstInputs);
         Assert.assertEquals(srcOutputs, dstOutputs);

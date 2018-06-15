@@ -12,9 +12,6 @@ import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
 import org.workcraft.dom.references.ReferenceManager;
 import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.gui.propertyeditor.NamePropertyDescriptor;
-import org.workcraft.plugins.dtd.Signal.State;
-import org.workcraft.plugins.dtd.Signal.Type;
-import org.workcraft.plugins.dtd.SignalTransition.Direction;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.Identifier;
@@ -53,7 +50,7 @@ public class Dtd extends AbstractMathModel {
         return Hierarchy.getDescendantsOfType(getRoot(), Signal.class);
     }
 
-    public Collection<Signal> getSignals(final Type type) {
+    public Collection<Signal> getSignals(final Signal.Type type) {
         return Hierarchy.getDescendantsOfType(getRoot(), Signal.class,
                 signal -> (signal != null) && (signal.getType() == type));
     }
@@ -67,13 +64,13 @@ public class Dtd extends AbstractMathModel {
                 transition -> (transition != null) && (transition.getSignal() == signal));
     }
 
-    public State getPreviousState(SignalEvent event) {
+    public Signal.State getPreviousState(SignalEvent event) {
         Signal signal = event.getSignal();
         for (Node node: getPreset(event)) {
             if (node instanceof SignalTransition) {
                 SignalTransition transition = (SignalTransition) node;
                 if (transition.getSignal() == signal) {
-                    Direction direction = transition.getDirection();
+                    SignalTransition.Direction direction = transition.getDirection();
                     return DtdUtils.getNextState(direction);
                 }
             }

@@ -63,9 +63,9 @@ public class CheckDeadlockTask extends MpsatChainTask {
 
             if (exportResult.getOutcome() != Outcome.SUCCESS) {
                 if (exportResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
+                    return new Result<>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                return new Result<>(Outcome.FAILURE,
                         new MpsatChainOutput(exportResult, null, null, null, settings));
             }
             monitor.progressUpdate(0.20);
@@ -77,9 +77,9 @@ public class CheckDeadlockTask extends MpsatChainTask {
 
             if (punfResult.getOutcome() != Outcome.SUCCESS) {
                 if (punfResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
+                    return new Result<>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                return new Result<>(Outcome.FAILURE,
                         new MpsatChainOutput(exportResult, null, punfResult, null, settings));
             }
             monitor.progressUpdate(0.70);
@@ -91,26 +91,26 @@ public class CheckDeadlockTask extends MpsatChainTask {
 
             if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
                 if (mpsatResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
+                    return new Result<>(Outcome.CANCEL);
                 }
                 String errorMessage = mpsatResult.getPayload().getErrorsHeadAndTail();
-                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                return new Result<>(Outcome.FAILURE,
                         new MpsatChainOutput(exportResult, null, punfResult, mpsatResult, settings, errorMessage));
             }
             monitor.progressUpdate(0.90);
 
             MpsatOutputParser mdp = new MpsatOutputParser(mpsatResult.getPayload());
             if (!mdp.getSolutions().isEmpty()) {
-                return new Result<MpsatChainOutput>(Outcome.SUCCESS,
+                return new Result<>(Outcome.SUCCESS,
                         new MpsatChainOutput(exportResult, null, punfResult, mpsatResult, settings, "Policy net has a deadlock"));
             }
             monitor.progressUpdate(1.0);
 
-            return new Result<MpsatChainOutput>(Outcome.SUCCESS,
+            return new Result<>(Outcome.SUCCESS,
                     new MpsatChainOutput(exportResult, null, punfResult, mpsatResult, settings, "Policy net is deadlock-free"));
 
         } catch (Throwable e) {
-            return new Result<MpsatChainOutput>(e);
+            return new Result<>(e);
         } finally {
             FileUtils.deleteOnExitRecursively(directory);
         }

@@ -9,7 +9,7 @@ public class AtacsGeneralisedCelementSynthesisCommand extends AtacsAbstractSynth
 
     @Override
     public String getDisplayName() {
-        return "Generalized C-element [ATACS]";
+        return "Generalised C-element [ATACS]";
     }
 
     @Override

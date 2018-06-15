@@ -15,7 +15,6 @@ import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.Symbol;
 import org.workcraft.plugins.fst.Fst;
 import org.workcraft.plugins.fst.Signal;
-import org.workcraft.plugins.fst.Signal.Type;
 import org.workcraft.plugins.fst.SignalEvent;
 import org.workcraft.plugins.fst.interop.SgFormat;
 import org.workcraft.serialisation.ModelSerialiser;
@@ -73,7 +72,7 @@ public class SgSerialiser implements ModelSerialiser {
         return result;
     }
 
-    private void writeSignalHeader(PrintWriter out, Fst fst, Type type) {
+    private void writeSignalHeader(PrintWriter out, Fst fst, Signal.Type type) {
         HashSet<String> names = new HashSet<>();
         for (Signal signal: fst.getSignals(type)) {
             String name = getSrialisedNodeName(fst, signal);
@@ -139,10 +138,10 @@ public class SgSerialiser implements ModelSerialiser {
     private void writeFsm(PrintWriter out, Fsm fsm) {
         if (fsm instanceof Fst) {
             Fst fst = (Fst) fsm;
-            writeSignalHeader(out, fst, Type.INPUT);
-            writeSignalHeader(out, fst, Type.OUTPUT);
-            writeSignalHeader(out, fst, Type.INTERNAL);
-            writeSignalHeader(out, fst, Type.DUMMY);
+            writeSignalHeader(out, fst, Signal.Type.INPUT);
+            writeSignalHeader(out, fst, Signal.Type.OUTPUT);
+            writeSignalHeader(out, fst, Signal.Type.INTERNAL);
+            writeSignalHeader(out, fst, Signal.Type.DUMMY);
         } else {
             writeSymbolHeader(out, fsm);
         }

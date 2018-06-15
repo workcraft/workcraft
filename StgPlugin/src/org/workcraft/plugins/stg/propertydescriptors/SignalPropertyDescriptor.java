@@ -1,6 +1,5 @@
 package org.workcraft.plugins.stg.propertydescriptors;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
@@ -32,12 +31,12 @@ public class SignalPropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public Object getValue() throws InvocationTargetException {
+    public Object getValue() {
         return transition.getSignalName();
     }
 
     @Override
-    public void setValue(Object value) throws InvocationTargetException {
+    public void setValue(Object value) {
         stg.setName(transition, (String) value);
     }
 
