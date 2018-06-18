@@ -99,13 +99,13 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
                         createdNodes.put(mathNode, visualComponent);
                     }
                     if ((mathNode instanceof Container) && (visualComponent instanceof Container)) {
-                        containerQueue.add(new Pair<Container, Container>((Container) mathNode, (Container) visualComponent));
+                        containerQueue.add(new Pair<>((Container) mathNode, (Container) visualComponent));
                     }
                 }
             }
         }
         // Create connections
-        containerQueue.add(new Pair<Container, Container>(getMathModel().getRoot(), getRoot()));
+        containerQueue.add(new Pair<>(getMathModel().getRoot(), getRoot()));
         while (!containerQueue.isEmpty()) {
             Pair<Container, Container> container = containerQueue.remove();
             Container mathContainer = container.getFirst();
@@ -122,7 +122,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
                     MathNode mathNode = (MathNode) node;
                     VisualComponent visualComponent = createdNodes.get(mathNode);
                     if ((mathNode instanceof Container) && (visualComponent instanceof Container)) {
-                        containerQueue.add(new Pair<Container, Container>((Container) mathNode, (Container) visualComponent));
+                        containerQueue.add(new Pair<>((Container) mathNode, (Container) visualComponent));
                     }
                 }
             }
@@ -558,7 +558,7 @@ public abstract class AbstractVisualModel extends AbstractModel implements Visua
                 if (filter.eval(node)) {
                     batch = batches.get(container);
                     if (batch == null) {
-                        batch = new LinkedList<Node>();
+                        batch = new LinkedList<>();
                         batches.put(container, batch);
                     }
                     batch.add(node);
