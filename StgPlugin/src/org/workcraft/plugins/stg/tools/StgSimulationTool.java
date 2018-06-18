@@ -1,33 +1,5 @@
 package org.workcraft.plugins.stg.tools;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Cursor;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.datatransfer.DataFlavor;
-import java.awt.datatransfer.Transferable;
-import java.awt.dnd.DragSource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.Set;
-
-import javax.activation.ActivationDataFlavor;
-import javax.activation.DataHandler;
-import javax.swing.DropMode;
-import javax.swing.JComponent;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
-import javax.swing.TransferHandler;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.TableModelEvent;
-import javax.swing.table.AbstractTableModel;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
-
 import org.workcraft.Framework;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Node;
@@ -37,11 +9,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.gui.Coloriser;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.Trace;
-import org.workcraft.gui.propertyeditor.BooleanCellEditor;
-import org.workcraft.gui.propertyeditor.BooleanCellRenderer;
-import org.workcraft.gui.propertyeditor.ColorCellEditor;
-import org.workcraft.gui.propertyeditor.ColorCellRenderer;
-import org.workcraft.gui.propertyeditor.PropertyEditorTable;
+import org.workcraft.gui.propertyeditor.*;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.dtd.DtdDescriptor;
 import org.workcraft.plugins.dtd.VisualDtd;
@@ -59,6 +27,23 @@ import org.workcraft.util.DialogUtils;
 import org.workcraft.util.Pair;
 import org.workcraft.workspace.ModelEntry;
 
+import javax.activation.ActivationDataFlavor;
+import javax.activation.DataHandler;
+import javax.swing.*;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.TableModelEvent;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import java.awt.*;
+import java.awt.datatransfer.DataFlavor;
+import java.awt.datatransfer.Transferable;
+import java.awt.dnd.DragSource;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.Set;
+
 public class StgSimulationTool extends PetriSimulationTool {
     private static final int COLUMN_SIGNAL = 0;
     private static final int COLUMN_STATE = 1;
@@ -75,39 +60,11 @@ public class StgSimulationTool extends PetriSimulationTool {
         super(true);
     }
 
-    public enum SignalState {
-        HIGH("1"),
-        LOW("0"),
-        UNDEFINED("?");
-
-        private final String name;
-
-        SignalState(final String name) {
-            this.name = name;
-        }
-
-        @Override
-        public String toString() {
-            return name;
-        }
-
-        public SignalState toggle() {
-            switch (this) {
-            case HIGH:
-                return LOW;
-            case LOW:
-                return HIGH;
-            default:
-                return this;
-            }
-        }
-    }
-
     public final class SignalData {
         public final String name;
         public final Signal.Type type;
 
-        public SignalState value = SignalState.UNDEFINED;
+        public Signal.State value = Signal.State.UNDEFINED;
         public boolean excited = false;
         public Boolean visible = true;
         public Color color = Color.BLACK;
@@ -451,10 +408,10 @@ public class StgSimulationTool extends PetriSimulationTool {
                 if (signalState != null) {
                     switch (transition.getDirection()) {
                     case MINUS:
-                        signalState.value = SignalState.LOW;
+                        signalState.value = Signal.State.LOW;
                         break;
                     case PLUS:
-                        signalState.value = SignalState.HIGH;
+                        signalState.value = Signal.State.HIGH;
                         break;
                     case TOGGLE:
                         signalState.value = signalState.value.toggle();
@@ -483,9 +440,9 @@ public class StgSimulationTool extends PetriSimulationTool {
             SignalData signalData = signalDataMap.get(signal);
             Boolean signalState = (initialSignalState == null) ? null : initialSignalState.get(signal);
             if (signalState == null) {
-                signalData.value = SignalState.UNDEFINED;
+                signalData.value = Signal.State.UNDEFINED;
             } else {
-                signalData.value = signalState ? SignalState.HIGH : SignalState.LOW;
+                signalData.value = signalState ? Signal.State.HIGH : Signal.State.LOW;
             }
             signalData.excited = false;
         }
