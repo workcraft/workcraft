@@ -1,14 +1,11 @@
 package org.workcraft.plugins.stg;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.util.*;
-
 import org.workcraft.Framework;
+import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.InvalidConnectionException;
@@ -19,6 +16,11 @@ import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.*;
 
 public class StgUtils {
     public static final String SPEC_FILE_PREFIX = "net";
@@ -226,8 +228,52 @@ public class StgUtils {
         return result;
     }
 
+    /**
+     * Copy the given STG preserving the signal hierarchy and references. Note that
+     * STG places are copied without their hierarchy and their names are not preserved.
+     * @param stg an STG to be copied
+     * @return a new STG with the same signal references
+     */
+    private static StgModel copyStgPreserveSignals(StgModel stg) {
+        Stg result = new Stg();
+        Map<MathNode, MathNode> nodeMap = new HashMap<>();
+        // Copy signal transitions with their hierarchy.
+        for (SignalTransition signalTransition: stg.getSignalTransitions()) {
+            String ref = stg.getNodeReference(signalTransition);
+            SignalTransition newSignalTransition = result.createSignalTransition(ref, null);
+            newSignalTransition.setSignalType(signalTransition.getSignalType());
+            newSignalTransition.setDirection(signalTransition.getDirection());
+            nodeMap.put(signalTransition, newSignalTransition);
+        }
+        // Copy dummy transitions with their hierarchy.
+        for (DummyTransition dummyTransition: stg.getDummyTransitions()) {
+            String ref = stg.getNodeReference(dummyTransition);
+            DummyTransition newDummyTransition = result.createDummyTransition(ref, null);
+            nodeMap.put(dummyTransition, newDummyTransition);
+        }
+        // Copy places WITHOUT their hierarchy -- implicit places cannot be copied (NOTE that implicit place ref in NOT C-style).
+        for (Place place: stg.getPlaces()) {
+            StgPlace newPlace = result.createPlace();
+            newPlace.setCapacity(place.getCapacity());
+            newPlace.setTokens(place.getTokens());
+            nodeMap.put(place, newPlace);
+        }
+        // Connect places and transitions.
+        for (Connection connection: stg.getConnections()) {
+            Node first = nodeMap.get(connection.getFirst());
+            Node second = nodeMap.get(connection.getSecond());
+            try {
+                result.connect(first, second);
+            } catch (InvalidConnectionException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
+
     public static HashMap<String, Boolean> getInitialState(StgModel stg, int timeout) {
         HashMap<String, Boolean> result = new HashMap<>();
+        stg = copyStgPreserveSignals(stg);
         Set<String> signalRefs = stg.getSignalReferences();
         HashSet<HashMap<Place, Integer>> visitedMarkings = new HashSet<>();
         Queue<HashMap<Place, Integer>> queue = new LinkedList<>();

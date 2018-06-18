@@ -54,7 +54,7 @@ public class Stg extends AbstractMathModel implements StgModel {
         new SignalTypeConsistencySupervisor(this).attach(getRoot());
     }
 
-    public final Place createPlace() {
+    public final StgPlace createPlace() {
         return createPlace(null, null);
     }
 
