@@ -1,27 +1,11 @@
 package org.workcraft.plugins.circuit.tasks;
 
-import java.io.File;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Set;
-
 import org.workcraft.Framework;
-import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.CircuitSettings;
-import org.workcraft.plugins.circuit.CircuitUtils;
-import org.workcraft.plugins.circuit.Contact;
-import org.workcraft.plugins.circuit.FunctionComponent;
-import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.mpsat.MpsatParameters;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
-import org.workcraft.plugins.mpsat.tasks.MpsatChainTask;
-import org.workcraft.plugins.mpsat.tasks.MpsatOutput;
-import org.workcraft.plugins.mpsat.tasks.MpsatOutputParser;
-import org.workcraft.plugins.mpsat.tasks.MpsatTask;
+import org.workcraft.plugins.mpsat.tasks.*;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.CompositionData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
@@ -42,6 +26,9 @@ import org.workcraft.util.FileUtils;
 import org.workcraft.util.Pair;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.io.File;
+import java.util.*;
 
 public class CheckCircuitTask extends MpsatChainTask {
     private final MpsatParameters toolchainPreparationSettings = MpsatParameters.getToolchainPreparationSettings();
@@ -211,7 +198,7 @@ public class CheckCircuitTask extends MpsatChainTask {
             Result<? extends PunfOutput> punfResult = null;
             if (checkDeadlock || checkPersistency) {
                 unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + PunfTask.PNML_FILE_EXTENSION);
-                punfTask = new PunfTask(sysStgFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
+                punfTask = new PunfTask(sysStgFile, unfoldingFile, directory);
                 SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<>(monitor);
                 punfResult = manager.execute(punfTask, "Unfolding .g", punfMonitor);
 
@@ -231,7 +218,7 @@ public class CheckCircuitTask extends MpsatChainTask {
                 if ((sysStgFile != sysModStgFile) || (unfoldingModFile == null)) {
                     String fileSuffix = (sysStgFile == null) ? "" : StgUtils.MODIFIED_FILE_SUFFIX;
                     unfoldingModFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + fileSuffix + PunfTask.PNML_FILE_EXTENSION);
-                    punfModTask = new PunfTask(sysModStgFile.getAbsolutePath(), unfoldingModFile.getAbsolutePath());
+                    punfModTask = new PunfTask(sysModStgFile, unfoldingModFile, directory);
                     SubtaskMonitor<Object> punfModMonitor = new SubtaskMonitor<>(monitor);
                     punfModResult = manager.execute(punfModTask, "Unfolding .g", punfModMonitor);
 

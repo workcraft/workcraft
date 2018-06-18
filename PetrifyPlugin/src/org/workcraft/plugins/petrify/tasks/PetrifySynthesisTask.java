@@ -135,7 +135,7 @@ public class PetrifySynthesisTask implements Task<PetrifySynthesisOutput>, Exter
 
         boolean printStdout = PetrifySettings.getPrintStdout();
         boolean printStderr = PetrifySettings.getPrintStderr();
-        ExternalProcessTask task = new ExternalProcessTask(command, null, printStdout, printStderr);
+        ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
         SubtaskMonitor<ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
 

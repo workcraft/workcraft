@@ -71,7 +71,7 @@ public class CheckDataflowTask extends MpsatChainTask {
             monitor.progressUpdate(0.20);
 
             File unfoldingFile = new File(directory, "unfolding" + PunfTask.PNML_FILE_EXTENSION);
-            PunfTask punfTask = new PunfTask(netFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
+            PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory);
             Result<? extends PunfOutput> punfResult = framework.getTaskManager().execute(
                     punfTask, "Unfolding .g", mon);
 

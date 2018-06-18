@@ -126,7 +126,7 @@ public class MpsatConformationTask extends MpsatChainTask {
 
             // Generate unfolding
             File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + PunfTask.PNML_FILE_EXTENSION);
-            PunfTask punfTask = new PunfTask(stgFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
+            PunfTask punfTask = new PunfTask(stgFile, unfoldingFile, directory);
             Result<? extends PunfOutput> punfResult = taskManager.execute(
                     punfTask, "Unfolding .g", subtaskMonitor);
 

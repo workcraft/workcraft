@@ -68,7 +68,7 @@ public class MpsatChainTask implements Task<MpsatChainOutput> {
             boolean useLegacyMci = PunfSettings.getUseMciCsc() && (settings.getMode() == MpsatMode.RESOLVE_ENCODING_CONFLICTS);
             String unfoldingExtension = useLegacyMci ? PunfTask.MCI_FILE_EXTENSION : PunfTask.PNML_FILE_EXTENSION;
             File unfoldingFile = new File(directory, "unfolding" + unfoldingExtension);
-            PunfTask punfTask = new PunfTask(netFile.getAbsolutePath(), unfoldingFile.getAbsolutePath(), useLegacyMci);
+            PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory, useLegacyMci);
             Result<? extends PunfOutput> punfResult = manager.execute(punfTask, "Unfolding .g", subtaskMonitor);
 
             if (punfResult.getOutcome() != Outcome.SUCCESS) {

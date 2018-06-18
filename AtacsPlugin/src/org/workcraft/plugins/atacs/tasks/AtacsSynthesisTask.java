@@ -85,7 +85,7 @@ public class AtacsSynthesisTask implements Task<AtacsSynthesisOutput>, ExternalP
 
         boolean printStdout = AtacsSettings.getPrintStdout();
         boolean printStderr = AtacsSettings.getPrintStderr();
-        ExternalProcessTask task = new ExternalProcessTask(command, null, printStdout, printStderr);
+        ExternalProcessTask task = new ExternalProcessTask(command, directory, printStdout, printStderr);
         SubtaskMonitor<ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
 

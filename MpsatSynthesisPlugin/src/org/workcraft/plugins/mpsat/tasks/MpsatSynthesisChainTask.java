@@ -89,7 +89,7 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainOutput> 
 
             // Generate unfolding
             File unfoldingFile = new File(directory, filePrefix + PunfTask.PNML_FILE_EXTENSION);
-            PunfTask punfTask = new PunfTask(netFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
+            PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory);
             Result<? extends PunfOutput> punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", subtaskMonitor);
 
             if (punfResult.getOutcome() != Outcome.SUCCESS) {

@@ -78,7 +78,7 @@ public class CheckStrictImplementationTask extends MpsatChainTask {
             Result<? extends PunfOutput> punfResult = null;
             final TaskManager taskManager = framework.getTaskManager();
             File unfoldingFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + PunfTask.PNML_FILE_EXTENSION);
-            PunfTask punfTask = new PunfTask(envStgFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
+            PunfTask punfTask = new PunfTask(envStgFile, unfoldingFile, directory);
             SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<>(monitor);
             punfResult = taskManager.execute(punfTask, "Unfolding .g", punfMonitor);
 

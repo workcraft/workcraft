@@ -79,7 +79,7 @@ public class MpsatCombinedChainTask implements Task<MpsatCombinedChainOutput> {
             String unfoldingExtension = useMci ? PunfTask.MCI_FILE_EXTENSION : PunfTask.PNML_FILE_EXTENSION;
 
             File unfoldingFile = new File(directory, "unfolding" + unfoldingExtension);
-            PunfTask punfTask = new PunfTask(netFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
+            PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory);
             Result<? extends PunfOutput> punfResult = taskManager.execute(punfTask, "Unfolding .g", subtaskMonitor);
 
             if (punfResult.getOutcome() != Outcome.SUCCESS) {

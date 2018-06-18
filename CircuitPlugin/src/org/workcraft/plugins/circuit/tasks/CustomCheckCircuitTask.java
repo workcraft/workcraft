@@ -115,7 +115,7 @@ public class CustomCheckCircuitTask extends MpsatChainTask {
 
             // Generate unfolding (only if needed)
             File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + PunfTask.PNML_FILE_EXTENSION);
-            PunfTask punfTask = new PunfTask(sysStgFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
+            PunfTask punfTask = new PunfTask(sysStgFile, unfoldingFile, directory);
             SubtaskMonitor<Object> punfMonitor = new SubtaskMonitor<>(monitor);
             Result<? extends PunfOutput> punfResult = manager.execute(punfTask, "Unfolding .g", punfMonitor);
 
