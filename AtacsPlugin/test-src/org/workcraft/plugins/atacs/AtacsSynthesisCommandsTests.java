@@ -2,6 +2,8 @@ package org.workcraft.plugins.atacs;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
+import org.junit.Test;
 import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.DesktopApi;
@@ -12,9 +14,10 @@ import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgPlace;
+import org.workcraft.util.PackageUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
@@ -30,42 +33,50 @@ public class AtacsSynthesisCommandsTests {
         framework.init();
         switch (DesktopApi.getOs()) {
         case LINUX:
-            AtacsSettings.setCommand("../dist-template/linux/tools/ATACS/atacs");
+            AtacsSettings.setCommand("dist-template/linux/tools/ATACS/atacs");
             break;
         case MACOS:
-            AtacsSettings.setCommand("../dist-template/osx/Contents/Resources/tools/ATACS/atacs");
+            AtacsSettings.setCommand("dist-template/osx/Contents/Resources/tools/ATACS/atacs");
             break;
         case WINDOWS:
-            AtacsSettings.setCommand("..\\dist-template\\windows\\tools\\ATACS\\atacs.exe");
+            AtacsSettings.setCommand("dist-template\\windows\\tools\\ATACS\\atacs.exe");
             break;
         default:
         }
     }
 
-//    @Test
-    public void bufferComplexGateSynthesis() {
-        testComplexGateSynthesisCommand("org/workcraft/plugins/atacs/buffer-compact.stg.work", 1);
+    @Test @Ignore
+    public void celementComplexGateSynthesis() {
+        String workName = PackageUtils.getPackagePath(getClass(), "celement.stg.work");
+        testComplexGateSynthesisCommand(workName, 1);
     }
 
-    private void testComplexGateSynthesisCommand(String testStgWork, int expectedGateCount) {
+    @Test @Ignore
+    public void edcCscComplexGateSynthesis() {
+        String workName = PackageUtils.getPackagePath(getClass(), "edc-csc.stg.work");
+        testComplexGateSynthesisCommand(workName, 7);
+    }
+
+    private void testComplexGateSynthesisCommand(String workName, int expectedGateCount) {
         try {
-            testSynthesisCommand(AtacsComplexGateSynthesisCommand.class, testStgWork, expectedGateCount);
+            testSynthesisCommand(AtacsComplexGateSynthesisCommand.class, workName, expectedGateCount);
         } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
             e.printStackTrace();
         }
     }
 
-    private <C extends AtacsAbstractSynthesisCommand> void testSynthesisCommand(Class<C> cls, String testStgWork, int expectedGateCount)
+    private <C extends AtacsAbstractSynthesisCommand> void testSynthesisCommand(Class<C> cls, String workName, int expectedGateCount)
             throws DeserialisationException, InstantiationException, IllegalAccessException {
 
         final Framework framework = Framework.getInstance();
         final ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-        URL srcUrl = classLoader.getResource(testStgWork);
+        URL srcUrl = classLoader.getResource(workName);
 
         WorkspaceEntry srcWe = framework.loadWork(srcUrl.getFile());
         Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
-        Set<String> srcInputs = srcStg.getSignalNames(Type.INPUT, null);
-        Set<String> srcOutputs = srcStg.getSignalNames(Type.OUTPUT, null);
+        Set<String> srcInputs = srcStg.getSignalNames(Signal.Type.INPUT, null);
+        Set<String> srcOutputs = srcStg.getSignalNames(Signal.Type.OUTPUT, null);
+        srcOutputs.addAll(srcStg.getSignalNames(Signal.Type.INTERNAL, null));
         Set<String> srcMutexes = getMutexNames(srcStg);
 
         C command = cls.newInstance();

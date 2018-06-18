@@ -1,9 +1,5 @@
 package org.workcraft.plugins.stg.serialisation;
 
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.*;
-
 import org.workcraft.Info;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
@@ -16,6 +12,10 @@ import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.*;
 import org.workcraft.util.ExportUtils;
 import org.workcraft.util.Hierarchy;
+
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.util.*;
 
 public class SerialiserUtils {
 
@@ -63,8 +63,7 @@ public class SerialiserUtils {
             HashMap<String, Boolean> initialState = StgUtils.getInitialState(stg, 1000);
             writer.write("#@.init_state [");
             for (final Signal.Type type: Signal.Type.values()) {
-                final Set<String> signals = stg.getSignalReferences(type);
-                for (String signal : signals) {
+                for (String signal: getSortedSignals(stg, type)) {
                     Boolean signalState = initialState.get(signal);
                     if ((signalState == null) || (signalState == false)) {
                         writer.write("0");
@@ -101,14 +100,12 @@ public class SerialiserUtils {
         return result;
     }
 
-    private static void writeSignalsHeader(PrintWriter out, Collection<String> signalNames, String header) {
-        if (!signalNames.isEmpty()) {
-            LinkedList<String> sortedNames = new LinkedList<>(signalNames);
-            Collections.sort(sortedNames);
+    private static void writeSignalsHeader(PrintWriter out, List<String> signals, String header) {
+        if (!signals.isEmpty()) {
             out.write(header);
-            for (String name : sortedNames) {
+            for (String signal: signals) {
                 out.write(" ");
-                out.write(name);
+                out.write(signal);
             }
             out.write("\n");
         }
@@ -153,14 +150,14 @@ public class SerialiserUtils {
     }
 
     private static void writeSTG(PrintWriter out, StgModel stg, boolean needInstanceNumbers) {
-        writeSignalsHeader(out, stg.getSignalReferences(Signal.Type.INTERNAL), KEYWORD_INTERNAL);
-        writeSignalsHeader(out, stg.getSignalReferences(Signal.Type.INPUT), KEYWORD_INPUTS);
-        writeSignalsHeader(out, stg.getSignalReferences(Signal.Type.OUTPUT), KEYWORD_OUTPUTS);
+        writeSignalsHeader(out, getSortedSignals(stg, Signal.Type.INPUT), KEYWORD_INPUTS);
+        writeSignalsHeader(out, getSortedSignals(stg, Signal.Type.OUTPUT), KEYWORD_OUTPUTS);
+        writeSignalsHeader(out, getSortedSignals(stg, Signal.Type.INTERNAL), KEYWORD_INTERNAL);
         Set<String> pageRefs = getPageReferences(stg);
         if (!pageRefs.isEmpty()) {
             out.write("# Pages added as dummies: " + String.join(", ", pageRefs) + "\n");
         }
-        Set<String> dummyRefs = stg.getDummyReferences();
+        List<String> dummyRefs = new ArrayList(stg.getDummyReferences());
         dummyRefs.addAll(pageRefs);
         writeSignalsHeader(out, dummyRefs, KEYWORD_DUMMY);
 
@@ -175,6 +172,12 @@ public class SerialiserUtils {
             writeGraphEntry(out, stg, n, needInstanceNumbers);
         }
         writeMarking(out, stg, stg.getPlaces(), needInstanceNumbers);
+    }
+
+    private static List<String> getSortedSignals(StgModel stg, Signal.Type type) {
+        List<String> result = new ArrayList<>(stg.getSignalReferences(type));
+        Collections.sort(result);
+        return result;
     }
 
     private static Set<String> getPageReferences(StgModel stg) {
