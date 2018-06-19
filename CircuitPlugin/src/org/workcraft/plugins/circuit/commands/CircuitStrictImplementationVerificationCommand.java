@@ -1,19 +1,9 @@
 package org.workcraft.plugins.circuit.commands;
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.dom.references.ReferenceHelper;
-import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.CircuitUtils;
-import org.workcraft.plugins.circuit.Contact;
-import org.workcraft.plugins.circuit.FunctionComponent;
-import org.workcraft.plugins.circuit.VisualCircuit;
+import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.tasks.CheckStrictImplementationTask;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainOutput;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
@@ -26,6 +16,12 @@ import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
 
 public class CircuitStrictImplementationVerificationCommand extends AbstractVerificationCommand {
 
@@ -61,10 +57,7 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
 
     private MpsatChainResultHandler queueVerification(WorkspaceEntry we) {
         MpsatChainResultHandler monitor = null;
-        VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
-        File envFile = visualCircuit.getEnvironmentFile();
-        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
-        if (check(circuit, envFile)) {
+        if (checkPrerequisites(we)) {
             Framework framework = Framework.getInstance();
             TaskManager manager = framework.getTaskManager();
             CheckStrictImplementationTask task = new CheckStrictImplementationTask(we);
@@ -75,22 +68,33 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
         return monitor;
     }
 
-    private boolean check(Circuit circuit, File envFile) {
-        // Check that circuit is not empty
-        if (circuit.getFunctionComponents().isEmpty()) {
-            DialogUtils.showError("The circuit must have components.");
-            return false;
-        }
-        // Check that environment STG exists
+    private boolean checkPrerequisites(WorkspaceEntry we) {
+        return CircuitVerificationUtils.checkCircuitHasComponents(we)
+                && CircuitVerificationUtils.checkInterfaceInitialState(we)
+                && checkCircuitHasEnvironmentStrict(we)
+                && checkCircuitInterfaceSignals(we)
+                && checkCircuitLocalSignals(we);
+    }
+
+    private boolean checkCircuitHasEnvironmentStrict(WorkspaceEntry we) {
+        VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
+        File envFile = visualCircuit.getEnvironmentFile();
         Stg envStg = StgUtils.loadStg(envFile);
         if (envStg == null) {
-            String message = "Strict implementation cannot be checked without an environment STG.";
+            String msg = "Strict implementation cannot be checked without an environment STG.";
             if (envFile != null) {
-                message += "\n\nCannot read STG model from the file:\n" + envFile.getAbsolutePath();
+                msg += "\n\nCannot read an STG model from the file:\n" + envFile.getAbsolutePath();
             }
-            DialogUtils.showError(message);
+            DialogUtils.showError(msg);
             return false;
         }
+        return true;
+    }
+
+    private boolean checkCircuitInterfaceSignals(WorkspaceEntry we) {
+        Stg envStg = CircuitVerificationUtils.getEnvironmentStg(we);
+        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
+
         // Make sure that input signals of the circuit are also inputs in the environment STG
         ArrayList<String> circuitInputSignals = ReferenceHelper.getReferenceList(circuit, circuit.getInputPorts());
         ArrayList<String> circuitOutputSignals = ReferenceHelper.getReferenceList(circuit, circuit.getOutputPorts());
@@ -101,13 +105,19 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
         if (!stgInputSignals.containsAll(circuitInputSignals)) {
             Set<String> missingInputSignals = new HashSet<>(circuitInputSignals);
             missingInputSignals.removeAll(stgInputSignals);
-            String message = "Strict implementation cannot be checked for a circuit whose\n"
+            String msg = "Strict implementation cannot be checked for a circuit whose\n"
                     + "input signals are not specified in its environment STG.";
-            message += "\n\nThe following input signals are missing in the environemnt STG:\n"
+            msg += "\n\nThe following input signals are missing in the environemnt STG:\n"
                     + ReferenceHelper.getReferencesAsString(missingInputSignals, 50);
-            DialogUtils.showError(message);
+            DialogUtils.showError(msg);
             return false;
         }
+        return true;
+    }
+
+    private boolean checkCircuitLocalSignals(WorkspaceEntry we) {
+        Stg envStg = CircuitVerificationUtils.getEnvironmentStg(we);
+        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
 
         // Check that the set of local signals is the same for the circuit and STG.
         Set<String> stgLocalSignals = new HashSet<>();
@@ -122,21 +132,21 @@ public class CircuitStrictImplementationVerificationCommand extends AbstractVeri
             }
         }
         if (!stgLocalSignals.equals(circuitLocalSignals)) {
-            String message = "Strict implementation cannot be checked for a circuit whose\n"
+            String msg = "Strict implementation cannot be checked for a circuit whose\n"
                     + "non-input signals are different from those of its environment STG.";
             Set<String> missingCircuitSignals = new HashSet<>(circuitLocalSignals);
             missingCircuitSignals.removeAll(stgLocalSignals);
             if (!missingCircuitSignals.isEmpty()) {
-                message += "\n\nNon-input signals missing in the circuit:\n"
+                msg += "\n\nNon-input signals missing in the circuit:\n"
                         + ReferenceHelper.getReferencesAsString(missingCircuitSignals, 50);
             }
             Set<String> missingStgSignals = new HashSet<>(stgLocalSignals);
             missingStgSignals.removeAll(circuitLocalSignals);
             if (!missingStgSignals.isEmpty()) {
-                message += "\n\nNon-input signals missing in the environment STG:\n"
+                msg += "\n\nNon-input signals missing in the environment STG:\n"
                         + ReferenceHelper.getReferencesAsString(missingStgSignals, 50);
             }
-            DialogUtils.showError(message);
+            DialogUtils.showError(msg);
             return false;
         }
         return true;

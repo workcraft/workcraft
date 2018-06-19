@@ -135,6 +135,7 @@ public class StgUtils {
         Stg result = null;
         if (file != null) {
             Framework framework = Framework.getInstance();
+            String filePath = file.getAbsolutePath();
             try {
                 ModelEntry me = framework.loadModel(file);
                 if (me != null) {
@@ -142,14 +143,13 @@ public class StgUtils {
                     if (model instanceof Stg) {
                         result = (Stg) model;
                     } else {
-                        LogUtils.logError("Model in file '" + file.getAbsolutePath() + "' is not an STG.");
+                        LogUtils.logError("Model in file '" + filePath + "' is not an STG.");
                     }
                 } else {
-                    LogUtils.logError("Cannot read file '" + file.getAbsolutePath() + "'.");
+                    LogUtils.logError("Cannot read file '" + filePath + "'.");
                 }
             } catch (DeserialisationException e) {
-                LogUtils.logError("Cannot read STG model from file '" + file.getAbsolutePath() + "': "
-                        + e.getMessage());
+                LogUtils.logError("Cannot read STG model from file '" + filePath + "':\n" + e.getMessage());
             }
         }
         return result;

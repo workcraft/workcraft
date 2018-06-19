@@ -1,11 +1,5 @@
 package org.workcraft.plugins.circuit;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
-
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -25,6 +19,8 @@ import org.workcraft.plugins.circuit.Contact.IOType;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
+
+import java.util.*;
 
 public class CircuitUtils {
 
