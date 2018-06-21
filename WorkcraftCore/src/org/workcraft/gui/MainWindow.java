@@ -695,7 +695,8 @@ public class MainWindow extends JFrame {
     public void loadRecentFilesFromConfig() {
         final Framework framework = Framework.getInstance();
         String lastDirectoryName = framework.getConfigVar(CONFIG_GUI_MAIN_LAST_DIRECTORY, false);
-        setLastDirectory(new File(lastDirectoryName));
+        File lastDirectory = (lastDirectoryName == null) ? null : new File(lastDirectoryName);
+        setLastDirectory(lastDirectory);
         for (int i = 0; i < CommonEditorSettings.getRecentCount(); i++) {
             String entry = framework.getConfigVar(CONFIG_GUI_MAIN_RECENT_FILE + i, false);
             pushRecentFile(entry, false);

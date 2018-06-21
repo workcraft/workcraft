@@ -1,7 +1,7 @@
 SPECIAL_LINE=" == expected js line"
 
 # Development version
-./workcraft -nogui -exec:<(echo "
+./workcraft -exec:<(echo "
     print('$SPECIAL_LINE');
     exit();
 ") \
@@ -17,7 +17,7 @@ else
     WORKCRAFT="dist/linux/workcraft/workcraft"
 fi
 
-$WORKCRAFT -nogui -exec:<(echo "
+$WORKCRAFT -exec:<(echo "
     print('$SPECIAL_LINE');
     exit();
 ") \
