@@ -1,6 +1,5 @@
 package org.workcraft.gui.propertyeditor;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.workcraft.dom.visual.AbstractVisualModel;
@@ -15,12 +14,12 @@ public class TitlePropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public Object getValue() throws InvocationTargetException {
+    public Object getValue() {
         return model.getTitle();
     }
 
     @Override
-    public void setValue(Object value) throws InvocationTargetException {
+    public void setValue(Object value) {
         model.setTitle(value.toString());
     }
 

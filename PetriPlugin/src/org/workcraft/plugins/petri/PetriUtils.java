@@ -1,6 +1,7 @@
 package org.workcraft.plugins.petri;
 
 import java.util.HashMap;
+import java.util.HashSet;
 
 import org.workcraft.dom.Node;
 import org.workcraft.gui.graph.tools.Trace;
@@ -42,6 +43,16 @@ public class PetriUtils {
             }
         }
         return true;
+    }
+
+    public static HashSet<Transition> getEnabledTransitions(PetriNetModel net) {
+        HashSet<Transition> result = new HashSet<>();
+        for (Transition transition: net.getTransitions()) {
+            if (net.isEnabled(transition)) {
+                result.add(transition);
+            }
+        }
+        return result;
     }
 
 }

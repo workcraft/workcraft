@@ -13,7 +13,6 @@ import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Signal;
-import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.util.DialogUtils;
 
 public class CircuitSettings implements Settings {
@@ -361,10 +360,10 @@ public class CircuitSettings implements Settings {
         Mutex result = null;
         Matcher matcher = MUTEX_DATA_PATTERN.matcher(str.replaceAll("\\s", ""));
         if (matcher.find()) {
-            Signal r1 = new Signal(matcher.group(MUTEX_R1_GROUP), Type.INPUT);
-            Signal g1 = new Signal(matcher.group(MUTEX_G1_GROUP), Type.OUTPUT);
-            Signal r2 = new Signal(matcher.group(MUTEX_R2_GROUP), Type.INPUT);
-            Signal g2 = new Signal(matcher.group(MUTEX_G2_GROUP), Type.OUTPUT);
+            Signal r1 = new Signal(matcher.group(MUTEX_R1_GROUP), Signal.Type.INPUT);
+            Signal g1 = new Signal(matcher.group(MUTEX_G1_GROUP), Signal.Type.OUTPUT);
+            Signal r2 = new Signal(matcher.group(MUTEX_R2_GROUP), Signal.Type.INPUT);
+            Signal g2 = new Signal(matcher.group(MUTEX_G2_GROUP), Signal.Type.OUTPUT);
             result = new Mutex(matcher.group(MUTEX_NAME_GROUP), r1, g1, r2, g2);
         }
         return result;

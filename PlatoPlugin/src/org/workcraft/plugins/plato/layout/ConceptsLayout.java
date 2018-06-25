@@ -19,9 +19,8 @@ import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReadArc;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.SignalTransition.Direction;
-import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
 import org.workcraft.util.Hierarchy;
@@ -37,17 +36,17 @@ public class ConceptsLayout {
 
     public static void layout(VisualStg visualStg) {
         try {
-            HashMap<Type, HashMap<String, HashSet<VisualComponent>>> typeMap = groupBySignalType(visualStg);
+            HashMap<Signal.Type, HashMap<String, HashSet<VisualComponent>>> typeMap = groupBySignalType(visualStg);
 
             double centreX = 0.0;
             double centreY = 0.0;
 
-            ArrayList<Type> typeList = new ArrayList<>();
-            typeList.add(Type.INPUT);
-            typeList.add(Type.INTERNAL);
-            typeList.add(Type.OUTPUT);
+            ArrayList<Signal.Type> typeList = new ArrayList<>();
+            typeList.add(Signal.Type.INPUT);
+            typeList.add(Signal.Type.INTERNAL);
+            typeList.add(Signal.Type.OUTPUT);
 
-            for (Type t : typeList) {
+            for (Signal.Type t: typeList) {
                 if (typeMap.containsKey(t)) {
                     centreX = arrangeNodes(visualStg, typeMap.get(t), centreX, centreY);
                     centreY = centreY + (yDiff * 2) + 2;
@@ -101,9 +100,9 @@ public class ConceptsLayout {
 
                 if (c instanceof VisualSignalTransition) {
                     VisualSignalTransition t  = (VisualSignalTransition) c;
-                    if (t.getDirection() == Direction.PLUS) {
+                    if (t.getDirection() == SignalTransition.Direction.PLUS) {
                         plus.add(t);
-                    } else if (t.getDirection() == Direction.MINUS) {
+                    } else if (t.getDirection() == SignalTransition.Direction.MINUS) {
                         minus.add(t);
                     }
                 }
@@ -160,12 +159,12 @@ public class ConceptsLayout {
         }
     }
 
-    private static HashMap<Type, HashMap<String, HashSet<VisualComponent>>> groupBySignalType(VisualStg visualStg) {
-        HashMap<Type, HashMap<String, HashSet<VisualComponent>>> typeMap = new HashMap<>();
+    private static HashMap<Signal.Type, HashMap<String, HashSet<VisualComponent>>> groupBySignalType(VisualStg visualStg) {
+        HashMap<Signal.Type, HashMap<String, HashSet<VisualComponent>>> typeMap = new HashMap<>();
 
         for (VisualSignalTransition t : visualStg.getVisualSignalTransitions()) {
             String signalName = t.getSignalName();
-            Type signalType = t.getSignalType();
+            Signal.Type signalType = t.getSignalType();
             if (typeMap.containsKey(signalType)) {
                 HashMap<String, HashSet<VisualComponent>> nodeMap = typeMap.get(signalType);
                 if (nodeMap.containsKey(signalName)) {
@@ -187,7 +186,7 @@ public class ConceptsLayout {
         for (VisualPlace p : visualStg.getVisualPlaces()) {
             String signalName = visualStg.getMathName(p);
             signalName = signalName.substring(0, signalName.length() - 1);
-            Type signalType = findSignalType(signalName, typeMap);
+            Signal.Type signalType = findSignalType(signalName, typeMap);
             if (typeMap.containsKey(signalType)) {
                 HashMap<String, HashSet<VisualComponent>> nodeMap = typeMap.get(signalType);
                 if (nodeMap.containsKey(signalName)) {
@@ -208,8 +207,8 @@ public class ConceptsLayout {
         return typeMap;
     }
 
-    private static Type findSignalType(String signalName, HashMap<Type, HashMap<String, HashSet<VisualComponent>>> typeMap) {
-        for (Type t : typeMap.keySet()) {
+    private static Signal.Type findSignalType(String signalName, HashMap<Signal.Type, HashMap<String, HashSet<VisualComponent>>> typeMap) {
+        for (Signal.Type t: typeMap.keySet()) {
             HashMap<String, HashSet<VisualComponent>> nodeMap = typeMap.get(t);
             for (String s : nodeMap.keySet()) {
                 if (signalName.equals(s)) {

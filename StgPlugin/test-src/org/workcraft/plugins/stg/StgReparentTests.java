@@ -5,7 +5,6 @@ import java.util.Arrays;
 import org.junit.Assert;
 import org.junit.Test;
 import org.workcraft.dom.math.PageNode;
-import org.workcraft.plugins.stg.SignalTransition.Type;
 
 public class StgReparentTests {
 
@@ -107,28 +106,28 @@ public class StgReparentTests {
         stg.add(page1);
         stg.setName(page1, "page1");
         SignalTransition transition1 = stg.createSignalTransition("ABC+", page1);
-        transition1.setSignalType(Type.INPUT);
+        transition1.setSignalType(Signal.Type.INPUT);
         Assert.assertEquals("page1.ABC+", stg.getNodeReference(transition1));
 
         PageNode page2 = new PageNode();
         stg.add(page2);
         stg.setName(page2, "page2");
         SignalTransition transition2 = stg.createSignalTransition("ABC-", page2);
-        transition2.setSignalType(Type.INPUT);
+        transition2.setSignalType(Signal.Type.INPUT);
         Assert.assertEquals("page2.ABC-", stg.getNodeReference(transition2));
 
         PageNode page3 = new PageNode();
         stg.add(page3);
         stg.setName(page3, "page3");
         SignalTransition transition3 = stg.createSignalTransition("XYZ", page3);
-        transition3.setSignalType(Type.OUTPUT);
+        transition3.setSignalType(Signal.Type.OUTPUT);
         Assert.assertEquals("page3.XYZ~", stg.getNodeReference(transition3));
 
         PageNode page4 = new PageNode();
         stg.add(page4);
         stg.setName(page4, "page4");
         SignalTransition transition4 = stg.createSignalTransition("XYZ", page4);
-        transition4.setSignalType(Type.INTERNAL);
+        transition4.setSignalType(Signal.Type.INTERNAL);
         Assert.assertEquals("page4.XYZ~", stg.getNodeReference(transition4));
 
         boolean transition1ReparentResult = stg.reparent(stg.getRoot(), stg, page1, Arrays.asList(transition1));

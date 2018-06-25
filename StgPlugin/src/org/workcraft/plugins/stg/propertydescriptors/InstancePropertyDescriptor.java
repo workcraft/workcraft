@@ -1,29 +1,28 @@
 package org.workcraft.plugins.stg.propertydescriptors;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
-import org.workcraft.dom.Node;
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
+import org.workcraft.plugins.stg.NamedTransition;
 import org.workcraft.plugins.stg.Stg;
 
 public class InstancePropertyDescriptor implements PropertyDescriptor {
     private final Stg stg;
-    private final Node st;
+    private final NamedTransition nt;
 
-    public InstancePropertyDescriptor(Stg stg, Node st) {
+    public InstancePropertyDescriptor(Stg stg, NamedTransition nt) {
         this.stg = stg;
-        this.st = st;
+        this.nt = nt;
     }
 
     @Override
-    public Object getValue() throws InvocationTargetException {
-        return stg.getInstanceNumber(st);
+    public Object getValue() {
+        return stg.getInstanceNumber(nt);
     }
 
     @Override
-    public void setValue(Object value) throws InvocationTargetException {
-        stg.setInstanceNumber(st, Integer.parseInt(value.toString()));
+    public void setValue(Object value) {
+        stg.setInstanceNumber(nt, Integer.parseInt(value.toString()));
     }
 
     @Override

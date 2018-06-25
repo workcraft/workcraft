@@ -11,8 +11,8 @@ import org.workcraft.plugins.petri.PetriNetChecker;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.stg.DummyTransition;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
@@ -37,9 +37,9 @@ public class StgStatisticsCommand extends AbstractStatisticsCommand {
         Collection<Place> places = stg.getPlaces();
         Collection<Connection> connections = stg.getConnections();
 
-        int inputSignalCount = stg.getSignalReferences(Type.INPUT).size();
-        int outputSignalCount = stg.getSignalReferences(Type.OUTPUT).size();
-        int internalSignalCount = stg.getSignalReferences(Type.INTERNAL).size();
+        int inputSignalCount = stg.getSignalReferences(Signal.Type.INPUT).size();
+        int outputSignalCount = stg.getSignalReferences(Signal.Type.OUTPUT).size();
+        int internalSignalCount = stg.getSignalReferences(Signal.Type.INTERNAL).size();
         int signalCount = inputSignalCount + outputSignalCount + internalSignalCount;
 
         int inputTransitionCount = 0;

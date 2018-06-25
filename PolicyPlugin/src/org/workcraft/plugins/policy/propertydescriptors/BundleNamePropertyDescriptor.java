@@ -1,6 +1,5 @@
 package org.workcraft.plugins.policy.propertydescriptors;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
@@ -32,7 +31,7 @@ public final class BundleNamePropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public Object getValue() throws InvocationTargetException {
+    public Object getValue() {
         return model.getPolicyNet().getName(bundle.getReferencedBundle());
     }
 
@@ -42,7 +41,7 @@ public final class BundleNamePropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public void setValue(Object value) throws InvocationTargetException {
+    public void setValue(Object value) {
         model.getPolicyNet().setName(bundle.getReferencedBundle(), (String) value);
     }
 

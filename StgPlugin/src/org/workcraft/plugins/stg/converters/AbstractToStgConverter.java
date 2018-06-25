@@ -20,11 +20,7 @@ import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualReplicaPlace;
-import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.StgSettings;
-import org.workcraft.plugins.stg.VisualSignalTransition;
-import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.plugins.stg.*;
 import org.workcraft.util.Hierarchy;
 
 public abstract class AbstractToStgConverter {
@@ -198,7 +194,7 @@ public abstract class AbstractToStgConverter {
         return new Point2D.Double(x, y);
     }
 
-    public SignalStg generateBasicSignalStg(String signalName, double x, double y, SignalTransition.Type type) throws InvalidConnectionException {
+    public SignalStg generateBasicSignalStg(String signalName, double x, double y, Signal.Type type) throws InvalidConnectionException {
         VisualPlace zero = stg.createVisualPlace(SignalStg.getLowName(signalName));
         zero.getReferencedPlace().setTokens(1);
         zero.setNamePositioning(Positioning.BOTTOM);
@@ -224,7 +220,7 @@ public abstract class AbstractToStgConverter {
         return new SignalStg(zero, one, fall, rise);
     }
 
-    public SignalStg generateSignalStg(SignalLayoutType layoutType, String signalName, Point2D pos, SignalTransition.Type type, int fallCount, int riseCount) throws InvalidConnectionException {
+    public SignalStg generateSignalStg(SignalLayoutType layoutType, String signalName, Point2D pos, Signal.Type type, int fallCount, int riseCount) throws InvalidConnectionException {
         double x = pos.getX();
         double y = pos.getY();
         int xSign = 1;

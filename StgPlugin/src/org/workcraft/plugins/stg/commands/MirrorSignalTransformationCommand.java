@@ -7,8 +7,8 @@ import org.workcraft.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
@@ -37,8 +37,8 @@ public class MirrorSignalTransformationCommand extends AbstractTransformationCom
     public boolean isApplicableTo(Node node) {
         if (node instanceof VisualSignalTransition) {
             VisualSignalTransition signalTransition = (VisualSignalTransition) node;
-            Type signalType = signalTransition.getSignalType();
-            return (signalType == Type.INPUT) || (signalType == Type.OUTPUT);
+            Signal.Type signalType = signalTransition.getSignalType();
+            return (signalType == Signal.Type.INPUT) || (signalType == Signal.Type.OUTPUT);
         }
         return false;
     }
@@ -91,7 +91,7 @@ public class MirrorSignalTransformationCommand extends AbstractTransformationCom
     public void transform(Model model, Node node) {
         if ((model instanceof VisualStg) && (node instanceof VisualSignalTransition)) {
             SignalTransition signalTransition = ((VisualSignalTransition) node).getReferencedTransition();
-            Type signalType = signalTransition.getSignalType();
+            Signal.Type signalType = signalTransition.getSignalType();
             signalTransition.setSignalType(signalType.mirror());
         }
     }

@@ -3,7 +3,6 @@ package org.workcraft.plugins.stg;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.util.Pair;
 import org.workcraft.util.Triple;
 
@@ -31,7 +30,7 @@ public class LabelParser {
         if (matcher.find() && (matcher.end() == s.length())) {
             final String signalName = matcher.group(1);
 
-            final Direction direction;
+            final SignalTransition.Direction direction;
             String directionGroup = matcher.group(2);
             if (directionGroup.equals("+")) {
                 direction = SignalTransition.Direction.PLUS;

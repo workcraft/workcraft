@@ -12,7 +12,7 @@ import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.mpsat.commands.MpsatCscConflictResolutionCommand;
 import org.workcraft.plugins.punf.PunfSettings;
-import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.util.PackageUtils;
@@ -64,18 +64,18 @@ public class MpsatCscConflictResolutionCommandTests {
         WorkspaceEntry srcWe = framework.loadWork(url.getFile());
 
         Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
-        Set<String> srcInputs = srcStg.getSignalNames(Type.INPUT, null);
-        Set<String> srcInternals = srcStg.getSignalNames(Type.INTERNAL, null);
-        Set<String> srcOutputs = srcStg.getSignalNames(Type.OUTPUT, null);
+        Set<String> srcInputs = srcStg.getSignalNames(Signal.Type.INPUT, null);
+        Set<String> srcInternals = srcStg.getSignalNames(Signal.Type.INTERNAL, null);
+        Set<String> srcOutputs = srcStg.getSignalNames(Signal.Type.OUTPUT, null);
         Set<String> srcMutexes = getMutexNames(srcStg);
 
         MpsatCscConflictResolutionCommand command = new MpsatCscConflictResolutionCommand();
         WorkspaceEntry dstWe = command.execute(srcWe);
 
         Stg dstStg = WorkspaceUtils.getAs(dstWe, Stg.class);
-        Set<String> dstInputs = dstStg.getSignalNames(Type.INPUT, null);
-        Set<String> dstInternals = dstStg.getSignalNames(Type.INTERNAL, null);
-        Set<String> dstOutputs = dstStg.getSignalNames(Type.OUTPUT, null);
+        Set<String> dstInputs = dstStg.getSignalNames(Signal.Type.INPUT, null);
+        Set<String> dstInternals = dstStg.getSignalNames(Signal.Type.INTERNAL, null);
+        Set<String> dstOutputs = dstStg.getSignalNames(Signal.Type.OUTPUT, null);
         Set<String> dstMutexes = getMutexNames(dstStg);
 
         Set<String> expInternals = new HashSet<>();

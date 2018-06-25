@@ -4,7 +4,6 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.references.UniqueNameManager;
 import org.workcraft.exceptions.ArgumentException;
 import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.util.Identifier;
 import org.workcraft.util.ListMap;
 import org.workcraft.util.Pair;
@@ -37,12 +36,12 @@ public class StgNameManager extends UniqueNameManager {
 
     private void setSignalTransitionName(SignalTransition st, String name, boolean forceInstance) {
         String signalName = st.getSignalName();
-        Direction direction = st.getDirection();
+        SignalTransition.Direction direction = st.getDirection();
         Integer instance = 0;
         if (Identifier.isName(name)) {
             signalName = name;
         } else {
-            final Triple<String, Direction, Integer> r = LabelParser.parseSignalTransition(name);
+            final Triple<String, SignalTransition.Direction, Integer> r = LabelParser.parseSignalTransition(name);
             if (r == null) {
                 throw new ArgumentException("Name '" + name + "' is not a valid signal transition label.");
             }
@@ -154,7 +153,7 @@ public class StgNameManager extends UniqueNameManager {
         }
     }
 
-    private SignalTransition.Type getSignalType(String signalName) {
+    private Signal.Type getSignalType(String signalName) {
         for (SignalTransition st: signalTransitions.get(signalName)) {
             return st.getSignalType();
         }
@@ -169,14 +168,14 @@ public class StgNameManager extends UniqueNameManager {
         return !dummyTransitions.get(name).isEmpty();
     }
 
-    private boolean isGoodSignalName(String name, SignalTransition.Type type) {
+    private boolean isGoodSignalName(String name, Signal.Type type) {
         boolean result = true;
         if (super.getNode(name) != null) {
             result = false;
         } else if (isDummyName(name)) {
             result = false;
         } else if (isSignalName(name)) {
-            SignalTransition.Type expectedType = getSignalType(name);
+            Signal.Type expectedType = getSignalType(name);
             if ((expectedType != null) && !expectedType.equals(type)) {
                 result = false;
             }

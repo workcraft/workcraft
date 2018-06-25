@@ -1,19 +1,11 @@
 package org.workcraft.plugins.son;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-
-import javax.swing.JOptionPane;
-
 import org.workcraft.Framework;
 import org.workcraft.annotations.VisualClass;
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.AbstractMathModel;
-import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.math.PageNode;
 import org.workcraft.dom.references.HierarchicalUniqueNameReferenceManager;
@@ -23,13 +15,8 @@ import org.workcraft.gui.propertyeditor.ModelProperties;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 import org.workcraft.plugins.son.connections.SONConnection;
 import org.workcraft.plugins.son.connections.SONConnection.Semantics;
-import org.workcraft.plugins.son.elements.Block;
-import org.workcraft.plugins.son.elements.ChannelPlace;
-import org.workcraft.plugins.son.elements.Condition;
+import org.workcraft.plugins.son.elements.*;
 import org.workcraft.plugins.son.elements.Event;
-import org.workcraft.plugins.son.elements.PlaceNode;
-import org.workcraft.plugins.son.elements.Time;
-import org.workcraft.plugins.son.elements.TransitionNode;
 import org.workcraft.plugins.son.exception.IncompatibleScenarioException;
 import org.workcraft.plugins.son.propertydescriptors.ConnectionTimePropertyDescriptor;
 import org.workcraft.plugins.son.propertydescriptors.DurationPropertyDescriptor;
@@ -40,6 +27,12 @@ import org.workcraft.plugins.son.util.ScenarioRef;
 import org.workcraft.plugins.son.util.ScenarioSaveList;
 import org.workcraft.serialisation.References;
 import org.workcraft.util.Hierarchy;
+
+import javax.swing.*;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashSet;
 
 @VisualClass(org.workcraft.plugins.son.VisualSON.class)
 public class SON extends AbstractMathModel {
@@ -77,11 +70,6 @@ public class SON extends AbstractMathModel {
             setName(condition, name);
         }
         return condition;
-    }
-
-    @SuppressWarnings("deprecation")
-    public MathConnection connect(Node first, Node second) throws InvalidConnectionException {
-        throw new org.workcraft.exceptions.NotImplementedException();
     }
 
     public SONConnection connect(Node first, Node second, Semantics semantics) throws InvalidConnectionException {

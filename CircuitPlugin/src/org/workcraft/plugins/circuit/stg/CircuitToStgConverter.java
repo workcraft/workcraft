@@ -40,13 +40,7 @@ import org.workcraft.plugins.circuit.VisualFunctionComponent;
 import org.workcraft.plugins.circuit.VisualFunctionContact;
 import org.workcraft.plugins.petri.VisualPlace;
 import org.workcraft.plugins.petri.VisualTransition;
-import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.SignalTransition.Direction;
-import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.StgSettings;
-import org.workcraft.plugins.stg.VisualImplicitPlaceArc;
-import org.workcraft.plugins.stg.VisualSignalTransition;
-import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.plugins.stg.*;
 import org.workcraft.plugins.stg.converters.SignalStg;
 import org.workcraft.util.Geometry;
 import org.workcraft.util.Hierarchy;
@@ -54,8 +48,6 @@ import org.workcraft.util.Pair;
 import org.workcraft.util.TwoWayMap;
 
 public class CircuitToStgConverter {
-    public static final String LABEL_SUFFIX_0 = " = 0";
-    public static final String LABEL_SUFFIX_1 = " = 1";
 
     private static final double SCALE_X = 4.0;
     private static final double SCALE_Y = 6.0;
@@ -261,14 +253,14 @@ public class CircuitToStgConverter {
                 setFunc = BooleanOperations.not(resetFunc);
             }
             Dnf setDnf = DnfGenerator.generate(setFunc);
-            createSignalStgTransitions(driver, setDnf, Direction.PLUS);
+            createSignalStgTransitions(driver, setDnf, SignalTransition.Direction.PLUS);
 
             Dnf resetDnf = DnfGenerator.generate(resetFunc);
-            createSignalStgTransitions(driver, resetDnf, Direction.MINUS);
+            createSignalStgTransitions(driver, resetDnf, SignalTransition.Direction.MINUS);
         }
     }
 
-    private void createSignalStgTransitions(VisualContact driver, Dnf dnf, Direction direction) {
+    private void createSignalStgTransitions(VisualContact driver, Dnf dnf, SignalTransition.Direction direction) {
         VisualContact signal = CircuitUtils.findSignal(circuit, driver, true);
         SignalStg driverStg = driverToStgMap.getValue(driver);
         if ((signal != null) && (driverStg != null)) {
@@ -276,10 +268,10 @@ public class CircuitToStgConverter {
         }
     }
 
-    private void createSignalStgTransitions(VisualContact signal, SignalStg driverStg, Dnf dnf, Direction direction) {
-        VisualPlace predPlace = direction == Direction.PLUS ? driverStg.zero : driverStg.one;
-        VisualPlace succPlace = direction == Direction.PLUS ? driverStg.one : driverStg.zero;
-        Collection<VisualSignalTransition> transitions = direction == Direction.PLUS ? driverStg.riseList : driverStg.fallList;
+    private void createSignalStgTransitions(VisualContact signal, SignalStg driverStg, Dnf dnf, SignalTransition.Direction direction) {
+        VisualPlace predPlace = direction == SignalTransition.Direction.PLUS ? driverStg.zero : driverStg.one;
+        VisualPlace succPlace = direction == SignalTransition.Direction.PLUS ? driverStg.one : driverStg.zero;
+        Collection<VisualSignalTransition> transitions = direction == SignalTransition.Direction.PLUS ? driverStg.riseList : driverStg.fallList;
 
         TreeSet<DnfClause> clauses = new TreeSet<>(
                 new Comparator<DnfClause>() {
@@ -294,7 +286,7 @@ public class CircuitToStgConverter {
         clauses.addAll(dnf.getClauses());
 
         String signalName = CircuitUtils.getSignalName(circuit, signal);
-        SignalTransition.Type signalType = CircuitUtils.getSignalType(circuit, signal);
+        Signal.Type signalType = CircuitUtils.getSignalType(circuit, signal);
         for (DnfClause clause : clauses) {
             // In self-looped signals the read-arcs will clash with producing/consuming arcs:
             // 1) a read-arc from a preset place is redundant (is superseded by a consuming arc);
@@ -361,10 +353,10 @@ public class CircuitToStgConverter {
                 for (VisualSignalTransition transition: stg.getVisualSignalTransitions()) {
                     String transitionSignalRef = stg.getSignalReference(transition);
                     if (signalRef.equals(transitionSignalRef)) {
-                        if (transition.getDirection() == Direction.PLUS) {
+                        if (transition.getDirection() == SignalTransition.Direction.PLUS) {
                             plusTransition = transition;
                         }
-                        if (transition.getDirection() == Direction.MINUS) {
+                        if (transition.getDirection() == SignalTransition.Direction.MINUS) {
                             minusTransition = transition;
                         }
                     }
@@ -395,10 +387,10 @@ public class CircuitToStgConverter {
                 for (VisualSignalTransition transition: stg.getVisualSignalTransitions()) {
                     String transitionSignalRef = stg.getSignalReference(transition);
                     if (signalRef.equals(transitionSignalRef)) {
-                        if (transition.getDirection() == Direction.PLUS) {
+                        if (transition.getDirection() == SignalTransition.Direction.PLUS) {
                             signalStg.riseList.add(transition);
                         }
-                        if (transition.getDirection() == Direction.MINUS) {
+                        if (transition.getDirection() == SignalTransition.Direction.MINUS) {
                             signalStg.fallList.add(transition);
                         }
                     }

@@ -1,7 +1,5 @@
 package org.workcraft.plugins.circuit.commands;
 
-import java.io.File;
-
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.plugins.circuit.Circuit;
@@ -17,6 +15,8 @@ import org.workcraft.tasks.TaskManager;
 import org.workcraft.util.DialogUtils;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.io.File;
 
 public class CircuitVerificationCommand extends AbstractVerificationCommand {
 
@@ -45,21 +45,52 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
     }
 
     private MpsatChainResultHandler queueVerification(WorkspaceEntry we) {
-        MpsatChainResultHandler monitor = null;
+        if (!checkPrerequisites(we)) {
+            return null;
+        }
+        // Adjust the set of checked properties depending on availability of environment STG
         boolean checkConformation = checkConformation();
         boolean checkDeadlock = checkDeadlock();
         boolean checkPersistency = checkPersistency();
-        if (identifyChecks(we, checkConformation, checkDeadlock, checkPersistency)) {
-            if (checkConformation || checkDeadlock || checkPersistency) {
-                Framework framework = Framework.getInstance();
-                TaskManager manager = framework.getTaskManager();
-                CheckCircuitTask task = new CheckCircuitTask(we, checkConformation, checkDeadlock, checkPersistency);
-                String description = MpsatUtils.getToolchainDescription(we.getTitle());
-                monitor = new MpsatChainResultHandler(we);
-                manager.queue(task, description, monitor);
+        VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
+        File envFile = visualCircuit.getEnvironmentFile();
+        Stg envStg = StgUtils.loadStg(envFile);
+        if (envStg == null) {
+            String messagePrefix = "";
+            if (envFile != null) {
+                messagePrefix = "Cannot read an STG model from the file:\n" + envFile.getAbsolutePath() + "\n\n";
+            }
+            if (!checkConformation) {
+                DialogUtils.showWarning(messagePrefix + "The circuit will be verified without environment STG.\n");
+            } else {
+                if (!checkDeadlock && !checkPersistency) {
+                    DialogUtils.showError(messagePrefix + "The circuit conformation cannot be checked without environment STG.\n");
+                } else {
+                    boolean proceed = DialogUtils.showConfirmWarning(messagePrefix
+                                    + "The circuit conformation cannot be checked without environment STG.\n"
+                                    + "Proceed with verification of the other properties?\n",
+                            "Circuit verification", true);
+                    checkDeadlock &= proceed;
+                    checkPersistency &= proceed;
+                }
+                checkConformation = false;
             }
         }
+        if (!checkConformation && !checkDeadlock && !checkPersistency) {
+            return null;
+        }
+        Framework framework = Framework.getInstance();
+        TaskManager manager = framework.getTaskManager();
+        CheckCircuitTask task = new CheckCircuitTask(we, checkConformation, checkDeadlock, checkPersistency);
+        String description = MpsatUtils.getToolchainDescription(we.getTitle());
+        MpsatChainResultHandler monitor = new MpsatChainResultHandler(we);
+        manager.queue(task, description, monitor);
         return monitor;
+    }
+
+    private boolean checkPrerequisites(WorkspaceEntry we) {
+        return CircuitVerificationUtils.checkCircuitHasComponents(we)
+            && CircuitVerificationUtils.checkInterfaceInitialState(we);
     }
 
     public boolean checkDeadlock() {
@@ -71,41 +102,6 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
     }
 
     public boolean checkConformation() {
-        return true;
-    }
-
-    private boolean identifyChecks(WorkspaceEntry we, boolean checkConformation, boolean checkDeadlock, boolean checkPersistency) {
-        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
-        if (circuit.getFunctionComponents().isEmpty()) {
-            DialogUtils.showError("The circuit must have components.");
-            return false;
-        }
-
-        VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
-        File envFile = visualCircuit.getEnvironmentFile();
-        Stg envStg = StgUtils.loadStg(envFile);
-        if (envStg == null) {
-            String messagePrefix = "";
-            if (envFile != null) {
-                messagePrefix = "Cannot read an STG model from the file:\n" + envFile.getAbsolutePath() + "\n\n";
-            }
-            if (checkConformation) {
-                if (checkDeadlock || checkPersistency) {
-                    boolean proceed = DialogUtils.showConfirmWarning(messagePrefix
-                            + "The circuit conformation cannot be checked without environment STG.\n"
-                            + "Proceed with verification of the other properties?\n",
-                            "Circuit verification", true);
-                    checkDeadlock &= proceed;
-                    checkPersistency &= proceed;
-                } else {
-                    DialogUtils.showError(messagePrefix + "The circuit conformation cannot be checked without environment STG.\n");
-                    return false;
-                }
-                checkConformation = false;
-            } else {
-                DialogUtils.showWarning(messagePrefix + "The circuit will be verified without environment STG.\n");
-            }
-        }
         return true;
     }
 

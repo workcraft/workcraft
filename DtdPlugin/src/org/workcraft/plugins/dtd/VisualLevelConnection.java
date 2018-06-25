@@ -8,7 +8,6 @@ import java.awt.geom.AffineTransform;
 import org.workcraft.dom.math.MathConnection;
 import org.workcraft.dom.visual.VisualNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
-import org.workcraft.plugins.dtd.Signal.State;
 import org.workcraft.plugins.shared.CommonVisualSettings;
 
 public class VisualLevelConnection extends VisualConnection {
@@ -78,16 +77,16 @@ public class VisualLevelConnection extends VisualConnection {
 
     @Override
     public Stroke getStroke() {
-        State state = getState();
+        Signal.State state = getState();
         float width = 0.5f * (float) CommonVisualSettings.getStrokeWidth();
-        if (state == State.UNSTABLE) {
+        if (state == Signal.State.UNSTABLE) {
             float[] pattern = {0.1f, 0.1f};
             return new BasicStroke(width, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 1.0f, pattern, 0.0f);
         }
         return new BasicStroke(width);
     }
 
-    private State getState() {
+    private Signal.State getState() {
         VisualNode node = getFirst();
         if (node instanceof VisualSignalEvent) {
             VisualSignalEvent event = (VisualSignalEvent) node;

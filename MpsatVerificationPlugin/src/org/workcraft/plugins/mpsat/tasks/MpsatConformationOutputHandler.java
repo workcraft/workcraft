@@ -11,8 +11,8 @@ import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.petri.PetriUtils;
 import org.workcraft.plugins.petri.Place;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.StgModel;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.util.LogUtils;
@@ -57,9 +57,9 @@ class MpsatConformationOutputHandler extends MpsatReachabilityOutputHandler {
             // Check if any output can be fired that is not enabled in the composition
             HashSet<String> compEnabledSignals = solutionToEnableSignals.get(solution);
             for (SignalTransition transition: stg.getSignalTransitions()) {
-                Type type = transition.getSignalType();
+                Signal.Type type = transition.getSignalType();
                 String signal = transition.getSignalName();
-                if (stg.isEnabled(transition) && (type == Type.OUTPUT) && !compEnabledSignals.contains(signal)) {
+                if (stg.isEnabled(transition) && (type == Signal.Type.OUTPUT) && !compEnabledSignals.contains(signal)) {
                     String ref = stg.getNodeReference(transition);
                     LogUtils.logWarning("Output '" + ref + "' becomes unexpectedly enabled");
                     trace.add(stg.getNodeReference(transition));

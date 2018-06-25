@@ -1,7 +1,6 @@
 package org.workcraft.plugins.circuit;
 
 import java.io.File;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
@@ -29,12 +28,12 @@ public class EnvironmentFilePropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public Object getValue() throws InvocationTargetException {
+    public Object getValue() {
         return model.getEnvironmentFile();
     }
 
     @Override
-    public void setValue(Object value) throws InvocationTargetException {
+    public void setValue(Object value) {
         model.setEnvironmentFile((File) value);
     }
 

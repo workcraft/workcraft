@@ -61,9 +61,9 @@ public class MpsatCombinedChainTask implements Task<MpsatCombinedChainOutput> {
 
             if (exportResult.getOutcome() != Outcome.SUCCESS) {
                 if (exportResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatCombinedChainOutput>(Outcome.CANCEL);
+                    return new Result<>(Outcome.CANCEL);
                 }
-                return new Result<MpsatCombinedChainOutput>(Outcome.FAILURE,
+                return new Result<>(Outcome.FAILURE,
                         new MpsatCombinedChainOutput(exportResult, null, null, null, settingsList));
             }
             monitor.progressUpdate(0.33);
@@ -79,14 +79,14 @@ public class MpsatCombinedChainTask implements Task<MpsatCombinedChainOutput> {
             String unfoldingExtension = useMci ? PunfTask.MCI_FILE_EXTENSION : PunfTask.PNML_FILE_EXTENSION;
 
             File unfoldingFile = new File(directory, "unfolding" + unfoldingExtension);
-            PunfTask punfTask = new PunfTask(netFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
+            PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory);
             Result<? extends PunfOutput> punfResult = taskManager.execute(punfTask, "Unfolding .g", subtaskMonitor);
 
             if (punfResult.getOutcome() != Outcome.SUCCESS) {
                 if (punfResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatCombinedChainOutput>(Outcome.CANCEL);
+                    return new Result<>(Outcome.CANCEL);
                 }
-                return new Result<MpsatCombinedChainOutput>(Outcome.FAILURE,
+                return new Result<>(Outcome.FAILURE,
                         new MpsatCombinedChainOutput(exportResult, null, punfResult, null, settingsList));
             }
             monitor.progressUpdate(0.66);
@@ -100,18 +100,18 @@ public class MpsatCombinedChainTask implements Task<MpsatCombinedChainOutput> {
                 mpsatResultList.add(mpsatResult);
                 if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
                     if (mpsatResult.getOutcome() == Outcome.CANCEL) {
-                        return new Result<MpsatCombinedChainOutput>(Outcome.CANCEL);
+                        return new Result<>(Outcome.CANCEL);
                     }
-                    return new Result<MpsatCombinedChainOutput>(Outcome.FAILURE,
+                    return new Result<>(Outcome.FAILURE,
                             new MpsatCombinedChainOutput(exportResult, null, punfResult, mpsatResultList, settingsList));
                 }
             }
             monitor.progressUpdate(1.0);
 
-            return new Result<MpsatCombinedChainOutput>(Outcome.SUCCESS,
+            return new Result<>(Outcome.SUCCESS,
                     new MpsatCombinedChainOutput(exportResult, null, punfResult, mpsatResultList, settingsList));
         } catch (Throwable e) {
-            return new Result<MpsatCombinedChainOutput>(e);
+            return new Result<>(e);
         } finally {
             FileUtils.deleteOnExitRecursively(directory);
         }

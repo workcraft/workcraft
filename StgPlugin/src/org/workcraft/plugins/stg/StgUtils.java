@@ -1,25 +1,26 @@
 package org.workcraft.plugins.stg;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-
 import org.workcraft.Framework;
+import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
 import org.workcraft.dom.math.MathModel;
+import org.workcraft.dom.math.MathNode;
 import org.workcraft.dom.visual.connections.VisualConnection;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.exceptions.InvalidConnectionException;
+import org.workcraft.plugins.petri.PetriUtils;
+import org.workcraft.plugins.petri.Place;
+import org.workcraft.plugins.petri.Transition;
 import org.workcraft.plugins.petri.VisualReadArc;
-import org.workcraft.plugins.stg.SignalTransition.Direction;
-import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.plugins.stg.interop.StgImporter;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.util.*;
 
 public class StgUtils {
     public static final String SPEC_FILE_PREFIX = "net";
@@ -110,7 +111,7 @@ public class StgUtils {
 
     public static VisualSignalTransition convertDummyToSignalTransition(VisualStg stg, VisualNamedTransition dummyTransition) {
         Container container = (Container) dummyTransition.getParent();
-        VisualSignalTransition signalTransition = stg.createVisualSignalTransition(null, Type.INTERNAL, Direction.TOGGLE, container);
+        VisualSignalTransition signalTransition = stg.createVisualSignalTransition(null, Signal.Type.INTERNAL, SignalTransition.Direction.TOGGLE, container);
         replaceNamedTransition(stg, dummyTransition, signalTransition);
         return signalTransition;
     }
@@ -134,6 +135,7 @@ public class StgUtils {
         Stg result = null;
         if (file != null) {
             Framework framework = Framework.getInstance();
+            String filePath = file.getAbsolutePath();
             try {
                 ModelEntry me = framework.loadModel(file);
                 if (me != null) {
@@ -141,14 +143,13 @@ public class StgUtils {
                     if (model instanceof Stg) {
                         result = (Stg) model;
                     } else {
-                        LogUtils.logError("Model in file '" + file.getAbsolutePath() + "' is not an STG.");
+                        LogUtils.logError("Model in file '" + filePath + "' is not an STG.");
                     }
                 } else {
-                    LogUtils.logError("Cannot read file '" + file.getAbsolutePath() + "'.");
+                    LogUtils.logError("Cannot read file '" + filePath + "'.");
                 }
             } catch (DeserialisationException e) {
-                LogUtils.logError("Cannot read STG model from file '" + file.getAbsolutePath() + "': "
-                        + e.getMessage());
+                LogUtils.logError("Cannot read STG model from file '" + filePath + "':\n" + e.getMessage());
             }
         }
         return result;
@@ -157,30 +158,30 @@ public class StgUtils {
     public static void restoreInterfaceSignals(Stg stg, Collection<String> inputSignalNames, Collection<String> outputSignalNames) {
         Container container = stg.getRoot();
         for (String signalName: stg.getSignalNames(container)) {
-            stg.setSignalType(signalName, Type.INTERNAL, container);
+            stg.setSignalType(signalName, Signal.Type.INTERNAL, container);
         }
         for (String inputName: inputSignalNames) {
-            stg.setSignalType(inputName, Type.INPUT, container);
+            stg.setSignalType(inputName, Signal.Type.INPUT, container);
         }
         for (String outputName: outputSignalNames) {
-            stg.setSignalType(outputName, Type.OUTPUT, container);
+            stg.setSignalType(outputName, Signal.Type.OUTPUT, container);
         }
     }
 
     public static void convertInternalSignalsToDummies(Stg stg) {
-        for (SignalTransition transition: stg.getSignalTransitions(Type.INTERNAL)) {
+        for (SignalTransition transition: stg.getSignalTransitions(Signal.Type.INTERNAL)) {
             StgUtils.convertSignalToDummyTransition(stg, transition);
         }
     }
 
     public static boolean isSameSignals(StgModel srcStg, StgModel dstStg) {
-        Set<String> srcInputs = srcStg.getSignalReferences(Type.INPUT);
-        Set<String> srcOutputs = srcStg.getSignalReferences(Type.OUTPUT);
-        Set<String> srcInternal = srcStg.getSignalReferences(Type.INTERNAL);
+        Set<String> srcInputs = srcStg.getSignalReferences(Signal.Type.INPUT);
+        Set<String> srcOutputs = srcStg.getSignalReferences(Signal.Type.OUTPUT);
+        Set<String> srcInternal = srcStg.getSignalReferences(Signal.Type.INTERNAL);
 
-        Set<String> dstInputs = dstStg.getSignalReferences(Type.INPUT);
-        Set<String> dstOutputs = dstStg.getSignalReferences(Type.OUTPUT);
-        Set<String> dstInternal = dstStg.getSignalReferences(Type.INTERNAL);
+        Set<String> dstInputs = dstStg.getSignalReferences(Signal.Type.INPUT);
+        Set<String> dstOutputs = dstStg.getSignalReferences(Signal.Type.OUTPUT);
+        Set<String> dstInternal = dstStg.getSignalReferences(Signal.Type.INTERNAL);
 
         return srcInputs.equals(dstInputs) && srcOutputs.equals(dstOutputs) && srcInternal.equals(dstInternal);
     }
@@ -201,9 +202,9 @@ public class StgUtils {
 
     public static HashSet<SignalTransition> getEnabledSignalTransitions(StgModel stg) {
         HashSet<SignalTransition> result = new HashSet<>();
-        for (SignalTransition transition: stg.getSignalTransitions()) {
-            if (stg.isEnabled(transition)) {
-                result.add(transition);
+        for (Transition transition: PetriUtils.getEnabledTransitions(stg)) {
+            if (transition instanceof SignalTransition) {
+                result.add((SignalTransition) transition);
             }
         }
         return result;
@@ -212,7 +213,7 @@ public class StgUtils {
     public static HashSet<String> getEnabledLocalSignals(StgModel stg) {
         HashSet<String> result = new HashSet<>();
         for (SignalTransition transition: getEnabledSignalTransitions(stg)) {
-            if ((transition.getSignalType() == Type.OUTPUT) || (transition.getSignalType() == Type.INTERNAL)) {
+            if ((transition.getSignalType() == Signal.Type.OUTPUT) || (transition.getSignalType() == Signal.Type.INTERNAL)) {
                 result.add(transition.getSignalName());
             }
         }
@@ -224,6 +225,84 @@ public class StgUtils {
         for (SignalTransition transition: getEnabledSignalTransitions(stg)) {
             result.add(transition.getSignalName());
         }
+        return result;
+    }
+
+    /**
+     * Copy the given STG preserving the signal hierarchy and references. Note that
+     * STG places are copied without their hierarchy and their names are not preserved.
+     * @param stg an STG to be copied
+     * @return a new STG with the same signal references
+     */
+    private static StgModel copyStgPreserveSignals(StgModel stg) {
+        Stg result = new Stg();
+        Map<MathNode, MathNode> nodeMap = new HashMap<>();
+        // Copy signal transitions with their hierarchy.
+        for (SignalTransition signalTransition: stg.getSignalTransitions()) {
+            String ref = stg.getNodeReference(signalTransition);
+            SignalTransition newSignalTransition = result.createSignalTransition(ref, null);
+            newSignalTransition.setSignalType(signalTransition.getSignalType());
+            newSignalTransition.setDirection(signalTransition.getDirection());
+            nodeMap.put(signalTransition, newSignalTransition);
+        }
+        // Copy dummy transitions with their hierarchy.
+        for (DummyTransition dummyTransition: stg.getDummyTransitions()) {
+            String ref = stg.getNodeReference(dummyTransition);
+            DummyTransition newDummyTransition = result.createDummyTransition(ref, null);
+            nodeMap.put(dummyTransition, newDummyTransition);
+        }
+        // Copy places WITHOUT their hierarchy -- implicit places cannot be copied (NOTE that implicit place ref in NOT C-style).
+        for (Place place: stg.getPlaces()) {
+            StgPlace newPlace = result.createPlace();
+            newPlace.setCapacity(place.getCapacity());
+            newPlace.setTokens(place.getTokens());
+            nodeMap.put(place, newPlace);
+        }
+        // Connect places and transitions.
+        for (Connection connection: stg.getConnections()) {
+            Node first = nodeMap.get(connection.getFirst());
+            Node second = nodeMap.get(connection.getSecond());
+            try {
+                result.connect(first, second);
+            } catch (InvalidConnectionException e) {
+                e.printStackTrace();
+            }
+        }
+        return result;
+    }
+
+    public static HashMap<String, Boolean> getInitialState(StgModel stg, int timeout) {
+        HashMap<String, Boolean> result = new HashMap<>();
+        stg = copyStgPreserveSignals(stg);
+        Set<String> signalRefs = stg.getSignalReferences();
+        HashSet<HashMap<Place, Integer>> visitedMarkings = new HashSet<>();
+        Queue<HashMap<Place, Integer>> queue = new LinkedList<>();
+        HashMap<Place, Integer> initialMarking = PetriUtils.getMarking(stg);
+        queue.add(initialMarking);
+        long endTime = System.currentTimeMillis() + timeout;
+        while (!queue.isEmpty() && !signalRefs.isEmpty() && System.currentTimeMillis() < endTime) {
+            HashMap<Place, Integer> curMarking = queue.remove();
+            visitedMarkings.add(curMarking);
+            PetriUtils.setMarking(stg, curMarking);
+            List<Transition> enabledTransitions = new ArrayList<>(PetriUtils.getEnabledTransitions(stg));
+            for (Transition transition: enabledTransitions) {
+                if (transition instanceof SignalTransition) {
+                    SignalTransition signalTransition = (SignalTransition) transition;
+                    String signalRef = stg.getSignalReference(signalTransition);
+                    if (signalRefs.remove(signalRef)) {
+                        result.put(signalRef, signalTransition.getDirection() == SignalTransition.Direction.MINUS);
+                    }
+                }
+                if (signalRefs.isEmpty() || (System.currentTimeMillis() >= endTime)) break;
+                stg.fire(transition);
+                HashMap<Place, Integer> marking = PetriUtils.getMarking(stg);
+                if (!visitedMarkings.contains(marking)) {
+                    queue.add(marking);
+                }
+                stg.unFire(transition);
+            }
+        }
+        PetriUtils.setMarking(stg, initialMarking);
         return result;
     }
 

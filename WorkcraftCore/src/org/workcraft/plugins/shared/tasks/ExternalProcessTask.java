@@ -1,10 +1,5 @@
 package org.workcraft.plugins.shared.tasks;
 
-import java.io.File;
-import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
-
 import org.workcraft.interop.ExternalProcess;
 import org.workcraft.interop.ExternalProcessListener;
 import org.workcraft.tasks.ProgressMonitor;
@@ -12,6 +7,11 @@ import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.DataAccumulator;
 import org.workcraft.util.LogUtils;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
 
 public class ExternalProcessTask implements Task<ExternalProcessOutput>, ExternalProcessListener {
     private List<String> args;
@@ -82,21 +82,8 @@ public class ExternalProcessTask implements Task<ExternalProcessOutput>, Externa
         return Result.success(output);
     }
 
-    public static String getCommandLine(List<String> args) {
-        String command = "";
-        for (String arg: args) {
-            if (command.isEmpty()) {
-                command = "";
-            } else {
-                command += " ";
-            }
-            command += arg;
-        }
-        return command;
-    }
-
-    public static  void printCommandLine(List<String> args) {
-        LogUtils.logInfo("Running external command: " + getCommandLine(args));
+    public static void printCommandLine(List<String> args) {
+        LogUtils.logInfo("Running external command: " + String.join(" ", args));
     }
 
     @Override

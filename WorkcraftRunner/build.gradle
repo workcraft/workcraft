@@ -20,4 +20,5 @@ dependencies {
     compile project(':StgPlugin')
     compile project(':WtgPlugin')
     compile project(':XmasPlugin')
+    compile project(':AtacsPlugin')
 }

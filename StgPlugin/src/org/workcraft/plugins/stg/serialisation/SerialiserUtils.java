@@ -1,15 +1,5 @@
 package org.workcraft.plugins.stg.serialisation;
 
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Set;
-
 import org.workcraft.Info;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
@@ -19,11 +9,13 @@ import org.workcraft.exceptions.FormatException;
 import org.workcraft.plugins.petri.PetriNetModel;
 import org.workcraft.plugins.petri.Place;
 import org.workcraft.plugins.petri.Transition;
-import org.workcraft.plugins.stg.SignalTransition.Type;
-import org.workcraft.plugins.stg.StgModel;
-import org.workcraft.plugins.stg.StgPlace;
+import org.workcraft.plugins.stg.*;
 import org.workcraft.util.ExportUtils;
 import org.workcraft.util.Hierarchy;
+
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.util.*;
 
 public class SerialiserUtils {
 
@@ -46,32 +38,49 @@ public class SerialiserUtils {
         }
         PetriNetModel petriModel = (PetriNetModel) model;
 
-        String prefix = "# STG file ";
-        String keyword = KEYWORD_MODEL;
-        boolean needInstanceNumbers = false;
-        if (style == Style.LPN) {
-            prefix = "# LPN file ";
-            keyword = KEYWORD_NAME;
-            needInstanceNumbers = hasInstanceNumbers(petriModel);
-        }
         PrintWriter writer = new PrintWriter(out);
-        writer.write(Info.getGeneratedByText(prefix, "\n"));
-        String title = ExportUtils.getClearModelTitle(petriModel);
-        writer.write(keyword + " " + title + "\n");
+        writeIntro(writer, petriModel, style);
         if (petriModel instanceof StgModel) {
-            writeSTG((StgModel) petriModel, writer, needInstanceNumbers);
+            boolean needsInstanceNumbers = (style == Style.LPN) && hasInstanceNumbers(petriModel);
+            writeSTG(writer, (StgModel) petriModel, needsInstanceNumbers);
         } else {
-            writePN(petriModel, writer);
+            writePN(writer, petriModel);
         }
         writer.write(KEYWORD_END + "\n");
         writer.close();
     }
 
+    private static void writeIntro(PrintWriter writer, PetriNetModel petri, Style style) {
+        String prefix = (style == Style.LPN) ? "# LPN file " : "# STG file ";
+        writer.write(Info.getGeneratedByText(prefix, "\n"));
+
+        String keyword = (style == Style.LPN) ? KEYWORD_NAME : KEYWORD_MODEL;
+        String title = ExportUtils.getClearModelTitle(petri);
+        writer.write(keyword + " " + title + "\n");
+
+        if ((style == Style.LPN) && (petri instanceof StgModel)) {
+            StgModel stg = (StgModel) petri;
+            HashMap<String, Boolean> initialState = StgUtils.getInitialState(stg, 1000);
+            writer.write("#@.init_state [");
+            for (final Signal.Type type: Signal.Type.values()) {
+                for (String signal: getSortedSignals(stg, type)) {
+                    Boolean signalState = initialState.get(signal);
+                    if ((signalState == null) || (signalState == false)) {
+                        writer.write("0");
+                    } else {
+                        writer.write("1");
+                    }
+                }
+            }
+            writer.write("]\n");
+        }
+    }
+
     private static boolean hasInstanceNumbers(PetriNetModel petriModel) {
         if (petriModel instanceof StgModel) {
             StgModel stg = (StgModel) petriModel;
-            for (Node n: stg.getSignalTransitions()) {
-                if (stg.getInstanceNumber(n) != 0) {
+            for (SignalTransition st: stg.getSignalTransitions()) {
+                if (stg.getInstanceNumber(st) != 0) {
                     return true;
                 }
             }
@@ -81,24 +90,22 @@ public class SerialiserUtils {
 
     private static String getReference(Model model, Node node, boolean needInstanceNumbers) {
         String result = model.getNodeReference(node);
-        if (needInstanceNumbers && (model instanceof StgModel) && (node instanceof Transition)) {
-            Transition transition = (Transition) node;
+        if (needInstanceNumbers && (model instanceof StgModel) && (node instanceof NamedTransition)) {
+            NamedTransition nt = (NamedTransition) node;
             StgModel stg = (StgModel) model;
-            if (stg.getInstanceNumber(transition) == 0) {
+            if (stg.getInstanceNumber(nt) == 0) {
                 result += "/0";
             }
         }
         return result;
     }
 
-    private static void writeSignalsHeader(PrintWriter out, Collection<String> signalNames, String header) {
-        if (!signalNames.isEmpty()) {
-            LinkedList<String> sortedNames = new LinkedList<>(signalNames);
-            Collections.sort(sortedNames);
+    private static void writeSignalsHeader(PrintWriter out, List<String> signals, String header) {
+        if (!signals.isEmpty()) {
             out.write(header);
-            for (String name : sortedNames) {
+            for (String signal: signals) {
                 out.write(" ");
-                out.write(name);
+                out.write(signal);
             }
             out.write("\n");
         }
@@ -106,12 +113,7 @@ public class SerialiserUtils {
 
     private static Iterable<Node> sortNodes(Collection<? extends Node> nodes, final Model model) {
         ArrayList<Node> list = new ArrayList<>(nodes);
-        Collections.sort(list, new Comparator<Node>() {
-            @Override
-            public int compare(Node o1, Node o2) {
-                return model.getNodeReference(o1).compareTo(model.getNodeReference(o2));
-            }
-        });
+        Collections.sort(list, Comparator.comparing(model::getNodeReference));
         return list;
     }
 
@@ -147,15 +149,15 @@ public class SerialiserUtils {
         out.write("\n");
     }
 
-    private static void writeSTG(StgModel stg, PrintWriter out, boolean needInstanceNumbers) {
-        writeSignalsHeader(out, stg.getSignalReferences(Type.INTERNAL), KEYWORD_INTERNAL);
-        writeSignalsHeader(out, stg.getSignalReferences(Type.INPUT), KEYWORD_INPUTS);
-        writeSignalsHeader(out, stg.getSignalReferences(Type.OUTPUT), KEYWORD_OUTPUTS);
+    private static void writeSTG(PrintWriter out, StgModel stg, boolean needInstanceNumbers) {
+        writeSignalsHeader(out, getSortedSignals(stg, Signal.Type.INPUT), KEYWORD_INPUTS);
+        writeSignalsHeader(out, getSortedSignals(stg, Signal.Type.OUTPUT), KEYWORD_OUTPUTS);
+        writeSignalsHeader(out, getSortedSignals(stg, Signal.Type.INTERNAL), KEYWORD_INTERNAL);
         Set<String> pageRefs = getPageReferences(stg);
         if (!pageRefs.isEmpty()) {
             out.write("# Pages added as dummies: " + String.join(", ", pageRefs) + "\n");
         }
-        Set<String> dummyRefs = stg.getDummyReferences();
+        List<String> dummyRefs = new ArrayList(stg.getDummyReferences());
         dummyRefs.addAll(pageRefs);
         writeSignalsHeader(out, dummyRefs, KEYWORD_DUMMY);
 
@@ -169,7 +171,13 @@ public class SerialiserUtils {
         for (Node n : sortNodes(stg.getPlaces(), stg)) {
             writeGraphEntry(out, stg, n, needInstanceNumbers);
         }
-        writeMarking(stg, stg.getPlaces(), out, needInstanceNumbers);
+        writeMarking(out, stg, stg.getPlaces(), needInstanceNumbers);
+    }
+
+    private static List<String> getSortedSignals(StgModel stg, Signal.Type type) {
+        List<String> result = new ArrayList<>(stg.getSignalReferences(type));
+        Collections.sort(result);
+        return result;
     }
 
     private static Set<String> getPageReferences(StgModel stg) {
@@ -180,7 +188,7 @@ public class SerialiserUtils {
         return result;
     }
 
-    private static void writeMarking(Model model, Collection<Place> places, PrintWriter out, boolean needInstanceNumbers) {
+    private static void writeMarking(PrintWriter out, Model model, Collection<Place> places, boolean needInstanceNumbers) {
         ArrayList<String> markingEntries = new ArrayList<>();
         for (Place p: places) {
             final int tokens = p.getTokens();
@@ -231,7 +239,7 @@ public class SerialiserUtils {
         }
     }
 
-    private static void writePN(PetriNetModel petriModel, PrintWriter out) {
+    private static void writePN(PrintWriter out, PetriNetModel petriModel) {
         LinkedList<String> transitions = new LinkedList<>();
         for (Transition t : petriModel.getTransitions()) {
             String transitionRef = petriModel.getNodeReference(t);
@@ -245,7 +253,7 @@ public class SerialiserUtils {
         for (Place p : petriModel.getPlaces()) {
             writeGraphEntry(out, petriModel, p, false);
         }
-        writeMarking(petriModel, petriModel.getPlaces(), out, false);
+        writeMarking(out, petriModel, petriModel.getPlaces(), false);
     }
 
 }

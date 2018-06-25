@@ -1,13 +1,10 @@
 package org.workcraft.plugins.circuit.commands;
 
-import java.io.File;
-
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractVerificationCommand;
 import org.workcraft.commands.ScriptableCommandUtils;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.VisualCircuit;
 import org.workcraft.plugins.circuit.tasks.CustomCheckCircuitTask;
 import org.workcraft.plugins.mpsat.MpsatPresetManager;
 import org.workcraft.plugins.mpsat.MpsatSettingsSerialiser;
@@ -15,13 +12,12 @@ import org.workcraft.plugins.mpsat.commands.MpsatPropertyVerificationCommand;
 import org.workcraft.plugins.mpsat.gui.MpsatPropertyDialog;
 import org.workcraft.plugins.mpsat.tasks.MpsatChainResultHandler;
 import org.workcraft.plugins.mpsat.tasks.MpsatUtils;
-import org.workcraft.plugins.stg.Stg;
-import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.tasks.TaskManager;
-import org.workcraft.util.DialogUtils;
 import org.workcraft.util.GUI;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
+
+import java.io.File;
 
 public class CircuitPropertyVerificationCommand extends AbstractVerificationCommand {
 
@@ -48,37 +44,30 @@ public class CircuitPropertyVerificationCommand extends AbstractVerificationComm
 
     @Override
     public void run(WorkspaceEntry we) {
+        if (!checkPrerequisites(we)) {
+            return;
+        }
         Framework framework = Framework.getInstance();
         MainWindow mainWindow = framework.getMainWindow();
-
-        Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
-        if (circuit.getFunctionComponents().isEmpty()) {
-            DialogUtils.showError("The circuit must have components.");
-        } else {
-            VisualCircuit visualCircuit = WorkspaceUtils.getAs(we, VisualCircuit.class);
-            File envFile = visualCircuit.getEnvironmentFile();
-            Stg envStg = StgUtils.loadStg(envFile);
-            if (envStg == null) {
-                String messagePrefix = "";
-                if (envFile != null) {
-                    messagePrefix = "Cannot read an STG model from the file:\n" + envFile.getAbsolutePath() + "\n\n";
-                }
-                DialogUtils.showWarning(messagePrefix + "The circuit will be verified without environment STG.");
-            }
-            File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, MpsatPropertyVerificationCommand.MPSAT_PROPERTY_PRESETS_FILE);
-            MpsatPresetManager pmgr = new MpsatPresetManager(presetFile, new MpsatSettingsSerialiser(), true);
-            MpsatPropertyDialog dialog = new MpsatPropertyDialog(mainWindow, pmgr);
-            dialog.pack();
-            GUI.centerToParent(dialog, mainWindow);
-            dialog.setVisible(true);
-            if (dialog.getModalResult() == 1) {
-                TaskManager manager = framework.getTaskManager();
-                CustomCheckCircuitTask task = new CustomCheckCircuitTask(we, dialog.getSettings());
-                String description = MpsatUtils.getToolchainDescription(we.getTitle());
-                MpsatChainResultHandler monitor = new MpsatChainResultHandler(we);
-                manager.queue(task, description, monitor);
-            }
+        File presetFile = new File(Framework.SETTINGS_DIRECTORY_PATH, MpsatPropertyVerificationCommand.MPSAT_PROPERTY_PRESETS_FILE);
+        MpsatPresetManager pmgr = new MpsatPresetManager(presetFile, new MpsatSettingsSerialiser(), true);
+        MpsatPropertyDialog dialog = new MpsatPropertyDialog(mainWindow, pmgr);
+        dialog.pack();
+        GUI.centerToParent(dialog, mainWindow);
+        dialog.setVisible(true);
+        if (dialog.getModalResult() == 1) {
+            TaskManager manager = framework.getTaskManager();
+            CustomCheckCircuitTask task = new CustomCheckCircuitTask(we, dialog.getSettings());
+            String description = MpsatUtils.getToolchainDescription(we.getTitle());
+            MpsatChainResultHandler monitor = new MpsatChainResultHandler(we);
+            manager.queue(task, description, monitor);
         }
+    }
+
+    private boolean checkPrerequisites(WorkspaceEntry we) {
+        return CircuitVerificationUtils.checkCircuitHasComponents(we)
+            && CircuitVerificationUtils.checkCircuitHasValidEnvironment(we)
+            && CircuitVerificationUtils.checkInterfaceInitialState(we);
     }
 
 }

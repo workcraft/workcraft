@@ -11,7 +11,6 @@ import org.workcraft.annotations.DisplayName;
 import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.gui.propertyeditor.PropertyDeclaration;
-import org.workcraft.plugins.dtd.SignalTransition.Direction;
 
 @Hotkey(KeyEvent.VK_T)
 @DisplayName("Transition")
@@ -33,13 +32,13 @@ public class VisualSignalTransition extends VisualSignalEvent {
     }
 
     private void addPropertyDeclarations() {
-        addPropertyDeclaration(new PropertyDeclaration<VisualSignalTransition, Direction>(
-                this, SignalTransition.PROPERTY_DIRECTION, Direction.class, true, true, true) {
-            protected void setter(VisualSignalTransition object, Direction value) {
+        addPropertyDeclaration(new PropertyDeclaration<VisualSignalTransition, SignalTransition.Direction>(
+                this, SignalTransition.PROPERTY_DIRECTION, SignalTransition.Direction.class, true, true, true) {
+            protected void setter(VisualSignalTransition object, SignalTransition.Direction value) {
                 object.setDirection(value);
             }
 
-            protected Direction getter(VisualSignalTransition object) {
+            protected SignalTransition.Direction getter(VisualSignalTransition object) {
                 return object.getDirection();
             }
         });
@@ -148,11 +147,11 @@ public class VisualSignalTransition extends VisualSignalEvent {
         return (SignalTransition) getReferencedComponent();
     }
 
-    public void setDirection(Direction value) {
+    public void setDirection(SignalTransition.Direction value) {
         getReferencedTransition().setDirection(value);
     }
 
-    public Direction getDirection() {
+    public SignalTransition.Direction getDirection() {
         return getReferencedTransition().getDirection();
     }
 

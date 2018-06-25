@@ -17,7 +17,6 @@ import org.workcraft.plugins.fsm.Event;
 import org.workcraft.plugins.fsm.Fsm;
 import org.workcraft.plugins.fsm.State;
 import org.workcraft.plugins.fsm.Symbol;
-import org.workcraft.plugins.fst.Signal.Type;
 import org.workcraft.plugins.fst.propertydescriptors.DirectionPropertyDescriptor;
 import org.workcraft.plugins.fst.propertydescriptors.EventSignalPropertyDescriptor;
 import org.workcraft.plugins.fst.propertydescriptors.SignalTypePropertyDescriptor;
@@ -67,20 +66,20 @@ public class Fst extends Fsm {
         boolean result = false;
         if (symbol instanceof Signal) {
             Signal signal = (Signal) symbol;
-            result = signal.getType() != Type.DUMMY;
+            result = signal.getType() != Signal.Type.DUMMY;
         } else {
             result = super.isDeterministicSymbol(symbol);
         }
         return result;
     }
 
-    public Signal createSignal(String name, Type type) {
+    public Signal createSignal(String name, Signal.Type type) {
         Signal signal = createNode(name, null, Signal.class);
         signal.setType(type);
         return signal;
     }
 
-    public Signal getOrCreateSignal(String name, Type type) {
+    public Signal getOrCreateSignal(String name, Signal.Type type) {
         Signal signal = null;
         Node node = getNodeByReference(name);
         if (node == null) {
@@ -108,7 +107,7 @@ public class Fst extends Fsm {
         return Hierarchy.getDescendantsOfType(getRoot(), Signal.class);
     }
 
-    public final Collection<Signal> getSignals(final Type type) {
+    public final Collection<Signal> getSignals(final Signal.Type type) {
         return Hierarchy.getDescendantsOfType(getRoot(), Signal.class,
                 signal -> (signal != null) && (signal.getType() == type));
     }

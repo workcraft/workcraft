@@ -1,6 +1,5 @@
 package org.workcraft.plugins.fsm.propertydescriptors;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.workcraft.dom.Node;
@@ -51,12 +50,12 @@ public class SymbolPropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public Object getValue() throws InvocationTargetException {
+    public Object getValue() {
         return fsm.getName(symbol);
     }
 
     @Override
-    public void setValue(Object value) throws InvocationTargetException {
+    public void setValue(Object value) {
         String name = (String) value;
         Node node = fsm.getNodeByReference(name);
         if (node == null) {

@@ -8,8 +8,6 @@ import org.workcraft.annotations.Hotkey;
 import org.workcraft.annotations.SVGIcon;
 import org.workcraft.observation.StateObserver;
 import org.workcraft.plugins.shared.CommonSignalSettings;
-import org.workcraft.plugins.stg.SignalTransition.Direction;
-import org.workcraft.plugins.stg.SignalTransition.Type;
 import org.workcraft.serialisation.xml.NoAutoSerialisation;
 
 @Hotkey(KeyEvent.VK_T)
@@ -60,7 +58,7 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
     }
 
     @NoAutoSerialisation
-    public Type getSignalType() {
+    public Signal.Type getSignalType() {
         return getReferencedTransition().getSignalType();
     }
 
@@ -70,7 +68,7 @@ public class VisualSignalTransition extends VisualNamedTransition implements Sta
     }
 
     @NoAutoSerialisation
-    public Direction getDirection() {
+    public SignalTransition.Direction getDirection() {
         return getReferencedTransition().getDirection();
     }
 

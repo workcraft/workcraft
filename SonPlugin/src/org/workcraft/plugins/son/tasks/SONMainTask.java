@@ -162,7 +162,7 @@ public class SONMainTask implements Task<VerificationResult> {
 
         logger.info("\n\nVerification-Result : " + err + " Error(s), " + warning + " Warning(s).");
 
-        return new Result<VerificationResult>(Outcome.SUCCESS);
+        return new Result<>(Outcome.SUCCESS);
     }
 
     private static void clearConsole() {

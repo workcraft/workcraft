@@ -10,7 +10,6 @@ import org.workcraft.plugins.fsm.VisualEvent;
 import org.workcraft.plugins.fsm.VisualFsm;
 import org.workcraft.plugins.fsm.VisualState;
 import org.workcraft.plugins.fst.Signal;
-import org.workcraft.plugins.fst.Signal.Type;
 import org.workcraft.plugins.fst.SignalEvent.Direction;
 import org.workcraft.plugins.fst.VisualFst;
 import org.workcraft.plugins.fst.VisualSignalEvent;
@@ -71,11 +70,11 @@ public class FstToStgConverter {
         return result;
     }
 
-    private org.workcraft.plugins.stg.SignalTransition.Type convertFstToStgType(Type type) {
+    private org.workcraft.plugins.stg.Signal.Type convertFstToStgType(Signal.Type type) {
         switch (type) {
-        case INPUT: return org.workcraft.plugins.stg.SignalTransition.Type.INPUT;
-        case OUTPUT: return org.workcraft.plugins.stg.SignalTransition.Type.OUTPUT;
-        case INTERNAL: return org.workcraft.plugins.stg.SignalTransition.Type.INTERNAL;
+        case INPUT: return org.workcraft.plugins.stg.Signal.Type.INPUT;
+        case OUTPUT: return org.workcraft.plugins.stg.Signal.Type.OUTPUT;
+        case INTERNAL: return org.workcraft.plugins.stg.Signal.Type.INTERNAL;
         case DUMMY: return null;
         }
         return null;
@@ -97,8 +96,8 @@ public class FstToStgConverter {
             Signal signal = signalEvent.getReferencedSignalEvent().getSignal();
             String name = srcModel.getMathName(signal);
             if (signal.hasDirection()) {
-                Type srcType = signal.getType();
-                org.workcraft.plugins.stg.SignalTransition.Type dstType = convertFstToStgType(srcType);
+                Signal.Type srcType = signal.getType();
+                org.workcraft.plugins.stg.Signal.Type dstType = convertFstToStgType(srcType);
                 Direction srcDirection = signalEvent.getReferencedSignalEvent().getDirection();
                 org.workcraft.plugins.stg.SignalTransition.Direction dstDirection = convertFstToStgDirection(srcDirection);
                 transition = dstModel.createVisualSignalTransition(name, dstType, dstDirection, null);

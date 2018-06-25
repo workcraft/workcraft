@@ -12,7 +12,7 @@ import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.shared.tasks.ExportTask;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.plugins.stg.interop.StgFormat;
@@ -61,16 +61,16 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainOutput> 
 
             if (exportResult.getOutcome() != Outcome.SUCCESS) {
                 if (exportResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatSynthesisChainOutput>(Outcome.CANCEL);
+                    return new Result<>(Outcome.CANCEL);
                 }
-                return new Result<MpsatSynthesisChainOutput>(Outcome.FAILURE,
+                return new Result<>(Outcome.FAILURE,
                         new MpsatSynthesisChainOutput(exportResult, null, null, settings));
             }
             if (!mutexes.isEmpty()) {
                 model = StgUtils.loadStg(netFile);
                 for (Mutex m: mutexes) {
-                    model.setSignalType(m.g1.name, Type.INPUT);
-                    model.setSignalType(m.g2.name, Type.INPUT);
+                    model.setSignalType(m.g1.name, Signal.Type.INPUT);
+                    model.setSignalType(m.g2.name, Signal.Type.INPUT);
                 }
                 filePrefix += StgUtils.MUTEX_FILE_SUFFIX;
                 netFile = new File(directory, filePrefix + stgFileExtension);
@@ -79,9 +79,9 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainOutput> 
 
                 if (exportResult.getOutcome() != Outcome.SUCCESS) {
                     if (exportResult.getOutcome() == Outcome.CANCEL) {
-                        return new Result<MpsatSynthesisChainOutput>(Outcome.CANCEL);
+                        return new Result<>(Outcome.CANCEL);
                     }
-                    return new Result<MpsatSynthesisChainOutput>(Outcome.FAILURE,
+                    return new Result<>(Outcome.FAILURE,
                             new MpsatSynthesisChainOutput(exportResult, null, null, settings));
                 }
             }
@@ -89,14 +89,14 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainOutput> 
 
             // Generate unfolding
             File unfoldingFile = new File(directory, filePrefix + PunfTask.PNML_FILE_EXTENSION);
-            PunfTask punfTask = new PunfTask(netFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
+            PunfTask punfTask = new PunfTask(netFile, unfoldingFile, directory);
             Result<? extends PunfOutput> punfResult = framework.getTaskManager().execute(punfTask, "Unfolding .g", subtaskMonitor);
 
             if (punfResult.getOutcome() != Outcome.SUCCESS) {
                 if (punfResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatSynthesisChainOutput>(Outcome.CANCEL);
+                    return new Result<>(Outcome.CANCEL);
                 }
-                return new Result<MpsatSynthesisChainOutput>(Outcome.FAILURE,
+                return new Result<>(Outcome.FAILURE,
                         new MpsatSynthesisChainOutput(exportResult, punfResult, null, settings));
             }
             monitor.progressUpdate(0.66);
@@ -110,17 +110,17 @@ public class MpsatSynthesisChainTask implements Task<MpsatSynthesisChainOutput> 
 
             if (mpsatResult.getOutcome() != Outcome.SUCCESS) {
                 if (mpsatResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatSynthesisChainOutput>(Outcome.CANCEL);
+                    return new Result<>(Outcome.CANCEL);
                 }
-                return new Result<MpsatSynthesisChainOutput>(Outcome.FAILURE,
+                return new Result<>(Outcome.FAILURE,
                         new MpsatSynthesisChainOutput(exportResult, punfResult, mpsatResult, settings));
             }
             monitor.progressUpdate(1.0);
 
-            return new Result<MpsatSynthesisChainOutput>(Outcome.SUCCESS,
+            return new Result<>(Outcome.SUCCESS,
                     new MpsatSynthesisChainOutput(exportResult, punfResult, mpsatResult, settings));
         } catch (Throwable e) {
-            return new Result<MpsatSynthesisChainOutput>(e);
+            return new Result<>(e);
         } finally {
             FileUtils.deleteOnExitRecursively(directory);
         }

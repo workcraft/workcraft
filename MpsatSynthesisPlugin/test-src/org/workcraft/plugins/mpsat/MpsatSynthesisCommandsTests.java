@@ -18,7 +18,7 @@ import org.workcraft.plugins.mpsat.commands.MpsatAbstractSynthesisCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatComplexGateSynthesisCommand;
 import org.workcraft.plugins.mpsat.commands.MpsatTechnologyMappingSynthesisCommand;
 import org.workcraft.plugins.punf.PunfSettings;
-import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Mutex;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgPlace;
@@ -137,8 +137,8 @@ public class MpsatSynthesisCommandsTests {
 
         WorkspaceEntry srcWe = framework.loadWork(srcUrl.getFile());
         Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
-        Set<String> srcInputs = srcStg.getSignalNames(Type.INPUT, null);
-        Set<String> srcOutputs = srcStg.getSignalNames(Type.OUTPUT, null);
+        Set<String> srcInputs = srcStg.getSignalNames(Signal.Type.INPUT, null);
+        Set<String> srcOutputs = srcStg.getSignalNames(Signal.Type.OUTPUT, null);
         Set<String> srcMutexes = getMutexNames(srcStg);
 
         C command = cls.newInstance();

@@ -12,8 +12,7 @@ import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualComponent;
 import org.workcraft.exceptions.InvalidConnectionException;
 import org.workcraft.plugins.petri.VisualPlace;
-import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.converters.AbstractToStgConverter;
 import org.workcraft.plugins.stg.converters.NodeStg;
 import org.workcraft.plugins.stg.converters.SignalStg;
@@ -264,36 +263,36 @@ public class XmasToStgConverter extends AbstractToStgConverter {
     }
 
     private SignalStg generateSignalStg(XmasStgType xmasSignalType, String signalName, Point2D pos, int fallCount, int riseCount) throws InvalidConnectionException {
-        SignalLayoutType layoutType = SignalLayoutType.LEFT_TO_RIGHT;
-        SignalTransition.Type type = Type.INTERNAL;
+        SignalLayoutType layoutType;
+        Signal.Type type;
         switch (xmasSignalType) {
         case IDN:
             layoutType = SignalLayoutType.LEFT_TO_RIGHT_INVERTED;
-            type = Type.OUTPUT;
+            type = Signal.Type.OUTPUT;
             break;
         case IORACLE:
             layoutType = SignalLayoutType.LEFT_TO_RIGHT;
-            type = Type.INPUT;
+            type = Signal.Type.INPUT;
             break;
         case IRDY:
             layoutType = SignalLayoutType.LEFT_TO_RIGHT;
-            type = Type.INTERNAL;
+            type = Signal.Type.INTERNAL;
             break;
         case TDN:
             layoutType = SignalLayoutType.RIGHT_TO_LEFT;
-            type = Type.OUTPUT;
+            type = Signal.Type.OUTPUT;
             break;
         case TORACLE:
             layoutType = SignalLayoutType.RIGHT_TO_LEFT_INVERTED;
-            type = Type.INPUT;
+            type = Signal.Type.INPUT;
             break;
         case TRDY:
             layoutType = SignalLayoutType.RIGHT_TO_LEFT_INVERTED;
-            type = Type.INTERNAL;
+            type = Signal.Type.INTERNAL;
             break;
         default:
             layoutType = SignalLayoutType.LEFT_TO_RIGHT;
-            type = Type.INTERNAL;
+            type = Signal.Type.INTERNAL;
             break;
         }
         return generateSignalStg(layoutType, signalName, pos, type, fallCount, riseCount);
@@ -312,7 +311,7 @@ public class XmasToStgConverter extends AbstractToStgConverter {
 
     private SignalStg generateClockStg() throws InvalidConnectionException {
         String name = "clk";
-        SignalStg clockStg = generateBasicSignalStg(name, 60.0, 25.0, Type.INPUT);
+        SignalStg clockStg = generateBasicSignalStg(name, 60.0, 25.0, Signal.Type.INPUT);
         setSignalInitialState(clockStg, true);
         return clockStg;
     }
@@ -1088,7 +1087,7 @@ public class XmasToStgConverter extends AbstractToStgConverter {
             double xSlot = QUEUE_SLOT_SPACING * (idx - 0.5 * (capacity - 1));
             char suffix = (char) idx;
             suffix += 'A';
-            SignalStg mem = generateBasicSignalStg(name + _MEM + suffix, pos.getX() + xSlot, pos.getY(), SignalTransition.Type.INPUT);
+            SignalStg mem = generateBasicSignalStg(name + _MEM + suffix, pos.getX() + xSlot, pos.getY(), Signal.Type.INPUT);
             SignalStg rdy = generateSignalStg(XmasStgType.IRDY, name + _HEAD + suffix + _RDY, pos.getX() + xSlot, pos.getY() - 8.0);
             SignalStg dn = generateSignalStg(XmasStgType.IDN, name + _HEAD + suffix + _DN, pos.getX() + xSlot, pos.getY() - 16.0, 4, 3);
             ContactStg hd = new ContactStg(rdy, dn);

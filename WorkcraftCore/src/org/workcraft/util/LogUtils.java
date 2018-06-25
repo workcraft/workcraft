@@ -1,5 +1,7 @@
 package org.workcraft.util;
 
+import java.util.Collection;
+
 public class LogUtils {
     private static final String PREFIX_INFO = "[INFO] ";
     private static final String PREFIX_WARNING = "[WARNING] ";
@@ -78,4 +80,13 @@ public class LogUtils {
         return text;
     }
 
+    public static String getTextWithRefs(String msg, Collection<String> refs) {
+        String str = String.join(", ", refs);
+        if (refs.size() == 1) {
+            msg += " '" + str + "'.";
+        } else {
+            msg += "s:\n" + str;
+        }
+        return msg;
+    }
 }

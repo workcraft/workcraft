@@ -18,7 +18,7 @@ import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.shared.tasks.ExportTask;
-import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.plugins.stg.interop.StgFormat;
@@ -73,9 +73,9 @@ public class MpsatConformationTask extends MpsatChainTask {
 
             if (devExportResult.getOutcome() != Outcome.SUCCESS) {
                 if (devExportResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
+                    return new Result<>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                return new Result<>(Outcome.FAILURE,
                         new MpsatChainOutput(devExportResult, null, null, null, toolchainPreparationSettings));
             }
             monitor.progressUpdate(0.30);
@@ -83,13 +83,13 @@ public class MpsatConformationTask extends MpsatChainTask {
             // Generating .g for the environment
             Stg envStg = StgUtils.loadStg(envFile);
             if (envStg == null) {
-                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                return new Result<>(Outcome.FAILURE,
                         new MpsatChainOutput(null, null, null, null, toolchainPreparationSettings));
             }
 
             // Make sure that input signals of the device STG are also inputs in the environment STG
-            Set<String> inputSignalNames = devStg.getSignalNames(Type.INPUT, null);
-            Set<String> outputSignalNames = devStg.getSignalNames(Type.OUTPUT, null);
+            Set<String> inputSignalNames = devStg.getSignalNames(Signal.Type.INPUT, null);
+            Set<String> outputSignalNames = devStg.getSignalNames(Signal.Type.OUTPUT, null);
             StgUtils.restoreInterfaceSignals(envStg, inputSignalNames, outputSignalNames);
             Exporter envStgExporter = ExportUtils.chooseBestExporter(pluginManager, envStg, format);
             File envStgFile = new File(directory, StgUtils.ENVIRONMENT_FILE_PREFIX + stgFileExtension);
@@ -99,9 +99,9 @@ public class MpsatConformationTask extends MpsatChainTask {
 
             if (envExportResult.getOutcome() != Outcome.SUCCESS) {
                 if (envExportResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
+                    return new Result<>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                return new Result<>(Outcome.FAILURE,
                         new MpsatChainOutput(envExportResult, null, null, null, toolchainPreparationSettings));
             }
             monitor.progressUpdate(0.40);
@@ -117,24 +117,24 @@ public class MpsatConformationTask extends MpsatChainTask {
 
             if (pcompResult.getOutcome() != Outcome.SUCCESS) {
                 if (pcompResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
+                    return new Result<>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                return new Result<>(Outcome.FAILURE,
                         new MpsatChainOutput(devExportResult, pcompResult, null, null, toolchainPreparationSettings));
             }
             monitor.progressUpdate(0.50);
 
             // Generate unfolding
             File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + PunfTask.PNML_FILE_EXTENSION);
-            PunfTask punfTask = new PunfTask(stgFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
+            PunfTask punfTask = new PunfTask(stgFile, unfoldingFile, directory);
             Result<? extends PunfOutput> punfResult = taskManager.execute(
                     punfTask, "Unfolding .g", subtaskMonitor);
 
             if (punfResult.getOutcome() != Outcome.SUCCESS) {
                 if (punfResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
+                    return new Result<>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                return new Result<>(Outcome.FAILURE,
                         new MpsatChainOutput(devExportResult, pcompResult, punfResult, null, toolchainPreparationSettings));
             }
             monitor.progressUpdate(0.60);
@@ -151,16 +151,16 @@ public class MpsatConformationTask extends MpsatChainTask {
 
             if (mpsatConformationResult.getOutcome() != Outcome.SUCCESS) {
                 if (mpsatConformationResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
+                    return new Result<>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                return new Result<>(Outcome.FAILURE,
                         new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings));
             }
             monitor.progressUpdate(0.80);
 
             MpsatOutputParser mpsatConformationParser = new MpsatOutputParser(mpsatConformationResult.getPayload());
             if (!mpsatConformationParser.getSolutions().isEmpty()) {
-                return new Result<MpsatChainOutput>(Outcome.SUCCESS,
+                return new Result<>(Outcome.SUCCESS,
                         new MpsatChainOutput(devExportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings,
                                 "This model does not conform to the environment."));
             }
@@ -169,11 +169,11 @@ public class MpsatConformationTask extends MpsatChainTask {
             // Success
             unfoldingFile.delete();
             String message = "The model conforms to its environment (" + envFile.getName() + ").";
-            return new Result<MpsatChainOutput>(Outcome.SUCCESS,
+            return new Result<>(Outcome.SUCCESS,
                     new MpsatChainOutput(devExportResult, pcompResult, punfResult, null, toolchainCompletionSettings, message));
 
         } catch (Throwable e) {
-            return new Result<MpsatChainOutput>(e);
+            return new Result<>(e);
         } finally {
             FileUtils.deleteOnExitRecursively(directory);
         }

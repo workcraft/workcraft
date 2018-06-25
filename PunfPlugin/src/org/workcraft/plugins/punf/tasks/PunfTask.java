@@ -1,7 +1,5 @@
 package org.workcraft.plugins.punf.tasks;
 
-import java.util.ArrayList;
-
 import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.shared.tasks.ExternalProcessOutput;
 import org.workcraft.plugins.shared.tasks.ExternalProcessTask;
@@ -12,22 +10,27 @@ import org.workcraft.tasks.SubtaskMonitor;
 import org.workcraft.tasks.Task;
 import org.workcraft.util.ToolUtils;
 
+import java.io.File;
+import java.util.ArrayList;
+
 public class PunfTask implements Task<PunfOutput> {
     public static final String PNML_FILE_EXTENSION = ".pnml";
     public static final String MCI_FILE_EXTENSION = ".mci";
     public static final String LEGACY_TOOL_SUFFIX = "-mci";
 
-    private final String inputPath;
-    private final String outputPath;
+    private final File inputFile;
+    private final File outputFile;
+    private final File workingDir;
     private final boolean useLegacyMci;
 
-    public PunfTask(String inputPath, String outputPath) {
-        this(inputPath, outputPath, false);
+    public PunfTask(File inputFile, File outputFile, File workingDir) {
+        this(inputFile, outputFile, workingDir, false);
     }
 
-    public PunfTask(String inputPath, String outputPath, boolean useLegacyMci) {
-        this.inputPath = inputPath;
-        this.outputPath = outputPath;
+    public PunfTask(File inputFile, File outputFile, File workingDir, boolean useLegacyMci) {
+        this.inputFile = inputFile;
+        this.outputFile = outputFile;
+        this.workingDir = workingDir;
         this.useLegacyMci = useLegacyMci;
     }
 
@@ -49,12 +52,12 @@ public class PunfTask implements Task<PunfOutput> {
         }
 
         // Built-in arguments
-        command.add("-m=" + outputPath);
-        command.add(inputPath);
+        command.add("-m=" + outputFile.getAbsolutePath());
+        command.add(inputFile.getAbsolutePath());
 
         boolean printStdout = PunfSettings.getPrintStdout();
         boolean printStderr = PunfSettings.getPrintStderr();
-        ExternalProcessTask task = new ExternalProcessTask(command, null, printStdout, printStderr);
+        ExternalProcessTask task = new ExternalProcessTask(command, workingDir, printStdout, printStderr);
         SubtaskMonitor<? super ExternalProcessOutput> subtaskMonitor = new SubtaskMonitor<>(monitor);
         Result<? extends ExternalProcessOutput> result = task.run(subtaskMonitor);
 

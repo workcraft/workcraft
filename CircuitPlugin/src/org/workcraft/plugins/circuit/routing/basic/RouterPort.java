@@ -38,34 +38,6 @@ public final class RouterPort {
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
-            return false;
-        }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        RouterPort other = (RouterPort) obj;
-        if (getDirection() != other.getDirection()) {
-            return false;
-        }
-        if (isFixedDirection != other.isFixedDirection) {
-            return false;
-        }
-        if (getLocation() == null) {
-            if (other.getLocation() != null) {
-                return false;
-            }
-        } else if (!getLocation().equals(other.getLocation())) {
-            return false;
-        }
-        return true;
-    }
-
-    @Override
     public String toString() {
         return "Port [direction=" + getDirection() + ", location=" + getLocation() + ", "
                 + (isFixedDirection() ? "directed" : "undirected") + "]";

@@ -8,7 +8,7 @@ import org.workcraft.plugins.mpsat.MpsatParameters;
 import org.workcraft.plugins.pcomp.ComponentData;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.stg.LabelParser;
-import org.workcraft.plugins.stg.SignalTransition.Direction;
+import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.util.LogUtils;
 import org.workcraft.util.Triple;
 import org.workcraft.workspace.WorkspaceEntry;
@@ -31,7 +31,7 @@ class MpsatConsistencyOutputHandler extends MpsatReachabilityOutputHandler {
                 LogUtils.logMessage("No consistency violation detected");
             } else {
                 String lastTransitionRef = trace.get(size - 1);
-                final Triple<String, Direction, Integer> r = LabelParser.parseSignalTransition(lastTransitionRef);
+                final Triple<String, SignalTransition.Direction, Integer> r = LabelParser.parseSignalTransition(lastTransitionRef);
                 if (r == null) continue;
                 String signalRef = r.getFirst();
                 String comment = "Signal '" + signalRef + "' is inconsistent";

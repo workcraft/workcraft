@@ -42,6 +42,7 @@ public class StgExportTests {
                 ".graph\n";
         String lpnHeader = Info.getGeneratedByText("# LPN file ", "\n") +
                 ".name Untitled\n" +
+                "#@.init_state [000000]\n" +
                 ".inputs dsr dsw ldtack\n" +
                 ".outputs d dtack lds\n" +
                 ".grap";

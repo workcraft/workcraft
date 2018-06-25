@@ -1,11 +1,5 @@
 package org.workcraft.plugins.circuit;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Set;
-
 import org.workcraft.dom.Connection;
 import org.workcraft.dom.Container;
 import org.workcraft.dom.Node;
@@ -22,9 +16,11 @@ import org.workcraft.formula.jj.ParseException;
 import org.workcraft.formula.utils.BubbledLiteralsExtractor;
 import org.workcraft.formula.utils.StringGenerator;
 import org.workcraft.plugins.circuit.Contact.IOType;
-import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.util.Hierarchy;
 import org.workcraft.util.LogUtils;
+
+import java.util.*;
 
 public class CircuitUtils {
 
@@ -248,32 +244,32 @@ public class CircuitUtils {
         return result;
     }
 
-    public static Type getSignalType(VisualCircuit circuit, VisualContact contact) {
+    public static Signal.Type getSignalType(VisualCircuit circuit, VisualContact contact) {
         return getSignalType((Circuit) circuit.getMathModel(), contact.getReferencedContact());
     }
 
-    public static Type getSignalType(Circuit circuit, Contact contact) {
-        Type result = Type.INTERNAL;
+    public static Signal.Type getSignalType(Circuit circuit, Contact contact) {
+        Signal.Type result = Signal.Type.INTERNAL;
         if (contact.isPort()) {
             // Primary port
             if (contact.isInput()) {
-                result = Type.INPUT;
+                result = Signal.Type.INPUT;
             } else if (contact.isOutput()) {
-                result = Type.OUTPUT;
+                result = Signal.Type.OUTPUT;
             }
         } else {
             CircuitComponent component = (CircuitComponent) contact.getParent();
             if (component.getIsEnvironment()) {
                 // Contact of an environment component
                 if (contact.isInput()) {
-                    result = Type.OUTPUT;
+                    result = Signal.Type.OUTPUT;
                 } else if (contact.isOutput()) {
-                    result = Type.INPUT;
+                    result = Signal.Type.INPUT;
                 }
             } else {
                 // Contact of an ordinary component
                 if (contact.isOutput() && (getDrivenOutputPort(circuit, contact) != null)) {
-                    result = Type.OUTPUT;
+                    result = Signal.Type.OUTPUT;
                 }
             }
         }

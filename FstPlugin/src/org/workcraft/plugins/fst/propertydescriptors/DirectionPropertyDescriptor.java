@@ -1,6 +1,5 @@
 package org.workcraft.plugins.fst.propertydescriptors;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -42,7 +41,7 @@ public class DirectionPropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public Object getValue() throws InvocationTargetException {
+    public Object getValue() {
         if (event instanceof SignalEvent) {
             SignalEvent signalEvent = (SignalEvent) event;
             return signalEvent.getDirection();
@@ -51,7 +50,7 @@ public class DirectionPropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public void setValue(Object value) throws InvocationTargetException {
+    public void setValue(Object value) {
         if (event instanceof SignalEvent) {
             SignalEvent signalEvent = (SignalEvent) event;
             signalEvent.setDirection((Direction) value);
@@ -62,7 +61,7 @@ public class DirectionPropertyDescriptor implements PropertyDescriptor {
     public Map<Direction, String> getChoice() {
         Map<Direction, String> result = null;
         if (event instanceof SignalEvent) {
-            result = new LinkedHashMap<Direction, String>();
+            result = new LinkedHashMap<>();
             for (Direction item : Direction.values()) {
                 result.put(item, item.toString());
             }

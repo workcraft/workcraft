@@ -9,6 +9,7 @@ import org.workcraft.gui.events.GraphEditorMouseEvent;
 import org.workcraft.gui.graph.generators.DefaultNodeGenerator;
 import org.workcraft.gui.graph.tools.GraphEditor;
 import org.workcraft.gui.graph.tools.NodeGeneratorTool;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
 import org.workcraft.util.GUI;
 
@@ -22,7 +23,7 @@ public class StgSignalTransitionGeneratorTool extends NodeGeneratorTool {
             public MathNode createMathNode() throws NodeCreationException {
                 MathNode node = super.createMathNode();
                 SignalTransition t = (SignalTransition) node;
-                t.setSignalType(shiftKeyDown ? SignalTransition.Type.INPUT : SignalTransition.Type.OUTPUT);
+                t.setSignalType(shiftKeyDown ? Signal.Type.INPUT : Signal.Type.OUTPUT);
                 t.setDirection(menuKeyDown ? SignalTransition.Direction.MINUS : SignalTransition.Direction.PLUS);
                 return node;
             }

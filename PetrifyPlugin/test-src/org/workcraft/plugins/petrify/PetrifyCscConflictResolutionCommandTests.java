@@ -11,7 +11,7 @@ import org.workcraft.Framework;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.DesktopApi;
 import org.workcraft.plugins.petrify.commands.PetrifyCscConflictResolutionCommand;
-import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.util.PackageUtils;
@@ -59,18 +59,18 @@ public class PetrifyCscConflictResolutionCommandTests {
         WorkspaceEntry srcWe = framework.loadWork(url.getFile());
 
         Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
-        Set<String> srcInputs = srcStg.getSignalNames(Type.INPUT, null);
-        Set<String> srcInternals = srcStg.getSignalNames(Type.INTERNAL, null);
-        Set<String> srcOutputs = srcStg.getSignalNames(Type.OUTPUT, null);
+        Set<String> srcInputs = srcStg.getSignalNames(Signal.Type.INPUT, null);
+        Set<String> srcInternals = srcStg.getSignalNames(Signal.Type.INTERNAL, null);
+        Set<String> srcOutputs = srcStg.getSignalNames(Signal.Type.OUTPUT, null);
         Set<String> srcMutexes = getMutexNames(srcStg);
 
         PetrifyCscConflictResolutionCommand command = new PetrifyCscConflictResolutionCommand();
         WorkspaceEntry dstWe = command.execute(srcWe);
 
         Stg dstStg = WorkspaceUtils.getAs(dstWe, Stg.class);
-        Set<String> dstInputs = dstStg.getSignalNames(Type.INPUT, null);
-        Set<String> dstInternals = dstStg.getSignalNames(Type.INTERNAL, null);
-        Set<String> dstOutputs = dstStg.getSignalNames(Type.OUTPUT, null);
+        Set<String> dstInputs = dstStg.getSignalNames(Signal.Type.INPUT, null);
+        Set<String> dstInternals = dstStg.getSignalNames(Signal.Type.INTERNAL, null);
+        Set<String> dstOutputs = dstStg.getSignalNames(Signal.Type.OUTPUT, null);
         Set<String> dstMutexes = getMutexNames(dstStg);
 
         Set<String> expInternals = new HashSet<>();

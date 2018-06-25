@@ -18,7 +18,7 @@ import org.workcraft.plugins.petrify.commands.PetrifyAbstractSynthesisCommand;
 import org.workcraft.plugins.petrify.commands.PetrifyComplexGateSynthesisCommand;
 import org.workcraft.plugins.petrify.commands.PetrifyTechnologyMappingSynthesisCommand;
 import org.workcraft.plugins.stg.Mutex;
-import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgPlace;
 import org.workcraft.util.PackageUtils;
@@ -133,8 +133,8 @@ public class PetrifySynthesisCommandsTests {
 
         WorkspaceEntry srcWe = framework.loadWork(srcUrl.getFile());
         Stg srcStg = WorkspaceUtils.getAs(srcWe, Stg.class);
-        Set<String> srcInputs = srcStg.getSignalNames(Type.INPUT, null);
-        Set<String> srcOutputs = srcStg.getSignalNames(Type.OUTPUT, null);
+        Set<String> srcInputs = srcStg.getSignalNames(Signal.Type.INPUT, null);
+        Set<String> srcOutputs = srcStg.getSignalNames(Signal.Type.OUTPUT, null);
         Set<String> srcMutexes = getMutexNames(srcStg);
 
         C command = cls.newInstance();

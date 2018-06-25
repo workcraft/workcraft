@@ -25,7 +25,7 @@ class SignalTypeConsistencySupervisor extends StateSupervisor {
                 SignalTransition t = (SignalTransition) e.getSender();
                 String signalName = t.getSignalName();
                 Container container = (Container) t.getParent();
-                SignalTransition.Type signalType = t.getSignalType();
+                Signal.Type signalType = t.getSignalType();
                 final Collection<SignalTransition> transitions = stg.getSignalTransitions(signalName, container);
 
                 if (propertyName.equals(SignalTransition.PROPERTY_SIGNAL_TYPE)) {

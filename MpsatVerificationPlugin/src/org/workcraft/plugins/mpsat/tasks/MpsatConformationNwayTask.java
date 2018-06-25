@@ -20,7 +20,7 @@ import org.workcraft.plugins.punf.tasks.PunfOutput;
 import org.workcraft.plugins.punf.tasks.PunfTask;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
 import org.workcraft.plugins.shared.tasks.ExportTask;
-import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.plugins.stg.interop.StgFormat;
@@ -72,7 +72,7 @@ public class MpsatConformationNwayTask implements Task<MpsatChainOutput> {
                 if (stgExporter == null) {
                     throw new NoExporterException(stg, format);
                 }
-                Set<String> outputSignalNames = stg.getSignalNames(Type.OUTPUT, null);
+                Set<String> outputSignalNames = stg.getSignalNames(Signal.Type.OUTPUT, null);
                 allOutputSets.add(outputSignalNames);
 
                 // Generating .g for the model
@@ -84,9 +84,9 @@ public class MpsatConformationNwayTask implements Task<MpsatChainOutput> {
 
                 if (exportResult.getOutcome() != Outcome.SUCCESS) {
                     if (exportResult.getOutcome() == Outcome.CANCEL) {
-                        return new Result<MpsatChainOutput>(Outcome.CANCEL);
+                        return new Result<>(Outcome.CANCEL);
                     }
-                    return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                    return new Result<>(Outcome.FAILURE,
                             new MpsatChainOutput(exportResult, null, null, null, toolchainPreparationSettings));
                 }
             }
@@ -103,24 +103,24 @@ public class MpsatConformationNwayTask implements Task<MpsatChainOutput> {
 
             if (pcompResult.getOutcome() != Outcome.SUCCESS) {
                 if (pcompResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
+                    return new Result<>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                return new Result<>(Outcome.FAILURE,
                         new MpsatChainOutput(exportResult, pcompResult, null, null, toolchainPreparationSettings));
             }
             monitor.progressUpdate(0.50);
 
             // Generate unfolding
             File unfoldingFile = new File(directory, StgUtils.SYSTEM_FILE_PREFIX + PunfTask.PNML_FILE_EXTENSION);
-            PunfTask punfTask = new PunfTask(stgFile.getAbsolutePath(), unfoldingFile.getAbsolutePath());
+            PunfTask punfTask = new PunfTask(stgFile, unfoldingFile, directory);
             Result<? extends PunfOutput> punfResult = taskManager.execute(
                     punfTask, "Unfolding .g", subtaskMonitor);
 
             if (punfResult.getOutcome() != Outcome.SUCCESS) {
                 if (punfResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
+                    return new Result<>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                return new Result<>(Outcome.FAILURE,
                         new MpsatChainOutput(exportResult, pcompResult, punfResult, null, toolchainPreparationSettings));
             }
             monitor.progressUpdate(0.60);
@@ -142,16 +142,16 @@ public class MpsatConformationNwayTask implements Task<MpsatChainOutput> {
 
             if (mpsatConformationResult.getOutcome() != Outcome.SUCCESS) {
                 if (mpsatConformationResult.getOutcome() == Outcome.CANCEL) {
-                    return new Result<MpsatChainOutput>(Outcome.CANCEL);
+                    return new Result<>(Outcome.CANCEL);
                 }
-                return new Result<MpsatChainOutput>(Outcome.FAILURE,
+                return new Result<>(Outcome.FAILURE,
                         new MpsatChainOutput(exportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings));
             }
             monitor.progressUpdate(0.80);
 
             MpsatOutputParser mpsatConformationParser = new MpsatOutputParser(mpsatConformationResult.getPayload());
             if (!mpsatConformationParser.getSolutions().isEmpty()) {
-                return new Result<MpsatChainOutput>(Outcome.SUCCESS,
+                return new Result<>(Outcome.SUCCESS,
                         new MpsatChainOutput(exportResult, pcompResult, punfResult, mpsatConformationResult, conformationSettings,
                                 "This model does not conform to the environment."));
             }
@@ -160,11 +160,11 @@ public class MpsatConformationNwayTask implements Task<MpsatChainOutput> {
             // Success
             unfoldingFile.delete();
             String message = "N-way conformation holds.";
-            return new Result<MpsatChainOutput>(Outcome.SUCCESS,
+            return new Result<>(Outcome.SUCCESS,
                     new MpsatChainOutput(exportResult, pcompResult, punfResult, null, toolchainCompletionSettings, message));
 
         } catch (Throwable e) {
-            return new Result<MpsatChainOutput>(e);
+            return new Result<>(e);
         } finally {
             FileUtils.deleteOnExitRecursively(directory);
         }

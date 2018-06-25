@@ -8,7 +8,6 @@ import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
 import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.SignalTransition.Direction;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.VisualSignalTransition;
 import org.workcraft.plugins.stg.VisualStg;
@@ -37,8 +36,8 @@ public class MirrorTransitionTransformationCommand extends AbstractTransformatio
     public boolean isApplicableTo(Node node) {
         if (node instanceof VisualSignalTransition) {
             VisualSignalTransition signalTransition = (VisualSignalTransition) node;
-            Direction direction = signalTransition.getDirection();
-            return (direction == Direction.PLUS) || (direction == Direction.MINUS);
+            SignalTransition.Direction direction = signalTransition.getDirection();
+            return (direction == SignalTransition.Direction.PLUS) || (direction == SignalTransition.Direction.MINUS);
         }
         return false;
     }
@@ -74,7 +73,7 @@ public class MirrorTransitionTransformationCommand extends AbstractTransformatio
             Stg stg = (Stg) visualStg.getMathModel();
             VisualSignalTransition visualTransition = (VisualSignalTransition) node;
             SignalTransition transition = visualTransition.getReferencedTransition();
-            Direction direction = visualTransition.getDirection();
+            SignalTransition.Direction direction = visualTransition.getDirection();
             stg.setDirection(transition, direction.mirror());
         }
     }

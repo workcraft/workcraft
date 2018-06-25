@@ -1,6 +1,5 @@
 package org.workcraft.gui.propertyeditor;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -29,7 +28,7 @@ public abstract class PropertyDeclaration<O, V> implements PropertyDescriptor, D
     public Map<V, String> getChoice() {
         LinkedHashMap<V, String> result = null;
         if (cls.isEnum()) {
-            result = new LinkedHashMap<V, String>();
+            result = new LinkedHashMap<>();
             for (V item : cls.getEnumConstants()) {
                 result.put(item, item.toString());
             }
@@ -38,12 +37,12 @@ public abstract class PropertyDeclaration<O, V> implements PropertyDescriptor, D
     }
 
     @Override
-    public Object getValue() throws InvocationTargetException {
+    public Object getValue() {
         return getter(object);
     }
 
     @Override
-    public void setValue(Object value) throws InvocationTargetException {
+    public void setValue(Object value) {
         try {
             setter(object, cls.cast(value));
         } catch (ClassCastException e) {

@@ -10,7 +10,7 @@ import org.workcraft.plugins.circuit.stg.CircuitStgUtils;
 import org.workcraft.plugins.circuit.stg.CircuitToStgConverter;
 import org.workcraft.plugins.pcomp.tasks.PcompOutput;
 import org.workcraft.plugins.shared.tasks.ExportOutput;
-import org.workcraft.plugins.stg.SignalTransition.Type;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Stg;
 import org.workcraft.plugins.stg.StgUtils;
 import org.workcraft.plugins.stg.VisualStg;
@@ -53,8 +53,8 @@ public class CircuitToStgWithEnvironmentConversionCommand extends CircuitToStgCo
             File devStgFile = exportDevStg(devStg, directory);
             devStgFile.deleteOnExit();
             // Make sure that input signals of the device STG are also inputs in the environment STG
-            Set<String> inputSignalNames = devStg.getSignalNames(Type.INPUT, null);
-            Set<String> outputSignalNames = devStg.getSignalNames(Type.OUTPUT, null);
+            Set<String> inputSignalNames = devStg.getSignalNames(Signal.Type.INPUT, null);
+            Set<String> outputSignalNames = devStg.getSignalNames(Signal.Type.OUTPUT, null);
             File envStgFile = exportEnvStg(envWorkFile, inputSignalNames, outputSignalNames, directory);
             if (envStgFile != null) {
                 envStgFile.deleteOnExit();

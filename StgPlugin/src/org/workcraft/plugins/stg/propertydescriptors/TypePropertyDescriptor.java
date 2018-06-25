@@ -1,13 +1,12 @@
 package org.workcraft.plugins.stg.propertydescriptors;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.workcraft.gui.propertyeditor.PropertyDescriptor;
 import org.workcraft.plugins.stg.Stg;
+import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.SignalTransition;
-import org.workcraft.plugins.stg.SignalTransition.Type;
 
 public class TypePropertyDescriptor implements PropertyDescriptor {
     public static final String PROPERTY_SIGNAL_TYPE = "Signal type";
@@ -44,19 +43,19 @@ public class TypePropertyDescriptor implements PropertyDescriptor {
     }
 
     @Override
-    public Object getValue() throws InvocationTargetException {
+    public Object getValue() {
         return transition.getSignalType();
     }
 
     @Override
-    public void setValue(Object value) throws InvocationTargetException {
-        transition.setSignalType((Type) value);
+    public void setValue(Object value) {
+        transition.setSignalType((Signal.Type) value);
     }
 
     @Override
-    public Map<Type, String> getChoice() {
-        Map<Type, String> result = new LinkedHashMap<>();
-        for (Type item : Type.values()) {
+    public Map<Signal.Type, String> getChoice() {
+        Map<Signal.Type, String> result = new LinkedHashMap<>();
+        for (Signal.Type item : Signal.Type.values()) {
             result.put(item, item.toString());
         }
         return result;
