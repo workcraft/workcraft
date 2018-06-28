@@ -10,20 +10,7 @@ import org.workcraft.dom.ModelDescriptor;
 import org.workcraft.gui.propertyeditor.Settings;
 import org.workcraft.interop.Exporter;
 import org.workcraft.interop.Importer;
-import org.workcraft.plugins.stg.commands.ContractNamedTransitionTransformationCommand;
-import org.workcraft.plugins.stg.commands.DummyToSignalTransitionTransformationCommand;
-import org.workcraft.plugins.stg.commands.ExpandHandshakeReqAckTransformationCommand;
-import org.workcraft.plugins.stg.commands.ExpandHandshakeTransformationCommand;
-import org.workcraft.plugins.stg.commands.ExplicitPlaceTransformationCommand;
-import org.workcraft.plugins.stg.commands.ImplicitPlaceTransformationCommand;
-import org.workcraft.plugins.stg.commands.InsertDummyTransformationCommand;
-import org.workcraft.plugins.stg.commands.MergeTransitionTransformationCommand;
-import org.workcraft.plugins.stg.commands.MirrorSignalTransformationCommand;
-import org.workcraft.plugins.stg.commands.MirrorTransitionTransformationCommand;
-import org.workcraft.plugins.stg.commands.PetriToStgConversionCommand;
-import org.workcraft.plugins.stg.commands.SignalToDummyTransitionTransformationCommand;
-import org.workcraft.plugins.stg.commands.StgStatisticsCommand;
-import org.workcraft.plugins.stg.commands.StgToPetriConversionCommand;
+import org.workcraft.plugins.stg.commands.*;
 import org.workcraft.plugins.stg.interop.LpnExporter;
 import org.workcraft.plugins.stg.interop.LpnImporter;
 import org.workcraft.plugins.stg.interop.StgExporter;
@@ -86,6 +73,8 @@ public class StgModule implements Module {
                 "transform the given STG 'work' by expanding selected handshake transitions");
         ScriptableCommandUtils.register(ExpandHandshakeReqAckTransformationCommand.class, "transformStgExpandHandshakeReqAck",
                 "transform the given STG 'work' by expanding selected handshake transitions by adding _req and _ack suffixes");
+        ScriptableCommandUtils.register(SelectAllSignalTransitionsTransformationCommand.class, "transformStgSelectAllSignalTransitions",
+                "select all transitions of selected signals in the given STG 'work'");
 
         ScriptableCommandUtils.register(PetriToStgConversionCommand.class, "convertPetriToStg",
                 "convert the given Petri net 'work' into a new STG work");

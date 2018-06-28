@@ -1,33 +1,27 @@
 package org.workcraft.plugins.stg.commands;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-
 import org.workcraft.NodeTransformer;
 import org.workcraft.commands.AbstractTransformationCommand;
 import org.workcraft.dom.Model;
 import org.workcraft.dom.Node;
-import org.workcraft.plugins.stg.StgUtils;
-import org.workcraft.plugins.stg.VisualDummyTransition;
-import org.workcraft.plugins.stg.VisualSignalTransition;
-import org.workcraft.plugins.stg.VisualStg;
+import org.workcraft.plugins.stg.*;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
 import org.workcraft.workspace.WorkspaceUtils;
 
-public class SignalToDummyTransitionTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
+import java.util.Collection;
+import java.util.HashSet;
 
-    private HashSet<VisualDummyTransition> dummyTransitions = null;
+public class SelectAllSignalTransitionsTransformationCommand extends AbstractTransformationCommand implements NodeTransformer {
 
     @Override
     public String getDisplayName() {
-        return "Convert selected signal transitions to dummies";
+        return "Select all transitions of selected signals";
     }
 
     @Override
     public String getPopupName() {
-        return "Convert to dummy";
+        return "Select all transitions of signal";
     }
 
     @Override
@@ -47,7 +41,7 @@ public class SignalToDummyTransitionTransformationCommand extends AbstractTransf
 
     @Override
     public int getPriority() {
-        return 1;
+        return 0;
     }
 
     @Override
@@ -70,25 +64,25 @@ public class SignalToDummyTransitionTransformationCommand extends AbstractTransf
     public void transform(Model model, Collection<Node> nodes) {
         if (model instanceof VisualStg) {
             VisualStg stg = (VisualStg) model;
-            dummyTransitions = new HashSet<>(nodes.size());
+            HashSet<String> signals = new HashSet<>();
             for (Node node: nodes) {
-                transform(model, node);
+                if (node instanceof VisualSignalTransition) {
+                    VisualSignalTransition st = (VisualSignalTransition) node;
+                    signals.add(stg.getSignalReference(st));
+                }
             }
-            stg.select(new LinkedList<>(dummyTransitions));
-            dummyTransitions = null;
+            Stg mathStg = (Stg) stg.getMathModel();
+            stg.selectNone();
+            for (String signal: signals) {
+                for (SignalTransition mathTransition: mathStg.getSignalTransitions(signal)) {
+                    stg.addToSelection(stg.getVisualComponent(mathTransition, VisualSignalTransition.class));
+                }
+            }
         }
     }
 
     @Override
     public void transform(Model model, Node node) {
-        if ((model instanceof VisualStg) && (node instanceof VisualSignalTransition)) {
-            VisualStg stg = (VisualStg) model;
-            VisualSignalTransition signalTransition = (VisualSignalTransition) node;
-            VisualDummyTransition dummyTransition = StgUtils.convertSignalToDummyTransition(stg, signalTransition);
-            if (dummyTransitions != null) {
-                dummyTransitions.add(dummyTransition);
-            }
-        }
     }
 
 }
