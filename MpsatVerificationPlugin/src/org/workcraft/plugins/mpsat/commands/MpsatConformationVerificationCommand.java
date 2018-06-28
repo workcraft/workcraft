@@ -45,7 +45,7 @@ public class MpsatConformationVerificationCommand extends AbstractVerificationCo
 
     @Override
     public Position getPosition() {
-        return Position.BOTTOM;
+        return Position.BOTTOM_MIDDLE;
     }
 
     public void setEnvironment(File envFile) {

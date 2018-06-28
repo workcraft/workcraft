@@ -24,7 +24,7 @@ public abstract class AbstractTransformationCommand implements ScriptableCommand
 
     @Override
     public Position getPosition() {
-        return Position.TOP;
+        return null;
     }
 
     @Override

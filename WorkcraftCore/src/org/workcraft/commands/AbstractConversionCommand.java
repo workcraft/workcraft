@@ -20,7 +20,7 @@ public abstract class AbstractConversionCommand implements ScriptableCommand<Wor
 
     @Override
     public Position getPosition() {
-        return Position.TOP;
+        return null;
     }
 
     @Override

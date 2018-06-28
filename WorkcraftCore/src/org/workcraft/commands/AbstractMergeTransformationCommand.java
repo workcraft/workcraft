@@ -30,7 +30,7 @@ public abstract class AbstractMergeTransformationCommand extends AbstractTransfo
     }
 
     public Set<Class<? extends VisualComponent>> getMergableClasses() {
-        return new HashSet<Class<? extends VisualComponent>>();
+        return new HashSet<>();
     }
 
     @Override

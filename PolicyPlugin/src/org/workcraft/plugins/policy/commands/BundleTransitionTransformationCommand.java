@@ -20,7 +20,7 @@ public class BundleTransitionTransformationCommand extends AbstractTransformatio
 
     @Override
     public Position getPosition() {
-        return null;
+        return Position.TOP;
     }
 
     @Override

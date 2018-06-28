@@ -63,7 +63,7 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
 
     @Override
     public Position getPosition() {
-        return null;
+        return Position.TOP_MIDDLE;
     }
 
     @Override
@@ -81,7 +81,7 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
     public void transform(Model model, Collection<Node> nodes) {
         if (model instanceof VisualStg) {
             VisualStg stg = (VisualStg) model;
-            expandedNodes = new HashSet<Node>();
+            expandedNodes = new HashSet<>();
             suffixPair = getSufixes();
             if (suffixPair != null) {
                 for (Node node: nodes) {
@@ -181,7 +181,7 @@ public class ExpandHandshakeTransformationCommand extends AbstractTransformation
         }
         Point2D predPoint = MixUtils.middlePoint(predPoints);
         Point2D succPoint = MixUtils.middlePoint(succPoints);
-        return new Pair<Point2D, Point2D>(predPoint, succPoint);
+        return new Pair<>(predPoint, succPoint);
     }
 
     public Pair<String, String> getSufixes() {

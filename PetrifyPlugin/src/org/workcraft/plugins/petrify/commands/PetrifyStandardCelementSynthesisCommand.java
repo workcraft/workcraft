@@ -14,7 +14,7 @@ public class PetrifyStandardCelementSynthesisCommand extends PetrifyAbstractSynt
 
     @Override
     public Position getPosition() {
-        return Position.MIDDLE;
+        return Position.BOTTOM_MIDDLE;
     }
 
     @Override

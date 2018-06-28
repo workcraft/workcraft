@@ -38,7 +38,7 @@ public class MpsatMutexImplementabilityVerificationCommand extends AbstractVerif
 
     @Override
     public Position getPosition() {
-        return null;
+        return Position.TOP;
     }
 
     @Override

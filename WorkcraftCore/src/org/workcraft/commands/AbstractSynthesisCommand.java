@@ -17,7 +17,7 @@ public abstract class AbstractSynthesisCommand implements ScriptableCommand<Work
 
     @Override
     public Position getPosition() {
-        return Position.TOP;
+        return null;
     }
 
 }

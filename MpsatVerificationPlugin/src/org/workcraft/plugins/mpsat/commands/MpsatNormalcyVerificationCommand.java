@@ -19,7 +19,7 @@ public class MpsatNormalcyVerificationCommand extends MpsatAbstractVerificationC
 
     @Override
     public Position getPosition() {
-        return Position.TOP;
+        return Position.TOP_MIDDLE;
     }
 
     @Override

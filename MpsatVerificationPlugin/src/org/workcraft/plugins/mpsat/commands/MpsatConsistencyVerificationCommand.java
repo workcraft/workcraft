@@ -24,7 +24,7 @@ public class MpsatConsistencyVerificationCommand extends MpsatAbstractVerificati
 
     @Override
     public Position getPosition() {
-        return null;
+        return Position.TOP;
     }
 
     @Override

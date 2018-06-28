@@ -14,7 +14,7 @@ public class PetrifyGeneralisedCelementSynthesisCommand extends PetrifyAbstractS
 
     @Override
     public Position getPosition() {
-        return Position.TOP;
+        return Position.MIDDLE;
     }
 
     @Override

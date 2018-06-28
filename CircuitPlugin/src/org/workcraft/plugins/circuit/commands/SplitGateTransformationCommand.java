@@ -81,7 +81,7 @@ public class SplitGateTransformationCommand extends AbstractTransformationComman
 
     @Override
     public Position getPosition() {
-        return null;
+        return Position.TOP;
     }
 
     @Override

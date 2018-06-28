@@ -42,7 +42,7 @@ public class ExplicitPlaceTransformationCommand extends AbstractTransformationCo
 
     @Override
     public Position getPosition() {
-        return null;
+        return Position.MIDDLE;
     }
 
     @Override

@@ -29,6 +29,12 @@ public class CircuitVerificationCommand extends AbstractVerificationCommand {
     public boolean isApplicableTo(WorkspaceEntry we) {
         return WorkspaceUtils.isApplicable(we, Circuit.class);
     }
+
+    @Override
+    public Position getPosition() {
+        return Position.TOP;
+    }
+
     @Override
     public void run(WorkspaceEntry we) {
         queueVerification(we);

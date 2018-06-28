@@ -16,7 +16,7 @@ public class MpsatStandardCelementSynthesisCommand extends MpsatAbstractSynthesi
 
     @Override
     public Position getPosition() {
-        return Position.MIDDLE;
+        return Position.BOTTOM_MIDDLE;
     }
 
 }

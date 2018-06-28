@@ -16,7 +16,7 @@ public class MpsatComplexGateSynthesisCommand extends MpsatAbstractSynthesisComm
 
     @Override
     public Position getPosition() {
-        return null;
+        return Position.TOP_MIDDLE;
     }
 
 }

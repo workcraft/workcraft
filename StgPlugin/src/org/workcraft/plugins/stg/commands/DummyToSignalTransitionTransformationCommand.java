@@ -72,11 +72,11 @@ public class DummyToSignalTransitionTransformationCommand extends AbstractTransf
     public void transform(Model model, Collection<Node> nodes) {
         if (model instanceof VisualModel) {
             VisualModel visualModel = (VisualModel) model;
-            signalTransitions = new HashSet<VisualSignalTransition>(nodes.size());
+            signalTransitions = new HashSet<>(nodes.size());
             for (Node node: nodes) {
                 transform(model, node);
             }
-            visualModel.select(new LinkedList<Node>(signalTransitions));
+            visualModel.select(new LinkedList<>(signalTransitions));
             signalTransitions = null;
         }
     }

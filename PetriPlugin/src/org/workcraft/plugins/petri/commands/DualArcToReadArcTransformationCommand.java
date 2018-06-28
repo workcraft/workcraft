@@ -25,7 +25,7 @@ public class DualArcToReadArcTransformationCommand extends AbstractTransformatio
 
     @Override
     public Position getPosition() {
-        return Position.TOP;
+        return Position.BOTTOM_MIDDLE;
     }
 
     @Override

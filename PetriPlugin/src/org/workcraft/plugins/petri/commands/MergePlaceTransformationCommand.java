@@ -30,7 +30,7 @@ public final class MergePlaceTransformationCommand extends AbstractMergeTransfor
 
     @Override
     public Position getPosition() {
-        return null;
+        return Position.MIDDLE;
     }
 
 }

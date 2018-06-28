@@ -19,7 +19,7 @@ public class MpsatDiInterfaceVerificationCommand extends MpsatAbstractVerificati
 
     @Override
     public Position getPosition() {
-        return Position.TOP;
+        return Position.TOP_MIDDLE;
     }
 
     @Override
