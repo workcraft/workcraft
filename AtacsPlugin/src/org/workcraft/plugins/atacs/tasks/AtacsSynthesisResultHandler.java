@@ -2,18 +2,18 @@ package org.workcraft.plugins.atacs.tasks;
 
 import org.workcraft.Framework;
 import org.workcraft.commands.AbstractLayoutCommand;
+import org.workcraft.dom.Node;
 import org.workcraft.dom.visual.VisualModel;
 import org.workcraft.exceptions.DeserialisationException;
 import org.workcraft.gui.MainWindow;
 import org.workcraft.gui.workspace.Path;
 import org.workcraft.plugins.atacs.AtacsSettings;
-import org.workcraft.plugins.circuit.Circuit;
-import org.workcraft.plugins.circuit.CircuitDescriptor;
-import org.workcraft.plugins.circuit.VisualCircuit;
-import org.workcraft.plugins.circuit.VisualFunctionComponent;
+import org.workcraft.plugins.circuit.*;
 import org.workcraft.plugins.circuit.interop.VerilogImporter;
 import org.workcraft.plugins.circuit.renderers.ComponentRenderingResult.RenderType;
 import org.workcraft.plugins.stg.Mutex;
+import org.workcraft.plugins.stg.Signal;
+import org.workcraft.plugins.stg.Stg;
 import org.workcraft.tasks.AbstractExtendedResultHandler;
 import org.workcraft.tasks.Result;
 import org.workcraft.tasks.Result.Outcome;
@@ -21,11 +21,13 @@ import org.workcraft.util.DialogUtils;
 import org.workcraft.util.LogUtils;
 import org.workcraft.workspace.ModelEntry;
 import org.workcraft.workspace.WorkspaceEntry;
+import org.workcraft.workspace.WorkspaceUtils;
 
 import javax.swing.*;
 import java.io.ByteArrayInputStream;
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 public class AtacsSynthesisResultHandler extends AbstractExtendedResultHandler<AtacsSynthesisOutput, WorkspaceEntry> {
 
@@ -61,12 +63,12 @@ public class AtacsSynthesisResultHandler extends AbstractExtendedResultHandler<A
     }
 
     private WorkspaceEntry handleSuccess(AtacsSynthesisOutput atacsOutput) {
-        return handleVerilogSynthesisResult(atacsOutput);
+        return handleVerilogSynthesisOutput(atacsOutput);
     }
 
-    private WorkspaceEntry handleVerilogSynthesisResult(AtacsSynthesisOutput atacsResult) {
+    private WorkspaceEntry handleVerilogSynthesisOutput(AtacsSynthesisOutput atacsOutput) {
         WorkspaceEntry dstWe = null;
-        String verilogOutput = atacsResult.getVerilog();
+        String verilogOutput = atacsOutput.getVerilog();
         if ((verilogOutput != null) && !verilogOutput.isEmpty()) {
             LogUtils.logInfo("ATACS synthesis result in Verilog format:");
             System.out.println(verilogOutput);
@@ -77,6 +79,9 @@ public class AtacsSynthesisResultHandler extends AbstractExtendedResultHandler<A
                 ByteArrayInputStream verilogStream = new ByteArrayInputStream(verilogOutput.getBytes());
                 VerilogImporter verilogImporter = new VerilogImporter(sequentialAssign);
                 Circuit circuit = verilogImporter.importCircuit(verilogStream, mutexes);
+
+                removePortsForExposedInternalSignals(circuit);
+
                 Path<String> path = we.getWorkspacePath();
                 ModelEntry dstMe = new ModelEntry(new CircuitDescriptor(), circuit);
                 Framework framework = Framework.getInstance();
@@ -106,6 +111,24 @@ public class AtacsSynthesisResultHandler extends AbstractExtendedResultHandler<A
             }
         }
         return dstWe;
+    }
+
+    private void removePortsForExposedInternalSignals(Circuit circuit) {
+        Stg stg = WorkspaceUtils.getAs(we, Stg.class);
+        Set<String> internalSignals = stg.getSignalReferences(Signal.Type.INTERNAL);
+        // Remove intentionally exposed mutex grants from the list of initially internal signals.
+        for (Mutex mutex: mutexes) {
+            internalSignals.remove(mutex.g1.name);
+            internalSignals.remove(mutex.g2.name);
+        }
+        // Restore internal signals (except for MUTEX outputs).
+        for (String signal: internalSignals) {
+            Node node = circuit.getNodeByReference(signal);
+            if (node instanceof Contact) {
+                LogUtils.logInfo("Internal signal '" + signal + "' was exposed by ATACS as an output and is restored as internal now.");
+                circuit.remove(node);
+            }
+        }
     }
 
     private void setComponentsRenderStyle(final VisualCircuit visualCircuit) {
