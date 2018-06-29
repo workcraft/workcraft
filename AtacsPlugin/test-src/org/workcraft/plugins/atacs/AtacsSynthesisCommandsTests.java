@@ -78,7 +78,7 @@ public class AtacsSynthesisCommandsTests {
         testGeneralisedCelementSynthesisCommand(workName, 1);
     }
 
-    //@Test -- ATACS produces bad Verilog for this test
+    @Test
     public void edcCscGeneralisedCelementSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "edc-csc.stg.work");
         testGeneralisedCelementSynthesisCommand(workName, 7);
