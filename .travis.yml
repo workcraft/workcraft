@@ -28,6 +28,9 @@ before_install:
 install:
   - ./gradlew assemble
 
+before_script:
+  - if [ $TARGET == test ]; then export DISPLAY=:99.0; sudo Xvfb :99 -ac -screen 0 1900x1200x24; sleep 3; fi
+
 script:
   - ./gradlew $TARGET
   - if [ $TARGET == test ]; then ./integration-tests/run.sh; fi
