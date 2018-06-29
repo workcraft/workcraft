@@ -612,7 +612,7 @@ public class VerilogImporter implements Importer {
             if (node instanceof FunctionContact) {
                 FunctionContact contact = (FunctionContact) node;
                 if (contact.isPort() && contact.isOutput()) {
-                    LogUtils.logInfo("Signal " + signal.name + " is restored as internal.");
+                    LogUtils.logInfo("Signal '" + signal.name + "' is restored as internal.");
                     circuit.remove(contact);
                     Wire wire = wires.get(signal.name);
                     if (wire != null) {

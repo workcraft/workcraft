@@ -58,10 +58,8 @@ public class CircuitVerificationUtils {
             Circuit circuit = WorkspaceUtils.getAs(we, Circuit.class);
             Set<String> conflictSignals = getConflictingInterfaceSignals(circuit, envStg);
             if (!conflictSignals.isEmpty()) {
-                String msg = LogUtils.getTextWithRefs(
-                        "The circuit and its environment have different initial state of interface signal",
-                        conflictSignals);
-                DialogUtils.showError(msg);
+                String msg = "The circuit and its environment have different initial state of interface signal";
+                DialogUtils.showError(LogUtils.getTextWithRefs(msg, conflictSignals));
                 return false;
             }
         }

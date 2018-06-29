@@ -14,9 +14,7 @@ import org.workcraft.plugins.circuit.Circuit;
 import org.workcraft.plugins.circuit.CircuitSettings;
 import org.workcraft.plugins.circuit.Contact;
 import org.workcraft.plugins.circuit.FunctionComponent;
-import org.workcraft.plugins.mpsat.commands.MpsatAbstractSynthesisCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatComplexGateSynthesisCommand;
-import org.workcraft.plugins.mpsat.commands.MpsatTechnologyMappingSynthesisCommand;
+import org.workcraft.plugins.mpsat.commands.*;
 import org.workcraft.plugins.punf.PunfSettings;
 import org.workcraft.plugins.stg.Signal;
 import org.workcraft.plugins.stg.Mutex;
@@ -76,10 +74,46 @@ public class MpsatSynthesisCommandsTests {
         testComplexGateSynthesisCommand(workName, 6);
     }
 
-    //@Test
+    @Test
     public void edcComplexGateSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "edc-csc.stg.work");
-        testComplexGateSynthesisCommand(workName, 6);
+        testComplexGateSynthesisCommand(workName, 7);
+    }
+
+    private void testComplexGateSynthesisCommand(String workName, int expectedGateCount) {
+        try {
+            testSynthesisCommand(MpsatComplexGateSynthesisCommand.class, workName, expectedGateCount);
+        } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void edcGeneralisedCelementSynthesis() {
+        String workName = PackageUtils.getPackagePath(getClass(), "edc-csc.stg.work");
+        testGeneralisedCelementSynthesisCommand(workName, 7);
+    }
+
+    private void testGeneralisedCelementSynthesisCommand(String workName, int expectedGateCount) {
+        try {
+            testSynthesisCommand(MpsatGeneralisedCelementSynthesisCommand.class, workName, expectedGateCount);
+        } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void edcStandardCelementSynthesis() {
+        String workName = PackageUtils.getPackagePath(getClass(), "edc-csc.stg.work");
+        testStandardCelementSynthesisCommand(workName, 7);
+    }
+
+    private void testStandardCelementSynthesisCommand(String workName, int expectedGateCount) {
+        try {
+            testSynthesisCommand(MpsatStandardCelementSynthesisCommand.class, workName, expectedGateCount);
+        } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
+            e.printStackTrace();
+        }
     }
 
     @Test
@@ -106,18 +140,10 @@ public class MpsatSynthesisCommandsTests {
         testTechnologyMappingSynthesisCommand(workName, 6);
     }
 
-    //@Test
+    @Test
     public void edcTechnologyMappingSynthesis() {
         String workName = PackageUtils.getPackagePath(getClass(), "edc-csc.stg.work");
-        testTechnologyMappingSynthesisCommand(workName, 10);
-    }
-
-    private void testComplexGateSynthesisCommand(String workName, int expectedGateCount) {
-        try {
-            testSynthesisCommand(MpsatComplexGateSynthesisCommand.class, workName, expectedGateCount);
-        } catch (DeserialisationException | InstantiationException | IllegalAccessException e) {
-            e.printStackTrace();
-        }
+        testTechnologyMappingSynthesisCommand(workName, 7);
     }
 
     private void testTechnologyMappingSynthesisCommand(String workName, int expectedGateCount) {
